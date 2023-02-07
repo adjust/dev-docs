@@ -51,7 +51,11 @@ root_doc = "index"
 #
 html_theme = "sphinx_rtd_theme"
 html_context = {
-   "display_github": True
+   "display_github": True,
+   "github_user": "Sporiff",
+   "github_repo": "sdk-docs",
+   "github_version": "main",
+   "conf_py_path": "/"
 }
 pygments_style = "sphinx"
 
