@@ -4,12 +4,24 @@ Hello?
 
 ```{toctree}
 ---
-maxdepth: 1
-caption: Platforms
+maxdepth: 2
+caption: iOS
 hidden: true
 ---
 
-iOS <ios/index>
-Unity <unity/index>
+ios/index
+ios/features/index
+
+```
+
+```{toctree}
+---
+maxdepth: 1
+caption: Unity
+hidden: true
+---
+
+unity/index
+unity/features/index
 
 ```

@@ -14,6 +14,11 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath('./fragments'))
+
 
 # -- Project information -----------------------------------------------------
 
@@ -31,6 +36,8 @@ extensions = [
    "myst_parser",
    "sphinx_design",
    "sphinx_multiversion",
+   "sphinxcontrib.images",
+   "sphinx_copybutton",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -60,7 +67,20 @@ html_static_path = ['_static']
 
 # -- Options for MyST parser -------------------------------------------------
 
-myst_enable_extensions = ["colon_fence"]
+myst_enable_extensions = [
+   "colon_fence",
+   "substitution",
+   "tasklist",
+   "deflist",
+]
+
+myst_heading_anchors = 3
+
+images_config = {
+    'override_image_directive': True,
+    'download': False,
+    'default_show_title': True,
+}
 
 smv_tag_whitelist = r'^.*$'
 smv_branch_whitelist = r'^.*$'
