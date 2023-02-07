@@ -39,8 +39,8 @@ templates_path = ['_templates']
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
-
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'README.md']
+root_doc = "index"
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -51,6 +51,7 @@ html_theme = "sphinx_rtd_theme"
 html_context = {
    "display_github": True
 }
+pygments_style = "sphinx"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -60,3 +61,6 @@ html_static_path = ['_static']
 # -- Options for MyST parser -------------------------------------------------
 
 myst_enable_extensions = ["colon_fence"]
+
+smv_tag_whitelist = r'^.*$'
+smv_branch_whitelist = r'^.*$'
