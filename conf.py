@@ -57,6 +57,9 @@ html_context = {
    "github_version": "main",
    "conf_py_path": "/"
 }
+html_css_files = [
+    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+]
 pygments_style = "sphinx"
 
 # Add any paths that contain custom static files (such as style sheets) here,

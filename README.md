@@ -2,6 +2,8 @@
 
 This is the repository for Adjust's SDK documentation. Written with [Sphinx](https://www.sphinx-doc.org) and [MyST](https://myst-parser.readthedocs.io).
 
+![](screenshot.png)
+
 ## Live preview
 
 This project can be run in a Docker container to enable live editing. To do this:

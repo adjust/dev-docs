@@ -1,6 +1,23 @@
-# Welcome to Adjust SDK documentation's documentation!
+# Adjust SDK documentation
 
-Hello?
+Welcome to the Adjust SDK documentation portal!
+
+::::{grid} 2
+:gutter: 1
+
+:::{grid-item-card} {fab}`app-store-ios fa-10x`
+:link: ios/index
+:link-type: doc
+:text-align: center
+iOS
+:::
+:::{grid-item-card} {fab}`unity fa-10x`
+:link: unity/index
+:link-type: doc
+:text-align: center
+Unity
+:::
+::::
 
 ```{toctree}
 ---
