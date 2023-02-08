@@ -84,5 +84,4 @@ images_config = {
     'default_show_title': True,
 }
 
-smv_tag_whitelist = r'^.*$'
-smv_branch_whitelist = r'^.*$'
+smv_branch_whitelist = r'^(main|v5).*$'
