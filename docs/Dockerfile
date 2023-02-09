@@ -8,9 +8,6 @@ ENV POETRY_VERSION=1.3.2 \
     POETRY_VIRTUALENVS_IN_PROJECT=true \
     # do not ask any interactive question
     POETRY_NO_INTERACTION=1 \
-    \
-    # paths
-    # this is where our requirements + virtual environment will live
     PYSETUP_PATH="/opt/pysetup" \
     VENV_PATH="/opt/pysetup/.venv"
 
@@ -21,7 +18,8 @@ RUN curl -sSL https://install.python-poetry.org | python3 -
 
 WORKDIR $PYSETUP_PATH
 COPY poetry.lock pyproject.toml ./
-
 RUN poetry install
 
-WORKDIR /app
+WORKDIR /app/docs
+
+

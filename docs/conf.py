@@ -41,7 +41,7 @@ templates_path = ['_templates']
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'README.md', 'LICENSE', '.venv']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '.venv']
 root_doc = "index"
 
 # -- Options for HTML output -------------------------------------------------
@@ -55,7 +55,7 @@ html_context = {
    "github_user": "Sporiff",
    "github_repo": "sdk-docs",
    "github_version": "main",
-   "conf_py_path": "/"
+   "conf_py_path": "docs"
 }
 html_css_files = [
     "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
