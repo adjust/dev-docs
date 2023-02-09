@@ -44,10 +44,12 @@ Devices running iOS 8 and earlier use a custom URL scheme to handle deep links.
 Android devices use a unique URI scheme to handle deep links. To set up deep linking, add your scheme to the {guilabel}`Android URI Schemes` section of the Adjust prefab. The SDK adds the required XML tags to your {file}`AndroidManifest.xml`.
 
 ```{image} https://images.ctfassets.net/5s247im0esyq/3NYo4ctARqUSwJJz7wyOjI/276b2699ef82fc0ab72989a5aaa2b347/android_uri_schemes.png
-:alt: A screenshot of the Andorid URI Schemes section in the Unity prefab menu
+:alt: A screenshot of the Android URI Schemes section in the Unity prefab menu
 ```
 
 ## Deferred deep linking
+
+{term}`Deferred deep link`.
 
 ### Disable deferred deep linking
 
