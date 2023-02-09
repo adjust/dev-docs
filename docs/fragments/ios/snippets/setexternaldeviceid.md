@@ -1,5 +1,7 @@
 ---
-:orphaned:
+orphan: true
+nosearch: true
+:nosearch:
 ---
 
 ::::{tab-set}
