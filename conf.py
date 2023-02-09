@@ -85,3 +85,8 @@ images_config = {
 }
 
 smv_branch_whitelist = r'^(main|v5).*$'
+
+# Set up localization repositories
+
+locale_dirs = ['locale/']
+gettext_compact = False
