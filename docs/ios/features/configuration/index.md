@@ -1,6 +1,6 @@
 # Configuration
 
-```{include} ../../../fragments/configuration-features.md
+```{include} /fragments/configuration-features.md
 ```
 
 ```{toctree}

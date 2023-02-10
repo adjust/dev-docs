@@ -1,6 +1,6 @@
 # Set up deep linking
 
-```{include} ../../../fragments/feature-intros/deep-links.md
+```{include} /fragments/feature-intros/deep-links.md
 ```
 
 ## Set up deep linking
@@ -53,23 +53,23 @@ Android devices use a unique URI scheme to handle deep links. To set up deep lin
 
 ### Disable deferred deep linking
 
-```{include} ../../../fragments/method-intros/setlaunchdeferreddeeplink.md
+```{include} /fragments/method-intros/setlaunchdeferreddeeplink.md
 ```
 
-```{include} ../../../fragments/unity/snippets/setlaunchdeferreddeeplink.md
+```{include} /fragments/unity/snippets/setlaunchdeferreddeeplink.md
 ```
 
 ### Set up a deferred deep link delegate
 
-```{include} ../../../fragments/method-intros/setdeferreddeeplinkdelegate.md
+```{include} /fragments/method-intros/setdeferreddeeplinkdelegate.md
 ```
 
-```{include} ../../../fragments/unity/snippets/setdeferreddeeplinkdelegate.md
+```{include} /fragments/unity/snippets/setdeferreddeeplinkdelegate.md
 ```
 
 :::{dropdown} Example
 
-```{include} ../../../fragments/example-intros/setdeferreddeeplinkdelegate.md
+```{include} /fragments/example-intros/setdeferreddeeplinkdelegate.md
 ```
 
 ```{code-block} cs
@@ -87,8 +87,8 @@ Adjust.start(adjustConfig);
 
 ### Enable LinkMe
 
-```{include} ../../../fragments/method-intros/setlinkmeenabled.md
+```{include} /fragments/method-intros/setlinkmeenabled.md
 ```
 
-```{include} ../../../fragments/unity/snippets/setlinkmeenabled.md
+```{include} /fragments/unity/snippets/setlinkmeenabled.md
 ```

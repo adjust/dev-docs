@@ -1,6 +1,6 @@
 # Set up SKAdNetwork and conversion values
 
-```{include} ../../../fragments/feature-intros/skad.md
+```{include} /fragments/feature-intros/skad.md
 ```
 
 ## Disable SKAdNetwork communication
