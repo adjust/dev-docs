@@ -42,3 +42,16 @@ unity/index
 unity/features/index
 
 ```
+
+```{toctree}
+---
+maxdepth: 2
+caption: Web
+hidden: true
+---
+
+web/index
+web/features/index
+web/reference/index
+
+```
