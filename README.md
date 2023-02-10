@@ -21,7 +21,7 @@ This project can be run in a Docker container to enable live editing. To do this
    $ docker compose up docs
    ```
 
-4. Open http://localhost:8001 to see your the local preview
+4. Open http://localhost:8000 to see your the local preview
 
 The preview updates as you save your changes.
 
