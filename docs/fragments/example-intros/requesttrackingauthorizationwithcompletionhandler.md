@@ -3,4 +3,4 @@ orphan: true
 nosearch: true
 ---
 
-In this example, we log a human-readable description of the user's authorization status when they interact with the prompt.
+This example demonstrates how to log a human-readable description of the user's authorization status when they interact with a prompt.
