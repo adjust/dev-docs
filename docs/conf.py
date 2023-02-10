@@ -74,6 +74,7 @@ myst_enable_extensions = [
    "substitution",
    "tasklist",
    "deflist",
+   "fieldlist",
 ]
 
 myst_heading_anchors = 3

@@ -52,5 +52,6 @@ hidden: true
 
 web/index
 web/features/index
+web/reference/index
 
 ```

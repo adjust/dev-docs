@@ -21,10 +21,6 @@ To set these properties, call the {{ recordMethod }} method and pass the followi
    - The ISO code of the currency used for the transaction
 ```
 
-```{important}
-You must format the currency code as a 3 character string that follows the [ISO 4217 standard]. The Adjust server converts the reported revenue to your chosen reporting currency. Check [Adjust's guide to tracking purchases in different currencies] for more information.
-```
-
-[ISO 4217 standard]: https://www.iban.com/currency-codes
-
-[Adjust's guide to tracking purchases in different currencies]: https://help.adjust.com/en/article/currency-conversion
+:::{important}
+You must format the currency code as a 3 character string that follows the [ISO 4217 standard](https://www.iban.com/currency-codes). The Adjust server converts the reported revenue to your chosen reporting currency. Check [Adjust's guide to tracking purchases in different currencies](https://help.adjust.com/en/article/currency-conversion) for more information.
+:::
