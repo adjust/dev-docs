@@ -4,7 +4,7 @@
 Contact your Adjust representative to get started with external device IDs.
 :::
 
-```{include} ../../../fragments/feature-intros/external-device-id.md
+```{include} /fragments/feature-intros/external-device-id.md
 ```
 
 ## Set external device ID
@@ -13,10 +13,10 @@ Contact your Adjust representative to get started with external device IDs.
 You must set your external device ID **before** initializing the Adjust SDK.
 :::
 
-```{include} ../../../fragments/method-intros/setexternaldeviceid.md
+```{include} /fragments/method-intros/setexternaldeviceid.md
 ```
 
-```{include} ../../../fragments/unity/snippets/setexternaldeviceid.md
+```{include} /fragments/unity/snippets/setexternaldeviceid.md
 ```
 
 If you want to use the external device ID in your business analytics, you can pass it as a session callback parameter. 
