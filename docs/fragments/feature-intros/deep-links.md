@@ -1,5 +1,6 @@
 ---
-:orphaned:
+orphan: true
+nosearch: true
 ---
 
 You can create deep links to take users to specific pages in your app. The Adjust SDK uses different logic depending on if the user already has your app installed on their device:

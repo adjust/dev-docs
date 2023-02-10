@@ -1,5 +1,6 @@
 ---
-:orphaned:
+orphan: true
+nosearch: true
 ---
 
 The Adjust SDK communicates with SKAdNetwork by default on v4.23.0 and above. The SDK registers for SKAdNetwork attribution upon initialization.
