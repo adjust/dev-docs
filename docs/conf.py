@@ -90,3 +90,9 @@ smv_branch_whitelist = r'^(main|v5).*$'
 
 locale_dirs = ['locale/']
 gettext_compact = False
+
+# Add substitution for global prolog
+
+myst_substitutions = {
+    "eventToken": "*`g3mfiw`*"
+}
