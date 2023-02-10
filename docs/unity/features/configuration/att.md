@@ -3,19 +3,19 @@
 ```{versionadded} 4.26.0
 ```
 
-```{include} ../../../fragments/feature-intros/att-framework.md
+```{include} /fragments/feature-intros/att-framework.md
 ```
 
 :::{dropdown} Authorization statuses
 
-```{include} ../../../fragments/data/att-auth-statuses.md
+```{include} /fragments/data/att-auth-statuses.md
 ```
 
 :::
 
 ## App-tracking authorization wrapper
 
-```{include} ../../../fragments/feature-intros/att-wrapper.md
+```{include} /fragments/feature-intros/att-wrapper.md
 ```
 
 You must specify text content for the tracking request dialog. You can add this to your project in two ways: 
@@ -23,15 +23,15 @@ You must specify text content for the tracking request dialog. You can add this 
 1. Add your text to the {guilabel}`User Tracking Description` field in the Adjust prefab.
 2. Add your text to the `NSUserTrackingUsageDescription` key in your {file}`Info.plist` file.
 
-```{include} ../../../fragments/callouts/att-prompt-tip.md
+```{include} /fragments/callouts/att-prompt-tip.md
 ```
 
-```{include} ../../../fragments/unity/snippets/requesttrackingauthorizationwithcompletionhandler.md
+```{include} /fragments/unity/snippets/requesttrackingauthorizationwithcompletionhandler.md
 ```
 
 :::::{dropdown} Example
 
-```{include} ../../../fragments/example-intros/requesttrackingauthorizationwithcompletionhandler.md
+```{include} /fragments/example-intros/requesttrackingauthorizationwithcompletionhandler.md
 ```
 
 ::::{tab-set}
@@ -67,15 +67,15 @@ Adjust.requestTrackingAuthorizationWithCompletionHandler((status) =>
 
 ## Get current authorisation status
 
-```{include} ../../../fragments/method-intros/getapptrackingauthorizationstatus.md
+```{include} /fragments/method-intros/getapptrackingauthorizationstatus.md
 ```
 
-```{include} ../../../fragments/unity/snippets/getapptrackingauthorizationstatus.md
+```{include} /fragments/unity/snippets/getapptrackingauthorizationstatus.md
 ```
 
 :::::{dropdown} Example
 
-```{include} ../../../fragments/example-intros/getapptrackingauthorizationstatus.md
+```{include} /fragments/example-intros/getapptrackingauthorizationstatus.md
 ```
 
 ::::{tab-set}
@@ -96,8 +96,8 @@ Adjust.addSessionPartnerParameter("status", authorizationStatus);
 
 ## Check for authorization status changes
 
-```{include} ../../../fragments/method-intros/checkfornewattstatus.md
+```{include} /fragments/method-intros/checkfornewattstatus.md
 ```
 
-```{include} ../../../fragments/unity/snippets/checkfornewattstatus.md
+```{include} /fragments/unity/snippets/checkfornewattstatus.md
 ```

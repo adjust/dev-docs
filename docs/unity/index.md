@@ -2,7 +2,7 @@
 
 The Adjust Unity SDK enables you to measure attribution, events, and more in your Unity app. Follow the steps in this guide to set up your app to work with the Adjust SDK.
 
-```{include} ../fragments/support-level-callout.md
+```{include} /fragments/support-level-callout.md
 ```
 
 ## 1. Get the Adjust SDK
@@ -78,7 +78,7 @@ To install the {abbr}`ARR (Android Archive)` manually, [download it from Maven](
 
 If you are using Proguard, add the following rules to your [custom Proguard file](https://docs.unity3d.com/Manual/class-PlayerSettingsAndroid.html#build).
 
-```{include} ../fragments/data/proguard-file.md
+```{include} /fragments/data/proguard-file.md
 ```
 
 ### Set up install referrer

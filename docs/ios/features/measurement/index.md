@@ -1,6 +1,6 @@
 # Measurement
 
-```{include} ../../../fragments/measurement-features.md
+```{include} /fragments/measurement-features.md
 ```
 
 ```{toctree}

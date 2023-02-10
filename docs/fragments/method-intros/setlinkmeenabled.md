@@ -1,5 +1,6 @@
 ---
-:orphaned:
+orphan: true
+nosearch: true
 ---
 
 The Adjust SDK lets you copy deep link information from the device pasteboard. When combined with Adjust’s LinkMe solution, this feature enables deferred deep linking on devices running iOS 15 and above.
