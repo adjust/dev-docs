@@ -22,7 +22,7 @@ Your config object contains a **string** {code}`externalDeviceId` property that 
 
 The external device ID is case-sensitive. If you have imported external device IDs, make sure the value you pass matches the imported value.
 
-```{include} /ios/fragments/AdjustConfig.md
+```{include} /ios/fragments/ADJConfig.md
 :start-after: externalDeviceId
 :end-before: end
 ```

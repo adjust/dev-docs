@@ -96,5 +96,6 @@ gettext_compact = False
 # Add substitution for global prolog
 
 myst_substitutions = {
-    "eventToken": "*`g3mfiw`*"
+    "eventToken": "*`g3mfiw`*",
+    "ios_version": "4.33.4"
 }

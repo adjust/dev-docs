@@ -10,18 +10,18 @@ To use the Adjust SDK in your iOS app, you need to add it to your Xcode project.
 
 To add the SDK using Cocoapods, specify the version you want to use in your `Podfile`:
 
-```{code-block} text
+```{parsed-literal}
 // Get pod from repository
-pod 'Adjust', '~> 4.33.4'
+pod 'Adjust', '~> {{ ios_version }}'
 
 // Get source directly from GitHub
-pod 'Adjust', :git => 'https://github.com/adjust/ios_sdk.git', :tag => '4.33.4'
+pod 'Adjust', :git => 'https://github.com/adjust/ios_sdk.git', :tag => '{{ ios_version }}'
 ```
 
 If you're using web views in your app, add the Adjust Web Bridge by adding the following:
 
-```{code-block} ruby
-pod 'Adjust/WebBridge', '~> 4.33.4'
+```{parsed-literal}
+pod 'Adjust/WebBridge', '~> {{ ios_version }}'
 ```
 :::
 
@@ -451,7 +451,7 @@ Once you've finished your testing, you can build your app for production. To do 
 Update the following values:
 
 - `environment`: Set this to `ADJEnvironmentProduction`.
-- `logLevel`: Choose a [logging level](https://help.adjust.com/en/article/set-log-level-ios-sdk), or disable logging completely by passing an `allowSuppressLogLevel` argument in your config object.
+- `logLevel`: Choose a [logging level](features/configuration/log-level), or disable logging completely by passing an `allowSuppressLogLevel` argument in your config object.
 
 ::::{tab-set}
 :::{tab-item} Swift
