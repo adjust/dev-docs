@@ -58,7 +58,8 @@ html_context = {
    "conf_py_path": "docs"
 }
 html_css_files = [
-    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css",
+    "css/custom.css",
 ]
 pygments_style = "sphinx"
 
