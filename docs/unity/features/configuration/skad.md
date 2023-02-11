@@ -1,27 +1,40 @@
 # Set up SKAdNetwork and conversion values
 
-```{include} /fragments/feature-intros/skad.md
-```
+:::{important}
+This feature is only available on devices running iOS 14 and above.
+:::
+
+SKAdNetwork  is Apple's attribution framework for app install and reinstall attribution. The SKAdNetwork workflow goes like this:
+
+1. Apple gathers attribution information and notifies the relevant ad network.
+2. The network sends a postback with this information to Adjust.
+3. Adjust displays SKAdNetwork data in Datascape and Data Canvas.
 
 ## Disable SKAdNetwork communication
 
-<fragment id="SDK disable SKAdNetwork intro" />
+The Adjust SDK communicates with SKAdNetwork by default on v4.23.0 and above. The SDK registers for SKAdNetwork attribution upon initialization.
 
-<fragment id="Unity SDK deactivateSKAdNetworkHandling snippet" />
+Your config object contains a boolean `isSKAdNetworkHandlingActive` property that controls this behavior. You can disable SKAdNetwork communication by calling the `deactivateSKAdNetworkHandling` method with no argument.
+
+```{include} /unity/fragments/AdjustConfig.md
+:start-after: deactivateSKAdNetworkHandling
+:end-before: end
+```
 
 ## Update conversion values
 
-<fragment id="SDK update conversion value intro" />
+Conversion values are a mechanism used to track user behavior in SKAdNetwork. You can map 64 conditions to values from 0 through 63 and send this integer value to SKAdNetwork on user install. This gives you insight into how your users interact with your app in the first few days.
 
-<fragment id="Unity SDK updateConversionValue snippet" />
+If you manage your conversion values with Adjust, the servers update this value in the SDK. You can also update this value by using the `updateConversionValue` method. This method wraps [Apple's `updateConversionValue` method](https://developer.apple.com/documentation/storekit/skadnetwork/3566697-updateconversionvalue). It accepts an integer argument representing your updated conversion value.
 
-:::::{dropdown} Example
+```{include} /unity/fragments/AdjustConfig.md
+:start-after: updateConversionValue
+:end-before: end
+```
 
-<fragment id="SDK updateConversionValue example intro" />
+:::{dropdown} Example
 
-::::{tab-set}
-
-:::{tab-item} C#
+This example demonstrates how to update a conversion value to `10` in response to a user triggering an event.
 
 ```{code-block} cs
 :emphasize-lines: 2
@@ -30,24 +43,18 @@ public void OnButtonClick() {
    Adjust.updateConversionValue(10);
 }
 ```
-
 :::
-
-::::
-
-:::::
 
 ## Listen for changes to conversion values
 
-<fragment id="SDK setConversionValueUpdatedCallbackDelegate intro" />
+You can configure the Adjust SDK to listen for when a user's conversion value updates. Your config object contains a `setConversionValueUpdatedCallbackDelegate` method that listens for updates. This method accepts a delegate function as its argument.
 
-:::::{dropdown} Example
+:::{dropdown} Example
 
-<fragment id="SDK setConversionValueUpdatedCallbackDelegate example intro" />
+This example demonstrates how to emit the following to the console when the conversion value updates:
 
-::::{tab-set}
-
-:::{tab-item} C#
+* A message confirming the conversion value update
+* The new conversion value
 
 ```{code-block} cs
 :emphasize-lines: 8, 14-17
@@ -71,9 +78,4 @@ public class ExampleGUI : MonoBehaviour {
     }
 }
 ```
-
 :::
-
-::::
-
-:::::

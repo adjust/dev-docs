@@ -1,6 +1,0 @@
----
-orphan: true
-nosearch: true
----
-
-Use these features to measure in-app behavior and record user-generated revenue.

@@ -3,10 +3,34 @@ orphan: true
 nosearch: true
 ---
 
+% checkForNewAttStatus
+
 ::::{tab-set}
-
 :::{tab-item} C#
+```{code-block} cs
+Adjust.checkForNewAttStatus();
+```
+:::
+::::
 
+% end
+
+% getAppTrackingAuthorizationStatus
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+Adjust.getAppTrackingAuthorizationStatus();
+```
+:::
+::::
+
+% end
+
+% requestTrackingAuthorizationWithCompletionHandler
+
+::::{tab-set}
+:::{tab-item} C#
 ```{code-block} cs
 Adjust.requestTrackingAuthorizationWithCompletionHandler((status) =>
 {
@@ -27,8 +51,7 @@ Adjust.requestTrackingAuthorizationWithCompletionHandler((status) =>
     }
 });
 ```
-
 :::
-
 ::::
 
+% end

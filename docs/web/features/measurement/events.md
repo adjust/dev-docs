@@ -14,14 +14,10 @@ You can associate your [Adjust event tokens](https://help.adjust.com/en/article/
 1. Create a new Adjust event instance and pass your event token as a **string** argument.
 2. Call the {{ recordMethod }} method with your event instance as an argument.
 
-::::{tab-set}
-:::{tab-item} Javascript
-```{include} /fragments/web/snippets/trackEvent.md
+```{include} /web/fragments/Adjust.md
 :start-after: Record an event
 :end-before: end
 ```
-:::
-::::
 
 :::::{dropdown} Example
 
@@ -29,13 +25,36 @@ This example demonstrates how to record an event with the token {{ eventToken }}
 
 ::::{tab-set}
 :::{tab-item} Javascript
-```{include} /fragments/web/examples/trackEvent.md
-:start-after: Record an event
-:end-before: end
+```{code-block} js
+
+function init (defaultEventConfig = {}) {
+_ui.trackEventButton.addEventListener('click', _handleTrackEvent, false)
+}
+//...
+function _handleTrackEvent () {
+const eventConfig = getItem('eventConfig') || {..._defaultEventConfig}
+
+if (_disabled) {
+   return
+}
+
+_disabled = true
+_ui.trackEventButton.classList.add('loading')
+_ui.trackEventButton.disabled = true
+
+clearTimeout(_timeoutId)
+_timeoutId = setTimeout(() => {
+   _disabled = false
+   _ui.trackEventButton.classList.remove('loading')
+   _ui.trackEventButton.disabled = false
+   Adjust.trackEvent({
+      eventToken: 'g3mfiw'
+   })
+}
+
 ```
 :::
 ::::
-
 :::::
 
 ## Record event revenue
@@ -62,14 +81,10 @@ To set these properties, call the {{ recordMethod }} method and pass the followi
 You must format the currency code as a 3 character string that follows the [ISO 4217 standard](https://www.iban.com/currency-codes). The Adjust server converts the reported revenue to your chosen reporting currency. Check [Adjust's guide to tracking purchases in different currencies](https://help.adjust.com/en/article/currency-conversion) for more information.
 :::
 
-::::{tab-set}
-:::{tab-item} Javascript
-```{include} /fragments/web/snippets/trackEvent.md
+```{include} /web/fragments/Adjust.md
 :start-after: Set revenue
 :end-before: end
 ```
-:::
-::::
 
 ## Deduplicate events
 
@@ -77,14 +92,10 @@ You can pass an optional identifier to avoid measuring duplicate events. The SDK
 
 To configure this, set the {{ deduplicateMethodName }} property to your transaction ID.
 
-::::{tab-set}
-:::{tab-item} Javascript
-```{include} /fragments/web/snippets/trackEvent.md
+```{include} /web/fragments/Adjust.md
 :start-after:  Add deduplication ID
 :end-before: end
 ```
-:::
-::::
 
 ## Add callback parameters
 
@@ -112,14 +123,10 @@ Add callback parameters to your event by creating a {{ callbackMethodName }} arr
 You can append several parameters by adding multiple key-value pairs to the {{ callbackMethodName }} array.
 :::
 
-::::{tab-set}
-:::{tab-item} Javascript
-```{include} /fragments/web/snippets/trackEvent.md
+```{include} /web/fragments/Adjust.md
 :start-after: Add callback params
 :end-before: end
 ```
-:::
-::::
 
 ## Add partner parameters
 
@@ -151,14 +158,10 @@ Add callback parameters to your event by creating a {{ partnerMethodName }} arra
 You can append several parameters by adding multiple key-value pairs to the {{ partnerMethodName }} array.
 :::
 
-::::{tab-set}
-:::{tab-item} Javascript
-```{include} /fragments/web/snippets/trackEvent.md
+```{include} /web/fragments/Adjust.md
 :start-after: Add partner params
 :end-before: end
 ```
-:::
-::::
 
 ## Record event and redirect to an external page
 
@@ -174,11 +177,25 @@ The Adjust SDK saves events to an internal queue. This means that even if your r
 
 ::::{tab-set}
 :::{tab-item} Javascript
-```{include} /fragments/web/examples/trackEvent.md
-:start-after: Track event and redirect
-:end-before: end
+```{code-block} js
+Promise
+  .race([
+    Adjust.trackEvent({
+      eventToken: 'YOUR_EVENT_TOKEN',
+      // ... other event parameters
+    }),
+    new Promise((resolve, reject) => {
+      setTimeout(() => reject('Timed out'), 2000)
+    })
+  ])
+  .catch(error => {
+    // ... 
+  })
+  .then(() => {
+    // ... perform redirect, for example 
+    window.location.href = "https://www.example.org/"
+  });
 ```
 :::
 ::::
-
 :::::
