@@ -17,7 +17,7 @@ Adjust.trackEvent({
 :::
 ::::
 
-% end
+% methodEnd
 
 % Add callback params
 
@@ -37,7 +37,7 @@ Adjust.trackEvent({
 :::
 ::::
 
-% end
+% methodEnd
 
 % Add partner params
 
@@ -57,7 +57,7 @@ Adjust.trackEvent({
 :::
 ::::
 
-% end
+% methodEnd
 
 % Set revenue
 
@@ -75,7 +75,7 @@ Adjust.trackEvent({
 :::
 ::::
 
-% end
+% methodEnd
 
 % Add deduplication ID
 
@@ -92,4 +92,4 @@ Adjust.trackEvent({
 :::
 ::::
 
-% end
+% methodEnd

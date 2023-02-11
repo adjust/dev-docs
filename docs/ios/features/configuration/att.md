@@ -46,7 +46,7 @@ The Adjust SDK also records the consent status if you use a custom prompt. If yo
 
 ```{include} /ios/fragments/Adjust.md
 :start-after: requestTrackingAuthorizationWithCompletionHandler
-:end-before: end
+:end-before: methodEnd
 ```
 
 ## Get current authorization status
@@ -55,7 +55,7 @@ You can retrieve a user's current authorization status at any time. Call the {co
 
 ```{include} /ios/fragments/Adjust.md
 :start-after: appTrackingAuthorizationStatus
-:end-before: end
+:end-before: methodEnd
 ```
 
 ## Check for authorization status changes
@@ -64,5 +64,5 @@ If you use a custom ATT prompt, you need to inform the Adjust SDK of changes to 
 
 ```{include} /ios/fragments/Adjust.md
 :start-after: checkForNewAttStatus
-:end-before: end
+:end-before: methodEnd
 ```

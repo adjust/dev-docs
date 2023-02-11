@@ -27,7 +27,7 @@ You can set your log level in the Adjust prefab menu or by calling the {code}`se
 
 ```{include} /unity/fragments/AdjustConfig.md
 :start-after: setLogLevel
-:end-before: end
+:end-before: methodEnd
 ```
 
 ## Disable all logging
@@ -36,7 +36,7 @@ To disable all log output when initializing the SDK manually, call {code}`setLog
 
 ```{include} /unity/fragments/AdjustConfig.md
 :start-after: allowSuppressLogLevel
-:end-before: end
+:end-before: methodEnd
 ```
 
 ## View compiled logs on Windows
@@ -51,5 +51,5 @@ You must call the {code}`setLogDelegate` method **before** you initialize the Ad
 
 ```{include} /unity/fragments/AdjustConfig.md
 :start-after: setLogDelegate
-:end-before: end
+:end-before: methodEnd
 ```

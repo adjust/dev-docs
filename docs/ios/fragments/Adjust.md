@@ -29,7 +29,7 @@ var authorizationStatus = Adjust.appTrackingAuthorizationStatus();
 :::
 ::::
 
-% end
+% methodEnd
 
 % checkForNewAttStatus
 
@@ -50,7 +50,7 @@ Adjust.checkForNewAttStatus();
 :::
 ::::
 
-% end
+% methodEnd
 
 % isEnabled
 
@@ -77,7 +77,7 @@ Adjust.isEnabled();
 ```
 ::::
 
-% end
+% methodEnd
 
 % requestTrackingAuthorizationWithCompletionHandler
 
@@ -133,7 +133,7 @@ Adjust.requestTrackingAuthorization() { status in
 :::
 ::::
 
-% end
+% methodEnd
 
 % setEnabled
 
@@ -161,4 +161,4 @@ Adjust.setEnabled(false);
 :::
 ::::
 
-% end
+% methodEnd

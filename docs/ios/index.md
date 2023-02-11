@@ -1,6 +1,6 @@
 # Get started
 
-The Adjust iOS SDK enables you to measure attribution, events, and more in your iOS app. This guide shows you how to integrate the Adjust SDK with your app.
+The Adjust iOS SDK enables you to record attribution, events, and more in your iOS app. This guide shows you how to integrate the Adjust SDK with your app.
 
 ## 1. Add the SDK to your project
 
@@ -262,7 +262,7 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 ### Set up your iMessage app
 
 :::{important}
-iMessage extensions have different bundle identifiers to apps and run in a different memory space. If you try to measure both with the same token, the SDK returns mixed data. You must create a separate app in the Adjust dashboard for your iMessage app and use its token when initializing the Adjust SDK.
+iMessage extensions have different bundle identifiers to apps and run in a different memory space. If you configure both with the same token, the SDK returns mixed data. You must create a separate app in the Adjust dashboard for your iMessage app and use its token when initializing the Adjust SDK.
 :::
 
 If your app targets iMessage, there are some additional settings you must configure:
@@ -347,7 +347,7 @@ func willResignActive(with conversation: MSConversation) {
 
 ### Set up the Adjust Web Bridge
 
-If your app uses web views, you must set up the Adjust Web Bridge to measure activity inside the web view.
+If your app uses web views, you must set up the Adjust Web Bridge to record activity inside the web view.
 
 #### Integrate `AdjustBridge` into your app
 
@@ -436,11 +436,11 @@ setupWebViewJavascriptBridge(function(bridge) {
 
 ## 5. Configure the Adjust SDK
 
-Once you've added your config object and initialization logic, you can configure the Adjust SDK to measure different parts of your app. Check out the guides for the SDK's configuration features and measurement features to set up exactly what you want to measure.
+Once you've added your config object and initialization logic, you can configure the Adjust SDK to record information about different parts of your app. Check out the guides for the SDK's configuration features and recording features to set up exactly what you want to record.
 
 ## 6. Test the Adjust SDK
 
-Now that you've configured the Adjust SDK to measure your app, it's time to test it. Adjust offers a [testing console](https://help.adjust.com/en/article/testing-console) and a [Device API](https://help.adjust.com/en/article/device-api) to help you test your app.
+Now that you've configured the Adjust SDK to record information about your app, it's time to test it. Adjust offers a [testing console](https://help.adjust.com/en/article/testing-console) and a [Device API](https://help.adjust.com/en/article/device-api) to help you test your app.
 
 Follow the [testing guide](https://help.adjust.com/en/article/test-the-adjust-sdk) to make sure Adjust receives the expected values back from your app.
 

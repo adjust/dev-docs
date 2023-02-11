@@ -36,5 +36,5 @@ You can set your log level by calling the `setLogLevel` method on your `ADJConfi
 
 ```{include} /ios/fragments/ADJConfig.md
 :start-after: setLogLevel
-:end-before: end
+:end-before: methodEnd
 ```

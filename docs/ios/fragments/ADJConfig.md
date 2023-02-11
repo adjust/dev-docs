@@ -37,7 +37,7 @@ Adjust.appDidLaunch(myConfig)
 :::
 ::::
 
-% end
+% methodEnd
 
 % externalDeviceId
 
@@ -85,7 +85,7 @@ setupWebViewJavascriptBridge(function(bridge) {
 :::
 ::::
 
-% end
+% methodEnd
 
 % setLogLevel
 
@@ -133,7 +133,55 @@ setupWebViewJavascriptBridge(function(bridge) {
 :::
 ::::
 
-% end
+% methodEnd
+
+% setSendInBackground
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+:emphasize-lines: 7
+
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+   appToken: yourAppToken,
+   environment: environment)
+// ...
+adjustConfig?.sendInBackground = true
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+:emphasize-lines: 6
+
+NSString *yourAppToken = @"{YourAppToken}";
+NSString *environment = ADJEnvironmentSandbox;
+*adjustConfig = [ADJConfig configWithAppToken:yourAppToken
+                                  environment:environment];
+// ...
+[adjustConfig setSendInBackground:YES];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+```{code-block} js
+:emphasize-lines: 6
+
+setupWebViewJavascriptBridge(function(bridge) {
+   // ...
+   var yourAppToken = yourAppToken;
+   var environment = AdjustConfig.EnvironmentSandbox;
+   var adjustConfig = new AdjustConfig(yourAppToken, environment);
+   adjustConfig.setSendInBackground(true);
+});
+```
+:::
+::::
+
+% methodEnd
 
 % updateConversionValue
 
@@ -152,4 +200,4 @@ Adjust.updateConversionValue(value)
 :::
 ::::
 
-% end
+% methodEnd

@@ -18,7 +18,7 @@ Your config object contains a boolean `isSKAdNetworkHandlingActive` property tha
 
 ```{include} /unity/fragments/AdjustConfig.md
 :start-after: deactivateSKAdNetworkHandling
-:end-before: end
+:end-before: methodEnd
 ```
 
 ## Update conversion values
@@ -29,7 +29,7 @@ If you manage your conversion values with Adjust, the servers update this value 
 
 ```{include} /unity/fragments/AdjustConfig.md
 :start-after: updateConversionValue
-:end-before: end
+:end-before: methodEnd
 ```
 
 :::{dropdown} Example
