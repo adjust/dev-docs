@@ -5,6 +5,8 @@ nosearch: true
 
 % Record an event
 
+::::{tab-set}
+:::{tab-item} Javascript
 ```{code-block} js
 :emphasize-lines: 2
 
@@ -12,11 +14,15 @@ Adjust.trackEvent({
   eventToken: '{YourEventToken}'
 })
 ```
+:::
+::::
 
 % end
 
 % Add callback params
 
+::::{tab-set}
+:::{tab-item} Javascript
 ```{code-block} js
 :emphasize-lines: 3-6
 
@@ -28,11 +34,15 @@ Adjust.trackEvent({
   ]
 })
 ```
+:::
+::::
 
 % end
 
 % Add partner params
 
+::::{tab-set}
+:::{tab-item} Javascript
 ```{code-block} js
 :emphasize-lines: 3-6
 
@@ -44,11 +54,15 @@ Adjust.trackEvent({
   ]
 })
 ```
+:::
+::::
 
 % end
 
 % Set revenue
 
+::::{tab-set}
+:::{tab-item} Javascript
 ```{code-block} js
 :emphasize-lines: 3-4
 
@@ -58,11 +72,15 @@ Adjust.trackEvent({
   currency: 'EUR'
 })
 ```
+:::
+::::
 
 % end
 
 % Add deduplication ID
 
+::::{tab-set}
+:::{tab-item} Javascript
 ```{code-block} js
 :emphasize-lines: 3
 
@@ -71,5 +89,7 @@ Adjust.trackEvent({
    deduplicationId: '{YourDeduplicationId}'
 })
 ```
+:::
+::::
 
 % end

@@ -2,12 +2,13 @@
 
 The Adjust Unity SDK enables you to measure attribution, events, and more in your Unity app. Follow the steps in this guide to set up your app to work with the Adjust SDK.
 
-```{include} /fragments/support-level-callout.md
-```
+:::{important}
+The Adjust SDK supports iOS 9 or later and Android API level 9 (Gingerbread) or later.
+:::
 
 ## 1. Get the Adjust SDK
 
-To use the Adjust SDK in your Unity app, you need to add it to your project. You can download the latest version from our [GitHub releases page](https://github.com/adjust/adjust_unity_sdk/releases).
+To use the Adjust SDK in your Unity app, you need to add it to your project. You can download the latest version from the [GitHub releases page](https://github.com/adjust/adjust_unity_sdk/releases).
 
 To import the Adjust SDK to your Unity project:
 
@@ -78,7 +79,19 @@ To install the {abbr}`ARR (Android Archive)` manually, [download it from Maven](
 
 If you are using Proguard, add the following rules to your [custom Proguard file](https://docs.unity3d.com/Manual/class-PlayerSettingsAndroid.html#build).
 
-```{include} /fragments/data/proguard-file.md
+```{code-block} groovy
+-keep public class com.adjust.sdk.** { *; }
+-keep class com.google.android.gms.common.ConnectionResult {
+    int SUCCESS;
+}
+-keep class com.google.android.gms.ads.identifier.AdvertisingIdClient {
+    com.google.android.gms.ads.identifier.AdvertisingIdClient$Info getAdvertisingIdInfo(android.content.Context);
+}
+-keep class com.google.android.gms.ads.identifier.AdvertisingIdClient$Info {
+    java.lang.String getId();
+    boolean isLimitAdTrackingEnabled();
+}
+-keep public class com.android.installreferrer.** { *; }
 ```
 
 ### Set up install referrer
@@ -106,13 +119,13 @@ dependencies {
 
 :::{dropdown} Huawei Referrer API
 
-As of v4.21.1, the Adjust SDK supports install tracking on Huawei devices using Huawei App Gallery v10.4 and later. You do not need to make any changes to start using the Huawei Referrer API.
+As of v4.21.1, the Adjust SDK supports install tracking on Huawei devices using Huawei App Gallery v10.4 and later. You don't need to make any changes to start using the Huawei Referrer API.
 
 :::
 
 ## 4. Build your app
 
-To complete the app build process, the Adjust Unity package performs custom post-build actions to ensure the Adjust SDK works properly in your app.
+To complete the app build process, the Adjust Unity package performs custom post-build actions to ensure the Adjust SDK works in your app.
 
 This process is performed by the {code}`OnPostprocessBuild` method in {file}`AdjustEditor.cs`. Output logs show up in the Unity IDE console output window.
 
@@ -128,57 +141,57 @@ To run the iOS post-build process, make sure that you have {guilabel}`iOS build 
 
 The iOS post-build process makes the following changes to your generated Xcode project:
 
-* Adds the other linker flag -ObjC – required to recognize Adjust Objective-C categories at build time.
+* Adds the other linker flag `-ObjC`: required to recognize Adjust Objective-C categories at build time.
 * Enables Objective-C exceptions.
 
 ### Frameworks
 
 You can enable the following frameworks to access iOS features:
 
-* {guilabel}`AdServices.framework` – required for Apple Search Ads tracking.
-* {guilabel}`AdSupport.framework`– required to read the device IDFA.
-* {guilabel}`AppTrackingTransparency.framework` – required to ask for user's consent to be tracked and obtain consent status.
-* {guilabel}`StoreKit.framework` – required to communicate with the SKAdNetwork framework.
-* {guilabel}`iAd.framework` (deprecated) - use AdServices.framework
+* {guilabel}`AdServices.framework`: required for Apple Search Ads tracking
+* {guilabel}`AdSupport.framework`: required to read the device IDFA
+* {guilabel}`AppTrackingTransparency.framework`: required to ask for user's consent to be tracked and obtain consent status 
+* {guilabel}`StoreKit.framework`: required to communicate with the SKAdNetwork framework.
+* {guilabel}`iAd.framework` {bdg-warning}`Deprecated` - use AdServices.framework
 
-### ATT consent dialog
+### App Tracking Transparency consent dialog
 
-If you are using the ATT wrapper, enter a **User Tracking Description** message. This displays when you present the tracking consent dialog to your user.
+If you are using the {abbr}`ATT (App Tracking Transparency)` wrapper, enter a **User Tracking Description** message. This displays when you present the tracking consent dialog to your user.
 
 ### Deep linking
 
 To enable deep linking, add the following information:
 
-* {guilabel}`iOS Universal Links Domain` – the associated domain used for universal links.
-* {guilabel}`iOS URL Identifier` – your app's bundle ID.
-* {guilabel}`iOS URL Schemes` – the URL scheme associated with your app.
+* {guilabel}`iOS Universal Links Domain`: the associated domain used for universal links.
+* {guilabel}`iOS URL Identifier`: your app's bundle ID.
+* {guilabel}`iOS URL Schemes`: the URL scheme associated with your app.
 
 ::::
 
 ::::{dropdown} Android
 
-The Android post-build process checks for an {file}`AndroidManifest.xml` file in {file}`Assets/Plugins/Android/`. If this file is not present, it creates a copy from [{file}`AdjustAndroidManifest.xml`](https://github.com/adjust/unity_sdk/blob/master/Assets/Adjust/Android/AdjustAndroidManifest.xml "A link to the AdjustAndroidManifest file on GitHub").
+The Android post-build process checks for an {file}`AndroidManifest.xml` file in {file}`Assets/Plugins/Android/`. If this file isn't present, it creates a copy from [{file}`AdjustAndroidManifest.xml`](https://github.com/adjust/unity_sdk/blob/master/Assets/Adjust/Android/AdjustAndroidManifest.xml "A link to the AdjustAndroidManifest file on GitHub").
 
 ### Permissions
 
 You can enable the following permissions to access Android features:
 
-* {guilabel}`android.permission.INTERNET` – required to connect to the internet.
-* {guilabel}`android.permission.ACCESS_NETWORK_STATE` – required to read the type of network the device is connected to.
-* {guilabel}`com.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE` (deprecated) – required to fetch install referrer information via Google Play Store intent.
-* {guilabel}`com.google.android.gms.permission.AD_ID` – required to read the device advertising ID on Android 12 (API level 31) and above. See [Google's `AdvertisingIdClient.info` documentation](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid) for more information.
+* {guilabel}`android.permission.INTERNET`: required to connect to the internet.
+* {guilabel}`android.permission.ACCESS_NETWORK_STATE`: required to read the type of network the device is connected to.
+* {guilabel}`com.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE` {bdg-warning}`Deprecated`: required to fetch install referrer information via Google Play Store intent.
+* {guilabel}`com.google.android.gms.permission.AD_ID`: required to read the device advertising ID on Android 12 (API level 31) and above. See [Google's `AdvertisingIdClient.info` documentation](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid) for more information.
 
 ### Deep linking
 
 To enable deep linking, add the following information:
 
-* {guilabel}`Android URI Schemes` – the destination of your deep link.
+* {guilabel}`Android URI Schemes`: the destination of your deep link.
 
 ::::
 
 ## 5. Add the Adjust SDK signature
 
-You can use the Adjust SDK signature to sign all communications sent by the Adjust SDK. This enables Adjust’s servers to detect and reject any install activity that is not legitimate.
+You can use the Adjust SDK signature to sign all communications sent by the Adjust SDK. This enables Adjust’s servers to detect and reject any install activity that's not legitimate.
 
 To get started with the Adjust SDK signature, contact your Technical Account Manager or <support@adjust.com>.
 
@@ -198,6 +211,6 @@ If you encounter any issues, email <support@adjust.com> with all details and log
 
 To test that the Adjust SDK can receive a device's Google Advertising ID, set the [log level](#set-your-log-level) to **verbose** and the environment to **Sandbox**. Start your app and measure a session or an event. The SDK logs the {abbr}`gps_adid (Google Play Services Advertiser ID)` parameter if it has read the advertising ID.
 
-If you are having issues retrieving the Google Advertising ID, open an issue in our [GitHub repository](https://github.com/adjust/unity_sdk) or contact <support@adjust.com>.
+If you are having issues retrieving the Google Advertising ID, open an issue in the [GitHub repository](https://github.com/adjust/unity_sdk) or contact <support@adjust.com>.
 
 :::
