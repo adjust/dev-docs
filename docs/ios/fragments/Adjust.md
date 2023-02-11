@@ -10,7 +10,7 @@
 :sync: swift
 
 ```{code-block} swift
-let authorizationStatus = Adjust.appTrackingAuthorizationStatus()
+let authorizationStatus = Adjust.appTrackingAuthorizationStatus();
 ```
 :::
 :::{tab-item} Objective-C
@@ -38,7 +38,7 @@ var authorizationStatus = Adjust.appTrackingAuthorizationStatus();
 :sync: swift
 
 ```{code-block} swift
-Adjust.checkForNewAttStatus()
+Adjust.checkForNewAttStatus();
 ```
 :::
 :::{tab-item} Objective-C
@@ -48,6 +48,33 @@ Adjust.checkForNewAttStatus()
 [Adjust checkForNewAttStatus];
 ```
 :::
+::::
+
+% end
+
+% isEnabled
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+
+```{code-block} swift
+Adjust.isEnabled();
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+
+```{code-block} objc
+[Adjust isEnabled];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+
+```{code-block} js
+Adjust.isEnabled();
+```
 ::::
 
 % end
@@ -103,6 +130,34 @@ Adjust.requestTrackingAuthorization() { status in
 }];
 ```
 
+:::
+::::
+
+% end
+
+% setEnabled
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+
+```{code-block} swift
+Adjust.setEnabled(false);
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+
+```{code-block} objc
+[Adjust setEnabled:NO];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+
+```{code-block} js
+Adjust.setEnabled(false);
+```
 :::
 ::::
 

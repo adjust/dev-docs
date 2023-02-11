@@ -1,15 +1,13 @@
 # Set external device identifiers
 
-:::{versionadded} 4.20.0
-Contact your Adjust representative to get started with external device IDs.
+:::{versionadded} v4.20.0
+An external device identifier is a custom value that you can assign to a device or user. They help you recognize users across sessions and platforms. They can also help you deduplicate installs by user so that a user isn't counted as duplicate new installs. Contact your Adjust representative to get started with external device IDs.
 :::
-
-An external device identifier is a custom value that you can assign to a device or user. They help you recognize users across sessions and platforms. They can also help you deduplicate installs by user so that a user isn't counted as duplicate new installs.
 
 You can use an external device ID as a custom identifier for a device. This helps you keep continuity with your other systems.
 
 :::{seealso}
-See the [External device identifiers article](https://help.adjust.com/en/article/external-device-identifiers) for more information.
+See the [External device identifiers article](https://help.adjust.com/en/article/external-device-identifiers) in the Adjust help center for more information.
 :::
 
 ## Set external device identifier

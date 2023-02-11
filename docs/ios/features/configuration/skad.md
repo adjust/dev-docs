@@ -12,7 +12,9 @@ This feature is only available on devices running iOS 14 and above.
 
 ## Disable SKAdNetwork communication
 
+```{versionadded} v4.23.0
 The Adjust SDK communicates with SKAdNetwork by default on v4.23.0 and above. The SDK registers for SKAdNetwork attribution upon initialization.
+```
 
 Your config object contains a boolean `isSKAdNetworkHandlingActive` property that controls this behavior. You can disable SKAdNetwork communication by calling the `deactivateSKAdNetworkHandling` method with no argument.
 
@@ -61,9 +63,8 @@ func onButtonClick() {
 ### Set up completion handlers
 
 ```{versionadded} v4.33.0
-```
-
 The Adjust SDK contains wrappers for Apple's `updatePostbackConversionValue` methods. These methods provide more options for handling SKAdNetwork postbacks, including the option to handle failures.
+```
 
 The following methods are supported:
 
@@ -161,9 +162,8 @@ func adjustConversionValueUpdated(_ conversionValue: NSNumber?) {
 ## SKAdNetwork 4.0 callbacks
 
 ```{versionadded} v4.33.0
-```
-
 SKAdNetwork 4.0 postbacks contain some additional information to give advertisers more insight into their users. When Adjust's servers update conversion values, this additional information is sent in a payload. You can access this information with the `adjustConversionValueUpdated` callback method.
+```
 
 ```{list-table}
 :header-rows: 1
@@ -216,7 +216,7 @@ func adjustConversionValueUpdated(_ fineValue: NSNumber?, coarseValue: String?, 
 ## Set up direct install postbacks
 
 :::{note}
-Direct install postbacks contain only SKAdNetwork information. Information such as campaign data is not included in these postbacks.
+Direct install postbacks contain only SKAdNetwork information. Information such as campaign data isn't included in these postbacks.
 :::
 
 You can configure your app to send a copy of winning SKAdNetwork callbacks to Adjust. This enables you to use SKAdNetwork information in your analytics.
