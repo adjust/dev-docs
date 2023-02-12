@@ -163,6 +163,39 @@ Adjust.requestTrackingAuthorization() { status in
 
 % methodEnd
 
+% setDeviceToken
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+:emphasize-lines: 2
+
+func application(_ app: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+    Adjust.deviceToken = deviceToken
+}
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+:emphasize-lines: 2
+
+- (void)application:(UIApplication *)app didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+    [Adjust setDeviceToken:deviceToken];
+}
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+```{code-block} js
+Adjust.setDeviceToken(deviceToken);
+```
+:::
+::::
+
+% methodEnd
+
 % setEnabled
 
 ::::{tab-set}
