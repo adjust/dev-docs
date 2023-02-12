@@ -13,13 +13,13 @@ nosearch: true
 
 let yourAppToken = "{YourAppToken}"
 let environment = ADJEnvironmentSandbox as? String
-let myConfig = ADJConfig(
+let adjustConfig = ADJConfig(
     appToken: yourAppToken,
     environment: environment)
 //...
-myConfig.deactivateSKAdNetworkHandling()
+adjustConfig.deactivateSKAdNetworkHandling()
 //...
-Adjust.appDidLaunch(myConfig)
+Adjust.appDidLaunch(adjustConfig)
 ```
 :::
 :::{tab-item} Objective-C
@@ -27,12 +27,12 @@ Adjust.appDidLaunch(myConfig)
 ```{code-block} objc
 :emphasize-lines: 4
 
-*myConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
+*adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
                                   environment:ADJEnvironmentSandbox];
 //...
-[myConfig.deactivateSKAdNetworkHandling];
+[adjustConfig.deactivateSKAdNetworkHandling];
 //...
-[Adjust appDidLaunch:myConfig];
+[Adjust appDidLaunch:adjustConfig];
 ```
 :::
 ::::
@@ -80,6 +80,56 @@ setupWebViewJavascriptBridge(function(bridge) {
    var environment = AdjustConfig.EnvironmentSandbox;
    var adjustConfig = new AdjustConfig(yourAppToken, environment);
    adjustConfig.setExternalDeviceId("yourExternalDeviceId");
+});
+```
+:::
+::::
+
+% methodEnd
+
+% setEventBufferingEnabled
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+:emphasize-lines: 7
+
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+    appToken: yourAppToken,
+    environment: environment)
+//...
+adjustConfig?.eventBufferingEnabled = true
+//...
+Adjust.appDidLaunch(adjustConfig)
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+:emphasize-lines: 4
+
+*adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
+                                  environment:ADJEnvironmentSandbox];
+//...
+[adjustConfig setEventBufferingEnabled:YES];
+//...
+[Adjust appDidLaunch:adjustConfig];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+```{code-block} js
+:emphasize-lines: 6
+
+setupWebViewJavascriptBridge(function(bridge) {
+   // ...
+   var yourAppToken = yourAppToken;
+   var environment = AdjustConfig.EnvironmentSandbox;
+   var adjustConfig = new AdjustConfig(yourAppToken, environment);
+   adjustConfig.setEventBufferingEnabled(true);
 });
 ```
 :::

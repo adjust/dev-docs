@@ -224,29 +224,33 @@ Adjust.setEnabled(false);
 
 % methodEnd
 
+% setOfflineMode
+
 ::::{tab-set}
 :::{tab-item} Swift
 :sync: swift
 
 ```{code-block} swift
-Adjust.setEnabled(false);
+Adjust.setOfflineMode(true);
 ```
 :::
 :::{tab-item} Objective-C
 :sync: objc
 
 ```{code-block} objc
-[Adjust setEnabled:NO];
+[Adjust setOfflineMode:YES];
 ```
 :::
 :::{tab-item} Javascript
 :sync: js
 
 ```{code-block} js
-Adjust.setEnabled(false);
+Adjust.setOfflineMode(true);
 ```
 :::
 ::::
+
+% methodEnd
 
 % trackThirdPartySharing true
 
