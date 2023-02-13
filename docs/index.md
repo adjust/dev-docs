@@ -21,7 +21,7 @@ Unity
 
 ```{toctree}
 ---
-maxdepth: 2
+maxdepth: 4
 caption: iOS
 hidden: true
 ---
@@ -54,4 +54,14 @@ web/index
 web/features/index
 web/reference/index
 
+```
+
+```{toctree}
+---
+maxdepth: 1
+hidden: true
+caption: Glossary
+---
+
+glossary
 ```

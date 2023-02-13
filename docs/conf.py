@@ -33,6 +33,7 @@ extensions = [
    "sphinx_multiversion",
    "sphinxcontrib.images",
    "sphinx_copybutton",
+   "sphinxcontrib.mermaid",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -50,6 +51,9 @@ root_doc = "index"
 # a list of builtin themes.
 #
 html_theme = "sphinx_rtd_theme"
+html_theme_options = {
+    "navigation_depth": -1,
+}
 html_context = {
    "display_github": True,
    "github_user": "Sporiff",

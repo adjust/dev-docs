@@ -10,5 +10,6 @@ maxdepth: 1
 ---
 
 ./*
+deep-link/index
 
 ```
