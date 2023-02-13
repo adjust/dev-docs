@@ -14,11 +14,11 @@ To get started, follow these steps.
 
 ```{toctree}
 :maxdepth: 1
-:numbered: true
 
-data-points
-deep-link
-direct
-deferred
-resolution
+1. Retrieve data points <data-points>
+2. Set up deep links in the Adjust dashboard <deep-link>
+3. Set up direct deep linking <direct>
+4. Set up deferred deep linking <deferred>
+5. Link resolution <resolution>
+6. Test deep linking <testing>
 ```
