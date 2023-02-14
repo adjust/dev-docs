@@ -28,6 +28,7 @@ hidden: true
 
 ios/index
 ios/features/index
+ios/reference/index
 
 ```
 

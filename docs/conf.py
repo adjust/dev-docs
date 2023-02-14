@@ -34,6 +34,7 @@ extensions = [
    "sphinxcontrib.images",
    "sphinx_copybutton",
    "sphinxcontrib.mermaid",
+   "sphinx_tippy",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -103,3 +104,6 @@ myst_substitutions = {
     "eventToken": "*`g3mfiw`*",
     "ios_version": "4.33.4"
 }
+
+tippy_anchor_parent_selector = "div.rst-content"
+tippy_tip_selector = "figure, table, img, p, aside, div.admonition, div.literal-block-wrapper, div.notranslate"

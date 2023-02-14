@@ -36,7 +36,7 @@ This is how link resolution works:
    
    The Adjust SDK will follow up to ten redirects when attempting to resolve a URL. If there are more than ten redirects, the SDK will return the tenth redirect URL.
 
-4. Your app receives the returned URL and opens deep link content and displays it to the user. Your app also calls the `appWillOpenUrl` method in the Adjust SDK with the returned URL. This sends the resolved URL to Adjust's servers to be recorded.
+4. Your app receives the returned URL and opens deep link content and displays it to the user. Your app also calls the [appWillOpenUrl method](ios-appwillopenurl-invocation) in the Adjust SDK with the returned URL. This sends the resolved URL to Adjust's servers to be recorded.
 
 :::{note}
 If a user who doesn't have your app installed clicks on the redirect URL, iOS handles this as a normal web URL and redirects the user to the App Store. In this case, link resolution isn't applicable.
@@ -118,7 +118,7 @@ Examples:
 
 7. The link resolution method returns the resolved URL.
 8. Your app handles the returned URL. In this case, your app would display the `summer-clothes` page in your app with a `beach promo` modal to the user.
-9. Your app calls the `appWillOpenUrl` method in the Adjust SDK with the returned URL.
+9. Your app calls the [`appWillOpenUrl` method](ios-appwillopenurl-invocation) in the Adjust SDK with the returned URL.
 :::
 
 ### URL shorteners

@@ -1,6 +1,6 @@
 ---
-:orphan: true
-:nosearch: true
+orphan: true
+nosearch: true
 ---
 
 % appTrackingAuthorizationStatus
@@ -25,6 +25,25 @@ int authorizationStatus = [Adjust appTrackingAuthorizationStatus];
 
 ```{code-block} js
 var authorizationStatus = Adjust.appTrackingAuthorizationStatus();
+```
+:::
+::::
+
+% methodEnd
+
+% appWillOpenUrl
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+Adjust.appWillOpenUrl(url)
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+[Adjust appWillOpenUrl:url];
 ```
 :::
 ::::
