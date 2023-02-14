@@ -12,7 +12,7 @@ You need to retrieve the following data points before you can set up deep links 
 
 ## Instructions
 
-Follow these intructions to retrieve your data points.
+Follow these instructions to retrieve your data points.
 
 ::::{dropdown} Branded Link domain
 Your marketing team is responsible for setting up the Branded Link domain in the Adjust dashboard. Get this information from them and store it somewhere for later use.

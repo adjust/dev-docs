@@ -15,7 +15,7 @@ You can only call this method after the first session. This setting persists bet
 
 ## Check enabled status
 
-You can check if the Adjust SDK is enabled at any time by calling the `isEnabled` method. This method returns a boolean vaule.
+You can check if the Adjust SDK is enabled at any time by calling the `isEnabled` method. This method returns a boolean value.
 
 ```{include} /ios/fragments/Adjust.md
 :start-after: isEnabled

@@ -315,7 +315,7 @@ Add a call to `trackSubsessionEnd` inside your `willResignActiveWithConversation
 ```swift
 func willResignActive(with conversation: MSConversation) {
     // Called when the extension is about to move from the active to inactive state.
-    // This will happen when the user dissmises the extension, changes to a different
+    // This will happen when the user dismisses the extension, changes to a different
     // conversation or quits Messages.
     
     // Use this method to release shared resources, save user data, invalidate timers,
@@ -332,7 +332,7 @@ func willResignActive(with conversation: MSConversation) {
 ```objc
 -(void)willResignActiveWithConversation:(MSConversation *)conversation {
     // Called when the extension is about to move from the active to inactive state.
-    // This will happen when the user dissmises the extension, changes to a different
+    // This will happen when the user dismisses the extension, changes to a different
     // conversation or quits Messages.
     
     // Use this method to release shared resources, save user data, invalidate timers,
