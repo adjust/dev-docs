@@ -3,7 +3,7 @@
 ## Offline mode
 
 :::{important}
-The offline mode setting is not remembered between sessions. Offline mode is disabled at the start of each new session.
+The offline mode setting isn't remembered between sessions. Offline mode is disabled at the start of each new session.
 :::
 
 The Adjust SDK sends event and session data to Adjust's servers in real time. You can pause the sending of information by putting the SDK in offline mode. In offline mode the SDK stores all data in a local file on the device. The SDK sends this information to Adjust's servers when you disable offline mode.
