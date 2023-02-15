@@ -3,6 +3,62 @@ orphan: true
 nosearch: true
 ---
 
+% addSessionCallbackParameter
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+
+```{code-block} swift
+Adjust.addSessionCallbackParameter("foo", value: "bar")
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+
+```{code-block} objc
+[Adjust addSessionCallbackParameter:@"foo" value:@"bar"];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+
+```{code-block} js
+Adjust.addSessionCallbackParameter('foo', 'bar');
+```
+:::
+::::
+
+% methodEnd
+
+% addSessionPartnerParameter
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+
+```{code-block} swift
+Adjust.addSessionPartnerParameter("foo", value: "bar")
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+
+```{code-block} objc
+[Adjust addSessionPartnerParameter:@"foo" value:@"bar"];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+
+```{code-block} js
+Adjust.addSessionPartnerParameter('foo', 'bar');
+```
+:::
+::::
+
+% methodEnd
+
 % appTrackingAuthorizationStatus
 
 ::::{tab-set}
@@ -126,6 +182,120 @@ Adjust.isEnabled();
 
 % methodEnd
 
+% removeSessionCallbackParameter
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+
+```{code-block} swift
+Adjust.removeSessionCallbackParameter("foo")
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+
+```{code-block} objc
+[Adjust removeSessionCallbackParameter:@"foo"];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+
+```{code-block} js
+Adjust.removeSessionCallbackParameter('foo');
+```
+:::
+::::
+
+
+% methodEnd
+
+% removeSessionPartnerParameter
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+
+```{code-block} swift
+Adjust.removeSessionPartnerParameter("foo")
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+
+```{code-block} objc
+[Adjust removeSessionPartnerParameter:@"foo"];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+
+```{code-block} js
+Adjust.removeSessionPartnerParameter('foo');
+```
+:::
+::::
+
+
+% methodEnd
+
+% resetSessionCallbackParameters
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+
+```{code-block} swift
+Adjust.resetSessionCallbackParameters()
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+
+```{code-block} objc
+[Adjust resetSessionCallbackParameters];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+
+```{code-block} js
+Adjust.resetSessionCallbackParameters();
+```
+:::
+::::
+
+% methodEnd
+
+% resetSessionPartnerParameters
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+
+```{code-block} swift
+Adjust.resetSessionPartnerParameters()
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+
+```{code-block} objc
+[Adjust resetSessionPartnerParameters];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+
+```{code-block} js
+Adjust.resetSessionPartnerParameters();
+```
+:::
+::::
+
+% methodEnd
+
 % requestTrackingAuthorizationWithCompletionHandler
 
 ::::{tab-set}
@@ -152,9 +322,7 @@ Adjust.requestTrackingAuthorization() { status in
    }
 }
 ```
-
 :::
-
 :::{tab-item} Objective-C
 :sync: objc
 
@@ -176,7 +344,34 @@ Adjust.requestTrackingAuthorization() { status in
    }
 }];
 ```
+:::
+::::
 
+% methodEnd
+
+% sendFirstPackages
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+
+```{code-block} swift
+Adjust.sendFirstPackages()
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+
+```{code-block} objc
+[Adjust sendFirstPackages];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+
+```{code-block} js
+Adjust.sendFirstPackages();
+```
 :::
 ::::
 
