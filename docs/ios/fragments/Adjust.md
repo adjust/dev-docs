@@ -59,6 +59,34 @@ Adjust.addSessionPartnerParameter('foo', 'bar');
 
 % methodEnd
 
+% adid
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+
+```{code-block} swift
+let adid = Adjust.adid()
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+
+```{code-block} objc
+NSString *adid = [Adjust adid];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+
+```{code-block} js
+var adid = Adjust.getAdid();
+```
+:::
+::::
+
+% methodEnd
+
 % appTrackingAuthorizationStatus
 
 ::::{tab-set}
@@ -177,6 +205,36 @@ Adjust.gdprForgetMe();
 
 ```{code-block} js
 Adjust.gdprForgetMe();
+```
+:::
+::::
+
+% methodEnd
+
+% idfa
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+
+```{code-block} swift
+let idfa = Adjust.idfa()
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+
+```{code-block} objc
+NSString *idfa = [Adjust idfa];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+
+```{code-block} js
+Adjust.getIdfa(function(idfa) {
+   // …
+});
 ```
 :::
 ::::
