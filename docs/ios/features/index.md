@@ -8,6 +8,6 @@ caption:  Features
 ---
 
 configuration/index
-measurement/index
+recording/index
 
 ```

@@ -2,8 +2,6 @@
 
 % classMethod appWillOpenUrl
 
-(ios-appWillOpenUrl)=
-
 :::{function} appWillOpenUrl (url)
 :noindex:
 
@@ -32,7 +30,9 @@ Instructs the Adjust SDK to search for attribution information in a URL. If the 
 :::{function} setLinkMeEnabled (boolean)
 :noindex:
 
+```{versionadded} v4.31.0
 Toggle support for Adjust's [LinkMe solution](https://help.adjust.com/preview/en/article/linkme) for deep linking.
+```
 
 ```{code-block} objc
 :name: ios-setLinkMeEnabled-invocation

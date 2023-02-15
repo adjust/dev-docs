@@ -271,6 +271,37 @@ Adjust.setOfflineMode(true);
 
 % methodEnd
 
+% trackEvent
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+
+```{code-block} swift
+let event = ADJEvent(eventToken: "abc123")
+Adjust.trackEvent(event)
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+
+```{code-block} objc
+ADJEvent *event = [ADJEvent eventWithEventToken:@"abc123"];
+[Adjust trackEvent:event];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+
+```{code-block} js
+var adjustEvent = new AdjustEvent('abc123');
+Adjust.trackEvent(adjustEvent);
+```
+:::
+::::
+
+% methodEnd
+
 % trackThirdPartySharing true
 
 ::::{tab-set}

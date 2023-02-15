@@ -7,5 +7,7 @@ maxdepth: 1
 ---
 
 Adjust/index
+ADJConfig/index
+ADJLinkResolution
 
 ```
