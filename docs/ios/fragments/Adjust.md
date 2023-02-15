@@ -271,6 +271,82 @@ Adjust.setOfflineMode(true);
 
 % methodEnd
 
+% trackAdRevenue
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+
+```{code-block} swift
+let adRevenue = ADJAdRevenue(source: source);
+Adjust.trackAdRevenue(source, payload: payload);
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+
+```{code-block} objc
+ADJAdRevenue *adRevenue = [[ADJAdRevenue alloc] initWithSource:source];
+//...
+[Adjust trackAdRevenue:source payload:payload];
+```
+:::
+::::
+
+% methodEnd
+
+% trackSubscription
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+let subscription = ADJSubscription(
+    price: price,
+    currency: currency,
+    transactionId: transactionId,
+    andReceipt: receipt)
+ 
+subscription.setTransactionDate(transactionDate)
+subscription.setSalesRegion(salesRegion)
+
+// Add callback parameters
+
+subscription.addCallbackParameter("key1", value: "value1")
+subscription.addCallbackParameter("key2", value: "value2")
+
+// Add partner parameters
+
+subscription.addPartnerParameter("key1", value: "value1")
+subscription.addCallbackParameter("key2", value: "value2")
+
+Adjust.trackSubscription(subscription)
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:price
+                                                              currency:currency
+                                                         transactionId:transactionId
+                                                            andReceipt:receipt];
+[subscription setTransactionDate:transactionDate]; 
+[subscription setSalesRegion:salesRegion];
+// Add callback parameters
+[subscription addCallbackParameter:@"key1" value:@"value1"];
+[subscription addCallbackParameter:@"key2" value:@"value2"];
+
+// Add partner parameters
+[subscription addPartnerParameter:@"key1" value:@"value1"];
+[subscription addPartnerParameter:@"key2" value:@"value2"];
+
+[Adjust trackSubscription:subscription];
+```
+:::
+::::
+
+% methodEnd
+
 % trackEvent
 
 ::::{tab-set}
