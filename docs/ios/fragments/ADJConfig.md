@@ -187,6 +187,66 @@ setupWebViewJavascriptBridge(function(bridge) {
 
 % methodEnd
 
+% setDelegate
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+:emphasize-lines: 7
+
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+    appToken: yourAppToken,
+    environment: environment)
+//...
+adjustConfig?.delegate = self
+//...
+Adjust.appDidLaunch(adjustConfig)
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+:emphasize-lines: 4
+
+*adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
+                                  environment:ADJEnvironmentSandbox];
+//...
+[adjustConfig setDelegate:self];
+//...
+[Adjust appDidLaunch:adjustConfig];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+```{code-block} js
+:emphasize-lines: 6
+
+setupWebViewJavascriptBridge(function(bridge) {
+   // ...
+   var yourAppToken = yourAppToken;
+   var environment = AdjustConfig.EnvironmentSandbox;
+   var adjustConfig = new AdjustConfig(yourAppToken, environment);
+   adjustConfig.setAttributionCallback(function(attribution) {
+    // In this example, we're just displaying alert with attribution content.
+    alert('Tracker token = ' + attribution.trackerToken + '\n' +
+          'Tracker name = ' + attribution.trackerName + '\n' +
+          'Network = ' + attribution.network + '\n' +
+          'Campaign = ' + attribution.campaign + '\n' +
+          'Adgroup = ' + attribution.adgroup + '\n' +
+          'Creative = ' + attribution.creative + '\n' +
+          'Click label = ' + attribution.clickLabel + '\n' +
+          'Adid = ' + attribution.adid);
+   });
+});
+```
+:::
+::::
+
+% methodEnd
+
 % setEventBufferingEnabled
 
 ::::{tab-set}

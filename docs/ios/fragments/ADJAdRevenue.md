@@ -26,7 +26,7 @@ ADJAdRevenue *adRevenue = [[ADJAdRevenue alloc] initWithSource:source];
 :::
 ::::
 
-%methodEnd
+% methodEnd
 
 % addPartnerParameter
 

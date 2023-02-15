@@ -106,6 +106,34 @@ Adjust.appWillOpenUrl(url)
 
 % methodEnd
 
+% attribution
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+
+```{code-block} swift
+let attribution = Adjust.attribution()
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+
+```{code-block} objc
+ADJAttribution *attribution = [Adjust attribution];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+
+```{code-block} js
+var attribution = Adjust.getAttribution();
+```
+:::
+::::
+
+% methodEnd
+
 % checkForNewAttStatus
 
 ::::{tab-set}
