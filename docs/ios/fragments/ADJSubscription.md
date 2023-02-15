@@ -67,8 +67,7 @@ ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:price
 
 % methodEnd
 
-
-% initWithPrice
+% initWithPrice method
 
 ::::{tab-set}
 :::{tab-item} Swift

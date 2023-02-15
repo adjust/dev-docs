@@ -33,7 +33,7 @@ To get started, you need to create a subscription object containing details of t
 ```
 
 ```{include} /ios/fragments/ADJSubscription.md
-:start-after: initWithPrice
+:start-after: initWithPrice method
 :end-before: methodEnd
 ```
 
