@@ -211,7 +211,7 @@ To set the identifier, call the [`setTransactionId` method]() and pass your tran
 
 :::::{dropdown} Example
 
-Thie example demonstrates how to record an event with the token {{ eventToken }} whenever a user interacts with a button. The function sets the `uniqueId` to {{ uniqueEventId }} using the [`setTransactionId` method]().
+This example demonstrates how to record an event with the token {{ eventToken }} whenever a user interacts with a button. The function sets the `uniqueId` to {{ uniqueEventId }} using the [`setTransactionId` method]().
 
 ::::{tab-set}
 :::{tab-item} Swift
