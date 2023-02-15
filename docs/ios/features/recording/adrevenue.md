@@ -9,7 +9,7 @@ You need to perform some extra setup steps in your Adjust dashboard to measure a
 To measure ad revenue:
 
 1. Create a new Adjust ad revenue instance and pass your ad revenue source as an argument.
-2. Call the [`trackAdRevenue` method]() with your ad revenue instance as an argument.
+2. Call the [`trackAdRevenue` method](ios-trackAdRevenue-invocation) with your ad revenue instance as an argument.
 
 ```{include} /ios/fragments/Adjust.md
 :start-after: trackAdRevenue
@@ -46,7 +46,7 @@ To measure ad revenue:
 
 You can record ad revenue by setting the `revenue` and `currency` properties on your ad revenue instance.
 
-To set these properties, call the [`setRevenue` method]() and pass the following arguments:
+To set these properties, call the [`setRevenue` method](ios-setRevenue-invocation) and pass the following arguments:
 
 * The `revenue` amount (**number**)
 * The `currency` code (**string**)
@@ -67,7 +67,7 @@ Check the [guide to tracking purchases in different currencies](https://help.adj
 The ad revenue object contains properties you can use to report on your ad campaigns.
 
 :::::{dropdown} Ad impressions
-Record the number of ad impressions by passing an **integer** value to the [`setAdImpressionsCount` method]().
+Record the number of ad impressions by passing an **integer** value to the [`setAdImpressionsCount` method](ios-setAdImpressionsCount-invocation).
 
 ```{include} /ios/fragments/ADJAdRevenue.md
 :start-after: setAdImpressionsCount
@@ -76,7 +76,7 @@ Record the number of ad impressions by passing an **integer** value to the [`set
 :::::
 
 :::::{dropdown} Ad revenue network
-Record which network generated the revenue by passing a **string** value to the [`setAdRevenueNetwork` method]().
+Record which network generated the revenue by passing a **string** value to the [`setAdRevenueNetwork` method](ios-setAdRevenueNetwork-invocation).
 
 ```{include} /ios/fragments/ADJAdRevenue.md
 :start-after: setAdRevenueNetwork
@@ -85,7 +85,7 @@ Record which network generated the revenue by passing a **string** value to the 
 :::::
 
 :::::{dropdown} Ad revenue unit
-Record which ad revenue unit generated the revenue by passing a **string** value to the [`setAdRevenueUnit` method]().
+Record which ad revenue unit generated the revenue by passing a **string** value to the [`setAdRevenueUnit` method](ios-setAdRevenueUnit-invocation).
 
 ```{include} /ios/fragments/ADJAdRevenue.md
 :start-after: setAdRevenueUnit
@@ -94,7 +94,7 @@ Record which ad revenue unit generated the revenue by passing a **string** value
 :::::
 
 :::::{dropdown} Ad revenue placement
-Record the placement of your ad by passing a **string** value to the [`setAdRevenuePlacement` method]().
+Record the placement of your ad by passing a **string** value to the [`setAdRevenuePlacement` method](ios-setAdRevenuePlacement-invocation).
 
 ```{include} /ios/fragments/ADJAdRevenue.md
 :start-after: setAdRevenuePlacement
@@ -108,7 +108,7 @@ If you [register a callback URL](https://help.adjust.com/en/article/best-practic
 
 You can configure callback parameters to your servers. Once you configure parameters on an event, the SDK appends them to your [callback URL](https://help.adjust.com/en/article/raw-data-exports). You can use this information to analyze your users' in-app behavior with your BI system.
 
-Add callback parameters to your event by calling the [`addCallbackParameter` method]() with **string** key-value arguments. You can add multiple parameters by calling this method multiple times.
+Add callback parameters to your event by calling the [`addCallbackParameter` method](ios-ADJAdRevenue-addCallbackParameter-invocation) with **string** key-value arguments. You can add multiple parameters by calling this method multiple times.
 
 The Adjust SDK measures the event and sends a request to your URL with the callback parameters. For example, if you register the URL `https://www.mydomain.com/callback`, your callback looks like this:
 
@@ -143,7 +143,7 @@ Adjust sends partner parameters to [external partners](https://help.adjust.com/e
 Partner parameters don't appear in raw data by default. You can add the `{partner_parameters}` placeholder to receive them as a single string.
 :::
 
-Add partner parameters to your event by calling the [`addPartnerParameter` method]() with **string** key-value arguments. You can add multiple parameters by calling this method multiple times.
+Add partner parameters to your event by calling the [`addPartnerParameter` method](ios-ADJAdRevenue-addPartnerParameter-invocation) with **string** key-value arguments. You can add multiple parameters by calling this method multiple times.
 
 ```{include} /ios/fragments/ADJAdRevenue.md
 :start-after: addPartnerParameter

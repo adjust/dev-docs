@@ -108,4 +108,5 @@ myst_substitutions = {
 }
 
 tippy_anchor_parent_selector = "div.rst-content"
-tippy_tip_selector = "div.notranslate, dt, code, div.admonition"
+tippy_tip_selector = "div.notranslate, dt, code"
+

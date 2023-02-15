@@ -64,7 +64,7 @@ Within your delegate function, you have access to the user's `Attribution` infor
 ## Get current attribution information
 
 ```{versionadded} v4.11.0
-When a user installs your app, Adjust attributes the install to a campaign. The Adjust SDK gives you access to campaign attribution details for your install. To return this information, call the [`getAttribution` method]().
+When a user installs your app, Adjust attributes the install to a campaign. The Adjust SDK gives you access to campaign attribution details for your install. To return this information, call the [`attribution` method](ios-attribution-invocation).
 ```
 
 This method returns an Attribution object. See the [`ADJAttribution` class reference]() for a list of available properties.

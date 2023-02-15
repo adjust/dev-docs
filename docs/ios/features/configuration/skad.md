@@ -33,7 +33,7 @@ Conversion values are a mechanism used to track user behavior in SKAdNetwork. Yo
 
 If you manage your conversion values with Adjust, the servers update this value in the SDK. You can also update this value by using the `updateConversionValue` method. This method wraps [Apple's `updateConversionValue` method](https://developer.apple.com/documentation/storekit/skadnetwork/3566697-updateconversionvalue). It accepts an integer argument representing your updated conversion value.
 
-```{include} /ios/fragments/ADJConfig.md
+```{include} /ios/fragments/Adjust.md
 :start-after: updateConversionValue
 :end-before: methodEnd
 ```

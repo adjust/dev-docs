@@ -3,6 +3,249 @@ orphan: true
 nosearch: true
 ---
 
+% configWithAppToken
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+   appToken: yourAppToken,
+   environment: environment)
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+NSString *yourAppToken = @"{YourAppToken}";
+NSString *environment = ADJEnvironmentSandbox;
+*adjustConfig = [ADJConfig configWithAppToken:yourAppToken
+                                  environment:environment];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+```{code-block} js
+:emphasize-lines: 6
+
+setupWebViewJavascriptBridge(function(bridge) {
+   var yourAppToken = yourAppToken;
+   var environment = AdjustConfig.EnvironmentSandbox;
+   var adjustConfig = new AdjustConfig(yourAppToken, environment);
+});
+```
+:::
+::::
+
+% methodEnd
+
+% setAllowAdServicesInfoReading
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+:emphasize-lines: 7
+
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+    appToken: yourAppToken,
+    environment: environment)
+//...
+adjustConfig.allowAdServicesInfoReading = true;
+//...
+Adjust.appDidLaunch(adjustConfig)
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+:emphasize-lines: 4
+
+*adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
+                                  environment:ADJEnvironmentSandbox];
+//...
+[adjustConfig.setAllowAdServicesInfoReading:YES];
+//...
+[Adjust appDidLaunch:adjustConfig];
+```
+:::
+::::
+
+% methodEnd
+
+% setAllowiAdInfoReading
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+:emphasize-lines: 7
+
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+    appToken: yourAppToken,
+    environment: environment)
+//...
+adjustConfig.allowiAdInfoReading = true;
+//...
+Adjust.appDidLaunch(adjustConfig)
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+:emphasize-lines: 4
+
+*adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
+                                  environment:ADJEnvironmentSandbox];
+//...
+[adjustConfig.setAllowiAdInfoReading:YES];
+//...
+[Adjust appDidLaunch:adjustConfig];
+```
+:::
+::::
+
+% methodEnd
+
+% setAllowIdfaReading
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+:emphasize-lines: 7
+
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+    appToken: yourAppToken,
+    environment: environment)
+//...
+adjustConfig.allowIdfaReading = true;
+//...
+Adjust.appDidLaunch(adjustConfig)
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+:emphasize-lines: 4
+
+*adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
+                                  environment:ADJEnvironmentSandbox];
+//...
+[adjustConfig.setAllowIdfaReading:YES];
+//...
+[Adjust appDidLaunch:adjustConfig];
+```
+:::
+::::
+
+% methodEnd
+
+% setCoppaCompliantEnabled
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+:emphasize-lines: 7
+
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+   appToken: yourAppToken,
+   environment: environment)
+// ...
+adjustConfig?.coppaCompliantEnabled = true
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+:emphasize-lines: 6
+
+NSString *yourAppToken = @"{YourAppToken}";
+NSString *environment = ADJEnvironmentSandbox;
+*adjustConfig = [ADJConfig configWithAppToken:yourAppToken
+                                  environment:environment];
+// ...
+[adjustConfig setCoppaCompliantEnabled:YES];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+```{code-block} js
+:emphasize-lines: 6
+
+setupWebViewJavascriptBridge(function(bridge) {
+   // ...
+   var yourAppToken = yourAppToken;
+   var environment = AdjustConfig.EnvironmentSandbox;
+   var adjustConfig = new AdjustConfig(yourAppToken, environment);
+   adjustConfig.setCoppaCompliantEnabled(true);
+});
+```
+:::
+::::
+
+% methodEnd
+
+
+% setUrlStrategy
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+:emphasize-lines: 7
+
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+   appToken: yourAppToken,
+   environment: environment)
+// ...
+adjustConfig?.urlStrategy = ADJDataResidencyEU
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+:emphasize-lines: 6
+
+NSString *yourAppToken = @"{YourAppToken}";
+NSString *environment = ADJEnvironmentSandbox;
+*adjustConfig = [ADJConfig configWithAppToken:yourAppToken
+                                  environment:environment];
+// ...
+[adjustConfig setUrlStrategy:ADJDataResidencyEU];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+```{code-block} js
+:emphasize-lines: 6
+
+setupWebViewJavascriptBridge(function(bridge) {
+   // ...
+   var yourAppToken = yourAppToken;
+   var environment = AdjustConfig.EnvironmentSandbox;
+   var adjustConfig = new AdjustConfig(yourAppToken, environment);
+   adjustConfig.setUrlStrategy(ADJDataResidencyEU);
+});
+```
+:::
+::::
+
+% methodEnd
+
 % deactivateSKAdNetworkHandling
 
 ::::{tab-set}
@@ -393,6 +636,54 @@ setupWebViewJavascriptBridge(function(bridge) {
 
 % methodEnd
 
+% setNeedsCost
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+:emphasize-lines: 7
+
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+   appToken: yourAppToken,
+   environment: environment)
+// ...
+adjustConfig?.needsCost = true
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+:emphasize-lines: 6
+
+NSString *yourAppToken = @"{YourAppToken}";
+NSString *environment = ADJEnvironmentSandbox;
+*adjustConfig = [ADJConfig configWithAppToken:yourAppToken
+                                  environment:environment];
+// ...
+[adjustConfig setNeedsCost:NO];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+```{code-block} js
+:emphasize-lines: 6
+
+setupWebViewJavascriptBridge(function(bridge) {
+   // ...
+   var yourAppToken = yourAppToken;
+   var environment = AdjustConfig.EnvironmentSandbox;
+   var adjustConfig = new AdjustConfig(yourAppToken, environment);
+   adjustConfig.setNeedsCost(false);
+});
+```
+:::
+::::
+
+% methodEnd
+
 % setSendInBackground
 
 ::::{tab-set}
@@ -435,25 +726,6 @@ setupWebViewJavascriptBridge(function(bridge) {
    var adjustConfig = new AdjustConfig(yourAppToken, environment);
    adjustConfig.setSendInBackground(true);
 });
-```
-:::
-::::
-
-% methodEnd
-
-% updateConversionValue
-
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
-```{code-block} swift
-Adjust.updateConversionValue(value)
-```
-:::
-:::{tab-item} Objective-C
-:sync: objc
-```{code-block} objc
-[Adjust updateConversionValue:value];
 ```
 :::
 ::::

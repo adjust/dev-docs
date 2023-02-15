@@ -2,6 +2,181 @@
 
 % classMethod appWillOpenUrl
 
+:::{function} trackEvent (event)
+:noindex:
+
+Record event information using an `ADJEvent` object and an [Adjust event token](https://help.adjust.com/en/article/basic-event-setup#create-an-event-token).
+
+```{code-block} objc
+:name: ios-trackEvent-invocation
+
++ (void) trackEvent: (nullable ADJEvent *) event
+```
+
+:param event: An event object containing information you want to record
+:type event: [*ADJEvent*](https://google.com)
+
+```{include} /ios/fragments/Adjust.md
+:start-after: trackEvent
+:end-before: methodEnd
+```
+
+:::
+
+% classMethodEnd
+
+% classMethod addSessionCallbackParameter
+
+:::{function} addSessionCallbackParameter (key, value)
+:noindex:
+
+Adds callback parameters to send with each session recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
+
+```{code-block} objc
+:name: ios-addSessionCallbackParameter-invocation
+
++ (void) addSessionCallbackParameter: (nonnull NSString *) key
+                               value: (nonnull NSString *) value
+```
+
+:param key: The data key
+:type key: NSString
+:param value: The data value
+:type value: NSString
+
+```{include} /ios/fragments/Adjust.md
+:start-after: addSessionCallbackParameter
+:end-before: methodEnd
+```
+
+:::
+
+% classMethodEnd
+
+% classMethod removeSessionCallbackParameter
+
+:::{function} removeSessionCallbackParameter (key)
+:noindex:
+
+Removes a callback parameter
+
+```{code-block} objc
+:name: ios-removeSessionCallbackParameter-invocation
+
++ (void) removeSessionCallbackParameter: (nonnull NSString *) key
+```
+
+:param key: The data key
+:type key: NSString
+
+```{include} /ios/fragments/Adjust.md
+:start-after: removeSessionCallbackParameter
+:end-before: methodEnd
+```
+
+:::
+
+% classMethodEnd
+
+% classMethod resetSessionCallbackParameters
+
+:::{function} resetSessionCallbackParameters
+:noindex:
+
+Removes all callback parameters
+
+```{code-block} objc
+:name: ios-resetSessionCallbackParameters-invocation
+
++ (void) resetSessionCallbackParameters
+```
+
+```{include} /ios/fragments/Adjust.md
+:start-after: resetSessionCallbackParameters
+:end-before: methodEnd
+```
+
+:::
+
+% classMethodEnd
+
+% classMethod addSessionPartnerParameter
+
+:::{function} addSessionPartnerParameter (key, value)
+:noindex:
+
+Adds partner parameters to send with each session recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
+
+```{code-block} objc
+:name: ios-addSessionPartnerParameter-invocation
+
++ (void) addSessionPartnerParameter: (nonnull NSString *) key
+                               value: (nonnull NSString *) value
+```
+
+:param key: The data key
+:type key: NSString
+:param value: The data value
+:type value: NSString
+
+```{include} /ios/fragments/Adjust.md
+:start-after: addSessionPartnerParameter
+:end-before: methodEnd
+```
+
+:::
+
+% classMethodEnd
+
+% classMethod removeSessionPartnerParameter
+
+:::{function} removeSessionPartnerParameter (key)
+:noindex:
+
+Removes a partner parameter
+
+```{code-block} objc
+:name: ios-removeSessionPartnerParameter-invocation
+
++ (void) removeSessionPartnerParameter: (nonnull NSString *) key
+```
+
+:param key: The data key
+:type key: NSString
+
+```{include} /ios/fragments/Adjust.md
+:start-after: removeSessionPartnerParameter
+:end-before: methodEnd
+```
+
+:::
+
+% classMethodEnd
+
+% classMethod resetSessionPartnerParameters
+
+:::{function} resetSessionPartnerParameters
+:noindex:
+
+Resets all partner parameters
+
+```{code-block} objc
+:name: ios-resetSessionPartnerParameters-invocation
+
++ (void) resetSessionPartnerParameters
+```
+
+```{include} /ios/fragments/Adjust.md
+:start-after: resetSessionPartnerParameters
+:end-before: methodEnd
+```
+
+:::
+
+% classMethodEnd
+
+% classMethod appWillOpenUrl
+
 :::{function} appWillOpenUrl (url)
 :noindex:
 
@@ -25,26 +200,49 @@ Instructs the Adjust SDK to search for attribution information in a URL. If the 
 
 % classMethodEnd
 
-% classMethod setLinkMeEnabled
+% classMethod attribution
 
-:::{function} setLinkMeEnabled (boolean)
+:::{function} attribution
 :noindex:
 
-```{versionadded} v4.31.0
-Toggle support for Adjust's [LinkMe solution](https://help.adjust.com/preview/en/article/linkme) for deep linking.
-```
+Fetches attribution data from the device
 
 ```{code-block} objc
-:name: ios-setLinkMeEnabled-invocation
+:name: ios-attribution-invocation
 
-@property (nonatomic, assign) BOOL linkMeEnabled;
++ (ADJAttribution *) attribution
 ```
 
-:param url: A URL containing deep link information
-:type url: NSURL
+:returns: An attribution object containing attribution data associated with the device
+:rtype: [`ADJAttribution` object]()
 
-```{include} /ios/fragments/ADJConfig.md
-:start-after: setLinkMeEnabled
+```{include} /ios/fragments/Adjust.md
+:start-after: attribution
+:end-before: methodEnd
+```
+
+:::
+
+% classMethodEnd
+
+% classMethod trackSubscription
+
+:::{function} trackSubscription(subscription)
+:noindex:
+
+Record the details of an ADJSubscription object
+
+```{code-block} objc
+:name: ios-attribution-invocation
+
++ (void)trackSubscription:(nonnull ADJSubscription *)subscription;
+```
+
+:param subscription: The subscription object containing the purchase details
+:type subscription: ADJSubscription
+
+```{include} /ios/fragments/Adjust.md
+:start-after: trackSubscription
 :end-before: methodEnd
 ```
 

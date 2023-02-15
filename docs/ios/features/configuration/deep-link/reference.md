@@ -12,7 +12,7 @@ Use the methods in this article to configure deep linking in your app.
 :end-before: classMethodEnd
 ```
 
-```{include} /ios/reference/Adjust/recording.md
+```{include} /ios/reference/ADJConfig/setup.md
 :start-after: classMethod setLinkMeEnabled
 :end-before: classMethodEnd
 ```

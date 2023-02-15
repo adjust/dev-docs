@@ -3,7 +3,7 @@
 You can associate your [Adjust event tokens](https://help.adjust.com/en/article/basic-event-setup#create-an-event-token) to actions in your app to record them. To record an event:
 
 * Create a new Adjust event instance and pass your event token as a string argument.
-* Call the [`trackEvent` method]() with your event instance as an argument.
+* Call the [`trackEvent` method](ios-trackEvent-invocation) with your event instance as an argument.
 
 ```{include} /ios/fragments/Adjust.md
 :start-after: trackEvent
@@ -97,7 +97,7 @@ class ViewControllerSwift: UIViewController {
 
 You can record revenue associated with an event by setting the revenue and currency properties on your event instance. Use this feature to record revenue-generating actions in your app.
 
-To set these properties, call the [`setRevenue` method]() and pass the following arguments:
+To set these properties, call the [`setRevenue` method](ios-setRevenue-invocation) and pass the following arguments:
 
 * The `revenue` amount (**number**)
 * The `currency` code (**string**)
@@ -202,7 +202,7 @@ class ViewControllerSwift: UIViewController {
 
 You can pass an optional identifier to avoid recording duplicate events. The SDK stores the last ten identifiers and skips revenue events with duplicate transaction IDs.
 
-To set the identifier, call the [`setTransactionId` method]() and pass your transaction ID as a **string** argument.
+To set the identifier, call the [`setTransactionId` method](ios-setTransactionId-invocation) and pass your transaction ID as a **string** argument.
 
 ```{include} /ios/fragments/ADJEvent.md
 :start-after: setTransactionId
@@ -211,7 +211,7 @@ To set the identifier, call the [`setTransactionId` method]() and pass your tran
 
 :::::{dropdown} Example
 
-This example demonstrates how to record an event with the token {{ eventToken }} whenever a user interacts with a button. The function sets the `uniqueId` to {{ uniqueEventId }} using the [`setTransactionId` method]().
+This example demonstrates how to record an event with the token {{ eventToken }} whenever a user interacts with a button. The function sets the `uniqueId` to {{ uniqueEventId }} using the [`setTransactionId` method](ios-setTransactionId-invocation).
 
 ::::{tab-set}
 :::{tab-item} Swift
@@ -302,7 +302,7 @@ If you [register a callback URL](https://help.adjust.com/en/article/best-practic
 
 You can configure callback parameters to your servers. Once you configure parameters on an event, the SDK appends them to your [callback URL](https://help.adjust.com/en/article/raw-data-exports). You can use this information to analyze your users' in-app behavior with your BI system.
 
-Add callback parameters to your event by calling the [`addCallbackParameter` method]() with **string** key-value arguments. You can add multiple parameters by calling this method multiple times.
+Add callback parameters to your event by calling the [`addCallbackParameter` method](ios-ADJEvent-addCallbackParameter-invocation) with **string** key-value arguments. You can add multiple parameters by calling this method multiple times.
 
 ```{include} /ios/fragments/ADJEvent.md
 :start-after: addCallbackParameter
@@ -434,7 +434,7 @@ Adjust sends partner parameters to [external partners](https://help.adjust.com/e
 Partner parameters don't appear in raw data by default. You can add the `{partner_parameters}` placeholder to receive them as a single string.
 :::
 
-Add partner parameters to your event by calling the [`addPartnerParameter` method]() with **string** key-value arguments. You can add multiple parameters by calling this method multiple times.
+Add partner parameters to your event by calling the [`addPartnerParameter` method](ios-ADJEvent-addPartnerParameter-invocation) with **string** key-value arguments. You can add multiple parameters by calling this method multiple times.
 
 ```{include} /ios/fragments/ADJEvent.md
 :start-after: addPartnerParameter
@@ -536,7 +536,7 @@ class ViewControllerSwift: UIViewController {
 
 You can add a custom string identifier to each event you want to measure. Adjust's servers can report on this identifier in event callbacks. This enables you to keep track of which events have been successfully measured.
 
-Set up this identifier by calling the [`setCallbackId` method]() with your ID as a **string** argument.
+Set up this identifier by calling the [`setCallbackId` method](ios-setCallbackId-invocation) with your ID as a **string** argument.
 
 ```{include} /ios/fragments/ADJEvent.md
 :start-after: setCallbackId

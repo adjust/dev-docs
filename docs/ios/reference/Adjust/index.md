@@ -9,5 +9,9 @@ maxdepth: 2
 ---
 
 recording
+config
+device-info
+skan-att
+privacy
 
 ```

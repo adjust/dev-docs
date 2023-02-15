@@ -2,7 +2,7 @@
 
 The Adjust SDK runs when your app is open by default. You can disable and re-enable the Adjust SDK to pause and resume recording. When you disable the Adjust SDK, it doesn't send any data to Adjust's servers.
 
-You can enable or disable the SDK at any time by calling the `setEnabled` method with a boolean argument.
+You can enable or disable the SDK at any time by calling the [`setEnabled` method](ios-setEnabled-invocation) with a boolean argument.
 
 :::{important}
 You can only call this method after the first session. This setting persists between sessions.
@@ -15,7 +15,7 @@ You can only call this method after the first session. This setting persists bet
 
 ## Check enabled status
 
-You can check if the Adjust SDK is enabled at any time by calling the `isEnabled` method. This method returns a boolean value.
+You can check if the Adjust SDK is enabled at any time by calling the [`isEnabled` method](ios-isEnabled-invocation). This method returns a boolean value.
 
 ```{include} /ios/fragments/Adjust.md
 :start-after: isEnabled

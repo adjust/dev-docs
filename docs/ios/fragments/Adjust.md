@@ -183,6 +183,33 @@ Adjust.checkForNewAttStatus();
 
 % methodEnd
 
+% disableThirdPartySharing
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+
+```{code-block} swift
+Adjust.disableThirdPartySharing()
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+
+```{code-block} objc
+[Adjust disableThirdPartySharing];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+```{code-block} js
+Adjust.disableThirdPartySharing();
+```
+:::
+::::
+
+% methodEnd
+
 % gdprForgetMe
 
 ::::{tab-set}
@@ -659,6 +686,34 @@ Adjust.trackEvent(adjustEvent);
 
 % methodEnd
 
+% trackMeasurementConsent
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+
+```{code-block} swift
+Adjust.trackMeasurementConsent(true)
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+
+```{code-block} objc
+[Adjust trackMeasurementConsent:YES];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+
+```{code-block} js
+Adjust.trackMeasurementConsent(false);
+```
+:::
+::::
+
+% methodEnd
+
 % trackThirdPartySharing true
 
 ::::{tab-set}
@@ -749,6 +804,25 @@ ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc] in
 var adjustThirdPartySharing = new AdjustThirdPartySharing(null);
 adjustThirdPartySharing.addGranularOption('PartnerA', 'foo', 'bar');
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+```
+:::
+::::
+
+% methodEnd
+
+% updateConversionValue
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+Adjust.updateConversionValue(value)
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+[Adjust updateConversionValue:value];
 ```
 :::
 ::::
