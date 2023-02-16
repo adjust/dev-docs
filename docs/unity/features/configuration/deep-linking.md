@@ -62,7 +62,7 @@ The SDK opens deferred deep links by default. You can configure this by passing 
 
 ```{include} /unity/fragments/AdjustConfig.md
 :start-after: setLaunchDeferredDeeplink
-:end-before: end
+:end-before: methodEnd
 ```
 
 ### Set up a deferred deep link delegate
@@ -71,7 +71,7 @@ You can configure the Adjust SDK to call a delegate function when it receives a 
 
 ```{include}/unity/fragments/AdjustConfig.md
 :start-after: setDeferredDeeplinkDelegate
-:end-before: end
+:end-before: methodEnd
 ```
 
 :::::{dropdown} Example
@@ -108,5 +108,5 @@ To enable pasteboard checking in your app, pass a true value to the {code}`setLi
 
 ```{include} /unity/fragments/AdjustConfig.md
 :start-after: setLinkMeEnabled
-:end-before: end
+:end-before: methodEnd
 ```

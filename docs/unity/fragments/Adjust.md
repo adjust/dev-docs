@@ -13,7 +13,7 @@ Adjust.checkForNewAttStatus();
 :::
 ::::
 
-% end
+% methodEnd
 
 % getAppTrackingAuthorizationStatus
 
@@ -25,7 +25,7 @@ Adjust.getAppTrackingAuthorizationStatus();
 :::
 ::::
 
-% end
+% methodEnd
 
 % requestTrackingAuthorizationWithCompletionHandler
 
@@ -54,4 +54,4 @@ Adjust.requestTrackingAuthorizationWithCompletionHandler((status) =>
 :::
 ::::
 
-% end
+% methodEnd

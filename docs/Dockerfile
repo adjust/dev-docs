@@ -20,6 +20,6 @@ WORKDIR $PYSETUP_PATH
 COPY poetry.lock pyproject.toml ./
 RUN poetry install
 
-WORKDIR /app/docs
+WORKDIR /app
 
 

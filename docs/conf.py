@@ -33,6 +33,8 @@ extensions = [
    "sphinx_multiversion",
    "sphinxcontrib.images",
    "sphinx_copybutton",
+   "sphinxcontrib.mermaid",
+   "sphinx_tippy",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -50,6 +52,9 @@ root_doc = "index"
 # a list of builtin themes.
 #
 html_theme = "sphinx_rtd_theme"
+html_theme_options = {
+    "navigation_depth": -1,
+}
 html_context = {
    "display_github": True,
    "github_user": "Sporiff",
@@ -96,5 +101,12 @@ gettext_compact = False
 # Add substitution for global prolog
 
 myst_substitutions = {
-    "eventToken": "*`g3mfiw`*"
+    "eventToken": "*`g3mfiw`*",
+    "uniqueEventId": "*`5e85484b-1ebc-4141-aab7-25b869e54c49`*",
+    "callbackId": "*`f2e728d8-271b-49ab-80ea-27830a215147`*",
+    "ios_version": "4.33.4"
 }
+
+tippy_anchor_parent_selector = "div.rst-content"
+tippy_tip_selector = "div.notranslate, dt, code"
+

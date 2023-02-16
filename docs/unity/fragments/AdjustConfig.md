@@ -19,7 +19,7 @@ Adjust.start(config);
 :::
 ::::
 
-% end
+% methodEnd
 
 % allowSuppressLogLevel
 
@@ -37,7 +37,7 @@ Adjust.start(adjustConfig);
 :::
 ::::
 
-% end
+% methodEnd
 
 % deactivateSKAdNetworkHandling
 
@@ -55,7 +55,7 @@ Adjust.start(adjustConfig);
 :::
 ::::
 
-% end
+% methodEnd
 
 % setDeferredDeeplinkDelegate
 
@@ -75,7 +75,7 @@ Adjust.start(adjustConfig);
 :::
 ::::
 
-% end
+% methodEnd
 
 % setExternalDeviceId
 
@@ -93,7 +93,7 @@ Adjust.start(adjustConfig);
 :::
 ::::
 
-% end
+% methodEnd
 
 % setLaunchDeferredDeeplink
 
@@ -111,7 +111,7 @@ Adjust.start(adjustConfig);
 :::
 ::::
 
-% end
+% methodEnd
 
 % setLinkMeEnabled
 
@@ -129,7 +129,7 @@ Adjust.start(adjustConfig);
 :::
 ::::
 
-% end
+% methodEnd
 
 % setLogDelegate
 
@@ -147,7 +147,7 @@ Adjust.start(adjustConfig);
 :::
 ::::
 
-% end
+% methodEnd
 
 % updateConversionValue
 
@@ -159,4 +159,4 @@ Adjust.updateConversionValue(6);
 :::
 ::::
 
-% end
+% methodEnd

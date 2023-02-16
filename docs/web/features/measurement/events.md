@@ -16,7 +16,7 @@ You can associate your [Adjust event tokens](https://help.adjust.com/en/article/
 
 ```{include} /web/fragments/Adjust.md
 :start-after: Record an event
-:end-before: end
+:end-before: methodEnd
 ```
 
 :::::{dropdown} Example
@@ -83,7 +83,7 @@ You must format the currency code as a 3 character string that follows the [ISO 
 
 ```{include} /web/fragments/Adjust.md
 :start-after: Set revenue
-:end-before: end
+:end-before: methodEnd
 ```
 
 ## Deduplicate events
@@ -94,7 +94,7 @@ To configure this, set the {{ deduplicateMethodName }} property to your transact
 
 ```{include} /web/fragments/Adjust.md
 :start-after:  Add deduplication ID
-:end-before: end
+:end-before: methodEnd
 ```
 
 ## Add callback parameters
@@ -125,7 +125,7 @@ You can append several parameters by adding multiple key-value pairs to the {{ c
 
 ```{include} /web/fragments/Adjust.md
 :start-after: Add callback params
-:end-before: end
+:end-before: methodEnd
 ```
 
 ## Add partner parameters
@@ -160,7 +160,7 @@ You can append several parameters by adding multiple key-value pairs to the {{ p
 
 ```{include} /web/fragments/Adjust.md
 :start-after: Add partner params
-:end-before: end
+:end-before: methodEnd
 ```
 
 ## Record event and redirect to an external page

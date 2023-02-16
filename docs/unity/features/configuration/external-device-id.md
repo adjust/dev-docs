@@ -24,7 +24,7 @@ The external device ID is case-sensitive. If you have imported external device I
 
 ```{include} /unity/fragments/AdjustConfig.md
 :start-after: setExternalDeviceId
-:end-before: end
+:end-before: methodEnd
 ```
 
 If you want to use the external device ID in your business analytics, you can pass it as a session callback parameter. 
