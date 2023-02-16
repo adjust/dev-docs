@@ -40,10 +40,10 @@ Disable or enable sharing of information with third parties on a per-user basis.
 ```
 
 :param thirdPartySharing: The third party sharing object
-:type thirdPartySharing: [*ADJThirdPartySharing*]()
+:type thirdPartySharing: [*ADJThirdPartySharing*](/ios/reference/ADJThirdPartySharing.md)
 
 ```{include} /ios/fragments/Adjust.md
-:start-after: trackThirdPartySharing true
+:start-after: trackThirdPartySharing
 :end-before: methodEnd
 ```
 

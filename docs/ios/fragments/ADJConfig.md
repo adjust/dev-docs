@@ -28,7 +28,7 @@ NSString *environment = ADJEnvironmentSandbox;
 :::{tab-item} Javascript
 :sync: js
 ```{code-block} js
-:emphasize-lines: 6
+:emphasize-lines: 4
 
 setupWebViewJavascriptBridge(function(bridge) {
    var yourAppToken = yourAppToken;
@@ -169,7 +169,7 @@ adjustConfig?.coppaCompliantEnabled = true
 :::{tab-item} Objective-C
 :sync: objc
 ```{code-block} objc
-:emphasize-lines: 6
+:emphasize-lines: 5
 
 NSString *yourAppToken = @"{YourAppToken}";
 NSString *environment = ADJEnvironmentSandbox;

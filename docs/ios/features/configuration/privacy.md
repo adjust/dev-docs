@@ -19,27 +19,38 @@ You can use the Adjust SDK to record when a user changes their third-party shari
 
 ### Disable third-party sharing
 
-Some users may want to opt-out of sharing their data with third-parties. To communicate this to Adjust, call the [`trackThirdPartySharing` method](ios-trackThirdPartySharing-invocation) with a `false` value. When Adjust's servers receive this information, Adjust stops sharing the user's data with third-parties. The Adjust SDK continues to work as expected.
+Some users may want to opt-out of sharing their data with third-parties. To communicate this to Adjust, call the [`trackThirdPartySharing` method](ios-trackThirdPartySharing-invocation) with an [`ADJThirdPartySharing` object](/ios/reference/ADJThirdPartySharing) initialized with a `false` value. When Adjust's servers receive this information, Adjust stops sharing the user's data with third-parties. The Adjust SDK continues to work as expected.
 
-```{include} /ios/fragments/Adjust.md
-:start-after: trackThirdPartySharing false
+```{include} /ios/fragments/ADJThirdPartySharing.md
+:start-after: initWithIsEnabledNumberBool false
 :end-before: methodEnd
 ```
 
 ### Enable third-party sharing
 
-If a user opts into sharing with third-parties, call the [`trackThirdPartySharing` method](ios-trackThirdPartySharing-invocation) with a `true` value. This updates the user's preferences.
+If a user opts into sharing with third-parties, call the [`trackThirdPartySharing` method](ios-trackThirdPartySharing-invocation) with an [`ADJThirdPartySharing` object](/ios/reference/ADJThirdPartySharing) initialized with a `true` value. This updates the user's preferences.
 
-```{include} /ios/fragments/Adjust.md
-:start-after: trackThirdPartySharing true
+```{include} /ios/fragments/ADJThirdPartySharing.md
+:start-after: initWithIsEnabledNumberBool true
 :end-before: methodEnd
 ```
 
 ### Send granular information
 
-You can attach granular information when a user updates their third-party sharing preferences. Use this information to communicate more detail about a user's decision.
+You can attach granular information when a user updates their third-party sharing preferences. Use this information to communicate more detail about a user's decision. To do this, call the [`addGranularOption` method](ios-addGranularOption-invocation) with your partner name and your options.
 
-```{include} /ios/fragments/Adjust.md
-:start-after: trackThirdPartySharing addGranularOption
+```{include} /ios/fragments/ADJThirdPartySharing.md
+:start-after: addGranularOption
+:end-before: methodEnd
+```
+
+### Update partner settings
+
+```{versionadded} 4.32.0
+You can use the Adjust SDK to update your third party sharing settings on a per-partner basis. To do this, call the [`addPartnerSharingSetting` method](ios-addPartnerSharingSetting-invocation) with your partner name and your options.
+```
+
+```{include} /ios/fragments/ADJThirdPartySharing.md
+:start-after: addPartnerSharingSetting
 :end-before: methodEnd
 ```

@@ -3,6 +3,31 @@ orphan: true
 nosearch: true
 ---
 
+% initWithSource
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+
+```{code-block} swift
+let adRevenue = ADJAdRevenue(source: source);
+//...
+Adjust.trackAdRevenue(adRevenue);
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+
+```{code-block} objc
+ADJAdRevenue *adRevenue = [[ADJAdRevenue alloc] initWithSource:source];
+//...
+[Adjust trackAdRevenue:adRevenue];
+```
+:::
+::::
+
+% methodEnd
+
 % addCallbackParameter
 
 ::::{tab-set}

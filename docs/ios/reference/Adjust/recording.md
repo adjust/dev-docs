@@ -1,6 +1,6 @@
 # Recording methods
 
-% classMethod appWillOpenUrl
+% classMethod trackEvent
 
 :::{function} trackEvent (event)
 :noindex:
@@ -14,7 +14,7 @@ Record event information using an `ADJEvent` object and an [Adjust event token](
 ```
 
 :param event: An event object containing information you want to record
-:type event: [*ADJEvent*](https://google.com)
+:type event: [*ADJEvent*](/ios/reference/ADJEvent.md)
 
 ```{include} /ios/fragments/Adjust.md
 :start-after: trackEvent
@@ -214,7 +214,7 @@ Fetches attribution data from the device
 ```
 
 :returns: An attribution object containing attribution data associated with the device
-:rtype: [`ADJAttribution` object]()
+:rtype: [`ADJAttribution` object](/ios/reference/ADJAttribution.md)
 
 ```{include} /ios/fragments/Adjust.md
 :start-after: attribution
@@ -233,16 +233,41 @@ Fetches attribution data from the device
 Record the details of an ADJSubscription object
 
 ```{code-block} objc
-:name: ios-attribution-invocation
+:name: ios-trackSubscription-invocation
 
 + (void)trackSubscription:(nonnull ADJSubscription *)subscription;
 ```
 
 :param subscription: The subscription object containing the purchase details
-:type subscription: ADJSubscription
+:type subscription: [ADJSubscription object](/ios/reference/ADJSubscription.md)
 
 ```{include} /ios/fragments/Adjust.md
 :start-after: trackSubscription
+:end-before: methodEnd
+```
+
+:::
+
+% classMethodEnd
+
+% classMethod trackAdRevenue
+
+:::{function} trackAdRevenue(adRevenue)
+:noindex:
+
+Record the details of an ADJAdRevenue object
+
+```{code-block} objc
+:name: ios-trackAdRevenue-invocation
+
++ (void)trackAdRevenue:(nonnull ADJAdRevenue *)adRevenue;
+```
+
+:param adRevenue: The ad revenue object containing the revenue details
+:type adRevenue: [ADJAdRevenue object](/ios/reference/ADJAdRevenue.md)
+
+```{include} /ios/fragments/Adjust.md
+:start-after: trackAdRevenue
 :end-before: methodEnd
 ```
 

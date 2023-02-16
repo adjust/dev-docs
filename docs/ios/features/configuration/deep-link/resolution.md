@@ -166,5 +166,5 @@ When marketers run certain types of campaigns, sometimes a short URL is required
 
 8. The link resolution method returns the resolved URL.
 9. Your app handles the returned URL. In this case, your app would display the `summer-clothes` page in your app with a `beach promo` modal to the user.
-10. Your app calls the `appWillOpenUrl` method in the Adjust SDK with the returned URL.
+10. Your app calls the [`appWillOpenUrl` method](ios-appWillOpenUrl-invocation) in the Adjust SDK with the returned URL.
 :::

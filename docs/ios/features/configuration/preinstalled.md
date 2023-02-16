@@ -6,11 +6,11 @@ Configuring a default campaign enables you to attribute all preinstalls to a pre
 
 1. Create a new campaign link in Datascape.
    
-   ```{code-block} url
+   ```
    https://app.adjust.com/{token}
    ```
 
-2. Copy this token and pass it to the `setDefaultTracker` method in your app delegate file.
+2. Copy this token and pass it to the [`setDefaultTracker` method](ios-setDefaultTracker-invocation) in your app delegate file.
 
    ```{include} /ios/fragments/ADJConfig.md
    :start-after: setDefaultTracker
@@ -19,6 +19,6 @@ Configuring a default campaign enables you to attribute all preinstalls to a pre
 
 3. Build and run your app. If you have logging enabled, you should see a message in your log
 
-   ```{code-block} log
+   ```
    Default tracker: 'abc123'.
    ```

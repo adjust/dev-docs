@@ -97,7 +97,7 @@ class ViewControllerSwift: UIViewController {
 
 You can record revenue associated with an event by setting the revenue and currency properties on your event instance. Use this feature to record revenue-generating actions in your app.
 
-To set these properties, call the [`setRevenue` method](ios-setRevenue-invocation) and pass the following arguments:
+To set these properties, call the [`setRevenue` method](ios-ADJEvent-setRevenue-invocation) and pass the following arguments:
 
 * The `revenue` amount (**number**)
 * The `currency` code (**string**)
@@ -311,7 +311,7 @@ Add callback parameters to your event by calling the [`addCallbackParameter` met
 
 The Adjust SDK measures the event and sends a request to your URL with the callback parameters. For example, if you register the URL `https://www.mydomain.com/callback`, your callback looks like this:
 
-```{code-block} url
+```
 https://www.mydomain.com/callback?key=value&foo=bar
 ```
 
@@ -336,7 +336,7 @@ This example demonstrates how to record an event with the token {{ eventToken }}
 
 The resulting callback URL looks like this:
 
-```{code-block} url
+```
 http://www.mydomain.com/callback?event_token=g3mfiw&revenue_amount=0.05
 ```
 

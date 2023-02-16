@@ -43,7 +43,7 @@ To add the SDK using Swift's package manager:
 3. Select **Add Package Dependency**.
 4. In the box that appears, enter the SDK's GitHub address.
 
-  ```{code-block} url
+  ```
   https://github.com/adjust/ios_sdk
   ```
 
@@ -209,7 +209,7 @@ The Adjust SDK depends on frameworks to access certain device information. To en
 
 To initialize the Adjust SDK, you need to create a config object. This object contains configuration options that control how the Adjust SDK behaves. Pass the following arguments for a minimal setup:
 
-- `appToken`: Your [app's token](/en/article/app-settings#view-your-app-token).
+- `appToken`: Your [app's token](https://help.adjust.com/en/article/app-settings#view-your-app-token).
 - `environment`: The environment you want to run the SDK in. Set this to `ADJEnvironmentSandbox`.
 
 To initialize the Adjust SDK with this config object:

@@ -19,7 +19,7 @@ Your config object contains a boolean `isOffline` property that controls this be
 
 The Adjust SDK sends event information as soon as a user triggers an event in your app. You can send event information on a schedule by enabling event buffering. Event buffering stores events in a local buffer on the device and sends all requests once per minute.
 
-Your config object contains a boolean `eventBufferingEnabled` property that controls this behavior. You can set this property by calling the `setEventBufferingEnabled` method on your config object with a boolean argument.
+Your config object contains a boolean `eventBufferingEnabled` property that controls this behavior. You can set this property by calling the [`setEventBufferingEnabled` method](ios-setEventBufferingEnabled-invocation) on your config object with a boolean argument.
 
 ```{include} /ios/fragments/ADJConfig.md
 :start-after: setEventBufferingEnabled

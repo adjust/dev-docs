@@ -46,7 +46,7 @@ To measure ad revenue:
 
 You can record ad revenue by setting the `revenue` and `currency` properties on your ad revenue instance.
 
-To set these properties, call the [`setRevenue` method](ios-setRevenue-invocation) and pass the following arguments:
+To set these properties, call the [`setRevenue` method](ios-ADJAdRevenue-setRevenue-invocation) and pass the following arguments:
 
 * The `revenue` amount (**number**)
 * The `currency` code (**string**)
@@ -112,7 +112,7 @@ Add callback parameters to your event by calling the [`addCallbackParameter` met
 
 The Adjust SDK measures the event and sends a request to your URL with the callback parameters. For example, if you register the URL `https://www.mydomain.com/callback`, your callback looks like this:
 
-```{code-block} url
+```
 https://www.mydomain.com/callback?key=value&foo=bar
 ```
 

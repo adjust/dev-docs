@@ -96,7 +96,7 @@ If you don't see the correct page in the app, check the following:
 
 After selecting the deep link, your app calls the appWillOpen method in the Adjust SDK, and you should see entries similar to the following in your {program}`Xcode` logs:
 
-```{code-block} log
+```
 2022-09-28 09:19:30.873598+0900 example[1619:241845]  [Adjust]d: Added sdk_click 1
 2022-09-28 09:19:30.873782+0900 example[1619:241845]  [Adjust]v: Path:      /sdk_click
 2022-09-28 09:19:30.873806+0900 example[1619:241845]  [Adjust]v: ClientSdk: ios4.32.1
@@ -109,7 +109,7 @@ If you don't see these entries in your {program}`Xcode` logs, ensure the followi
 
 * You have set the environment to `sandbox` and logging to `verbose` in the Adjust SDK.
   * Verbose logging is indicated by `[Adjust]v` in your {program}`Xcode` logs.
-* Your app calls the `appWillOpen` method in the method that receives the deep link.
+* Your app calls the [`appWillOpenUrl` method](ios-appWillOpenUrl-invocation) in the method that receives the deep link.
 
 #### App running in background
 
@@ -121,9 +121,9 @@ If you don't see the correct page in the app, check the following:
    * **App doesn't use scenes**: `application(_:continue:restorationHandler:)` method
    * **App uses scenes**: `scene(_:continue:)` method
 
-After selecting the deep link, your app calls the `appWillOpen` method in the Adjust SDK, and you should see entries similar to the following in your {program}`Xcode` logs:
+After selecting the deep link, your app calls the [`appWillOpenUrl` method](ios-appWillOpenUrl-invocation) in the Adjust SDK, and you should see entries similar to the following in your {program}`Xcode` logs:
 
-```{code-block} log
+```
 2022-09-28 09:19:30.873598+0900 example[1619:241845]  [Adjust]d: Added sdk_click 1
 2022-09-28 09:19:30.873782+0900 example[1619:241845]  [Adjust]v: Path:      /sdk_click
 2022-09-28 09:19:30.873806+0900 example[1619:241845]  [Adjust]v: ClientSdk: ios4.32.1
@@ -136,7 +136,7 @@ If you don't see these entries in your {program}`Xcode` logs, ensure the followi
 
 * You have set the environment to `sandbox` and logging to `verbose` in the Adjust SDK.
    * Verbose logging is indicated by `[Adjust]v` in your {program}`Xcode` logs.
-* Your app calls the `appWillOpen` method in the method that receives the deep link.
+* Your app calls the [`appWillOpenUrl` method](ios-appWillOpenUrl-invocation) in the method that receives the deep link.
 
 ## Test direct deep linking with a custom URL scheme
 
@@ -157,9 +157,9 @@ If you don't see the correct page in the app, check the following:
    * **App uses scenes**: `scene(_:continue:)` method
 * Check if other content in your code is interfering with the deep link.
 
-After selecting the deep link, your app calls the `appWillOpen` method in the Adjust SDK, and you should see entries similar to the following in your {program}`Xcode` logs:
+After selecting the deep link, your app calls the [`appWillOpenUrl` method](ios-appWillOpenUrl-invocation) in the Adjust SDK, and you should see entries similar to the following in your {program}`Xcode` logs:
 
-```{code-block} log
+```
 2022-09-28 09:19:30.873598+0900 example[1619:241845]  [Adjust]d: Added sdk_click 1
 2022-09-28 09:19:30.873782+0900 example[1619:241845]  [Adjust]v: Path:      /sdk_click
 2022-09-28 09:19:30.873806+0900 example[1619:241845]  [Adjust]v: ClientSdk: ios4.32.1
@@ -172,7 +172,7 @@ If you don't see these entries in your {program}`Xcode` logs, ensure the followi
 
 * You have set the environment to `sandbox` and `logging` to verbose in the Adjust SDK.
    * Verbose logging is indicated by `[Adjust]v` in your {program}`Xcode` logs.
-* Your app calls the `appWillOpen` method in the method that receives the deep link.
+* Your app calls the [`appWillOpenUrl` method](ios-appWillOpenUrl-invocation) in the method that receives the deep link.
 
 ## Test deferred deep linking
 
@@ -181,7 +181,7 @@ To test deferred deep linking on the test device, follow these steps.
 1. Install your app.
 2. Retrieve the {abbr}`ADID (Adjust device identifier)` from your {program}`Xcode` logs. Example:
 
-   ```{code-block} log
+   ```
    2022-09-28 09:19:35.609913+0900 example[1619:241847] [Adjust]v: Response: {"app_token":"2eb2na2w54c3","adid":"4446ab34861b99b78ee374c3bd38a350","timestamp":"2022-09-28T00:19:35.841Z+0000","message":"Attribution found","attribution":{"tracker_token":"abc123","tracker_name":"Organic","network":"Organic"}}
    ```
 

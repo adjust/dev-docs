@@ -86,11 +86,11 @@ Prompts the SDK to check the current state of `att_status`
 :noindex:
 
 ```{versionadded} v4.26.0
-Updates the [conversion value]()
+Updates the [conversion value](https://help.adjust.com/en/new/article/conversion-hub)
 ```
 
 ```{code-block} objc
-:name: ios-checkForNewAttStatus-invocation
+:name: ios-updateConversionValue-invocation
 
 - (void)updateConversionValue:(NSInteger)conversionValue;
 ```

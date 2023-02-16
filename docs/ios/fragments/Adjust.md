@@ -183,6 +183,37 @@ Adjust.checkForNewAttStatus();
 
 % methodEnd
 
+% trackThirdPartySharing
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+
+```{code-block} swift
+let adjustThirdPartySharing = ADJThirdPartySharing.initWithIsEnabledNumberBool(true)
+Adjust.trackThirdPartySharing(adjustThirdPartySharing)
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+
+```{code-block} objc
+ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc] initWithIsEnabledNumberBool:@YES];
+[Adjust trackThirdPartySharing:adjustThirdPartySharing];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+
+```{code-block} js
+var adjustThirdPartySharing = new AdjustThirdPartySharing(true);
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+```
+:::
+::::
+
+% methodEnd
+
 % disableThirdPartySharing
 
 ::::{tab-set}
@@ -587,7 +618,7 @@ Adjust.setOfflineMode(true);
 
 ```{code-block} swift
 let adRevenue = ADJAdRevenue(source: source);
-Adjust.trackAdRevenue(source, payload: payload);
+Adjust.trackAdRevenue(adRevenue);
 ```
 :::
 :::{tab-item} Objective-C
@@ -596,7 +627,7 @@ Adjust.trackAdRevenue(source, payload: payload);
 ```{code-block} objc
 ADJAdRevenue *adRevenue = [[ADJAdRevenue alloc] initWithSource:source];
 //...
-[Adjust trackAdRevenue:source payload:payload];
+[Adjust trackAdRevenue:adRevenue];
 ```
 :::
 ::::
@@ -708,102 +739,6 @@ Adjust.trackMeasurementConsent(true)
 
 ```{code-block} js
 Adjust.trackMeasurementConsent(false);
-```
-:::
-::::
-
-% methodEnd
-
-% trackThirdPartySharing true
-
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
-
-```{code-block} swift
-let adjustThirdPartySharing = ADJThirdPartySharing.initWithIsEnabledNumberBool(true)
-Adjust.trackThirdPartySharing(adjustThirdPartySharing)
-```
-:::
-:::{tab-item} Objective-C
-:sync: objc
-
-```{code-block} objc
-ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc] initWithIsEnabledNumberBool:@YES];
-[Adjust trackThirdPartySharing:adjustThirdPartySharing];
-```
-:::
-:::{tab-item} Javascript
-:sync: js
-
-```{code-block} js
-var adjustThirdPartySharing = new AdjustThirdPartySharing(true);
-Adjust.trackThirdPartySharing(adjustThirdPartySharing);
-```
-:::
-::::
-
-% methodEnd
-
-% trackThirdPartySharing false
-
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
-
-```{code-block} swift
-let adjustThirdPartySharing = ADJThirdPartySharing.initWithIsEnabledNumberBool(false)
-Adjust.trackThirdPartySharing(adjustThirdPartySharing)
-```
-:::
-:::{tab-item} Objective-C
-:sync: objc
-
-```{code-block} objc
-ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc] initWithIsEnabledNumberBool:@NO];
-[Adjust trackThirdPartySharing:adjustThirdPartySharing];
-```
-:::
-:::{tab-item} Javascript
-:sync: js
-
-```{code-block} js
-var adjustThirdPartySharing = new AdjustThirdPartySharing(false);
-Adjust.trackThirdPartySharing(adjustThirdPartySharing);
-```
-:::
-::::
-
-% methodEnd
-
-% trackThirdPartySharing addGranularOption
-
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
-
-```{code-block} swift
-let adjustThirdPartySharing = ADJThirdPartySharing.initWithIsEnabledNumberBool(nil)
-adjustThirdPartySharing.addGranularOption("PartnerA", key: "foo", value: "bar")
-Adjust.trackThirdPartySharing(adjustThirdPartySharing)
-```
-:::
-:::{tab-item} Objective-C
-:sync: objc
-
-```{code-block} objc
-ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc] initWithIsEnabledNumberBool:nil];
-[adjustThirdPartySharing addGranularOption:@"PartnerA" key:@"foo" value:@"bar"];
-[Adjust trackThirdPartySharing:adjustThirdPartySharing];
-```
-:::
-:::{tab-item} Javascript
-:sync: js
-
-```{code-block} js
-var adjustThirdPartySharing = new AdjustThirdPartySharing(null);
-adjustThirdPartySharing.addGranularOption('PartnerA', 'foo', 'bar');
-Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 :::
 ::::

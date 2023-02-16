@@ -32,7 +32,7 @@ The Adjust SDK provides configurable log levels to return different amounts of i
       * Production
 ```
 
-You can set your log level by calling the `setLogLevel` method on your `ADJConfig` instance.
+You can set your log level by calling the [`setLogLevel` method](ios-setLogLevel-invocation) on your `ADJConfig` instance.
 
 ```{include} /ios/fragments/ADJConfig.md
 :start-after: setLogLevel
