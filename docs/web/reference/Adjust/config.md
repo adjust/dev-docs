@@ -2,6 +2,22 @@
 
 Use these methods to update the Adjust SDK's configuration.
 
+% classMethod initSdk
+
+:::{function} initSdk({ logLevel, logOutput, ...options }: InitOptions)
+
+Initialize the Adjust with a set of customizable options
+
+```{code-block} ts
+:name: web-initSdk-invocation
+
+function initSdk({ logLevel, logOutput, ...options }: InitOptions): void
+```
+
+:::
+
+% classMethod end
+
 % classMethod stop
 
 :::{function} stop

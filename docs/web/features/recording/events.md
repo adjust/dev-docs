@@ -71,7 +71,7 @@ Check the guide to [tracking purchases in different currencies](https://help.adj
 
 :::::{dropdown} Example
 
-This example demonstrates how to record an event with the token {{ eventToken }} whenever a user interacts with a button. The function sets the `revenue` property of this event to _`0.25`_ and the `currency` property to _`EUR`_.
+This example demonstrates how to record an event with the token {{ eventToken }} whenever a user interacts with a button. The function sets the `revenue` property of this event to *`0.25`* and the `currency` property to *`EUR`*.
 
 ::::{tab-set}
 :::{tab-item} Javascript
@@ -258,7 +258,7 @@ Adjust sends partner parameters to [external partners](https://help.adjust.com/e
 Partner parameters don't appear in raw data by default. You can add the `{partner_parameters}` placeholder to receive them as a single string.
 :::
 
-Add callback parameters to your event by creating a `partnerParams` array containing `GlobalParam` objects.
+Add partner parameters to your event by creating a `partnerParams` array containing `GlobalParam` objects.
 
 ```{include} /web/reference/Adjust/recording.md
 :start-after: interface GlobalParams

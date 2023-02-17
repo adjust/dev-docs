@@ -99,6 +99,43 @@ Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 
 % methodEnd
 
+% addGranularOption Facebook
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+
+```{code-block} swift
+let tps = ADJThirdPartySharing.initWithIsEnabledNumberBool(nil)
+tps.addGranularOption("facebook", key: "data_processing_options_country", value: "1")
+tps.addGranularOption("facebook", key: "data_processing_options_state", value: "1000")
+Adjust.trackThirdPartySharing(tps)
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+
+```{code-block} objc
+ADJThirdPartySharing *tps = [[ADJThirdPartySharing alloc] initWithIsEnabledNumberBool:@YES];
+[tps addGranularOption:@"facebook" key:@"data_processing_options_country" value:@"1"];
+[tps addGranularOption:@"facebook" key:@"data_processing_options_state" value:@"1000"];
+[Adjust trackThirdPartySharing:tps];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+
+```{code-block} js
+var tps = new AdjustThirdPartySharing(null);
+tps.addGranularOption('facebook', 'data_processing_options_country', '1');
+tps.addGranularOption('facebook', 'data_processing_options_state', '1000');
+Adjust.trackThirdPartySharing(tps);
+```
+:::
+::::
+
+% methodEnd
+
 % addPartnerSharingSetting
 
 ::::{tab-set}

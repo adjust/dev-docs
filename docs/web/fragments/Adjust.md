@@ -219,3 +219,69 @@ Adjust.trackEvent({
 ::::
 
 % methodEnd
+
+% gdprForgetMe
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.gdprForgetMe();
+```
+:::
+::::
+
+% methodEnd
+
+% disableThirdPartySharing
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.disableThirdPartySharing();
+```
+:::
+::::
+
+% methodEnd
+
+% dataResidency
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.initSdk({
+  "appToken": "YOUR_APP_TOKEN",
+  "environment": "production",
+  "logLevel": "verbose",
+  "dataResidency": "EU"
+})
+```
+:::
+::::
+
+% methodEnd
+
+% urlStrategy
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.initSdk({
+  "appToken": "YOUR_APP_TOKEN",
+  "environment": "production",
+  "logLevel": "verbose",
+  "urlStrategy": "china"
+})
+```
+:::
+::::
+
+% methodEnd
+
+% getWebUUID
+
+```{code-block} js
+const webUUID = Adjust.getWebUUID();
+```
+
+% methodEnd

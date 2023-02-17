@@ -8,5 +8,7 @@ maxdepth: 2
 
 recording
 config
+privacy
+device-info
 
 ```
