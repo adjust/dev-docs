@@ -26,6 +26,11 @@ function trackEvent (params: EventParamsT): Promise<void> {
 :param EventParamsT: Your Adjust event parameters
 :type EventParamsT: *{{ EventParams }}*
 
+```{include} /web/fragments/Adjust.md
+:start-after: initSdk
+:end-before: methodEnd
+```
+
 :::
 
 % classMethod end

@@ -19,7 +19,7 @@ The Adjust SDK provides configurable log levels to return different amounts of i
    - Disable all logging
 ```
 
-You can set an external device ID by specifying an `logLevel` argument in the [`initSdk` method](web-initSdk-invocation). The SDK defaults to `error` if no value is passed.
+You can set the log level by specifying an `logLevel` argument in the [`initSdk` method](web-initSdk-invocation). The SDK defaults to `error` if no value is passed.
 
 ```{include} /web/fragments/Adjust.md
 :start-after: logLevel
