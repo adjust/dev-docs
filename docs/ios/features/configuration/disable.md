@@ -1,6 +1,6 @@
 # Disable the Adjust SDK
 
-The Adjust SDK runs when your app is open by default. You can disable and re-enable the Adjust SDK to pause and resume recording. When you disable the Adjust SDK, it doesn't send any data to Adjust's servers.
+The Adjust SDK runs by default when your app is open. You can disable and re-enable the Adjust SDK to pause and resume recording. When you disable the Adjust SDK, it doesn't send any data to Adjust's servers.
 
 You can enable or disable the SDK at any time by calling the [`setEnabled` method](ios-setEnabled-invocation) with a boolean argument.
 

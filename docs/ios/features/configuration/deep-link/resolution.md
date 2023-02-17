@@ -87,7 +87,7 @@ Email service provider (ESP)
 7. Configure the DNS for your email redirect domain to point to your CDN.
 
 :::{seealso}
-For partner-specific instructions that correspond to the above instructions, refer to the [ESP integrations section](https://help.adjust.com/preview/en/marketer/ESP%20integrations) in the Help Center.
+For partner-specific instructions that correspond to the above instructions, refer to the [ESP integrations section](https://help.adjust.com/en/marketer/ESP%20integrations) in the Help Center.
 :::
 
 ##### Support for email partners

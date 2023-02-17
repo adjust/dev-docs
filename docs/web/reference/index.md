@@ -2,10 +2,13 @@
 
 ```{toctree}
 ---
-maxdepth: 2
-hidden: true
-glob: true
+caption: Methods
+maxdepth: 1
 ---
 
-./Adjust/*
+recording
+config
+privacy
+device-info
+
 ```
