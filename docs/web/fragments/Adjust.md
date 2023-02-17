@@ -3,7 +3,31 @@ orphan: true
 nosearch: true
 ---
 
-% Record an event
+% start
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.stop();
+```
+:::
+::::
+
+% methodEnd
+
+% restart
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.restart();
+```
+:::
+::::
+
+% methodEnd
+
+% trackEvent
 
 ::::{tab-set}
 :::{tab-item} Javascript
@@ -19,7 +43,7 @@ Adjust.trackEvent({
 
 % methodEnd
 
-% Add callback params
+% trackEvent callbackParams
 
 ::::{tab-set}
 :::{tab-item} Javascript
@@ -39,7 +63,7 @@ Adjust.trackEvent({
 
 % methodEnd
 
-% Add partner params
+% trackEvent partnerParams
 
 ::::{tab-set}
 :::{tab-item} Javascript
@@ -59,7 +83,7 @@ Adjust.trackEvent({
 
 % methodEnd
 
-% Set revenue
+% trackEvent revenue
 
 ::::{tab-set}
 :::{tab-item} Javascript
@@ -77,7 +101,7 @@ Adjust.trackEvent({
 
 % methodEnd
 
-% Add deduplication ID
+% trackEvent deduplicationId
 
 ::::{tab-set}
 :::{tab-item} Javascript

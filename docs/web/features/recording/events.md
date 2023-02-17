@@ -1,21 +1,12 @@
----
-myst:
-   substitutions:
-      recordMethod: "{ref}`trackEvent <web-sdk-trackevent>`"
-      callbackMethodName: "`callbackParams`"
-      partnerMethodName: "`partnerParams`"
-      deduplicateMethodName: "`deduplicationId`"
----
-
 # Record events
 
 You can associate your [Adjust event tokens](https://help.adjust.com/en/article/basic-event-setup#create-an-event-token) to actions in your app to record them. To record an event:
 
 1. Create a new Adjust event instance and pass your event token as a **string** argument.
-2. Call the {{ recordMethod }} method with your event instance as an argument.
+2. Call the [`trackEvent` method](web-trackEvent-invocation) method with your event instance as an argument.
 
 ```{include} /web/fragments/Adjust.md
-:start-after: Record an event
+:start-after: trackEvent
 :end-before: methodEnd
 ```
 
@@ -61,7 +52,7 @@ _timeoutId = setTimeout(() => {
 
 You can record revenue associated with an event by setting the `revenue` and `currency` properties on your event instance. Use this feature to record revenue-generating actions in your app.
 
-To set these properties, call the {{ recordMethod }} method and pass the following arguments: 
+To set these properties, call the [`trackEvent` method](web-trackEvent-invocation) and pass the following arguments: 
 
 ```{list-table}
 :header-rows: 1
@@ -82,7 +73,7 @@ You must format the currency code as a 3 character string that follows the [ISO 
 :::
 
 ```{include} /web/fragments/Adjust.md
-:start-after: Set revenue
+:start-after: trackEvent revenue
 :end-before: methodEnd
 ```
 
@@ -90,10 +81,10 @@ You must format the currency code as a 3 character string that follows the [ISO 
 
 You can pass an optional identifier to avoid measuring duplicate events. The SDK stores the last ten identifiers and skips revenue events with duplicate transaction IDs.
 
-To configure this, set the {{ deduplicateMethodName }} property to your transaction ID.
+To configure this, set the `deduplicationId` property to your transaction ID.
 
 ```{include} /web/fragments/Adjust.md
-:start-after:  Add deduplication ID
+:start-after:  trackEvent deduplicationId
 :end-before: methodEnd
 ```
 
@@ -103,7 +94,7 @@ You can register a [callback URL](https://help.adjust.com/en/article/best-practi
 
 Callback parameters are **string** key-value pairs that you can to events to send additional information. The Adjust SDK appends these parameters to your callback URL so that you can access it in your [raw data exports](https://help.adjust.com/en/article/raw-data-exports). You can use this information to analyse your users' in-app behavior with your BI system.
 
-Add callback parameters to your event by creating a {{ callbackMethodName }} array containing the following information:
+Add callback parameters to your event by creating a `callbackParams` array containing the following information:
 
 ```{list-table}
 :header-rows: 1
@@ -120,11 +111,11 @@ Add callback parameters to your event by creating a {{ callbackMethodName }} arr
 ```
 
 :::{tip}
-You can append several parameters by adding multiple key-value pairs to the {{ callbackMethodName }} array.
+You can append several parameters by adding multiple key-value pairs to the `callbackParams` array.
 :::
 
 ```{include} /web/fragments/Adjust.md
-:start-after: Add callback params
+:start-after: trackEvent callbackParams
 :end-before: methodEnd
 ```
 
@@ -138,7 +129,7 @@ Adjust sends partner parameters to [external partners](https://help.adjust.com/e
 Partner parameters don't appear in raw data by default. You can add the `{partner_parameters}` placeholder to receive them as a single string.
 :::
 
-Add callback parameters to your event by creating a {{ partnerMethodName }} array containing the following information:
+Add callback parameters to your event by creating a `partnerParams` array containing the following information:
 
 ```{list-table}
 :header-rows: 1
@@ -155,11 +146,11 @@ Add callback parameters to your event by creating a {{ partnerMethodName }} arra
 ```
 
 :::{tip}
-You can append several parameters by adding multiple key-value pairs to the {{ partnerMethodName }} array.
+You can append several parameters by adding multiple key-value pairs to the `partnerParams`} array.
 :::
 
 ```{include} /web/fragments/Adjust.md
-:start-after: Add partner params
+:start-after: trackEvent partnerParams
 :end-before: methodEnd
 ```
 
