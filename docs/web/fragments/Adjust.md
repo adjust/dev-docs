@@ -3,6 +3,171 @@ orphan: true
 nosearch: true
 ---
 
+% initSdk
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.initSdk({
+  appToken: 'YOUR_APP_TOKEN',
+  environment: 'sandbox'
+});
+```
+:::
+::::
+
+% methodEnd
+
+% customUrl
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.initSdk({
+  appToken: 'YOUR_APP_TOKEN',
+  environment: 'sandbox',
+  customUrl: 'https://my-custom-url.com/'
+});
+```
+:::
+::::
+
+% methodEnd
+
+% defaultTracker
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.initSdk({
+  appToken: 'YOUR_APP_TOKEN',
+  environment: 'sandbox',
+  defaultTracker: '{token}'
+});
+```
+:::
+::::
+
+% methodEnd
+
+% eventDeduplicationListLimit
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.initSdk({
+  appToken: 'YOUR_APP_TOKEN',
+  environment: 'sandbox',
+  eventDeduplicationListLimit: 20
+});
+```
+:::
+::::
+
+% methodEnd
+
+% externalDeviceId
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.initSdk({
+  appToken: 'YOUR_APP_TOKEN',
+  environment: 'sandbox',
+  externalDeviceId: 'YOUR_EXTERNAL_DEVICE_ID'
+});
+```
+:::
+::::
+
+% methodEnd
+
+% logLevel
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.initSdk({
+  appToken: 'YOUR_APP_TOKEN',
+  environment: 'sandbox',
+  logLevel: 'verbose'
+});
+```
+:::
+::::
+
+% methodEnd
+
+% logOutput
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.initSdk({
+  appToken: 'YOUR_APP_TOKEN',
+  environment: 'sandbox',
+  logOutput: '#logDiv'
+});
+```
+:::
+::::
+
+% methodEnd
+
+% namespace
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.initSdk({
+  appToken: 'YOUR_APP_TOKEN',
+  environment: 'sandbox',
+  namespace: 'myCustomNamespace'
+});
+```
+:::
+::::
+
+% methodEnd
+
+% getAttribution
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+const attribution = Adjust.getAttribution();
+```
+:::
+::::
+
+% methodEnd
+
+% attributionCallback
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.initSdk({
+   appToken: 'YOUR_APP_TOKEN',
+   environment: 'sandbox',
+   attributionCallback: function (e, attribution){
+      console.log('Adid: ' + attribution.adid);
+      console.log('Tracker Token: ' + attribution.tracker_token);
+      console.log('Tracker Name: ' + attribution.tracker_name);
+      console.log('Network: ' + attribution.network);
+      console.log('Campaign: ' + attribution.campaign);
+      console.log('Adgroup: ' + attribution.adgroup);
+      console.log('Creative: ' + attribution.creative);
+      console.log('Click Label: ' + attribution.click_label);
+      console.log('Atribution State: ' + attribution.state);
+   }
+});
+```
+:::
+::::
+
+% methodEnd
+
 % addGlobalCallbackParameters
 
 ::::{tab-set}
@@ -280,8 +445,24 @@ Adjust.initSdk({
 
 % getWebUUID
 
+::::{tab-set}
+:::{tab-item} Javascript
 ```{code-block} js
 const webUUID = Adjust.getWebUUID();
 ```
+:::
+::::
+
+% methodEnd
+
+% setReferrer
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.setReferrer("adjust_external_click_id%3DEXTERNAL_CLICK_ID");
+```
+:::
+::::
 
 % methodEnd

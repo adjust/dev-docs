@@ -111,7 +111,7 @@ _timeoutId = setTimeout(() => {
 
 ## Unique events
 
-You can pass an optional identifier to avoid measuring duplicate events. The SDK stores the last ten identifiers and skips revenue events with duplicate transaction IDs.
+You can pass an optional identifier to avoid measuring duplicate events. The SDK stores the last 10 identifiers and skips revenue events with duplicate transaction IDs.
 
 To configure this, set the `deduplicationId` property to your transaction ID.
 
@@ -159,6 +159,13 @@ _timeoutId = setTimeout(() => {
 ::::
 :::::
 
+You can override the deduplication limit to change the number of identifiers the Adjust SDK stores. To do this, specify the new limit in the `eventDeduplicationListLimit` property of the [`initSdk` method](web-initSdk-invocation).
+
+```{include} /web/fragments/Adjust.md
+:start-after: eventDeduplicationListLimit
+:end-before: methodEnd
+```
+
 ## Add callback parameters
 
 If you [register a callback URL](https://help.adjust.com/en/article/set-up-callbacks) in the Adjust dashboard, the SDK sends a GET request to your callback URL when it records an event.
@@ -167,7 +174,7 @@ You can configure callback parameters to send to your servers. Once you configur
 
 Add callback parameters to your event by creating a `callbackParams` array containing `GlobalParam` objects.
 
-```{include} /web/reference/Adjust/recording.md
+```{include} /web/reference/recording.md
 :start-after: interface GlobalParams
 :end-before: interfaceEnd
 ```
@@ -260,7 +267,7 @@ Partner parameters don't appear in raw data by default. You can add the `{partne
 
 Add partner parameters to your event by creating a `partnerParams` array containing `GlobalParam` objects.
 
-```{include} /web/reference/Adjust/recording.md
+```{include} /web/reference/recording.md
 :start-after: interface GlobalParams
 :end-before: interfaceEnd
 ```

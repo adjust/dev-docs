@@ -3,6 +3,7 @@ myst:
    substitutions:
       GlobalParams: "[GlobalParams](web-interface-GlobalParams)"
       EventParams: "[EventParams](web-interface-EventParams)"
+      Attribution: "[Attribution](web-interface-Attribution)"
 ---
 
 # Recording methods
@@ -173,12 +174,37 @@ function clearGlobalPartnerParameters(): void
 
 % classMethod end
 
+% classMethod getAttribution
+
+:::{function} getAttribution
+:noindex:
+
+Returns the user's attribution information
+
+```{code-block} ts
+:name: web-getAttribution-invocation
+
+function getAttribution(): Attribution | undefined
+```
+
+:returns: The user's attribution information
+:rtype: {{ Attribution }}
+
+```{include} /web/fragments/Adjust.md
+:start-after: getAttribution
+:end-before: methodEnd
+```
+
+:::
+
+% classMethod end
+
 ## Interfaces
 
 (web-interface-EventParams)=
 % interface EventParams
 
-:::{js:class} EventParams (eventToken, revenue, currency, deuplicationId, callbackParams, partnerParams)
+:::{js:class} EventParams (eventToken, revenue?, currency?, deuplicationId?, callbackParams?, partnerParams?)
 :noindex:
 
 :param eventToken: Your Adjust event token
@@ -208,6 +234,34 @@ function clearGlobalPartnerParameters(): void
 :type key: *String*
 :param value: The parameter value
 :type value: *String*
+:::
+
+% interfaceEnd
+
+(web-interface-Attribution)=
+% interface Attribution
+
+:::{js:class} Attribution (adid, tracker_token, tracker_name, network?, campaign?, adgroup?, creative?, click_label?, state?)
+:noindex:
+
+:param adid: The device's unique Adjust identifier
+:type adid: *String*
+:param tracker_token: The campaign token associated with the attribution
+:type tracker_token: *String*
+:param tracker_name: The name of the campaign link
+:type tracker_name: *String*
+:param network: The network associate with the campaign
+:type network: *String*
+:param campaign: The name of the campaign associated with the attribution
+:type campaign: *String*
+:param adgroup: The adgroup associated with the attribution
+:type adgroup: *String*
+:param creative: The creative associated with the attribution
+:type creative: *String*
+:param click_label: The [click label](https://help.adjust.com/en/article/user-rewards) associated with the attribution
+:type click_label: *String*
+:param state: The current state of the attribution. Either `installed` or `reattributed`
+:type state: *String*
 :::
 
 % interfaceEnd

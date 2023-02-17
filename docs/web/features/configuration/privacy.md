@@ -26,7 +26,7 @@ Some users may want to opt-out of sharing their data with third-parties. To comm
 
 The data residency feature allows you to choose the country in which Adjust stores your data. This is useful if you're operating in a country with strict privacy requirements. When you set up data residency, Adjust stores your data in a data center located in the region your have chosen.
 
-To set your country of data residency, pass the country code of your preferred country to the `initSdk` method as `dataResidency`.
+To set your country of data residency, pass the region code of your preferred country code in the `dataResidency` property of the [`initSdk` method](web-initSdk-invocation).
 
 ```{include} /web/fragments/Adjust.md
 :start-after: dataResidency
@@ -48,7 +48,7 @@ To set your country of data residency, pass the country code of your preferred c
 
 ## URL strategy
 
-You can set a URL strategy to prioritize regional endpoints for sending data from the Adjust SDK. To do this, pass the country code of your preferred country to the `initSdk` method as `urlStrategy`.
+You can set a URL strategy to prioritize regional endpoints for sending data from the Adjust SDK. To do this, pass the region of your preferred country code in the `urlStrategy` property of the [`initSdk` method](web-initSdk-invocation).
 
 ```{include} /web/fragments/Adjust.md
 :start-after: urlStrategy
@@ -64,4 +64,13 @@ You can set a URL strategy to prioritize regional endpoints for sending data fro
    - `china`
 * - India
    - `india`
+```
+
+## Set custom endpoint
+
+By default, the Adjust SDK sends all data to Adjust's endpoints. If you want to specify a custom endpoint, pass your endpoint in the `customUrl` property of the [`initSdk` method](web-initSdk-invocation).
+
+```{include} /web/fragments/Adjust.md
+:start-after: customUrl
+:end-before: methodEnd
 ```

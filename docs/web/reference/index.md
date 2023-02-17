@@ -2,10 +2,13 @@
 
 ```{toctree}
 ---
-caption: Classes
+caption: Methods
 maxdepth: 1
 ---
 
-Adjust/index
+recording
+config
+privacy
+device-info
 
 ```
