@@ -298,9 +298,9 @@ class ViewControllerSwift: UIViewController {
 
 ## Add callback parameters
 
-If you [register a callback URL](https://help.adjust.com/en/article/best-practices-callbacks) in the Adjust dashboard, the SDK sends a GET request to your callback URL when it records an event.
+If you [register a callback URL](https://help.adjust.com/en/article/set-up-callbacks) in the Adjust dashboard, the SDK sends a GET request to your callback URL when it records an event.
 
-You can configure callback parameters to your servers. Once you configure parameters on an event, the SDK appends them to your [callback URL](https://help.adjust.com/en/article/raw-data-exports). You can use this information to analyze your users' in-app behavior with your BI system.
+You can configure callback parameters to send to your servers. Once you configure parameters on an event, the SDK appends them to your [callback URL](https://help.adjust.com/en/article/raw-data-exports). You can use this information to analyze your users' in-app behavior with your BI system.
 
 Add callback parameters to your event by calling the [`addCallbackParameter` method](ios-ADJEvent-addCallbackParameter-invocation) with **string** key-value arguments. You can add multiple parameters by calling this method multiple times.
 
@@ -319,7 +319,7 @@ https://www.mydomain.com/callback?key=value&foo=bar
 Adjust doesn't store your custom callback parameters. Custom parameters are only appended to your callback URL.
 :::
 
-If you are using CSV uploads, make sure to add the parameters to your CSV definition.
+If you're using CSV uploads, make sure to add the parameters to your CSV definition.
 
 Adjust supports many placeholders which you can use to pass information from the SDK to your URL. For example, the `{idfa}` placeholder for iOS and the `{gps_adid}` placeholder for Android. The `{publisher_parameter}` placeholder presents all callback parameters in a single string.
 
