@@ -144,7 +144,8 @@ The iOS post-build process makes the following changes to your generated Xcode p
 * Adds the other linker flag `-ObjC`: required to recognize Adjust Objective-C categories at build time.
 * Enables Objective-C exceptions.
 
-### Frameworks
+```{rubric} Frameworks
+```
 
 You can enable the following frameworks to access iOS features:
 
@@ -154,11 +155,13 @@ You can enable the following frameworks to access iOS features:
 * {guilabel}`StoreKit.framework`: required to communicate with the SKAdNetwork framework.
 * {guilabel}`iAd.framework` {bdg-warning}`Deprecated` - use AdServices.framework
 
-### App Tracking Transparency consent dialog
+```{rubric} App Tracking Transparency consent dialog
+```
 
 If you are using the {abbr}`ATT (App Tracking Transparency)` wrapper, enter a **User Tracking Description** message. This displays when you present the tracking consent dialog to your user.
 
-### Deep linking
+```{rubric} Deep linking
+```
 
 To enable deep linking, add the following information:
 
@@ -172,7 +175,8 @@ To enable deep linking, add the following information:
 
 The Android post-build process checks for an {file}`AndroidManifest.xml` file in {file}`Assets/Plugins/Android/`. If this file isn't present, it creates a copy from [{file}`AdjustAndroidManifest.xml`](https://github.com/adjust/unity_sdk/blob/master/Assets/Adjust/Android/AdjustAndroidManifest.xml "A link to the AdjustAndroidManifest file on GitHub").
 
-### Permissions
+```{rubric} Permissions
+```
 
 You can enable the following permissions to access Android features:
 
@@ -181,7 +185,8 @@ You can enable the following permissions to access Android features:
 * {guilabel}`com.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE` {bdg-warning}`Deprecated`: required to fetch install referrer information via Google Play Store intent.
 * {guilabel}`com.google.android.gms.permission.AD_ID`: required to read the device advertising ID on Android 12 (API level 31) and above. See [Google's `AdvertisingIdClient.info` documentation](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid) for more information.
 
-### Deep linking
+```{rubric} Deep linking
+```
 
 To enable deep linking, add the following information:
 

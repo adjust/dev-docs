@@ -69,7 +69,7 @@ The SDK opens deferred deep links by default. You can configure this by passing 
 
 You can configure the Adjust SDK to call a delegate function when it receives a deferred deep link. This delegate function receives the deep link as a **string** argument.
 
-```{include}/unity/fragments/AdjustConfig.md
+```{include} /unity/fragments/AdjustConfig.md
 :start-after: setDeferredDeeplinkDelegate
 :end-before: methodEnd
 ```

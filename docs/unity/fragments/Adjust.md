@@ -55,3 +55,80 @@ Adjust.requestTrackingAuthorizationWithCompletionHandler((status) =>
 ::::
 
 % methodEnd
+
+% trackEvent
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+AdjustEvent adjustEvent = new AdjustEvent("abc123");
+//...
+Adjust.trackEvent(adjustEvent);
+```
+:::
+::::
+
+% methodEnd
+
+% trackAdRevenue
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue("source");
+//...
+Adjust.trackAdRevenue(adjustAdRevenue);
+```
+:::
+::::
+
+% methodEnd
+
+% trackPlayStoreSubscription
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
+    price,
+    currency,
+    sku,
+    orderId,
+    signature,
+    purchaseToken);
+subscription.setPurchaseTime(purchaseTime);
+subscription.addCallbackParameter("key1", "value1");
+subscription.addCallbackParameter("key2", "value2");
+subscription.addPartnerParameter("key1", "value1");
+subscription.addPartnerParameter("key2", "value2");
+
+Adjust.trackPlayStoreSubscription(subscription);
+```
+:::
+::::
+
+% methodEnd
+
+% trackAppStoreSubscription
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
+    price,
+    currency,
+    transactionId,
+    receipt);
+subscription.setTransactionDate(transactionDate);
+subscription.setSalesRegion(salesRegion);
+subscription.addCallbackParameter("key1", "value1");
+subscription.addCallbackParameter("key2", "value2");
+subscription.addPartnerParameter("key1", "value1");
+subscription.addPartnerParameter("key2", "value2");
+
+Adjust.trackAppStoreSubscription(subscription);
+```
+:::
+::::
+
+% methodEnd

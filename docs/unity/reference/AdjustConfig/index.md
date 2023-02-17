@@ -1,0 +1,1 @@
+# AdjustConfig class
