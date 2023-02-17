@@ -1,6 +1,6 @@
-# Measurement
+# Recording features
 
-Use these features to measure in-app behavior and record user-generated revenue.
+Use these features to record in-app behavior and user-generated revenue. Recorded data is sent to Adjust's servers for you to measure.
 
 ```{toctree}
 ---

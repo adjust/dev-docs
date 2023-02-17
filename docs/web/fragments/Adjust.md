@@ -3,7 +3,7 @@ orphan: true
 nosearch: true
 ---
 
-% start
+% stop
 
 ::::{tab-set}
 :::{tab-item} Javascript
@@ -21,6 +21,30 @@ Adjust.stop();
 :::{tab-item} Javascript
 ```{code-block} js
 Adjust.restart();
+```
+:::
+::::
+
+% methodEnd
+
+% switchToOfflineMode
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.switchToOfflineMode();
+```
+:::
+::::
+
+% methodEnd
+
+% switchBackToOnlineMode
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.switchBackToOnlineMode();
 ```
 :::
 ::::

@@ -45,3 +45,47 @@ function restart(): void
 :::
 
 % classMethod end
+
+% classMethod switchToOfflineMode
+
+:::{function} switchToOfflineMode
+:noindex:
+
+Restarts the Adjust SDK
+
+```{code-block} ts
+:name: web-switchToOfflineMode-invocation
+
+function switchToOfflineMode(): void
+```
+
+```{include} /web/fragments/Adjust.md
+:start-after: switchToOfflineMode
+:end-before: methodEnd
+```
+
+:::
+
+% classMethod end
+
+% classMethod switchBackToOnlineMode
+
+:::{function} switchBackToOnlineMode
+:noindex:
+
+Restarts the Adjust SDK
+
+```{code-block} ts
+:name: web-switchBackToOnlineMode-invocation
+
+function switchBackToOnlineMode(): void
+```
+
+```{include} /web/fragments/Adjust.md
+:start-after: switchBackToOnlineMode
+:end-before: methodEnd
+```
+
+:::
+
+% classMethod end
