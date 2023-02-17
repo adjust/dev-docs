@@ -2,7 +2,11 @@
 
 ```{toctree}
 ---
-maxdepth: 1
+caption: Recording methods
+maxdepth: 2
 ---
+
+recording
+config
 
 ```

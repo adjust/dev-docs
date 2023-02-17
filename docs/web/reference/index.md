@@ -2,10 +2,10 @@
 
 ```{toctree}
 ---
-maxdepth: 2
-hidden: true
-glob: true
+caption: Classes
+maxdepth: 1
 ---
 
-./Adjust/*
+Adjust/index
+
 ```

@@ -51,7 +51,7 @@ function restart(): void
 :::{function} switchToOfflineMode
 :noindex:
 
-Restarts the Adjust SDK
+Enables offline mode
 
 ```{code-block} ts
 :name: web-switchToOfflineMode-invocation
@@ -73,7 +73,7 @@ function switchToOfflineMode(): void
 :::{function} switchBackToOnlineMode
 :noindex:
 
-Restarts the Adjust SDK
+Disables offline mode
 
 ```{code-block} ts
 :name: web-switchBackToOnlineMode-invocation

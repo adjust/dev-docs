@@ -3,6 +3,84 @@ orphan: true
 nosearch: true
 ---
 
+% addGlobalCallbackParameters
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.addGlobalCallbackParameters([
+  {key: 'key1', value: 'value1'},
+  {key: 'key2', value: 'value2'}
+]);
+```
+:::
+::::
+
+% methodEnd
+
+% removeGlobalCallbackParameter
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.removeGlobalCallbackParameter('key1');
+```
+:::
+::::
+
+% methodEnd
+
+% clearGlobalCallbackParameters
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.clearGlobalCallbackParameters();
+```
+:::
+::::
+
+% methodEnd
+
+% addGlobalPartnerParameters
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.addGlobalPartnerParameters([
+  {key: 'key1', value: 'value1'},
+  {key: 'key2', value: 'value2'}
+]);
+```
+:::
+::::
+
+% methodEnd
+
+% removeGlobalPartnerParameter
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.removeGlobalPartnerParameter('key1');
+```
+:::
+::::
+
+% methodEnd
+
+% clearGlobalPartnerParameters
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.clearGlobalPartnerParameters();
+```
+:::
+::::
+
+% methodEnd
+
 % stop
 
 ::::{tab-set}

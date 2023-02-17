@@ -186,7 +186,7 @@ To test deferred deep linking on the test device, follow these steps.
    ```
 
 3. Uninstall your app.
-4. Open the [Testing Console](https://help.adjust.com/preview/en/article/testing-console), enter the Adjust ADID and select {guilabel}`View Device Data`. You should see the `TrackerName` as `Organic`.
+4. Open the [Testing Console](https://help.adjust.com/en/article/testing-console), enter the Adjust ADID and select {guilabel}`View Device Data`. You should see the `TrackerName` as `Organic`.
 5. Forget your device in the testing console.
 6. Paste your universal link or custom URL scheme deep link in {program}`Apple Notes`.
 7. Select the deep link. This should redirect you to the App Store.

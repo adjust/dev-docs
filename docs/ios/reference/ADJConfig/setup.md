@@ -211,7 +211,7 @@ Sets whether the SDK should gather cost data. This is accessible in the user's a
 :noindex:
 
 ```{versionadded} v4.31.0
-Toggle support for Adjust's [LinkMe solution](https://help.adjust.com/preview/en/article/linkme) for deep linking
+Toggle support for Adjust's [LinkMe solution](https://help.adjust.com/en/article/linkme) for deep linking
 ```
 
 ```{code-block} objc
