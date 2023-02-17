@@ -10,7 +10,7 @@ You can use an external device ID as a custom identifier for a device. This help
 See the [External device identifiers article](https://help.adjust.com/en/article/external-device-identifiers) in the Adjust help center for more information.
 :::
 
-You can set an external device ID by specifying an `externalDeviceId` property in the [`initSdk` method](web-initSdk-invocation). The external device ID is case-sensitive. If you have imported external device IDs, make sure the value you pass matches the imported value.
+You can set an external device ID by specifying an `externalDeviceId` argument in the [`initSdk` method](web-initSdk-invocation). The external device ID is case-sensitive. If you have imported external device IDs, make sure the value you pass matches the imported value.
 
 ```{include} /web/fragments/Adjust.md
 :start-after: externalDeviceId

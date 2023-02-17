@@ -159,7 +159,7 @@ _timeoutId = setTimeout(() => {
 ::::
 :::::
 
-You can override the deduplication limit to change the number of identifiers the Adjust SDK stores. To do this, specify the new limit in the `eventDeduplicationListLimit` property of the [`initSdk` method](web-initSdk-invocation).
+You can override the deduplication limit to change the number of identifiers the Adjust SDK stores. To do this, specify the new limit in the `eventDeduplicationListLimit` argument of the [`initSdk` method](web-initSdk-invocation).
 
 ```{include} /web/fragments/Adjust.md
 :start-after: eventDeduplicationListLimit

@@ -56,9 +56,9 @@ $ pnpm add @adjustcom/adjust-web-sdk
 
 ## 2. Initialize the SDK
 
-Once you've installed the SDK, you need to initialize it. To do this, call the [`initSdk` method](web-initSdk-invocation). This method takes a number of parameters that customize how the SDK works in your app.
+Once you've installed the SDK, you need to initialize it. To do this, call the [`initSdk` method](web-initSdk-invocation). This method takes a number of arguments that customize how the SDK works in your app.
 
-The following parameters are required to initialize the Adjust SDK:
+The following arguments are required to initialize the Adjust SDK:
 
 `appToken`
    : Your [Adjust app token](https://help.adjust.com/en/article/app-settings#view-your-app-token).

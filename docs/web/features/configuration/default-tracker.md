@@ -8,7 +8,7 @@ Configuring a default campaign enables you to attribute all preinstalls to a pre
    https://app.adjust.com/{token}
    ```
 
-2. Pass your campaign token to the [`initSdk` method](web-initSdk-invocation) in the `defaultTracker` property.
+2. Pass your campaign token to the [`initSdk` method](web-initSdk-invocation) in the `defaultTracker` argument.
 
    ```{include} /web/fragments/Adjust.md
    :start-after: defaultTracker

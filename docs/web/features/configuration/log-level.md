@@ -19,7 +19,7 @@ The Adjust SDK provides configurable log levels to return different amounts of i
    - Disable all logging
 ```
 
-You can set an external device ID by specifying an `logLevel` property in the [`initSdk` method](web-initSdk-invocation). The SDK defaults to `error` if no value is passed.
+You can set an external device ID by specifying an `logLevel` argument in the [`initSdk` method](web-initSdk-invocation). The SDK defaults to `error` if no value is passed.
 
 ```{include} /web/fragments/Adjust.md
 :start-after: logLevel
@@ -28,7 +28,7 @@ You can set an external device ID by specifying an `logLevel` property in the [`
 
 ## Set log output
 
-You can delegate a log output location in your web app to show logs directly on the screen. To do this, specify an HTML selector in the `logOutput` property in the [`initSdk` method](web-initSdk-invocation). The SDK logs will print to this container.
+You can delegate a log output location in your web app to show logs directly on the screen. To do this, specify an HTML selector in the `logOutput` argument in the [`initSdk` method](web-initSdk-invocation). The SDK logs will print to this container.
 
 ```{include} /web/fragments/Adjust.md
 :start-after: logOutput
