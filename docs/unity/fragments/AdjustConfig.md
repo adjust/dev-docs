@@ -178,3 +178,91 @@ Adjust.start(adjustConfig);
 ::::
 
 % methodEnd
+
+% setSessionSuccessDelegate
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+:emphasize-lines: 3, 7-9
+
+AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
+adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
+adjustConfig.setSessionSuccessDelegate(SessionSuccessCallback);
+//...
+Adjust.start(adjustConfig);
+//...
+public void SessionSuccessCallback (AdjustSessionSuccess sessionSuccessData) {
+    //...
+}
+```
+:::
+::::
+
+% methodEnd
+
+% setSessionFailureDelegate
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+:emphasize-lines: 3, 7-9
+
+AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
+adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
+adjustConfig.setSessionFailureDelegate(SessionFailureCallback);
+//...
+Adjust.start(adjustConfig);
+//...
+public void SessionFailureCallback (AdjustSessionFailure sessionFailureData) {
+    //...
+}
+```
+:::
+::::
+
+% methodEnd
+
+% setEventSuccessDelegate
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+:emphasize-lines: 3, 7-9
+
+AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
+adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
+adjustConfig.setEventSuccessDelegate(EventSuccessCallback);
+//...
+Adjust.start(adjustConfig);
+//...
+public void EventSuccessCallback(AdjustEventSuccess eventSuccessData) {
+    //...
+}
+```
+:::
+::::
+
+% methodEnd
+
+% setEventFailureDelegate
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+:emphasize-lines: 3, 7-9
+
+AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
+adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
+adjustConfig.setEventFailureDelegate(EventFailureCallback);
+//...
+Adjust.start(adjustConfig);
+//...
+public void EventFailureCallback(AdjustEventFailure eventFailureData) {
+    //...
+}
+```
+:::
+::::
+
+% methodEnd

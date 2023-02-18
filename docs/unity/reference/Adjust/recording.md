@@ -136,7 +136,8 @@ Removes a partner parameter
 ```{code-block} cs
 :name: unity-removeSessionPartnerParameter-invocation
 
-public static void removeSessionPartnerParameter(string key)```
+public static void removeSessionPartnerParameter(string key)
+```
 
 :param key: The data key
 :type key: string
