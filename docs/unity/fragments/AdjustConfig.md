@@ -160,3 +160,21 @@ Adjust.updateConversionValue(6);
 ::::
 
 % methodEnd
+
+% setDelayStart
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+:emphasize-lines: 3
+
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+//...
+adjustConfig.setDelayStart(5.5);
+//...
+Adjust.start(adjustConfig);
+```
+:::
+::::
+
+% methodEnd

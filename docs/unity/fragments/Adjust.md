@@ -132,3 +132,87 @@ Adjust.trackAppStoreSubscription(subscription);
 ::::
 
 % methodEnd
+
+% addSessionCallbackParameter
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+Adjust.addSessionCallbackParameter("key", "value");
+```
+:::
+::::
+
+% methodEnd
+
+% removeSessionCallbackParameter
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+Adjust.removeSessionCallbackParameter("key");
+```
+:::
+::::
+
+% methodEnd
+
+% resetSessionCallbackParameters
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+Adjust.resetSessionCallbackParameters();
+```
+:::
+::::
+
+% methodEnd
+
+% addSessionPartnerParameter
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+Adjust.addSessionPartnerParameter("key", "value");
+```
+:::
+::::
+
+% methodEnd
+
+% removeSessionPartnerParameter
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+Adjust.removeSessionPartnerParameter("key");
+```
+:::
+::::
+
+% methodEnd
+
+% resetSessionPartnerParameters
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+Adjust.resetSessionPartnerParameters();
+```
+:::
+::::
+
+% methodEnd
+
+% sendFirstPackages
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+Adjust.sendFirstPackages();
+```
+:::
+::::
+
+% methodEnd

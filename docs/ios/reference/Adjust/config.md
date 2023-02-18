@@ -66,7 +66,7 @@ The Adjust SDK sends information to Adjust's servers as soon as it starts. If yo
 ```{code-block} objc
 :name: ios-sendFirstPackages-invocation
 
-public static void sendFirstPackages()
++ (void)sendFirstPackages;
 ```
 
 ```{include} /ios/fragments/Adjust.md

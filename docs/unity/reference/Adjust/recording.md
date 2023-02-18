@@ -25,6 +25,153 @@ public static void trackEvent(AdjustEvent adjustEvent)
 
 % classMethodEnd
 
+% classMethod addSessionCallbackParameter
+
+:::{function} addSessionCallbackParameter (key, value)
+:noindex:
+
+Adds callback parameters to send with each session recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
+
+```{code-block} cs
+:name: unity-addSessionCallbackParameter-invocation
+
+public static void addSessionCallbackParameter(string key, string value)
+```
+
+:param key: The data key
+:type key: string
+:param value: The data value
+:type value: string
+
+```{include} /unity/fragments/Adjust.md
+:start-after: addSessionCallbackParameter
+:end-before: methodEnd
+```
+
+:::
+
+% classMethodEnd
+
+% classMethod removeSessionCallbackParameter
+
+:::{function} removeSessionCallbackParameter (key)
+:noindex:
+
+Removes a callback parameter
+
+```{code-block} cs
+:name: unity-removeSessionCallbackParameter-invocation
+
+public static void removeSessionCallbackParameter(string key)
+```
+
+:param key: The data key
+:type key: NSString
+
+```{include} /unity/fragments/Adjust.md
+:start-after: removeSessionCallbackParameter
+:end-before: methodEnd
+```
+
+:::
+
+% classMethodEnd
+
+% classMethod resetSessionCallbackParameters
+
+:::{function} resetSessionCallbackParameters
+:noindex:
+
+Removes all callback parameters
+
+```{code-block} cs
+:name: unity-resetSessionCallbackParameters-invocation
+
+public static void resetSessionCallbackParameters()
+```
+
+```{include} /unity/fragments/Adjust.md
+:start-after: resetSessionCallbackParameters
+:end-before: methodEnd
+```
+
+:::
+
+% classMethodEnd
+
+% classMethod addSessionPartnerParameter
+
+:::{function} addSessionPartnerParameter (key, value)
+:noindex:
+
+Adds partner parameters to send with each session recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
+
+```{code-block} cs
+:name: unity-addSessionPartnerParameter-invocation
+
+public static void addSessionPartnerParameter(string key, string value)
+```
+
+:param key: The data key
+:type key: string
+:param value: The data value
+:type value: string
+
+```{include} /unity/fragments/Adjust.md
+:start-after: addSessionPartnerParameter
+:end-before: methodEnd
+```
+
+:::
+
+% classMethodEnd
+
+% classMethod removeSessionPartnerParameter
+
+:::{function} removeSessionPartnerParameter (key)
+:noindex:
+
+Removes a partner parameter
+
+```{code-block} cs
+:name: unity-removeSessionPartnerParameter-invocation
+
+public static void removeSessionPartnerParameter(string key)```
+
+:param key: The data key
+:type key: string
+
+```{include} /unity/fragments/Adjust.md
+:start-after: removeSessionPartnerParameter
+:end-before: methodEnd
+```
+
+:::
+
+% classMethodEnd
+
+% classMethod resetSessionPartnerParameters
+
+:::{function} resetSessionPartnerParameters
+:noindex:
+
+Resets all partner parameters
+
+```{code-block} cs
+:name: unity-resetSessionPartnerParameters-invocation
+
+public static void resetSessionPartnerParameters()
+```
+
+```{include} /unity/fragments/Adjust.md
+:start-after: resetSessionPartnerParameters
+:end-before: methodEnd
+```
+
+:::
+
+% classMethodEnd
+
 % classMethod trackAdRevenue
 
 :::{function} trackAdRevenue(adRevenue)
