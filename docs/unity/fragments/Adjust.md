@@ -216,3 +216,15 @@ Adjust.sendFirstPackages();
 ::::
 
 % methodEnd
+
+% getAttribution
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+var attribution = Adjust.getAttribution();
+```
+:::
+::::
+
+% methodEnd

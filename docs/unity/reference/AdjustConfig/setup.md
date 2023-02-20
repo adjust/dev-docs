@@ -124,3 +124,55 @@ public void setDelayStart(double delayStart)
 :::
 
 % classMethodEnd
+
+% classMethod setNeedsCost
+
+:::{function} setNeedsCost (needsCost)
+:noindex:
+
+```{versionadded} v4.24.0
+Sets whether the SDK should gather cost data. This is accessible in the user's attribution information.
+```
+
+```{code-block} cs
+:name: unity-setNeedsCost-invocation
+
+public void setNeedsCost(bool needsCost)
+```
+
+:param needsCost: Whether the SDK should gather cost data
+:type needsCost: bool
+
+```{include} /unity/fragments/AdjustConfig.md
+:start-after: setNeedsCost
+:end-before: methodEnd
+```
+
+:::
+
+% classMethodEnd
+
+% classMethod setAttributionChangedDelegate
+
+:::{function} setAttributionChangedDelegate (attributionChangedDelegate)
+:noindex:
+
+Sets a delegate function that fires when a user's attribution information updates
+
+```{code-block} cs
+:name: unity-setAttributionChangedDelegate-invocation
+
+public void setAttributionChangedDelegate(Action<AdjustAttribution> attributionChangedDelegate, string sceneName = "Adjust")
+```
+
+:param attributionChangedDelegate: The delegate function that the SDK calls when a the user's attribution information changes
+:type attributionChangedDelegate: Action
+
+```{include} /unity/fragments/AdjustConfig.md
+:start-after: setAttributionChangedDelegate
+:end-before: methodEnd
+```
+
+:::
+
+% classMethodEnd

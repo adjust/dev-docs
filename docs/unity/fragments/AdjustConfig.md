@@ -266,3 +266,48 @@ public void EventFailureCallback(AdjustEventFailure eventFailureData) {
 ::::
 
 % methodEnd
+
+% setAttributionChangedDelegate
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+:emphasize-lines: 9, 13-16
+
+using com.adjust.sdk;
+
+public class ExampleGUI : MonoBehaviour {
+    void OnGUI() {
+        if (GUI.Button(new Rect(0, 0, Screen.width, Screen.height), "callback")) {
+            AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
+            adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
+            adjustConfig.setAttributionChangedDelegate(this.attributionChangedDelegate);
+            Adjust.start(adjustConfig);
+        }
+    }
+
+    public void attributionChangedDelegate(AdjustAttribution attribution) {
+        Debug.Log("Attribution changed");
+        // ...
+    }
+}
+```
+:::
+::::
+
+% methodEnd
+
+% setNeedsCost
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+
+AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
+adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
+adjustConfig.setNeedsCost(true);
+```
+:::
+::::
+
+% methodEnd

@@ -245,3 +245,26 @@ public static void trackPlayStoreSubscription(AdjustPlayStoreSubscription subscr
 ```
 
 :::
+
+% classMethod getAttribution
+
+:::{function} getAttribution
+:noindex:
+
+Fetches attribution data from the device
+
+```{code-block} cs
+:name: unity-getAttribution-invocation
+
+public static AdjustAttribution getAttribution()
+```
+
+:returns: An attribution object containing attribution data associated with the device
+:rtype: [`AdjustAttribution` object](/unity/reference/AdjustAttribution.md)
+
+```{include} /unity/fragments/Adjust.md
+:start-after: getAttribution
+:end-before: methodEnd
+```
+
+:::
