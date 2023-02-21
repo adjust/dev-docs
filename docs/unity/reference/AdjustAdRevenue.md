@@ -1,26 +1,26 @@
 # ADJAdRevenue class
 
-Use this class to store ad revenue information. You can pass this to Adjust's servers using the [`trackAdRevenue` method](ios-trackAdRevenue-invocation).
+Use this class to store ad revenue information. You can pass this to Adjust's servers using the [`trackAdRevenue` method](unity-trackAdRevenue-invocation).
 
 
-% classMethod initWithSource
+% classMethod AdjustAdRevenue
 
-::::{function} initWithSource (source)
+::::{function} AdjustAdRevenue (source)
 :noindex:
 
 Creates an ad revenue object initialized with an external ad revenue source
 
-```{code-block} objc
-:name: ios-initWithSource-invocation
+```{code-block} cs
+:name: unity-AdjustAdRevenue-invocation
 
-- (nullable id)initWithSource:(nonnull NSString *)source;
+public AdjustAdRevenue(string source)
 ```
 
 :param source: The source of the ad revenue. See table below for available options
-:type source: NSString
+:type source: string
 
-```{include} /ios/fragments/ADJAdRevenue.md
-:start-after: initWithSource
+```{include} /unity/fragments/AdjustAdRevenue.md
+:start-after: AdjustAdRevenue
 :end-before: methodEnd
 ```
 
@@ -31,21 +31,21 @@ Creates an ad revenue object initialized with an external ad revenue source
 
 * - Parameter
    - Source
-* - `ADJAdRevenueSourceAppLovinMAX`
+* - `AdjustConfig.AdjustAdRevenueSourceAppLovinMAX`
    - AppLovin MAX
-* - `ADJAdRevenueSourceMopub`
+* - `AdjustConfig.AdjustAdRevenueSourceMopub`
    - Mopub
-* - `ADJAdRevenueSourceAdMob`
+* - `AdjustConfig.AdjustAdRevenueSourceAdMo`
    - AdMob
-* - `ADJAdRevenueSourceIronSource`
+* - `AdjustConfig.AdjustAdRevenueSourceIronSource`
    - ironSource
-* - `ADJAdRevenueSourceAdMost`
+* - `AdjustConfig.AdjustAdRevenueSourceAdmost`
    - AdMost
-* - `ADJAdRevenueSourceUnity`
+* - `AdjustConfig.AdjustAdRevenueSourceUnity`
    - Unity
-* - `ADJAdRevenueSourceHeliumChartboost`
+* - `AdjustConfig.AdjustAdRevenueSourceHeliumChartboost`
    - Helium Chartboost
-* - `ADJAdRevenueSourcePublisher`
+* - `AdjustConfig.AdjustAdRevenueSourcePublisher`
    - Generic source
 ```
 :::
@@ -61,18 +61,18 @@ Creates an ad revenue object initialized with an external ad revenue source
 
 Creates an event object initialized with an Adjust event token
 
-```{code-block} objc
-:name: ios-ADJAdRevenue-setRevenue-invocation
+```{code-block} cs
+:name: unity-AdjustAdRevenue-setRevenue-invocation
 
-- (void)setRevenue:(double)amount currency:(nonnull NSString *)currency;
+public void setRevenue(double amount, string currency)
 ```
 
 :param amount: The amount of currency units associated with the ad
 :type amount: double
 :param currency: The 3 character [ISO 4217 code](https://www.iban.com/currency-codes) of the currency unit
-:type currency: NSString
+:type currency: string
 
-```{include} /ios/fragments/ADJAdRevenue.md
+```{include} /unity/fragments/AdjustAdRevenue.md
 :start-after: setRevenue
 :end-before: methodEnd
 ```
@@ -88,16 +88,16 @@ Creates an event object initialized with an Adjust event token
 
 Sets the number of impressions received for an ad
 
-```{code-block} objc
-:name: ios-setAdImpressionsCount-invocation
+```{code-block} cs
+:name: unity-setAdImpressionsCount-invocation
 
-- (void)setAdImpressionsCount:(int)adImpressionsCount;
+public void setAdImpressionsCount(int adImpressionsCount)
 ```
 
 :param adImpressionsCount: The number of impressions associated with the ad
 :type adImpressionsCount: int
 
-```{include} /ios/fragments/ADJAdRevenue.md
+```{include} /unity/fragments/AdjustAdRevenue.md
 :start-after: setAdImpressionsCount
 :end-before: methodEnd
 ```
@@ -113,16 +113,16 @@ Sets the number of impressions received for an ad
 
 Sets the number of impressions received for an ad
 
-```{code-block} objc
-:name: ios-setAdRevenueNetwork-invocation
+```{code-block} cs
+:name: unity-setAdRevenueNetwork-invocation
 
-- (void)setAdRevenueNetwork:(nonnull NSString *)adRevenueNetwork;
+public void setAdRevenueNetwork(string adRevenueNetwork)
 ```
 
 :param adRevenueNetwork: The network associated with the ad revenue
-:type adRevenueNetwork: NSString
+:type adRevenueNetwork: string
 
-```{include} /ios/fragments/ADJAdRevenue.md
+```{include} /unity/fragments/AdjustAdRevenue.md
 :start-after: setAdRevenueNetwork
 :end-before: methodEnd
 ```
@@ -138,16 +138,16 @@ Sets the number of impressions received for an ad
 
 Sets the ad unit ID associated with the ad revenue
 
-```{code-block} objc
-:name: ios-setAdRevenueUnit-invocation
+```{code-block} cs
+:name: unity-setAdRevenueUnit-invocation
 
-- (void)setAdRevenueUnit:(nonnull NSString *)adRevenueUnit;
+public void setAdRevenueUnit(string adRevenueUnit)
 ```
 
 :param adRevenueUnit: The ad unit ID associated with the ad revenue
 :type adRevenueUnit: NSString
 
-```{include} /ios/fragments/ADJAdRevenue.md
+```{include} /unity/fragments/AdjustAdRevenue.md
 :start-after: setAdRevenueUnit
 :end-before: methodEnd
 ```
@@ -164,15 +164,15 @@ Sets the ad unit ID associated with the ad revenue
 Sets the placement of the ad associated with the ad revenue
 
 ```{code-block} objc
-:name: ios-setAdRevenuePlacement-invocation
+:name: unity-setAdRevenuePlacement-invocation
 
-- (void)setAdRevenuePlacement:(nonnull NSString *)adRevenuePlacement;
+public void setAdRevenuePlacement(string adRevenuePlacement)
 ```
 
 :param adRevenuePlacement: The placement of the ad associated with the revenue
-:type adRevenuePlacement: NSString
+:type adRevenuePlacement: string
 
-```{include} /ios/fragments/ADJAdRevenue.md
+```{include} /unity/fragments/AdjustAdRevenue.md
 :start-after: setAdRevenuePlacement
 :end-before: methodEnd
 ```
@@ -190,18 +190,18 @@ Adds key-value callback parameters to the ad revenue object. You can add multipl
 
 Event callback parameters override session callback parameters that have the same key.
 
-```{code-block} objc
-:name: ios-ADJAdRevenue-addCallbackParameter-invocation
+```{code-block} cs
+:name: unity-AdjustAdrevenue-addCallbackParameter-invocation
 
-- (void)addCallbackParameter:(nonnull NSString *)key value:(nonnull NSString *)value;
+public void addCallbackParameter(string key, string value)
 ```
 
 :param key: The data key
-:type key: NSString
+:type key: string
 :param value: The data value
-:type value: NSString
+:type value: string
 
-```{include} /ios/fragments/ADJAdRevenue.md
+```{include} /unity/fragments/AdjustAdRevenue.md
 :start-after: addCallbackParameter
 :end-before: methodEnd
 ```
@@ -218,17 +218,17 @@ Event callback parameters override session callback parameters that have the sam
 Adds key-value partner parameters to the ad revenue object. You can add multiple parameters by calling this method multiple times.
 
 ```{code-block} objc
-:name: ios-ADJAdRevenue-addPartnerParameter-invocation
+:name: unity-AdjustAdRevenue-addPartnerParameter-invocation
 
-- (void)addPartnerParameter:(nonnull NSString *)key value:(nonnull NSString *)value;
+public void addPartnerParameter(string key, string value)
 ```
 
 :param key: The data key
-:type key: NSString
+:type key: string
 :param value: The data value
-:type value: NSString
+:type value: string
 
-```{include} /ios/fragments/ADJAdRevenue.md
+```{include} /unity/fragments/AdjustAdRevenue.md
 :start-after: addPartnerParameter
 :end-before: methodEnd
 ```

@@ -89,7 +89,7 @@ Adjust.requestTrackingAuthorizationWithCompletionHandler((status) =>
 You can retrieve a user's current authorization status at any time. Call the {code}`getAppTrackingAuthorizationStatus` method to return the authorization status code as an **integer**.
 
 ```{include} /unity/fragments/Adjust.md
-:start-after: getapptrackingauthorizationstatus
+:start-after: getAppTrackingAuthorizationStatus
 :end-before: methodEnd
 ```
 

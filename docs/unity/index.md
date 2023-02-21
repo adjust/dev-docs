@@ -35,7 +35,7 @@ To set up the Adjust SDK, enter the following information:
 2. Your **Environment**:
    * Choose **Sandbox** if you are testing your app and want to send test data. You need to enable sandbox mode in the dashboard to see test data.
    * Choose **Production** when you have finished testing and are ready to release your app.
-3. Your **Log Level**. This controls what logs you receive. See Set log level for more information.
+3. Your **Log Level**. This controls what logs you receive. See [](/unity/features/configuration/log-level) for more information.
 
 The Adjust SDK starts when the app's Awake event triggers by default. To override this behavior, check the {guilabel}`START SDK MANUALLY` option. This enables you to initialize the Adjust SDK by calling {code}`Adjust.start()` with your config instance as an argument.
 
@@ -144,7 +144,8 @@ The iOS post-build process makes the following changes to your generated Xcode p
 * Adds the other linker flag `-ObjC`: required to recognize Adjust Objective-C categories at build time.
 * Enables Objective-C exceptions.
 
-### Frameworks
+```{rubric} Frameworks
+```
 
 You can enable the following frameworks to access iOS features:
 
@@ -154,11 +155,13 @@ You can enable the following frameworks to access iOS features:
 * {guilabel}`StoreKit.framework`: required to communicate with the SKAdNetwork framework.
 * {guilabel}`iAd.framework` {bdg-warning}`Deprecated` - use AdServices.framework
 
-### App Tracking Transparency consent dialog
+```{rubric} App Tracking Transparency consent dialog
+```
 
 If you are using the {abbr}`ATT (App Tracking Transparency)` wrapper, enter a **User Tracking Description** message. This displays when you present the tracking consent dialog to your user.
 
-### Deep linking
+```{rubric} Deep linking
+```
 
 To enable deep linking, add the following information:
 
@@ -172,7 +175,8 @@ To enable deep linking, add the following information:
 
 The Android post-build process checks for an {file}`AndroidManifest.xml` file in {file}`Assets/Plugins/Android/`. If this file isn't present, it creates a copy from [{file}`AdjustAndroidManifest.xml`](https://github.com/adjust/unity_sdk/blob/master/Assets/Adjust/Android/AdjustAndroidManifest.xml "A link to the AdjustAndroidManifest file on GitHub").
 
-### Permissions
+```{rubric} Permissions
+```
 
 You can enable the following permissions to access Android features:
 
@@ -181,7 +185,8 @@ You can enable the following permissions to access Android features:
 * {guilabel}`com.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE` {bdg-warning}`Deprecated`: required to fetch install referrer information via Google Play Store intent.
 * {guilabel}`com.google.android.gms.permission.AD_ID`: required to read the device advertising ID on Android 12 (API level 31) and above. See [Google's `AdvertisingIdClient.info` documentation](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid) for more information.
 
-### Deep linking
+```{rubric} Deep linking
+```
 
 To enable deep linking, add the following information:
 
@@ -201,7 +206,7 @@ The Adjust SDK provides tools for testing and troubleshooting issues with your i
 
 * Set your environment to **Sandbox**.
 * Add a sandbox filter to your Adjust dashboard results.
-* Set your log level to **verbose**.
+* Set your [log level](/unity/features/configuration/log-level) to **verbose**.
 
 :::{tip}
 If you encounter any issues, email <support@adjust.com> with all details and logs.
@@ -209,7 +214,7 @@ If you encounter any issues, email <support@adjust.com> with all details and log
 
 :::{dropdown} Test Google Play Services integration
 
-To test that the Adjust SDK can receive a device's Google Advertising ID, set the [log level](#set-your-log-level) to **verbose** and the environment to **Sandbox**. Start your app and measure a session or an event. The SDK logs the {abbr}`gps_adid (Google Play Services Advertiser ID)` parameter if it has read the advertising ID.
+To test that the Adjust SDK can receive a device's Google Advertising ID, set the [log level](/unity/features/configuration/log-level) to **verbose** and the environment to **Sandbox**. Start your app and measure a session or an event. The SDK logs the {abbr}`gps_adid (Google Play Services Advertiser ID)` parameter if it has read the advertising ID.
 
 If you are having issues retrieving the Google Advertising ID, open an issue in the [GitHub repository](https://github.com/adjust/unity_sdk) or contact <support@adjust.com>.
 
