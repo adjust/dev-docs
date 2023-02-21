@@ -2,9 +2,9 @@
 
 Use this class to store subscription information. You can pass this to Adjust's servers using the [`trackSubscription` method](ios-trackSubscription-invocation).
 
-% classMethod initWithPrice
+% Class method initWithPrice
 
-:::{function} initWithPrice (price, currency, transactionId, receipt)
+:::::{function} initWithPrice (price, currency, transactionId, receipt)
 :noindex:
 
 Initializes a subscription
@@ -27,18 +27,39 @@ Initializes a subscription
 :param receipt: A data object containing receipt details
 :type receipt: NSData
 
-```{include} /ios/fragments/ADJSubscription.md
-:start-after: initWithPrice method
-:end-before: methodEnd
+% initWithPrice snippet
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+let subscription = ADJSubscription(
+    price: price,
+    currency: currency,
+    transactionId: transactionId,
+    andReceipt: receipt)
 ```
-
 :::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:price
+                                                              currency:currency
+                                                         transactionId:transactionId
+                                                            andReceipt:receipt];
+```
+:::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod setTransactionDate
+:::::
 
-:::{function} setTransactionDate (transactionDate)
+% Class method end
+
+% Class method setTransactionDate
+
+:::::{function} setTransactionDate (transactionDate)
 :noindex:
 
 Sets the date of the transaction in the subscription object
@@ -52,18 +73,43 @@ Sets the date of the transaction in the subscription object
 :param transactionDate: The date on which the subscription was purchased
 :type transactionDate: NSDate
 
-```{include} /ios/fragments/ADJSubscription.md
-:start-after: setTransactionDate
-:end-before: methodEnd
+% setTransactionDate snippet
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+let subscription = ADJSubscription(
+    price: price,
+    currency: currency,
+    transactionId: transactionId,
+    andReceipt: receipt)
+//...
+subscription.setTransactionDate(transactionDate)
 ```
-
 :::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:price
+                                                              currency:currency
+                                                         transactionId:transactionId
+                                                            andReceipt:receipt];
+//...
+[subscription setTransactionDate:transactionDate];
+```
+:::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod setSalesRegion
+:::::
 
-:::{function} setSalesRegion (salesRegion)
+% Class method end
+
+% Class method setSalesRegion
+
+:::::{function} setSalesRegion (salesRegion)
 :noindex:
 
 Sets the region in which the subscription purchase was made
@@ -77,18 +123,43 @@ Sets the region in which the subscription purchase was made
 :param salesRegion: The region in which the 
 :type salesRegion: NSString
 
-```{include} /ios/fragments/ADJSubscription.md
-:start-after: setSalesRegion
-:end-before: methodEnd
+% setSalesRegion snippet
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+let subscription = ADJSubscription(
+    price: price,
+    currency: currency,
+    transactionId: transactionId,
+    andReceipt: receipt)
+//...
+subscription.setSalesRegion(salesRegion)
 ```
-
 :::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:price
+                                                              currency:currency
+                                                         transactionId:transactionId
+                                                            andReceipt:receipt];
+//...
+[subscription setSalesRegion:salesRegion];
+```
+:::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod addCallbackParameter
+:::::
 
-:::{function} addCallbackParameter (key, value)
+% Class method end
+
+% Class method addCallbackParameter
+
+:::::{function} addCallbackParameter (key, value)
 :noindex:
 
 Adds key-value callback parameters to the subscription object. You can add multiple parameters by calling this method multiple times.
@@ -104,18 +175,45 @@ Adds key-value callback parameters to the subscription object. You can add multi
 :param value: The data value
 :type value: NSString
 
-```{include} /ios/fragments/ADJSubscription.md
-:start-after: addCallbackParameter
-:end-before: methodEnd
+% addCallbackParameter snippet
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+let subscription = ADJSubscription(
+    price: price,
+    currency: currency,
+    transactionId: transactionId,
+    andReceipt: receipt)
+//...
+subscription.addCallbackParameter("key1", value: "value1")
+subscription.addCallbackParameter("key2", value: "value2")
 ```
-
 :::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:price
+                                                              currency:currency
+                                                         transactionId:transactionId
+                                                            andReceipt:receipt];
+//...
+[subscription addCallbackParameter:@"key1" value:@"value1"];
+[subscription addCallbackParameter:@"key2" value:@"value2"];
+```
+:::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod addPartnerParameter
+:::::
 
-:::{function} addPartnerParameter (key, value)
+% Class method end
+
+% Class method addPartnerParameter
+
+:::::{function} addPartnerParameter (key, value)
 :noindex:
 
 Adds key-value partner parameters to the subscription object. You can add multiple parameters by calling this method multiple times.
@@ -131,14 +229,41 @@ Adds key-value partner parameters to the subscription object. You can add multip
 :param value: The data value
 :type value: NSString
 
-```{include} /ios/fragments/ADJSubscription.md
-:start-after: addPartnerParameter
-:end-before: methodEnd
+% addPartnerParameter snippet
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+let subscription = ADJSubscription(
+    price: price,
+    currency: currency,
+    transactionId: transactionId,
+    andReceipt: receipt)
+//...
+subscription.addPartnerParameter("key1", value: "value1")
+subscription.addPartnerParameter("key2", value: "value2")
 ```
-
 :::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:price
+                                                              currency:currency
+                                                         transactionId:transactionId
+                                                            andReceipt:receipt];
+//...
+[subscription addPartnerParameter:@"key1" value:@"value1"];
+[subscription addPartnerParameter:@"key2" value:@"value2"];
+```
+:::
+::::
 
-% classMethodEnd
+% Snippet end
+
+:::::
+
+% Class method end
 
 
 

@@ -2,7 +2,7 @@
 
 Use the features in this section to configure the Adjust SDK.
 
-```{toctree}
+:::{toctree}
 ---
 caption: Features
 glob: true
@@ -12,4 +12,4 @@ maxdepth: 1
 ./*
 deep-link/index
 
-```
+:::

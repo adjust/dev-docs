@@ -14,7 +14,7 @@ The following values can only be accessed if the [`needsCost`](ios-setNeedsCost-
 * `costCurrency`
 :::
 
-```{list-table}
+:::{list-table}
 :header-rows: 1
 
 * - Values
@@ -53,4 +53,4 @@ The following values can only be accessed if the [`needsCost`](ios-setNeedsCost-
 * - `costCurrency`
    - String	
    - The [3 character ISO 4217 code](https://www.iban.com/currency-codes) of the currency associated with the cost.
-```
+:::

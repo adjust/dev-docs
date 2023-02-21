@@ -121,7 +121,7 @@ When a user clicks on a LinkMe URL they have the option to copy the link informa
 
 To enable pasteboard checking in your app, pass a true value to the `setLinkMeEnabled` method on your `ADJConfig` object:
 
-```{include} /ios/fragments/ADJConfig.md
-:start-after: setLinkMeEnabled
-:end-before: methodEnd
-```
+:::{include} /ios/reference/ADJConfig/setup.md
+:start-after: setLinkMeEnabled snippet
+:end-before: Snippet end
+:::

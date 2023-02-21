@@ -60,8 +60,8 @@ You need to update your iOS app to set up different deep linking scenarios. How 
 
 If your app doesn't uses scenes, you need to update methods in your app delegate.
 
-```{rubric} Universal links
-```
+:::{rubric} Universal links
+:::
 
 Update the `application(_:continue:restorationHandler:)` method in your app delegate to call the following methods in the Adjust SDK:
 
@@ -143,8 +143,8 @@ func application(
 :::
 ::::
 
-```{rubric} Custom URL scheme
-```
+:::{rubric} Custom URL scheme
+:::
 
 If your marketing team requires you to set up custom URL scheme deep links, update the `application(_:open:options:)` method in your app delegate to call the `Adjust.appWillOpen` method in the Adjust SDK. This method sends deep links to Adjust's servers to record them. You can pass both Adjust and non-Adjust deep links to this method. Adjust's servers ignore any deep links that don’t have Adjust parameters.
 
@@ -200,8 +200,8 @@ func application(
 
 If your app uses scenes, you need to update methods in your scene delegate.
 
-```{rubric} Universal links
-```
+:::{rubric} Universal links
+:::
 
 1. Update the `scene(_:willConnectTo:options:)` method in your scene delegate. When a user clicks on your universal links and the user has your app closed, iOS opens your app and delivers the deep link to this method.
 2. Update the `scene(_:continue:)` method in your scene delegate. When a user clicks on your universal links, and the user has your app running in the background, iOS opens your app and delivers the deep link to this method.
@@ -324,8 +324,8 @@ func scene(
 :::
 ::::
 
-```{rubric} Custom URL scheme
-```
+:::{rubric} Custom URL scheme
+:::
 
 1. Update the `scene(_:willConnectTo:options:)` method in your scene delegate. When a user clicks on your custom URL scheme deep link and the user has your app closed, iOS opens your app and delivers the deep link to this method.
 2. Update the `scene(_:openURLContexts:)` method in your scene delegate. When a user clicks on your custom URL scheme deep link, and the user has your app running in the background, iOS opens your app and delivers the deep link to this method.

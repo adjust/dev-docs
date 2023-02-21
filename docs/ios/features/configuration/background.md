@@ -8,7 +8,7 @@ Your config object contains a boolean `sendInBackground` property that controls 
 You must set the `sendInBackground` property *before* you initialize the Adjust SDK.
 :::
 
-```{include} /ios/fragments/ADJConfig.md
-:start-after: setSendInBackground
-:end-before: methodEnd
-```
+:::{include} /ios/reference/ADJConfig/setup.md
+:start-after: setSendInBackground snippet
+:end-before: Snippet end
+:::

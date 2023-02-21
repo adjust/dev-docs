@@ -54,22 +54,22 @@ When a user interacts with a campaign link, their attribution information update
 
 3. Set the delegate with your Adjust config instance.
 
-   ```{include} /ios/fragments/ADJConfig.md
-   :start-after: setDelegate
-   :end-before: methodEnd
-   ```
+   :::{include} /ios/reference/ADJConfig/setup.md
+   :start-after: setDelegate snippet
+   :end-before: Snippet end
+   :::
 
 Within your delegate function, you have access to the user's `Attribution` information. See the [`ADJAttribution` class reference](/ios/reference/ADJAttribution.md) for a list of available properties.
 
 ## Get current attribution information
 
-```{versionadded} v4.11.0
+:::{versionadded} v4.11.0
 When a user installs your app, Adjust attributes the install to a campaign. The Adjust SDK gives you access to campaign attribution details for your install. To return this information, call the [`attribution` method](ios-attribution-invocation).
-```
+:::
 
 This method returns an Attribution object. See the [`ADJAttribution` class reference](/ios/reference/ADJAttribution.md) for a list of available properties.
 
-```{include} /ios/fragments/Adjust.md
-:start-after: attribution
-:end-before: methodEnd
-```
+:::{include} /ios/reference/Adjust/recording.md
+:start-after: attribution snippet
+:end-before: Snippet end
+:::

@@ -2,9 +2,9 @@
 
 Use these methods to update the Adjust SDK's configuration.
 
-% classMethod setEnabled
+% Class method setEnabled
 
-:::{function} setEnabled (boolean)
+:::::{function} setEnabled (boolean)
 :noindex:
 
 Enable or disable the Adjust SDK. The SDK doesn't send any information while disabled.
@@ -18,18 +18,41 @@ Enable or disable the Adjust SDK. The SDK doesn't send any information while dis
 :param enabled: Whether the SDK should be enabled or not
 :type enabled: BOOL
 
-```{include} /ios/fragments/Adjust.md
-:start-after: setEnabled
-:end-before: methodEnd
+% setEnabled snippet
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+
+```{code-block} swift
+Adjust.setEnabled(false);
 ```
-
 :::
+:::{tab-item} Objective-C
+:sync: objc
 
-% classMethodEnd
+```{code-block} objc
+[Adjust setEnabled:NO];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
 
-% classMethod isEnabled
+```{code-block} js
+Adjust.setEnabled(false);
+```
+:::
+::::
 
-:::{function} isEnabled ()
+% Snippet end
+
+:::::
+
+% Class method end
+
+% Class method isEnabled
+
+:::::{function} isEnabled ()
 :noindex:
 
 Call this method to check whether the Adjust SDK is enabled.
@@ -43,18 +66,40 @@ Call this method to check whether the Adjust SDK is enabled.
 :returns: Whether the SDK is currently enabled
 :rtype: BOOL
 
-```{include} /ios/fragments/Adjust.md
-:start-after: isEnabled
-:end-before: methodEnd
+% isEnabled snippet
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+
+```{code-block} swift
+Adjust.isEnabled();
 ```
-
 :::
+:::{tab-item} Objective-C
+:sync: objc
 
-% classMethodEnd
+```{code-block} objc
+[Adjust isEnabled];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
 
-% classMethod sendFirstPackages
+```{code-block} js
+Adjust.isEnabled();
+```
+::::
 
-::::{function} sendFirstPackages ()
+% Snippet end
+
+:::::
+
+% Class method end
+
+% Class method sendFirstPackages
+
+:::::{function} sendFirstPackages ()
 :noindex:
 
 :::{note}
@@ -69,18 +114,41 @@ The Adjust SDK sends information to Adjust's servers as soon as it starts. If yo
 + (void)sendFirstPackages;
 ```
 
-```{include} /ios/fragments/Adjust.md
-:start-after: sendFirstPackages
-:end-before: methodEnd
-```
+% sendFirstPackages snippet
 
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+
+```{code-block} swift
+Adjust.sendFirstPackages()
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+
+```{code-block} objc
+[Adjust sendFirstPackages];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+
+```{code-block} js
+Adjust.sendFirstPackages();
+```
+:::
 ::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod setOfflineMode
+:::::
 
-:::{function} setOfflineMode (boolean)
+% Class method end
+
+% Class method setOfflineMode
+
+:::::{function} setOfflineMode (boolean)
 :noindex:
 
 Controls whether the SDK is in offline mode. When in offline mode, the SDK queues all events in a file until offline mode is disabled. When offline mode is disabled, the SDK sends all queued events.
@@ -94,18 +162,41 @@ Controls whether the SDK is in offline mode. When in offline mode, the SDK queue
 :param enabled: Whether the SDK should be enabled or not
 :type enabled: BOOL
 
-```{include} /ios/fragments/Adjust.md
-:start-after: setOfflineMode
-:end-before: methodEnd
+% setOfflineMode snippet
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+
+```{code-block} swift
+Adjust.setOfflineMode(true);
 ```
-
 :::
+:::{tab-item} Objective-C
+:sync: objc
 
-% classMethodEnd
+```{code-block} objc
+[Adjust setOfflineMode:YES];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
 
-% classMethod setDeviceToken
+```{code-block} js
+Adjust.setOfflineMode(true);
+```
+:::
+::::
 
-:::{function} setDeviceToken (deviceToken)
+% Snippet end
+
+:::::
+
+% Class method end
+
+% Class method setDeviceToken
+
+:::::{function} setDeviceToken (deviceToken)
 :noindex:
 
 Set your [push token](https://help.adjust.com/en/article/push-notifications) to record [uninstalls and reattributions](https://help.adjust.com/en/article/uninstalls-reinstalls). You can update this value at any time.
@@ -119,11 +210,39 @@ Set your [push token](https://help.adjust.com/en/article/push-notifications) to 
 :param deviceToken: Your Apple push token
 :type deviceToken: NSData
 
-```{include} /ios/fragments/Adjust.md
-:start-after: setDeviceToken
-:end-before: methodEnd
+% setDeviceToken snippet
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+:emphasize-lines: 2
+
+func application(_ app: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+    Adjust.deviceToken = deviceToken
+}
 ```
-
 :::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+:emphasize-lines: 2
 
-% classMethodEnd
+- (void)application:(UIApplication *)app didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+    [Adjust setDeviceToken:deviceToken];
+}
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+```{code-block} js
+Adjust.setDeviceToken(deviceToken);
+```
+:::
+::::
+
+% Snippet end
+
+:::::
+
+% Class method end

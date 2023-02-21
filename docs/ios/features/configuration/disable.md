@@ -8,19 +8,19 @@ You can enable or disable the SDK at any time by calling the [`setEnabled` metho
 You can only call this method after the first session. This setting persists between sessions.
 :::
 
-```{include} /ios/fragments/Adjust.md
-:start-after: setEnabled
-:end-before: methodEnd
-```
+:::{include} /ios/reference/Adjust/config.md
+:start-after: setEnabled snippet
+:end-before: Snippet end
+:::
 
 ## Check enabled status
 
 You can check if the Adjust SDK is enabled at any time by calling the [`isEnabled` method](ios-isEnabled-invocation). This method returns a boolean value.
 
-```{include} /ios/fragments/Adjust.md
-:start-after: isEnabled
-:end-before: methodEnd
-```
+:::{include} /ios/reference/Adjust/config.md
+:start-after: isEnabled snippet
+:end-before: Snippet end
+:::
 
 ## Example
 

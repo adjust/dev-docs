@@ -8,7 +8,7 @@ Your config object contains a string `pushToken` property that you can use to st
 If you have access to the push token from the web view, you can call the `setDeviceToken` method in Javascript.
 :::
 
-```{include} /ios/fragments/Adjust.md
-:start-after: setDeviceToken
-:end-before: methodEnd
-```
+:::{include} /ios/reference/Adjust/config.md
+:start-after: setDeviceToken snippet
+:end-before: Snippet end
+:::

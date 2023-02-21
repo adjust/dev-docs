@@ -12,7 +12,7 @@ Deferred deep linking
 
 To get started, follow these steps.
 
-```{toctree}
+:::{toctree}
 :maxdepth: 1
 
 1. Retrieve data points <data-points>
@@ -22,4 +22,4 @@ To get started, follow these steps.
 5. Link resolution <resolution>
 6. Test deep linking <testing>
 reference
-```
+:::
