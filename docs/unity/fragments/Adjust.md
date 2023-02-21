@@ -377,3 +377,15 @@ Adjust.isEnabled();
 ::::
 
 % methodEnd
+
+% updateConversionValue
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+Adjust.updateConversionValue(6);
+```
+:::
+::::
+
+% methodEnd

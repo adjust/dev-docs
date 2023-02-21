@@ -3,6 +3,19 @@ orphan: true
 nosearch: true
 ---
 
+% AdjustConfig
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+AdjustConfig config = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
+Adjust.start(config);
+```
+:::
+::::
+
+% methodEnd
+
 % setLogLevel
 
 ::::{tab-set}
@@ -375,3 +388,72 @@ Adjust.start(adjustConfig);
 ::::
 
 % methodEnd
+
+% setDefaultTracker
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+//...
+adjustConfig.setDefaultTracker("{TrackerToken}");
+//...
+Adjust.start(adjustConfig);
+```
+:::
+::::
+
+% methodEnd
+
+% setPreinstallTrackingEnabled
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
+//...
+adjustConfig.setPreinstallTrackingEnabled(true);
+//...
+Adjust.start(adjustConfig);
+```
+:::
+::::
+
+% methodEnd
+
+% setPreinstallFilePath
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
+//...
+adjustConfig.setPreinstallFilePath("../EngagementFile.xml");
+//...
+Adjust.start(adjustConfig);
+```
+:::
+::::
+
+% methodEnd
+
+% setConversionValueUpdatedDelegate
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
+//...
+adjustConfig.setConversionValueUpdatedDelegate(ConversionValueUpdatedCallback);
+//...
+Adjust.start(adjustConfig);
+```
+:::
+::::
+
+% methodEnd
+

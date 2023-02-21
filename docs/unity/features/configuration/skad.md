@@ -51,6 +51,11 @@ public void OnButtonClick() {
 
 You can configure the Adjust SDK to listen for when a user's conversion value updates. Your config object contains a [`setConversionValueUpdatedCallbackDelegate` method](unity-setConversionValueUpdatedCallbackDelegate-invocation) that listens for updates. This method accepts a delegate function as its argument.
 
+```{include} /unity/fragments/AdjustConfig.md
+:start-after: setConversionValueUpdatedDelegate
+:end-before: methodEnd
+```
+
 :::{dropdown} Example
 
 This example demonstrates how to emit the following to the console when the conversion value updates:

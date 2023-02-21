@@ -1,5 +1,103 @@
 # Setup methods
 
+% classMethod setLogLevel
+
+::::{function} setLogLevel (logLevel)
+:noindex:
+
+Set the verbosity of logs you want to receive from the Adjust SDK
+
+```{code-block} cs
+:name: unity-setLogLevel-invocation
+
+public void setLogLevel(AdjustLogLevel logLevel)
+```
+
+:param logLevel: The verbosity of the logging
+:type logLevel: ADJLogLevel
+
+```{include} /unity/fragments/AdjustConfig.md
+:start-after: setLogLevel
+:end-before: methodEnd
+```
+
+:::{dropdown} Available log levels
+```{list-table}
+:header-rows: 1
+
+* - Log level
+   - Description
+* - `AdjustLogLevel.Verbose`
+   - Enable all logging
+* - `AdjustLogLevel.Debug`
+   - Enable debug logging
+* - `AdjustLogLevel.Info`
+   - Only show info level logs (default option)
+* - `AdjustLogLevel.Warn`
+   - Disable info logging
+* - `AdjustLogLevel.Error`
+   - Disable warning level logging and below
+* - `AdjustLogLevel.Assert`
+   - Disable error level logging and below
+* - `AdjustLogLevel.Suppress`
+   - Suppress all logging
+
+```
+:::
+::::
+
+% classMethodEnd
+
+% classMethod setLogDelegate
+
+:::{function} setLogDelegate (logDelegate)
+:noindex:
+
+Sets a delegate function ro program to handle log output
+
+```{code-block} cs
+:name: unity-setLogDelegate-invocation
+
+public void setLogDelegate(Action<String> logDelegate)
+```
+
+:param logDelegate: The delegate function or program that handles log output
+:type logDelegate: String
+
+```{include} /unity/fragments/AdjustConfig.md
+:start-after: setLogDelegate
+:end-before: methodEnd
+```
+
+:::
+
+% classMethodEnd
+
+% classMethod setDefaultTracker
+
+:::{function} setDefaultTracker (defaultTracker)
+:noindex:
+
+Sets a default tracker token to record installs against
+
+```{code-block} cs
+:name: unity-setDefaultTracker-invocation
+
+public void setDefaultTracker(string defaultTracker)
+```
+
+:param defaultTracker: The tracker token to which all preinstalled sessions are attributed
+:type defaultTracker: String
+
+```{include} /unity/fragments/AdjustConfig.md
+:start-after: setDefaultTracker
+:end-before: methodEnd
+```
+
+:::
+
+% classMethodEnd
+
 % classMethod setSendInBackground
 
 :::{function} setSendInBackground (sendInBackground)
@@ -150,6 +248,31 @@ public void setDelayStart(double delayStart)
 
 % classMethodEnd
 
+% classMethod setExternalDeviceId
+
+:::{function} setExternalDeviceId (externalDeviceId)
+:noindex:
+
+Sets an external device identifier for reporting purposes
+
+```{code-block} cs
+:name: unity-setExternalDeviceId-invocation
+
+public void setExternalDeviceId(string externalDeviceId)
+```
+
+:param externalDeviceId: The external device ID associated with the device
+:type externalDeviceId: String
+
+```{include} /unity/fragments/AdjustConfig.md
+:start-after: setExternalDeviceId
+:end-before: methodEnd
+```
+
+:::
+
+% classMethodEnd
+
 % classMethod setEventBufferingEnabled
 
 :::{function} setEventBufferingEnabled (eventBufferingEnabled)
@@ -220,6 +343,154 @@ public void setAttributionChangedDelegate(Action<AdjustAttribution> attributionC
 
 ```{include} /unity/fragments/AdjustConfig.md
 :start-after: setAttributionChangedDelegate
+:end-before: methodEnd
+```
+
+:::
+
+% classMethodEnd
+
+% classMethod setPreinstallTrackingEnabled
+
+:::{function} setPreinstallTrackingEnabled (preinstallTrackingEnabled)
+:noindex:
+
+Enables or disables preinstall tracking
+
+```{code-block} cs
+:name: unity-setPreinstallTrackingEnabled-invocation
+
+public void setPreinstallTrackingEnabled(bool preinstallTrackingEnabled)
+```
+
+:param preinstallTrackingEnabled: Whether preinstall tracking is enabled
+:type preinstallTrackingEnabled: Boolean
+
+```{include} /unity/fragments/AdjustConfig.md
+:start-after: setPreinstallTrackingEnabled
+:end-before: methodEnd
+```
+
+:::
+
+% classMethodEnd
+
+% classMethod setPreinstallTrackingEnabled
+
+:::{function} setPreinstallFilePath (preinstallFilePath)
+:noindex:
+
+Defines a relative path where preinstall information is available. This directoy must be world-readable
+
+```{code-block} cs
+:name: unity-setPreinstallFilePath-invocation
+
+public void setPreinstallFilePath(string preinstallFilePath)
+```
+
+:param preinstallFilePath: The path where the preinstall information is written
+:type preinstallFilePath: String
+
+```{include} /unity/fragments/AdjustConfig.md
+:start-after: setPreinstallFilePath
+:end-before: methodEnd
+```
+
+:::
+
+% classMethodEnd
+
+% classMethod deactivateSKAdNetworkHandling
+
+:::{function} deactivateSKAdNetworkHandling
+:noindex:
+
+Turns off communication with SKAdNetwork. Communication is *enabled* by default
+
+```{code-block} cs
+:name: unity-deactivateSKAdNetworkHandling-invocation
+
+public void deactivateSKAdNetworkHandling()
+```
+
+```{include} /unity/fragments/AdjustConfig.md
+:start-after: deactivateSKAdNetworkHandling
+:end-before: methodEnd
+```
+
+:::
+
+% classMethodEnd
+
+% classMethod setLaunchDeferredDeeplink
+
+:::{function} setLaunchDeferredDeeplink (launchDeferredDeeplink)
+:noindex:
+
+Enables or disables launching deferred deep links with the SDK. If **enabled**, the SDK launches deep links the user interacts with
+
+```{code-block} cs
+:name: unity-setLaunchDeferredDeeplink-invocation
+
+public void setLaunchDeferredDeeplink(bool launchDeferredDeeplink)
+```
+
+:param launchDeferredDeeplink: Whether to enable launching deferred deep links
+:type launchDeferredDeeplink: Boolean
+
+```{include} /unity/fragments/AdjustConfig.md
+:start-after: setLaunchDeferredDeeplink
+:end-before: methodEnd
+```
+
+:::
+
+% classMethodEnd
+
+
+% classMethod setLinkMeEnabled
+
+:::{function} setLinkMeEnabled (linkMeEnabled)
+:noindex:
+
+Toggle support for Adjust's [LinkMe solution](https://help.adjust.com/en/article/linkme) for deep linking
+
+```{code-block} cs
+:name: unity-setLinkMeEnabled-invocation
+
+public void setLinkMeEnabled(bool linkMeEnabled)
+```
+
+:param linkMeEnabled: Whether LinkMe should be enabled
+:type linkMeEnabled: Boolean
+
+```{include} /unity/fragments/AdjustConfig.md
+:start-after: setLinkMeEnabled
+:end-before: methodEnd
+```
+
+:::
+
+% classMethodEnd
+
+% classMethod setConversionValueUpdatedCallbackDelegate
+
+:::{function} setConversionValueUpdatedCallbackDelegate(conversionValueUpdatedDelegate)
+:noindex:
+
+Sets a delegate function to call when the user's conversion value updates.
+
+```{code-block} cs
+:name: unity-setConversionValueUpdatedCallbackDelegate-invocation
+
+public void setConversionValueUpdatedDelegate(Action<int> conversionValueUpdatedDelegate, string sceneName = "Adjust")
+```
+
+:param conversionValueUpdatedDelegate: The delegate function the SDK launches when teh conversion value updates
+:type conversionValueUpdatedDelegate: Action
+
+```{include} /unity/fragments/AdjustConfig.md
+:start-after: setConversionValueUpdatedDelegate
 :end-before: methodEnd
 ```
 

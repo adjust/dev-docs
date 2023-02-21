@@ -12,5 +12,6 @@ recording
 config
 device-info
 privacy
+skan-att
 
 ```
