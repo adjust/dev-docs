@@ -278,3 +278,40 @@ string amazonAdId = Adjust.getAmazonAdId();
 ::::
 
 % methodEnd
+
+% disableThirdPartySharing
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+Adjust.disableThirdPartySharing();
+```
+:::
+::::
+
+% methodEnd
+
+% trackMeasurementConsent
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+Adjust.trackMeasurementConsent(true);
+```
+:::
+::::
+
+% methodEnd
+
+% gdprForgetMe
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+Adjust.gdprForgetMe();
+```
+:::
+::::
+
+% methodEnd
+

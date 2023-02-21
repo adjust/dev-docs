@@ -311,3 +311,33 @@ adjustConfig.setNeedsCost(true);
 ::::
 
 % methodEnd
+
+% setUrlStrategy
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+adjustConfig.setUrlStrategy(AdjustConfig.AdjustDataResidencyEU);
+Adjust.start(adjustConfig);
+```
+:::
+::::
+
+% methodEnd
+
+% setCoppaCompliantEnabled
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+adjustConfig.setCoppaCompliantEnabled(true);
+Adjust.start(adjustConfig);
+```
+:::
+::::
+
+% methodEnd
