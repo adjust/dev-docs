@@ -25,3 +25,28 @@ public static void sendFirstPackages()
 ::::
 
 % classMethodEnd
+
+% classMethod setDeviceToken
+
+:::{function} setDeviceToken (deviceToken)
+:noindex:
+
+Set your [push token](https://help.adjust.com/en/article/push-notifications) to record [uninstalls and reattributions](https://help.adjust.com/en/article/uninstalls-reinstalls). You can update this value at any time.
+
+```{code-block} cs
+:name: unity-setDeviceToken-invocation
+
+public static void setDeviceToken(string deviceToken)
+```
+
+:param deviceToken: Your push token
+:type deviceToken: String
+
+```{include} /unity/fragments/Adjust.md
+:start-after: setDeviceToken
+:end-before: methodEnd
+```
+
+:::
+
+% classMethodEnd

@@ -315,3 +315,29 @@ Adjust.gdprForgetMe();
 
 % methodEnd
 
+% setDeviceToken
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+Adjust.setDeviceToken("{YourDeviceToken}");
+```
+:::
+::::
+
+% methodEnd
+
+% trackThirdPartySharing
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(true);
+//...
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+```
+:::
+::::
+
+% methodEnd
+
