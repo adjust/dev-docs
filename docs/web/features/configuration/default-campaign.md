@@ -10,7 +10,14 @@ Configuring a default campaign enables you to attribute all preinstalls to a pre
 
 2. Pass your campaign token to the [`initSdk` method](web-initSdk-invocation) in the `defaultTracker` argument.
 
-   ```{include} /web/fragments/Adjust.md
-   :start-after: defaultTracker
-   :end-before: methodEnd
+   ::::{tab-set}
+   :::{tab-item} Javascript
+   ```{code-block} js
+   Adjust.initSdk({
+   appToken: 'YOUR_APP_TOKEN',
+   environment: 'sandbox',
+   defaultTracker: '{token}'
+   });
    ```
+   :::
+   ::::

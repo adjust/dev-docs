@@ -8,8 +8,8 @@ To identify web users in Adjust, Web SDK generates a unique `web_uuid` when it t
 
 Call the [`getWebUUID` method](web-getWebUUID-invocation) to return this information as a **string**.
 
-```{include} /web/fragments/Adjust.md
-:start-after: getWebUUID
-:end-before: methodEnd
-```
+:::{include} /web/reference/device-info.md
+:start-after: getWebUUID snippet
+:end-before: Snippet end
+:::
 

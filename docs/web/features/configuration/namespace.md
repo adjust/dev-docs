@@ -10,7 +10,14 @@ If you set a custom namespace this value shouldn't be changed. If you change to 
 
 You can set an custom namespace by specifying a `namespace` property in the [`initSdk` method](web-initSdk-invocation).
 
-```{include} /web/fragments/Adjust.md
-:start-after: namespace
-:end-before: methodEnd
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.initSdk({
+  appToken: 'YOUR_APP_TOKEN',
+  environment: 'sandbox',
+  namespace: 'myCustomNamespace'
+});
 ```
+:::
+::::

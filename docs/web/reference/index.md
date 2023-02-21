@@ -1,6 +1,6 @@
 # SDK reference
 
-```{toctree}
+:::{toctree}
 ---
 caption: Methods
 maxdepth: 1
@@ -11,4 +11,4 @@ config
 privacy
 device-info
 
-```
+:::

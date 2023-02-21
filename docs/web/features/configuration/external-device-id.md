@@ -12,9 +12,16 @@ See the [External device identifiers article](https://help.adjust.com/en/article
 
 You can set an external device ID by specifying an `externalDeviceId` argument in the [`initSdk` method](web-initSdk-invocation). The external device ID is case-sensitive. If you have imported external device IDs, make sure the value you pass matches the imported value.
 
-```{include} /web/fragments/Adjust.md
-:start-after: externalDeviceId
-:end-before: methodEnd
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.initSdk({
+  appToken: 'YOUR_APP_TOKEN',
+  environment: 'sandbox',
+  externalDeviceId: 'YOUR_EXTERNAL_DEVICE_ID'
+});
 ```
+:::
+::::
 
 You can import existing external device IDs into Adjust. This ensures that the Adjust servers match future data to your existing device records. Contact your Adjust representative for more information.
