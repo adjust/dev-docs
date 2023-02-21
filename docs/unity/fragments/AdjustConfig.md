@@ -341,3 +341,20 @@ Adjust.start(adjustConfig);
 ::::
 
 % methodEnd
+
+% setEventBufferingEnabled
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+//...
+adjustConfig.setEventBufferingEnabled(true);
+//...
+Adjust.start(adjustConfig);
+```
+:::
+::::
+
+% methodEnd

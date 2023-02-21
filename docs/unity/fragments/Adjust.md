@@ -341,3 +341,15 @@ Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 
 % methodEnd
 
+% setOfflineMode
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+Adjust.setOfflineMode(true);
+```
+:::
+::::
+
+% methodEnd
+

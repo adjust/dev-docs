@@ -125,6 +125,31 @@ public void setDelayStart(double delayStart)
 
 % classMethodEnd
 
+% classMethod setEventBufferingEnabled
+
+:::{function} setEventBufferingEnabled (eventBufferingEnabled)
+:noindex:
+
+Sets event buffering. If enabled, the SDK stores events on the device and sends all requests once per minute.
+
+```{code-block} cs
+:name: unity-setEventBufferingEnabled-invocation
+
+public void setEventBufferingEnabled(bool eventBufferingEnabled)
+```
+
+:param eventBufferingEnabled: Whether event buffering is enabled or not
+:type eventBufferingEnabled: Boolean
+
+```{include} /unity/fragments/AdjustConfig.md
+:start-after: setEventBufferingEnabled
+:end-before: methodEnd
+```
+
+:::
+
+% classMethodEnd
+
 % classMethod setNeedsCost
 
 :::{function} setNeedsCost (needsCost)
