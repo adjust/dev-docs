@@ -380,7 +380,7 @@ public void setPreinstallTrackingEnabled(bool preinstallTrackingEnabled)
 :::{function} setPreinstallFilePath (preinstallFilePath)
 :noindex:
 
-Defines a relative path where preinstall information is available. This directoy must be world-readable
+Defines a relative path where preinstall information is available. This directory must be world-readable
 
 ```{code-block} cs
 :name: unity-setPreinstallFilePath-invocation
@@ -486,7 +486,7 @@ Sets a delegate function to call when the user's conversion value updates.
 public void setConversionValueUpdatedDelegate(Action<int> conversionValueUpdatedDelegate, string sceneName = "Adjust")
 ```
 
-:param conversionValueUpdatedDelegate: The delegate function the SDK launches when teh conversion value updates
+:param conversionValueUpdatedDelegate: The delegate function the SDK launches when the conversion value updates
 :type conversionValueUpdatedDelegate: Action
 
 ```{include} /unity/fragments/AdjustConfig.md
