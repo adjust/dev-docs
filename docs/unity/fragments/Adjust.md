@@ -353,3 +353,27 @@ Adjust.setOfflineMode(true);
 
 % methodEnd
 
+
+% setEnabled
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+Adjust.setEnabled(false);
+```
+:::
+::::
+
+% methodEnd
+
+% isEnabled
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+Adjust.isEnabled();
+```
+:::
+::::
+
+% methodEnd

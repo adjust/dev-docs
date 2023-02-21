@@ -1,5 +1,57 @@
 # Config methods
 
+Use these methods to update the Adjust SDK's configuration.
+
+% classMethod setEnabled
+
+:::{function} setEnabled (enabled)
+:noindex:
+
+Enable or disable the Adjust SDK. The SDK doesn't send any information while disabled.
+
+```{code-block} cs
+:name: unity-setEnabled-invocation
+
+public static void setEnabled(bool enabled)
+```
+
+:param enabled: Whether the SDK should be enabled or not
+:type enabled: Boolean
+
+```{include} /unity/fragments/Adjust.md
+:start-after: setEnabled
+:end-before: methodEnd
+```
+
+:::
+
+% classMethodEnd
+
+% classMethod isEnabled
+
+:::{function} isEnabled ()
+:noindex:
+
+Call this method to check whether the Adjust SDK is enabled.
+
+```{code-block} cs
+:name: unity-isEnabled-invocation
+
+public static bool isEnabled()
+```
+
+:returns: Whether the SDK is currently enabled
+:rtype: Boolean
+
+```{include} /unity/fragments/Adjust.md
+:start-after: isEnabled
+:end-before: methodEnd
+```
+
+:::
+
+% classMethodEnd
+
 % classMethod sendFirstPackages
 
 ::::{function} sendFirstPackages ()

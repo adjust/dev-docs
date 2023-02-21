@@ -21,7 +21,7 @@ The Adjust SDK sends event information as soon as a user triggers an event in yo
 
 Your config object contains a boolean `eventBufferingEnabled` property that controls this behavior. You can set this property by calling the [`setEventBufferingEnabled` method](unity-setEventBufferingEnabled-invocation) on your config object with a boolean argument.
 
-```{include} /unity/fragments/ADJConfig.md
+```{include} /unity/fragments/AdjustConfig.md
 :start-after: setEventBufferingEnabled
 :end-before: methodEnd
 ```
