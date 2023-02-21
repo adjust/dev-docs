@@ -228,3 +228,53 @@ var attribution = Adjust.getAttribution();
 ::::
 
 % methodEnd
+
+% getAdid
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+string adid = Adjust.getAdid();
+```
+:::
+::::
+
+% methodEnd
+
+% getIdfa
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+string idfa = Adjust.getIdfa();
+```
+:::
+::::
+
+% methodEnd
+
+% getGoogleAdId
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+Adjust.getGoogleAdId((string googleAdId) => {
+   //...
+}};
+```
+:::
+::::
+
+% methodEnd
+
+% getAmazonAdId
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+string amazonAdId = Adjust.getAmazonAdId();
+```
+:::
+::::
+
+% methodEnd

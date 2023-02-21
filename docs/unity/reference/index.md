@@ -10,6 +10,7 @@ Adjust/index
 AdjustConfig/index
 AdjustEvent
 AdjustAdRevenue
+AdjustAttribution
 AdjustAppStoreSubscription
 AdjustPlayStoreSubscription
 
