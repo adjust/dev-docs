@@ -358,3 +358,20 @@ Adjust.start(adjustConfig);
 ::::
 
 % methodEnd
+
+% setSendInBackground
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+//...
+adjustConfig.setSendInBackground(true);
+//...
+Adjust.start(adjustConfig);
+```
+:::
+::::
+
+% methodEnd

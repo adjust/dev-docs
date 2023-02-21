@@ -1,5 +1,30 @@
 # Setup methods
 
+% classMethod setSendInBackground
+
+:::{function} setSendInBackground (sendInBackground)
+:noindex:
+
+Sets whether the SDK should send data while the app is running in the background
+
+```{code-block} cs
+:name: unity-setSendInBackground-invocation
+
+public void setSendInBackground(bool sendInBackground)
+```
+
+:param sendInBackground: Whether the SDK should send information when the app is running in the background
+:type sendInBackground: Boolean
+
+```{include} /unity/fragments/AdjustConfig.md
+:start-after: setSendInBackground
+:end-before: methodEnd
+```
+
+:::
+
+% classMethodEnd
+
 % classMethod setSessionSuccessDelegate
 
 :::{function} setSessionSuccessDelegate (sessionSuccessDelegate)
