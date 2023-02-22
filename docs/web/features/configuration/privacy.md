@@ -8,19 +8,19 @@ Article 17 of the European Union's {abbr}`GDPR (General Data Protection Regulati
 
 You can send the user's RTBF request to Adjust by calling the [`gdprForgetMe` method](web-gdprForgetMe-invocation).
 
-```{include} /web/fragments/Adjust.md
-:start-after: gdprForgetMe
-:end-before: methodEnd
-```
+:::{include} /web/reference/privacy.md
+:start-after: gdprForgetMe snippet
+:end-before: Snippet end
+:::
 
 ## Disable third-party sharing
 
 Some users may want to opt-out of sharing their data with third-parties. To communicate this to Adjust, call the [`disableThirdPartySharing` method](web-disableThirdPartySharing-invocation). When Adjust's servers receive this information, Adjust stops sharing the user's data with third-parties. The Adjust SDK continues to work as expected.
 
-```{include} /web/fragments/Adjust.md
-:start-after: disableThirdPartySharing
-:end-before: methodEnd
-```
+:::{include} /web/reference/privacy.md
+:start-after: disableThirdPartySharing snippet
+:end-before: Snippet end
+:::
 
 ## Data residency
 
@@ -28,12 +28,20 @@ The data residency feature allows you to choose the country in which Adjust stor
 
 To set your country of data residency, pass the region code of your preferred country code in the `dataResidency` property of the [`initSdk` method](web-initSdk-invocation).
 
-```{include} /web/fragments/Adjust.md
-:start-after: dataResidency
-:end-before: methodEnd
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.initSdk({
+  "appToken": "YOUR_APP_TOKEN",
+  "environment": "production",
+  "logLevel": "verbose",
+  "dataResidency": "EU"
+})
 ```
+:::
+::::
 
-```{list-table} Available regions
+:::{list-table} Available regions
 :header-rows: 1
 
 * - Region
@@ -44,18 +52,26 @@ To set your country of data residency, pass the region code of your preferred co
    - `TR`
 * - United States of America
    - `US`
-```
+:::
 
 ## URL strategy
 
 You can set a URL strategy to prioritize regional endpoints for sending data from the Adjust SDK. To do this, pass the region of your preferred country code in the `urlStrategy` property of the [`initSdk` method](web-initSdk-invocation).
 
-```{include} /web/fragments/Adjust.md
-:start-after: urlStrategy
-:end-before: methodEnd
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.initSdk({
+  "appToken": "YOUR_APP_TOKEN",
+  "environment": "production",
+  "logLevel": "verbose",
+  "urlStrategy": "china"
+})
 ```
+:::
+::::
 
-```{list-table} Available regions
+:::{list-table} Available regions
 :header-rows: 1
 
 * - Region
@@ -64,13 +80,20 @@ You can set a URL strategy to prioritize regional endpoints for sending data fro
    - `china`
 * - India
    - `india`
-```
+:::
 
 ## Set custom endpoint
 
 By default, the Adjust SDK sends all data to Adjust's endpoints. If you want to specify a custom endpoint, pass your endpoint in the `customUrl` property of the [`initSdk` method](web-initSdk-invocation).
 
-```{include} /web/fragments/Adjust.md
-:start-after: customUrl
-:end-before: methodEnd
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.initSdk({
+  appToken: 'YOUR_APP_TOKEN',
+  environment: 'sandbox',
+  customUrl: 'https://my-custom-url.com/'
+});
 ```
+:::
+::::

@@ -2,9 +2,9 @@
 
 Use this class to store Play Store subscription information. You can pass this to Adjust's servers using the [`trackPlayStoreSubscription` method](unity-trackPlayStoreSubscription-invocation).
 
-% classMethod AdjustPlayStoreSubscription
+% Class method AdjustPlayStoreSubscription
 
-:::{function} AdjustPlayStoreSubscription (price, currency, sku, orderId, signature, purchaseToken)
+:::::{function} AdjustPlayStoreSubscription (price, currency, sku, orderId, signature, purchaseToken)
 :noindex:
 
 Initializes a subscription
@@ -29,18 +29,31 @@ public AdjustPlayStoreSubscription(string price, string currency, string sku, st
 :type purchaseToken: string
 
 
-```{include} /unity/fragments/AdjustPlayStoreSubscription.md
-:start-after: AdjustPlayStoreSubscription
-:end-before: methodEnd
+% AdjustPlayStoreSubscription snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
+    price,
+    currency,
+    sku,
+    orderId,
+    signature,
+    purchaseToken);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod setPurchaseTime
+:::::
 
-:::{function} setPurchaseTime (purchaseTime)
+% Class method end
+
+% Class method setPurchaseTime
+
+:::::{function} setPurchaseTime (purchaseTime)
 :noindex:
 
 Sets the date of the transaction in the subscription object
@@ -54,18 +67,32 @@ public void setPurchaseTime(string purchaseTime)
 :param purchaseTime: The date on which the subscription was purchased
 :type purchaseTime: string
 
-```{include} /unity/fragments/AdjustPlayStoreSubscription.md
-:start-after: setPurchaseTime
-:end-before: methodEnd
+% setPurchaseTime snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
+    price,
+    currency,
+    sku,
+    orderId,
+    signature,
+    purchaseToken);
+subscription.setPurchaseTime(purchaseTime);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod addCallbackParameter
+:::::
 
-:::{function} addCallbackParameter (key, value)
+% Class method end
+
+% Class method addCallbackParameter
+
+:::::{function} addCallbackParameter (key, value)
 :noindex:
 
 Adds key-value callback parameters to the subscription object. You can add multiple parameters by calling this method multiple times.
@@ -81,18 +108,34 @@ public void addCallbackParameter(string key, string value)
 :param value: The data value
 :type value: string
 
-```{include} /unity/fragments/AdjustPlayStoreSubscription.md
-:start-after: addCallbackParameter
-:end-before: methodEnd
+% addCallbackParameter snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
+    price,
+    currency,
+    sku,
+    orderId,
+    signature,
+    purchaseToken);
+//...
+subscription.addCallbackParameter("key1", "value1");
+subscription.addCallbackParameter("key2", "value2");
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod addPartnerParameter
+:::::
 
-:::{function} addPartnerParameter (key, value)
+% Class method end
+
+% Class method addPartnerParameter
+
+:::::{function} addPartnerParameter (key, value)
 :noindex:
 
 Adds key-value partner parameters to the subscription object. You can add multiple parameters by calling this method multiple times.
@@ -108,11 +151,27 @@ public void addPartnerParameter(string key, string value)
 :param value: The data value
 :type value: string
 
-```{include} /unity/fragments/AdjustPlayStoreSubscription.md
-:start-after: addPartnerParameter
-:end-before: methodEnd
+% addPartnerParameter snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
+    price,
+    currency,
+    sku,
+    orderId,
+    signature,
+    purchaseToken);
+//...
+subscription.addPartnerParameter("key1", "value1");
+subscription.addPartnerParameter("key2", "value2");
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
+
+:::::
+
+% Class method end

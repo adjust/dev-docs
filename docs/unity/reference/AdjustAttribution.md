@@ -14,7 +14,7 @@ The following values can only be accessed if the [`needsCost`](unity-setNeedsCos
 * `costCurrency`
 :::
 
-```{list-table}
+:::{list-table}
 :header-rows: 1
 
 * - Values
@@ -46,7 +46,7 @@ The following values can only be accessed if the [`needsCost`](unity-setNeedsCos
    - The unique Adjust ID assigned to the device
 * - `costType`
    - String
-   - The campaign pricing model (e.g. cpi)
+   - The campaign pricing model (for example cpi)
 * - `costAmount`
    - Number
    - The cost of the install.
@@ -56,4 +56,4 @@ The following values can only be accessed if the [`needsCost`](unity-setNeedsCos
 * - `fbInstallReferrer`
    - String
    - The [Facebook install referrer](https://developers.facebook.com/docs/app-ads/install-referrer/). *Android only*.
-```
+:::

@@ -10,14 +10,14 @@ The Adjust SDK sends event and session data to Adjust's servers in real time. Yo
 
 Call the [`switchToOfflineMode` method](web-switchToOfflineMode-invocation) to enable offline mode.
 
-```{include} /web/fragments/Adjust.md
-:start-after: switchToOfflineMode
-:end-before: methodEnd
-```
+:::{include} /web/reference/config.md
+:start-after: switchToOfflineMode snippet
+:end-before: Snippet end
+:::
 
 The SDK sends all saved information to Adjust's servers when you disable offline mode. To do this, call the [`switchBackToOnlineMode` method](web-switchBackToOnlineMode-invocation)
 
-```{include} /web/fragments/Adjust.md
-:start-after: switchBackToOnlineMode
-:end-before: methodEnd
-```
+:::{include} /web/reference/config.md
+:start-after: switchBackToOnlineMode snippet
+:end-before: Snippet end
+:::

@@ -8,7 +8,7 @@ Your config object contains a boolean `sendInBackground` property that controls 
 You must set the `sendInBackground` property *before* you initialize the Adjust SDK.
 :::
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setSendInBackground
-:end-before: methodEnd
-```
+:::{include} /unity/reference/AdjustConfig/setup.md
+:start-after: setSendInBackground snippet
+:end-before: Snippet end
+:::

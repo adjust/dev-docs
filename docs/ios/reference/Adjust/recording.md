@@ -1,8 +1,8 @@
 # Recording methods
 
-% classMethod trackEvent
+% Class method trackEvent
 
-:::{function} trackEvent (event)
+:::::{function} trackEvent (event)
 :noindex:
 
 Record event information using an `ADJEvent` object and an [Adjust event token](https://help.adjust.com/en/article/basic-event-setup#create-an-event-token).
@@ -16,18 +16,44 @@ Record event information using an `ADJEvent` object and an [Adjust event token](
 :param event: An event object containing information you want to record
 :type event: [*ADJEvent*](/ios/reference/ADJEvent.md)
 
-```{include} /ios/fragments/Adjust.md
-:start-after: trackEvent
-:end-before: methodEnd
+% trackEvent snippet
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+
+```{code-block} swift
+let event = ADJEvent(eventToken: "abc123")
+Adjust.trackEvent(event)
 ```
-
 :::
+:::{tab-item} Objective-C
+:sync: objc
 
-% classMethodEnd
+```{code-block} objc
+ADJEvent *event = [ADJEvent eventWithEventToken:@"abc123"];
+[Adjust trackEvent:event];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
 
-% classMethod addSessionCallbackParameter
+```{code-block} js
+var adjustEvent = new AdjustEvent('abc123');
+Adjust.trackEvent(adjustEvent);
+```
+:::
+::::
 
-:::{function} addSessionCallbackParameter (key, value)
+% Snippet end
+
+:::::
+
+% Class method end
+
+% Class method addSessionCallbackParameter
+
+:::::{function} addSessionCallbackParameter (key, value)
 :noindex:
 
 Adds callback parameters to send with each session recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
@@ -44,18 +70,41 @@ Adds callback parameters to send with each session recorded by the Adjust SDK. Y
 :param value: The data value
 :type value: NSString
 
-```{include} /ios/fragments/Adjust.md
-:start-after: addSessionCallbackParameter
-:end-before: methodEnd
+% addSessionCallbackParameter snippet
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+
+```{code-block} swift
+Adjust.addSessionCallbackParameter("foo", value: "bar")
 ```
-
 :::
+:::{tab-item} Objective-C
+:sync: objc
 
-% classMethodEnd
+```{code-block} objc
+[Adjust addSessionCallbackParameter:@"foo" value:@"bar"];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
 
-% classMethod removeSessionCallbackParameter
+```{code-block} js
+Adjust.addSessionCallbackParameter('foo', 'bar');
+```
+:::
+::::
 
-:::{function} removeSessionCallbackParameter (key)
+% Snippet end
+
+:::::
+
+% Class method end
+
+% Class method removeSessionCallbackParameter
+
+:::::{function} removeSessionCallbackParameter (key)
 :noindex:
 
 Removes a callback parameter
@@ -69,18 +118,41 @@ Removes a callback parameter
 :param key: The data key
 :type key: NSString
 
-```{include} /ios/fragments/Adjust.md
-:start-after: removeSessionCallbackParameter
-:end-before: methodEnd
+% removeSessionCallbackParameter snippet
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+
+```{code-block} swift
+Adjust.removeSessionCallbackParameter("foo")
 ```
-
 :::
+:::{tab-item} Objective-C
+:sync: objc
 
-% classMethodEnd
+```{code-block} objc
+[Adjust removeSessionCallbackParameter:@"foo"];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
 
-% classMethod resetSessionCallbackParameters
+```{code-block} js
+Adjust.removeSessionCallbackParameter('foo');
+```
+:::
+::::
 
-:::{function} resetSessionCallbackParameters
+% Snippet end
+
+:::::
+
+% Class method end
+
+% Class method resetSessionCallbackParameters
+
+:::::{function} resetSessionCallbackParameters
 :noindex:
 
 Removes all callback parameters
@@ -91,18 +163,41 @@ Removes all callback parameters
 + (void) resetSessionCallbackParameters
 ```
 
-```{include} /ios/fragments/Adjust.md
-:start-after: resetSessionCallbackParameters
-:end-before: methodEnd
+% resetSessionCallbackParameters snippet
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+
+```{code-block} swift
+Adjust.resetSessionCallbackParameters()
 ```
-
 :::
+:::{tab-item} Objective-C
+:sync: objc
 
-% classMethodEnd
+```{code-block} objc
+[Adjust resetSessionCallbackParameters];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
 
-% classMethod addSessionPartnerParameter
+```{code-block} js
+Adjust.resetSessionCallbackParameters();
+```
+:::
+::::
 
-:::{function} addSessionPartnerParameter (key, value)
+% Snippet end
+
+:::::
+
+% Class method end
+
+% Class method addSessionPartnerParameter
+
+:::::{function} addSessionPartnerParameter (key, value)
 :noindex:
 
 Adds partner parameters to send with each session recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
@@ -119,18 +214,41 @@ Adds partner parameters to send with each session recorded by the Adjust SDK. Yo
 :param value: The data value
 :type value: NSString
 
-```{include} /ios/fragments/Adjust.md
-:start-after: addSessionPartnerParameter
-:end-before: methodEnd
+% addSessionPartnerParameter snippet
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+
+```{code-block} swift
+Adjust.addSessionPartnerParameter("foo", value: "bar")
 ```
-
 :::
+:::{tab-item} Objective-C
+:sync: objc
 
-% classMethodEnd
+```{code-block} objc
+[Adjust addSessionPartnerParameter:@"foo" value:@"bar"];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
 
-% classMethod removeSessionPartnerParameter
+```{code-block} js
+Adjust.addSessionPartnerParameter('foo', 'bar');
+```
+:::
+::::
 
-:::{function} removeSessionPartnerParameter (key)
+% Snippet end
+
+:::::
+
+% Class method end
+
+% Class method removeSessionPartnerParameter
+
+:::::{function} removeSessionPartnerParameter (key)
 :noindex:
 
 Removes a partner parameter
@@ -144,18 +262,41 @@ Removes a partner parameter
 :param key: The data key
 :type key: NSString
 
-```{include} /ios/fragments/Adjust.md
-:start-after: removeSessionPartnerParameter
-:end-before: methodEnd
+% removeSessionPartnerParameter snippet
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+
+```{code-block} swift
+Adjust.removeSessionPartnerParameter("foo")
 ```
-
 :::
+:::{tab-item} Objective-C
+:sync: objc
 
-% classMethodEnd
+```{code-block} objc
+[Adjust removeSessionPartnerParameter:@"foo"];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
 
-% classMethod resetSessionPartnerParameters
+```{code-block} js
+Adjust.removeSessionPartnerParameter('foo');
+```
+:::
+::::
 
-:::{function} resetSessionPartnerParameters
+% Snippet end
+
+:::::
+
+% Class method end
+
+% Class method resetSessionPartnerParameters
+
+:::::{function} resetSessionPartnerParameters
 :noindex:
 
 Resets all partner parameters
@@ -166,18 +307,41 @@ Resets all partner parameters
 + (void) resetSessionPartnerParameters
 ```
 
-```{include} /ios/fragments/Adjust.md
-:start-after: resetSessionPartnerParameters
-:end-before: methodEnd
+% resetSessionPartnerParameters snippet
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+
+```{code-block} swift
+Adjust.resetSessionPartnerParameters()
 ```
-
 :::
+:::{tab-item} Objective-C
+:sync: objc
 
-% classMethodEnd
+```{code-block} objc
+[Adjust resetSessionPartnerParameters];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
 
-% classMethod appWillOpenUrl
+```{code-block} js
+Adjust.resetSessionPartnerParameters();
+```
+:::
+::::
 
-:::{function} appWillOpenUrl (url)
+% Snippet end
+
+:::::
+
+% Class method end
+
+% Class method appWillOpenUrl
+
+:::::{function} appWillOpenUrl (url)
 :noindex:
 
 Instructs the Adjust SDK to search for attribution information in a URL. If the SDK finds valid information, it sends this information to Adjust's servers.
@@ -191,18 +355,32 @@ Instructs the Adjust SDK to search for attribution information in a URL. If the 
 :param url: A URL containing deep link information
 :type url: NSURL
 
-```{include} /ios/fragments/Adjust.md
-:start-after: appWillOpenUrl
-:end-before: methodEnd
+% appWillOpenUrl snippet
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+Adjust.appWillOpenUrl(url)
 ```
-
 :::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+[Adjust appWillOpenUrl:url];
+```
+:::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod attribution
+:::::
 
-:::{function} attribution
+% Class method end
+
+% Class method attribution
+
+:::::{function} attribution
 :noindex:
 
 Fetches attribution data from the device
@@ -216,18 +394,41 @@ Fetches attribution data from the device
 :returns: An attribution object containing attribution data associated with the device
 :rtype: [`ADJAttribution` object](/ios/reference/ADJAttribution.md)
 
-```{include} /ios/fragments/Adjust.md
-:start-after: attribution
-:end-before: methodEnd
+% attribution snippet
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+
+```{code-block} swift
+let attribution = Adjust.attribution()
 ```
-
 :::
+:::{tab-item} Objective-C
+:sync: objc
 
-% classMethodEnd
+```{code-block} objc
+ADJAttribution *attribution = [Adjust attribution];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
 
-% classMethod trackSubscription
+```{code-block} js
+var attribution = Adjust.getAttribution();
+```
+:::
+::::
 
-:::{function} trackSubscription(subscription)
+% Snippet end
+
+:::::
+
+% Class method end
+
+% Class method trackSubscription
+
+:::::{function} trackSubscription(subscription)
 :noindex:
 
 Record the details of an ADJSubscription object
@@ -241,18 +442,65 @@ Record the details of an ADJSubscription object
 :param subscription: The subscription object containing the purchase details
 :type subscription: [ADJSubscription object](/ios/reference/ADJSubscription.md)
 
-```{include} /ios/fragments/Adjust.md
-:start-after: trackSubscription
-:end-before: methodEnd
+% trackSubscription snippet
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+let subscription = ADJSubscription(
+    price: price,
+    currency: currency,
+    transactionId: transactionId,
+    andReceipt: receipt)
+ 
+subscription.setTransactionDate(transactionDate)
+subscription.setSalesRegion(salesRegion)
+
+// Add callback parameters
+
+subscription.addCallbackParameter("key1", value: "value1")
+subscription.addCallbackParameter("key2", value: "value2")
+
+// Add partner parameters
+
+subscription.addPartnerParameter("key1", value: "value1")
+subscription.addCallbackParameter("key2", value: "value2")
+
+Adjust.trackSubscription(subscription)
 ```
-
 :::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:price
+                                                              currency:currency
+                                                         transactionId:transactionId
+                                                            andReceipt:receipt];
+[subscription setTransactionDate:transactionDate]; 
+[subscription setSalesRegion:salesRegion];
+// Add callback parameters
+[subscription addCallbackParameter:@"key1" value:@"value1"];
+[subscription addCallbackParameter:@"key2" value:@"value2"];
 
-% classMethodEnd
+// Add partner parameters
+[subscription addPartnerParameter:@"key1" value:@"value1"];
+[subscription addPartnerParameter:@"key2" value:@"value2"];
 
-% classMethod trackAdRevenue
+[Adjust trackSubscription:subscription];
+```
+:::
+::::
 
-:::{function} trackAdRevenue(adRevenue)
+% Snippet end
+
+:::::
+
+% Class method end
+
+% Class method trackAdRevenue
+
+:::::{function} trackAdRevenue(adRevenue)
 :noindex:
 
 Record the details of an ADJAdRevenue object
@@ -266,11 +514,30 @@ Record the details of an ADJAdRevenue object
 :param adRevenue: The ad revenue object containing the revenue details
 :type adRevenue: [ADJAdRevenue object](/ios/reference/ADJAdRevenue.md)
 
-```{include} /ios/fragments/Adjust.md
-:start-after: trackAdRevenue
-:end-before: methodEnd
+% trackAdRevenue snippet
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+
+```{code-block} swift
+let adRevenue = ADJAdRevenue(source: source);
+Adjust.trackAdRevenue(adRevenue);
 ```
-
 :::
+:::{tab-item} Objective-C
+:sync: objc
 
-% classMethodEnd
+```{code-block} objc
+ADJAdRevenue *adRevenue = [[ADJAdRevenue alloc] initWithSource:source];
+//...
+[Adjust trackAdRevenue:adRevenue];
+```
+:::
+::::
+
+% Snippet end
+
+:::::
+
+% Class method end

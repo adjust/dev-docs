@@ -8,7 +8,7 @@ Call this method as close to initializing the SDK as possible to ensure your ref
 
 To set you referrer, call the [`setReferrer` method](web-setReferrer-invocation) and pass your referrer as a URL-encoded **string** argument.
 
-```{include} /web/fragments/Adjust.md
-:start-after: setReferrer
-:end-before: methodEnd
-```
+:::{include} /web/reference/config.md
+:start-after: setReferrer snippet
+:end-before: Snippet end
+:::

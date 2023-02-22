@@ -2,9 +2,9 @@
 
 Use these methods to retrieve device information.
 
-% classMethod adid
+% Class method adid
 
-:::{function} adid
+:::::{function} adid
 :noindex:
 
 Returns the {abbr}`ADID (Adjust Device ID)` associated with the device
@@ -18,18 +18,41 @@ Returns the {abbr}`ADID (Adjust Device ID)` associated with the device
 :returns: The device ADID
 :rtype: NSString
 
-```{include} /ios/fragments/Adjust.md
-:start-after: adid
-:end-before: methodEnd
+% adid snippet
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+
+```{code-block} swift
+let adid = Adjust.adid()
 ```
-
 :::
+:::{tab-item} Objective-C
+:sync: objc
 
-% classMethodEnd
+```{code-block} objc
+NSString *adid = [Adjust adid];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
 
-% classMethod idfa
+```{code-block} js
+var adid = Adjust.getAdid();
+```
+:::
+::::
 
-::::{function} adid
+% Snippet end
+
+:::::
+
+% Class method end
+
+% Class method idfa
+
+:::::{function} idfa
 :noindex:
 
 Returns the {abbr}`IDFA (ID For Advertisers)` associated with the device
@@ -47,11 +70,36 @@ The [`allowIdfaReading` property](ios-setAllowIdfaReading-invocation) must be `t
 :returns: The device IDFA
 :rtype: NSString
 
-```{include} /ios/fragments/Adjust.md
-:start-after: idfa
-:end-before: methodEnd
-```
+% idfa snippet
 
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+
+```{code-block} swift
+let idfa = Adjust.idfa()
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+
+```{code-block} objc
+NSString *idfa = [Adjust idfa];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+
+```{code-block} js
+Adjust.getIdfa(function(idfa) {
+   // …
+});
+```
+:::
 ::::
 
-% classMethodEnd
+% Snippet end
+
+:::::
+
+% Class method end

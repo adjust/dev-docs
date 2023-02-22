@@ -14,7 +14,7 @@ The following values can only be accessed if the [`needsCost`](ios-setNeedsCost-
 * `costCurrency`
 :::
 
-```{list-table}
+:::{list-table}
 :header-rows: 1
 
 * - Values
@@ -46,11 +46,11 @@ The following values can only be accessed if the [`needsCost`](ios-setNeedsCost-
    - The unique Adjust ID assigned to the device
 * - `costType`
    - String
-   - The campaign pricing model (e.g. cpi)
+   - The campaign pricing model (for example cpi)
 * - `costAmount`
    - Number
    - The cost of the install.
 * - `costCurrency`
    - String	
    - The [3 character ISO 4217 code](https://www.iban.com/currency-codes) of the currency associated with the cost.
-```
+:::

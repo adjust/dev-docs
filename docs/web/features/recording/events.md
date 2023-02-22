@@ -5,10 +5,10 @@ You can associate your [Adjust event tokens](https://help.adjust.com/en/article/
 1. Create a new Adjust event instance and pass your event token as a **string** argument.
 2. Call the [`trackEvent` method](web-trackEvent-invocation) method with your event instance as an argument.
 
-```{include} /web/fragments/Adjust.md
-:start-after: trackEvent
-:end-before: methodEnd
-```
+:::{include} /web/reference/recording.md
+:start-after: trackEvent snippet
+:end-before: Snippet end
+:::
 
 :::::{dropdown} Example
 
@@ -64,10 +64,19 @@ Check the guide to [tracking purchases in different currencies](https://help.adj
 :::
 
 
-```{include} /web/fragments/Adjust.md
-:start-after: trackEvent revenue
-:end-before: methodEnd
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+:emphasize-lines: 3-4
+
+Adjust.trackEvent({
+  // ... other params go here, including mandatory ones
+  revenue: 110,
+  currency: 'EUR'
+})
 ```
+:::
+::::
 
 :::::{dropdown} Example
 
@@ -115,10 +124,18 @@ You can pass an optional identifier to avoid measuring duplicate events. The SDK
 
 To configure this, set the `deduplicationId` property to your transaction ID.
 
-```{include} /web/fragments/Adjust.md
-:start-after:  trackEvent deduplicationId
-:end-before: methodEnd
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+:emphasize-lines: 3
+
+Adjust.trackEvent({
+  // ... other params go here, including mandatory ones
+   deduplicationId: '{YourDeduplicationId}'
+})
 ```
+:::
+::::
 
 :::::{dropdown} Example
 
@@ -161,10 +178,17 @@ _timeoutId = setTimeout(() => {
 
 You can override the deduplication limit to change the number of identifiers the Adjust SDK stores. To do this, specify the new limit in the `eventDeduplicationListLimit` argument of the [`initSdk` method](web-initSdk-invocation).
 
-```{include} /web/fragments/Adjust.md
-:start-after: eventDeduplicationListLimit
-:end-before: methodEnd
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.initSdk({
+  appToken: 'YOUR_APP_TOKEN',
+  environment: 'sandbox',
+  eventDeduplicationListLimit: 20
+});
 ```
+:::
+::::
 
 ## Add callback parameters
 
@@ -174,17 +198,28 @@ You can configure callback parameters to send to your servers. Once you configur
 
 Add callback parameters to your event by creating a `callbackParams` array containing `GlobalParam` objects.
 
-```{include} /web/reference/recording.md
+:::{include} /web/reference/recording.md
 :start-after: interface GlobalParams
 :end-before: interfaceEnd
-```
+:::
 
 You can append several parameters by adding multiple `GlobalParam` objects to the `callbackParams` array.
 
-```{include} /web/fragments/Adjust.md
-:start-after: trackEvent callbackParams
-:end-before: methodEnd
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+:emphasize-lines: 3-6
+
+Adjust.trackEvent({
+  // ... other params go here, including mandatory ones
+  callbackParams: [
+    {key: 'key', value: 'value'}, 
+    {key: 'foo', value: 'bar'}
+  ]
+})
 ```
+:::
+::::
 
 The Adjust SDK measures the event and sends a request to your URL with the callback parameters. For example, if you register the URL `https://www.mydomain.com/callback`, your callback looks like this:
 
@@ -267,17 +302,28 @@ Partner parameters don't appear in raw data by default. You can add the `{partne
 
 Add partner parameters to your event by creating a `partnerParams` array containing `GlobalParam` objects.
 
-```{include} /web/reference/recording.md
+:::{include} /web/reference/recording.md
 :start-after: interface GlobalParams
 :end-before: interfaceEnd
-```
+:::
 
 You can append several parameters by adding multiple `GlobalParam` objects to the `partnerParams` array.
 
-```{include} /web/fragments/Adjust.md
-:start-after: trackEvent partnerParams
-:end-before: methodEnd
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+:emphasize-lines: 3-6
+
+Adjust.trackEvent({
+  // ... other params go here, including mandatory ones
+  partnerParams: [
+    {key: 'key', value: 'value'}, 
+    {key: 'foo', value: 'bar'}
+  ]
+})
 ```
+:::
+::::
 
 :::::{dropdown} Example
 

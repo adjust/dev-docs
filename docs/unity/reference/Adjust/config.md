@@ -2,9 +2,9 @@
 
 Use these methods to update the Adjust SDK's configuration.
 
-% classMethod setEnabled
+% Class method setEnabled
 
-:::{function} setEnabled (enabled)
+:::::{function} setEnabled (enabled)
 :noindex:
 
 Enable or disable the Adjust SDK. The SDK doesn't send any information while disabled.
@@ -18,18 +18,25 @@ public static void setEnabled(bool enabled)
 :param enabled: Whether the SDK should be enabled or not
 :type enabled: Boolean
 
-```{include} /unity/fragments/Adjust.md
-:start-after: setEnabled
-:end-before: methodEnd
+% setEnabled snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+Adjust.setEnabled(false);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod isEnabled
+:::::
 
-:::{function} isEnabled ()
+% Class method end
+
+% Class method isEnabled
+
+:::::{function} isEnabled ()
 :noindex:
 
 Call this method to check whether the Adjust SDK is enabled.
@@ -43,18 +50,25 @@ public static bool isEnabled()
 :returns: Whether the SDK is currently enabled
 :rtype: Boolean
 
-```{include} /unity/fragments/Adjust.md
-:start-after: isEnabled
-:end-before: methodEnd
+% isEnabled snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+Adjust.isEnabled();
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod sendFirstPackages
+:::::
 
-::::{function} sendFirstPackages ()
+% Class method end
+
+% Class method sendFirstPackages
+
+:::::{function} sendFirstPackages ()
 :noindex:
 
 :::{note}
@@ -69,18 +83,25 @@ The Adjust SDK sends information to Adjust's servers as soon as it starts. If yo
 public static void sendFirstPackages()
 ```
 
-```{include} /unity/fragments/Adjust.md
-:start-after: sendFirstPackages
-:end-before: methodEnd
-```
+% sendFirstPackages snippet
 
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+Adjust.sendFirstPackages();
+```
+:::
 ::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod setOfflineMode
+:::::
 
-:::{function} setOfflineMode (enabled)
+% Class method end
+
+% Class method setOfflineMode
+
+:::::{function} setOfflineMode (enabled)
 :noindex:
 
 Controls whether the SDK is in offline mode. When in offline mode, the SDK queues all events in a file until offline mode is disabled. When offline mode is disabled, the SDK sends all queued events.
@@ -94,18 +115,25 @@ public static void setOfflineMode(bool enabled)
 :param enabled: Whether the SDK should be enabled or not
 :type enabled: Boolean
 
-```{include} /unity/fragments/Adjust.md
-:start-after: setOfflineMode
-:end-before: methodEnd
+% setOfflineMode snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+Adjust.setOfflineMode(true);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod setDeviceToken
+:::::
 
-:::{function} setDeviceToken (deviceToken)
+% Class method end
+
+% Class method setDeviceToken
+
+:::::{function} setDeviceToken (deviceToken)
 :noindex:
 
 Set your [push token](https://help.adjust.com/en/article/push-notifications) to record [uninstalls and reattributions](https://help.adjust.com/en/article/uninstalls-reinstalls). You can update this value at any time.
@@ -119,11 +147,18 @@ public static void setDeviceToken(string deviceToken)
 :param deviceToken: Your push token
 :type deviceToken: String
 
-```{include} /unity/fragments/Adjust.md
-:start-after: setDeviceToken
-:end-before: methodEnd
+% setDeviceToken snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+Adjust.setDeviceToken("{YourDeviceToken}");
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
+
+:::::
+
+% Class method end

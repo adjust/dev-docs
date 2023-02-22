@@ -8,9 +8,9 @@ myst:
 
 # Recording methods
 
-% classMethod trackEvent
+% Class method trackEvent
 
-:::{function} trackEvent (EventParamsT)
+:::::{function} trackEvent (EventParamsT)
 :noindex:
 
 Record an event object with an [Adjust event token](https://help.adjust.com/en/article/basic-event-setup#create-an-event-token) and additional parameters.
@@ -26,18 +26,29 @@ function trackEvent (params: EventParamsT): Promise<void> {
 :param EventParamsT: Your Adjust event parameters
 :type EventParamsT: *{{ EventParams }}*
 
-```{include} /web/fragments/Adjust.md
-:start-after: initSdk
-:end-before: methodEnd
+% trackEvent snippet
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+:emphasize-lines: 2
+
+Adjust.trackEvent({
+  eventToken: '{YourEventToken}'
+})
 ```
-
 :::
+::::
 
-% classMethod end
+% Snippet end
 
-% classMethod addGlobalCallbackParameters
+:::::
 
-:::{function} addGlobalCallbackParameters(Array<GlobalParams>)
+% Class method end
+
+% Class method addGlobalCallbackParameters
+
+:::::{function} addGlobalCallbackParameters(Array<GlobalParams>)
 :noindex:
 
 Adds callback parameters to send with each session and event recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
@@ -51,18 +62,28 @@ function addGlobalCallbackParameters(params: Array<GlobalParams>): void
 :param GlobalParams: An array of key-value pairs
 :type GlobalParams: *Array\<{{ GlobalParams }}\>*
 
-```{include} /web/fragments/Adjust.md
-:start-after: addGlobalCallbackParameters
-:end-before: methodEnd
+% addGlobalCallbackParameters snippet
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.addGlobalCallbackParameters([
+  {key: 'key1', value: 'value1'},
+  {key: 'key2', value: 'value2'}
+]);
 ```
-
 :::
+::::
 
-% classMethod end
+% Snippet end
 
-% classMethod removeGlobalCallbackParameter
+:::::
 
-:::{function} removeGlobalCallbackParameter(key, value)
+% Class method end
+
+% Class method removeGlobalCallbackParameter
+
+:::::{function} removeGlobalCallbackParameter(key, value)
 :noindex:
 
 Removes a global callback parameter
@@ -76,18 +97,25 @@ function removeGlobalCallbackParameter(key: string): void
 :param key: The data key
 :type key: String
 
-```{include} /web/fragments/Adjust.md
-:start-after: removeGlobalCallbackParameter
-:end-before: methodEnd
+% removeGlobalCallbackParameter snippet
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.removeGlobalCallbackParameter('key1');
 ```
-
 :::
+::::
 
-% classMethod end
+% Snippet end
 
-% classMethod clearGlobalCallbackParameters
+:::::
 
-:::{function} clearGlobalCallbackParameters
+% Class method end
+
+% Class method clearGlobalCallbackParameters
+
+:::::{function} clearGlobalCallbackParameters
 :noindex:
 
 Removes all global callback parameters
@@ -98,18 +126,25 @@ Removes all global callback parameters
 function clearGlobalCallbackParameters(): void
 ```
 
-```{include} /web/fragments/Adjust.md
-:start-after: clearGlobalCallbackParameters
-:end-before: methodEnd
+% clearGlobalCallbackParameters snippet
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.clearGlobalCallbackParameters();
 ```
-
 :::
+::::
 
-% classMethod end
+% Snippet end
 
-% classMethod addGlobalPartnerParameters
+:::::
 
-:::{function} addGlobalPartnerParameters(Array<GlobalParams>)
+% Class method end
+
+% Class method addGlobalPartnerParameters
+
+:::::{function} addGlobalPartnerParameters(Array<GlobalParams>)
 :noindex:
 
 Adds partner parameters to send with each session and event recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
@@ -123,18 +158,28 @@ function addGlobalPartnerParameters(params: Array<GlobalParams>): void
 :param GlobalParams: An array of key-value pairs
 :type GlobalParams: *Array\<{{ GlobalParams }}\>*
 
-```{include} /web/fragments/Adjust.md
-:start-after: addGlobalPartnerParameters
-:end-before: methodEnd
+% addGlobalPartnerParameters snippet
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.addGlobalPartnerParameters([
+  {key: 'key1', value: 'value1'},
+  {key: 'key2', value: 'value2'}
+]);
 ```
-
 :::
+::::
 
-% classMethod end
+% Snippet end
 
-% classMethod removeGlobalPartnerParameter
+:::::
 
-:::{function} removeGlobalPartnerParameter(key, value)
+% Class method end
+
+% Class method removeGlobalPartnerParameter
+
+:::::{function} removeGlobalPartnerParameter(key, value)
 :noindex:
 
 Removes a global partner parameter
@@ -148,18 +193,25 @@ function removeGlobalPartnerParameter(key: string): void
 :param key: The data key
 :type key: String
 
-```{include} /web/fragments/Adjust.md
-:start-after: removeGlobalPartnerParameter
-:end-before: methodEnd
+% removeGlobalPartnerParameter snippet
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.removeGlobalPartnerParameter('key1');
 ```
-
 :::
+::::
 
-% classMethod end
+% Snippet end
 
-% classMethod clearGlobalPartnerParameters
+:::::
 
-:::{function} clearGlobalPartnerParameters
+% Class method end
+
+% Class method clearGlobalPartnerParameters
+
+:::::{function} clearGlobalPartnerParameters
 :noindex:
 
 Removes all global partner parameters
@@ -170,18 +222,25 @@ Removes all global partner parameters
 function clearGlobalPartnerParameters(): void
 ```
 
-```{include} /web/fragments/Adjust.md
-:start-after: clearGlobalPartnerParameters
-:end-before: methodEnd
+% clearGlobalPartnerParameters snippet
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.clearGlobalPartnerParameters();
 ```
-
 :::
+::::
 
-% classMethod end
+% Snippet end
 
-% classMethod getAttribution
+:::::
 
-:::{function} getAttribution
+% Class method end
+
+% Class method getAttribution
+
+:::::{function} getAttribution
 :noindex:
 
 Returns the user's attribution information
@@ -195,14 +254,21 @@ function getAttribution(): Attribution | undefined
 :returns: The user's attribution information
 :rtype: {{ Attribution }}
 
-```{include} /web/fragments/Adjust.md
-:start-after: getAttribution
-:end-before: methodEnd
+% getAttribution snippet
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+const attribution = Adjust.getAttribution();
 ```
-
 :::
+::::
 
-% classMethod end
+% Snippet end
+
+:::::
+
+% Class method end
 
 ## Interfaces
 

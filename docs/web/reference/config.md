@@ -8,9 +8,9 @@ myst:
 
 Use these methods to update the Adjust SDK's configuration.
 
-% classMethod initSdk
+% Class method initSdk
 
-:::{function} initSdk({ logLevel, logOutput, ...options }: InitOptions)
+:::::{function} initSdk({ logLevel, logOutput, ...options }: InitOptions)
 :noindex:
 
 Initializes the Adjust with a set of customizable options
@@ -24,13 +24,28 @@ function initSdk({ logLevel, logOutput, ...options }: InitOptions): void
 :param InitOptions: A set of initialization options that configure the SDK's behavior
 :type InitOptions: {{ InitOptions }}
 
+% initSdk snippet
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.initSdk({
+  appToken: 'YOUR_APP_TOKEN',
+  environment: 'sandbox'
+});
+```
 :::
+::::
 
-% classMethod end
+% Snippet end
 
-% classMethod stop
+:::::
 
-:::{function} stop
+% Class method end
+
+% Class method stop
+
+:::::{function} stop
 :noindex:
 
 Disables the Adjust SDK. The SDK doesn't send any information while disabled.
@@ -41,18 +56,25 @@ Disables the Adjust SDK. The SDK doesn't send any information while disabled.
 function stop(): void
 ```
 
-```{include} /web/fragments/Adjust.md
-:start-after: stop
-:end-before: methodEnd
+% stop snippet
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.stop();
 ```
-
 :::
+::::
 
-% classMethod end
+% Snippet end
 
-% classMethod restart
+:::::
 
-:::{function} restart
+% Class method end
+
+% Class method restart
+
+:::::{function} restart
 :noindex:
 
 Restarts the Adjust SDK
@@ -63,18 +85,25 @@ Restarts the Adjust SDK
 function restart(): void
 ```
 
-```{include} /web/fragments/Adjust.md
-:start-after: restart
-:end-before: methodEnd
+% restart snippet
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.restart();
 ```
-
 :::
+::::
 
-% classMethod end
+% Snippet end
 
-% classMethod switchToOfflineMode
+:::::
 
-:::{function} switchToOfflineMode
+% Class method end
+
+% Class method switchToOfflineMode
+
+:::::{function} switchToOfflineMode
 :noindex:
 
 Enables offline mode
@@ -85,18 +114,25 @@ Enables offline mode
 function switchToOfflineMode(): void
 ```
 
-```{include} /web/fragments/Adjust.md
-:start-after: switchToOfflineMode
-:end-before: methodEnd
+% switchToOfflineMode snippet
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.switchToOfflineMode();
 ```
-
 :::
+::::
 
-% classMethod end
+% Snippet end
 
-% classMethod switchBackToOnlineMode
+:::::
 
-:::{function} switchBackToOnlineMode
+% Class method end
+
+% Class method switchBackToOnlineMode
+
+:::::{function} switchBackToOnlineMode
 :noindex:
 
 Disables offline mode
@@ -107,18 +143,25 @@ Disables offline mode
 function switchBackToOnlineMode(): void
 ```
 
-```{include} /web/fragments/Adjust.md
-:start-after: switchBackToOnlineMode
-:end-before: methodEnd
+% switchBackToOnlineMode snippet
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.switchBackToOnlineMode();
 ```
-
 :::
+::::
 
-% classMethod end
+% Snippet end
 
-% classMethod setReferrer
+:::::
 
-:::{function} setReferrer(referrer)
+% Class method end
+
+% Class method setReferrer
+
+:::::{function} setReferrer(referrer)
 :noindex:
 
 Sets a default referrer to simulate a click
@@ -132,14 +175,21 @@ function setReferrer(referrer: string): void
 :param referrer: Your URL-encoded referrer
 :type referrer: String
 
-```{include} /web/fragments/Adjust.md
-:start-after: setReferrer
-:end-before: methodEnd
+% setReferrer snippet
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+Adjust.setReferrer("adjust_external_click_id%3DEXTERNAL_CLICK_ID");
 ```
-
 :::
+::::
 
-% classMethod end
+% Snippet end
+
+:::::
+
+% Class method end
 
 ## Interfaces
 

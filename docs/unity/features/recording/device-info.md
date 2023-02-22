@@ -6,19 +6,19 @@ The Adjust SDK contains helper methods that return device information. Use these
 
 Adjust generates a unique {abbr}`ADID (Adjust Device ID)` for each device. Call the [`getAdid` method](unity-getAdid-invocation) to return this ID as a **string**.
 
-```{include} /unity/fragments/Adjust.md
-:start-after: getAdid
-:end-before: methodEnd
-```
+:::{include} /unity/reference/Adjust/device-info.md
+:start-after: getAdid snippet
+:end-before: Snippet end
+:::
 
 ## ID For Advertisers
 
 The {abbr}`IDFA (ID for Advertisers)` is a device-specific identifier for Apple devices. Call the [`getIdfa` method](unity-getIdfa-invocation) to return this ID as a **string**.
 
-```{include} /unity/fragments/Adjust.md
-:start-after: getIdfa
-:end-before: methodEnd
-```
+:::{include} /unity/reference/Adjust/device-info.md
+:start-after: getIdfa snippet
+:end-before: Snippet end
+:::
 
 ## Google Play Services Advertising ID
 
@@ -28,16 +28,16 @@ Users can opt out of sharing their GPS ADID by toggling the "Opt out of Ads Pers
 
 You can access this value by calling the [`getGoogleAdId` method](unity-getGoogleAdId-invocation) in a background thread. Assign a delegate function to access the GPS ADID value.
 
-```{include} /unity/fragments/Adjust.md
-:start-after: getGoogleAdId
-:end-before: methodEnd
-```
+:::{include} /unity/reference/Adjust/device-info.md
+:start-after: getGoogleAdId snippet
+:end-before: Snippet end
+:::
 
 ## Amazon Advertiser ID
 
 The {abbr}`Amazon Ad ID (Amazon Advertising ID)` is a device-specific identifier for Android devices. Call the [`getAmazonAdId` method](unity-getAmazonAdId-invocation) to return this ID as a **string**.
 
-```{include} /unity/fragments/Adjust.md
-:start-after: getAmazonAdId
-:end-before: methodEnd
-```
+:::{include} /unity/reference/Adjust/device-info.md
+:start-after: getAmazonAdId snippet
+:end-before: Snippet end
+:::

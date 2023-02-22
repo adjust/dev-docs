@@ -11,29 +11,30 @@ You can configure global callback parameters to your servers. Once you configure
 
 Add callback parameters to your sessions and events by calling the [`addGlobalCallbackParameters` method](web-addGlobalCallbackParameters-invocation) with an array of **string** key-value pair objects. You can add as many objects to this array as you require.
 
-```{include} /web/fragments/Adjust.md
-:start-after: addGlobalCallbackParameters
-:end-before: methodEnd
-```
+:::{include} /web/reference/recording.md
+:start-after: addGlobalCallbackParameters snippet
+:end-before: Snippet end
+:::
 
 For the above example, the callback URL looks like this:
 
 ```
 https://www.mydomain.com/callback?key=value&foo=bar
 ```
+
 You can remove global callback parameters if they're no longer required. To do this, pass the parameter key to the [`removeGlobalCallbackParameter` method](web-removeGlobalCallbackParameter-invocation).
 
-```{include} /web/fragments/Adjust.md
-:start-after: removeGlobalCallbackParameter
-:end-before: methodEnd
-```
+:::{include} /web/reference/recording.md
+:start-after: removeGlobalCallbackParameter snippet
+:end-before: Snippet end
+:::
 
 You can remove all global callback parameters if they're no longer required. To do this, call the [`clearGlobalCallbackParameters` method](web-clearGlobalCallbackParameters-invocation).
 
-```{include} /web/fragments/Adjust.md
-:start-after: clearGlobalCallbackParameters
-:end-before: methodEnd
-```
+:::{include} /web/reference/recording.md
+:start-after: clearGlobalCallbackParameters snippet
+:end-before: Snippet end
+:::
 
 ## Global partner parameters
 
@@ -47,22 +48,22 @@ Partner parameters don't appear in raw data by default. You can add the `{partne
 
 Add partner parameters to your sessions and events by calling the [`addGlobalPartnerParameters` method](web-addGlobalPartnerParameters-invocation) with an array of **string** key-value pair objects. You can add as many objects to this array as you require.
 
-```{include} /web/fragments/Adjust.md
-:start-after: addGlobalPartnerParameters
-:end-before: methodEnd
-```
+:::{include} /web/reference/recording.md
+:start-after: addGlobalPartnerParameters snippet
+:end-before: Snippet end
+:::
 
 You can remove global partner parameters if they're no longer required. To do this, pass the parameter key to the [`removeGlobalPartnerParameter` method](web-removeGlobalPartnerParameter-invocation).
 
-```{include} /web/fragments/Adjust.md
-:start-after: removeGlobalPartnerParameter
-:end-before: methodEnd
-```
+:::{include} /web/reference/recording.md
+:start-after: removeGlobalPartnerParameter snippet
+:end-before: Snippet end
+:::
 
 You can remove all global partner parameters if they're no longer required. To do this, call the [`clearGlobalPartnerParameters` method](web-clearGlobalPartnerParameters-invocation).
 
-```{include} /web/fragments/Adjust.md
-:start-after: clearGlobalPartnerParameters
-:end-before: methodEnd
-```
+:::{include} /web/reference/recording.md
+:start-after: clearGlobalPartnerParameters snippet
+:end-before: Snippet end
+:::
 

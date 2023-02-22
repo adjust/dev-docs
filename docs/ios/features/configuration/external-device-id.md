@@ -18,10 +18,10 @@ You must set your external device ID **before** initializing the Adjust SDK.
 
 The external device ID is case-sensitive. If you have imported external device IDs, make sure the value you pass matches the imported value.
 
-```{include} /ios/fragments/ADJConfig.md
-:start-after: externalDeviceId
-:end-before: methodEnd
-```
+:::{include} /ios/reference/ADJConfig/setup.md
+:start-after: setExternalDeviceId snippet
+:end-before: Snippet end
+:::
 
 If you want to use the external device ID in your business analytics, you can pass it as a session callback parameter. 
 

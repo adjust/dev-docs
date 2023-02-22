@@ -4,17 +4,17 @@ The Adjust SDK runs by default when your app is open. You can disable and re-ena
 
 You can disable the SDK at any time by calling the [`stop` method](web-stop-invocation).
 
-```{include} /web/fragments/Adjust.md
-:start-after: stop
-:end-before: methodEnd
-```
+:::{include} /web/reference/config.md
+:start-after: stop snippet
+:end-before: Snippet end
+:::
 
 You can restart the SDK at any time by calling the [`restart` method](web-restart-invocation).
 
-```{include} /web/fragments/Adjust.md
-:start-after: restart
-:end-before: methodEnd
-```
+:::{include} /web/reference/config.md
+:start-after: restart snippet
+:end-before: Snippet end
+:::
 
 ## Example
 

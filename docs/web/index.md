@@ -66,9 +66,9 @@ The following arguments are required to initialize the Adjust SDK:
 `environment`
    : The environment your app is running in. Set this to `sandbox` to test your app locally.
 
-```{include} /web/fragments/Adjust.md
-:start-after: initSdk
-:end-before: methodEnd
-```
+:::{include} /web/reference/config.md
+:start-after: initSdk snippet
+:end-before: Snippet end
+:::
 
 To further customize your Adjust SDK setup, check out the guides in the [configuration features section](/web/features/configuration/index.md).

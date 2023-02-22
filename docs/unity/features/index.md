@@ -17,14 +17,12 @@ Recording features
 :::
 ::::
 
-```{toctree}
----
-hidden: true
-maxdepth: 1
-caption:  Features
----
+:::{toctree}
+:hidden: true
+:maxdepth: 1
+:caption:  Features
 
 configuration/index
 recording/index
 
-```
+:::

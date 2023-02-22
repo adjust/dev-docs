@@ -6,9 +6,9 @@ Use the methods in this class to set up the Adjust SDK.
 The methods in this class must be called **before** you initialize the SDK.
 :::
 
-% classMethod configWithAppToken
+% Class method configWithAppToken
 
-:::{function} configWithAppToken(appToken, environment,allowSuppressLogLevel)
+:::::{function} configWithAppToken(appToken, environment,allowSuppressLogLevel)
 :noindex:
 
 Initialize the configuration object with your Adjust app token.
@@ -30,16 +30,49 @@ Initialize the configuration object with your Adjust app token.
 :returns: A config object initialized with the provided params
 :rtype: ADJConfig
 
-```{include} /ios/fragments/ADJConfig.md
-:start-after: configWithAppToken
-:end-before: methodEnd
+% configWithAppToken snippet
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+   appToken: yourAppToken,
+   environment: environment)
 ```
-
 :::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+NSString *yourAppToken = @"{YourAppToken}";
+NSString *environment = ADJEnvironmentSandbox;
+*adjustConfig = [ADJConfig configWithAppToken:yourAppToken
+                                  environment:environment];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+```{code-block} js
+:emphasize-lines: 4
 
-% classMethodEnd
+setupWebViewJavascriptBridge(function(bridge) {
+   var yourAppToken = yourAppToken;
+   var environment = AdjustConfig.EnvironmentSandbox;
+   var adjustConfig = new AdjustConfig(yourAppToken, environment);
+});
+```
+:::
+::::
 
-```{toctree}
+% endSnippet
+
+:::::
+
+% Class method end
+
+:::{toctree}
 ---
 caption: Setup methods
 maxdepth: 2
@@ -48,4 +81,4 @@ maxdepth: 2
 setup
 privacy
 
-```
+:::

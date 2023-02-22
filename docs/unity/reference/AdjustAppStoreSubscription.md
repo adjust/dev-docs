@@ -2,9 +2,9 @@
 
 Use this class to store App Store subscription information. You can pass this to Adjust's servers using the [`trackAppStoreSubscription` method](unity-trackAppStoreSubscription-invocation).
 
-% classMethod AdjustAppStoreSubscription
+% Class method AdjustAppStoreSubscription
 
-:::{function} AdjustAppStoreSubscription (price, currency, transactionId, receipt)
+:::::{function} AdjustAppStoreSubscription (price, currency, transactionId, receipt)
 :noindex:
 
 Initializes a subscription
@@ -25,18 +25,29 @@ public AdjustAppStoreSubscription(string price, string currency, string transact
 :type receipt: string
 
 
-```{include} /unity/fragments/AdjustAppStoreSubscription.md
-:start-after: AdjustAppStoreSubscription
-:end-before: methodEnd
+% AdjustAppStoreSubscription snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
+    price,
+    currency,
+    transactionId,
+    receipt);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod setTransactionDate
+:::::
 
-:::{function} setTransactionDate (transactionDate)
+% Class method end
+
+% Class method setTransactionDate
+
+:::::{function} setTransactionDate (transactionDate)
 :noindex:
 
 Sets the date of the transaction in the subscription object
@@ -50,18 +61,31 @@ public void setTransactionDate(string transactionDate)
 :param transactionDate: The date on which the subscription was purchased
 :type transactionDate: string
 
-```{include} /unity/fragments/AdjustAppStoreSubscription.md
-:start-after: setTransactionDate
-:end-before: methodEnd
+% setTransactionDate snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
+    price,
+    currency,
+    transactionId,
+    receipt);
+//...
+subscription.setTransactionDate(transactionDate);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod setSalesRegion
+:::::
 
-:::{function} setSalesRegion (salesRegion)
+% Class method end
+
+% Class method setSalesRegion
+
+:::::{function} setSalesRegion (salesRegion)
 :noindex:
 
 You can record the region in which the user purchased a subscription
@@ -75,18 +99,31 @@ public void setSalesRegion(string salesRegion)
 :param salesRegion: The date on which the subscription was purchased
 :type salesRegion: string
 
-```{include} /unity/fragments/AdjustAppStoreSubscription.md
-:start-after: setSalesRegion
-:end-before: methodEnd
+% setSalesRegion snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
+    price,
+    currency,
+    transactionId,
+    receipt);
+//...
+subscription.setSalesRegion(salesRegion);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod addCallbackParameter
+:::::
 
-:::{function} addCallbackParameter (key, value)
+% Class method end
+
+% Class method addCallbackParameter
+
+:::::{function} addCallbackParameter (key, value)
 :noindex:
 
 Adds key-value callback parameters to the subscription object. You can add multiple parameters by calling this method multiple times.
@@ -102,18 +139,32 @@ public void addCallbackParameter(string key, string value)
 :param value: The data value
 :type value: string
 
-```{include} /unity/fragments/AdjustAppStoreSubscription.md
-:start-after: addCallbackParameter
-:end-before: methodEnd
+% addCallbackParameter snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
+    price,
+    currency,
+    transactionId,
+    receipt);
+//...
+subscription.addCallbackParameter("key1", "value1");
+subscription.addCallbackParameter("key2", "value2");
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod addPartnerParameter
+:::::
 
-:::{function} addPartnerParameter (key, value)
+% Class method end
+
+% Class method addPartnerParameter
+
+:::::{function} addPartnerParameter (key, value)
 :noindex:
 
 Adds key-value partner parameters to the subscription object. You can add multiple parameters by calling this method multiple times.
@@ -129,11 +180,25 @@ public void addPartnerParameter(string key, string value)
 :param value: The data value
 :type value: string
 
-```{include} /unity/fragments/AdjustAppStoreSubscription.md
-:start-after: addPartnerParameter
-:end-before: methodEnd
+% addPartnerParameter snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
+    price,
+    currency,
+    transactionId,
+    receipt);
+//...
+subscription.addPartnerParameter("key1", "value1");
+subscription.addPartnerParameter("key2", "value2");
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
+
+:::::
+
+% Class method end

@@ -11,36 +11,18 @@ To measure ad revenue:
 1. Create a new Adjust ad revenue instance and pass your ad revenue source as an argument.
 2. Call the [`trackAdRevenue` method](ios-trackAdRevenue-invocation) with your ad revenue instance as an argument.
 
-```{include} /ios/fragments/Adjust.md
-:start-after: trackAdRevenue
-:end-before: methodEnd
-```
-
-:::{dropdown} Sources
-
-```{list-table}
-:header-rows: 1
-
-* - Parameter
-   - Source
-* - `ADJAdRevenueSourceAppLovinMAX`
-   - AppLovin MAX
-* - `ADJAdRevenueSourceMopub`
-   - Mopub
-* - `ADJAdRevenueSourceAdMob`
-   - AdMob
-* - `ADJAdRevenueSourceIronSource`
-   - ironSource
-* - `ADJAdRevenueSourceAdMost`
-   - AdMost
-* - `ADJAdRevenueSourceUnity`
-   - Unity
-* - `ADJAdRevenueSourceHeliumChartboost`
-   - Helium Chartboost
-* - `ADJAdRevenueSourcePublisher`
-   - Generic source
-```
+:::{include} /ios/reference/Adjust/recording.md
+:start-after: trackAdRevenue snippet
+:end-before: Snippet end
 :::
+
+::::{dropdown} Sources
+
+:::{include} /ios/reference/ADJAdRevenue.md
+:start-after: adRevenue sources table
+:end-before: tableEnd
+:::
+::::
 
 ## Record ad revenue amount
 
@@ -57,50 +39,50 @@ You must format the currency code as a 3 character string that follows the [ISO 
 Check the [guide to tracking purchases in different currencies](https://help.adjust.com/en/article/currency-conversion) for more information.
 :::
 
-```{include} /ios/fragments/ADJAdRevenue.md
-:start-after: setRevenue
-:end-before: methodEnd
-```
+:::{include} /ios/reference/ADJAdRevenue.md
+:start-after: setRevenue snippet
+:end-before: Snippet end
+:::
 
 ## Record ad campaign details
 
 The ad revenue object contains properties you can use to report on your ad campaigns.
 
-:::::{dropdown} Ad impressions
+::::{dropdown} Ad impressions
 Record the number of ad impressions by passing an **integer** value to the [`setAdImpressionsCount` method](ios-setAdImpressionsCount-invocation).
 
-```{include} /ios/fragments/ADJAdRevenue.md
-:start-after: setAdImpressionsCount
-:end-before: methodEnd
-```
-:::::
+:::{include} /ios/reference/ADJAdRevenue.md
+:start-after: setAdImpressionsCount snippet
+:end-before: Snippet end
+:::
+::::
 
-:::::{dropdown} Ad revenue network
+::::{dropdown} Ad revenue network
 Record which network generated the revenue by passing a **string** value to the [`setAdRevenueNetwork` method](ios-setAdRevenueNetwork-invocation).
 
-```{include} /ios/fragments/ADJAdRevenue.md
-:start-after: setAdRevenueNetwork
-:end-before: methodEnd
-```
-:::::
+:::{include} /ios/reference/ADJAdRevenue.md
+:start-after: setAdRevenueNetwork snippet
+:end-before: Snippet end
+:::
+::::
 
-:::::{dropdown} Ad revenue unit
+::::{dropdown} Ad revenue unit
 Record which ad revenue unit generated the revenue by passing a **string** value to the [`setAdRevenueUnit` method](ios-setAdRevenueUnit-invocation).
 
-```{include} /ios/fragments/ADJAdRevenue.md
-:start-after: setAdRevenueUnit
-:end-before: methodEnd
-```
-:::::
+:::{include} /ios/reference/ADJAdRevenue.md
+:start-after: setAdRevenueUnit snippet
+:end-before: Snippet end
+:::
+::::
 
-:::::{dropdown} Ad revenue placement
+::::{dropdown} Ad revenue placement
 Record the placement of your ad by passing a **string** value to the [`setAdRevenuePlacement` method](ios-setAdRevenuePlacement-invocation).
 
-```{include} /ios/fragments/ADJAdRevenue.md
-:start-after: setAdRevenuePlacement
-:end-before: methodEnd
-```
-:::::
+:::{include} /ios/reference/ADJAdRevenue.md
+:start-after: setAdRevenuePlacement snippet
+:end-before: Snippet end
+:::
+::::
 
 ## Add callback parameters
 
@@ -128,10 +110,10 @@ Adjust supports many placeholders which you can use to pass information from the
 You can read more about using URL callbacks, including a full list of available values, in the [callbacks guide](https://help.adjust.com/en/article/callbacks).
 :::
 
-```{include} /ios/fragments/ADJAdRevenue.md
-:start-after: addCallbackParameter
-:end-before: methodEnd
-```
+:::{include} /ios/reference/ADJAdRevenue.md
+:start-after: addCallbackParameter snippet
+:end-before: Snippet end
+:::
 
 ## Add partner parameters
 
@@ -145,10 +127,10 @@ Partner parameters don't appear in raw data by default. You can add the `{partne
 
 Add partner parameters to your event by calling the [`addPartnerParameter` method](ios-ADJAdRevenue-addPartnerParameter-invocation) with **string** key-value arguments. You can add multiple parameters by calling this method multiple times.
 
-```{include} /ios/fragments/ADJAdRevenue.md
-:start-after: addPartnerParameter
-:end-before: methodEnd
-```
+:::{include} /ios/reference/ADJAdRevenue.md
+:start-after: addPartnerParameter snippet
+:end-before: Snippet end
+:::
 
 ## Example
 

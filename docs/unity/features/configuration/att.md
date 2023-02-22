@@ -1,13 +1,13 @@
 # Set up App Tracking Transparency
 
-```{versionadded} 4.26.0
-```
+:::{versionadded} 4.26.0
+:::
 
 If you want to record the device's {abbr}`IDFA (ID for Advertisers)`, you must display a prompt to get your user's authorization. To do this, you need to include Apple's {abbr}`ATT (App Tracking Transparency)` framework in your app. The Adjust SDK stores the user's authorization status and sends it to Adjust's servers with each request.
 
 ::::{dropdown} Authorization statuses
 
-```{list-table}
+:::{list-table}
 :header-rows: 1
 
 * - Status
@@ -15,7 +15,7 @@ If you want to record the device's {abbr}`IDFA (ID for Advertisers)`, you must d
    - Description
 * - `ATTrackingManagerAuthorizationStatusNotDetermined`
    - `0`
-   - The user has not responded to the access prompt yet
+   - The user hasn't responded to the access prompt yet
 * - `ATTrackingManagerAuthorizationStatusRestricted`
    - `1`
    - Access to app-related data is blocked at the device level
@@ -25,7 +25,7 @@ If you want to record the device's {abbr}`IDFA (ID for Advertisers)`, you must d
 * - `ATTrackingManagerAuthorizationStatusAuthorized`
    - `3`
    - The user has approved access to app-related data for device tracking
-```
+:::
 
 :::{note}
 You might receive a status code of `-1` if the SDK is unable to retrieve the {abbr}`ATT (App Tracking Transparency)` status.
@@ -49,10 +49,10 @@ The Adjust SDK also records the consent status if you use a custom prompt. If yo
 :::
 
 
-```{include} /unity/fragments/Adjust.md
-:start-after: requestTrackingAuthorizationWithCompletionHandler
-:end-before: methodEnd
-```
+:::{include} /unity/reference/Adjust/skan-att.md
+:start-after: requestTrackingAuthorizationWithCompletionHandler snippet
+:end-before: Snippet end
+:::
 
 :::::{dropdown} Example
 
@@ -66,7 +66,7 @@ Adjust.requestTrackingAuthorizationWithCompletionHandler((status) =>
     switch (status)
     {
         case 0:
-            Debug.Log("The user has not responded to the access prompt yet.");
+            Debug.Log("The user hasn't responded to the access prompt yet.");
             break;
         case 1:
             Debug.Log("Access to app-related data is blocked at the device level.");
@@ -86,12 +86,12 @@ Adjust.requestTrackingAuthorizationWithCompletionHandler((status) =>
 
 ## Get current authorization status
 
-You can retrieve a user's current authorization status at any time. Call the {code}`getAppTrackingAuthorizationStatus` method to return the authorization status code as an **integer**.
+You can retrieve a user's current authorization status at any time. Call the [`getAppTrackingAuthorizationStatus` method](unity-getAppTrackingAuthorizationStatus-invocation) to return the authorization status code as an **integer**.
 
-```{include} /unity/fragments/Adjust.md
-:start-after: getAppTrackingAuthorizationStatus
-:end-before: methodEnd
-```
+:::{include} /unity/reference/Adjust/skan-att.md
+:start-after: getAppTrackingAuthorizationStatus snippet
+:end-before: Snippet end
+:::
 
 :::::{dropdown} Example
 
@@ -109,9 +109,9 @@ Adjust.addSessionPartnerParameter("status", authorizationStatus);
 
 ## Check for authorization status changes
 
-If you use a custom ATT prompt, you need to inform the Adjust SDK of changes to the user's authorization status. Call the {code}`checkForNewAttStatus` method to send the authorization status to Adjust's servers.
+If you use a custom ATT prompt, you need to inform the Adjust SDK of changes to the user's authorization status. Call the [`checkForNewAttStatus` method](unity-checkForNewAttStatus-invocation) to send the authorization status to Adjust's servers.
 
-```{include} /unity/fragments/Adjust.md
-:start-after: checkForNewAttStatus
-:end-before: methodEnd
-```
+:::{include} /unity/reference/Adjust/skan-att.md
+:start-after: checkForNewAttStatus snippet
+:end-before: Snippet end
+:::

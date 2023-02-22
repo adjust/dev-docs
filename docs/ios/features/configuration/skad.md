@@ -12,9 +12,9 @@ This feature is only available on devices running iOS 14 and above.
 
 ## Disable SKAdNetwork communication
 
-```{versionadded} v4.23.0
+:::{versionadded} v4.23.0
 The Adjust SDK communicates with SKAdNetwork by default on v4.23.0 and above. The SDK registers for SKAdNetwork attribution upon initialization.
-```
+:::
 
 Your config object contains a boolean `isSKAdNetworkHandlingActive` property that controls this behavior. You can disable SKAdNetwork communication by calling the [`deactivateSKAdNetworkHandling` method](ios-deactivateSKAdNetworkHandling-invocation) with no argument.
 
@@ -22,10 +22,10 @@ Your config object contains a boolean `isSKAdNetworkHandlingActive` property tha
 You must call the `deactivateSKAdNetworkHandling` method *before* initializing the Adjust SDK.
 :::
 
-```{include} /ios/fragments/ADJConfig.md
-:start-after: deactivateSKAdNetworkHandling
-:end-before: methodEnd
-```
+:::{include} /ios/reference/ADJConfig/setup.md
+:start-after: deactivateSKAdNetworkHandling snippet
+:end-before: Snippet end
+:::
 
 ## Update conversion values
 
@@ -33,10 +33,10 @@ Conversion values are a mechanism used to track user behavior in SKAdNetwork. Yo
 
 If you manage your conversion values with Adjust, the servers update this value in the SDK. You can also update this value by using the [`updateConversionValue` method](ios-updateConversionValue-invocation). This method wraps [Apple's `updateConversionValue` method](https://developer.apple.com/documentation/storekit/skadnetwork/3566697-updateconversionvalue). It accepts an integer argument representing your updated conversion value.
 
-```{include} /ios/fragments/Adjust.md
-:start-after: updateConversionValue
-:end-before: methodEnd
-```
+:::{include} /ios/reference/Adjust/skan-att.md
+:start-after: updateConversionValue snippet
+:end-before: Snippet end
+:::
 
 :::::{dropdown} Example
 
@@ -62,9 +62,9 @@ func onButtonClick() {
 
 ### Set up completion handlers
 
-```{versionadded} v4.33.0
+:::{versionadded} v4.33.0
 The Adjust SDK contains wrappers for Apple's `updatePostbackConversionValue` methods. These methods provide more options for handling SKAdNetwork postbacks, including the option to handle failures.
-```
+:::
 
 The following methods are supported:
 
@@ -73,7 +73,7 @@ The following methods are supported:
 updatePostbackConversionValue
 * [`updatePostbackConversionValue(_:coarseValue:lockWindow:completionHandler:)`](https://developer.apple.com/documentation/storekit/skadnetwork/4097267-updatepostbackconversionvalue): update both fine and coarse conversion values, determine whether to send the postback before the end of the conversion value window, and handle errors.
 
-```{list-table}
+:::{list-table}
 :header-rows: 1
 
 * - Argument
@@ -83,7 +83,7 @@ updatePostbackConversionValue
    - Integer
    - Your conversion value. Must be between 0 and 63
 * - `coarseValue`
-   - [SKAdNetwork.CoarseConversionValue](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
+   - [`SKAdNetwork.CoarseConversionValue`](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
    - The coarse conversion value. This value is used if your app doesn't have sufficient installs to reach the privacy threshold.
       * `SKAdNetworkCoarseConversionValueLow`
       * `SKAdNetworkCoarseConversionValueMedium`
@@ -94,7 +94,7 @@ updatePostbackConversionValue
 * - `completion`
    - Function
    - An optional completion handler you provide to catch and handle any errors this method encounters when you update a conversion value. Set this value to `nil` if you don’t provide a handler.
-```
+:::
 
 :::::{dropdown} Example
 ::::{tab-set}
@@ -161,11 +161,11 @@ func adjustConversionValueUpdated(_ conversionValue: NSNumber?) {
 
 ## SKAdNetwork 4.0 callbacks
 
-```{versionadded} v4.33.0
+:::{versionadded} v4.33.0
 SKAdNetwork 4.0 postbacks contain some additional information to give advertisers more insight into their users. When Adjust's servers update conversion values, this additional information is sent in a payload. You can access this information with the `adjustConversionValueUpdated` callback method.
-```
+:::
 
-```{list-table}
+:::{list-table}
 :header-rows: 1
 
 * - Arguments
@@ -173,7 +173,7 @@ SKAdNetwork 4.0 postbacks contain some additional information to give advertiser
    - Description
 * - `fineValue`
    - Integer
-   - The conversion value sent by the Adjust backend
+   - The conversion value sent by Adjust's servers
 * - `coarseValue`
    - String
    - The coarse conversion value. This value is used if your app doesn't have sufficient installs to reach the privacy threshold. Accepted values:
@@ -183,7 +183,7 @@ SKAdNetwork 4.0 postbacks contain some additional information to give advertiser
 * - `lockWindow`
    - Integer
    - Whether to send the postback before the conversion window ends. `1` indicates the postback will be sent before the conversion window ends. Defaults to `0` in SKAdNetwork 4.0 postbacks and `nil` in older SKAdNetwork versions
-```
+:::
 
 :::::{dropdown} Example
 

@@ -8,23 +8,23 @@ You can enable or disable the SDK at any time by calling the [`setEnabled` metho
 You can only call this method after the first session. This setting persists between sessions.
 :::
 
-```{include} /unity/fragments/Adjust.md
-:start-after: setEnabled
-:end-before: methodEnd
-```
+:::{include} /unity/reference/Adjust/config.md
+:start-after: setEnabled snippet
+:end-before: Snippet end
+:::
 
 ## Check enabled status
 
 You can check if the Adjust SDK is enabled at any time by calling the [`isEnabled` method](unity-isEnabled-invocation). This method returns a boolean value.
 
-```{include} /unity/fragments/Adjust.md
-:start-after: isEnabled
-:end-before: methodEnd
-```
+:::{include} /unity/reference/Adjust/config.md
+:start-after: isEnabled snippet
+:end-before: Snippet end
+:::
 
 ## Example
 
-In this example we generate a button to enable or disable the Adjust SDK. The button displays the correct action based on the value of the txtSetEnabled variable.
+This exmpale demonstrates how to generate a button to enable or disable the Adjust SDK. The button displays the correct action based on the value of the txtSetEnabled variable.
 
 * When `txtSetEnabled` = `"Disable SDK"`, the button disables the SDK and sets `txtSetEnabled` to `"Enable SDK"`.
 * When `txtSetEnabled` = `"Enable SDK"`, the button enables the SDK and sets `txtSetEnabled` to `"Disable SDK"`.

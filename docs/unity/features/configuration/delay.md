@@ -10,10 +10,10 @@ The Adjust SDK sends event and session data to Adjust's servers in real time. Yo
 
 Your config object contains a boolean `isOffline` property that controls this behavior. You can update this property at any time by calling the [`setOfflineMode` method](unity-setOfflineMode-invocation) with a boolean argument. The SDK sends all saved information to Adjust's servers when you deactivate offline mode.
 
-```{include} /unity/fragments/Adjust.md
-:start-after: setOfflineMode
-:end-before: methodEnd
-```
+:::{include} /unity/reference/Adjust/config.md
+:start-after: setOfflineMode snippet
+:end-before: Snippet end
+:::
 
 ## Event buffering
 
@@ -21,7 +21,7 @@ The Adjust SDK sends event information as soon as a user triggers an event in yo
 
 Your config object contains a boolean `eventBufferingEnabled` property that controls this behavior. You can set this property by calling the [`setEventBufferingEnabled` method](unity-setEventBufferingEnabled-invocation) on your config object with a boolean argument.
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setEventBufferingEnabled
-:end-before: methodEnd
-```
+:::{include} /unity/reference/AdjustConfig/setup.md
+:start-after: setEventBufferingEnabled snippet
+:end-before: Snippet end
+:::

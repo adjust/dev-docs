@@ -2,9 +2,9 @@
 
 This class contains information about events triggered in your application. You can send this information to Adjust's servers by passing an `AdjustEvent` object to the [`trackEvent` method](unity-trackEvent-invocation).
 
-% classMethod AdjustEvent
+% Class method AdjustEvent
 
-:::{function} AdjustEvent (eventToken)
+:::::{function} AdjustEvent (eventToken)
 :noindex:
 
 Creates an event object initialized with an Adjust event token
@@ -18,18 +18,18 @@ public AdjustEvent(string eventToken)
 :param eventToken: A 6 character Adjust event token
 :type eventToken: string
 
-```{include} /unity/fragments/Adjust.md
-:start-after: trackEvent
-:end-before: methodEnd
-```
-
+:::{include} /unity/reference/Adjust/recording.md
+:start-after: trackEvent snippet
+:end-before: Snippet end
 :::
 
-% classMethodEnd
+:::::
 
-% classMethod setRevenue
+% Class method end
 
-:::{function} setRevenue (amount, currency)
+% Class method setRevenue
+
+:::::{function} setRevenue (amount, currency)
 :noindex:
 
 Sets the revenue and currency associated with the event
@@ -45,18 +45,31 @@ public void setRevenue(double amount, string currency)
 :param currency: The 3 character [ISO 4217 code](https://www.iban.com/currency-codes) of the currency unit
 :type currency: string
 
-```{include} /unity/fragments/AdjustEvent.md
-:start-after: setRevenue
-:end-before: methodEnd
+% setRevenue snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+:emphasize-lines: 3
+
+AdjustEvent adjustEvent = new AdjustEvent("abc123");
+//...
+adjustEvent.setRevenue(0.01, "EUR");
+//...
+Adjust.trackEvent(adjustEvent);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod addCallbackParameter
+:::::
 
-:::{function} addCallbackParameter (key, value)
+% Class method end
+
+% Class method addCallbackParameter
+
+:::::{function} addCallbackParameter (key, value)
 :noindex:
 
 Adds key-value callback parameters to the event object. You can add multiple parameters by calling this method multiple times.
@@ -74,18 +87,31 @@ public void addCallbackParameter(string key, string value)
 :param value: The data value
 :type value: string
 
-```{include} /unity/fragments/AdjustEvent.md
-:start-after: addCallbackParameter
-:end-before: methodEnd
+% addCallbackParameter snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+:emphasize-lines: 3
+
+AdjustEvent adjustEvent = new AdjustEvent("abc123");
+//...
+adjustEvent.addCallbackParameter("key", "value");
+//...
+Adjust.trackEvent(adjustEvent);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod addPartnerParameter
+:::::
 
-:::{function} addPartnerParameter (key, value)
+% Class method end
+
+% Class method addPartnerParameter
+
+:::::{function} addPartnerParameter (key, value)
 :noindex:
 
 Adds key-value partner parameters to the event object. You can add multiple parameters by calling this method multiple times.
@@ -101,18 +127,31 @@ public void addPartnerParameter(string key, string value)
 :param value: The data value
 :type value: string
 
-```{include} /unity/fragments/AdjustEvent.md
-:start-after: addPartnerParameter
-:end-before: methodEnd
+% addPartnerParameter snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+:emphasize-lines: 3
+
+AdjustEvent adjustEvent = new AdjustEvent("abc123");
+//...
+adjustEvent.addPartnerParameter("key", "value");
+//...
+Adjust.trackEvent(adjustEvent);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod setTransactionId
+:::::
 
-:::{function} setTransactionId (transactionId)
+% Class method end
+
+% Class method setTransactionId
+
+:::::{function} setTransactionId (transactionId)
 :noindex:
 
 Sets a deduplication ID on your event to avoid recording duplicates. The SDK stores the last ten identifiers and skips revenue events with duplicate IDs.
@@ -126,18 +165,31 @@ public void setTransactionId(string transactionId)
 :param transactionId: A unique identifier used to deduplicate events
 :type transactionId: string
 
-```{include} /unity/fragments/AdjustEvent.md
-:start-after: setTransactionId
-:end-before: methodEnd
+% setTransactionId snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+:emphasize-lines: 3
+
+AdjustEvent adjustEvent = new AdjustEvent("abc123");
+//...
+adjustEvent.setTransactionId("transactionId");
+//...
+Adjust.trackEvent(adjustEvent);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod setCallbackId
+:::::
 
-:::{function} setCallbackId (callbackId)
+% Class method end
+
+% Class method setCallbackId
+
+:::::{function} setCallbackId (callbackId)
 :noindex:
 
 Sets a custom identifier for your event object. Adjust's servers can report on this identifier in event callbacks.
@@ -151,11 +203,24 @@ public void setCallbackId(string callbackId)
 :param callbackId: A custom identifier for your event object
 :type callbackId: string
 
-```{include} /unity/fragments/AdjustEvent.md
-:start-after: setCallbackId
-:end-before: methodEnd
+% setCallbackId snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+:emphasize-lines: 3
+
+AdjustEvent adjustEvent = new AdjustEvent("abc123");
+//...
+adjustEvent.setCallbackId("{your_callback_id}");
+//...
+Adjust.trackEvent(adjustEvent);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
+
+:::::
+
+% Class method end

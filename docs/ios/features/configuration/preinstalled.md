@@ -12,10 +12,10 @@ Configuring a default campaign enables you to attribute all preinstalls to a pre
 
 2. Copy this token and pass it to the [`setDefaultTracker` method](ios-setDefaultTracker-invocation) in your app delegate file.
 
-   ```{include} /ios/fragments/ADJConfig.md
-   :start-after: setDefaultTracker
-   :end-before: methodEnd
-   ```
+   :::{include} /ios/reference/ADJConfig/setup.md
+   :start-after: setDefaultTracker snippet
+   :end-before: Snippet end
+   :::
 
 3. Build and run your app. If you have logging enabled, you should see a message in your log
 

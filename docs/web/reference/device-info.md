@@ -2,9 +2,9 @@
 
 Use these methods to retrieve device information.
 
-% classMethod getWebUUID
+% Class method getWebUUID
 
-:::{function} getWebUUID
+:::::{function} getWebUUID
 :noindex:
 
 Return the user's `web_uuid`  as a string
@@ -14,11 +14,18 @@ Return the user's `web_uuid`  as a string
 function getWebUUID(): string | undefined
 ```
 
-```{include} /web/fragments/Adjust.md
-:start-after: getWebUUID
-:end-before: methodEnd
+% getWebUUID snippet
+
+::::{tab-set}
+:::{tab-item} Javascript
+```{code-block} js
+const webUUID = Adjust.getWebUUID();
 ```
-
 :::
+::::
 
-% classMethod end
+% Snippet end
+
+:::::
+
+% Class method end

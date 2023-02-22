@@ -87,7 +87,7 @@ Adjust's servers automatically pass the deferred deep link to the Adjust SDK. Wh
    ```{code-block} swift
    func adjustDeeplinkResponse(_ deeplink: URL?) -> Bool {
       // add your code below to handle deep link
-      // (e.g., show onboarding screens, then open deep link content)
+      // (for example, show onboarding screens, then open deep link content)
       // deeplink object contains the deep link
 
 
@@ -100,7 +100,7 @@ Adjust's servers automatically pass the deferred deep link to the Adjust SDK. Wh
    ```{code-block} objc
    - (BOOL)adjustDeeplinkResponse:(NSURL *)deeplink {
        // add your code below to handle deep link
-       // (e.g., show onboarding screens, then open deep link content)
+       // (for example, show onboarding screens, then open deep link content)
        // deeplink object contains the deep link
        
        
@@ -121,7 +121,7 @@ When a user clicks on a LinkMe URL they have the option to copy the link informa
 
 To enable pasteboard checking in your app, pass a true value to the `setLinkMeEnabled` method on your `ADJConfig` object:
 
-```{include} /ios/fragments/ADJConfig.md
-:start-after: setLinkMeEnabled
-:end-before: methodEnd
-```
+:::{include} /ios/reference/ADJConfig/setup.md
+:start-after: setLinkMeEnabled snippet
+:end-before: Snippet end
+:::

@@ -1,9 +1,9 @@
 # Setup methods
 
 
-% classMethod setLogLevel
+% Class method setLogLevel
 
-::::{function} setLogLevel (logLevel)
+:::::{function} setLogLevel (logLevel)
 :noindex:
 
 Set the verbosity of logs you want to receive from the Adjust SDK
@@ -17,13 +17,58 @@ Set the verbosity of logs you want to receive from the Adjust SDK
 :param logLevel: The verbosity of the logging
 :type logLevel: ADJLogLevel
 
-```{include} /ios/fragments/ADJConfig.md
-:start-after: setLogLevel
-:end-before: methodEnd
-```
+% setLogLevel snippet
 
-:::{dropdown} Available log levels
-```{list-table}
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+:emphasize-lines: 7
+
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+   appToken: yourAppToken,
+   environment: environment)
+// ...
+adjustConfig?.logLevel = ADJLogLevelVerbose
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+:emphasize-lines: 6
+
+NSString *yourAppToken = @"{YourAppToken}";
+NSString *environment = ADJEnvironmentSandbox;
+*adjustConfig = [ADJConfig configWithAppToken:yourAppToken
+                                  environment:environment];
+// ...
+[adjustConfig setLogLevel:ADJLogLevelVerbose];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+```{code-block} js
+:emphasize-lines: 6
+
+setupWebViewJavascriptBridge(function(bridge) {
+   // ...
+   var yourAppToken = yourAppToken;
+   var environment = AdjustConfig.EnvironmentSandbox;
+   var adjustConfig = new AdjustConfig(yourAppToken, environment);
+   adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
+});
+```
+:::
+::::
+
+% Snippet end
+
+
+::::{dropdown} Available log levels
+% logLevel table
+:::{list-table}
 :header-rows: 1
 
 * - ADJLogLevel
@@ -43,20 +88,22 @@ Set the verbosity of logs you want to receive from the Adjust SDK
 * - `ADJLogLevelSuppress`
    - Suppress all logging
 
-```
 :::
+% tableEnd
+
 ::::
+:::::
 
-% classMethodEnd
+% Class method end
 
-% classMethod setDefaultTracker
+% Class method setDefaultTracker
 
-:::{function} setDefaultTracker (defaultTracker)
+:::::{function} setDefaultTracker (defaultTracker)
 :noindex:
 
-```{versionadded} v4.2.2
+:::{versionadded} v4.2.2
 Sets a default tracker token to record installs against
-```
+:::
 
 ```{code-block} objc
 :name: ios-setDefaultTracker-invocation
@@ -67,18 +114,143 @@ Sets a default tracker token to record installs against
 :param defaultTracker: The tracker token to which all preinstalled sessions are attributed
 :type defaultTracker: NSString
 
-```{include} /ios/fragments/ADJConfig.md
-:start-after: setDefaultTracker
-:end-before: methodEnd
+% setDefaultTracker snippet
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+:emphasize-lines: 7
+
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+    appToken: yourAppToken,
+    environment: environment)
+//...
+adjustConfig?.defaultTracker = "{Token}"
+//...
+Adjust.appDidLaunch(adjustConfig)
+```
+:::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+:emphasize-lines: 4
+
+*adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
+                                  environment:ADJEnvironmentSandbox];
+//...
+[adjustConfig setDefaultTracker:@"{Token}"];
+//...
+[Adjust appDidLaunch:adjustConfig];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+```{code-block} js
+:emphasize-lines: 6
+
+setupWebViewJavascriptBridge(function(bridge) {
+   // ...
+   var yourAppToken = yourAppToken;
+   var environment = AdjustConfig.EnvironmentSandbox;
+   var adjustConfig = new AdjustConfig(yourAppToken, environment);
+   adjustConfig.setDefaultTracker("{Token}");
+});
+```
+:::
+::::
+
+% Snippet end
+
+:::::
+
+% Class method end
+
+% Class method setDelegate
+
+:::::{function} setDelegate (delegate)
+:noindex:
+
+Sets a delegate function that the SDK calls when the user's attribution changes
+
+```{code-block} objc
+:name: ios-setDelegate-invocation
+
+- (void)setDelegate:(NSObject<AdjustDelegate> *)delegate
 ```
 
+:param delegate: The delegate function to call when attribution changes
+:type delegate: NSObject
+
+% setDelegate snippet
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+:emphasize-lines: 7
+
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+    appToken: yourAppToken,
+    environment: environment)
+//...
+adjustConfig?.delegate = self
+//...
+Adjust.appDidLaunch(adjustConfig)
+```
 :::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+:emphasize-lines: 4
 
-% classMethodEnd
+*adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
+                                  environment:ADJEnvironmentSandbox];
+//...
+[adjustConfig setDelegate:self];
+//...
+[Adjust appDidLaunch:adjustConfig];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+```{code-block} js
+:emphasize-lines: 6
 
-% classMethod setDelayStart
+setupWebViewJavascriptBridge(function(bridge) {
+   // ...
+   var yourAppToken = yourAppToken;
+   var environment = AdjustConfig.EnvironmentSandbox;
+   var adjustConfig = new AdjustConfig(yourAppToken, environment);
+   adjustConfig.setAttributionCallback(function(attribution) {
+    // In this example, we're just displaying alert with attribution content.
+    alert('Tracker token = ' + attribution.trackerToken + '\n' +
+          'Tracker name = ' + attribution.trackerName + '\n' +
+          'Network = ' + attribution.network + '\n' +
+          'Campaign = ' + attribution.campaign + '\n' +
+          'Adgroup = ' + attribution.adgroup + '\n' +
+          'Creative = ' + attribution.creative + '\n' +
+          'Click label = ' + attribution.clickLabel + '\n' +
+          'Adid = ' + attribution.adid);
+   });
+});
+```
+:::
+::::
 
-:::{function} setDelayStart (delayStart)
+% Snippet end
+
+:::::
+
+% Class method end
+
+% Class method setDelayStart
+
+:::::{function} setDelayStart (delayStart)
 :noindex:
 
 Sets a delay before the SDK starts to allow data to load before session information is sent to Adjust's servers. Maximum delay: 10 seconds
@@ -92,23 +264,68 @@ Sets a delay before the SDK starts to allow data to load before session informat
 :param delayStart: The time (in seconds) to delay the start of the SDK by
 :type delayStart: double
 
-```{include} /ios/fragments/ADJConfig.md
-:start-after: setDelayStart
-:end-before: methodEnd
+% setDelayStart snippet
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+:emphasize-lines: 7
+
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+    appToken: yourAppToken,
+    environment: environment)
+//...
+adjustConfig?.delayStart = 5.5
+//...
+Adjust.appDidLaunch(adjustConfig)
 ```
-
 :::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+:emphasize-lines: 4
 
-% classMethodEnd
+*adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
+                                  environment:ADJEnvironmentSandbox];
+//...
+[adjustConfig setDelayStart:5.5];
+//...
+[Adjust appDidLaunch:adjustConfig];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+```{code-block} js
+:emphasize-lines: 6
 
-% classMethod setExternalDeviceId
+setupWebViewJavascriptBridge(function(bridge) {
+   // ...
+   var yourAppToken = yourAppToken;
+   var environment = AdjustConfig.EnvironmentSandbox;
+   var adjustConfig = new AdjustConfig(yourAppToken, environment);
+   adjustConfig.setDelayStart(5.5);
+});
+```
+:::
+::::
 
-:::{function} setExternalDeviceId (externalDeviceId)
+% Snippet end
+
+:::::
+
+% Class method end
+
+% Class method setExternalDeviceId
+
+:::::{function} setExternalDeviceId (externalDeviceId)
 :noindex:
 
-```{versionadded} v4.20.0
+:::{versionadded} v4.20.0
 Sets an external device identifier for reporting purposes
-```
+:::
 
 ```{code-block} objc
 :name: ios-setExternalDeviceId-invocation
@@ -119,18 +336,61 @@ Sets an external device identifier for reporting purposes
 :param externalDeviceId: The external device ID associated with the device
 :type externalDeviceId: NSString
 
-```{include} /ios/fragments/ADJConfig.md
-:start-after: externalDeviceId
-:end-before: methodEnd
+% setExternalDeviceId snippet
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+:emphasize-lines: 7
+
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+   appToken: yourAppToken,
+   environment: environment)
+// ...
+adjustConfig?.externalDeviceId = "yourExternalDeviceId"
 ```
-
 :::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+:emphasize-lines: 6
 
-% classMethodEnd
+NSString *yourAppToken = @"{YourAppToken}";
+NSString *environment = ADJEnvironmentSandbox;
+*adjustConfig = [ADJConfig configWithAppToken:yourAppToken
+                                  environment:environment];
+// ...
+[adjustConfig setExternalDeviceId:@"yourExternalDeviceId"];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+```{code-block} js
+:emphasize-lines: 6
 
-% classMethod setEventBufferingEnabled
+setupWebViewJavascriptBridge(function(bridge) {
+   // ...
+   var yourAppToken = yourAppToken;
+   var environment = AdjustConfig.EnvironmentSandbox;
+   var adjustConfig = new AdjustConfig(yourAppToken, environment);
+   adjustConfig.setExternalDeviceId("yourExternalDeviceId");
+});
+```
+:::
+::::
 
-:::{function} setEventBufferingEnabled (eventBufferingEnabled)
+% Snippet end
+
+:::::
+
+% Class method end
+
+% Class method setEventBufferingEnabled
+
+:::::{function} setEventBufferingEnabled (eventBufferingEnabled)
 :noindex:
 
 Sets event buffering. If enabled, the SDK stores events on the device and sends all requests once per minute.
@@ -144,18 +404,63 @@ Sets event buffering. If enabled, the SDK stores events on the device and sends 
 :param eventBufferingEnabled: Whether event buffering is enabled or not
 :type eventBufferingEnabled: BOOL
 
-```{include} /ios/fragments/ADJConfig.md
-:start-after: setEventBufferingEnabled
-:end-before: methodEnd
+% setEventBufferingEnabled snippet
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+:emphasize-lines: 7
+
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+    appToken: yourAppToken,
+    environment: environment)
+//...
+adjustConfig?.eventBufferingEnabled = true
+//...
+Adjust.appDidLaunch(adjustConfig)
 ```
-
 :::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+:emphasize-lines: 4
 
-% classMethodEnd
+*adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
+                                  environment:ADJEnvironmentSandbox];
+//...
+[adjustConfig setEventBufferingEnabled:YES];
+//...
+[Adjust appDidLaunch:adjustConfig];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+```{code-block} js
+:emphasize-lines: 6
 
-% classMethod setSendInBackground
+setupWebViewJavascriptBridge(function(bridge) {
+   // ...
+   var yourAppToken = yourAppToken;
+   var environment = AdjustConfig.EnvironmentSandbox;
+   var adjustConfig = new AdjustConfig(yourAppToken, environment);
+   adjustConfig.setEventBufferingEnabled(true);
+});
+```
+:::
+::::
 
-:::{function} setSendInBackground (sendInBackground)
+% Snippet end
+
+:::::
+
+% Class method end
+
+% Class method setSendInBackground
+
+:::::{function} setSendInBackground (sendInBackground)
 :noindex:
 
 Sets whether the SDK should send data while the app is running in the background
@@ -169,23 +474,66 @@ Sets whether the SDK should send data while the app is running in the background
 :param sendInBackground: Whether the SDK should send information when the app is running in the background
 :type sendInBackground: BOOL
 
-```{include} /ios/fragments/ADJConfig.md
-:start-after: setSendInBackground
-:end-before: methodEnd
+% setSendInBackground snippet
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+:emphasize-lines: 7
+
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+   appToken: yourAppToken,
+   environment: environment)
+// ...
+adjustConfig?.sendInBackground = true
 ```
-
 :::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+:emphasize-lines: 6
 
-% classMethodEnd
+NSString *yourAppToken = @"{YourAppToken}";
+NSString *environment = ADJEnvironmentSandbox;
+*adjustConfig = [ADJConfig configWithAppToken:yourAppToken
+                                  environment:environment];
+// ...
+[adjustConfig setSendInBackground:YES];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+```{code-block} js
+:emphasize-lines: 6
 
-% classMethod setNeedsCost
+setupWebViewJavascriptBridge(function(bridge) {
+   // ...
+   var yourAppToken = yourAppToken;
+   var environment = AdjustConfig.EnvironmentSandbox;
+   var adjustConfig = new AdjustConfig(yourAppToken, environment);
+   adjustConfig.setSendInBackground(true);
+});
+```
+:::
+::::
 
-:::{function} setNeedsCost (needsCost)
+% Snippet end
+
+:::::
+
+% Class method end
+
+% Class method setNeedsCost
+
+:::::{function} setNeedsCost (needsCost)
 :noindex:
 
-```{versionadded} v4.24.0
+:::{versionadded} v4.24.0
 Sets whether the SDK should gather cost data. This is accessible in the user's attribution information.
-```
+:::
 
 ```{code-block} objc
 :name: ios-setNeedsCost-invocation
@@ -196,23 +544,66 @@ Sets whether the SDK should gather cost data. This is accessible in the user's a
 :param needsCost: Whether the SDK should gather cost data
 :type needsCost: BOOL
 
-```{include} /ios/fragments/ADJConfig.md
-:start-after: setNeedsCost
-:end-before: methodEnd
+% setNeedsCost snippet
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+:emphasize-lines: 7
+
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+   appToken: yourAppToken,
+   environment: environment)
+// ...
+adjustConfig?.needsCost = true
 ```
-
 :::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+:emphasize-lines: 6
 
-% classMethodEnd
+NSString *yourAppToken = @"{YourAppToken}";
+NSString *environment = ADJEnvironmentSandbox;
+*adjustConfig = [ADJConfig configWithAppToken:yourAppToken
+                                  environment:environment];
+// ...
+[adjustConfig setNeedsCost:NO];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+```{code-block} js
+:emphasize-lines: 6
 
-% classMethod setLinkMeEnabled
+setupWebViewJavascriptBridge(function(bridge) {
+   // ...
+   var yourAppToken = yourAppToken;
+   var environment = AdjustConfig.EnvironmentSandbox;
+   var adjustConfig = new AdjustConfig(yourAppToken, environment);
+   adjustConfig.setNeedsCost(false);
+});
+```
+:::
+::::
 
-:::{function} setLinkMeEnabled (boolean)
+% Snippet end
+
+:::::
+
+% Class method end
+
+% Class method setLinkMeEnabled
+
+:::::{function} setLinkMeEnabled (boolean)
 :noindex:
 
-```{versionadded} v4.31.0
+:::{versionadded} v4.31.0
 Toggle support for Adjust's [LinkMe solution](https://help.adjust.com/en/article/linkme) for deep linking
-```
+:::
 
 ```{code-block} objc
 :name: ios-setLinkMeEnabled-invocation
@@ -223,23 +614,66 @@ Toggle support for Adjust's [LinkMe solution](https://help.adjust.com/en/article
 :param linkMeEnabled: Whether LinkMe should be enabled
 :type linkMeEnabled: BOOL
 
-```{include} /ios/fragments/ADJConfig.md
-:start-after: setLinkMeEnabled
-:end-before: methodEnd
+% setLinkMeEnabled snippet
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+:emphasize-lines: 7
+
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+   appToken: yourAppToken,
+   environment: environment)
+// ...
+adjustConfig?.linkMeEnabled = true
 ```
-
 :::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+:emphasize-lines: 6
 
-% classMethodEnd
+NSString *yourAppToken = @"{YourAppToken}";
+NSString *environment = ADJEnvironmentSandbox;
+*adjustConfig = [ADJConfig configWithAppToken:yourAppToken
+                                  environment:environment];
+// ...
+[adjustConfig setLinkMeEnabled:YES];
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+```{code-block} js
+:emphasize-lines: 6
 
-% classMethod deactivateSKAdNetworkHandling
+setupWebViewJavascriptBridge(function(bridge) {
+   // ...
+   var yourAppToken = yourAppToken;
+   var environment = AdjustConfig.EnvironmentSandbox;
+   var adjustConfig = new AdjustConfig(yourAppToken, environment);
+   adjustConfig.setLinkMeEnabled(true);
+});
+```
+:::
+::::
 
-:::{function} deactivateSKAdNetworkHandling
+% Snippet end
+
+:::::
+
+% Class method end
+
+% Class method deactivateSKAdNetworkHandling
+
+:::::{function} deactivateSKAdNetworkHandling
 :noindex:
 
-```{versionadded} v4.23.0
+:::{versionadded} v4.23.0
 Turns off communication with SKAdNetwork. Communication is *enabled* by default.
-```
+:::
 
 ```{code-block} objc
 :name: ios-deactivateSKAdNetworkHandling-invocation
@@ -247,18 +681,49 @@ Turns off communication with SKAdNetwork. Communication is *enabled* by default.
 - (void)deactivateSKAdNetworkHandling;
 ```
 
-```{include} /ios/fragments/ADJConfig.md
-:start-after: deactivateSKAdNetworkHandling
-:end-before: methodEnd
+% deactivateSKAdNetworkHandling snippet
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+:emphasize-lines: 7
+
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+    appToken: yourAppToken,
+    environment: environment)
+//...
+adjustConfig.deactivateSKAdNetworkHandling()
+//...
+Adjust.appDidLaunch(adjustConfig)
 ```
-
 :::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+:emphasize-lines: 4
 
-% classMethodEnd
+*adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
+                                  environment:ADJEnvironmentSandbox];
+//...
+[adjustConfig.deactivateSKAdNetworkHandling];
+//...
+[Adjust appDidLaunch:adjustConfig];
+```
+:::
+::::
 
-% classMethod setAllowIdfaReading
+% Snippet end
 
-:::{function} setAllowIdfaReading(allowIdfaReading)
+:::::
+
+% Class method end
+
+% Class method setAllowIdfaReading
+
+:::::{function} setAllowIdfaReading(allowIdfaReading)
 :noindex:
 
 Sets whether the Adjust SDK can read the device {abbr}`IDFA (ID for Advertisers)`
@@ -272,18 +737,49 @@ Sets whether the Adjust SDK can read the device {abbr}`IDFA (ID for Advertisers)
 :param allowIdfaReading: Whether the Adjust SDK can read the device IDFA
 :type allowIdfaReading: BOOL
 
-```{include} /ios/fragments/ADJConfig.md
-:start-after: setAllowIdfaReading
-:end-before: methodEnd
+% setAllowIdfaReading snippet
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+:emphasize-lines: 7
+
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+    appToken: yourAppToken,
+    environment: environment)
+//...
+adjustConfig.allowIdfaReading = true;
+//...
+Adjust.appDidLaunch(adjustConfig)
 ```
-
 :::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+:emphasize-lines: 4
 
-% classMethodEnd
+*adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
+                                  environment:ADJEnvironmentSandbox];
+//...
+[adjustConfig.setAllowIdfaReading:YES];
+//...
+[Adjust appDidLaunch:adjustConfig];
+```
+:::
+::::
 
-% classMethod setAllowAdServicesInfoReading
+% Snippet end
 
-:::{function} setAllowAdServicesInfoReading(allowAdServicesInfoReading)
+:::::
+
+% Class method end
+
+% Class method setAllowAdServicesInfoReading
+
+:::::{function} setAllowAdServicesInfoReading(allowAdServicesInfoReading)
 :noindex:
 
 Sets whether the Adjust SDK can read AdServices framework data.
@@ -297,23 +793,54 @@ Sets whether the Adjust SDK can read AdServices framework data.
 :param allowAdServicesInfoReading: Whether AdServices framework data is read by the Adjust SDK
 :type allowAdServicesInfoReading: BOOL
 
-```{include} /ios/fragments/ADJConfig.md
-:start-after: setAllowAdServicesInfoReading
-:end-before: methodEnd
+% setAllowAdServicesInfoReading snippet
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+:emphasize-lines: 7
+
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+    appToken: yourAppToken,
+    environment: environment)
+//...
+adjustConfig.allowAdServicesInfoReading = true;
+//...
+Adjust.appDidLaunch(adjustConfig)
 ```
-
 :::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+:emphasize-lines: 4
 
-% classMethodEnd
+*adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
+                                  environment:ADJEnvironmentSandbox];
+//...
+[adjustConfig.setAllowAdServicesInfoReading:YES];
+//...
+[Adjust appDidLaunch:adjustConfig];
+```
+:::
+::::
 
-% classMethod setAllowiAdInfoReading
+% Snippet end
 
-:::{function} setAllowiAdInfoReading(allowiAdInfoReading)
+:::::
+
+% Class method end
+
+% Class method setAllowiAdInfoReading
+
+:::::{function} setAllowiAdInfoReading(allowiAdInfoReading)
 :noindex:
 
-```{deprecated} v4.33.4
+:::{deprecated} v4.33.4
 Sets whether the Adjust SDK can read iAd framework data.
-```
+:::
 
 ```{code-block} objc
 :name: ios-setAllowiAdInfoReading-invocation
@@ -324,11 +851,42 @@ Sets whether the Adjust SDK can read iAd framework data.
 :param allowiAdInfoReading: Whether iAd framework data is read by the Adjust SDK
 :type allowiAdInfoReading: BOOL
 
-```{include} /ios/fragments/ADJConfig.md
-:start-after: setAllowiAdInfoReading
-:end-before: methodEnd
+% allowiAdInfoReading snippet
+
+::::{tab-set}
+:::{tab-item} Swift
+:sync: swift
+```{code-block} swift
+:emphasize-lines: 7
+
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+    appToken: yourAppToken,
+    environment: environment)
+//...
+adjustConfig.allowiAdInfoReading = true;
+//...
+Adjust.appDidLaunch(adjustConfig)
 ```
-
 :::
+:::{tab-item} Objective-C
+:sync: objc
+```{code-block} objc
+:emphasize-lines: 4
 
-% classMethodEnd
+*adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
+                                  environment:ADJEnvironmentSandbox];
+//...
+[adjustConfig.setAllowiAdInfoReading:YES];
+//...
+[Adjust appDidLaunch:adjustConfig];
+```
+:::
+::::
+
+% Snippet end
+
+:::::
+
+% Class method end

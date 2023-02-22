@@ -1,6 +1,6 @@
 # SDK reference
 
-```{toctree}
+:::{toctree}
 ---
 caption: Classes
 maxdepth: 1
@@ -15,4 +15,4 @@ ADJLinkResolution
 ADJSubscription
 ADJThirdPartySharing
 
-```
+:::

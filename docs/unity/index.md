@@ -24,10 +24,10 @@ The Adjust SDK contains a Unity [prefab](https://docs.unity3d.com/Manual/Prefabs
 2. Open the prefab Inspector Menu.
 3. The prefab menu contains editable fields that control the behavior of the Adjust SDK.
 
-```{image} https://images.ctfassets.net/5s247im0esyq/4sh9TsPWBDWrQSMz3HFWu7/69607cff5c78059a6fac9eed2ad2aa31/unity.png
+:::{image} https://images.ctfassets.net/5s247im0esyq/4sh9TsPWBDWrQSMz3HFWu7/69607cff5c78059a6fac9eed2ad2aa31/unity.png
 :alt: A screenshot of the Adjust SDK prefab configuration script in the Unity editor.
 :title: A screenshot of the Adjust SDK prefab configuration script in the Unity editor.
-```
+:::
 
 To set up the Adjust SDK, enter the following information:
 
@@ -129,9 +129,9 @@ To complete the app build process, the Adjust Unity package performs custom post
 
 This process is performed by the {code}`OnPostprocessBuild` method in {file}`AdjustEditor.cs`. Output logs show up in the Unity IDE console output window.
 
-```{image} https://images.ctfassets.net/5s247im0esyq/5yFmvFN4y3LJSieJQcF4qE/bad5913682af34cfe61224daca312373/post-build-unity.png
+:::{image} https://images.ctfassets.net/5s247im0esyq/5yFmvFN4y3LJSieJQcF4qE/bad5913682af34cfe61224daca312373/post-build-unity.png
 :alt:  A screenshot of the Adjust SDK post-build configuration script in the Unity editor. 
-```
+:::
 
 ::::{dropdown} iOS
 
@@ -144,8 +144,8 @@ The iOS post-build process makes the following changes to your generated Xcode p
 * Adds the other linker flag `-ObjC`: required to recognize Adjust Objective-C categories at build time.
 * Enables Objective-C exceptions.
 
-```{rubric} Frameworks
-```
+:::{rubric} Frameworks
+:::
 
 You can enable the following frameworks to access iOS features:
 
@@ -155,13 +155,13 @@ You can enable the following frameworks to access iOS features:
 * {guilabel}`StoreKit.framework`: required to communicate with the SKAdNetwork framework.
 * {guilabel}`iAd.framework` {bdg-warning}`Deprecated` - use AdServices.framework
 
-```{rubric} App Tracking Transparency consent dialog
-```
+:::{rubric} App Tracking Transparency consent dialog
+:::
 
 If you are using the {abbr}`ATT (App Tracking Transparency)` wrapper, enter a **User Tracking Description** message. This displays when you present the tracking consent dialog to your user.
 
-```{rubric} Deep linking
-```
+:::{rubric} Deep linking
+:::
 
 To enable deep linking, add the following information:
 
@@ -175,8 +175,8 @@ To enable deep linking, add the following information:
 
 The Android post-build process checks for an {file}`AndroidManifest.xml` file in {file}`Assets/Plugins/Android/`. If this file isn't present, it creates a copy from [{file}`AdjustAndroidManifest.xml`](https://github.com/adjust/unity_sdk/blob/master/Assets/Adjust/Android/AdjustAndroidManifest.xml "A link to the AdjustAndroidManifest file on GitHub").
 
-```{rubric} Permissions
-```
+:::{rubric} Permissions
+:::
 
 You can enable the following permissions to access Android features:
 
@@ -185,8 +185,8 @@ You can enable the following permissions to access Android features:
 * {guilabel}`com.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE` {bdg-warning}`Deprecated`: required to fetch install referrer information via Google Play Store intent.
 * {guilabel}`com.google.android.gms.permission.AD_ID`: required to read the device advertising ID on Android 12 (API level 31) and above. See [Google's `AdvertisingIdClient.info` documentation](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid) for more information.
 
-```{rubric} Deep linking
-```
+:::{rubric} Deep linking
+:::
 
 To enable deep linking, add the following information:
 

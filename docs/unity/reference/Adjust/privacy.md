@@ -2,14 +2,14 @@
 
 Use these methods to handle user privacy in your app.
 
-% classMethod disableThirdPartySharing
+% Class method disableThirdPartySharing
 
-:::{function} disableThirdPartySharing
+:::::{function} disableThirdPartySharing
 :noindex:
 
-```{versionadded} v4.19.0
+:::{versionadded} v4.19.0
 Disables sharing of information with third parties for all users.
-```
+:::
 
 ```{code-block} cs
 :name: unity-disableThirdPartySharing-invocation
@@ -17,18 +17,25 @@ Disables sharing of information with third parties for all users.
 public static void disableThirdPartySharing()
 ```
 
-```{include} /unity/fragments/Adjust.md
-:start-after: disableThirdPartySharing
-:end-before: methodEnd
+% disableThirdPartySharing snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+Adjust.disableThirdPartySharing();
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod trackThirdPartySharing
+:::::
 
-:::{function} trackThirdPartySharing(thirdPartySharing)
+% Class method end
+
+% Class method trackThirdPartySharing
+
+:::::{function} trackThirdPartySharing(thirdPartySharing)
 :noindex:
 
 Disable or enable sharing of information with third parties on a per-user basis. Accepts a third party sharing object initialized with a **boolean** value.
@@ -42,18 +49,27 @@ public static void trackThirdPartySharing(AdjustThirdPartySharing thirdPartyShar
 :param thirdPartySharing: The third party sharing object
 :type thirdPartySharing: [*AdjustThirdPartySharing*](/unity/reference/AdjustThirdPartySharing.md)
 
-```{include} /unity/fragments/Adjust.md
-:start-after: trackThirdPartySharing
-:end-before: methodEnd
+% trackThirdPartySharing snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(true);
+//...
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod trackMeasurementConsent
+:::::
 
-:::{function} trackMeasurementConsent(enabled)
+% Class method end
+
+% Class method trackMeasurementConsent
+
+:::::{function} trackMeasurementConsent(enabled)
 :noindex:
 
 Set whether [data collection and retention rules](https://help.adjust.com/en/article/manage-data-collection-and-retention) apply to a user.
@@ -67,23 +83,30 @@ public static void trackMeasurementConsent(bool measurementConsent)
 :param enabled: Whether data collection and retention rules apply for the user
 :type enabled: Boolean
 
-```{include} /unity/fragments/Adjust.md
-:start-after: trackMeasurementConsent
-:end-before: methodEnd
+% trackMeasurementConsent snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+Adjust.trackMeasurementConsent(true);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod gdprForgetMe
+:::::
 
-:::{function} gdprForgetMe
+% Class method end
+
+% Class method gdprForgetMe
+
+:::::{function} gdprForgetMe
 :noindex:
 
-```{versionadded} v4.13.0
+:::{versionadded} v4.13.0
 Send an {abbr}`RTBF (Right To Be Forgotten)` request to Adjust's servers. This erases all information about the user the source app. The SDK stops sending requests for the user.
-```
+:::
 
 ```{code-block} cs
 :name: unity-gdprForgetMe-invocation
@@ -91,11 +114,18 @@ Send an {abbr}`RTBF (Right To Be Forgotten)` request to Adjust's servers. This e
 public static void gdprForgetMe()
 ```
 
-```{include} /unity/fragments/Adjust.md
-:start-after: gdprForgetMe
-:end-before: methodEnd
+% gdprForgetMe snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+Adjust.gdprForgetMe();
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
+
+:::::
+
+% Class method end
