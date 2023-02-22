@@ -77,6 +77,10 @@ html_css_files = [
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+html_js_files = [
+   'js/mermaid.js',
+]
+
 # -- Options for MyST parser -------------------------------------------------
 
 myst_enable_extensions = [
@@ -114,3 +118,4 @@ myst_substitutions = {
 tippy_anchor_parent_selector = "article.bd-article"
 tippy_tip_selector = "div.notranslate, dt, code"
 
+mermaid_version = ""
