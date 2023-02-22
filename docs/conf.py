@@ -51,22 +51,26 @@ root_doc = "index"
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "sphinx_rtd_theme"
+html_theme = "sphinx_book_theme"
 html_theme_options = {
-    "navigation_depth": -1,
-}
-html_context = {
-   "display_github": True,
-   "github_user": "Sporiff",
-   "github_repo": "sdk-docs",
-   "github_version": "main",
-   "conf_py_path": "docs"
+    "show_navbar_depth": 1,
+   "use_download_button": True,
+   "use_fullscreen_button": True,
+   "use_repository_button": True,
+   "use_issues_button": True,
+   "use_edit_page_button": True,
+   "repository_url": "https://github.com/Sporiff/sdk-docs",
+   "repository_branch": "main",
+   "path_to_docs": "docs",
+   "logo": {
+    "image_dark": "_static/logo-dark.svg",
+    "image_light": "_static/logo-light.svg"
+   }
 }
 html_css_files = [
     "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css",
     "css/custom.css",
 ]
-pygments_style = "sphinx"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -107,6 +111,6 @@ myst_substitutions = {
     "ios_version": "4.33.4"
 }
 
-tippy_anchor_parent_selector = "div.rst-content"
+tippy_anchor_parent_selector = "article.bd-article"
 tippy_tip_selector = "div.notranslate, dt, code"
 
