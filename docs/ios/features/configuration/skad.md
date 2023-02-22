@@ -83,7 +83,7 @@ updatePostbackConversionValue
    - Integer
    - Your conversion value. Must be between 0 and 63
 * - `coarseValue`
-   - [SKAdNetwork.CoarseConversionValue](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
+   - [`SKAdNetwork.CoarseConversionValue`](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
    - The coarse conversion value. This value is used if your app doesn't have sufficient installs to reach the privacy threshold.
       * `SKAdNetworkCoarseConversionValueLow`
       * `SKAdNetworkCoarseConversionValueMedium`
@@ -173,7 +173,7 @@ SKAdNetwork 4.0 postbacks contain some additional information to give advertiser
    - Description
 * - `fineValue`
    - Integer
-   - The conversion value sent by the Adjust backend
+   - The conversion value sent by Adjust's servers
 * - `coarseValue`
    - String
    - The coarse conversion value. This value is used if your app doesn't have sufficient installs to reach the privacy threshold. Accepted values:

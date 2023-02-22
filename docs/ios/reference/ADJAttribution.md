@@ -46,7 +46,7 @@ The following values can only be accessed if the [`needsCost`](ios-setNeedsCost-
    - The unique Adjust ID assigned to the device
 * - `costType`
    - String
-   - The campaign pricing model (e.g. cpi)
+   - The campaign pricing model (for example cpi)
 * - `costAmount`
    - Number
    - The cost of the install.

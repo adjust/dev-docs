@@ -87,7 +87,7 @@ Adjust's servers automatically pass the deferred deep link to the Adjust SDK. Wh
    ```{code-block} swift
    func adjustDeeplinkResponse(_ deeplink: URL?) -> Bool {
       // add your code below to handle deep link
-      // (e.g., show onboarding screens, then open deep link content)
+      // (for example, show onboarding screens, then open deep link content)
       // deeplink object contains the deep link
 
 
@@ -100,7 +100,7 @@ Adjust's servers automatically pass the deferred deep link to the Adjust SDK. Wh
    ```{code-block} objc
    - (BOOL)adjustDeeplinkResponse:(NSURL *)deeplink {
        // add your code below to handle deep link
-       // (e.g., show onboarding screens, then open deep link content)
+       // (for example, show onboarding screens, then open deep link content)
        // deeplink object contains the deep link
        
        

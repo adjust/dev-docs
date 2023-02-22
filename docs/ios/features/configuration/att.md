@@ -14,7 +14,7 @@ If you want to record the device's {abbr}`IDFA (ID for Advertisers)`, you must d
    - Description
 * - `ATTrackingManagerAuthorizationStatusNotDetermined`
    - `0`
-   - The user has not responded to the access prompt yet
+   - The user hasn't responded to the access prompt yet
 * - `ATTrackingManagerAuthorizationStatusRestricted`
    - `1`
    - Access to app-related data is blocked at the device level

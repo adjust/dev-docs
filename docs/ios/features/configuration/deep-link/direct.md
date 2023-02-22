@@ -90,11 +90,11 @@ func application(
         resolveUrlSuffixArray: ["email.example.com", "short.example.com"],
         callback: { resolvedURL in
             // add your code below to handle deep link
-            // (e.g., open deep link content)    
+            // (for example, open deep link content)    
             // resolvedURL object contains the deep link
           
           
-            // call the below method to send deep link to Adjust backend
+            // call the below method to send deep link to Adjust's servers
             Adjust.appWillOpen(resolvedURL)
         })
       } else {
@@ -126,11 +126,11 @@ func application(
         ]
         callback:^(NSURL* _Nullable resolvedURL) {
             // add your code below to handle deep link
-            // (e.g., open deep link content)
+            // (for example, open deep link content)
             // resolvedURL object contains the deep link
             
             
-            // call the below method to send deep link to Adjust backend
+            // call the below method to send deep link to Adjust's servers
             [Adjust appWillOpenUrl:resolvedURL];
         }];
     } else {
@@ -162,11 +162,11 @@ func application(
     ) -> Bool {
 
     // add your code below to handle deep link
-    // (e.g., open deep link content)
+    // (for example, open deep link content)
     // incomingURL object contains the deep link
 
 
-    // call the below method to send deep link to Adjust backend
+    // call the below method to send deep link to Adjust's servers
     Adjust.appWillOpen(incomingURL)
 
     return true
@@ -182,11 +182,11 @@ func application(
     options:(NSDictionary *)options {
 
     // add your code below to handle deep link
-    // (e.g., open deep link content)    
+    // (for example, open deep link content)    
     // incomingURL object contains the deep link
 
 
-    // call the below method to send deep link to Adjust backend
+    // call the below method to send deep link to Adjust's servers
     [Adjust appWillOpenUrl:incomingURL];
 
     return YES;
@@ -233,11 +233,11 @@ func scene(
       resolveUrlSuffixArray: ["email.example.com", "short.example.com"],
       callback: { resolvedURL in
         // add your code below to handle deep link
-        // (e.g., open deep link content)
+        // (for example, open deep link content)
         // resolvedURL object contains the deep link
 
 
-        // call the below method to send deep link to Adjust backend
+        // call the below method to send deep link to Adjust's servers
         Adjust.appWillOpen(resolvedURL)
       })
 }
@@ -255,11 +255,11 @@ func scene(
         resolveUrlSuffixArray: ["email.example.com", "short.example.com"],
         callback: { resolvedURL in
             // add your code below to handle deep link
-            // (e.g., open deep link content)    
+            // (for example, open deep link content)    
             // resolvedURL object contains the deep link
           
           
-            // call the below method to send deep link to Adjust backend
+            // call the below method to send deep link to Adjust's servers
             Adjust.appWillOpen(resolvedURL)
         })
     }
@@ -288,11 +288,11 @@ func scene(
         ]
         callback:^(NSURL* _Nullable resolvedURL) {
             // add your code below to handle deep link
-            // (e.g., open deep link content)
+            // (for example, open deep link content)
             // resolvedURL object contains the deep link
             
             
-            // call the below method to send deep link to Adjust backend
+            // call the below method to send deep link to Adjust's servers
             [Adjust appWillOpenUrl:resolvedURL];
         }];
     }
@@ -311,11 +311,11 @@ func scene(
         ]
         callback:^(NSURL* _Nullable resolvedURL) {
             // add your code below to handle deep link
-            // (e.g., open deep link content)
+            // (for example, open deep link content)
             // resolvedURL object contains the deep link
             
             
-            // call the below method to send deep link to Adjust backend
+            // call the below method to send deep link to Adjust's servers
             [Adjust appWillOpenUrl:resolvedURL];
         }];
     }
@@ -347,11 +347,11 @@ func scene(
     }
     
     // add your code below to handle deep link
-    // (e.g., open deep link content)
+    // (for example, open deep link content)
     // incomingURL object contains the deep link
 
 
-    // call the below method to send deep link to Adjust backend
+    // call the below method to send deep link to Adjust's servers
     Adjust.appWillOpen(incomingURL)
 }
 ```
@@ -367,11 +367,11 @@ func scene(
     
     if (incomingURL) {
         // add your code below to handle deep link
-        // (e.g., open deep link content)
+        // (for example, open deep link content)
         // incomingURL object contains the deep link
 
 
-        // call the below method to send deep link to Adjust backend
+        // call the below method to send deep link to Adjust's servers
         [Adjust appWillOpenUrl:incomingURL];
     }
 }

@@ -15,7 +15,7 @@ If you want to record the device's {abbr}`IDFA (ID for Advertisers)`, you must d
    - Description
 * - `ATTrackingManagerAuthorizationStatusNotDetermined`
    - `0`
-   - The user has not responded to the access prompt yet
+   - The user hasn't responded to the access prompt yet
 * - `ATTrackingManagerAuthorizationStatusRestricted`
    - `1`
    - Access to app-related data is blocked at the device level
@@ -66,7 +66,7 @@ Adjust.requestTrackingAuthorizationWithCompletionHandler((status) =>
     switch (status)
     {
         case 0:
-            Debug.Log("The user has not responded to the access prompt yet.");
+            Debug.Log("The user hasn't responded to the access prompt yet.");
             break;
         case 1:
             Debug.Log("Access to app-related data is blocked at the device level.");
