@@ -4,7 +4,22 @@ The Adjust iOS SDK enables you to record attribution, events, and more in your i
 
 ## 1. Add the SDK to your project
 
-To use the Adjust SDK in your iOS app, you need to add it to your Xcode project.
+To use the Adjust SDK in your iOS app, you need to add it to your {program}`Xcode` project.
+
+To add the SDK using Swift's package manager:
+
+1. Select {guilabel}`File`.
+2. Select {guilabel}`Swift Packages`.
+3. Select {guilabel}`Add Package Dependency`.
+4. In the box that appears, enter the SDK's GitHub address.
+
+  ```
+  https://github.com/adjust/ios_sdk
+  ```
+
+5. Select the version of the Adjust SDK you want to use in the {guilabel}`Version` dropdown. Check the [releases page](https://github.com/adjust/ios_sdk/releases) for the latest version.
+
+### Alternative installation methods
 
 :::{dropdown} Cocoapods
 
@@ -34,23 +49,6 @@ github "adjust/ios_sdk"
 ```
 :::
 
-:::{dropdown} Swift package manager
-
-To add the SDK using Swift's package manager:
-
-1. Click **File**.
-2. Select **Swift Packages**.
-3. Select **Add Package Dependency**.
-4. In the box that appears, enter the SDK's GitHub address.
-
-  ```
-  https://github.com/adjust/ios_sdk
-  ```
-
-5. Select the version of the Adjust SDK you want to use in the **Version** dropdown. Check the [releases page](https://github.com/adjust/ios_sdk/releases) for the latest version.
-
-:::
-
 :::{dropdown} Add as framework
 
 You can integrate the Adjust SDK by adding it to your project as a framework. You can find the following archives on the [releases page](https://github.com/adjust/ios_sdk/releases/latest):
@@ -62,17 +60,17 @@ You can integrate the Adjust SDK by adding it to your project as a framework. Yo
 * `AdjustSdkImDynamic.framework.zip`: Dynamic framework for iMessage apps
 * `AdjustSdkWebBridgeDynamic.framework.zip`: Dynamic framework for web views
 
-Choose the frameworks you need and add them to your Xcode project:
+Choose the frameworks you need and add them to your {program}`Xcode` project:
 
 1. Download the archive from the releases page.
 2. Unzip the archive on your computer.
-3. Copy the `.framework` folder into your Xcode project.
+3. Copy the `.framework` folder into your {program}`Xcode` project.
 
 :::
 
 ## 2. Integrate the Adjust SDK
 
-Once you've added the Adjust SDK to your Xcode project, you need to integrate it in your app.
+Once you've added the Adjust SDK to your {program}`Xcode` project, you need to integrate it in your app.
 
 :::::{dropdown} Cocoapods
 
@@ -495,7 +493,7 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 :::
 ::::
 
-You can use Xcode's build flags to dynamically update your config depending on whether you create a debug build or a production build.
+You can use {program}`Xcode`'s build flags to dynamically update your config depending on whether you create a debug build or a production build.
 
 ::::{tab-set}
 :::{tab-item} Swift
@@ -557,3 +555,14 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 ```
 :::
 ::::
+
+:::{raw} html
+<script src="https://utteranc.es/client.js"
+        repo="Sporiff/utterance-test"
+        issue-term="url"
+        label="💬 Comment"
+        theme="preferred-color-scheme"
+        crossorigin="anonymous"
+        async>
+</script>
+:::
