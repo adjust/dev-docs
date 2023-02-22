@@ -25,51 +25,43 @@ Web
 :::
 ::::
 
-```{toctree}
----
-maxdepth: 4
-caption: iOS
-hidden: true
----
+:::{toctree}
+:maxdepth: 4
+:caption: iOS
+:hidden: true
 
 ios/index
 ios/features/index
 ios/reference/index
 
-```
+:::
 
-```{toctree}
----
-maxdepth: 1
-caption: Unity
-hidden: true
----
+:::{toctree}
+:maxdepth: 1
+:caption: Unity
+:hidden: true
 
 unity/index
 unity/features/index
 unity/reference/index
 
-```
+:::
 
-```{toctree}
----
-maxdepth: 2
-caption: Web
-hidden: true
----
+:::{toctree}
+:maxdepth: 2
+:caption: Web
+:hidden: true
 
 web/index
 web/features/index
 web/reference/index
 
-```
+:::
 
-```{toctree}
----
-maxdepth: 1
-hidden: true
-caption: Glossary
----
+:::{toctree}
+:maxdepth: 1
+:hidden: true
+:caption: Glossary
 
 glossary
-```
+:::
