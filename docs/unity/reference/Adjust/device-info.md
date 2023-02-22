@@ -2,9 +2,9 @@
 
 Use these methods to retrieve device information.
 
-% classMethod getAdid
+% Class method getAdid
 
-:::{function} getAdid
+:::::{function} getAdid
 :noindex:
 
 Returns the {abbr}`ADID (Adjust Device ID)` associated with the device
@@ -18,18 +18,25 @@ public static string getAdid()
 :returns: The device ADID
 :rtype: String
 
-```{include} /unity/fragments/Adjust.md
-:start-after: getAdid
-:end-before: methodEnd
+% getAdid snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+string adid = Adjust.getAdid();
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod getIdfa
+:::::
 
-::::{function} getIdfa
+% Class method end
+
+% Class method getIdfa
+
+:::::{function} getIdfa
 :noindex:
 
 Returns the {abbr}`IDFA (ID For Advertisers)` associated with the device
@@ -43,18 +50,25 @@ public static string getIdfa()
 :returns: The device IDFA
 :rtype: String
 
-```{include} /unity/fragments/Adjust.md
-:start-after: getIdfa
-:end-before: methodEnd
-```
+% getIdfa snippet
 
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+string idfa = Adjust.getIdfa();
+```
+:::
 ::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod getAmazonAdId
+:::::
 
-::::{function} getAmazonAdId
+% Class method end
+
+% Class method getAmazonAdId
+
+:::::{function} getAmazonAdId
 :noindex:
 
 Returns the {abbr}`Amazon Ad ID (Amazon Advertising ID)` associated with the device
@@ -68,18 +82,25 @@ public static string getAmazonAdId()
 :returns: The device Amazon Ad ID
 :rtype: String
 
-```{include} /unity/fragments/Adjust.md
-:start-after: getAmazonAdId
-:end-before: methodEnd
-```
+% getAmazonAdId snippet
 
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+string amazonAdId = Adjust.getAmazonAdId();
+```
+:::
 ::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod getGoogleAdId
+:::::
 
-::::{function} getGoogleAdId(onDeviceIdsRead)
+% Class method end
+
+% Class method getGoogleAdId
+
+:::::{function} getGoogleAdId(onDeviceIdsRead)
 :noindex:
 
 Returns the {abbr}`GPS ADID (Google Play Services Advertising ID)` associated with the device. Must be called in a background thread
@@ -93,11 +114,20 @@ public static void getGoogleAdId(Action<string> onDeviceIdsRead)
 :param onDeviceIdsRead: The function called when the SDK receives the ID from the device
 :type onDeviceIdsRead: Action\<string\>
 
-```{include} /unity/fragments/Adjust.md
-:start-after: getGoogleAdId
-:end-before: methodEnd
-```
+% getGoogleAdId snippet
 
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+Adjust.getGoogleAdId((string googleAdId) => {
+   //...
+}};
+```
+:::
 ::::
 
-% classMethodEnd
+% Snippet end
+
+:::::
+
+% Class method end

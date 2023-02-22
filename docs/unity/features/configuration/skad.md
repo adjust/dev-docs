@@ -12,16 +12,16 @@ SKAdNetwork  is Apple's attribution framework for app install and reinstall attr
 
 ## Disable SKAdNetwork communication
 
-```{versionadded} v4.23.0
+:::{versionadded} v4.23.0
 The Adjust SDK communicates with SKAdNetwork by default on v4.23.0 and above. The SDK registers for SKAdNetwork attribution upon initialization.
-```
+:::
 
 Your config object contains a boolean `isSKAdNetworkHandlingActive` property that controls this behavior. You can disable SKAdNetwork communication by calling the [`deactivateSKAdNetworkHandling` method](unity-deactivateSKAdNetworkHandling-invocation) with no argument.
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: deactivateSKAdNetworkHandling
-:end-before: methodEnd
-```
+:::{include} /unity/reference/AdjustConfig/setup.md
+:start-after: deactivateSKAdNetworkHandling snippet
+:end-before: Snippet end
+:::
 
 ## Update conversion values
 
@@ -29,10 +29,10 @@ Conversion values are a mechanism used to track user behavior in SKAdNetwork. Yo
 
 If you manage your conversion values with Adjust, the servers update this value in the SDK. You can also update this value by using the [`updateConversionValue` method](unity-updateConversionValue-invocation). This method wraps [Apple's `updateConversionValue` method](https://developer.apple.com/documentation/storekit/skadnetwork/3566697-updateconversionvalue). It accepts an integer argument representing your updated conversion value.
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: updateConversionValue
-:end-before: methodEnd
-```
+:::{include} /unity/reference/Adjust/skan-att.md
+:start-after: updateConversionValue snippet
+:end-before: Snippet end
+:::
 
 :::{dropdown} Example
 
@@ -51,10 +51,10 @@ public void OnButtonClick() {
 
 You can configure the Adjust SDK to listen for when a user's conversion value updates. Your config object contains a [`setConversionValueUpdatedCallbackDelegate` method](unity-setConversionValueUpdatedCallbackDelegate-invocation) that listens for updates. This method accepts a delegate function as its argument.
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setConversionValueUpdatedDelegate
-:end-before: methodEnd
-```
+:::{include} /unity/reference/AdjustConfig/setup.md
+:start-after: setConversionValueUpdatedDelegate snippet
+:end-before: Snippet end
+:::
 
 :::{dropdown} Example
 

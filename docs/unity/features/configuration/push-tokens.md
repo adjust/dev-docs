@@ -4,10 +4,10 @@ Push tokens are used for [Audience Builder](https://help.adjust.com/en/article/a
 
 Your config object contains a string `pushToken` property that you can use to store your push token. You can update this property at any time by calling the [`setDeviceToken` method](unity-setDeviceToken-invocation) and passing your token as an argument.
 
-```{include} /unity/fragments/Adjust.md
-:start-after: setDeviceToken
-:end-before: methodEnd
-```
+:::{include} /unity/reference/Adjust/config.md
+:start-after: setDeviceToken snippet
+:end-before: Snippet end
+:::
 
 ## Example
 

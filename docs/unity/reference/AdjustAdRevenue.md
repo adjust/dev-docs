@@ -3,9 +3,9 @@
 Use this class to store ad revenue information. You can pass this to Adjust's servers using the [`trackAdRevenue` method](unity-trackAdRevenue-invocation).
 
 
-% classMethod AdjustAdRevenue
+% Class method AdjustAdRevenue
 
-::::{function} AdjustAdRevenue (source)
+:::::{function} AdjustAdRevenue (source)
 :noindex:
 
 Creates an ad revenue object initialized with an external ad revenue source
@@ -19,14 +19,20 @@ public AdjustAdRevenue(string source)
 :param source: The source of the ad revenue. See table below for available options
 :type source: string
 
-```{include} /unity/fragments/AdjustAdRevenue.md
-:start-after: AdjustAdRevenue
-:end-before: methodEnd
+% AdjustAdRevenue snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue("source");
+Adjust.trackAdRevenue(adjustAdRevenue);
 ```
+:::
+::::
 
-:::{dropdown} Sources
+::::{dropdown} Sources
 
-```{list-table}
+:::{list-table}
 :header-rows: 1
 
 * - Parameter
@@ -47,16 +53,18 @@ public AdjustAdRevenue(string source)
    - Helium Chartboost
 * - `AdjustConfig.AdjustAdRevenueSourcePublisher`
    - Generic source
-```
 :::
-
 ::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod setRevenue
+:::::
 
-:::{function} setRevenue (amount, currency)
+% Class method end
+
+% Class method setRevenue
+
+:::::{function} setRevenue (amount, currency)
 :noindex:
 
 Creates an event object initialized with an Adjust event token
@@ -72,18 +80,31 @@ public void setRevenue(double amount, string currency)
 :param currency: The 3 character [ISO 4217 code](https://www.iban.com/currency-codes) of the currency unit
 :type currency: string
 
-```{include} /unity/fragments/AdjustAdRevenue.md
-:start-after: setRevenue
-:end-before: methodEnd
+% setRevenue snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+:emphasize-lines: 3
+
+AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue("source");
+//...
+adjustAdRevenue.setRevenue(1.00, "EUR");
+//...
+Adjust.trackAdRevenue(adjustAdRevenue);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod setAdImpressionsCount
+:::::
 
-:::{function} setAdImpressionsCount (adImpressionsCount)
+% Class method end
+
+% Class method setAdImpressionsCount
+
+:::::{function} setAdImpressionsCount (adImpressionsCount)
 :noindex:
 
 Sets the number of impressions received for an ad
@@ -97,18 +118,31 @@ public void setAdImpressionsCount(int adImpressionsCount)
 :param adImpressionsCount: The number of impressions associated with the ad
 :type adImpressionsCount: int
 
-```{include} /unity/fragments/AdjustAdRevenue.md
-:start-after: setAdImpressionsCount
-:end-before: methodEnd
+% setAdImpressionsCount snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+:emphasize-lines: 3
+
+AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue("source");
+//...
+adjustAdRevenue.setAdImpressionsCount(10);
+//...
+Adjust.trackAdRevenue(adjustAdRevenue);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod setAdRevenueNetwork
+:::::
 
-:::{function} setAdRevenueNetwork (adRevenueNetwork)
+% Class method end
+
+% Class method setAdRevenueNetwork
+
+:::::{function} setAdRevenueNetwork (adRevenueNetwork)
 :noindex:
 
 Sets the number of impressions received for an ad
@@ -122,18 +156,31 @@ public void setAdRevenueNetwork(string adRevenueNetwork)
 :param adRevenueNetwork: The network associated with the ad revenue
 :type adRevenueNetwork: string
 
-```{include} /unity/fragments/AdjustAdRevenue.md
-:start-after: setAdRevenueNetwork
-:end-before: methodEnd
+% setAdRevenueNetwork snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+:emphasize-lines: 3
+
+AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue("source");
+//...
+adjustAdRevenue.setAdRevenueNetwork("network1");
+//...
+Adjust.trackAdRevenue(adjustAdRevenue);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod setAdRevenueUnit
+:::::
 
-:::{function} setAdRevenueUnit (adRevenueUnit)
+% Class method end
+
+% Class method setAdRevenueUnit
+
+:::::{function} setAdRevenueUnit (adRevenueUnit)
 :noindex:
 
 Sets the ad unit ID associated with the ad revenue
@@ -147,18 +194,31 @@ public void setAdRevenueUnit(string adRevenueUnit)
 :param adRevenueUnit: The ad unit ID associated with the ad revenue
 :type adRevenueUnit: NSString
 
-```{include} /unity/fragments/AdjustAdRevenue.md
-:start-after: setAdRevenueUnit
-:end-before: methodEnd
+% setAdRevenueUnit snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+:emphasize-lines: 3
+
+AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue("source");
+//...
+adjustAdRevenue.setAdRevenueUnit("unit1");
+//...
+Adjust.trackAdRevenue(adjustAdRevenue);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod setAdRevenuePlacement
+:::::
 
-:::{function} setAdRevenuePlacement (adRevenuePlacement)
+% Class method end
+
+% Class method setAdRevenuePlacement
+
+:::::{function} setAdRevenuePlacement (adRevenuePlacement)
 :noindex:
 
 Sets the placement of the ad associated with the ad revenue
@@ -172,18 +232,31 @@ public void setAdRevenuePlacement(string adRevenuePlacement)
 :param adRevenuePlacement: The placement of the ad associated with the revenue
 :type adRevenuePlacement: string
 
-```{include} /unity/fragments/AdjustAdRevenue.md
-:start-after: setAdRevenuePlacement
-:end-before: methodEnd
+% setAdRevenuePlacement snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+:emphasize-lines: 3
+
+AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue("source");
+//...
+adjustAdRevenue.setAdRevenuePlacement("banner");
+//...
+Adjust.trackAdRevenue(adjustAdRevenue);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod addCallbackParameter
+:::::
 
-:::{function} addCallbackParameter (key, value)
+% Class method end
+
+% Class method addCallbackParameter
+
+:::::{function} addCallbackParameter (key, value)
 :noindex:
 
 Adds key-value callback parameters to the ad revenue object. You can add multiple parameters by calling this method multiple times.
@@ -201,18 +274,31 @@ public void addCallbackParameter(string key, string value)
 :param value: The data value
 :type value: string
 
-```{include} /unity/fragments/AdjustAdRevenue.md
-:start-after: addCallbackParameter
-:end-before: methodEnd
+% addCallbackParameter snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+:emphasize-lines: 3
+
+AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue("source");
+//...
+adjustAdRevenue.addCallbackParameter("key", "value");
+//...
+Adjust.trackAdRevenue(adjustAdRevenue);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod addPartnerParameter
+:::::
 
-:::{function} addPartnerParameter (key, value)
+% Class method end
+
+% Class method addPartnerParameter
+
+:::::{function} addPartnerParameter (key, value)
 :noindex:
 
 Adds key-value partner parameters to the ad revenue object. You can add multiple parameters by calling this method multiple times.
@@ -228,11 +314,24 @@ public void addPartnerParameter(string key, string value)
 :param value: The data value
 :type value: string
 
-```{include} /unity/fragments/AdjustAdRevenue.md
-:start-after: addPartnerParameter
-:end-before: methodEnd
+% addPartnerParameter snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+:emphasize-lines: 3
+
+AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue("source");
+//...
+adjustAdRevenue.addPartnerParameter("key", "value");
+//...
+Adjust.trackAdRevenue(adjustAdRevenue);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
+
+:::::
+
+% Class method end

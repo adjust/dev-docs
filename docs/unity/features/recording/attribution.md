@@ -9,23 +9,23 @@ You must call the `setAttributionChangedDelegate` method **before** initializing
 :::
 
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setAttributionChangedDelegate
-:end-before: methodEnd
-```
+:::{include} /unity/reference/AdjustConfig/setup.md
+:start-after: setAttributionChangedDelegate snippet
+:end-before: Snippet end
+:::
 
 Within your delegate function, you have access to the user's Attribution object. See the [`AdjustAttribution` class reference](/unity/reference/AdjustAttribution.md) for a list of available parameters.
 
 
 ## Get current attribution information
 
-```{versionadded} v4.11.0
+:::{versionadded} v4.11.0
 When a user installs your app, Adjust attributes the install to a campaign. The Adjust SDK gives you access to campaign attribution details for your install. To return this information, call the [`getAttribution` method](unity-getAttribution-invocation).
-```
+:::
 
 This method returns an Attribution object. See the [`AdjustAttribution` class reference](/unity/reference/AdjustAttribution.md) for a list of available properties.
 
-```{include} /unity/fragments/Adjust.md
-:start-after: getAttribution
-:end-before: methodEnd
-```
+:::{include} /unity/reference/Adjust/recording.md
+:start-after: getAttribution snippet
+:end-before: Snippet end
+:::

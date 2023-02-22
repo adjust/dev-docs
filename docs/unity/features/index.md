@@ -17,7 +17,7 @@ Recording features
 :::
 ::::
 
-```{toctree}
+:::{toctree}
 ---
 hidden: true
 maxdepth: 1
@@ -27,4 +27,4 @@ caption:  Features
 configuration/index
 recording/index
 
-```
+:::

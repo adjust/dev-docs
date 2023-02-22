@@ -11,14 +11,14 @@ To measure ad revenue:
 1. Create a new Adjust ad revenue instance and pass your ad revenue source as an argument.
 2. Call the [`trackAdRevenue` method](unity-trackAdRevenue-invocation) with your ad revenue instance as an argument.
 
-```{include} /unity/fragments/Adjust.md
-:start-after: trackAdRevenue
-:end-before: methodEnd
-```
+:::{include} /unity/reference/Adjust/recording.md
+:start-after: trackAdRevenue snippet
+:end-before: Snippet end
+:::
 
-:::{dropdown} Sources
+::::{dropdown} Sources
 
-```{list-table}
+:::{list-table}
 :header-rows: 1
 
 * - Parameter
@@ -39,8 +39,8 @@ To measure ad revenue:
    - Helium Chartboost
 * - `AdjustConfig.AdjustAdRevenueSourcePublisher`
    - Generic source
-```
 :::
+::::
 
 ## Record ad revenue amount
 
@@ -57,10 +57,10 @@ You must format the currency code as a 3 character string that follows the [ISO 
 Check the [guide to tracking purchases in different currencies](https://help.adjust.com/en/article/currency-conversion) for more information.
 :::
 
-```{include} /unity/fragments/AdjustAdRevenue.md
-:start-after: setRevenue
-:end-before: methodEnd
-```
+:::{include} /unity/reference/AdjustAdRevenue.md
+:start-after: setRevenue snippet
+:end-before: Snippet end
+:::
 
 ## Record ad campaign details
 
@@ -69,37 +69,37 @@ The ad revenue object contains properties you can use to report on your ad campa
 :::::{dropdown} Ad impressions
 Record the number of ad impressions by passing an **integer** value to the [`setAdImpressionsCount` method](unity-setAdImpressionsCount-invocation).
 
-```{include} /unity/fragments/AdjustAdRevenue.md
-:start-after: setAdImpressionsCount
-:end-before: methodEnd
-```
+:::{include} /unity/reference/AdjustAdRevenue.md
+:start-after: setAdImpressionsCount snippet
+:end-before: Snippet end
+:::
 :::::
 
 :::::{dropdown} Ad revenue network
 Record which network generated the revenue by passing a **string** value to the [`setAdRevenueNetwork` method](unity-setAdRevenueNetwork-invocation).
 
-```{include} /unity/fragments/AdjustAdRevenue.md
-:start-after: setAdRevenueNetwork
-:end-before: methodEnd
-```
+:::{include} /unity/reference/AdjustAdRevenue.md
+:start-after: setAdRevenueNetwork snippet
+:end-before: Snippet end
+:::
 :::::
 
 :::::{dropdown} Ad revenue unit
 Record which ad revenue unit generated the revenue by passing a **string** value to the [`setAdRevenueUnit` method](unity-setAdRevenueUnit-invocation).
 
-```{include} /unity/fragments/AdjustAdRevenue.md
-:start-after: setAdRevenueUnit
-:end-before: methodEnd
-```
+:::{include} /unity/reference/AdjustAdRevenue.md
+:start-after: setAdRevenueUnit snippet
+:end-before: Snippet end
+:::
 :::::
 
 :::::{dropdown} Ad revenue placement
 Record the placement of your ad by passing a **string** value to the [`setAdRevenuePlacement` method](unity-setAdRevenuePlacement-invocation).
 
-```{include} /unity/fragments/AdjustAdRevenue.md
-:start-after: setAdRevenuePlacement
-:end-before: methodEnd
-```
+:::{include} /unity/reference/AdjustAdRevenue.md
+:start-after: setAdRevenuePlacement snippet
+:end-before: Snippet end
+:::
 :::::
 
 ## Add callback parameters
@@ -128,10 +128,10 @@ Adjust supports many placeholders which you can use to pass information from the
 You can read more about using URL callbacks, including a full list of available values, in the [callbacks guide](https://help.adjust.com/en/article/callbacks).
 :::
 
-```{include} /unity/fragments/AdjustAdRevenue.md
-:start-after: addCallbackParameter
-:end-before: methodEnd
-```
+:::{include} /unity/reference/AdjustAdRevenue.md
+:start-after: addCallbackParameter snippet
+:end-before: Snippet end
+:::
 
 ## Add partner parameters
 
@@ -145,10 +145,10 @@ Partner parameters don't appear in raw data by default. You can add the `{partne
 
 Add partner parameters to your event by calling the [`addPartnerParameter` method](unity-AdjustAdRevenue-addPartnerParameter-invocation) with **string** key-value arguments. You can add multiple parameters by calling this method multiple times.
 
-```{include} /unity/fragments/AdjustAdRevenue.md
-:start-after: addPartnerParameter
-:end-before: methodEnd
-```
+:::{include} /unity/reference/AdjustAdRevenue.md
+:start-after: addPartnerParameter snippet
+:end-before: Snippet end
+:::
 
 ## Example
 

@@ -1,13 +1,13 @@
 # Privacy methods
 
-% classMethod setUrlStrategy
+% Class method setUrlStrategy
 
-::::{function} setUrlStrategy(urlStrategy)
+:::::{function} setUrlStrategy(urlStrategy)
 :noindex:
 
-```{versionadded} v4.23.0
+:::{versionadded} v4.23.0
 Sets whether the Adjust SDK can read the device {abbr}`IDFA (ID for Advertisers)`
-```
+:::
 
 ```{code-block} cs
 :name: unity-setUrlStrategy-invocation
@@ -18,13 +18,21 @@ public void setUrlStrategy(String urlStrategy)
 :param urlStrategy: The data residency target (see available values below)
 :type urlStrategy: String
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setUrlStrategy
-:end-before: methodEnd
-```
+% setUrlStrategy snippet
 
-:::{dropdown} Available URL strategies
-```{list-table}
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+adjustConfig.setUrlStrategy(AdjustConfig.AdjustDataResidencyEU);
+Adjust.start(adjustConfig);
+```
+:::
+::::
+
+::::{dropdown} Available URL strategies
+:::{list-table}
 :header-rows: 1
 
 * - Value
@@ -40,20 +48,23 @@ public void setUrlStrategy(String urlStrategy)
 * - `AdjustUrlStrategyIndia`
    - Sets the area of data residency to India
 
-```
 :::
 ::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod setCoppaCompliantEnabled
+:::::
 
-:::{function} setCoppaCompliantEnabled(coppaCompliantEnabled)
+% Class method end
+
+% Class method setCoppaCompliantEnabled
+
+:::::{function} setCoppaCompliantEnabled(coppaCompliantEnabled)
 :noindex:
 
-```{versionadded} v4.30.0
+:::{versionadded} v4.30.0
 Enable {abbr}`COPPA (Children's Online Privacy Protection Act)` compliance in your app.
-```
+:::
 
 ```{code-block} cs
 :name: unity-setCoppaCompliantEnabled-invocation
@@ -64,10 +75,21 @@ public void setCoppaCompliantEnabled(bool coppaCompliantEnabled)
 :param coppaCompliantEnabled: Whether the app should be COPPA compliant
 :type coppaCompliantEnabled: Boolean
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setCoppaCompliantEnabled
-:end-before: methodEnd
+% setCoppaCompliantEnabled snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+adjustConfig.setCoppaCompliantEnabled(true);
+Adjust.start(adjustConfig);
 ```
 :::
+::::
 
-% classMethodEnd
+% Snippet end
+
+:::::
+
+% Class method end

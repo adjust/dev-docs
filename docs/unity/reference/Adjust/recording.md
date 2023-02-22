@@ -1,8 +1,8 @@
 # Recording methods
 
-% classMethod trackEvent
+% Class method trackEvent
 
-:::{function} trackEvent (event)
+:::::{function} trackEvent (event)
 :noindex:
 
 Record event information using an `ADJEvent` object and an [Adjust event token](https://help.adjust.com/en/article/basic-event-setup#create-an-event-token).
@@ -16,18 +16,27 @@ public static void trackEvent(AdjustEvent adjustEvent)
 :param event: An event object containing information you want to record
 :type event: [*AdjustEvent*](/unity/reference/AdjustEvent.md)
 
-```{include} /unity/fragments/Adjust.md
-:start-after: trackEvent
-:end-before: methodEnd
+% trackEvent snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+AdjustEvent adjustEvent = new AdjustEvent("abc123");
+//...
+Adjust.trackEvent(adjustEvent);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod addSessionCallbackParameter
+:::::
 
-:::{function} addSessionCallbackParameter (key, value)
+% Class method end
+
+% Class method addSessionCallbackParameter
+
+:::::{function} addSessionCallbackParameter (key, value)
 :noindex:
 
 Adds callback parameters to send with each session recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
@@ -43,18 +52,25 @@ public static void addSessionCallbackParameter(string key, string value)
 :param value: The data value
 :type value: string
 
-```{include} /unity/fragments/Adjust.md
-:start-after: addSessionCallbackParameter
-:end-before: methodEnd
+% addSessionCallbackParameter snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+Adjust.addSessionCallbackParameter("key", "value");
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod removeSessionCallbackParameter
+:::::
 
-:::{function} removeSessionCallbackParameter (key)
+% Class method end
+
+% Class method removeSessionCallbackParameter
+
+:::::{function} removeSessionCallbackParameter (key)
 :noindex:
 
 Removes a callback parameter
@@ -68,18 +84,25 @@ public static void removeSessionCallbackParameter(string key)
 :param key: The data key
 :type key: NSString
 
-```{include} /unity/fragments/Adjust.md
-:start-after: removeSessionCallbackParameter
-:end-before: methodEnd
+% removeSessionCallbackParameter snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+Adjust.removeSessionCallbackParameter("key");
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod resetSessionCallbackParameters
+:::::
 
-:::{function} resetSessionCallbackParameters
+% Class method end
+
+% Class method resetSessionCallbackParameters
+
+:::::{function} resetSessionCallbackParameters
 :noindex:
 
 Removes all callback parameters
@@ -90,18 +113,25 @@ Removes all callback parameters
 public static void resetSessionCallbackParameters()
 ```
 
-```{include} /unity/fragments/Adjust.md
-:start-after: resetSessionCallbackParameters
-:end-before: methodEnd
+% resetSessionCallbackParameters snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+Adjust.resetSessionCallbackParameters();
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod addSessionPartnerParameter
+:::::
 
-:::{function} addSessionPartnerParameter (key, value)
+% Class method end
+
+% Class method addSessionPartnerParameter
+
+:::::{function} addSessionPartnerParameter (key, value)
 :noindex:
 
 Adds partner parameters to send with each session recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
@@ -117,18 +147,25 @@ public static void addSessionPartnerParameter(string key, string value)
 :param value: The data value
 :type value: string
 
-```{include} /unity/fragments/Adjust.md
-:start-after: addSessionPartnerParameter
-:end-before: methodEnd
+% addSessionPartnerParameter snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+Adjust.addSessionPartnerParameter("key", "value");
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod removeSessionPartnerParameter
+:::::
 
-:::{function} removeSessionPartnerParameter (key)
+% Class method end
+
+% Class method removeSessionPartnerParameter
+
+:::::{function} removeSessionPartnerParameter (key)
 :noindex:
 
 Removes a partner parameter
@@ -142,18 +179,25 @@ public static void removeSessionPartnerParameter(string key)
 :param key: The data key
 :type key: string
 
-```{include} /unity/fragments/Adjust.md
-:start-after: removeSessionPartnerParameter
-:end-before: methodEnd
+% removeSessionPartnerParameter snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+Adjust.removeSessionPartnerParameter("key");
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod resetSessionPartnerParameters
+:::::
 
-:::{function} resetSessionPartnerParameters
+% Class method end
+
+% Class method resetSessionPartnerParameters
+
+:::::{function} resetSessionPartnerParameters
 :noindex:
 
 Resets all partner parameters
@@ -164,18 +208,25 @@ Resets all partner parameters
 public static void resetSessionPartnerParameters()
 ```
 
-```{include} /unity/fragments/Adjust.md
-:start-after: resetSessionPartnerParameters
-:end-before: methodEnd
+% resetSessionPartnerParameters snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+Adjust.resetSessionPartnerParameters();
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod trackAdRevenue
+:::::
 
-:::{function} trackAdRevenue(adRevenue)
+% Class method end
+
+% Class method trackAdRevenue
+
+:::::{function} trackAdRevenue(adRevenue)
 :noindex:
 
 Record the details of an AdjustAdRevenue object
@@ -189,18 +240,27 @@ public static void trackAdRevenue(AdjustAdRevenue adRevenue)
 :param adRevenue: The ad revenue object containing the revenue details
 :type adRevenue: [AdjustAdRevenue object](/unity/reference/AdjustAdRevenue.md)
 
-```{include} /unity/fragments/Adjust.md
-:start-after: trackAdRevenue
-:end-before: methodEnd
+% trackAdRevenue snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue("source");
+//...
+Adjust.trackAdRevenue(adjustAdRevenue);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod trackAppStoreSubscription
+:::::
 
-:::{function} trackAppStoreSubscription(subscription)
+% Class method end
+
+% Class method trackAppStoreSubscription
+
+:::::{function} trackAppStoreSubscription(subscription)
 :noindex:
 
 Record an App Store subscription object
@@ -214,18 +274,37 @@ public static void trackAppStoreSubscription(AdjustAppStoreSubscription subscrip
 :param subscription: The ad revenue object containing the revenue details
 :type subscription: [AdjustAppStoreSubscription object](/unity/reference/AdjustAppStoreSubscription.md)
 
-```{include} /unity/fragments/Adjust.md
-:start-after: trackAppStoreSubscription
-:end-before: methodEnd
+% trackAppStoreSubscription snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
+    price,
+    currency,
+    transactionId,
+    receipt);
+subscription.setTransactionDate(transactionDate);
+subscription.setSalesRegion(salesRegion);
+subscription.addCallbackParameter("key1", "value1");
+subscription.addCallbackParameter("key2", "value2");
+subscription.addPartnerParameter("key1", "value1");
+subscription.addPartnerParameter("key2", "value2");
+
+Adjust.trackAppStoreSubscription(subscription);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod trackPlayStoreSubscription
+:::::
 
-:::{function} trackPlayStoreSubscription(subscription)
+% Class method end
+
+% Class method trackPlayStoreSubscription
+
+:::::{function} trackPlayStoreSubscription(subscription)
 :noindex:
 
 Record an Play Store subscription object
@@ -239,16 +318,36 @@ public static void trackPlayStoreSubscription(AdjustPlayStoreSubscription subscr
 :param subscription: The ad revenue object containing the revenue details
 :type subscription: [trackPlayStoreSubscription object](/unity/reference/AdjustPlayStoreSubscription.md)
 
-```{include} /unity/fragments/Adjust.md
-:start-after: trackPlayStoreSubscription
-:end-before: methodEnd
+% trackPlayStoreSubscription snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
+    price,
+    currency,
+    sku,
+    orderId,
+    signature,
+    purchaseToken);
+subscription.setPurchaseTime(purchaseTime);
+subscription.addCallbackParameter("key1", "value1");
+subscription.addCallbackParameter("key2", "value2");
+subscription.addPartnerParameter("key1", "value1");
+subscription.addPartnerParameter("key2", "value2");
+
+Adjust.trackPlayStoreSubscription(subscription);
 ```
-
 :::
+::::
 
-% classMethod getAttribution
+% Snippet end
 
-:::{function} getAttribution
+:::::
+
+% Class method getAttribution
+
+:::::{function} getAttribution
 :noindex:
 
 Fetches attribution data from the device
@@ -262,9 +361,16 @@ public static AdjustAttribution getAttribution()
 :returns: An attribution object containing attribution data associated with the device
 :rtype: [`AdjustAttribution` object](/unity/reference/AdjustAttribution.md)
 
-```{include} /unity/fragments/Adjust.md
-:start-after: getAttribution
-:end-before: methodEnd
-```
+% getAttribution snippet
 
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+var attribution = Adjust.getAttribution();
+```
 :::
+::::
+
+% Snippet end
+
+:::::

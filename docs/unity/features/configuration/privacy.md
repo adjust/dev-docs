@@ -8,10 +8,10 @@ Article 17 of the European Union's {abbr}`GDPR (General Data Protection Regulati
 
 You can send the user's RTBF request to Adjust by calling the [`gdprForgetMe` method](unity-gdprForgetMe-invocation).
 
-```{include} /unity/fragments/Adjust.md
-:start-after: gdprForgetMe
-:end-before: methodEnd
-```
+:::{include} /unity/reference/Adjust/privacy.md
+:start-after: gdprForgetMe snippet
+:end-before: Snippet end
+:::
 
 ## Third-party sharing for specific users
 
@@ -21,41 +21,41 @@ You can use the Adjust SDK to record when a user changes their third-party shari
 
 Some users may want to opt-out of sharing their data with third-parties. To communicate this to Adjust, call the [`trackThirdPartySharing` method](unity-trackThirdPartySharing-invocation) with an [`AdjustThirdPartySharing` object](/unity/reference/AdjustThirdPartySharing) initialized with a `false` value. When Adjust's servers receive this information, Adjust stops sharing the user's data with third-parties. The Adjust SDK continues to work as expected.
 
-```{include} /unity/fragments/AdjustThirdPartySharing.md
-:start-after: AdjustThirdPartySharing false
-:end-before: methodEnd
-```
+:::{include} /unity/reference/AdjustThirdPartySharing.md
+:start-after: AdjustThirdPartySharing false snippet
+:end-before: Snippet end
+:::
 
 ### Enable third-party sharing
 
 If a user opts into sharing with third-parties, call the [`trackThirdPartySharing` method](unity-trackThirdPartySharing-invocation) with an [`AdjustThirdPartySharing` object](/unity/reference/AdjustThirdPartySharing) initialized with a `true` value. This updates the user's preferences.
 
-```{include} /unity/fragments/AdjustThirdPartySharing.md
-:start-after: AdjustThirdPartySharing true
-:end-before: methodEnd
-```
+:::{include} /unity/reference/AdjustThirdPartySharing.md
+:start-after: AdjustThirdPartySharing true snippet
+:end-before: Snippet end
+:::
 
 ### Send granular information
 
 You can attach granular information when a user updates their third-party sharing preferences. Use this information to communicate more detail about a user's decision. To do this, call the [`addGranularOption` method](unity-addGranularOption-invocation) with your partner name and your options.
 
-```{include} /unity/fragments/AdjustThirdPartySharing.md
-:start-after: addGranularOption
-:end-before: methodEnd
-```
+:::{include} /unity/reference/AdjustThirdPartySharing.md
+:start-after: addGranularOption snippet
+:end-before: Snippet end
+:::
 
 ### Update partner settings
 
-```{versionadded} 4.32.0
+:::{versionadded} 4.32.0
 You can use the Adjust SDK to update your third party sharing settings on a per-partner basis. To do this, call the [`addPartnerSharingSetting` method](unity-addPartnerSharingSetting-invocation) with your partner name and your options.
-```
+:::
 
-```{include} /unity/fragments/AdjustThirdPartySharing.md
-:start-after: addPartnerSharingSetting
-:end-before: methodEnd
-```
+:::{include} /unity/reference/AdjustThirdPartySharing.md
+:start-after: addPartnerSharingSetting snippet
+:end-before: Snippet end
+:::
 
-```{list-table} Available partners
+:::{list-table} Available partners
 :header-rows: 1
 
 * - Partner name
@@ -80,7 +80,7 @@ You can use the Adjust SDK to update your third party sharing settings on a per-
    - `yahoo_gemini`
 * - YahooJapanSearch
    - `yahoo_japan_search`
-```
+:::
 
 ### Manage Facebook Limited Data Use
 
@@ -92,12 +92,12 @@ Facebook provides a feature called Limited Data Use (LDU) to comply with the {ab
 
 You can update the Facebook LDU status by passing arguments to the [`addGranularOption` method](unity-addGranularOption-invocation).
 
-```{include} /unity/fragments/AdjustThirdPartySharing.md
-:start-after: addGranularOption Facebook
-:end-before: methodEnd
-```
+:::{include} /unity/reference/AdjustThirdPartySharing.md
+:start-after: addGranularOption Facebook snippet
+:end-before: Snippet end
+:::
 
-```{list-table} Parameters
+:::{list-table} Parameters
 :header-rows: 1
 
 * - Parameter	
@@ -113,7 +113,7 @@ You can update the Facebook LDU status by passing arguments to the [`addGranular
       * `0`: Request that Facebook use geolocation.
       * `1000`: California.
 
-```
+:::
 
 :::{note}
 If you call this method with a `0` value for **either** `data_processing_options_country` or `data_processing_options_state`, the Adjust SDK passes **both** fields back as `0`.
@@ -123,10 +123,10 @@ If you call this method with a `0` value for **either** `data_processing_options
 
 To disable third-party sharing for all users, call the [`disableThirdPartySharing` method](unity-disableThirdPartySharing-invocation). When Adjust's servers receive this information, Adjust stops sharing the user's data with third-parties. The Adjust SDK continues to work as expected.
 
-```{include} /unity/fragments/Adjust.md
-:start-after: disableThirdPartySharing
-:end-before: methodEnd
-```
+:::{include} /unity/reference/Adjust/privacy.md
+:start-after: disableThirdPartySharing snippet
+:end-before: Snippet end
+:::
 
 ## Data residency
 
@@ -134,12 +134,12 @@ The data residency feature allows you to choose the country in which Adjust stor
 
 To set your country of data residency, call the [`setUrlStrategy` method](unity-setUrlStrategy-invocation) on your `AdjustConfig` instance.
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setUrlStrategy
-:end-before: methodEnd
-```
+:::{include} /unity/reference/AdjustConfig/privacy.md
+:start-after: setUrlStrategy snippet
+:end-before: Snippet end
+:::
 
-```{list-table} Available URL strategies
+:::{list-table} Available URL strategies
 :header-rows: 1
 
 * - Value
@@ -155,13 +155,13 @@ To set your country of data residency, call the [`setUrlStrategy` method](unity-
 * - `AdjustUrlStrategyIndia`
    - Sets the area of data residency to India
 
-```
+:::
 
 ## Consent measurement for specific users
 
 If you are using [Data Privacy settings](https://help.adjust.com/en/article/manage-data-collection-and-retention) in your Adjust dashboard, you need to set up the Adjust SDK to work with them. This includes settings such as consent expiry period and user data retention period. To toggle this feature, call the [`trackMeasurementConsent` method](unity-trackMeasurementConsent-invocation). When enabled, the SDK communicates the data privacy settings to Adjust's servers. Adjust's servers then applies your data privacy rules to the user. The Adjust SDK continues to work as expected.
 
-```{include} /unity/fragments/Adjust.md
-:start-after: trackMeasurementConsent
-:end-before: methodEnd
-```
+:::{include} /unity/reference/Adjust/privacy.md
+:start-after: trackMeasurementConsent snippet
+:end-before: Snippet end
+:::

@@ -22,10 +22,10 @@ Your config object contains a **string** `externalDeviceId` property that you ca
 
 The external device ID is case-sensitive. If you have imported external device IDs, make sure the value you pass matches the imported value.
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setExternalDeviceId
-:end-before: methodEnd
-```
+:::{include} /unity/reference/AdjustConfig/setup.md
+:start-after: setExternalDeviceId snippet
+:end-before: Snippet end
+:::
 
 If you want to use the external device ID in your business analytics, you can pass it as a session callback parameter. 
 

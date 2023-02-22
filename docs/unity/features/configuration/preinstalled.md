@@ -1,15 +1,15 @@
 # Record preinstalled app activity
 
-```{versionadded} v4.23.0
+:::{versionadded} v4.23.0
 You can use the Adjust SDK to record activity from apps that came preinstalled on a user's device. This enables you to record information from users who didn't download your app from a campaign.
-```
+:::
 
 Your config object contains a **boolean** `preinstallTrackingEnabled` property that controls this feature. To enable preinstall measurement, call the [`setPreinstallTrackingEnabled` method](unity-setPreinstallTrackingEnabled-invocation) with a `true` argument.
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setPreinstallTrackingEnabled
-:end-before: methodEnd
-```
+:::{include} /unity/reference/AdjustConfig/setup.md
+:start-after: setPreinstallTrackingEnabled snippet
+:end-before: Snippet end
+:::
 
 The Adjust SDK provides five methods for measuring preinstalled apps:
 
@@ -57,10 +57,10 @@ Save attribution information for your preinstalled app in a world-readable direc
 
 Pass the file path at which your preinstall information can be found to the [`setPreinstallFilePath` method](unity-setPreinstallFilePath-invocation) to give the Adjust SDK access to the information.
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setPreinstallFilePath
-:end-before: methodEnd
-```
+:::{include} /unity/reference/AdjustConfig/setup.md
+:start-after: setPreinstallFilePath snippet
+:end-before: Snippet end
+:::
 
 ## Default campaign token
 
@@ -74,10 +74,10 @@ Configuring a default campaign enables you to attribute all preinstalls to a pre
 
 2. Copy this token and pass it to the [`setDefaultTracker` method](unity-setDefaultTracker-invocation) in your app delegate file.
 
-   ```{include} /unity/fragments/AdjustConfig.md
-   :start-after: setDefaultTracker
-   :end-before: methodEnd
-   ```
+   :::{include} /unity/reference/AdjustConfig/setup.md
+   :start-after: setDefaultTracker snippet
+   :end-before: Snippet end
+   :::
 
 3. Build and run your app. If you have logging enabled, you should see a message in your log
 

@@ -5,10 +5,10 @@ You can associate your [Adjust event tokens](https://help.adjust.com/en/article/
 * Create a new Adjust event instance and pass your event token as a string argument.
 * Call the [`trackEvent` method](unity-trackEvent-invocation) with your event instance as an argument.
 
-```{include} /unity/fragments/Adjust.md
-:start-after: trackEvent
-:end-before: methodEnd
-```
+:::{include} /unity/reference/Adjust/recording.md
+:start-after: trackEvent snippet
+:end-before: Snippet end
+:::
 
 :::::{dropdown} Example
 
@@ -44,10 +44,10 @@ You must format the currency code as a 3 character string that follows the [ISO 
 Check the guide to [tracking purchases in different currencies](https://help.adjust.com/en/article/currency-conversion) for more information.
 :::
 
-```{include} /unity/fragments/AdjustEvent.md
-:start-after: setRevenue
-:end-before: methodEnd
-```
+:::{include} /unity/reference/AdjustEvent.md
+:start-after: setRevenue snippet
+:end-before: Snippet end
+:::
 
 :::::{dropdown} Example
 
@@ -75,10 +75,10 @@ You can pass an optional identifier to avoid recording duplicate events. The SDK
 
 To set the identifier, call the [`setTransactionId` method](unity-setTransactionId-invocation) and pass your transaction ID as a **string** argument.
 
-```{include} /unity/fragments/AdjustEvent.md
-:start-after: setTransactionId
-:end-before: methodEnd
-```
+:::{include} /unity/reference/AdjustEvent.md
+:start-after: setTransactionId snippet
+:end-before: Snippet end
+:::
 
 :::::{dropdown} Example
 
@@ -109,10 +109,10 @@ You can configure callback parameters to send to your servers. Once you configur
 
 Add callback parameters to your event by calling the [`addCallbackParameter` method](unity-AdjustEvent-addCallbackParameter-invocation) with **string** key-value arguments. You can add multiple parameters by calling this method multiple times.
 
-```{include} /unity/fragments/AdjustEvent.md
-:start-after: addCallbackParameter
-:end-before: methodEnd
-```
+:::{include} /unity/reference/AdjustEvent.md
+:start-after: addCallbackParameter snippet
+:end-before: Snippet end
+:::
 
 The Adjust SDK measures the event and sends a request to your URL with the callback parameters. For example, if you register the URL `https://www.mydomain.com/callback`, your callback looks like this:
 
@@ -174,10 +174,10 @@ Partner parameters don't appear in raw data by default. You can add the `{partne
 
 Add partner parameters to your event by calling the [`addPartnerParameter` method](unity-AdjustEvent-addPartnerParameter-invocation) with **string** key-value arguments. You can add multiple parameters by calling this method multiple times.
 
-```{include} /unity/fragments/AdjustEvent.md
-:start-after: addPartnerParameter
-:end-before: methodEnd
-```
+:::{include} /unity/reference/AdjustEvent.md
+:start-after: addPartnerParameter snippet
+:end-before: Snippet end
+:::
 
 :::::{dropdown} Example
 
@@ -209,10 +209,10 @@ You can add a custom string identifier to each event you want to measure. Adjust
 
 Set up this identifier by calling the [`setCallbackId` method](unity-setCallbackId-invocation) with your ID as a **string** argument.
 
-```{include} /unity/fragments/AdjustEvent.md
-:start-after: setCallbackId
-:end-before: methodEnd
-```
+:::{include} /unity/reference/AdjustEvent.md
+:start-after: setCallbackId snippet
+:end-before: Snippet end
+:::
 
 :::::{dropdown} Example
 

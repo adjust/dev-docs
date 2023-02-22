@@ -1,8 +1,8 @@
 # Setup methods
 
-% classMethod setLogLevel
+% Class method setLogLevel
 
-::::{function} setLogLevel (logLevel)
+:::::{function} setLogLevel (logLevel)
 :noindex:
 
 Set the verbosity of logs you want to receive from the Adjust SDK
@@ -16,13 +16,24 @@ public void setLogLevel(AdjustLogLevel logLevel)
 :param logLevel: The verbosity of the logging
 :type logLevel: ADJLogLevel
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setLogLevel
-:end-before: methodEnd
-```
+% setLogLevel snippet
 
-:::{dropdown} Available log levels
-```{list-table}
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+:emphasize-lines: 3
+
+AdjustConfig config = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
+//...
+config.setLogLevel(AdjustLogLevel.Error);
+//...
+Adjust.start(config);
+```
+:::
+::::
+
+::::{dropdown} Available log levels
+:::{list-table}
 :header-rows: 1
 
 * - Log level
@@ -42,15 +53,18 @@ public void setLogLevel(AdjustLogLevel logLevel)
 * - `AdjustLogLevel.Suppress`
    - Suppress all logging
 
-```
 :::
 ::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod setLogDelegate
+:::::
 
-:::{function} setLogDelegate (logDelegate)
+% Class method end
+
+% Class method setLogDelegate
+
+:::::{function} setLogDelegate (logDelegate)
 :noindex:
 
 Sets a delegate function ro program to handle log output
@@ -64,18 +78,31 @@ public void setLogDelegate(Action<String> logDelegate)
 :param logDelegate: The delegate function or program that handles log output
 :type logDelegate: String
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setLogDelegate
-:end-before: methodEnd
+% setLogDelegate snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+:emphasize-lines: 3
+
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
+//...
+adjustConfig.setLogDelegate(msg => Debug.Log(msg));
+//...
+Adjust.start(adjustConfig);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod setDefaultTracker
+:::::
 
-:::{function} setDefaultTracker (defaultTracker)
+% Class method end
+
+% Class method setDefaultTracker
+
+:::::{function} setDefaultTracker (defaultTracker)
 :noindex:
 
 Sets a default tracker token to record installs against
@@ -89,18 +116,30 @@ public void setDefaultTracker(string defaultTracker)
 :param defaultTracker: The tracker token to which all preinstalled sessions are attributed
 :type defaultTracker: String
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setDefaultTracker
-:end-before: methodEnd
+% setDefaultTracker snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+//...
+adjustConfig.setDefaultTracker("{TrackerToken}");
+//...
+Adjust.start(adjustConfig);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod setSendInBackground
+:::::
 
-:::{function} setSendInBackground (sendInBackground)
+% Class method end
+
+% Class method setSendInBackground
+
+:::::{function} setSendInBackground (sendInBackground)
 :noindex:
 
 Sets whether the SDK should send data while the app is running in the background
@@ -114,18 +153,30 @@ public void setSendInBackground(bool sendInBackground)
 :param sendInBackground: Whether the SDK should send information when the app is running in the background
 :type sendInBackground: Boolean
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setSendInBackground
-:end-before: methodEnd
+% setSendInBackground snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+//...
+adjustConfig.setSendInBackground(true);
+//...
+Adjust.start(adjustConfig);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod setSessionSuccessDelegate
+:::::
 
-:::{function} setSessionSuccessDelegate (sessionSuccessDelegate)
+% Class method end
+
+% Class method setSessionSuccessDelegate
+
+:::::{function} setSessionSuccessDelegate (sessionSuccessDelegate)
 :noindex:
 
 Sets up a success callback to trigger a function when the SDK records a session.
@@ -139,18 +190,35 @@ public void setSessionSuccessDelegate(Action<AdjustSessionSuccess> sessionSucces
 :param sessionSuccessDelegate: The function to launch when the SDK successfully records a session
 :type sessionSuccessDelegate: Action
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setSessionSuccessDelegate
-:end-before: methodEnd
+% setSessionSuccessDelegate snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+:emphasize-lines: 3, 7-9
+
+AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
+adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
+adjustConfig.setSessionSuccessDelegate(SessionSuccessCallback);
+//...
+Adjust.start(adjustConfig);
+//...
+public void SessionSuccessCallback (AdjustSessionSuccess sessionSuccessData) {
+    //...
+}
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod setSessionFailureDelegate
+:::::
 
-:::{function} setSessionFailureDelegate (sessionSuccessDelegate)
+% Class method end
+
+% Class method setSessionFailureDelegate
+
+:::::{function} setSessionFailureDelegate (sessionSuccessDelegate)
 :noindex:
 
 Sets up a success callback to trigger a function when the SDK records a session.
@@ -164,18 +232,35 @@ public void setSessionFailureDelegate(Action<AdjustSessionFailure> sessionFailur
 :param sessionFailureDelegate: The function to launch when the SDK fails to record a session
 :type sessionFailureDelegate: Action
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setSessionFailureDelegate
-:end-before: methodEnd
+% setSessionFailureDelegate snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+:emphasize-lines: 3, 7-9
+
+AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
+adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
+adjustConfig.setSessionFailureDelegate(SessionFailureCallback);
+//...
+Adjust.start(adjustConfig);
+//...
+public void SessionFailureCallback (AdjustSessionFailure sessionFailureData) {
+    //...
+}
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod setEventSuccessDelegate
+:::::
 
-:::{function} eventSuccessDelegate (eventSuccessDelegate)
+% Class method end
+
+% Class method setEventSuccessDelegate
+
+:::::{function} eventSuccessDelegate (eventSuccessDelegate)
 :noindex:
 
 Sets up a success callback to trigger a function when the SDK records an event.
@@ -189,18 +274,35 @@ public void setEventSuccessDelegate(Action<AdjustEventSuccess> eventSuccessDeleg
 :param eventSuccessDelegate: The function to launch when the SDK successfully records an event
 :type eventSuccessDelegate: Action
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setEventSuccessDelegate
-:end-before: methodEnd
+% setEventSuccessDelegate snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+:emphasize-lines: 3, 7-9
+
+AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
+adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
+adjustConfig.setEventSuccessDelegate(EventSuccessCallback);
+//...
+Adjust.start(adjustConfig);
+//...
+public void EventSuccessCallback(AdjustEventSuccess eventSuccessData) {
+    //...
+}
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod setEventFailureDelegate
+:::::
 
-:::{function} setEventFailureDelegate (eventFailureDelegate)
+% Class method end
+
+% Class method setEventFailureDelegate
+
+:::::{function} setEventFailureDelegate (eventFailureDelegate)
 :noindex:
 
 Sets up a success callback to trigger a function when the SDK records an event.
@@ -214,18 +316,35 @@ public void setEventFailureDelegate(Action<AdjustEventFailure> eventFailureDeleg
 :param eventFailureDelegate: The function to launch when the SDK fails to record an event
 :type eventFailureDelegate: Action
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setEventFailureDelegate
-:end-before: methodEnd
+% setEventFailureDelegate snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+:emphasize-lines: 3, 7-9
+
+AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
+adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
+adjustConfig.setEventFailureDelegate(EventFailureCallback);
+//...
+Adjust.start(adjustConfig);
+//...
+public void EventFailureCallback(AdjustEventFailure eventFailureData) {
+    //...
+}
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod setDelayStart
+:::::
 
-:::{function} setDelayStart (delayStart)
+% Class method end
+
+% Class method setDelayStart
+
+:::::{function} setDelayStart (delayStart)
 :noindex:
 
 Sets a delay before the SDK starts to allow data to load before session information is sent to Adjust's servers. Maximum delay: 10 seconds
@@ -239,18 +358,31 @@ public void setDelayStart(double delayStart)
 :param delayStart: The time (in seconds) to delay the start of the SDK by
 :type delayStart: double
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setDelayStart
-:end-before: methodEnd
+% setDelayStart snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+:emphasize-lines: 3
+
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+//...
+adjustConfig.setDelayStart(5.5);
+//...
+Adjust.start(adjustConfig);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod setExternalDeviceId
+:::::
 
-:::{function} setExternalDeviceId (externalDeviceId)
+% Class method end
+
+% Class method setExternalDeviceId
+
+:::::{function} setExternalDeviceId (externalDeviceId)
 :noindex:
 
 Sets an external device identifier for reporting purposes
@@ -264,18 +396,31 @@ public void setExternalDeviceId(string externalDeviceId)
 :param externalDeviceId: The external device ID associated with the device
 :type externalDeviceId: String
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setExternalDeviceId
-:end-before: methodEnd
+% setExternalDeviceId snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+:emphasize-lines: 3
+
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
+//...
+adjustConfig.setExternalDeviceId("{Your-External-Device-Id}");
+//...
+Adjust.start(adjustConfig);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod setEventBufferingEnabled
+:::::
 
-:::{function} setEventBufferingEnabled (eventBufferingEnabled)
+% Class method end
+
+% Class method setEventBufferingEnabled
+
+:::::{function} setEventBufferingEnabled (eventBufferingEnabled)
 :noindex:
 
 Sets event buffering. If enabled, the SDK stores events on the device and sends all requests once per minute.
@@ -289,23 +434,35 @@ public void setEventBufferingEnabled(bool eventBufferingEnabled)
 :param eventBufferingEnabled: Whether event buffering is enabled or not
 :type eventBufferingEnabled: Boolean
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setEventBufferingEnabled
-:end-before: methodEnd
+% setEventBufferingEnabled snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+//...
+adjustConfig.setEventBufferingEnabled(true);
+//...
+Adjust.start(adjustConfig);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod setNeedsCost
+:::::
 
-:::{function} setNeedsCost (needsCost)
+% Class method end
+
+% Class method setNeedsCost
+
+:::::{function} setNeedsCost (needsCost)
 :noindex:
 
-```{versionadded} v4.24.0
+:::{versionadded} v4.24.0
 Sets whether the SDK should gather cost data. This is accessible in the user's attribution information.
-```
+:::
 
 ```{code-block} cs
 :name: unity-setNeedsCost-invocation
@@ -316,18 +473,28 @@ public void setNeedsCost(bool needsCost)
 :param needsCost: Whether the SDK should gather cost data
 :type needsCost: bool
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setNeedsCost
-:end-before: methodEnd
+% setNeedsCost snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+
+AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
+adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
+adjustConfig.setNeedsCost(true);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod setAttributionChangedDelegate
+:::::
 
-:::{function} setAttributionChangedDelegate (attributionChangedDelegate)
+% Class method end
+
+% Class method setAttributionChangedDelegate
+
+:::::{function} setAttributionChangedDelegate (attributionChangedDelegate)
 :noindex:
 
 Sets a delegate function that fires when a user's attribution information updates
@@ -341,18 +508,43 @@ public void setAttributionChangedDelegate(Action<AdjustAttribution> attributionC
 :param attributionChangedDelegate: The delegate function that the SDK calls when a the user's attribution information changes
 :type attributionChangedDelegate: Action
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setAttributionChangedDelegate
-:end-before: methodEnd
+% setAttributionChangedDelegate snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+:emphasize-lines: 9, 13-16
+
+using com.adjust.sdk;
+
+public class ExampleGUI : MonoBehaviour {
+    void OnGUI() {
+        if (GUI.Button(new Rect(0, 0, Screen.width, Screen.height), "callback")) {
+            AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
+            adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
+            adjustConfig.setAttributionChangedDelegate(this.attributionChangedDelegate);
+            Adjust.start(adjustConfig);
+        }
+    }
+
+    public void attributionChangedDelegate(AdjustAttribution attribution) {
+        Debug.Log("Attribution changed");
+        // ...
+    }
+}
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod setPreinstallTrackingEnabled
+:::::
 
-:::{function} setPreinstallTrackingEnabled (preinstallTrackingEnabled)
+% Class method end
+
+% Class method setPreinstallTrackingEnabled
+
+:::::{function} setPreinstallTrackingEnabled (preinstallTrackingEnabled)
 :noindex:
 
 Enables or disables preinstall tracking
@@ -366,18 +558,30 @@ public void setPreinstallTrackingEnabled(bool preinstallTrackingEnabled)
 :param preinstallTrackingEnabled: Whether preinstall tracking is enabled
 :type preinstallTrackingEnabled: Boolean
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setPreinstallTrackingEnabled
-:end-before: methodEnd
+% setPreinstallTrackingEnabled snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
+//...
+adjustConfig.setPreinstallTrackingEnabled(true);
+//...
+Adjust.start(adjustConfig);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod setPreinstallTrackingEnabled
+:::::
 
-:::{function} setPreinstallFilePath (preinstallFilePath)
+% Class method end
+
+% Class method setPreinstallFilePath
+
+:::::{function} setPreinstallFilePath (preinstallFilePath)
 :noindex:
 
 Defines a relative path where preinstall information is available. This directory must be world-readable
@@ -391,18 +595,30 @@ public void setPreinstallFilePath(string preinstallFilePath)
 :param preinstallFilePath: The path where the preinstall information is written
 :type preinstallFilePath: String
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setPreinstallFilePath
-:end-before: methodEnd
+% setPreinstallFilePath snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
+//...
+adjustConfig.setPreinstallFilePath("../EngagementFile.xml");
+//...
+Adjust.start(adjustConfig);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod deactivateSKAdNetworkHandling
+:::::
 
-:::{function} deactivateSKAdNetworkHandling
+% Class method end
+
+% Class method deactivateSKAdNetworkHandling
+
+:::::{function} deactivateSKAdNetworkHandling
 :noindex:
 
 Turns off communication with SKAdNetwork. Communication is *enabled* by default
@@ -413,18 +629,31 @@ Turns off communication with SKAdNetwork. Communication is *enabled* by default
 public void deactivateSKAdNetworkHandling()
 ```
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: deactivateSKAdNetworkHandling
-:end-before: methodEnd
+% deactivateSKAdNetworkHandling snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+:emphasize-lines: 3
+
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
+//...
+adjustConfig.deactivateSKAdNetworkHandling();
+//...
+Adjust.start(adjustConfig);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod setLaunchDeferredDeeplink
+:::::
 
-:::{function} setLaunchDeferredDeeplink (launchDeferredDeeplink)
+% Class method end
+
+% Class method setLaunchDeferredDeeplink
+
+:::::{function} setLaunchDeferredDeeplink (launchDeferredDeeplink)
 :noindex:
 
 Enables or disables launching deferred deep links with the SDK. If **enabled**, the SDK launches deep links the user interacts with
@@ -438,19 +667,32 @@ public void setLaunchDeferredDeeplink(bool launchDeferredDeeplink)
 :param launchDeferredDeeplink: Whether to enable launching deferred deep links
 :type launchDeferredDeeplink: Boolean
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setLaunchDeferredDeeplink
-:end-before: methodEnd
+% setLaunchDeferredDeeplink snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+:emphasize-lines: 3
+
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+//...
+adjustConfig.setLaunchDeferredDeeplink(true);
+//...
+Adjust.start(adjustConfig);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
+
+:::::
+
+% Class method end
 
 
-% classMethod setLinkMeEnabled
+% Class method setLinkMeEnabled
 
-:::{function} setLinkMeEnabled (linkMeEnabled)
+:::::{function} setLinkMeEnabled (linkMeEnabled)
 :noindex:
 
 Toggle support for Adjust's [LinkMe solution](https://help.adjust.com/en/article/linkme) for deep linking
@@ -464,18 +706,31 @@ public void setLinkMeEnabled(bool linkMeEnabled)
 :param linkMeEnabled: Whether LinkMe should be enabled
 :type linkMeEnabled: Boolean
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setLinkMeEnabled
-:end-before: methodEnd
+% setLinkMeEnabled snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+:emphasize-lines: 3
+
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
+//...
+adjustConfig.setLinkMeEnabled(true);
+//...
+Adjust.start(adjustConfig);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-% classMethod setConversionValueUpdatedCallbackDelegate
+:::::
 
-:::{function} setConversionValueUpdatedCallbackDelegate(conversionValueUpdatedDelegate)
+% Class method end
+
+% Class method setConversionValueUpdatedCallbackDelegate
+
+:::::{function} setConversionValueUpdatedCallbackDelegate(conversionValueUpdatedDelegate)
 :noindex:
 
 Sets a delegate function to call when the user's conversion value updates.
@@ -489,11 +744,23 @@ public void setConversionValueUpdatedDelegate(Action<int> conversionValueUpdated
 :param conversionValueUpdatedDelegate: The delegate function the SDK launches when the conversion value updates
 :type conversionValueUpdatedDelegate: Action
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setConversionValueUpdatedDelegate
-:end-before: methodEnd
+% setConversionValueUpdatedDelegate snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
+//...
+adjustConfig.setConversionValueUpdatedDelegate(ConversionValueUpdatedCallback);
+//...
+Adjust.start(adjustConfig);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
+
+:::::
+
+% Class method end

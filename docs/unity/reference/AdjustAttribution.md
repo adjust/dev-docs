@@ -14,7 +14,7 @@ The following values can only be accessed if the [`needsCost`](unity-setNeedsCos
 * `costCurrency`
 :::
 
-```{list-table}
+:::{list-table}
 :header-rows: 1
 
 * - Values
@@ -56,4 +56,4 @@ The following values can only be accessed if the [`needsCost`](unity-setNeedsCos
 * - `fbInstallReferrer`
    - String
    - The [Facebook install referrer](https://developers.facebook.com/docs/app-ads/install-referrer/). *Android only*.
-```
+:::

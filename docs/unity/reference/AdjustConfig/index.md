@@ -6,9 +6,9 @@ Use the methods in this class to set up the Adjust SDK.
 The methods in this class must be called **before** you initialize the SDK.
 :::
 
-% classMethod AdjustConfig
+% Class method AdjustConfig
 
-:::{function} AdjustConfig(appToken, environment,allowSuppressLogLevel)
+:::::{function} AdjustConfig(appToken, environment,allowSuppressLogLevel)
 :noindex:
 
 Initialize the configuration object with your Adjust app token.
@@ -28,16 +28,24 @@ public AdjustConfig(string appToken, AdjustEnvironment environment, bool allowSu
 :returns: A config object initialized with the provided params
 :rtype: AdjustConfig
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: AdjustConfig
-:end-before: methodEnd
+% AdjustConfig snippet
+
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+AdjustConfig config = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
+Adjust.start(config);
 ```
-
 :::
+::::
 
-% classMethodEnd
+% Snippet end
 
-```{toctree}
+:::::
+
+% Class method end
+
+:::{toctree}
 ---
 caption: Class methods
 maxdepth: 1
@@ -46,4 +54,4 @@ maxdepth: 1
 setup
 privacy
 
-```
+:::

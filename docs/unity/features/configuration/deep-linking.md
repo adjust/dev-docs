@@ -50,9 +50,9 @@ Devices running iOS 8 and earlier use a custom URL scheme to handle deep links.
 
 Android devices use a unique URI scheme to handle deep links. To set up deep linking, add your scheme to the {guilabel}`Android URI Schemes` section of the Adjust prefab. The SDK adds the required XML tags to your {file}`AndroidManifest.xml`.
 
-```{image} https://images.ctfassets.net/5s247im0esyq/3NYo4ctARqUSwJJz7wyOjI/276b2699ef82fc0ab72989a5aaa2b347/android_uri_schemes.png
+:::{image} https://images.ctfassets.net/5s247im0esyq/3NYo4ctARqUSwJJz7wyOjI/276b2699ef82fc0ab72989a5aaa2b347/android_uri_schemes.png
 :alt: A screenshot of the Android URI Schemes section in the Unity prefab menu
-```
+:::
 
 ## Deferred deep linking
 
@@ -60,19 +60,30 @@ Android devices use a unique URI scheme to handle deep links. To set up deep lin
 
 The SDK opens deferred deep links by default. You can configure this by passing a **boolean** argument to the [`setLaunchDeferredDeeplink` method](unity-setLaunchDeferredDeeplink-invocation).
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setLaunchDeferredDeeplink
-:end-before: methodEnd
-```
+:::{include} /unity/reference/AdjustConfig/setup.md
+:start-after: setLaunchDeferredDeeplink snippet
+:end-before: Snippet end
+:::
 
 ### Set up a deferred deep link delegate
 
 You can configure the Adjust SDK to call a delegate function when it receives a deferred deep link. This delegate function receives the deep link as a **string** argument.
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setDeferredDeeplinkDelegate
-:end-before: methodEnd
+::::{tab-set}
+:::{tab-item} C#
+```{code-block} cs
+:emphasize-lines: 1-3, 6
+
+private void DeferredDeeplinkCallback(string deeplinkURL) {
+   //...
+}
+
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+adjustConfig.setDeferredDeeplinkDelegate(DeferredDeeplinkCallback);
+Adjust.start(adjustConfig);
 ```
+:::
+::::
 
 :::::{dropdown} Example
 
@@ -106,7 +117,7 @@ When a user clicks on a LinkMe URL they have the option to copy the link informa
 
 To enable pasteboard checking in your app, pass a true value to the [`setLinkMeEnabled` method](unity-setLinkMeEnabled-invocation) on your config object:
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setLinkMeEnabled
-:end-before: methodEnd
-```
+:::{include} /unity/reference/AdjustConfig/setup.md
+:start-after: setLinkMeEnabled snippet
+:end-before: Snippet end
+:::

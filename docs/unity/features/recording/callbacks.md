@@ -13,7 +13,7 @@ Set up session callbacks to trigger functions when the SDK sends session informa
 
 Session callbacks have access to a response data object. You can use its properties in your callback function.
 
-```{list-table} Session data object
+:::{list-table} Session data object
 :header-rows: 1
 
 * - Property
@@ -34,16 +34,16 @@ Session callbacks have access to a response data object. You can use its propert
 * - `WillRetry`
    - Boolean
    - Indicates whether there will be an attempt to resend a failed package.
-```
+:::
 
 ### Success callbacks
 
 Set up success callbacks to trigger functions when the SDK records a session.
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setSessionSuccessDelegate
-:end-before: methodEnd
-```
+:::{include} /unity/reference/AdjustConfig/setup.md
+:start-after: setSessionSuccessDelegate snippet
+:end-before: Snippet end
+:::
 
 :::::{dropdown} Example
 
@@ -69,10 +69,10 @@ public void sessionSuccess (AdjustSessionSuccess sessionSuccessData) {
 
 Set up failure callbacks to trigger functions when the SDK fails to record a session.
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setSessionFailureDelegate
-:end-before: methodEnd
-```
+:::{include} /unity/reference/AdjustConfig/setup.md
+:start-after: setSessionFailureDelegate snippet
+:end-before: Snippet end
+:::
 
 :::::{dropdown} Example
 
@@ -100,7 +100,7 @@ Set up event callbacks to trigger functions when the SDK sends event information
 
 Event callbacks have access to a response data object. You can use its properties in your callback function.
 
-```{list-table} Event data object
+:::{list-table} Event data object
 :header-rows: 1
 
 * - Property
@@ -127,16 +127,16 @@ Event callbacks have access to a response data object. You can use its propertie
 * - `WillRetry`
    - Boolean
    - Indicates whether there will be an attempt to resend a failed package.
-```
+:::
 
 ### Success callbacks
 
 Set up success callbacks to trigger functions when the SDK records an event.
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setEventSuccessDelegate
-:end-before: methodEnd
-```
+:::{include} /unity/reference/AdjustConfig/setup.md
+:start-after: setEventSuccessDelegate snippet
+:end-before: Snippet end
+:::
 
 :::::{dropdown} Example
 
@@ -162,10 +162,10 @@ public void eventSuccess (AdjustEventSuccess eventSuccessData) {
 
 Set up failure callbacks to trigger functions when the SDK fails to record an event.
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setEventFailureDelegate
-:end-before: methodEnd
-```
+:::{include} /unity/reference/AdjustConfig/setup.md
+:start-after: setEventFailureDelegate snippet
+:end-before: Snippet end
+:::
 
 
 :::::{dropdown} Example

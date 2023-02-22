@@ -10,24 +10,24 @@ The Adjust SDK merges session callback parameters with event callback parameters
 
 Add callback parameters to your event by calling the [`addSessionCallbackParameter` method](unity-addSessionCallbackParameter-invocation) with **string** key-value arguments. You can add multiple parameters by calling this method multiple times.
 
-```{include} /unity/fragments/Adjust.md
-:start-after: addSessionCallbackParameter
-:end-before: methodEnd
-```
+:::{include} /unity/reference/Adjust/recording.md
+:start-after: addSessionCallbackParameter snippet
+:end-before: Snippet end
+:::
 
 You can remove specific session callback parameters if they're no longer required. To do this, pass the parameter key to the [`removeSessionCallbackParameter` method](unity-removeSessionCallbackParameter-invocation).
 
-```{include} /unity/fragments/Adjust.md
-:start-after: removeSessionCallbackParameter
-:end-before: methodEnd
-```
+:::{include} /unity/reference/Adjust/recording.md
+:start-after: removeSessionCallbackParameter snippet
+:end-before: Snippet end
+:::
 
 You can remove all session parameters if they're no longer required. To do this, call the [`resetSessionCallbackParameters` method](unity-resetSessionCallbackParameters-invocation).
 
-```{include} /unity/fragments/Adjust.md
-:start-after: resetSessionCallbackParameters
-:end-before: methodEnd
-```
+:::{include} /unity/reference/Adjust/recording.md
+:start-after: resetSessionCallbackParameters snippet
+:end-before: Snippet end
+:::
 
 ## Session partner parameters
 
@@ -41,24 +41,24 @@ Partner parameters don't appear in raw data by default. You can add the `{partne
 
 Add partner parameters to your event by calling the [`addSessionPartnerParameter` method](unity-addSessionPartnerParameter-invocation) with **string** key-value arguments. You can add multiple parameters by calling this method multiple times.
 
-```{include} /unity/fragments/Adjust.md
-:start-after: addSessionPartnerParameter
-:end-before: methodEnd
-```
+:::{include} /unity/reference/Adjust/recording.md
+:start-after: addSessionPartnerParameter snippet
+:end-before: Snippet end
+:::
 
 You can remove specific session partner parameters if they're no longer required. To do this, pass the parameter key to the [`removeSessionPartnerParameter` method](unity-removeSessionPartnerParameter-invocation).
 
-```{include} /unity/fragments/Adjust.md
-:start-after: removeSessionPartnerParameter
-:end-before: methodEnd
-```
+:::{include} /unity/reference/Adjust/recording.md
+:start-after: removeSessionPartnerParameter snippet
+:end-before: Snippet end
+:::
 
 You can remove all session partner parameters if they're no longer required. To do this, call the [`resetSessionPartnerParameters` method](unity-resetSessionPartnerParameters-invocation).
 
-```{include} /unity/fragments/Adjust.md
-:start-after: resetSessionPartnerParameters
-:end-before: methodEnd
-```
+:::{include} /unity/reference/Adjust/recording.md
+:start-after: resetSessionPartnerParameters snippet
+:end-before: Snippet end
+:::
 
 ## Delay start
 
@@ -68,14 +68,14 @@ You can delay the startup of the SDK by up to **10 seconds**.
 
 The Adjust SDK starts as soon as your app opens. If you want to send data that's not available at launch in session parameters, you can delay the start of the SDK. To do this, pass the delay time in seconds to the [`setDelayStart` method](unity-setDelayStart-invocation) on your config object.
 
-```{include} /unity/fragments/AdjustConfig.md
-:start-after: setDelayStart
-:end-before: methodEnd
-```
+:::{include} /unity/reference/AdjustConfig/setup.md
+:start-after: setDelayStart snippet
+:end-before: Snippet end
+:::
 
 After this time has elapsed, the SDK sends the information to Adjust's servers. You can send the information before the timeout by calling the [`sendFirstPackages` method](unity-sendFirstPackages-invocation).
 
-```{include} /unity/fragments/Adjust.md
-:start-after: sendFirstPackages
-:end-before: methodEnd
-```
+:::{include} /unity/reference/Adjust/config.md
+:start-after: sendFirstPackages snippet
+:end-before: Snippet end
+:::
