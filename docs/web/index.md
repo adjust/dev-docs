@@ -8,11 +8,11 @@ To get started, you need to add the SDK to your web app. The Adjust SDK works in
 
 ### Using a CDN
 
-When loading the SDK through a CDN, you should use a minified version. You can specify a version in by adding it to the CDN target like this: `https://cdn.adjust.com/adjust-5.6.0.min.js`.
+When loading the SDK through a CDN, you should use a minified version in your production build. You can specify a version by adding it to the CDN target like this: `https://cdn.adjust.com/adjust-5.6.0.min.js`. You can get the latest version by targeting the `adjust-latest` package like this: `https://cdn.adjust.com/adjust-latest.min.js`. This package updates automatically so you don't need to change the target file.
 
-You can also get the latest version by targeting the `adjust-latest` package like this: `https://cdn.adjust.com/adjust-latest.min.js`. This package updates automatically so you don't need to change the target file.
-
+:::{tip}
 The SDK files are cached to enable fast service. This cache updates every 30 minutes. If you want to force an update to the latest version, target a specific version in your header.
+:::
 
 To load the SDK through a CDN, add the following snippet between your web app's `<head>` tags:
 
@@ -24,6 +24,8 @@ To load the SDK through a CDN, add the following snippet between your web app's 
 
 The Adjust SDK loads on each page and initates once per page load.
 
+#### Subresource Integrity
+
 If you want to use [Subresource Integrity](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity) checks to mitigate against {abbr}`XSS (Cross-Site Scripting)` attacks, you can validate the package before running it by using the following call:
 
 ```html
@@ -32,9 +34,9 @@ If you want to use [Subresource Integrity](https://developer.mozilla.org/en-US/d
 </script>
 ```
 
-### Using NPM
+### Using npm
 
-The Adjust SDK is also available on [NPM](https://www.npmjs.com/package/@adjustcom/adjust-web-sdk). To add the package to your project, use your preferred package manager:
+The Adjust SDK is also available on [npm](https://www.npmjs.com/package/@adjustcom/adjust-web-sdk). To add the package to your project, use your preferred package manager:
 
 ::::{tab-set}
 :::{tab-item} npm
@@ -58,7 +60,7 @@ $ pnpm add @adjustcom/adjust-web-sdk
 
 Once you've installed the SDK, you need to initialize it. To do this, call the [`initSdk` method](web-initSdk-invocation). This method takes a number of arguments that customize how the SDK works in your app.
 
-The following arguments are required to initialize the Adjust SDK:
+You must add the following arguments to your `initSdk` call to initialize the SDK:
 
 `appToken`
    : Your [Adjust app token](https://help.adjust.com/en/article/app-settings#view-your-app-token).
