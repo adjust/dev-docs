@@ -11,6 +11,12 @@ Welcome to the Adjust SDK documentation portal!
 :text-align: center
 iOS
 :::
+:::{grid-item-card} {fab}`android fa-5x`
+:link: android/index
+:link-type: doc
+:text-align: center
+Android
+:::
 :::{grid-item-card} {fab}`unity fa-5x`
 :link: unity/index
 :link-type: doc
@@ -26,13 +32,24 @@ Web
 ::::
 
 :::{toctree}
-:maxdepth: 4
+:maxdepth: 1
 :caption: iOS
 :hidden: true
 
 ios/index
 ios/features/index
 ios/reference/index
+
+:::
+
+:::{toctree}
+:maxdepth: 1
+:caption: Android
+:hidden: true
+
+android/index
+android/features/index
+android/reference/index
 
 :::
 
@@ -48,7 +65,7 @@ unity/reference/index
 :::
 
 :::{toctree}
-:maxdepth: 2
+:maxdepth: 1
 :caption: Web
 :hidden: true
 
