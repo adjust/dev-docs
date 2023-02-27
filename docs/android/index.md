@@ -119,7 +119,7 @@ If you're using Proguard, remember to add a rule to prevent the dependency from 
 The Huawei Referrer API is available to apps that target Huawei devices. The Adjust SDK can record installs on Huawei devices using Huawei App Gallery v10.4 and later. You don't need to make any changes to support this API.
 :::
 
-### Xiamoi referrer plugin
+### Xiaomi referrer plugin
 
 :::{versionadded} v4.31.0
 The Xiami referrer plugin enables you to record install referrer values for apps that target Xiaomi devices. See the plugin documentation for install information.
