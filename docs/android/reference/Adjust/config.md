@@ -154,3 +154,56 @@ Adjust.setOfflineMode(true);
 :::::
 
 % Class method end
+
+% Class method setPushToken
+
+:::::{function} setPushToken (pushToken, context)
+:noindex:
+
+Set your [push token](https://help.adjust.com/en/article/push-notifications) to record [uninstalls and reattributions](https://help.adjust.com/en/article/uninstalls-reinstalls). You can update this value at any time.
+
+```{code-block} java
+:name: android-setPushToken-invocation
+
+public static void setPushToken(final String token, final Context context)
+```
+
+:param pushToken: Your push token
+:type pushToken: String
+:param context: An optional parameter to pass the app context. Defaults to the extracted app context.
+:type context: Context
+
+% setPushToken snippet
+
+::::{tab-set}
+:::{tab-item} Kotlin
+:sync: kotlin
+
+```{code-block} kotlin
+Adjust.setPushToken("{YourPushToken}")
+```
+
+:::
+:::{tab-item} Java
+:sync: java
+
+```{code-block} java
+Adjust.setPushToken("{YourPushToken}");
+```
+
+:::
+:::{tab-item} Javascript
+:sync: js
+
+```{code-block} js
+Adjust.setPushToken('{YourPushToken}');
+```
+
+:::
+::::
+
+% Snippet end
+
+:::::
+
+% Class method end
