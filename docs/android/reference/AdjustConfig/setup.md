@@ -1,5 +1,104 @@
 # Setup methods
 
+% Class method setLogLevel
+
+:::::{function} setLogLevel (logLevel)
+:noindex:
+
+Set the verbosity of logs you want to receive from the Adjust SDK
+
+```{code-block} java
+:name: android-setLogLevel-invocation
+
+public void setLogLevel(LogLevel logLevel)
+```
+
+:param logLevel: The verbosity of the logging
+:type logLevel: LogLevel
+
+% setLogLevel snippet
+
+::::{tab-set}
+:::{tab-item} Kotlin
+:sync: kotlin
+```{code-block} kotlin
+:emphasize-lines: 4
+
+val appToken = "{YourAppToken}"
+val environment = AdjustConfig.ENVIRONMENT_SANDBOX
+val config = AdjustConfig(this, appToken, environment)
+config.setLogLevel(LogLevel.VERBOSE)
+//...
+Adjust.onCreate(config)
+```
+:::
+:::{tab-item} Java
+:sync: java
+```{code-block} java
+:emphasize-lines: 4
+
+String appToken = "{YourAppToken}";
+String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+config.setLogLevel(LogLevel.VERBOSE);
+//...
+Adjust.onCreate(config);
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+```{code-block} js
+:emphasize-lines: 4
+
+var yourAppToken = yourAppToken;
+var environment = AdjustConfig.EnvironmentSandbox;
+var adjustConfig = new AdjustConfig(yourAppToken, environment);
+adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
+```
+:::
+::::
+
+% Snippet end
+
+
+::::{dropdown} Available log levels
+% logLevel table
+:::{list-table}
+:header-rows: 1
+
+* - Log level
+   - Web View value
+   - Description
+* - `LogLevel.VERBOSE`
+   - `AdjustConfig.LogLevelVerbose`
+   - Enable all logging
+* - `LogLevel.DEBUG`
+   - `AdjustConfig.LogLevelDebug`
+   - Enable debug logging
+* - `LogLevel.INFO`
+   - `AdjustConfig.LogLevelInfo`
+   - Only show info level logs (default option)
+* - `LogLevel.WARN`
+   - `AdjustConfig.LogLevelWarn`
+   - Disable info logging
+* - `LogLevel.ERROR`
+   - `AdjustConfig.LogLevelError`
+   - Disable warning level logging and below
+* - `LogLevel.ASSERT`
+   - `AdjustConfig.LogLevelAssert`
+   - Disable error level logging and below
+* - `LogLevel.SUPPRESS`
+   - `AdjustConfig.LogLevelSuppress`
+   - Suppress all logging
+
+:::
+% tableEnd
+
+::::
+:::::
+
+% Class method end
+
 % Class method setExternalDeviceId
 
 :::::{function} setExternalDeviceId (externalDeviceId)
