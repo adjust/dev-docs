@@ -4,7 +4,7 @@ Use these methods to handle user privacy in your app.
 
 % Class method disableThirdPartySharing
 
-:::::{function} disableThirdPartySharing(context)
+::::{function} disableThirdPartySharing(context)
 :noindex:
 
 :::{versionadded} v4.19.0
@@ -22,42 +22,31 @@ public static void disableThirdPartySharing(final Context context)
 
 % disableThirdPartySharing snippet
 
-::::{tab-set}
-:::{tab-item} Kotlin
-:sync: kotlin
+:::{tab-set-code}
 
 ```{code-block} kotlin
 Adjust.disableThirdPartySharing()
 ```
 
-:::
-:::{tab-item} Java
-:sync: java
-
 ```{code-block} java
 Adjust.disableThirdPartySharing();
 ```
 
-:::
-:::{tab-item} Javascript
-:sync: js
-
-```{code-block} js
+```{code-block} javascript
 Adjust.disableThirdPartySharing();
 ```
 
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method trackThirdPartySharing
 
-:::::{function} trackThirdPartySharing(thirdPartySharing)
+::::{function} trackThirdPartySharing(thirdPartySharing)
 :noindex:
 
 Disable or enable sharing of information with third parties on a per-user basis. Accepts a third party sharing object initialized with a **boolean** value.
@@ -74,45 +63,34 @@ public static void trackThirdPartySharing(
 
 % trackThirdPartySharing snippet
 
-::::{tab-set}
-:::{tab-item} Kotlin
-:sync: kotlin
+:::{tab-set-code}
 
 ```{code-block} kotlin
 val adjustThirdPartySharing = AdjustThirdPartySharing(true)
 Adjust.trackThirdPartySharing(adjustThirdPartySharing)
 ```
 
-:::
-:::{tab-item} Java
-:sync: java
-
 ```{code-block} java
 AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(true);
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
-:::
-:::{tab-item} Javascript
-:sync: js
-
-```{code-block} js
+```{code-block} javascript
 let adjustThirdPartySharing = new AdjustThirdPartySharing(true);
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method trackMeasurementConsent
 
-:::::{function} trackMeasurementConsent(consentMeasurement)
+::::{function} trackMeasurementConsent(consentMeasurement)
 :noindex:
 
 Set whether [data collection and retention rules](https://help.adjust.com/en/article/manage-data-collection-and-retention) apply to a user.
@@ -128,42 +106,31 @@ public static void trackMeasurementConsent(final boolean consentMeasurement)
 
 % trackMeasurementConsent snippet
 
-::::{tab-set}
-:::{tab-item} Kotlin
-:sync: kotlin
+:::{tab-set-code}
 
 ```{code-block} kotlin
 Adjust.trackMeasurementConsent(true)
 ```
 
-:::
-:::{tab-item} Java
-:sync: java
-
 ```{code-block} java
 Adjust.trackMeasurementConsent(true);
 ```
 
-:::
-:::{tab-item} Javascript
-:sync: js
-
-```{code-block} js
+```{code-block} javascript
 Adjust.trackMeasurementConsent(true);
 ```
 
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method gdprForgetMe
 
-:::::{function} gdprForgetMe(context)
+::::{function} gdprForgetMe(context)
 :noindex:
 
 Send an {abbr}`RTBF (Right To Be Forgotten)` request to Adjust's servers. This erases all information about the user the source app. The SDK stops sending requests for the user.
@@ -179,35 +146,24 @@ public static void gdprForgetMe(final Context context)
 
 % gdprForgetMe snippet
 
-::::{tab-set}
-:::{tab-item} Kotlin
-:sync: kotlin
+:::{tab-set-code}
 
 ```{code-block} kotlin
 Adjust.gdprForgetMe()
 ```
 
-:::
-:::{tab-item} Java
-:sync: java
-
 ```{code-block} java
 Adjust.gdprForgetMe();
 ```
 
-:::
-:::{tab-item} Javascript
-:sync: js
-
-```{code-block} js
+```{code-block} javascript
 Adjust.gdprForgetMe();
 ```
 
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end

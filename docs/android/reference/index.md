@@ -8,5 +8,6 @@ maxdepth: 1
 
 Adjust/index
 AdjustConfig/index
+AdjustThirdPartySharing
 
 :::

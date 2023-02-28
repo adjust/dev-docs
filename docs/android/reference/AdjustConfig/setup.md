@@ -18,9 +18,7 @@ public void setLogLevel(LogLevel logLevel)
 
 % setLogLevel snippet
 
-::::{tab-set}
-:::{tab-item} Kotlin
-:sync: kotlin
+:::{tab-set-code}
 
 ```{code-block} kotlin
 :emphasize-lines: 4
@@ -33,10 +31,6 @@ config.setLogLevel(LogLevel.VERBOSE)
 Adjust.onCreate(config)
 ```
 
-:::
-:::{tab-item} Java
-:sync: java
-
 ```{code-block} java
 :emphasize-lines: 4
 
@@ -48,11 +42,7 @@ config.setLogLevel(LogLevel.VERBOSE);
 Adjust.onCreate(config);
 ```
 
-:::
-:::{tab-item} Javascript
-:sync: js
-
-```{code-block} js
+```{code-block} javascript
 :emphasize-lines: 4
 
 var yourAppToken = yourAppToken;
@@ -62,7 +52,6 @@ adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
 ```
 
 :::
-::::
 
 % Snippet end
 
@@ -106,7 +95,7 @@ adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
 
 % Class method setExternalDeviceId
 
-:::::{function} setExternalDeviceId (externalDeviceId)
+::::{function} setExternalDeviceId (externalDeviceId)
 :noindex:
 
 :::{versionadded} v4.20.0
@@ -124,9 +113,7 @@ public void setExternalDeviceId(String externalDeviceId)
 
 % setExternalDeviceId snippet
 
-::::{tab-set}
-:::{tab-item} Kotlin
-:sync: kotlin
+:::{tab-set-code}
 
 ```{code-block} kotlin
 :emphasize-lines: 4
@@ -139,10 +126,6 @@ config.externalDeviceId("{YourExternalDeviceId}")
 Adjust.onCreate(config)
 ```
 
-:::
-:::{tab-item} Java
-:sync: java
-
 ```{code-block} java
 :emphasize-lines: 4
 
@@ -154,11 +137,7 @@ config.externalDeviceId("{YourExternalDeviceId}");
 Adjust.onCreate(config);
 ```
 
-:::
-:::{tab-item} Javascript
-:sync: js
-
-```{code-block} js
+```{code-block} javascript
 :emphasize-lines: 4
 
 var yourAppToken = yourAppToken;
@@ -168,17 +147,16 @@ adjustConfig.externalDeviceId('{YourExternalDeviceId}');
 ```
 
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method setEventBufferingEnabled
 
-:::::{function} setEventBufferingEnabled (eventBufferingEnabled)
+::::{function} setEventBufferingEnabled (eventBufferingEnabled)
 :noindex:
 
 Sets event buffering. If enabled, the SDK stores events on the device and sends all requests once per minute.
@@ -194,9 +172,7 @@ public void setEventBufferingEnabled(Boolean eventBufferingEnabled)
 
 % setEventBufferingEnabled snippet
 
-::::{tab-set}
-:::{tab-item} Kotlin
-:sync: kotlin
+:::{tab-set-code}
 
 ```{code-block} kotlin
 :emphasize-lines: 4
@@ -209,10 +185,6 @@ config.setEventBufferingEnabled(true)
 Adjust.onCreate(config)
 ```
 
-:::
-:::{tab-item} Java
-:sync: java
-
 ```{code-block} java
 :emphasize-lines: 4
 
@@ -224,11 +196,7 @@ config.setEventBufferingEnabled(true);
 Adjust.onCreate(config);
 ```
 
-:::
-:::{tab-item} Javascript
-:sync: js
-
-```{code-block} js
+```{code-block} javascript
 :emphasize-lines: 4
 
 var yourAppToken = yourAppToken;
@@ -238,17 +206,16 @@ adjustConfig.setEventBufferingEnabled(true);
 ```
 
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method setDefaultTracker
 
-:::::{function} setDefaultTracker (defaultTracker)
+::::{function} setDefaultTracker (defaultTracker)
 :noindex:
 
 Sets a default tracker token to record installs against
@@ -264,9 +231,7 @@ public void setDefaultTracker(String defaultTracker)
 
 % setDefaultTracker snippet
 
-::::{tab-set}
-:::{tab-item} Kotlin
-:sync: kotlin
+:::{tab-set-code}
 
 ```{code-block} kotlin
 :emphasize-lines: 4
@@ -279,10 +244,6 @@ config.setDefaultTracker("{TrackerToken}")
 Adjust.onCreate(config)
 ```
 
-:::
-:::{tab-item} Java
-:sync: java
-
 ```{code-block} java
 :emphasize-lines: 4
 
@@ -294,11 +255,7 @@ config.setDefaultTracker("{TrackerToken}");
 Adjust.onCreate(config);
 ```
 
-:::
-:::{tab-item} Javascript
-:sync: js
-
-```{code-block} js
+```{code-block} javascript
 :emphasize-lines: 4
 
 var yourAppToken = yourAppToken;
@@ -308,17 +265,16 @@ adjustConfig.setDefaultTracker('{TrackerToken}');
 ```
 
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method setSendInBackground
 
-:::::{function} setSendInBackground (sendInBackground)
+::::{function} setSendInBackground (sendInBackground)
 :noindex:
 
 Sets whether the SDK should send data while the app is running in the background
@@ -334,9 +290,7 @@ public void setSendInBackground(boolean sendInBackground)
 
 % setSendInBackground snippet
 
-::::{tab-set}
-:::{tab-item} Kotlin
-:sync: kotlin
+:::{tab-set-code}
 
 ```{code-block} kotlin
 :emphasize-lines: 4
@@ -349,10 +303,6 @@ config.setSendInBackground(true)
 Adjust.onCreate(config)
 ```
 
-:::
-:::{tab-item} Java
-:sync: java
-
 ```{code-block} java
 :emphasize-lines: 4
 
@@ -364,11 +314,7 @@ config.setSendInBackground(true);
 Adjust.onCreate(config);
 ```
 
-:::
-:::{tab-item} Javascript
-:sync: js
-
-```{code-block} js
+```{code-block} javascript
 :emphasize-lines: 4
 
 var yourAppToken = yourAppToken;
@@ -378,17 +324,16 @@ adjustConfig.setSendInBackground(true);
 ```
 
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method setPreinstallTrackingEnabled
 
-:::::{function} setPreinstallTrackingEnabled (preinstallTrackingEnabled)
+::::{function} setPreinstallTrackingEnabled (preinstallTrackingEnabled)
 :noindex:
 
 Enables or disables preinstall tracking
@@ -404,9 +349,7 @@ public void setPreinstallTrackingEnabled(boolean preinstallTrackingEnabled)
 
 % setPreinstallTrackingEnabled snippet
 
-::::{tab-set}
-:::{tab-item} Kotlin
-:sync: kotlin
+:::{tab-set-code}
 
 ```{code-block} kotlin
 :emphasize-lines: 4
@@ -419,10 +362,6 @@ config.setPreinstallTrackingEnabled(true)
 Adjust.onCreate(config)
 ```
 
-:::
-:::{tab-item} Java
-:sync: java
-
 ```{code-block} java
 :emphasize-lines: 4
 
@@ -434,11 +373,7 @@ config.setPreinstallTrackingEnabled(true);
 Adjust.onCreate(config);
 ```
 
-:::
-:::{tab-item} Javascript
-:sync: js
-
-```{code-block} js
+```{code-block} javascript
 :emphasize-lines: 4
 
 var yourAppToken = yourAppToken;
@@ -448,17 +383,16 @@ adjustConfig.setPreinstallTrackingEnabled(true);
 ```
 
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method setPreinstallFilePath
 
-:::::{function} setPreinstallFilePath (preinstallFilePath)
+::::{function} setPreinstallFilePath (preinstallFilePath)
 :noindex:
 
 Defines a relative path where preinstall information is available. This directory must be world-readable
@@ -474,9 +408,7 @@ public void setPreinstallFilePath(String preinstallFilePath)
 
 % setPreinstallFilePath snippet
 
-::::{tab-set}
-:::{tab-item} Kotlin
-:sync: kotlin
+:::{tab-set-code}
 
 ```{code-block} kotlin
 :emphasize-lines: 4
@@ -489,10 +421,6 @@ config.setPreinstallFilePath("../EngagementFile.xml")
 Adjust.onCreate(config)
 ```
 
-:::
-:::{tab-item} Java
-:sync: java
-
 ```{code-block} java
 :emphasize-lines: 4
 
@@ -504,11 +432,7 @@ config.setPreinstallFilePath("../EngagementFile.xml");
 Adjust.onCreate(config);
 ```
 
-:::
-:::{tab-item} Javascript
-:sync: js
-
-```{code-block} js
+```{code-block} javascript
 :emphasize-lines: 4
 
 var yourAppToken = yourAppToken;
@@ -518,10 +442,9 @@ adjustConfig.setPreinstallFilePath('../EngagementFile.xml');
 ```
 
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end

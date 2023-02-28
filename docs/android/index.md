@@ -11,7 +11,7 @@ You can see an example of how to integrate the Adjust SDK [on GitHub](https://gi
 To use the Adjust SDK in your Unity app, you need to add it to your project. You can download the latest version from the [GitHub releases page](https://github.com/adjust/adjust_android_sdk/releases/latest).
 
 :::{important}
-The minimum supported Android API level for the Adjust SDK integration is 9 (Gingerbread). 
+The minimum supported Android API level for the Adjust SDK integration is 9 (Gingerbread).
 
 The minimum supported Android API level for the web view extension is 17 (Jelly Bean).
 :::
@@ -156,11 +156,9 @@ The recommended way to initialize the Adjust SDK is inside a global Android [App
 4. Find the `onCreate` method in your `Application` class or add one if it doesn't exist. Pass the following parameters to initialize the Adjust SDK:
    * Your `appToken`
    * The `environment` you want to run the app in
-   * The `LogLevel` you want to record 
+   * The `LogLevel` you want to record
 
-   ::::{tab-set}
-   :::{tab-item} Kotlin
-   :sync: kotlin
+   :::{tab-set-code}
 
    ```{code-block} kotlin
    import com.adjust.sdk.Adjust;
@@ -178,9 +176,6 @@ The recommended way to initialize the Adjust SDK is inside a global Android [App
       }
    }
    ```
-   :::
-   :::{tab-item} Java
-   :sync: java
 
    ```{code-block} java
    import com.adjust.sdk.Adjust;
@@ -199,8 +194,8 @@ The recommended way to initialize the Adjust SDK is inside a global Android [App
       }
    }
    ```
+
    :::
-   ::::
 
 ### Integrate the Adjust Web View SDK
 
@@ -212,9 +207,7 @@ If your app uses web views, you need to use the Adjust Web View SDK to record in
 4. Call `AdjustBridge.unregister()` to unregister the `AdjustBridgeInstance` and the `WebView`.
 5. Here's an example of a full setup:
 
-   ::::{tab-set}
-   :::{tab-item} Kotlin
-   :sync: kotlin
+   :::{tab-set-code}
 
    ```{code-block} kotlin
    class MainActivity : Activity() {
@@ -242,9 +235,6 @@ If your app uses web views, you need to use the Adjust Web View SDK to record in
       }
    }
    ```
-   :::
-   :::{tab-item} Java
-   :sync: java
 
    ```{code-block} java
    public class MainActivity extends Activity {
@@ -265,7 +255,7 @@ If your app uses web views, you need to use the Adjust Web View SDK to record in
                e.printStackTrace();
          }
       }
-      
+
       @Override
       protected void onDestroy() {
          AdjustBridge.unregister();
@@ -274,8 +264,8 @@ If your app uses web views, you need to use the Adjust Web View SDK to record in
       }
    }
    ```
+
    :::
-   ::::
 
 6. Import the Adjust Javascript files in your HTML:
 
@@ -311,9 +301,7 @@ To set up session recording for API level 14 and above:
 5. Add the `onCreate()` method to your Adjust SDK configuration step.
 6. Call `registerActivityLifecycleCallbacks` with an instance of the created `ActivityLifecycleCallbacks` class:
 
-   ::::{tab-set}
-   :::{tab-item} Kotlin
-   :sync: kotlin
+   :::{tab-set-code}
 
    ```{code-block} kotlin
    import com.adjust.sdk.Adjust;
@@ -343,9 +331,6 @@ To set up session recording for API level 14 and above:
       }
    }
    ```
-   :::
-   :::{tab-item} Java
-   :sync: java
 
    ```{code-block} java
    import com.adjust.sdk.Adjust;
@@ -378,8 +363,8 @@ To set up session recording for API level 14 and above:
       }
    }
    ```
+
    :::
-   :::::
 
 ### API level 9 to 13
 
@@ -393,10 +378,7 @@ To set up session recording in apps targeting API level 13 and below, follow the
 2. Add a call to `Adjust.onPause()` in your activity's `onPause` method.
 3. Repeat these steps for each activity in your app. Depending on your coding style, you might want to add this in a common superclass of all your activities.
 
-
-::::{tab-set}
-:::{tab-item} Kotlin
-:sync: kotlin
+:::{tab-set-code}
 
 ```{code-block} kotlin
 import com.adjust.sdk.Adjust;
@@ -412,9 +394,6 @@ class YourActivity : Activity () {
    }
 }
 ```
-:::
-:::{tab-item} Java
-:sync: java
 
 ```{code-block} java
 import com.adjust.sdk.Adjust;
@@ -430,8 +409,8 @@ public class YourActivity extends Activity {
     }
 }
 ```
+
 :::
-::::
 
 ## 8. Build your app for production
 
@@ -440,9 +419,7 @@ Once you've finished your testing, you can build your app for production. To do 
 1. Adjust your log level to return only what you need.
 2. Set your `environment` to `AdjustConfig.ENVIRONMENT_PRODUCTION`.
 
-::::{tab-set}
-:::{tab-item} Kotlin
-:sync: kotlin
+:::{tab-set-code}
 
 ```{code-block} kotlin
 val appToken = "{YourAppToken}"
@@ -451,9 +428,6 @@ val config = AdjustConfig(this, appToken, environment)
 config.setLogLevel(LogLevel.WARN)
 Adjust.onCreate(config)
 ```
-:::
-:::{tab-item} Java
-:sync: java
 
 ```{code-block} java
 String appToken = "{YourAppToken}";
@@ -462,5 +436,5 @@ AdjustConfig config = new AdjustConfig(this, appToken, environment);
 config.setLogLevel(LogLevel.WARN)
 Adjust.onCreate(config);
 ```
+
 :::
-::::

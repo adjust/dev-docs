@@ -4,7 +4,7 @@ Use these methods to update the Adjust SDK's configuration.
 
 % Class method setEnabled
 
-:::::{function} setEnabled (enabled)
+::::{function} setEnabled (enabled)
 :noindex:
 
 Enable or disable the Adjust SDK. The SDK doesn't send any information while disabled.
@@ -20,42 +20,31 @@ public static void setEnabled(boolean enabled)
 
 % setEnabled snippet
 
-::::{tab-set}
-:::{tab-item} Kotlin
-:sync: kotlin
+:::{tab-set-code}
 
 ```{code-block} kotlin
 Adjust.setEnabled(false)
 ```
 
-:::
-:::{tab-item} Java
-:sync: java
+```{code-block} java
+Adjust.setEnabled(false);
+```
 
-```{code-block} objc
+```{code-block} javascript
 Adjust.setEnabled(false);
 ```
 
 :::
-:::{tab-item} Javascript
-:sync: js
-
-```{code-block} js
-Adjust.setEnabled(false);
-```
-
-:::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method isEnabled
 
-:::::{function} isEnabled ()
+::::{function} isEnabled ()
 :noindex:
 
 Call this method to check whether the Adjust SDK is enabled.
@@ -71,42 +60,31 @@ public static boolean isEnabled()
 
 % isEnabled snippet
 
-::::{tab-set}
-:::{tab-item} Kotlin
-:sync: kotlin
+:::{tab-set-code}
 
 ```{code-block} kotlin
 Adjust.isEnabled()
 ```
 
-:::
-:::{tab-item} Java
-:sync: java
-
 ```{code-block} java
 Adjust.isEnabled();
 ```
 
-:::
-:::{tab-item} Javascript
-:sync: js
-
-```{code-block} js
+```{code-block} javascript
 Adjust.isEnabled();
 ```
 
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method setOfflineMode
 
-:::::{function} setOfflineMode (isOffline)
+::::{function} setOfflineMode (isOffline)
 :noindex:
 
 Controls whether the SDK is in offline mode. When in offline mode, the SDK queues all events in a file until offline mode is disabled. When offline mode is disabled, the SDK sends all queued events.
@@ -122,42 +100,31 @@ public static void setOfflineMode(boolean enabled)
 
 % setOfflineMode snippet
 
-::::{tab-set}
-:::{tab-item} Kotlin
-:sync: kotlin
+:::{tab-set-code}
 
 ```{code-block} kotlin
 Adjust.setOfflineMode(true)
 ```
 
-:::
-:::{tab-item} Java
-:sync: java
-
 ```{code-block} java
 Adjust.setOfflineMode(true);
 ```
 
-:::
-:::{tab-item} Javascript
-:sync: js
-
-```{code-block} js
+```{code-block} javascript
 Adjust.setOfflineMode(true);
 ```
 
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method setPushToken
 
-:::::{function} setPushToken (pushToken, context)
+::::{function} setPushToken (pushToken, context)
 :noindex:
 
 Set your [push token](https://help.adjust.com/en/article/push-notifications) to record [uninstalls and reattributions](https://help.adjust.com/en/article/uninstalls-reinstalls). You can update this value at any time.
@@ -170,40 +137,29 @@ public static void setPushToken(final String token, final Context context)
 
 :param pushToken: Your push token
 :type pushToken: String
-:param context: An optional parameter to pass the app context. Defaults to the extracted app context.
+:param context: The [context](https://developer.android.com/reference/android/content/Context) the method is being called in.
 :type context: Context
 
 % setPushToken snippet
 
-::::{tab-set}
-:::{tab-item} Kotlin
-:sync: kotlin
+:::{tab-set-code}
 
 ```{code-block} kotlin
-Adjust.setPushToken("{YourPushToken}")
+Adjust.setPushToken("{YourPushToken}", getApplicationContext())
 ```
-
-:::
-:::{tab-item} Java
-:sync: java
 
 ```{code-block} java
-Adjust.setPushToken("{YourPushToken}");
+Adjust.setPushToken("{YourPushToken}", getApplicationContext());
 ```
 
-:::
-:::{tab-item} Javascript
-:sync: js
-
-```{code-block} js
+```{code-block} javascript
 Adjust.setPushToken('{YourPushToken}');
 ```
 
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end

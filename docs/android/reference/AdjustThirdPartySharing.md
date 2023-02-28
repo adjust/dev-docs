@@ -4,7 +4,7 @@ Use this class to communicate a user's third party sharing preferences. Send thi
 
 % Class method AdjustThirdPartySharing
 
-:::::{function} AdjustThirdPartySharing (isEnabled)
+::::{function} AdjustThirdPartySharing (isEnabled)
 :noindex:
 
 Creates a third party sharing object initialized with an optional **boolean** value
@@ -20,79 +20,57 @@ public AdjustThirdPartySharing(final Boolean isEnabled)
 
 % AdjustThirdPartySharing true snippet
 
-::::{tab-set}
-:::{tab-item} Kotlin
-:sync: kotlin
+:::{tab-set-code}
 
 ```{code-block} kotlin
 val adjustThirdPartySharing = AdjustThirdPartySharing(true)
 Adjust.trackThirdPartySharing(adjustThirdPartySharing)
 ```
 
-:::
-:::{tab-item} Java
-:sync: java
-
 ```{code-block} java
 AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(true);
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
-:::
-:::{tab-item} Javascript
-:sync: js
-
-```{code-block} js
+```{code-block} javascript
 let adjustThirdPartySharing = new AdjustThirdPartySharing(true);
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
 :::
-::::
 
 % Snippet end
 
 % AdjustThirdPartySharing false snippet
 
-::::{tab-set}
-:::{tab-item} Kotlin
-:sync: kotlin
+:::{tab-set-code}
 
 ```{code-block} kotlin
 val adjustThirdPartySharing = AdjustThirdPartySharing(false)
 Adjust.trackThirdPartySharing(adjustThirdPartySharing)
 ```
 
-:::
-:::{tab-item} Java
-:sync: java
-
 ```{code-block} java
 AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(false);
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
-:::
-:::{tab-item} Javascript
-:sync: js
-
-```{code-block} js
+```{code-block} javascript
 let adjustThirdPartySharing = new AdjustThirdPartySharing(false);
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method addGranularOption
 
-:::::{function} addGranularOption (partnerName, key, value)
+::::{function} addGranularOption (partnerName, key, value)
 :noindex:
 
 Adds additional key-value pairs of information to share with third parties. You can add multiple parameters by calling this method multiple times.
@@ -114,9 +92,7 @@ public void addGranularOption(final String partnerName,
 
 % addGranularOption snippet
 
-::::{tab-set}
-:::{tab-item} Kotlin
-:sync: kotlin
+:::{tab-set-code}
 
 ```{code-block} kotlin
 val adjustThirdPartySharing = AdjustThirdPartySharing(true)
@@ -124,28 +100,19 @@ adjustThirdPartySharing.addGranularOption("PartnerA", "foo", "bar")
 Adjust.trackThirdPartySharing(adjustThirdPartySharing)
 ```
 
-:::
-:::{tab-item} Java
-:sync: java
-
 ```{code-block} java
 AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(true);
 adjustThirdPartySharing.addGranularOption("PartnerA", "foo", "bar");
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
-:::
-:::{tab-item} Javascript
-:sync: js
-
-```{code-block} js
+```{code-block} javascript
 let adjustThirdPartySharing = new AdjustThirdPartySharing(true);
 adjustThirdPartySharing.addGranularOption('PartnerA', 'foo', 'bar');
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
 :::
-::::
 
 % Snippet end
 
@@ -153,9 +120,7 @@ You can use this method to toggle Facebook data processing options.
 
 % addGranularOption Facebook snippet
 
-::::{tab-set}
-:::{tab-item} Kotlin
-:sync: kotlin
+:::{tab-set-code}
 
 ```{code-block} kotlin
 val adjustThirdPartySharing = AdjustThirdPartySharing(true)
@@ -164,10 +129,6 @@ adjustThirdPartySharing.addGranularOption("facebook", "data_processing_options_s
 Adjust.trackThirdPartySharing(adjustThirdPartySharing)
 ```
 
-:::
-:::{tab-item} Java
-:sync: java
-
 ```{code-block} java
 AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(true);
 adjustThirdPartySharing.addGranularOption("facebook", "data_processing_options_country", "1");
@@ -175,11 +136,7 @@ adjustThirdPartySharing.addGranularOption("facebook", "data_processing_options_s
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
-:::
-:::{tab-item} Javascript
-:sync: js
-
-```{code-block} js
+```{code-block} javascript
 let adjustThirdPartySharing = new AdjustThirdPartySharing(true);
 adjustThirdPartySharing.addGranularOption('facebook', 'data_processing_options_country', '1');
 adjustThirdPartySharing.addGranularOption('facebook', 'data_processing_options_state', '1000');
@@ -187,17 +144,16 @@ Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method addPartnerSharingSetting
 
-:::::{function} addPartnerSharingSetting (partnerName, key, value)
+::::{function} addPartnerSharingSetting (partnerName, key, value)
 :noindex:
 
 :::{versionadded} v4.32.0
@@ -221,9 +177,7 @@ public void addPartnerSharingSetting(final String partnerName,
 
 % addPartnerSharingSetting snippet
 
-::::{tab-set}
-:::{tab-item} Kotlin
-:sync: kotlin
+:::{tab-set-code}
 
 ```{code-block} kotlin
 val adjustThirdPartySharing = AdjustThirdPartySharing(true)
@@ -233,10 +187,6 @@ adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "sessions", true)
 Adjust.trackThirdPartySharing(adjustThirdPartySharing)
 ```
 
-:::
-:::{tab-item} Java
-:sync: java
-
 ```{code-block} java
 AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(true);
 adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "install", true);
@@ -245,11 +195,7 @@ adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "sessions", true);
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
-:::
-:::{tab-item} Javascript
-:sync: js
-
-```{code-block} js
+```{code-block} javascript
 let adjustThirdPartySharing = new AdjustThirdPartySharing(true);
 adjustThirdPartySharing.addPartnerSharingSetting('PartnerA', 'install', true);
 adjustThirdPartySharing.addPartnerSharingSetting('PartnerA', 'events', true);
@@ -258,10 +204,9 @@ Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end

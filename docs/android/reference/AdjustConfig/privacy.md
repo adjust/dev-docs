@@ -18,9 +18,7 @@ public void setUrlStrategy(String urlStrategy)
 
 % setUrlStrategy snippet
 
-::::{tab-set}
-:::{tab-item} Kotlin
-:sync: kotlin
+:::{tab-set-code}
 
 ```{code-block} kotlin
 :emphasize-lines: 4
@@ -33,10 +31,6 @@ config.setUrlStrategy(AdjustConfig.DATA_RESIDENCY_EU)
 Adjust.onCreate(config)
 ```
 
-:::
-:::{tab-item} Java
-:sync: java
-
 ```{code-block} java
 :emphasize-lines: 4
 
@@ -48,11 +42,7 @@ config.setUrlStrategy(AdjustConfig.DATA_RESIDENCY_EU);
 Adjust.onCreate(config);
 ```
 
-:::
-:::{tab-item} Javascript
-:sync: js
-
-```{code-block} js
+```{code-block} javascript
 :emphasize-lines: 4
 
 var yourAppToken = yourAppToken;
@@ -62,7 +52,6 @@ adjustConfig.setUrlStrategy(AdjustConfig.DATA_RESIDENCY_EU);
 ```
 
 :::
-::::
 
 ::::{dropdown} Available URL strategies
 :::{list-table}
@@ -92,7 +81,7 @@ adjustConfig.setUrlStrategy(AdjustConfig.DATA_RESIDENCY_EU);
 
 % Class method setCoppaCompliantEnabled
 
-:::::{function} setCoppaCompliantEnabled(coppaCompliantEnabled)
+::::{function} setCoppaCompliantEnabled(coppaCompliantEnabled)
 :noindex:
 
 :::{versionadded} v4.30.0
@@ -110,9 +99,7 @@ public void setCoppaCompliantEnabled(boolean coppaCompliantEnabled)
 
 % setCoppaCompliantEnabled snippet
 
-::::{tab-set}
-:::{tab-item} Kotlin
-:sync: kotlin
+:::{tab-set-code}
 
 ```{code-block} kotlin
 :emphasize-lines: 4
@@ -125,10 +112,6 @@ config.setCoppaCompliantEnabled(true)
 Adjust.onCreate(config)
 ```
 
-:::
-:::{tab-item} Java
-:sync: java
-
 ```{code-block} java
 :emphasize-lines: 4
 
@@ -140,11 +123,7 @@ config.setCoppaCompliantEnabled(true);
 Adjust.onCreate(config);
 ```
 
-:::
-:::{tab-item} Javascript
-:sync: js
-
-```{code-block} js
+```{code-block} javascript
 :emphasize-lines: 4
 
 var yourAppToken = yourAppToken;
@@ -154,10 +133,9 @@ adjustConfig.setCoppaCompliantEnabled(true);
 ```
 
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end

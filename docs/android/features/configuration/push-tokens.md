@@ -13,29 +13,18 @@ Your config object contains a string `pushToken` property that you can use to st
 
 This example demonstrates how to set a new push token with the value _`HrFmrcq96tj723aWFfrw`_ to track your app's retention rates. You can update this value at any time by passing a new token to the `setPushToken` method as an argument:
 
-::::{tab-set}
-:::{tab-item} Kotlin
-:sync: kotlin
+:::{tab-set-code}
 
 ```{code-block} kotlin
-Adjust.setPushToken("HrFmrcq96tj723aWFfrw")
+Adjust.setPushToken("HrFmrcq96tj723aWFfrw", getApplicationContext())
 ```
-
-:::
-:::{tab-item} Java
-:sync: java
 
 ```{code-block} java
-Adjust.setPushToken("HrFmrcq96tj723aWFfrw");
+Adjust.setPushToken("HrFmrcq96tj723aWFfrw", getApplicationContext());
 ```
 
-:::
-:::{tab-item} Javascript
-:sync: js
-
-```{code-block} js
+```{code-block} javascript
 Adjust.setPushToken('HrFmrcq96tj723aWFfrw')
 ```
 
 :::
-::::
