@@ -48,15 +48,76 @@ Adjust.onCreate(config);
 :::{tab-item} Javascript
 :sync: js
 ```{code-block} js
-:emphasize-lines: 6
+:emphasize-lines: 4
 
-setupWebViewJavascriptBridge(function(bridge) {
-   // ...
-   var yourAppToken = yourAppToken;
-   var environment = AdjustConfig.EnvironmentSandbox;
-   var adjustConfig = new AdjustConfig(yourAppToken, environment);
-   adjustConfig.setEventBufferingEnabled(true);
-});
+var yourAppToken = yourAppToken;
+var environment = AdjustConfig.EnvironmentSandbox;
+var adjustConfig = new AdjustConfig(yourAppToken, environment);
+adjustConfig.setEventBufferingEnabled(true);
+```
+:::
+::::
+
+% Snippet end
+
+:::::
+
+% Class method end
+
+% Class method setSendInBackground
+
+:::::{function} setSendInBackground (sendInBackground)
+:noindex:
+
+Sets whether the SDK should send data while the app is running in the background
+
+```{code-block} java
+:name: android-setSendInBackground-invocation
+
+public void setSendInBackground(boolean sendInBackground)
+```
+
+:param sendInBackground: Whether the SDK should send information when the app is running in the background
+:type sendInBackground: boolean
+
+% setSendInBackground snippet
+
+::::{tab-set}
+:::{tab-item} Kotlin
+:sync: kotlin
+```{code-block} kotlin
+:emphasize-lines: 4
+
+val appToken = "{YourAppToken}"
+val environment = AdjustConfig.ENVIRONMENT_SANDBOX
+val config = AdjustConfig(this, appToken, environment)
+config.setSendInBackground(true)
+//...
+Adjust.onCreate(config)
+```
+:::
+:::{tab-item} Java
+:sync: java
+```{code-block} java
+:emphasize-lines: 4
+
+String appToken = "{YourAppToken}";
+String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+config.setSendInBackground(true);
+//...
+Adjust.onCreate(config);
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+```{code-block} js
+:emphasize-lines: 4
+
+var yourAppToken = yourAppToken;
+var environment = AdjustConfig.EnvironmentSandbox;
+var adjustConfig = new AdjustConfig(yourAppToken, environment);
+adjustConfig.setSendInBackground(true);
 ```
 :::
 ::::
