@@ -4,7 +4,7 @@ Use these methods to update the Adjust SDK's configuration.
 
 % Class method setEnabled
 
-:::::{function} setEnabled (boolean)
+:::::{function} setEnabled (enabled)
 :noindex:
 
 Enable or disable the Adjust SDK. The SDK doesn't send any information while disabled.
