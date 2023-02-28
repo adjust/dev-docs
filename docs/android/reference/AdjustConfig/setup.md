@@ -1,5 +1,71 @@
 # Setup methods
 
+% Class method setExternalDeviceId
+
+:::::{function} setExternalDeviceId (externalDeviceId)
+:noindex:
+
+:::{versionadded} v4.20.0
+Sets an external device identifier for reporting purposes
+:::
+
+```{code-block} objc
+:name: ios-setExternalDeviceId-invocation
+
+@property (nonatomic, copy, nullable) NSString *externalDeviceId;
+```
+
+:param externalDeviceId: The external device ID associated with the device
+:type externalDeviceId: NSString
+
+% setExternalDeviceId snippet
+
+::::{tab-set}
+:::{tab-item} Kotlin
+:sync: kotlin
+```{code-block} kotlin
+:emphasize-lines: 4
+
+val appToken = "{YourAppToken}"
+val environment = AdjustConfig.ENVIRONMENT_SANDBOX
+val config = AdjustConfig(this, appToken, environment)
+config.externalDeviceId("{YourExternalDeviceId}")
+//...
+Adjust.onCreate(config)
+```
+:::
+:::{tab-item} Java
+:sync: java
+```{code-block} java
+:emphasize-lines: 4
+
+String appToken = "{YourAppToken}";
+String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+config.externalDeviceId("{YourExternalDeviceId}");
+//...
+Adjust.onCreate(config);
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+```{code-block} js
+:emphasize-lines: 4
+
+var yourAppToken = yourAppToken;
+var environment = AdjustConfig.EnvironmentSandbox;
+var adjustConfig = new AdjustConfig(yourAppToken, environment);
+adjustConfig.externalDeviceId('{YourExternalDeviceId}');
+```
+:::
+::::
+
+% Snippet end
+
+:::::
+
+% Class method end
+
 % Class method setEventBufferingEnabled
 
 :::::{function} setEventBufferingEnabled (eventBufferingEnabled)
