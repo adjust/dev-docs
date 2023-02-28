@@ -1,6 +1,5 @@
 # Setup methods
 
-
 % Class method setLogLevel
 
 :::::{function} setLogLevel (logLevel)

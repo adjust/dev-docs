@@ -96,3 +96,51 @@ Adjust.isEnabled();
 :::::
 
 % Class method end
+
+% Class method setOfflineMode
+
+:::::{function} setOfflineMode (isOffline)
+:noindex:
+
+Controls whether the SDK is in offline mode. When in offline mode, the SDK queues all events in a file until offline mode is disabled. When offline mode is disabled, the SDK sends all queued events.
+
+```{code-block} java
+:name: android-setOfflineMode-invocation
+
+public static void setOfflineMode(boolean enabled)
+```
+
+:param enabled: Whether the SDK should be enabled or not
+:type enabled: boolean
+
+% setOfflineMode snippet
+
+::::{tab-set}
+:::{tab-item} Kotlin
+:sync: kotlin
+
+```{code-block} kotlin
+Adjust.setOfflineMode(true)
+```
+:::
+:::{tab-item} Java
+:sync: java
+
+```{code-block} java
+Adjust.setOfflineMode(true);
+```
+:::
+:::{tab-item} Javascript
+:sync: js
+
+```{code-block} js
+Adjust.setOfflineMode(true);
+```
+:::
+::::
+
+% Snippet end
+
+:::::
+
+% Class method end
