@@ -27,6 +27,7 @@ public static void setEnabled(boolean enabled)
 ```{code-block} kotlin
 Adjust.setEnabled(false)
 ```
+
 :::
 :::{tab-item} Java
 :sync: java
@@ -34,6 +35,7 @@ Adjust.setEnabled(false)
 ```{code-block} objc
 Adjust.setEnabled(false);
 ```
+
 :::
 :::{tab-item} Javascript
 :sync: js
@@ -41,6 +43,7 @@ Adjust.setEnabled(false);
 ```{code-block} js
 Adjust.setEnabled(false);
 ```
+
 :::
 ::::
 
@@ -75,6 +78,7 @@ public static boolean isEnabled()
 ```{code-block} kotlin
 Adjust.isEnabled()
 ```
+
 :::
 :::{tab-item} Java
 :sync: java
@@ -82,6 +86,7 @@ Adjust.isEnabled()
 ```{code-block} java
 Adjust.isEnabled();
 ```
+
 :::
 :::{tab-item} Javascript
 :sync: js
@@ -89,6 +94,8 @@ Adjust.isEnabled();
 ```{code-block} js
 Adjust.isEnabled();
 ```
+
+:::
 ::::
 
 % Snippet end
@@ -122,6 +129,7 @@ public static void setOfflineMode(boolean enabled)
 ```{code-block} kotlin
 Adjust.setOfflineMode(true)
 ```
+
 :::
 :::{tab-item} Java
 :sync: java
@@ -129,6 +137,7 @@ Adjust.setOfflineMode(true)
 ```{code-block} java
 Adjust.setOfflineMode(true);
 ```
+
 :::
 :::{tab-item} Javascript
 :sync: js
@@ -136,6 +145,7 @@ Adjust.setOfflineMode(true);
 ```{code-block} js
 Adjust.setOfflineMode(true);
 ```
+
 :::
 ::::
 
