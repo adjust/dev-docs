@@ -21,6 +21,7 @@ public void setLogLevel(LogLevel logLevel)
 ::::{tab-set}
 :::{tab-item} Kotlin
 :sync: kotlin
+
 ```{code-block} kotlin
 :emphasize-lines: 4
 
@@ -31,9 +32,11 @@ config.setLogLevel(LogLevel.VERBOSE)
 //...
 Adjust.onCreate(config)
 ```
+
 :::
 :::{tab-item} Java
 :sync: java
+
 ```{code-block} java
 :emphasize-lines: 4
 
@@ -44,9 +47,11 @@ config.setLogLevel(LogLevel.VERBOSE);
 //...
 Adjust.onCreate(config);
 ```
+
 :::
 :::{tab-item} Javascript
 :sync: js
+
 ```{code-block} js
 :emphasize-lines: 4
 
@@ -55,11 +60,11 @@ var environment = AdjustConfig.EnvironmentSandbox;
 var adjustConfig = new AdjustConfig(yourAppToken, environment);
 adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
 ```
+
 :::
 ::::
 
 % Snippet end
-
 
 ::::{dropdown} Available log levels
 % logLevel table
@@ -108,20 +113,21 @@ adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
 Sets an external device identifier for reporting purposes
 :::
 
-```{code-block} objc
-:name: ios-setExternalDeviceId-invocation
+```{code-block} java
+:name: android-setExternalDeviceId-invocation
 
-@property (nonatomic, copy, nullable) NSString *externalDeviceId;
+public void setExternalDeviceId(String externalDeviceId)
 ```
 
 :param externalDeviceId: The external device ID associated with the device
-:type externalDeviceId: NSString
+:type externalDeviceId: String
 
 % setExternalDeviceId snippet
 
 ::::{tab-set}
 :::{tab-item} Kotlin
 :sync: kotlin
+
 ```{code-block} kotlin
 :emphasize-lines: 4
 
@@ -132,9 +138,11 @@ config.externalDeviceId("{YourExternalDeviceId}")
 //...
 Adjust.onCreate(config)
 ```
+
 :::
 :::{tab-item} Java
 :sync: java
+
 ```{code-block} java
 :emphasize-lines: 4
 
@@ -145,9 +153,11 @@ config.externalDeviceId("{YourExternalDeviceId}");
 //...
 Adjust.onCreate(config);
 ```
+
 :::
 :::{tab-item} Javascript
 :sync: js
+
 ```{code-block} js
 :emphasize-lines: 4
 
@@ -156,6 +166,7 @@ var environment = AdjustConfig.EnvironmentSandbox;
 var adjustConfig = new AdjustConfig(yourAppToken, environment);
 adjustConfig.externalDeviceId('{YourExternalDeviceId}');
 ```
+
 :::
 ::::
 
@@ -186,6 +197,7 @@ public void setEventBufferingEnabled(Boolean eventBufferingEnabled)
 ::::{tab-set}
 :::{tab-item} Kotlin
 :sync: kotlin
+
 ```{code-block} kotlin
 :emphasize-lines: 4
 
@@ -196,9 +208,11 @@ config.setEventBufferingEnabled(true)
 //...
 Adjust.onCreate(config)
 ```
+
 :::
 :::{tab-item} Java
 :sync: java
+
 ```{code-block} java
 :emphasize-lines: 4
 
@@ -209,9 +223,11 @@ config.setEventBufferingEnabled(true);
 //...
 Adjust.onCreate(config);
 ```
+
 :::
 :::{tab-item} Javascript
 :sync: js
+
 ```{code-block} js
 :emphasize-lines: 4
 
@@ -220,6 +236,77 @@ var environment = AdjustConfig.EnvironmentSandbox;
 var adjustConfig = new AdjustConfig(yourAppToken, environment);
 adjustConfig.setEventBufferingEnabled(true);
 ```
+
+:::
+::::
+
+% Snippet end
+
+:::::
+
+% Class method end
+
+% Class method setDefaultTracker
+
+:::::{function} setDefaultTracker (defaultTracker)
+:noindex:
+
+Sets a default tracker token to record installs against
+
+```{code-block} java
+:name: android-setDefaultTracker-invocation
+
+public void setDefaultTracker(String defaultTracker)
+```
+
+:param defaultTracker: The tracker token to which all preinstalled sessions are attributed
+:type defaultTracker: String
+
+% setDefaultTracker snippet
+
+::::{tab-set}
+:::{tab-item} Kotlin
+:sync: kotlin
+
+```{code-block} kotlin
+:emphasize-lines: 4
+
+val appToken = "{YourAppToken}"
+val environment = AdjustConfig.ENVIRONMENT_SANDBOX
+val config = AdjustConfig(this, appToken, environment)
+config.setDefaultTracker("{TrackerToken}")
+//...
+Adjust.onCreate(config)
+```
+
+:::
+:::{tab-item} Java
+:sync: java
+
+```{code-block} java
+:emphasize-lines: 4
+
+String appToken = "{YourAppToken}";
+String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+config.setDefaultTracker("{TrackerToken}");
+//...
+Adjust.onCreate(config);
+```
+
+:::
+:::{tab-item} Javascript
+:sync: js
+
+```{code-block} js
+:emphasize-lines: 4
+
+var yourAppToken = yourAppToken;
+var environment = AdjustConfig.EnvironmentSandbox;
+var adjustConfig = new AdjustConfig(yourAppToken, environment);
+adjustConfig.setDefaultTracker('{TrackerToken}');
+```
+
 :::
 ::::
 
@@ -250,6 +337,7 @@ public void setSendInBackground(boolean sendInBackground)
 ::::{tab-set}
 :::{tab-item} Kotlin
 :sync: kotlin
+
 ```{code-block} kotlin
 :emphasize-lines: 4
 
@@ -260,9 +348,11 @@ config.setSendInBackground(true)
 //...
 Adjust.onCreate(config)
 ```
+
 :::
 :::{tab-item} Java
 :sync: java
+
 ```{code-block} java
 :emphasize-lines: 4
 
@@ -273,9 +363,11 @@ config.setSendInBackground(true);
 //...
 Adjust.onCreate(config);
 ```
+
 :::
 :::{tab-item} Javascript
 :sync: js
+
 ```{code-block} js
 :emphasize-lines: 4
 
@@ -284,6 +376,147 @@ var environment = AdjustConfig.EnvironmentSandbox;
 var adjustConfig = new AdjustConfig(yourAppToken, environment);
 adjustConfig.setSendInBackground(true);
 ```
+
+:::
+::::
+
+% Snippet end
+
+:::::
+
+% Class method end
+
+% Class method setPreinstallTrackingEnabled
+
+:::::{function} setPreinstallTrackingEnabled (preinstallTrackingEnabled)
+:noindex:
+
+Enables or disables preinstall tracking
+
+```{code-block} java
+:name: android-setPreinstallTrackingEnabled-invocation
+
+public void setPreinstallTrackingEnabled(boolean preinstallTrackingEnabled)
+```
+
+:param preinstallTrackingEnabled: Whether preinstall tracking is enabled
+:type preinstallTrackingEnabled: Boolean
+
+% setPreinstallTrackingEnabled snippet
+
+::::{tab-set}
+:::{tab-item} Kotlin
+:sync: kotlin
+
+```{code-block} kotlin
+:emphasize-lines: 4
+
+val appToken = "{YourAppToken}"
+val environment = AdjustConfig.ENVIRONMENT_SANDBOX
+val config = AdjustConfig(this, appToken, environment)
+config.setPreinstallTrackingEnabled(true)
+//...
+Adjust.onCreate(config)
+```
+
+:::
+:::{tab-item} Java
+:sync: java
+
+```{code-block} java
+:emphasize-lines: 4
+
+String appToken = "{YourAppToken}";
+String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+config.setPreinstallTrackingEnabled(true);
+//...
+Adjust.onCreate(config);
+```
+
+:::
+:::{tab-item} Javascript
+:sync: js
+
+```{code-block} js
+:emphasize-lines: 4
+
+var yourAppToken = yourAppToken;
+var environment = AdjustConfig.EnvironmentSandbox;
+var adjustConfig = new AdjustConfig(yourAppToken, environment);
+adjustConfig.setPreinstallTrackingEnabled(true);
+```
+
+:::
+::::
+
+% Snippet end
+
+:::::
+
+% Class method end
+
+% Class method setPreinstallFilePath
+
+:::::{function} setPreinstallFilePath (preinstallFilePath)
+:noindex:
+
+Defines a relative path where preinstall information is available. This directory must be world-readable
+
+```{code-block} java
+:name: android-setPreinstallFilePath-invocation
+
+public void setPreinstallFilePath(String preinstallFilePath)
+```
+
+:param preinstallFilePath: The path where the preinstall information is written
+:type preinstallFilePath: String
+
+% setPreinstallFilePath snippet
+
+::::{tab-set}
+:::{tab-item} Kotlin
+:sync: kotlin
+
+```{code-block} kotlin
+:emphasize-lines: 4
+
+val appToken = "{YourAppToken}"
+val environment = AdjustConfig.ENVIRONMENT_SANDBOX
+val config = AdjustConfig(this, appToken, environment)
+config.setPreinstallFilePath("../EngagementFile.xml")
+//...
+Adjust.onCreate(config)
+```
+
+:::
+:::{tab-item} Java
+:sync: java
+
+```{code-block} java
+:emphasize-lines: 4
+
+String appToken = "{YourAppToken}";
+String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+config.setPreinstallFilePath("../EngagementFile.xml");
+//...
+Adjust.onCreate(config);
+```
+
+:::
+:::{tab-item} Javascript
+:sync: js
+
+```{code-block} js
+:emphasize-lines: 4
+
+var yourAppToken = yourAppToken;
+var environment = AdjustConfig.EnvironmentSandbox;
+var adjustConfig = new AdjustConfig(yourAppToken, environment);
+adjustConfig.setPreinstallFilePath('../EngagementFile.xml');
+```
+
 :::
 ::::
 

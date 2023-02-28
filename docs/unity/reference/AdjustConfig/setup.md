@@ -20,6 +20,7 @@ public void setLogLevel(AdjustLogLevel logLevel)
 
 ::::{tab-set}
 :::{tab-item} C#
+
 ```{code-block} cs
 :emphasize-lines: 3
 
@@ -29,6 +30,7 @@ config.setLogLevel(AdjustLogLevel.Error);
 //...
 Adjust.start(config);
 ```
+
 :::
 ::::
 
@@ -82,6 +84,7 @@ public void setLogDelegate(Action<String> logDelegate)
 
 ::::{tab-set}
 :::{tab-item} C#
+
 ```{code-block} cs
 :emphasize-lines: 3
 
@@ -91,6 +94,7 @@ adjustConfig.setLogDelegate(msg => Debug.Log(msg));
 //...
 Adjust.start(adjustConfig);
 ```
+
 :::
 ::::
 
@@ -120,6 +124,7 @@ public void setDefaultTracker(string defaultTracker)
 
 ::::{tab-set}
 :::{tab-item} C#
+
 ```{code-block} cs
 
 AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
@@ -128,6 +133,7 @@ adjustConfig.setDefaultTracker("{TrackerToken}");
 //...
 Adjust.start(adjustConfig);
 ```
+
 :::
 ::::
 
@@ -157,6 +163,7 @@ public void setSendInBackground(bool sendInBackground)
 
 ::::{tab-set}
 :::{tab-item} C#
+
 ```{code-block} cs
 
 AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
@@ -165,6 +172,7 @@ adjustConfig.setSendInBackground(true);
 //...
 Adjust.start(adjustConfig);
 ```
+
 :::
 ::::
 
@@ -194,6 +202,7 @@ public void setSessionSuccessDelegate(Action<AdjustSessionSuccess> sessionSucces
 
 ::::{tab-set}
 :::{tab-item} C#
+
 ```{code-block} cs
 :emphasize-lines: 3, 7-9
 
@@ -207,6 +216,7 @@ public void SessionSuccessCallback (AdjustSessionSuccess sessionSuccessData) {
     //...
 }
 ```
+
 :::
 ::::
 
@@ -236,6 +246,7 @@ public void setSessionFailureDelegate(Action<AdjustSessionFailure> sessionFailur
 
 ::::{tab-set}
 :::{tab-item} C#
+
 ```{code-block} cs
 :emphasize-lines: 3, 7-9
 
@@ -249,6 +260,7 @@ public void SessionFailureCallback (AdjustSessionFailure sessionFailureData) {
     //...
 }
 ```
+
 :::
 ::::
 
@@ -278,6 +290,7 @@ public void setEventSuccessDelegate(Action<AdjustEventSuccess> eventSuccessDeleg
 
 ::::{tab-set}
 :::{tab-item} C#
+
 ```{code-block} cs
 :emphasize-lines: 3, 7-9
 
@@ -291,6 +304,7 @@ public void EventSuccessCallback(AdjustEventSuccess eventSuccessData) {
     //...
 }
 ```
+
 :::
 ::::
 
@@ -320,6 +334,7 @@ public void setEventFailureDelegate(Action<AdjustEventFailure> eventFailureDeleg
 
 ::::{tab-set}
 :::{tab-item} C#
+
 ```{code-block} cs
 :emphasize-lines: 3, 7-9
 
@@ -333,6 +348,7 @@ public void EventFailureCallback(AdjustEventFailure eventFailureData) {
     //...
 }
 ```
+
 :::
 ::::
 
@@ -362,6 +378,7 @@ public void setDelayStart(double delayStart)
 
 ::::{tab-set}
 :::{tab-item} C#
+
 ```{code-block} cs
 :emphasize-lines: 3
 
@@ -371,6 +388,7 @@ adjustConfig.setDelayStart(5.5);
 //...
 Adjust.start(adjustConfig);
 ```
+
 :::
 ::::
 
@@ -400,6 +418,7 @@ public void setExternalDeviceId(string externalDeviceId)
 
 ::::{tab-set}
 :::{tab-item} C#
+
 ```{code-block} cs
 :emphasize-lines: 3
 
@@ -409,6 +428,7 @@ adjustConfig.setExternalDeviceId("{Your-External-Device-Id}");
 //...
 Adjust.start(adjustConfig);
 ```
+
 :::
 ::::
 
@@ -438,6 +458,7 @@ public void setEventBufferingEnabled(bool eventBufferingEnabled)
 
 ::::{tab-set}
 :::{tab-item} C#
+
 ```{code-block} cs
 
 AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
@@ -446,6 +467,7 @@ adjustConfig.setEventBufferingEnabled(true);
 //...
 Adjust.start(adjustConfig);
 ```
+
 :::
 ::::
 
@@ -477,12 +499,14 @@ public void setNeedsCost(bool needsCost)
 
 ::::{tab-set}
 :::{tab-item} C#
+
 ```{code-block} cs
 
 AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
 adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
 adjustConfig.setNeedsCost(true);
 ```
+
 :::
 ::::
 
@@ -512,6 +536,7 @@ public void setAttributionChangedDelegate(Action<AdjustAttribution> attributionC
 
 ::::{tab-set}
 :::{tab-item} C#
+
 ```{code-block} cs
 :emphasize-lines: 9, 13-16
 
@@ -533,6 +558,7 @@ public class ExampleGUI : MonoBehaviour {
     }
 }
 ```
+
 :::
 ::::
 
@@ -562,6 +588,7 @@ public void setPreinstallTrackingEnabled(bool preinstallTrackingEnabled)
 
 ::::{tab-set}
 :::{tab-item} C#
+
 ```{code-block} cs
 
 AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
@@ -570,6 +597,7 @@ adjustConfig.setPreinstallTrackingEnabled(true);
 //...
 Adjust.start(adjustConfig);
 ```
+
 :::
 ::::
 
@@ -599,6 +627,7 @@ public void setPreinstallFilePath(string preinstallFilePath)
 
 ::::{tab-set}
 :::{tab-item} C#
+
 ```{code-block} cs
 
 AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
@@ -607,6 +636,7 @@ adjustConfig.setPreinstallFilePath("../EngagementFile.xml");
 //...
 Adjust.start(adjustConfig);
 ```
+
 :::
 ::::
 
@@ -633,6 +663,7 @@ public void deactivateSKAdNetworkHandling()
 
 ::::{tab-set}
 :::{tab-item} C#
+
 ```{code-block} cs
 :emphasize-lines: 3
 
@@ -642,6 +673,7 @@ adjustConfig.deactivateSKAdNetworkHandling();
 //...
 Adjust.start(adjustConfig);
 ```
+
 :::
 ::::
 
@@ -671,6 +703,7 @@ public void setLaunchDeferredDeeplink(bool launchDeferredDeeplink)
 
 ::::{tab-set}
 :::{tab-item} C#
+
 ```{code-block} cs
 :emphasize-lines: 3
 
@@ -680,6 +713,7 @@ adjustConfig.setLaunchDeferredDeeplink(true);
 //...
 Adjust.start(adjustConfig);
 ```
+
 :::
 ::::
 
@@ -688,7 +722,6 @@ Adjust.start(adjustConfig);
 :::::
 
 % Class method end
-
 
 % Class method setLinkMeEnabled
 
@@ -710,6 +743,7 @@ public void setLinkMeEnabled(bool linkMeEnabled)
 
 ::::{tab-set}
 :::{tab-item} C#
+
 ```{code-block} cs
 :emphasize-lines: 3
 
@@ -719,6 +753,7 @@ adjustConfig.setLinkMeEnabled(true);
 //...
 Adjust.start(adjustConfig);
 ```
+
 :::
 ::::
 
@@ -748,6 +783,7 @@ public void setConversionValueUpdatedDelegate(Action<int> conversionValueUpdated
 
 ::::{tab-set}
 :::{tab-item} C#
+
 ```{code-block} cs
 
 AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
@@ -756,6 +792,7 @@ adjustConfig.setConversionValueUpdatedDelegate(ConversionValueUpdatedCallback);
 //...
 Adjust.start(adjustConfig);
 ```
+
 :::
 ::::
 
