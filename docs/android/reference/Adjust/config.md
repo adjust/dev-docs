@@ -163,3 +163,44 @@ Adjust.setPushToken('{YourPushToken}');
 ::::
 
 % Class method end
+
+% Class method sendFirstPackages
+
+::::{function} sendFirstPackages ()
+:noindex:
+
+:::{note}
+This method has an effect only if you delay the start of the Adjust SDK.
+:::
+
+The Adjust SDK sends information to Adjust's servers as soon as it starts. If you delay the start of the SDK, you can use this method to send packages before the delay ends.
+
+```{code-block} java
+:name: android-sendFirstPackages-invocation
+
+public static void sendFirstPackages()
+```
+
+% sendFirstPackages snippet
+
+:::{tab-set-code}
+
+```{code-block} kotlin
+Adjust.sendFirstPackages()
+```
+
+```{code-block} java
+Adjust.sendFirstPackages();
+```
+
+```{code-block} javascript
+Adjust.sendFirstPackages();
+```
+
+:::
+
+% Snippet end
+
+::::
+
+% Class method end

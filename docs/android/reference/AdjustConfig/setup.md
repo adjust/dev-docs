@@ -448,3 +448,204 @@ adjustConfig.setPreinstallFilePath('../EngagementFile.xml');
 ::::
 
 % Class method end
+
+% Class method setOnAttributionChangedListener
+
+::::{function} setOnAttributionChangedListener (attributionChangedDelegate)
+:noindex:
+
+Sets a delegate function that fires when a user's attribution information updates
+
+```{code-block} java
+:name: android-setOnAttributionChangedListener-invocation
+
+public void setOnAttributionChangedListener(OnAttributionChangedListener onAttributionChangedListener)
+```
+
+:param onAttributionChangedListener: The delegate function that the SDK calls when a the user's attribution information changes
+:type onAttributionChangedListener: OnAttributionChangedListener
+
+% setOnAttributionChangedListener snippet
+
+:::{tab-set-code}
+
+```{code-block} kotlin
+val config = AdjustConfig(this, appToken, environment)
+
+config.setOnAttributionChangedListener {
+   override fun onAttributionChanged(attribution: AdjustAttribution) {}
+}
+
+Adjust.onCreate(config)
+```
+
+```{code-block} java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+
+config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
+    @Override
+    public void onAttributionChanged(AdjustAttribution attribution) {}
+});
+
+Adjust.onCreate(config);
+```
+
+```{code-block} javascript
+function attributionCallback(attribution) {}
+
+// ...
+
+let adjustConfig = new AdjustConfig(yourAppToken, environment);
+adjustConfig.setAttributionCallback(attributionCallback);
+Adjust.onCreate(adjustConfig);
+```
+
+:::
+
+% Snippet end
+
+% setOnAttributionChangedListener Facebook snippet
+
+:::{tab-set-code}
+
+```{code-block} kotlin
+val config = AdjustConfig(this, appToken, environment)
+
+config.setOnAttributionChangedListener {
+    val fbInstallReferrerJSONObject = extractFBInstallReferrerJSON(it)
+}
+
+fun extractFBInstallReferrerJSON(adjustAttribution: AdjustAttribution): JSONObject? {
+    try {
+        return JSONObject(adjustAttribution.fbInstallReferrer)
+    } catch (e: JSONException) {
+        Log.d("example", e.message!!)
+    }
+    return null
+}
+
+Adjust.onCreate(config)
+```
+
+```{code-block} java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+
+config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
+      @Override
+      public void onAttributionChanged(AdjustAttribution adjustAttribution) {
+        JSONObject fbInstallReferrerJSONObject = extractFBInstallReferrerJSON(adjustAttribution);
+      }
+});
+
+@Nullable
+JSONObject extractFBInstallReferrerJSON(AdjustAttribution adjustAttribution) {
+  try {
+    return new JSONObject(adjustAttribution.fbInstallReferrer);  
+  } catch (JSONException e) {
+    Log.d("example", e.getMessage());  
+  }
+  return null;
+}
+
+Adjust.onCreate(config);
+```
+
+:::
+
+% Snippet end
+
+::::
+
+% Class method end
+
+% Class method setNeedsCost
+
+::::{function} setNeedsCost (needsCost)
+:noindex:
+
+Sets whether the SDK should gather cost data. This is accessible in the user's attribution information.
+
+```{code-block} java
+:name: android-setNeedsCost-invocation
+
+public void setNeedsCost(boolean needsCost)
+```
+
+:param needsCost: Whether the SDK should gather cost data
+:type needsCost: boolean
+
+% setNeedsCost snippet
+
+:::{tab-set-code}
+
+```{code-block} kotlin
+val config = AdjustConfig(this, appToken, environment)
+config.setNeedsCost(true)
+Adjust.onCreate(config)
+```
+
+```{code-block} java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+config.setNeedsCost(true);
+Adjust.onCreate(config);
+```
+
+```{code-block} javascript
+var adjustConfig = new AdjustConfig(yourAppToken, environment);
+adjustConfig.setNeedsCost(true);
+Adjust.onCreate(adjustConfig);
+```
+
+:::
+
+% Snippet end
+
+::::
+
+% Class method end
+
+% Class method setDelayStart
+
+::::{function} setDelayStart (delayStart)
+:noindex:
+
+Sets a delay before the SDK starts to allow data to load before session information is sent to Adjust's servers. Maximum delay: 10 seconds
+
+```{code-block} java
+:name: android-setDelayStart-invocation
+
+public void setDelayStart(double delayStart)
+```
+
+:param delayStart: The time (in seconds) to delay the start of the SDK by
+:type delayStart: double
+
+% setDelayStart snippet
+
+:::{tab-set-code}
+
+```{code-block} kotlin
+val config = AdjustConfig(this, appToken, environment)
+config.setDelayStart(5.5)
+Adjust.onCreate(config)
+```
+
+```{code-block} java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+config.setDelayStart(5.5);
+Adjust.onCreate(config);
+```
+
+```{code-block} javascript
+var adjustConfig = new AdjustConfig(yourAppToken, environment);
+adjustConfig.setDelayStart(5.5);
+Adjust.onCreate(adjustConfig);
+```
+
+:::
+
+% Snippet end
+
+::::
+
+% Class method end
