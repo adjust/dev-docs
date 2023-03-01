@@ -4,7 +4,7 @@
 The following steps only set up subscription tracking within the Adjust SDK. To enable the feature, Adjust need to set up app-specific information. Contact <support@adjust.com> or talk to your Technical Account manager to set this up.
 :::
 
-You can record Play Store subscriptions and verify their validity with the Adjust SDK. After the user purchases a subscription, create an `AdjustPlayStoreSubscription` instance containing the details.
+You can record Play Store subscriptions and verify their validity with the Adjust SDK. After the user purchases a subscription, create an [`AdjustPlayStoreSubscription` instance](/android/reference/AdjustPlayStoreSubscription) containing the details.
 
 ## 1. Set up your subscription object
 

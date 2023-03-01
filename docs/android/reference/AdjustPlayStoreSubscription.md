@@ -84,19 +84,19 @@ Sets the date of the transaction in the subscription object
 public void setPurchaseTime(final long purchaseTime)
 ```
 
-:param purchaseTime: The date on which the subscription was purchased
-:type purchaseTime: String
+:param purchaseTime: The timestamp on which the subscription was purchased
+:type purchaseTime: long
 
 % setPurchaseTime snippet
 
 :::{tab-set-code}
 
 ```{code-block} kotlin
-subscription.setPurchaseTime("{purchaseTime}")
+subscription.setPurchaseTime("1677668234")
 ```
 
 ```{code-block} java
-subscription.setPurchaseTime("{purchaseTime}");
+subscription.setPurchaseTime("1677668234");
 ```
 
 :::

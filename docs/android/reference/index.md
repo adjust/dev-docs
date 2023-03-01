@@ -11,6 +11,7 @@ AdjustConfig/index
 AdjustAttribution
 AdjustAdRevenue
 AdjustEvent
+AdjustPlayStoreSubscription
 AdjustThirdPartySharing
 
 :::
