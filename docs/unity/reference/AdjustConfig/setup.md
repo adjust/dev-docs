@@ -231,7 +231,7 @@ public void SessionSuccessCallback (AdjustSessionSuccess sessionSuccessData) {
 :::::{function} setSessionFailureDelegate (sessionSuccessDelegate)
 :noindex:
 
-Sets up a success callback to trigger a function when the SDK records a session.
+Sets up a callback to trigger a function when the SDK fails to record a session.
 
 ```{code-block} cs
 :name: unity-setSessionFailureDelegate-invocation
@@ -319,7 +319,7 @@ public void EventSuccessCallback(AdjustEventSuccess eventSuccessData) {
 :::::{function} setEventFailureDelegate (eventFailureDelegate)
 :noindex:
 
-Sets up a success callback to trigger a function when the SDK records an event.
+Sets up a callback to trigger a function when the SDK fails to record an event.
 
 ```{code-block} cs
 :name: unity-setEventFailureDelegate-invocation

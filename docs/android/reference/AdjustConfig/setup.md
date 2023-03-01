@@ -649,3 +649,251 @@ Adjust.onCreate(adjustConfig);
 ::::
 
 % Class method end
+
+% Class method setOnSessionTrackingSucceededListener
+
+::::{function} setOnSessionTrackingSucceededListener (onSessionTrackingSucceededListener)
+:noindex:
+
+Sets up a success callback to trigger a function when the SDK records a session.
+
+```{code-block} java
+:name: android-setOnSessionTrackingSucceededListener-invocation
+
+public void setOnSessionTrackingSucceededListener(OnSessionTrackingSucceededListener onSessionTrackingSucceededListener)
+```
+
+:param onSessionTrackingSucceededListener: The function to launch when the SDK successfully records a session
+:type onSessionTrackingSucceededListener: OnSessionTrackingSucceededListener
+
+% setOnSessionTrackingSucceededListener snippet
+
+:::{tab-set-code}
+
+```{code-block} kotlin
+val config = AdjustConfig(this, appToken, environment)
+
+config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
+    override fun onFinishedSessionTrackingSucceeded(sessionSuccessResponseData: AdjustSessionSuccess) {
+        // ...
+    }
+})
+
+Adjust.onCreate(config)
+```
+
+```{code-block} java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+
+config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
+    @Override
+    public void onFinishedSessionTrackingSucceeded(AdjustSessionSuccess sessionSuccessResponseData) {
+        // ...
+    }
+});
+
+Adjust.onCreate(config)
+```
+
+```{code-block} javascript
+function sessionSuccessCallback(sessionSuccessResponseData) {}
+
+let adjustConfig = new AdjustConfig(appToken, environment);
+adjustConfig.setSessionSuccessCallback(sessionSuccessCallback);
+
+Adjust.onCreate(adjustConfig);
+```
+
+:::
+
+% Snippet end
+
+::::
+
+% Class method end
+
+% Class method setOnSessionTrackingFailedListener
+
+::::{function} setOnSessionTrackingFailedListener (onSessionTrackingFailedListener)
+:noindex:
+
+Sets up a callback to trigger a function when the SDK fails to record a session.
+
+```{code-block} java
+:name: android-setOnSessionTrackingFailedListener-invocation
+
+public void setOnSessionTrackingFailedListener(OnSessionTrackingFailedListener onSessionTrackingFailedListener)
+```
+
+:param onSessionTrackingFailedListener: The function to launch when the SDK fails to record a session
+:type onSessionTrackingFailedListener: OnSessionTrackingFailedListener
+
+% setOnSessionTrackingFailedListener snippet
+
+:::{tab-set-code}
+
+```{code-block} kotlin
+val config = AdjustConfig(this, appToken, environment)
+
+config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
+    override fun onFinishedSessionTrackingFailed(sessionFailureResponseData: AdjustSessionFailure) {
+        // ...
+    }
+})
+
+Adjust.onCreate(config)
+```
+
+```{code-block} java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+
+config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
+    @Override
+    public void onFinishedSessionTrackingFailed(AdjustSessionFailure sessionFailureResponseData) {
+        // ...
+    }
+});
+
+Adjust.onCreate(config)
+```
+
+```{code-block} javascript
+function sessionFailureCallback(sessionFailureResponseData) {}
+
+let adjustConfig = new AdjustConfig(appToken, environment);
+adjustConfig.setSessionFailureCallback(sessionFailureCallback);
+
+Adjust.onCreate(adjustConfig);
+```
+
+:::
+
+% Snippet end
+
+::::
+
+% Class method end
+
+% Class method setOnEventTrackingSucceededListener
+
+::::{function} setOnEventTrackingSucceededListener (onEventTrackingSucceededListener)
+:noindex:
+
+Sets up a success callback to trigger a function when the SDK records an event.
+
+```{code-block} java
+:name: android-setOnEventTrackingSucceededListener-invocation
+
+public void setOnEventTrackingSucceededListener(OnEventTrackingSucceededListener onEventTrackingSucceededListener)
+```
+
+:param onEventTrackingSucceededListener: The function to launch when the SDK successfully records an event
+:type onEventTrackingSucceededListener: OnEventTrackingSucceededListener
+
+% setOnEventTrackingSucceededListener snippet
+
+:::{tab-set-code}
+
+```{code-block} kotlin
+val config = AdjustConfig(this, appToken, environment)
+
+config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
+    override fun onFinishedEventTrackingSucceeded(eventSuccessResponseData: AdjustEventSuccess) {
+        // ...
+    }
+})
+
+Adjust.onCreate(config)
+```
+
+```{code-block} java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+
+config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
+    @Override
+    public void onFinishedEventTrackingSucceeded(AdjustEventSuccess eventSuccessResponseData) {
+        // ...
+    }
+});
+
+Adjust.onCreate(config)
+```
+
+```{code-block} javascript
+function eventSuccessCallback(eventSuccessResponseData) {}
+
+let adjustConfig = new AdjustConfig(appToken, environment);
+adjustConfig.setEventSuccessCallback(eventSuccessCallback);
+
+Adjust.onCreate(adjustConfig);
+```
+
+:::
+
+% Snippet end
+
+::::
+
+% Class method end
+
+% Class method setOnEventTrackingFailedListener
+
+::::{function} setOnEventTrackingFailedListener (onEventTrackingFailedListener)
+:noindex:
+
+Sets up a callback to trigger a function when the SDK fails to record an event.
+
+```{code-block} java
+:name: android-setOnEventTrackingFailedListener-invocation
+
+public void setOnEventTrackingFailedListener(OnEventTrackingFailedListener onEventTrackingFailedListener)
+```
+
+:param onEventTrackingFailedListener: The function to launch when the SDK fails to record an event
+:type onEventTrackingFailedListener: OnEventTrackingFailedListener
+
+% setOnEventTrackingFailedListener snippet
+
+:::{tab-set-code}
+
+```{code-block} kotlin
+val config = AdjustConfig(this, appToken, environment)
+
+config.setOnEventTrackingFailedListener (OnEventTrackingFailedListener() {
+    override fun onFinishedEventTrackingFailed(eventFailureResponseData: AdjustEventFailure) {
+        // ...
+    }
+})
+
+Adjust.onCreate(config)
+```
+
+```{code-block} java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+
+config.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
+    @Override
+    public void onFinishedEventTrackingFailed(AdjustEventFailure eventFailureResponseData) {
+        // ...
+    }
+});
+
+Adjust.onCreate(config)
+```
+
+```{code-block} javascript
+function eventFailureCallback(eventFailureResponseData) {}
+
+let adjustConfig = new AdjustConfig(appToken, environment);
+adjustConfig.setEventFailureCallback(eventFailureCallback);
+
+Adjust.onCreate(adjustConfig);
+```
+
+:::
+
+% Snippet end
+
+::::
+
+% Class method end
