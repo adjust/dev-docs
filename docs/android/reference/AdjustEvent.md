@@ -12,11 +12,11 @@ Creates an event object initialized with an Adjust event token
 ```{code-block} java
 :name: android-AdjustEvent-invocation
 
-public AdjustEvent(string eventToken)
+public AdjustEvent(String eventToken)
 ```
 
 :param eventToken: A 6 character Adjust event token
-:type eventToken: string
+:type eventToken: String
 
 :::{include} /android/reference/Adjust/recording.md
 :start-after: trackEvent snippet
