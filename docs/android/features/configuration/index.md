@@ -8,6 +8,5 @@ Use the features in this section to configure the Adjust SDK.
 :maxdepth: 1
 
 ./*
-deep-link/index
 
 :::
