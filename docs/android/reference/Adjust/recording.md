@@ -311,6 +311,11 @@ AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue(AdjustConfig.AD_REVENUE_AP
 Adjust.trackAdRevenue(adjustAdRevenue)
 ```
 
+```{code-block} javascript
+let adjustAdRevenue = new AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX)
+Adjust.trackAdRevenue(adjustAdRevenue);
+```
+
 :::
 
 % Snippet end
