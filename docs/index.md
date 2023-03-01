@@ -3,9 +3,9 @@
 Welcome to the Adjust SDK documentation portal!
 
 ::::{grid} 3
-:gutter: 1
+:gutter: 5
 
-:::{grid-item-card} {fab}`app-store-ios fa-5x`
+:::{grid-item-card} {fab}`app-store-ios fa-10x`
 :link: ios/index
 :link-type: doc
 :text-align: center
@@ -17,13 +17,13 @@ iOS
 :text-align: center
 Android
 :::
-:::{grid-item-card} {fab}`unity fa-5x`
+:::{grid-item-card} {fab}`unity fa-10x`
 :link: unity/index
 :link-type: doc
 :text-align: center
 Unity
 :::
-:::{grid-item-card} {fab}`js fa-5x`
+:::{grid-item-card} {fab}`js fa-10x`
 :link: web/index
 :link-type: doc
 :text-align: center
