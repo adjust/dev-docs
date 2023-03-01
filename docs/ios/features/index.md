@@ -1,7 +1,7 @@
 # Features
 
 ::::{grid} 2
-:gutter: 1
+:gutter: 5
 
 :::{grid-item-card} {fas}`gears fa-5x`
 :link: configuration/index
