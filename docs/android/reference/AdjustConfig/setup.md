@@ -897,3 +897,71 @@ Adjust.onCreate(adjustConfig);
 ::::
 
 % Class method end
+
+% Class method setOnDeeplinkResponseListener
+
+::::{function} setOnDeeplinkResponseListener (onDeeplinkResponseListener)
+:noindex:
+
+Sets up a callback to trigger a function when the SDK receives a deferred deep link
+
+```{code-block} java
+:name: android-setOnDeeplinkResponseListener-invocation
+
+public void setOnDeeplinkResponseListener(OnDeeplinkResponseListener onDeeplinkResponseListener)
+```
+
+:param onDeeplinkResponseListener: The function to launch when the SDK receives a deferred deep link
+:type onDeeplinkResponseListener: OnDeeplinkResponseListener
+
+% setOnDeeplinkResponseListener snippet
+
+:::{tab-set-code}
+
+```{code-block} kotlin
+val config = AdjustConfig(this, appToken, environment)
+
+config.setOnDeeplinkResponseListener { deeplink ->
+            Log.d("example", "Deferred deep link callback called!")
+            Log.d("example", "Deep link URL: $deeplink")
+
+            true
+        }
+
+Adjust.onCreate(config)
+```
+
+```{code-block} java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+
+// Evaluate the deeplink to be launched.
+config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
+            @Override
+            public boolean launchReceivedDeeplink(Uri deeplink) {
+                Log.d("example", "Deferred deep link callback called!");
+                Log.d("example", "Deep link URL: " + deeplink);
+
+                return true;
+            }
+        });
+
+Adjust.onCreate(config);
+```
+
+```{code-block} javascript
+function deferredDeeplinkCallback(deeplink) {}
+
+let adjustConfig = new AdjustConfig(yourAppToken, environment);
+adjustConfig.setOpenDeferredDeeplink(true);
+adjustConfig.setDeferredDeeplinkCallback(deferredDeeplinkCallback);
+
+Adjust.start(adjustConfig);
+```
+
+:::
+
+% Snippet end
+
+::::
+
+% Class method end

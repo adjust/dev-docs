@@ -10,7 +10,7 @@ Deferred deep linking
 
 The SDK can read deep link data after a user opens your app from a link.
 
-## Set up deep linking
+## Configure your scheme name
 
 If a user has your app installed, it opens when they interact with a link containing deep link information. The Adjust SDK contains tools to parse deep link information for use throughout your app. To set up deep linking, you need to choose a unique **scheme name**.
 
@@ -47,7 +47,7 @@ This example demonstrates how to set up an activity called `MainActivity` to ope
 
 If a user clicks link with a `deep_link` parameter containing your **scheme name**, this activity fires.
 
-```url
+```
 https://app.adjust.com/abc123?deep_link=adjustExample%3A%2F%2F
 ```
 
@@ -114,53 +114,58 @@ protected void onNewIntent(Intent intent) {
 
 ## Deferred deep linking
 
-The Adjust SDK opens deferred deep links by default. No additional setup is required.
+The Adjust SDK opens deferred deep links by default. No additional setup is required. If you want to disable this behavior, you need to set up a deferred deep link callback using the [`setOnDeeplinkResponseListener` method](android-setOnDeeplinkResponseListener-invocation).
 
-### Set up a deferred deep link delegate
+### Set up a deferred deep link callback
 
 You can configure the Adjust SDK to call a delegate function when it receives a deferred deep link. This delegate function receives the deep link as a **string** argument.
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
-:emphasize-lines: 1-3, 6
+:::{include} /android/reference/AdjustConfig/setup.md
+:start-after: setOnDeeplinkResponseListener snippet
+:end-before: Snippet end
+:::
 
-private void DeferredDeeplinkCallback(string deeplinkURL) {
-   //...
+::::{dropdown} Example
+
+This example demonstrates how to prevent the SDK from launching an activity by returning a `false` value in your callback function.
+
+:::{tab-set-code}
+
+```{code-block} kotlin
+config.setOnDeeplinkResponseListener { deeplink ->
+   false
 }
+```
 
-AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
-adjustConfig.setDeferredDeeplinkDelegate(DeferredDeeplinkCallback);
+```{code-block} java
+config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
+   @Override
+   public boolean launchReceivedDeeplink(Uri deeplink) {
+         return false;
+   }
+});
+```
+
+```{code-block} javascript
+let adjustConfig = new AdjustConfig(yourAppToken, environment);
+adjustConfig.setOpenDeferredDeeplink(false);
+
 Adjust.start(adjustConfig);
 ```
+
 :::
 ::::
-
-:::::{dropdown} Example
-
-This example demonstrates how to log a deep link address when the user opens a deferred deep link.
-
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
-private void LogDeepLink(string deepLinkURL) {
- Debug.Log("Deeplink URL: " + deeplinkURL);
-}
-//...
-AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
-adjustConfig.setDeferredDeeplinkDelegate(LogDeepLink);
-//...
-Adjust.start(adjustConfig);
-```
-:::
-::::
-:::::
 
 ## Reattribution via deep links
 
 Adjust enables you to run re-engagement campaigns with usage of deep links. For more information, see the [guide to appending attribution data to a deep link](https://help.adjust.com/en/article/deeplink-generator#manage-your-deeplinks).
 
 To reattribute your user, you need to call the [`appWillOpenUrl` method](android-appWillOpenUrl-invocation) when the app receives deep link content. The Adjust SDK then looks for new attribution data within the deep link. If the SDK finds new information, it forwards the information to Adjust's servers for reattribution.
+
+:::{include} /android/reference/Adjust/config.md
+:start-after: appWillOpenUrl snippet
+:end-before: Snippet end
+:::
 
 ## Link resolution
 

@@ -204,3 +204,59 @@ Adjust.sendFirstPackages();
 ::::
 
 % Class method end
+
+% Class method appWillOpenUrl
+
+::::{function} appWillOpenUrl(url, context)
+:noindex:
+
+Processes URLs to extract deep link information.
+
+:::{versionchanged} v4.14.0
+You need to pass your app context to this method to use it.
+:::
+
+```{code-block} java
+:name: android-appWillOpenUrl-invocation
+
+public static void appWillOpenUrl(Uri url, Context context)
+```
+
+% appWillOpenUrl snippet
+
+:::{tab-set-code}
+
+```{code-block} kotlin
+override fun onCreate(savedInstanceState: Bundle?) {
+   super.onCreate(savedInstanceState)
+   setContentView(R.layout.activity_main)
+
+   val intent = intent
+   val data = intent.data
+   Adjust.appWillOpenUrl(data, getApplicationContext())
+}
+```
+
+```{code-block} java
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+
+    Intent intent = getIntent();
+    Uri data = intent.getData();
+    Adjust.appWillOpenUrl(data, getApplicationContext());
+}
+```
+
+```{code-block} javascript
+Adjust.appWillOpenUrl(deeplinkUrl);
+```
+
+:::
+
+% Snippet end
+
+::::
+
+% Class method end
