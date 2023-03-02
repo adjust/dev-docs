@@ -40,19 +40,25 @@ The Adjust SDK is also available on [npm](https://www.npmjs.com/package/@adjustc
 
 ::::{tab-set}
 :::{tab-item} npm
+
 ```console
 $ npm install @adjustcom/adjust-web-sdk --save
 ```
+
 :::
 :::{tab-item} yarn
+
 ```console
 $ yarn add @adjustcom/adjust-web-sdk
 ```
+
 :::
 :::{tab-item} pnpm
+
 ```console
 $ pnpm add @adjustcom/adjust-web-sdk
 ```
+
 :::
 ::::
 
