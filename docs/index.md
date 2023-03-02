@@ -48,6 +48,7 @@ ios/reference/index
 :hidden: true
 
 android/index
+android/setup/index
 android/features/index
 android/reference/index
 
