@@ -5,7 +5,7 @@
 :::::{function} trackEvent (event)
 :noindex:
 
-Record event information using an `ADJEvent` object and an [Adjust event token](https://help.adjust.com/en/article/basic-event-setup#create-an-event-token).
+Record event information using an `AdjustEvent` object and an [Adjust event token](https://help.adjust.com/en/article/basic-event-setup#create-an-event-token).
 
 ```{code-block} cs
 :name: unity-trackEvent-invocation

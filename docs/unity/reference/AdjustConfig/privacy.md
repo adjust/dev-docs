@@ -5,9 +5,7 @@
 :::::{function} setUrlStrategy(urlStrategy)
 :noindex:
 
-:::{versionadded} v4.23.0
-Sets whether the Adjust SDK can read the device {abbr}`IDFA (ID for Advertisers)`
-:::
+Sets the country or region of data residency. If called with a `UrlStrategy` parameter, sets the country/region where data will be sent preferentially.
 
 ```{code-block} cs
 :name: unity-setUrlStrategy-invocation

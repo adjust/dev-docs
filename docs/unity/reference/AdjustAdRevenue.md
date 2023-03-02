@@ -192,7 +192,7 @@ public void setAdRevenueUnit(string adRevenueUnit)
 ```
 
 :param adRevenueUnit: The ad unit ID associated with the ad revenue
-:type adRevenueUnit: NSString
+:type adRevenueUnit: string
 
 % setAdRevenueUnit snippet
 
@@ -223,7 +223,7 @@ Adjust.trackAdRevenue(adjustAdRevenue);
 
 Sets the placement of the ad associated with the ad revenue
 
-```{code-block} objc
+```{code-block} cs
 :name: unity-setAdRevenuePlacement-invocation
 
 public void setAdRevenuePlacement(string adRevenuePlacement)
@@ -303,7 +303,7 @@ Adjust.trackAdRevenue(adjustAdRevenue);
 
 Adds key-value partner parameters to the ad revenue object. You can add multiple parameters by calling this method multiple times.
 
-```{code-block} objc
+```{code-block} cs
 :name: unity-AdjustAdRevenue-addPartnerParameter-invocation
 
 public void addPartnerParameter(string key, string value)

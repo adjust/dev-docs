@@ -112,7 +112,7 @@ myst_substitutions = {
     "eventToken": "*`g3mfiw`*",
     "uniqueEventId": "*`5e85484b-1ebc-4141-aab7-25b869e54c49`*",
     "callbackId": "*`f2e728d8-271b-49ab-80ea-27830a215147`*",
-    "ios_version": "4.33.4"
+    "ios_version": "4.33.4",
 }
 
 tippy_anchor_parent_selector = "article.bd-article"

@@ -4,7 +4,7 @@ Use these methods to update the Adjust SDK's configuration.
 
 % Class method setEnabled
 
-:::::{function} setEnabled (boolean)
+:::::{function} setEnabled (enabled)
 :noindex:
 
 Enable or disable the Adjust SDK. The SDK doesn't send any information while disabled.
@@ -148,7 +148,7 @@ Adjust.sendFirstPackages();
 
 % Class method setOfflineMode
 
-:::::{function} setOfflineMode (boolean)
+:::::{function} setOfflineMode (enabled)
 :noindex:
 
 Controls whether the SDK is in offline mode. When in offline mode, the SDK queues all events in a file until offline mode is disabled. When offline mode is disabled, the SDK sends all queued events.
