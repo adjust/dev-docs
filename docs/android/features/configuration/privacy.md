@@ -147,3 +147,30 @@ If you are using [Data Privacy settings](https://help.adjust.com/en/article/mana
 :start-after: trackMeasurementConsent snippet
 :end-before: Snippet end
 :::
+
+## COPPA compliance
+
+If you need your app to be COPPA compliant, call the [`setCoppaCompliantEnabled` method](android-setCoppaCompliantEnabled-invocation). This method performs the following actions:
+
+1. Disables third-party sharing **before** the user launches their first session.
+2. Prevents the SDK from reading device and advertising IDs (for example: `gps_adid` and `android_id`).
+
+:::{include} /android/reference/AdjustConfig/privacy.md
+:start-after: setCoppaCompliantEnabled snippet
+:end-before: Snippet end
+:::
+
+You can disable COPPA compliance by calling this method with a `false` argument.
+
+:::{important}
+Disabling the `setCoppaCompliantEnabled` method doesn't re-enable third-party sharing. You need to [re-enable third-party sharing](#enable-third-party-sharing) for the user.
+:::
+
+## Play Store Kids Apps
+
+If your app targets users under the age of 13, and the install region **isn't** the USA, you need to mark it as a Kids App. This prevents the SDK from reading device and advertising IDs (for example: `gps_adid` and `android_id`). To do this, call the [`setPlayStoreKidsAppEnabled` method](android-setPlayStoreKidsAppEnabled-invocation) with a `true` argument.
+
+:::{include} /android/reference/AdjustConfig/privacy.md
+:start-after: setPlayStoreKidsAppEnabled snippet
+:end-before: Snippet end
+:::

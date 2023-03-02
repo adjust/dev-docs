@@ -139,3 +139,62 @@ adjustConfig.setCoppaCompliantEnabled(true);
 ::::
 
 % Class method end
+
+% Class method setPlayStoreKidsAppEnabled
+
+:::::{function} setPlayStoreKidsAppEnabled(playStoreKidsAppEnabled)
+:noindex:
+
+Marks your app as a Kids App and disables reading device information
+
+```{code-block} java
+:name: android-setPlayStoreKidsAppEnabled-invocation
+
+public void setPlayStoreKidsAppEnabled(boolean playStoreKidsAppEnabled)
+```
+
+:param playStoreKidsAppEnabled: Whether the app is a Kids app
+:type playStoreKidsAppEnabled: boolean
+
+% setPlayStoreKidsAppEnabled snippet
+
+:::{tab-set-code}
+
+```{code-block} kotlin
+:emphasize-lines: 4
+
+val appToken = "{YourAppToken}"
+val environment = AdjustConfig.ENVIRONMENT_SANDBOX
+val config = AdjustConfig(this, appToken, environment)
+config.setPlayStoreKidsAppEnabled(true)
+//...
+Adjust.onCreate(config)
+```
+
+```{code-block} java
+:emphasize-lines: 4
+
+String appToken = "{YourAppToken}";
+String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+config.setPlayStoreKidsAppEnabled(true);
+//...
+Adjust.onCreate(config);
+```
+
+```{code-block} javascript
+:emphasize-lines: 4
+
+var yourAppToken = yourAppToken;
+var environment = AdjustConfig.EnvironmentSandbox;
+var adjustConfig = new AdjustConfig(yourAppToken, environment);
+adjustConfig.setPlayStoreKidsAppEnabled(true);
+```
+
+:::
+
+% Snippet end
+
+:::::
+
+% Class method end
