@@ -188,7 +188,7 @@ adjust-dtt adjust-config.yaml
 
 1. Unpacks your APK into a folder. The folder will be located in the same directory as your APK. It will have the same name as your APK.
 2. Searches for an {file}`assets` folder and an {file}`adjust_config.properties` file. The {file}`adjust_config.properties` file contains default campaign information.
-   1. Creates the {file}`assets` folder and {file}`adjust_config.properties` file if they do not exist. The tool writes your `default_tracker` information to the {file}`adjust_config.properties` file.
+   1. Creates the {file}`assets` folder and {file}`adjust_config.properties` file if they don't exist. The tool writes your `default_tracker` information to the {file}`adjust_config.properties` file.
    2. Writes the `default_tracker` information to the {file}`adjust_config.properties` file if it exists. If the file already contains a default campaign value, it compares the two. If they differ, the value in your {file}`adjust-config.yaml` file overwrites the existing value.
 3. Repackages the APK.
 4. Signs the APK with the information specified in the {file}`adjust-config.yaml`. It uses the `keystore_path`, `keystore_pass`, and `keystore_alias` parameters.
