@@ -5,7 +5,7 @@
 ::::{function} trackEvent (event)
 :noindex:
 
-Record event information using an `ADJEvent` object and an [Adjust event token](hc:/basic-event-setup#create-an-event-token).
+Record event information using an `ADJEvent` object and an [Adjust event token](hc:basic-event-setup#create-an-event-token).
 
 {#ios-trackevent-invocation}
 ```objective-c

@@ -91,7 +91,7 @@ Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ::::{function} trackMeasurementConsent(consentMeasurement)
 :noindex:
 
-Set whether [data collection and retention rules](hc:/manage-data-collection-and-retention) apply to a user.
+Set whether [data collection and retention rules](hc:manage-data-collection-and-retention) apply to a user.
 
 {#android-trackmeasurementconsent-invocation}
 ```java

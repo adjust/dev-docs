@@ -13,7 +13,7 @@ myst:
 ::::{function} trackEvent (EventParamsT)
 :noindex:
 
-Record an event object with an [Adjust event token](hc:/basic-event-setup#create-an-event-token) and additional parameters.
+Record an event object with an [Adjust event token](hc:basic-event-setup#create-an-event-token) and additional parameters.
 
 {#web-trackEvent-invocation}
 
@@ -329,7 +329,7 @@ const attribution = Adjust.getAttribution();
 :type adgroup: *String*
 :param creative: The creative associated with the attribution
 :type creative: *String*
-:param click_label: The [click label](hc:/user-rewards) associated with the attribution
+:param click_label: The [click label](hc:user-rewards) associated with the attribution
 :type click_label: *String*
 :param state: The current state of the attribution. Either `installed` or `reattributed`
 :type state: *String*

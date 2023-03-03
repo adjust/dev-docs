@@ -7,7 +7,7 @@ An external device identifier is a custom value that you can assign to a device 
 You can use an external device ID as a custom identifier for a device. This helps you keep continuity with your other systems.
 
 :::{seealso}
-See the [External device identifiers article](hc:/external-device-identifiers) in the Adjust help center for more information.
+See the [External device identifiers article](hc:external-device-identifiers) in the Adjust help center for more information.
 :::
 
 You can set an external device ID by specifying an `externalDeviceId` argument in the [`initSdk` method](#web-initsdk-invocation). The external device ID is case-sensitive. If you have imported external device IDs, make sure the value you pass matches the imported value.

@@ -158,7 +158,7 @@ Adjust.start(adjustConfig);
 
 ## Reattribution via deep links
 
-Adjust enables you to run re-engagement campaigns with usage of deep links. For more information, see the [guide to appending attribution data to a deep link](hc:/deeplink-generator#manage-your-deeplinks).
+Adjust enables you to run re-engagement campaigns with usage of deep links. For more information, see the [guide to appending attribution data to a deep link](hc:deeplink-generator#manage-your-deeplinks).
 
 To reattribute your user, you need to call the [`appWillOpenUrl` method](#android-appwillopenurl-invocation) when the app receives deep link content. The Adjust SDK then looks for new attribution data within the deep link. If the SDK finds new information, it forwards the information to Adjust's servers for reattribution.
 

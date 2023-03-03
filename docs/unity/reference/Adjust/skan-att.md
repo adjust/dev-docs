@@ -1,6 +1,6 @@
 # SKAdNetwork and ATT methods
 
-Use these methods to manage your [SKAdNetwork](hc:/skadnetwork) and [App Tracking Transparency](hc:/app-tracking-transparency-att-framework) logic.
+Use these methods to manage your [SKAdNetwork](hc:skadnetwork) and [App Tracking Transparency](hc:app-tracking-transparency-att-framework) logic.
 
 % Class method requestTrackingAuthorizationWithCompletionHandler
 

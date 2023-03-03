@@ -75,7 +75,7 @@ This scheme will work for your production **and** debug builds.
 ::::
 ::::{dropdown} Link Resolution domains
 :::{tip}
-A link resolution domain is required for deep linking via email, SMS, QR codes, and platforms that shorten links. Check with your marketing team to see if [link resolution](hc:/link-resolution) is needed for the app.
+A link resolution domain is required for deep linking via email, SMS, QR codes, and platforms that shorten links. Check with your marketing team to see if [link resolution](hc:link-resolution) is needed for the app.
 :::
 
 Your marketing team is responsible for setting up Link Resolution domains for different scenarios. Get this information from them and store it somewhere for later use.

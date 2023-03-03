@@ -1,6 +1,6 @@
 # Get attribution information
 
-When a user interacts with a campaign link, their attribution information updates. This can happen if the user interacts with a [deep link](hc:/deep-links). The SDK can listen for attribution changes and call a function when it detects an update.
+When a user interacts with a campaign link, their attribution information updates. This can happen if the user interacts with a [deep link](hc:deep-links). The SDK can listen for attribution changes and call a function when it detects an update.
 
 You can set an attribution callback method by specifying an `attributionCallback` function in the [`initSdk` method](#web-initsdk-invocation).
 

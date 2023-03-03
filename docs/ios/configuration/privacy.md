@@ -96,7 +96,7 @@ To set your country of data residency, call the [setUrlStrategy method](#ios-set
 
 ## Consent measurement for specific users
 
-If you are using [Data Privacy settings](hc:/manage-data-collection-and-retention) in your Adjust dashboard, you need to set up the Adjust SDK to work with them. This includes settings such as consent expiry period and user data retention period. To toggle this feature, call the [`trackMeasurementConsent` method](#ios-trackmeasurementconsent-invocation). When enabled, the SDK communicates the data privacy settings to Adjust's servers. Adjust's servers then applies your data privacy rules to the user. The Adjust SDK continues to work as expected.
+If you are using [Data Privacy settings](hc:manage-data-collection-and-retention) in your Adjust dashboard, you need to set up the Adjust SDK to work with them. This includes settings such as consent expiry period and user data retention period. To toggle this feature, call the [`trackMeasurementConsent` method](#ios-trackmeasurementconsent-invocation). When enabled, the SDK communicates the data privacy settings to Adjust's servers. Adjust's servers then applies your data privacy rules to the user. The Adjust SDK continues to work as expected.
 
 :::{include} /ios/reference/Adjust/privacy.md
 :start-after: trackMeasurementConsent snippet

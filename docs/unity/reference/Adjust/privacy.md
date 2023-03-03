@@ -70,7 +70,7 @@ Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ::::{function} trackMeasurementConsent(enabled)
 :noindex:
 
-Set whether [data collection and retention rules](hc:/manage-data-collection-and-retention) apply to a user.
+Set whether [data collection and retention rules](hc:manage-data-collection-and-retention) apply to a user.
 
 {#unity-trackmeasurementconsent-invocation}
 ```c#

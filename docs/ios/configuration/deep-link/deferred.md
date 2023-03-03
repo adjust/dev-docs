@@ -104,7 +104,7 @@ Adjust's servers automatically pass the deferred deep link to the Adjust SDK. Wh
 
 ## Additional setup in iOS 15 and above
 
-The Adjust SDK lets you copy deep link information from the device pasteboard. When combined with [Adjust’s LinkMe solution](hc:/linkme), this feature enables deferred deep linking on devices running iOS 15 and above.
+The Adjust SDK lets you copy deep link information from the device pasteboard. When combined with [Adjust’s LinkMe solution](hc:linkme), this feature enables deferred deep linking on devices running iOS 15 and above.
 
 :::{important}
 The Adjust SDK checks the pasteboard when a user opens the app for the first time. The device displays a dialog asking if the user wants to allow the app to read the pasteboard.

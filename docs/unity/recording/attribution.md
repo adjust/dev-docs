@@ -1,6 +1,6 @@
 # Get attribution information
 
-When a user interacts with a campaign link, their attribution information updates. This can happen if the user interacts with a [deep link](hc:/deep-links). The SDK can listen for attribution changes and call a function when it detects an update.
+When a user interacts with a campaign link, their attribution information updates. This can happen if the user interacts with a [deep link](hc:deep-links). The SDK can listen for attribution changes and call a function when it detects an update.
 
 To configure your callback function, call the [`setAttributionChangedDelegate` method](#unity-setattributionchangeddelegate-invocation) with your function name as an argument.
 
