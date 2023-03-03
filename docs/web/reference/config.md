@@ -1,7 +1,7 @@
 ---
 myst:
    substitutions:
-      InitOptions: "[*InitOptions*](web-interface-InitOptions)"
+      InitOptions: "[*InitOptions*](#web-interface-InitOptions)"
 ---
 
 # Configuration methods
@@ -10,14 +10,13 @@ Use these methods to update the Adjust SDK's configuration.
 
 % Class method initSdk
 
-:::::{function} initSdk({ logLevel, logOutput, ...options }: InitOptions)
+::::{function} initSdk({ logLevel, logOutput, ...options }: InitOptions)
 :noindex:
 
 Initializes the Adjust with a set of customizable options
 
-```{code-block} ts
-:name: web-initSdk-invocation
-
+{#web-initsdk-invocation}
+```typescript
 function initSdk({ logLevel, logOutput, ...options }: InitOptions): void
 ```
 
@@ -26,149 +25,142 @@ function initSdk({ logLevel, logOutput, ...options }: InitOptions): void
 
 % initSdk snippet
 
-::::{tab-set}
-:::{tab-item} Javascript
-```{code-block} js
+:::{tab-set-code}
+
+```javascript
 Adjust.initSdk({
   appToken: 'YOUR_APP_TOKEN',
   environment: 'sandbox'
 });
 ```
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method stop
 
-:::::{function} stop
+::::{function} stop
 :noindex:
 
 Disables the Adjust SDK. The SDK doesn't send any information while disabled.
 
-```{code-block} ts
-:name: web-stop-invocation
-
+{#web-stop-invocation}
+```typescript
 function stop(): void
 ```
 
 % stop snippet
 
-::::{tab-set}
-:::{tab-item} Javascript
-```{code-block} js
+:::{tab-set-code}
+
+```javascript
 Adjust.stop();
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method restart
 
-:::::{function} restart
+::::{function} restart
 :noindex:
 
 Restarts the Adjust SDK
 
-```{code-block} ts
-:name: web-restart-invocation
-
+{#web-restart-invocation}
+```typescript
 function restart(): void
 ```
 
 % restart snippet
 
-::::{tab-set}
-:::{tab-item} Javascript
-```{code-block} js
+:::{tab-set-code}
+
+```javascript
 Adjust.restart();
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method switchToOfflineMode
 
-:::::{function} switchToOfflineMode
+::::{function} switchToOfflineMode
 :noindex:
 
 Enables offline mode
 
-```{code-block} ts
-:name: web-switchToOfflineMode-invocation
-
+{#web-switchtoofflinemode-invocation}
+```typescript
 function switchToOfflineMode(): void
 ```
 
 % switchToOfflineMode snippet
 
-::::{tab-set}
-:::{tab-item} Javascript
-```{code-block} js
+:::{tab-set-code}
+
+```javascript
 Adjust.switchToOfflineMode();
 ```
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method switchBackToOnlineMode
 
-:::::{function} switchBackToOnlineMode
+::::{function} switchBackToOnlineMode
 :noindex:
 
 Disables offline mode
 
-```{code-block} ts
-:name: web-switchBackToOnlineMode-invocation
-
+{#web-switchbacktoonlinemode-invocation}
+```typescript
 function switchBackToOnlineMode(): void
 ```
 
 % switchBackToOnlineMode snippet
 
-::::{tab-set}
-:::{tab-item} Javascript
-```{code-block} js
+:::{tab-set-code}
+
+```javascript
 Adjust.switchBackToOnlineMode();
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method setReferrer
 
-:::::{function} setReferrer(referrer)
+::::{function} setReferrer(referrer)
 :noindex:
 
 Sets a default referrer to simulate a click
 
-```{code-block} ts
-:name: web-setReferrer-invocation
-
+{#web-setreferrer-invocation}
+```typescript
 function setReferrer(referrer: string): void
 ```
 
@@ -177,17 +169,16 @@ function setReferrer(referrer: string): void
 
 % setReferrer snippet
 
-::::{tab-set}
-:::{tab-item} Javascript
-```{code-block} js
+:::{tab-set-code}
+
+```javascript
 Adjust.setReferrer("adjust_external_click_id%3DEXTERNAL_CLICK_ID");
 ```
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 

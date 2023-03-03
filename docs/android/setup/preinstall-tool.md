@@ -110,7 +110,7 @@ Next, you need to create a campaign link in your Adjust dashboard. You will use 
 Once you have your keystore file and your campaign token, you can create a configuration file. `adjust-dtt` uses an {file}`adjust-config.yaml` configuration file to read your settings. This file includes settings for the different app stores you need to set up.
 
 :::{list-table}
-:caption: Parameter
+:name: Parameter
 
 * - Parameter
    - Data type

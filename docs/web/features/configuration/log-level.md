@@ -19,32 +19,34 @@ The Adjust SDK provides configurable log levels to return different amounts of i
    - Disable all logging
 :::
 
-You can set the log level by specifying an `logLevel` argument in the [`initSdk` method](web-initSdk-invocation). The SDK defaults to `error` if no value is passed.
+You can set the log level by specifying an `logLevel` argument in the [`initSdk` method](#web-initsdk-invocation). The SDK defaults to `error` if no value is passed.
 
-::::{tab-set}
-:::{tab-item} Javascript
-```{code-block} js
+:::{tab-set-code}
+
+{emphasize-lines="4"}
+```javascript
 Adjust.initSdk({
   appToken: 'YOUR_APP_TOKEN',
   environment: 'sandbox',
   logLevel: 'verbose'
 });
 ```
+
 :::
-::::
 
 ## Set log output
 
-You can delegate a log output location in your web app to show logs directly on the screen. To do this, specify an HTML selector in the `logOutput` argument in the [`initSdk` method](web-initSdk-invocation). The SDK logs will print to this container.
+You can delegate a log output location in your web app to show logs directly on the screen. To do this, specify an HTML selector in the `logOutput` argument in the [`initSdk` method](#web-initsdk-invocation). The SDK logs will print to this container.
 
-::::{tab-set}
-:::{tab-item} Javascript
-```{code-block} js
+:::{tab-set-code}
+
+{emphasize-lines="4"}
+```javascript
 Adjust.initSdk({
   appToken: 'YOUR_APP_TOKEN',
   environment: 'sandbox',
   logOutput: '#logDiv'
 });
 ```
+
 :::
-::::

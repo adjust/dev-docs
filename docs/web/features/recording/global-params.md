@@ -9,7 +9,7 @@ If you [register a callback URL](https://help.adjust.com/en/article/set-up-callb
 
 You can configure global callback parameters to your servers. Once you configure parameters, the SDK appends them to your callback URL. You can use this information to analyze your users' in-app behavior with your BI system.
 
-Add callback parameters to your sessions and events by calling the [`addGlobalCallbackParameters` method](web-addGlobalCallbackParameters-invocation) with an array of **string** key-value pair objects. You can add as many objects to this array as you require.
+Add callback parameters to your sessions and events by calling the [`addGlobalCallbackParameters` method](#web-addglobalcallbackparameters-invocation) with an array of **string** key-value pair objects. You can add as many objects to this array as you require.
 
 :::{include} /web/reference/recording.md
 :start-after: addGlobalCallbackParameters snippet
@@ -22,14 +22,14 @@ For the above example, the callback URL looks like this:
 https://www.mydomain.com/callback?key=value&foo=bar
 ```
 
-You can remove global callback parameters if they're no longer required. To do this, pass the parameter key to the [`removeGlobalCallbackParameter` method](web-removeGlobalCallbackParameter-invocation).
+You can remove global callback parameters if they're no longer required. To do this, pass the parameter key to the [`removeGlobalCallbackParameter` method](#web-removeglobalcallbackparameter-invocation).
 
 :::{include} /web/reference/recording.md
 :start-after: removeGlobalCallbackParameter snippet
 :end-before: Snippet end
 :::
 
-You can remove all global callback parameters if they're no longer required. To do this, call the [`clearGlobalCallbackParameters` method](web-clearGlobalCallbackParameters-invocation).
+You can remove all global callback parameters if they're no longer required. To do this, call the [`clearGlobalCallbackParameters` method](#web-clearglobalcallbackparameters-invocation).
 
 :::{include} /web/reference/recording.md
 :start-after: clearGlobalCallbackParameters snippet
@@ -46,21 +46,21 @@ Adjust sends partner parameters to [external partners](https://help.adjust.com/e
 Partner parameters don't appear in raw data by default. You can add the `{partner_parameters}` placeholder to receive them as a single string.
 :::
 
-Add partner parameters to your sessions and events by calling the [`addGlobalPartnerParameters` method](web-addGlobalPartnerParameters-invocation) with an array of **string** key-value pair objects. You can add as many objects to this array as you require.
+Add partner parameters to your sessions and events by calling the [`addGlobalPartnerParameters` method](#web-addglobalpartnerparameters-invocation) with an array of **string** key-value pair objects. You can add as many objects to this array as you require.
 
 :::{include} /web/reference/recording.md
 :start-after: addGlobalPartnerParameters snippet
 :end-before: Snippet end
 :::
 
-You can remove global partner parameters if they're no longer required. To do this, pass the parameter key to the [`removeGlobalPartnerParameter` method](web-removeGlobalPartnerParameter-invocation).
+You can remove global partner parameters if they're no longer required. To do this, pass the parameter key to the [`removeGlobalPartnerParameter` method](#web-removeglobalpartnerparameter-invocation).
 
 :::{include} /web/reference/recording.md
 :start-after: removeGlobalPartnerParameter snippet
 :end-before: Snippet end
 :::
 
-You can remove all global partner parameters if they're no longer required. To do this, call the [`clearGlobalPartnerParameters` method](web-clearGlobalPartnerParameters-invocation).
+You can remove all global partner parameters if they're no longer required. To do this, call the [`clearGlobalPartnerParameters` method](#web-clearglobalpartnerparameters-invocation).
 
 :::{include} /web/reference/recording.md
 :start-after: clearGlobalPartnerParameters snippet

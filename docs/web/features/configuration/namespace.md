@@ -8,16 +8,17 @@ Any data that the SDK has stored in the default namespace will be moved the cust
 If you set a custom namespace this value shouldn't be changed. If you change to another custom namespace, the data won't be moved.
 :::
 
-You can set an custom namespace by specifying a `namespace` property in the [`initSdk` method](web-initSdk-invocation).
+You can set an custom namespace by specifying a `namespace` property in the [`initSdk` method](#web-initsdk-invocation).
 
-::::{tab-set}
-:::{tab-item} Javascript
-```{code-block} js
+:::{tab-set-code}
+
+{emphasize-lines="4"}
+```javascript
 Adjust.initSdk({
   appToken: 'YOUR_APP_TOKEN',
   environment: 'sandbox',
   namespace: 'myCustomNamespace'
 });
 ```
+
 :::
-::::
