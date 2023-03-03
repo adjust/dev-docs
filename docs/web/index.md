@@ -40,30 +40,36 @@ The Adjust SDK is also available on [npm](https://www.npmjs.com/package/@adjustc
 
 ::::{tab-set}
 :::{tab-item} npm
+
 ```console
 $ npm install @adjustcom/adjust-web-sdk --save
 ```
+
 :::
 :::{tab-item} yarn
+
 ```console
 $ yarn add @adjustcom/adjust-web-sdk
 ```
+
 :::
 :::{tab-item} pnpm
+
 ```console
 $ pnpm add @adjustcom/adjust-web-sdk
 ```
+
 :::
 ::::
 
 ## 2. Initialize the SDK
 
-Once you've installed the SDK, you need to initialize it. To do this, call the [`initSdk` method](web-initSdk-invocation). This method takes a number of arguments that customize how the SDK works in your app.
+Once you've installed the SDK, you need to initialize it. To do this, call the [`initSdk` method](#web-initsdk-invocation). This method takes a number of arguments that customize how the SDK works in your app.
 
 You must add the following arguments to your `initSdk` call to initialize the SDK:
 
 `appToken`
-   : Your [Adjust app token](https://help.adjust.com/en/article/app-settings#view-your-app-token).
+   : Your [Adjust app token](hc:/app-settings#view-your-app-token).
 
 `environment`
    : The environment your app is running in. Set this to `sandbox` to test your app locally.

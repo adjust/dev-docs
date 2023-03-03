@@ -1,8 +1,8 @@
 # Set up push tokens
 
-Push tokens are used for [Audience Builder](https://help.adjust.com/en/article/audience-builder) and client callbacks. They're also required for [Uninstall and reinstall tracking](https://help.adjust.com/en/article/uninstalls-reinstalls).
+Push tokens are used for [Audience Builder](hc:/audience-builder) and client callbacks. They're also required for [Uninstall and reinstall tracking](hc:/uninstalls-reinstalls).
 
-Your config object contains a string `pushToken` property that you can use to store your push token. You can update this property at any time by calling the [`setPushToken` method](android-setPushToken-invocation) and passing your token as an argument.
+Your config object contains a string `pushToken` property that you can use to store your push token. You can update this property at any time by calling the [`setPushToken` method](#android-setpushtoken-invocation) and passing your token as an argument.
 
 :::{include} /android/reference/Adjust/config.md
 :start-after: setPushToken snippet
@@ -15,15 +15,15 @@ This example demonstrates how to set a new push token with the value _`HrFmrcq96
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 Adjust.setPushToken("HrFmrcq96tj723aWFfrw", getApplicationContext())
 ```
 
-```{code-block} java
+```java
 Adjust.setPushToken("HrFmrcq96tj723aWFfrw", getApplicationContext());
 ```
 
-```{code-block} javascript
+```javascript
 Adjust.setPushToken('HrFmrcq96tj723aWFfrw')
 ```
 

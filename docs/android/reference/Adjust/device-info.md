@@ -9,9 +9,8 @@ Use these methods to retrieve device information.
 
 Returns the {abbr}`ADID (Adjust Device ID)` associated with the device
 
-```{code-block} java
-:name: android-getAdid-invocation
-
+{#android-getadid-invocation}
+```java
 public static String getAdid()
 ```
 
@@ -22,15 +21,15 @@ public static String getAdid()
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val adid = Adjust.getAdid()
 ```
 
-```{code-block} java
+```java
 String adid = Adjust.getAdid();
 ```
 
-```{code-block} javascript
+```javascript
 let adid = Adjust.getAdid();
 ```
 
@@ -49,9 +48,8 @@ let adid = Adjust.getAdid();
 
 Returns the {abbr}`Amazon Ad ID (Amazon Advertising ID)` associated with the device
 
-```{code-block} java
-:name: android-getAmazonAdId-invocation
-
+{#android-getamazonadid-invocation}
+```java
 public static String getAmazonAdId(final Context context)
 ```
 
@@ -64,15 +62,15 @@ public static String getAmazonAdId(final Context context)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val amazonAdId = Adjust.getAmazonAdId(getApplicationContext())
 ```
 
-```{code-block} java
+```java
 String amazonAdId = Adjust.getAmazonAdId(getApplicationContext());
 ```
 
-```{code-block} javascript
+```javascript
 let amazonAdId = Adjust.getAmazonAdId();
 ```
 
@@ -91,9 +89,8 @@ let amazonAdId = Adjust.getAmazonAdId();
 
 Returns the {abbr}`GPS ADID (Google Play Services Advertising ID)` associated with the device. Must be called in a background thread
 
-```{code-block} java
-:name: android-getGoogleAdId-invocation
-
+{#android-getgoogleadid-invocation}
+```java
 public static void getGoogleAdId(Context context, OnDeviceIdsRead onDeviceIdRead)
 ```
 
@@ -106,20 +103,20 @@ public static void getGoogleAdId(Context context, OnDeviceIdsRead onDeviceIdRead
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 Adjust.getGoogleAdId(this, object : OnDeviceIdsRead {
    override fun onGoogleAdIdRead(googleAdId: String) {}
 })
 ```
 
-```{code-block} java
+```java
 Adjust.getGoogleAdId(this, new OnDeviceIdsRead() {
     @Override
     public void onGoogleAdIdRead(String googleAdId) {}
 });
 ```
 
-```{code-block} javascript
+```javascript
 Adjust.getGoogleAdId(function(googleAdId) {
     // ...
 });

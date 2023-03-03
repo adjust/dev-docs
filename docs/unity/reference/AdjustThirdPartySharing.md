@@ -1,17 +1,16 @@
 # AdjustThirdPartySharing class
 
-Use this class to communicate a user's third party sharing preferences. Send this information to Adjust's servers using the [`trackThirdPartySharing` method](unity-trackThirdPartySharing-invocation).
+Use this class to communicate a user's third party sharing preferences. Send this information to Adjust's servers using the [`trackThirdPartySharing` method](#unity-trackthirdpartysharing-invocation).
 
 % Class method AdjustThirdPartySharing
 
-:::::{function} AdjustThirdPartySharing (isEnabled)
+::::{function} AdjustThirdPartySharing (isEnabled)
 :noindex:
 
 Creates a third party sharing object initialized with an optional **boolean** value
 
-```{code-block} cs
-:name: unity-AdjustThirdPartySharing-invocation
-
+{#unity-adjustthirdpartysharing-invocation}
+```c#
 public AdjustThirdPartySharing(bool? isEnabled)
 ```
 
@@ -20,46 +19,45 @@ public AdjustThirdPartySharing(bool? isEnabled)
 
 % AdjustThirdPartySharing true snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(true);
 //...
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
+
 :::
-::::
 
 % Snippet end
 
 % AdjustThirdPartySharing false snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(false);
 //...
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method addGranularOption
 
-:::::{function} addGranularOption (partnerName, key, value)
+::::{function} addGranularOption (partnerName, key, value)
 :noindex:
 
 Adds additional key-value pairs of information to share with third parties. You can add multiple parameters by calling this method multiple times.
 
-```{code-block} cs
-:name: unity-addGranularOption-invocation
-
+{#unity-addgranularoption-invocation}
+```c#
 public void addGranularOption(string partnerName, string key, string value)
 ```
 
@@ -72,17 +70,17 @@ public void addGranularOption(string partnerName, string key, string value)
 
 % addGranularOption snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(null);
 //...
 adjustThirdPartySharing.addGranularOption("PartnerA", "key", "value");
 //...
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
+
 :::
-::::
 
 % Snippet end
 
@@ -90,9 +88,9 @@ You can use this method to toggle Facebook data processing options.
 
 % addGranularOption Facebook snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(null);
 //...
 adjustThirdPartySharing.addGranularOption("facebook", "data_processing_options_country", "1");
@@ -100,27 +98,26 @@ adjustThirdPartySharing.addGranularOption("facebook", "data_processing_options_s
 //...
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method addPartnerSharingSetting
 
-:::::{function} addPartnerSharingSetting (partnerName, key, value)
+::::{function} addPartnerSharingSetting (partnerName, key, value)
 :noindex:
 
 :::{versionadded} v4.32.0
 Adds additional key-value pairs of settings to share with third parties. You can add multiple settings by calling this method multiple times.
 :::
 
-```{code-block} cs
-:name: unity-addPartnerSharingSetting-invocation
-
+{#unity-addpartnersharingsetting-invocation}
+```c#
 public void addPartnerSharingSetting(string partnerName, string key, bool value)
 ```
 
@@ -133,19 +130,19 @@ public void addPartnerSharingSetting(string partnerName, string key, bool value)
 
 % addPartnerSharingSetting snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(null);
 //...
 adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "foo", false);
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end

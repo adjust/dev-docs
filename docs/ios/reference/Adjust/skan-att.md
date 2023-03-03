@@ -1,19 +1,18 @@
 # SKAdNetwork and ATT methods
 
-Use these methods to manage your [SKAdNetwork](https://help.adjust.com/en/article/skadnetwork) and [App Tracking Transparency](https://help.adjust.com/en/article/app-tracking-transparency-att-framework) logic.
+Use these methods to manage your [SKAdNetwork](hc:/skadnetwork) and [App Tracking Transparency](hc:/app-tracking-transparency-att-framework) logic.
 
 % Class method requestTrackingAuthorizationWithCompletionHandler
 
-:::::{function} requestTrackingAuthorizationWithCompletionHandler (completion)
+::::{function} requestTrackingAuthorizationWithCompletionHandler (completion)
 :noindex:
 
 :::{versionadded} v4.23.0
 Receives the user's authorization status from the ATT prompt and passes it to a completion function
 :::
 
-```{code-block} objc
-:name: ios-requestTrackingAuthorizationWithCompletionHandler-invocation
-
+{#ios-requesttrackingauthorizationwithcompletionhandler-invocation}
+```objective-c
 + (void)requestTrackingAuthorizationWithCompletionHandler:(void (^_Nullable)(NSUInteger status))completion;
 ```
 
@@ -22,11 +21,9 @@ Receives the user's authorization status from the ATT prompt and passes it to a 
 
 % requestTrackingAuthorizationWithCompletionHandler snippet
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 Adjust.requestTrackingAuthorization() { status in
    switch status {
    case 0:
@@ -46,11 +43,8 @@ Adjust.requestTrackingAuthorization() { status in
    }
 }
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
 
-```{code-block} objc
+```objective-c
 [Adjust requestTrackingAuthorizationWithCompletionHandler:^(NSUInteger status) {
    switch (status) {
       case 0:
@@ -68,27 +62,26 @@ Adjust.requestTrackingAuthorization() { status in
    }
 }];
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method appTrackingAuthorizationStatus
 
-:::::{function} appTrackingAuthorizationStatus
+::::{function} appTrackingAuthorizationStatus
 :noindex:
 
 :::{versionadded} v4.25.0
 Retrieves the user's current authorization status
 :::
 
-```{code-block} objc
-:name: ios-appTrackingAuthorizationStatus-invocation
-
+{#ios-apptrackingauthorizationstatus-invocation}
+```objective-c
 - (int) appTrackingAuthorizationStatus
 ```
 
@@ -97,88 +90,72 @@ Retrieves the user's current authorization status
 
 % appTrackingAuthorizationStatus snippet
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 let authorizationStatus = Adjust.appTrackingAuthorizationStatus();
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
 
-```{code-block} objc
+```objective-c
 int authorizationStatus = [Adjust appTrackingAuthorizationStatus];
 ```
-:::
-:::{tab-item} Javascript
-:sync: js
 
-```{code-block} js
+```javascript
 var authorizationStatus = Adjust.appTrackingAuthorizationStatus();
 ```
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method checkForNewAttStatus
 
-:::::{function} checkForNewAttStatus
+::::{function} checkForNewAttStatus
 :noindex:
 
 :::{versionadded} v4.30.0
 Prompts the SDK to check the current state of `att_status`
 :::
 
-```{code-block} objc
-:name: ios-checkForNewAttStatus-invocation
-
+{#ios-checkfornewattstatus-invocation}
+```objective-c
 + (void)checkForNewAttStatus;
 ```
 
 % checkForNewAttStatus snippet
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 Adjust.checkForNewAttStatus();
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
 
-```{code-block} objc
+```objective-c
 [Adjust checkForNewAttStatus];
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method updateConversionValue
 
-:::::{function} updateConversionValue(conversionValue)
+::::{function} updateConversionValue(conversionValue)
 :noindex:
 
 :::{versionadded} v4.26.0
 Updates the [conversion value](https://help.adjust.com/en/new/article/conversion-hub)
 :::
 
-```{code-block} objc
-:name: ios-updateConversionValue-invocation
-
+{#ios-updateconversionvalue-invocation}
+```objective-c
 - (void)updateConversionValue:(NSInteger)conversionValue;
 ```
 
@@ -187,23 +164,20 @@ Updates the [conversion value](https://help.adjust.com/en/new/article/conversion
 
 % updateConversionValue snippet
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
-```{code-block} swift
+:::{tab-set-code}
+
+```swift
 Adjust.updateConversionValue(value)
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
-```{code-block} objc
+
+```objective-c
 [Adjust updateConversionValue:value];
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end

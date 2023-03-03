@@ -29,29 +29,26 @@ Adjust's servers automatically pass the deferred deep link to the Adjust SDK. Wh
 
 1. Set up a delegate callback for deferred deep linking. If you have already configured attribution callbacks, you can skip this step.
 
-   ::::{tab-set}
-   :::{tab-item} Swift
-   :sync: swift
-   ```{code-block} swift
+   :::{tab-set-code}
+
+   ```swift
    :caption: AppDelegate.swift
    class AppDelegate: UIResponder, UIApplicationDelegate, AdjustDelegate {
    }
    ```
-   :::
-   :::{tab-item} Objective-C
-   :sync: objc
-   ```{code-block} objc
+
+   ```objective-c
    :caption: AppDelegate.h
    @interface AppDelegate : UIResponder <UIApplicationDelegate, AdjustDelegate>
    ```
-   ::::
+
+   :::
 
 2. Create an instance of the `ADJConfig` class and set a delegate on the `ADJConfig` object in your app delegate. You need to set the delegate in `ADJConfig` before initializing the SDK.
 
-   ::::{tab-set}
-   :::{tab-item} Swift
-   :sync: swift
-   ```{code-block} swift
+   :::{tab-set-code}
+
+   ```swift
    let yourAppToken = "{YourAppToken}"
    let environment = ADJEnvironmentSandbox as? String
    let adjustConfig = ADJConfig(
@@ -63,10 +60,8 @@ Adjust's servers automatically pass the deferred deep link to the Adjust SDK. Wh
 
    Adjust.appDidLaunch(adjustConfig)
    ```
-   :::
-   :::{tab-item} Objective-C
-   :sync: objc
-   ```{code-block} objc
+
+   ```objective-c
    *adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
                                   environment:ADJEnvironmentSandbox];
    [adjustConfig setDelegate:self];
@@ -75,16 +70,16 @@ Adjust's servers automatically pass the deferred deep link to the Adjust SDK. Wh
 
    [Adjust appDidLaunch:adjustConfig];
    ```
-   ::::
+
+   :::
 
 3. Add the `adjustDeeplinkResponse` deferred deep link callback method to the delegate. The Adjust SDK calls this method after receiving a deferred deep link.
    1. Set your deep link handling code.
    2. Set the return value of the `adjustDeeplinkResponse` method to true or false. This indicates whether you want the Adjust SDK to call the `open(_:options:completionHandler:)` method to open the deep link after your deep link handling code runs.
 
-   ::::{tab-set}
-   :::{tab-item} Swift
-   :sync: swift
-   ```{code-block} swift
+   :::{tab-set-code}
+
+   ```swift
    func adjustDeeplinkResponse(_ deeplink: URL?) -> Bool {
       // add your code below to handle deep link
       // (for example, show onboarding screens, then open deep link content)
@@ -94,10 +89,8 @@ Adjust's servers automatically pass the deferred deep link to the Adjust SDK. Wh
       return false
    }
    ```
-   :::
-   :::{tab-item} Objective-C
-   :sync: objc
-   ```{code-block} objc
+
+   ```objective-c
    - (BOOL)adjustDeeplinkResponse:(NSURL *)deeplink {
        // add your code below to handle deep link
        // (for example, show onboarding screens, then open deep link content)
@@ -107,17 +100,17 @@ Adjust's servers automatically pass the deferred deep link to the Adjust SDK. Wh
        return NO;
    }
    ```
-   ::::
+   :::
 
 ## Additional setup in iOS 15 and above
 
-The Adjust SDK lets you copy deep link information from the device pasteboard. When combined with [Adjust’s LinkMe solution](https://help.adjust.com/en/article/linkme), this feature enables deferred deep linking on devices running iOS 15 and above.
+The Adjust SDK lets you copy deep link information from the device pasteboard. When combined with [Adjust’s LinkMe solution](hc:/linkme), this feature enables deferred deep linking on devices running iOS 15 and above.
 
 :::{important}
 The Adjust SDK checks the pasteboard when a user opens the app for the first time. The device displays a dialog asking if the user wants to allow the app to read the pasteboard.
 :::
 
-When a user clicks on a LinkMe URL they have the option to copy the link information to their system pasteboard. You can use the Adjust SDK to read the system pasteboard for deep link inforfmation. If deep link information is present, the Adjust SDK forwards the user to the correct page in your app.
+When a user clicks on a LinkMe URL they have the option to copy the link information to their system pasteboard. You can use the Adjust SDK to read the system pasteboard for deep link information. If deep link information is present, the Adjust SDK forwards the user to the correct page in your app.
 
 To enable pasteboard checking in your app, pass a true value to the `setLinkMeEnabled` method on your `ADJConfig` object:
 

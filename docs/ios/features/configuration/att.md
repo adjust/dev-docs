@@ -51,7 +51,7 @@ The Adjust SDK also records the consent status if you use a custom prompt. If yo
 
 ## Get current authorization status
 
-You can retrieve a user's current authorization status at any time. Call the [`appTrackingAuthorizationStatus` method](ios-appTrackingAuthorizationStatus-invocation) to return the authorization status code as an **integer**.
+You can retrieve a user's current authorization status at any time. Call the [`appTrackingAuthorizationStatus` method](#ios-apptrackingauthorizationstatus-invocation) to return the authorization status code as an **integer**.
 
 :::{include} /ios/reference/Adjust/skan-att.md
 :start-after: appTrackingAuthorizationStatus snippet
@@ -60,7 +60,7 @@ You can retrieve a user's current authorization status at any time. Call the [`a
 
 ## Check for authorization status changes
 
-If you use a custom ATT prompt, you need to inform the Adjust SDK of changes to the user's authorization status. Call the [`checkForNewAttStatus` method](ios-checkForNewAttStatus-invocation) to send the authorization status to Adjust's servers.
+If you use a custom ATT prompt, you need to inform the Adjust SDK of changes to the user's authorization status. Call the [`checkForNewAttStatus` method](#ios-checkfornewattstatus-invocation) to send the authorization status to Adjust's servers.
 
 :::{include} /ios/reference/Adjust/skan-att.md
 :start-after: checkForNewAttStatus snippet

@@ -1,8 +1,8 @@
 # Get attribution information
 
-When a user interacts with a campaign link, their attribution information updates. This can happen if the user interacts with a [deep link](https://help.adjust.com/en/article/deep-links). The SDK can listen for attribution changes and call a function when it detects an update.
+When a user interacts with a campaign link, their attribution information updates. This can happen if the user interacts with a [deep link](hc:/deep-links). The SDK can listen for attribution changes and call a function when it detects an update.
 
-To configure your callback function, call the [`setOnAttributionChangedListener` method](android-setOnAttributionChangedListener-invocation) with your function name as an argument.
+To configure your callback function, call the [`setOnAttributionChangedListener` method](#android-setonattributionchangedlistener-invocation) with your function name as an argument.
 
 :::{important}
 You must call the `setOnAttributionChangedListener` method **before** initializing the Adjust SDK in your app.
@@ -26,7 +26,7 @@ The Adjust SDK receives Facebook install referrer information as a **string** pr
 
 ## Get current attribution information
 
-When a user installs your app, Adjust attributes the install to a campaign. The Adjust SDK gives you access to campaign attribution details for your install. To return this information, call the [`getAttribution` method](android-getAttribution-invocation).
+When a user installs your app, Adjust attributes the install to a campaign. The Adjust SDK gives you access to campaign attribution details for your install. To return this information, call the [`getAttribution` method](#android-getattribution-invocation).
 
 This method returns an Attribution object. See the [`AdjustAttribution` class reference](/android/reference/AdjustAttribution.md) for a list of available properties.
 

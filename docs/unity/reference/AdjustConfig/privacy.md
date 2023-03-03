@@ -7,9 +7,8 @@
 
 Sets the country or region of data residency. If called with a `UrlStrategy` parameter, sets the country/region where data will be sent preferentially.
 
-```{code-block} cs
-:name: unity-setUrlStrategy-invocation
-
+{#unity-seturlstrategy-invocation}
+```c#
 public void setUrlStrategy(String urlStrategy)
 ```
 
@@ -18,16 +17,15 @@ public void setUrlStrategy(String urlStrategy)
 
 % setUrlStrategy snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
 
+```c#
 AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
 adjustConfig.setUrlStrategy(AdjustConfig.AdjustDataResidencyEU);
 Adjust.start(adjustConfig);
 ```
+
 :::
-::::
 
 ::::{dropdown} Available URL strategies
 :::{list-table}
@@ -57,16 +55,15 @@ Adjust.start(adjustConfig);
 
 % Class method setCoppaCompliantEnabled
 
-:::::{function} setCoppaCompliantEnabled(coppaCompliantEnabled)
+::::{function} setCoppaCompliantEnabled(coppaCompliantEnabled)
 :noindex:
 
 :::{versionadded} v4.30.0
 Enable {abbr}`COPPA (Children's Online Privacy Protection Act)` compliance in your app.
 :::
 
-```{code-block} cs
-:name: unity-setCoppaCompliantEnabled-invocation
-
+{#unity-setcoppacompliantenabled-invocation}
+```c#
 public void setCoppaCompliantEnabled(bool coppaCompliantEnabled)
 ```
 
@@ -75,19 +72,18 @@ public void setCoppaCompliantEnabled(bool coppaCompliantEnabled)
 
 % setCoppaCompliantEnabled snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
 
+```c#
 AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
 adjustConfig.setCoppaCompliantEnabled(true);
 Adjust.start(adjustConfig);
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end

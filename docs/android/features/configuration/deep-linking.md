@@ -24,7 +24,7 @@ You can launch a specific activity when a user interacts with a deep link. To do
 
 This example demonstrates how to set up an activity called `MainActivity` to open with the **scheme name** `adjustExample`.
 
-```{code-block} xml
+```xml
 <activity
     android:name=".MainActivity"
     android:configChanges="orientation|keyboardHidden"
@@ -65,7 +65,7 @@ Extract deep link information by calling the `getData()` method within the `onCr
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 override fun onCreate(savedInstanceState: Bundle?) {
    super.onCreate(savedInstanceState)
    setContentView(R.layout.activity_main)
@@ -76,7 +76,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
 }
 ```
 
-```{code-block} java
+```java
 @Override
 protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -92,7 +92,7 @@ protected void onCreate(Bundle savedInstanceState) {
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 override fun onNewIntent(intent: Intent?) {
    super.onNewIntent(intent)
    val data = intent?.data
@@ -100,7 +100,7 @@ override fun onNewIntent(intent: Intent?) {
 }
 ```
 
-```{code-block} java
+```java
 @Override
 protected void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
@@ -114,7 +114,7 @@ protected void onNewIntent(Intent intent) {
 
 ## Deferred deep linking
 
-The Adjust SDK opens deferred deep links by default. No additional setup is required. If you want to disable this behavior, you need to set up a deferred deep link callback using the [`setOnDeeplinkResponseListener` method](android-setOnDeeplinkResponseListener-invocation).
+The Adjust SDK opens deferred deep links by default. No additional setup is required. If you want to disable this behavior, you need to set up a deferred deep link callback using the [`setOnDeeplinkResponseListener` method](#android-setondeeplinkresponselistener-invocation).
 
 ### Set up a deferred deep link callback
 
@@ -131,13 +131,13 @@ This example demonstrates how to prevent the SDK from launching an activity by r
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 config.setOnDeeplinkResponseListener { deeplink ->
    false
 }
 ```
 
-```{code-block} java
+```java
 config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
    @Override
    public boolean launchReceivedDeeplink(Uri deeplink) {
@@ -146,7 +146,7 @@ config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
 });
 ```
 
-```{code-block} javascript
+```javascript
 let adjustConfig = new AdjustConfig(yourAppToken, environment);
 adjustConfig.setOpenDeferredDeeplink(false);
 
@@ -158,9 +158,9 @@ Adjust.start(adjustConfig);
 
 ## Reattribution via deep links
 
-Adjust enables you to run re-engagement campaigns with usage of deep links. For more information, see the [guide to appending attribution data to a deep link](https://help.adjust.com/en/article/deeplink-generator#manage-your-deeplinks).
+Adjust enables you to run re-engagement campaigns with usage of deep links. For more information, see the [guide to appending attribution data to a deep link](hc:/deeplink-generator#manage-your-deeplinks).
 
-To reattribute your user, you need to call the [`appWillOpenUrl` method](android-appWillOpenUrl-invocation) when the app receives deep link content. The Adjust SDK then looks for new attribution data within the deep link. If the SDK finds new information, it forwards the information to Adjust's servers for reattribution.
+To reattribute your user, you need to call the [`appWillOpenUrl` method](#android-appwillopenurl-invocation) when the app receives deep link content. The Adjust SDK then looks for new attribution data within the deep link. If the SDK finds new information, it forwards the information to Adjust's servers for reattribution.
 
 :::{include} /android/reference/Adjust/config.md
 :start-after: appWillOpenUrl snippet
@@ -187,7 +187,7 @@ You can use the returned deep link to reattribute your user. To do this, pass th
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 AdjustLinkResolution.resolveLink(url, 
                                  arrayOf("example.com"),
                                  object : AdjustLinkResolution.AdjustLinkResolutionCallback {
@@ -197,7 +197,7 @@ AdjustLinkResolution.resolveLink(url,
                                  })
 ```
 
-```{code-block} java
+```java
 AdjustLinkResolution.resolveLink(url, 
                                  new String[]{"example.com"},
                                  new AdjustLinkResolution.AdjustLinkResolutionCallback() {

@@ -109,7 +109,7 @@ If you don't see these entries in your {program}`Xcode` logs, ensure the followi
 
 * You have set the environment to `sandbox` and logging to `verbose` in the Adjust SDK.
   * Verbose logging is indicated by `[Adjust]v` in your {program}`Xcode` logs.
-* Your app calls the [`appWillOpenUrl` method](ios-appWillOpenUrl-invocation) in the method that receives the deep link.
+* Your app calls the [`appWillOpenUrl` method](#ios-appwillopenurl-invocation) in the method that receives the deep link.
 
 #### App running in background
 
@@ -121,7 +121,7 @@ If you don't see the correct page in the app, check the following:
    * **App doesn't use scenes**: `application(_:continue:restorationHandler:)` method
    * **App uses scenes**: `scene(_:continue:)` method
 
-After selecting the deep link, your app calls the [`appWillOpenUrl` method](ios-appWillOpenUrl-invocation) in the Adjust SDK, and you should see entries similar to the following in your {program}`Xcode` logs:
+After selecting the deep link, your app calls the [`appWillOpenUrl` method](#ios-appwillopenurl-invocation) in the Adjust SDK, and you should see entries similar to the following in your {program}`Xcode` logs:
 
 ```
 2022-09-28 09:19:30.873598+0900 example[1619:241845]  [Adjust]d: Added sdk_click 1
@@ -136,7 +136,7 @@ If you don't see these entries in your {program}`Xcode` logs, ensure the followi
 
 * You have set the environment to `sandbox` and logging to `verbose` in the Adjust SDK.
    * Verbose logging is indicated by `[Adjust]v` in your {program}`Xcode` logs.
-* Your app calls the [`appWillOpenUrl` method](ios-appWillOpenUrl-invocation) in the method that receives the deep link.
+* Your app calls the [`appWillOpenUrl` method](#ios-appwillopenurl-invocation) in the method that receives the deep link.
 
 ## Test direct deep linking with a custom URL scheme
 
@@ -157,7 +157,7 @@ If you don't see the correct page in the app, check the following:
    * **App uses scenes**: `scene(_:continue:)` method
 * Check if other content in your code is interfering with the deep link.
 
-After selecting the deep link, your app calls the [`appWillOpenUrl` method](ios-appWillOpenUrl-invocation) in the Adjust SDK, and you should see entries similar to the following in your {program}`Xcode` logs:
+After selecting the deep link, your app calls the [`appWillOpenUrl` method](#ios-appwillopenurl-invocation) in the Adjust SDK, and you should see entries similar to the following in your {program}`Xcode` logs:
 
 ```
 2022-09-28 09:19:30.873598+0900 example[1619:241845]  [Adjust]d: Added sdk_click 1
@@ -172,7 +172,7 @@ If you don't see these entries in your {program}`Xcode` logs, ensure the followi
 
 * You have set the environment to `sandbox` and `logging` to verbose in the Adjust SDK.
    * Verbose logging is indicated by `[Adjust]v` in your {program}`Xcode` logs.
-* Your app calls the [`appWillOpenUrl` method](ios-appWillOpenUrl-invocation) in the method that receives the deep link.
+* Your app calls the [`appWillOpenUrl` method](#ios-appwillopenurl-invocation) in the method that receives the deep link.
 
 ## Test deferred deep linking
 
@@ -186,7 +186,7 @@ To test deferred deep linking on the test device, follow these steps.
    ```
 
 3. Uninstall your app.
-4. Open the [Testing Console](https://help.adjust.com/en/article/testing-console), enter the Adjust ADID and select {guilabel}`View Device Data`. You should see the `TrackerName` as `Organic`.
+4. Open the [Testing Console](hc:/testing-console), enter the Adjust ADID and select {guilabel}`View Device Data`. You should see the `TrackerName` as `Organic`.
 5. Forget your device in the testing console.
 6. Paste your universal link or custom URL scheme deep link in {program}`Apple Notes`.
 7. Select the deep link. This should redirect you to the App Store.

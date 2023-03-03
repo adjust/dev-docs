@@ -8,14 +8,13 @@ The methods in this class must be called **before** you initialize the SDK.
 
 % Class method configWithAppToken
 
-:::::{function} configWithAppToken(appToken, environment,allowSuppressLogLevel)
+::::{function} configWithAppToken(appToken, environment,allowSuppressLogLevel)
 :noindex:
 
 Initialize the configuration object with your Adjust app token.
 
-```{code-block} objc
-:name: ios-configWithAppToken-invocation
-
+{#ios-configwithapptoken-invocation}
+```objective-c
 + (nullable ADJConfig *)configWithAppToken:(nonnull NSString *)appToken
                                environment:(nonnull NSString *)environment
                      allowSuppressLogLevel:(BOOL)allowSuppressLogLevel;
@@ -32,43 +31,37 @@ Initialize the configuration object with your Adjust app token.
 
 % configWithAppToken snippet
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
-```{code-block} swift
+{tab-set-code}
+
+```swift
 let yourAppToken = "{YourAppToken}"
 let environment = ADJEnvironmentSandbox as? String
 let adjustConfig = ADJConfig(
    appToken: yourAppToken,
    environment: environment)
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
-```{code-block} objc
+
+```objective-c
 NSString *yourAppToken = @"{YourAppToken}";
 NSString *environment = ADJEnvironmentSandbox;
 *adjustConfig = [ADJConfig configWithAppToken:yourAppToken
                                   environment:environment];
 ```
-:::
-:::{tab-item} Javascript
-:sync: js
-```{code-block} js
-:emphasize-lines: 4
 
+{emphasize-lines="4"}
+```javascript
 setupWebViewJavascriptBridge(function(bridge) {
    var yourAppToken = yourAppToken;
    var environment = AdjustConfig.EnvironmentSandbox;
    var adjustConfig = new AdjustConfig(yourAppToken, environment);
 });
 ```
+
 :::
-::::
 
 % endSnippet
 
-:::::
+::::
 
 % Class method end
 

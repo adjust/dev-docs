@@ -4,60 +4,51 @@ Use these methods to handle user privacy in your app.
 
 % Class method disableThirdPartySharing
 
-:::::{function} disableThirdPartySharing
+::::{function} disableThirdPartySharing
 :noindex:
 
 :::{versionadded} v4.19.0
 Disables sharing of information with third parties for all users.
 :::
 
-```{code-block} objc
-:name: ios-disableThirdPartySharing-invocation
-
+{#ios-disablethirdpartysharing-invocation}
+```objective-c
 + (void)disableThirdPartySharing;
 ```
 
 % disableThirdPartySharing snippet
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 Adjust.disableThirdPartySharing()
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
 
-```{code-block} objc
+```objective-c
 [Adjust disableThirdPartySharing];
 ```
-:::
-:::{tab-item} Javascript
-:sync: js
-```{code-block} js
+
+```javascript
 Adjust.disableThirdPartySharing();
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method trackThirdPartySharing
 
-:::::{function} trackThirdPartySharing(thirdPartySharing)
+::::{function} trackThirdPartySharing(thirdPartySharing)
 :noindex:
 
 Disable or enable sharing of information with third parties on a per-user basis. Accepts a third party sharing object initialized with a **boolean** value.
 
-```{code-block} objc
-:name: ios-trackThirdPartySharing-invocation
-
+{#ios-trackthirdpartysharing-invocation}
+```objective-c
 + (void)trackThirdPartySharing:(nonnull ADJThirdPartySharing *)thirdPartySharing;
 ```
 
@@ -66,49 +57,40 @@ Disable or enable sharing of information with third parties on a per-user basis.
 
 % trackThirdPartySharing snippet
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 let adjustThirdPartySharing = ADJThirdPartySharing.initWithIsEnabledNumberBool(true)
 Adjust.trackThirdPartySharing(adjustThirdPartySharing)
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
 
-```{code-block} objc
+```objective-c
 ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc] initWithIsEnabledNumberBool:@YES];
 [Adjust trackThirdPartySharing:adjustThirdPartySharing];
 ```
-:::
-:::{tab-item} Javascript
-:sync: js
 
-```{code-block} js
+```javascript
 var adjustThirdPartySharing = new AdjustThirdPartySharing(true);
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Snippet end
 
 % Class method trackMeasurementConsent
 
-:::::{function} trackMeasurementConsent(enabled)
+::::{function} trackMeasurementConsent(enabled)
 :noindex:
 
-Set whether [data collection and retention rules](https://help.adjust.com/en/article/manage-data-collection-and-retention) apply to a user.
+Set whether [data collection and retention rules](hc:/manage-data-collection-and-retention) apply to a user.
 
-```{code-block} objc
-:name: ios-trackMeasurementConsent-invocation
-
+{#ios-trackmeasurementconsent-invocation}
+```objective-c
 + (void) trackMeasurementConsent: (BOOL) enabled
 ```
 
@@ -117,79 +99,62 @@ Set whether [data collection and retention rules](https://help.adjust.com/en/art
 
 % trackMeasurementConsent snippet
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 Adjust.trackMeasurementConsent(true)
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
 
-```{code-block} objc
+```objective-c
 [Adjust trackMeasurementConsent:YES];
 ```
-:::
-:::{tab-item} Javascript
-:sync: js
 
-```{code-block} js
+```javascript
 Adjust.trackMeasurementConsent(false);
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method gdprForgetMe
 
-:::::{function} gdprForgetMe
+::::{function} gdprForgetMe
 :noindex:
 
 :::{versionadded} v4.13.0
 Send an {abbr}`RTBF (Right To Be Forgotten)` request to Adjust's servers. This erases all information about the user the source app. The SDK stops sending requests for the user.
 :::
 
-```{code-block} objc
-:name: ios-gdprForgetMe-invocation
-
+{#ios-gdprforgetme-invocation}
+```objective-c
 - (void) gdprForgetMe
 ```
 
 % gdprForgetMe snippet
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 Adjust.gdprForgetMe();
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
 
-```{code-block} objc
+```objective-c
 [Adjust gdprForgetMe];
 ```
-:::
-:::{tab-item} Javascript
-:sync: js
 
-```{code-block} js
+```javascript
 Adjust.gdprForgetMe();
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end

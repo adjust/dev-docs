@@ -56,7 +56,7 @@ This scheme will work for your production **and** debug builds.
 
 You need to update your iOS app to set up different deep linking scenarios. How you update your app depends on whether your app uses [scenes](https://developer.apple.com/documentation/uikit/app_and_environment/scenes).
 
-:::::{dropdown} App doesn't use scenes
+::::{dropdown} App doesn't use scenes
 
 If your app doesn't uses scenes, you need to update methods in your app delegate.
 
@@ -70,11 +70,9 @@ Update the `application(_:continue:restorationHandler:)` method in your app dele
 
 When a user clicks on your universal link, iOS opens your app and delivers the deep link to `application(_:continue:restorationHandler:)`. This occurs whether the user has closed your app or has it running in the background.
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 func application(
     _ application: UIApplication,
     continue userActivity: NSUserActivity,
@@ -104,11 +102,8 @@ func application(
       return true
 }
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
 
-```{code-block} objc
+```objective-c
 - (BOOL)application:(UIApplication *)application
     continueUserActivity:(NSUserActivity *)userActivity
     restorationHandler:
@@ -141,7 +136,6 @@ func application(
 }
 ```
 :::
-::::
 
 :::{rubric} Custom URL scheme
 :::
@@ -150,11 +144,9 @@ If your marketing team requires you to set up custom URL scheme deep links, upda
 
 When a user clicks on your custom URL scheme deep link, iOS opens your app and delivers the deep link to `application(_:open:options:)`. This occurs whether the user has closed your app or has it running in the background.
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 func application(
     _ app: UIApplication,
     open incomingURL: URL,
@@ -172,11 +164,8 @@ func application(
     return true
 }
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
 
-```{code-block} objc
+```objective-c
 - (BOOL)application:(UIApplication *)app
     openURL:(NSURL *)incomingURL
     options:(NSDictionary *)options {
@@ -194,9 +183,8 @@ func application(
 ```
 :::
 ::::
-:::::
 
-:::::{dropdown} App uses scenes
+::::{dropdown} App uses scenes
 
 If your app uses scenes, you need to update methods in your scene delegate.
 
@@ -211,11 +199,9 @@ The above methods call the following methods in the Adjust SDK:
 * `ADJLinkResolution.resolveLink`: Call this method only if your your marketing team requires the use of Adjust's Link Resolution solution. If the deep link uses a domain that matches an element in the `resolveUrlSuffixArray`, then the method attempts to resolve the deep link, and returns the resolved link. If the deep link doesn't match an element in this array, then the method passes through the original deep link, so you can pass all deep links to this method.
 * `Adjust.appWillOpen` - Call this method to send deep links to Adjust's servers to record them. You can pass both Adjust and non-Adjust deep links to this method. Adjust's servers ignore any deep links that don’t have Adjust parameters.
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 func scene(
     _ scene: UIScene,
     willConnectTo session: UISceneSession,
@@ -265,11 +251,8 @@ func scene(
     }
 }
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
 
-```{code-block} objc
+```objective-c
 - (void)scene:(UIScene *)scene willConnectToSession:(UISceneSession *)session
     options:(UISceneConnectionOptions *)connectionOptions {
     
@@ -321,8 +304,8 @@ func scene(
     }
 }
 ```
+
 :::
-::::
 
 :::{rubric} Custom URL scheme
 :::
@@ -332,11 +315,9 @@ func scene(
 
 These methods call the `Adjust.appWillOpen` method in the Adjust SDK. This method sends deep links to Adjust's servers to recordd them. You can pass both Adjust and non-Adjust deep links to this method. Adjust's servers ignore any deep links that don’t have Adjust parameters.
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 func scene(
     _ scene: UIScene,
     openURLContexts URLContexts: Set<UIOpenURLContext>
@@ -355,11 +336,8 @@ func scene(
     Adjust.appWillOpen(incomingURL)
 }
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
 
-```{code-block} objc
+```objective-c
 - (void)scene:(UIScene *)scene
     openURLContexts:(nonnull NSSet<UIOpenURLContext *> *)URLContexts {
     
@@ -376,6 +354,6 @@ func scene(
     }
 }
 ```
+
 :::
 ::::
-:::::

@@ -4,14 +4,13 @@ Use these methods to retrieve device information.
 
 % Class method getAdid
 
-:::::{function} getAdid
+::::{function} getAdid
 :noindex:
 
 Returns the {abbr}`ADID (Adjust Device ID)` associated with the device
 
-```{code-block} cs
-:name: unity-getAdid-invocation
-
+{#unity-getadid-invocation}
+```c#
 public static string getAdid()
 ```
 
@@ -20,30 +19,29 @@ public static string getAdid()
 
 % getAdid snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 string adid = Adjust.getAdid();
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method getIdfa
 
-:::::{function} getIdfa
+::::{function} getIdfa
 :noindex:
 
 Returns the {abbr}`IDFA (ID For Advertisers)` associated with the device
 
-```{code-block} cs
-:name: unity-getIdfa-invocation
-
+{#unity-getidfa-invocation}
+```c#
 public static string getIdfa()
 ```
 
@@ -52,30 +50,29 @@ public static string getIdfa()
 
 % getIdfa snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 string idfa = Adjust.getIdfa();
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method getAmazonAdId
 
-:::::{function} getAmazonAdId
+::::{function} getAmazonAdId
 :noindex:
 
 Returns the {abbr}`Amazon Ad ID (Amazon Advertising ID)` associated with the device
 
-```{code-block} cs
-:name: unity-getAmazonAdId-invocation
-
+{#unity-getamazonadid-invocation}
+```c#
 public static string getAmazonAdId()
 ```
 
@@ -84,30 +81,29 @@ public static string getAmazonAdId()
 
 % getAmazonAdId snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 string amazonAdId = Adjust.getAmazonAdId();
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method getGoogleAdId
 
-:::::{function} getGoogleAdId(onDeviceIdsRead)
+::::{function} getGoogleAdId(onDeviceIdsRead)
 :noindex:
 
 Returns the {abbr}`GPS ADID (Google Play Services Advertising ID)` associated with the device. Must be called in a background thread
 
-```{code-block} cs
-:name: unity-getGoogleAdId-invocation
-
+{#unity-getgoogleadid-invocation}
+```c#
 public static void getGoogleAdId(Action<string> onDeviceIdsRead)
 ```
 
@@ -116,18 +112,18 @@ public static void getGoogleAdId(Action<string> onDeviceIdsRead)
 
 % getGoogleAdId snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 Adjust.getGoogleAdId((string googleAdId) => {
    //...
 }};
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end

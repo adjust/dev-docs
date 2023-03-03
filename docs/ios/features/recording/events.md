@@ -1,9 +1,9 @@
 # Record events
 
-You can associate your [Adjust event tokens](https://help.adjust.com/en/article/basic-event-setup#create-an-event-token) to actions in your app to record them. To record an event:
+You can associate your [Adjust event tokens](hc:/basic-event-setup#create-an-event-token) to actions in your app to record them. To record an event:
 
 * Create a new Adjust event instance and pass your event token as a string argument.
-* Call the [`trackEvent` method](ios-trackEvent-invocation) with your event instance as an argument.
+* Call the [`trackEvent` method](#ios-trackevent-invocation) with your event instance as an argument.
 
 :::{include} /ios/reference/Adjust/recording.md
 :start-after: trackEvent snippet
@@ -15,11 +15,10 @@ You can associate your [Adjust event tokens](https://help.adjust.com/en/article/
 This example demonstrates how to record an event with the token {{ eventToken }} whenever a user interacts with a button.
 
 ::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
-```{code-block} swift
-:caption: ViewControllerSwift.swift
+:::{tab-item} SWIFT
+:sync: tabcode-swift
 
+```swift
 import Adjust
 import UIKit
 
@@ -32,12 +31,12 @@ class ViewControllerSwift: UIViewController {
    }
 }
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
-```{code-block} objc
-:caption: ViewControllerObjC.m
 
+:::
+:::{tab-item} OBJECTIVE-C
+:sync: tabcode-objective-c
+
+```objective-c
 #import "Adjust.h"
 #import "Constants.h"
 #import "ViewControllerObjC.h"
@@ -59,11 +58,10 @@ class ViewControllerSwift: UIViewController {
 @end
 ```
 :::
-:::{tab-item} Javascript
-:sync: js
-```{code-block} html
-:caption: WebView.html
+:::{tab-item} JAVASCRIPT
+:sync: tabcode-javascript
 
+```html
 <html>
    <body>
       <script>
@@ -89,6 +87,7 @@ class ViewControllerSwift: UIViewController {
    </body>
 </html>
 ```
+
 :::
 ::::
 :::::
@@ -97,7 +96,7 @@ class ViewControllerSwift: UIViewController {
 
 You can record revenue associated with an event by setting the revenue and currency properties on your event instance. Use this feature to record revenue-generating actions in your app.
 
-To set these properties, call the [`setRevenue` method](ios-ADJEvent-setRevenue-invocation) and pass the following arguments:
+To set these properties, call the [`setRevenue` method](#ios-adjevent-setrevenue-invocation) and pass the following arguments:
 
 * The `revenue` amount (**number**)
 * The `currency` code (**string**)
@@ -105,7 +104,7 @@ To set these properties, call the [`setRevenue` method](ios-ADJEvent-setRevenue-
 You must format the currency code as a 3 character string that follows the [ISO 4217 standard](https://www.iban.com/currency-codes). Adjust's servers convert the reported revenue to your chosen reporting currency. 
 
 :::{seealso}
-Check the guide to [tracking purchases in different currencies](https://help.adjust.com/en/article/currency-conversion) for more information.
+Check the guide to [tracking purchases in different currencies](hc:/currency-conversion) for more information.
 :::
 
 :::{include} /ios/reference/ADJEvent.md
@@ -118,11 +117,10 @@ Check the guide to [tracking purchases in different currencies](https://help.adj
 This example demonstrates how to record an event with the token {{ eventToken }} whenever a user interacts with a button. The function sets the `revenue` property of this event to _`0.25`_ and the `currency` property to _`EUR`_.
 
 ::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
-```{code-block} swift
-:caption: ViewControllerSwift.swift
+:::{tab-item} SWIFT
+:sync: tabcode-swift
 
+```swift
 import Adjust
 import UIKit
 
@@ -136,12 +134,12 @@ class ViewControllerSwift: UIViewController {
    }
 }
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
-```{code-block} objc
-:caption: ViewControllerObjC.m
 
+:::
+:::{tab-item} OBJECTIVE-C
+:sync: tabcode-objective-c
+
+```objective-c
 #import "Adjust.h"
 #import "Constants.h"
 #import "ViewControllerObjC.h"
@@ -162,12 +160,11 @@ class ViewControllerSwift: UIViewController {
 
 @end
 ```
-:::
-:::{tab-item} Javascript
-:sync: js
-```{code-block} html
-:caption: WebView.html
 
+:::
+:::{tab-item} JAVASCRIPT
+:sync: tabcode-javascript
+```html
 <html>
    <body>
       <script>
@@ -194,6 +191,7 @@ class ViewControllerSwift: UIViewController {
    </body>
 </html>
 ```
+
 :::
 ::::
 :::::
@@ -202,7 +200,7 @@ class ViewControllerSwift: UIViewController {
 
 You can pass an optional identifier to avoid recording duplicate events. The SDK stores the last ten identifiers and skips revenue events with duplicate transaction IDs.
 
-To set the identifier, call the [`setTransactionId` method](ios-setTransactionId-invocation) and pass your transaction ID as a **string** argument.
+To set the identifier, call the [`setTransactionId` method](#ios-settransactionid-invocation) and pass your transaction ID as a **string** argument.
 
 :::{include} /ios/reference/ADJEvent.md
 :start-after: setTransactionId snippet
@@ -211,14 +209,13 @@ To set the identifier, call the [`setTransactionId` method](ios-setTransactionId
 
 :::::{dropdown} Example
 
-This example demonstrates how to record an event with the token {{ eventToken }} whenever a user interacts with a button. The function sets the `uniqueId` to {{ uniqueEventId }} using the [`setTransactionId` method](ios-setTransactionId-invocation).
+This example demonstrates how to record an event with the token {{ eventToken }} whenever a user interacts with a button. The function sets the `uniqueId` to {{ uniqueEventId }} using the [`setTransactionId` method](#ios-settransactionid-invocation).
 
 ::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
-```{code-block} swift
-:caption: ViewControllerSwift.swift
+:::{tab-item} SWIFT
+:sync: tabcode-swift
 
+```swift
 import Adjust
 import UIKit
 
@@ -233,12 +230,12 @@ class ViewControllerSwift: UIViewController {
    }
 }
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
-```{code-block} objc
-:caption: ViewControllerObjC.m
 
+:::
+:::{tab-item} OBJECTIVE-C
+:sync: tabcode-objective-c
+
+```objective-c
 #import "Adjust.h"
 #import "Constants.h"
 #import "ViewControllerObjC.h"
@@ -259,12 +256,12 @@ class ViewControllerSwift: UIViewController {
 
 @end
 ```
-:::
-:::{tab-item} Javascript
-:sync: js
-```{code-block} html
-:caption: WebView.html
 
+:::
+:::{tab-item} JAVASCRIPT
+:sync: tabcode-javascript
+
+```html
 <html>
    <body>
       <script>
@@ -292,17 +289,18 @@ class ViewControllerSwift: UIViewController {
    </body>
 </html>
 ```
+
 :::
 ::::
 :::::
 
 ## Add callback parameters
 
-If you [register a callback URL](https://help.adjust.com/en/article/set-up-callbacks) in the Adjust dashboard, the SDK sends a GET request to your callback URL when it records an event.
+If you [register a callback URL](hc:/set-up-callbacks) in the Adjust dashboard, the SDK sends a GET request to your callback URL when it records an event.
 
-You can configure callback parameters to send to your servers. Once you configure parameters on an event, the SDK appends them to your [callback URL](https://help.adjust.com/en/article/raw-data-exports). You can use this information to analyze your users' in-app behavior with your BI system.
+You can configure callback parameters to send to your servers. Once you configure parameters on an event, the SDK appends them to your [callback URL](hc:/raw-data-exports). You can use this information to analyze your users' in-app behavior with your BI system.
 
-Add callback parameters to your event by calling the [`addCallbackParameter` method](ios-ADJEvent-addCallbackParameter-invocation) with **string** key-value arguments. You can add multiple parameters by calling this method multiple times.
+Add callback parameters to your event by calling the [`addCallbackParameter` method](#ios-adjevent-addcallbackparameter-invocation) with **string** key-value arguments. You can add multiple parameters by calling this method multiple times.
 
 :::{include} /ios/reference/ADJEvent.md
 :start-after: addCallbackParameter snippet
@@ -324,7 +322,7 @@ If you're using CSV uploads, make sure to add the parameters to your CSV definit
 Adjust supports many placeholders which you can use to pass information from the SDK to your URL. For example, the `{idfa}` placeholder for iOS and the `{gps_adid}` placeholder for Android. The `{publisher_parameter}` placeholder presents all callback parameters in a single string.
 
 :::{seealso}
-You can read more about using URL callbacks, including a full list of available values, in the [callbacks guide](https://help.adjust.com/en/article/callbacks).
+You can read more about using URL callbacks, including a full list of available values, in the [callbacks guide](hc:/callbacks).
 :::
 
 :::::{dropdown} Example
@@ -341,11 +339,10 @@ http://www.mydomain.com/callback?event_token=g3mfiw&revenue_amount=0.05
 ```
 
 ::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
-```{code-block} swift
-:caption: ViewControllerSwift.swift
+:::{tab-item} SWIFT
+:sync: tabcode-swift
 
+```swift
 import Adjust
 import UIKit
 
@@ -360,10 +357,12 @@ class ViewControllerSwift: UIViewController {
    }
 }
 ```
+
 :::
-:::{tab-item} Objective-C
-:sync: objc
-```{code-block} objc
+:::{tab-item} OBJECTIVE-C
+:sync: tabcode-objective-c
+
+```objective-c
 :caption: ViewControllerObjC.m
 
 #import "Adjust.h"
@@ -387,12 +386,12 @@ class ViewControllerSwift: UIViewController {
 
 @end
 ```
-:::
-:::{tab-item} Javascript
-:sync: js
-```{code-block} html
-:caption: WebView.html
 
+:::
+:::{tab-item} JAVASCRIPT
+:sync: tabcode-javascript
+
+```html
 <html>
    <body>
       <script>
@@ -426,15 +425,15 @@ class ViewControllerSwift: UIViewController {
 
 ## Add partner parameters
 
-You can send extra information to your network partners by adding [partner parameters](https://help.adjust.com/en/article/advanced-event-setup#receive-custom-data-with-partner-parameters).
+You can send extra information to your network partners by adding [partner parameters](hc:/advanced-event-setup#receive-custom-data-with-partner-parameters).
 
-Adjust sends partner parameters to [external partners](https://help.adjust.com/en/article/integrated-partners) you have set up. This information is useful for more granular analysis and retargeting purposes. Adjust's servers forward these parameters once you have set them up and enabled them for a partner.
+Adjust sends partner parameters to [external partners](hc:/integrated-partners) you have set up. This information is useful for more granular analysis and retargeting purposes. Adjust's servers forward these parameters once you have set them up and enabled them for a partner.
 
 :::{note}
 Partner parameters don't appear in raw data by default. You can add the `{partner_parameters}` placeholder to receive them as a single string.
 :::
 
-Add partner parameters to your event by calling the [`addPartnerParameter` method](ios-ADJEvent-addPartnerParameter-invocation) with **string** key-value arguments. You can add multiple parameters by calling this method multiple times.
+Add partner parameters to your event by calling the [`addPartnerParameter` method](#ios-adjevent-addpartnerparameter-invocation) with **string** key-value arguments. You can add multiple parameters by calling this method multiple times.
 
 :::{include} /ios/reference/ADJEvent.md
 :start-after: addPartnerParameter snippet
@@ -449,11 +448,10 @@ This example demonstrates how to record an event with the token {{ eventToken }}
 * The `user_id` of the user who triggered the event
 
 ::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
-```{code-block} swift
-:caption: ViewControllerSwift.swift
+:::{tab-item} SWIFT
+:sync: tabcode-swift
 
+```swift
 import Adjust
 import UIKit
 
@@ -468,12 +466,12 @@ class ViewControllerSwift: UIViewController {
    }
 }
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
-```{code-block} objc
-:caption: ViewControllerObjC.m
 
+:::
+:::{tab-item} OBJECTIVE-C
+:sync: tabcode-objective-c
+
+```objective-c
 #import "Adjust.h"
 #import "Constants.h"
 #import "ViewControllerObjC.h"
@@ -495,12 +493,12 @@ class ViewControllerSwift: UIViewController {
 
 @end
 ```
-:::
-:::{tab-item} Javascript
-:sync: js
-```{code-block} html
-:caption: WebView.html
 
+:::
+:::{tab-item} JAVASCRIPT
+:sync: tabcode-javascript
+
+```html
 <html>
    <body>
       <script>
@@ -536,7 +534,7 @@ class ViewControllerSwift: UIViewController {
 
 You can add a custom string identifier to each event you want to measure. Adjust's servers can report on this identifier in event callbacks. This enables you to keep track of which events have been successfully measured.
 
-Set up this identifier by calling the [`setCallbackId` method](ios-setCallbackId-invocation) with your ID as a **string** argument.
+Set up this identifier by calling the [`setCallbackId` method](#ios-setcallbackid-invocation) with your ID as a **string** argument.
 
 :::{include} /ios/reference/ADJEvent.md
 :start-after: setCallbackId snippet
@@ -548,11 +546,10 @@ Set up this identifier by calling the [`setCallbackId` method](ios-setCallbackId
 This example demonstrates how to record an event with the token {{ eventToken }} whenever a user interacts with a button. In this example, the `callbackId` is set to {{ callbackId }}. 
 
 ::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
-```{code-block} swift
-:caption: ViewControllerSwift.swift
+:::{tab-item} SWIFT
+:sync: tabcode-swift
 
+```swift
 import Adjust
 import UIKit
 
@@ -566,12 +563,12 @@ class ViewControllerSwift: UIViewController {
    }
 }
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
-```{code-block} objc
-:caption: ViewControllerObjC.m
 
+:::
+:::{tab-item} OBJECTIVE-C
+:sync: tabcode-objective-c
+
+```objective-c
 #import "Adjust.h"
 #import "Constants.h"
 #import "ViewControllerObjC.h"
@@ -592,12 +589,12 @@ class ViewControllerSwift: UIViewController {
 
 @end
 ```
-:::
-:::{tab-item} Javascript
-:sync: js
-```{code-block} html
-:caption: WebView.html
 
+:::
+:::{tab-item} JAVASCRIPT
+:sync: tabcode-javascript
+
+```html
 <html>
    <body>
       <script>

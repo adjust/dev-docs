@@ -2,7 +2,7 @@
 
 The Adjust SDK runs by default when your app is open. You can disable and re-enable the Adjust SDK to pause and resume recording. When you disable the Adjust SDK, it doesn't send any data to Adjust's servers.
 
-You can enable or disable the SDK at any time by calling the [`setEnabled` method](unity-setEnabled-invocation) with a boolean argument.
+You can enable or disable the SDK at any time by calling the [`setEnabled` method](#unity-setenabled-invocation) with a boolean argument.
 
 :::{important}
 You can only call this method after the first session. This setting persists between sessions.
@@ -15,7 +15,7 @@ You can only call this method after the first session. This setting persists bet
 
 ## Check enabled status
 
-You can check if the Adjust SDK is enabled at any time by calling the [`isEnabled` method](unity-isEnabled-invocation). This method returns a boolean value.
+You can check if the Adjust SDK is enabled at any time by calling the [`isEnabled` method](#unity-isenabled-invocation). This method returns a boolean value.
 
 :::{include} /unity/reference/Adjust/config.md
 :start-after: isEnabled snippet
@@ -29,10 +29,9 @@ This exmpale demonstrates how to generate a button to enable or disable the Adju
 * When `txtSetEnabled` = `"Disable SDK"`, the button disables the SDK and sets `txtSetEnabled` to `"Enable SDK"`.
 * When `txtSetEnabled` = `"Enable SDK"`, the button enables the SDK and sets `txtSetEnabled` to `"Disable SDK"`.
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
 
+```c#
 private string txtSetEnabled = "Disable SDK";
 
 if (GUI.Button(new Rect(0, Screen.height * 6 / numberOfButtons, Screen.width, Screen.height / numberOfButtons), txtSetEnabled)) {
@@ -46,5 +45,5 @@ if (GUI.Button(new Rect(0, Screen.height * 6 / numberOfButtons, Screen.width, Sc
   }
 }
 ```
+
 :::
-::::

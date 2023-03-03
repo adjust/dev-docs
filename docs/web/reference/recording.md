@@ -1,23 +1,23 @@
 ---
 myst:
    substitutions:
-      GlobalParams: "[GlobalParams](web-interface-GlobalParams)"
-      EventParams: "[EventParams](web-interface-EventParams)"
-      Attribution: "[Attribution](web-interface-Attribution)"
+      GlobalParams: "[GlobalParams](#web-interface-globalparams)"
+      EventParams: "[EventParams](#web-interface-eventparams)"
+      Attribution: "[Attribution](#web-interface-attribution)"
 ---
 
 # Recording methods
 
 % Class method trackEvent
 
-:::::{function} trackEvent (EventParamsT)
+::::{function} trackEvent (EventParamsT)
 :noindex:
 
-Record an event object with an [Adjust event token](https://help.adjust.com/en/article/basic-event-setup#create-an-event-token) and additional parameters.
+Record an event object with an [Adjust event token](hc:/basic-event-setup#create-an-event-token) and additional parameters.
 
-```{code-block} js
-:name: web-trackEvent-invocation
+{#web-trackEvent-invocation}
 
+```typescript
 function trackEvent (params: EventParamsT): Promise<void> {
   return _internalTrackEvent(params)
 }
@@ -28,34 +28,34 @@ function trackEvent (params: EventParamsT): Promise<void> {
 
 % trackEvent snippet
 
-::::{tab-set}
-:::{tab-item} Javascript
-```{code-block} js
-:emphasize-lines: 2
+:::{tab-set-code}
 
+{emphasize-lines="2"}
+
+```javascript
 Adjust.trackEvent({
   eventToken: '{YourEventToken}'
 })
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method addGlobalCallbackParameters
 
-:::::{function} addGlobalCallbackParameters(Array<GlobalParams>)
+::::{function} addGlobalCallbackParameters(Array<GlobalParams>)
 :noindex:
 
 Adds callback parameters to send with each session and event recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
 
-```{code-block} ts
-:name: web-addGlobalCallbackParameters-invocation
+{#web-addGlobalCallbackParameters-invocation}
 
+```typescript
 function addGlobalCallbackParameters(params: Array<GlobalParams>): void
 ```
 
@@ -64,33 +64,33 @@ function addGlobalCallbackParameters(params: Array<GlobalParams>): void
 
 % addGlobalCallbackParameters snippet
 
-::::{tab-set}
-:::{tab-item} Javascript
-```{code-block} js
+:::{tab-set-code}
+
+```javascript
 Adjust.addGlobalCallbackParameters([
   {key: 'key1', value: 'value1'},
   {key: 'key2', value: 'value2'}
 ]);
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method removeGlobalCallbackParameter
 
-:::::{function} removeGlobalCallbackParameter(key, value)
+::::{function} removeGlobalCallbackParameter(key, value)
 :noindex:
 
 Removes a global callback parameter
 
-```{code-block} ts
-:name: web-removeGlobalCallbackParameter-invocation
+{#web-removeGlobalCallbackParameter-invocation}
 
+```typescript
 function removeGlobalCallbackParameter(key: string): void
 ```
 
@@ -99,59 +99,59 @@ function removeGlobalCallbackParameter(key: string): void
 
 % removeGlobalCallbackParameter snippet
 
-::::{tab-set}
-:::{tab-item} Javascript
-```{code-block} js
+:::{tab-set-code}
+
+```javascript
 Adjust.removeGlobalCallbackParameter('key1');
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method clearGlobalCallbackParameters
 
-:::::{function} clearGlobalCallbackParameters
+::::{function} clearGlobalCallbackParameters
 :noindex:
 
 Removes all global callback parameters
 
-```{code-block} ts
-:name: web-clearGlobalCallbackParameters-invocation
+{#web-clearGlobalCallbackParameters-invocation}
 
+```typescript
 function clearGlobalCallbackParameters(): void
 ```
 
 % clearGlobalCallbackParameters snippet
 
-::::{tab-set}
-:::{tab-item} Javascript
-```{code-block} js
+:::{tab-set-code}
+
+```javascript
 Adjust.clearGlobalCallbackParameters();
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method addGlobalPartnerParameters
 
-:::::{function} addGlobalPartnerParameters(Array<GlobalParams>)
+::::{function} addGlobalPartnerParameters(Array<GlobalParams>)
 :noindex:
 
 Adds partner parameters to send with each session and event recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
 
-```{code-block} ts
-:name: web-addGlobalPartnerParameters-invocation
+{#web-addGlobalPartnerParameters-invocation}
 
+```typescript
 function addGlobalPartnerParameters(params: Array<GlobalParams>): void
 ```
 
@@ -160,33 +160,33 @@ function addGlobalPartnerParameters(params: Array<GlobalParams>): void
 
 % addGlobalPartnerParameters snippet
 
-::::{tab-set}
-:::{tab-item} Javascript
-```{code-block} js
+:::{tab-set-code}
+
+```javascript
 Adjust.addGlobalPartnerParameters([
   {key: 'key1', value: 'value1'},
   {key: 'key2', value: 'value2'}
 ]);
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method removeGlobalPartnerParameter
 
-:::::{function} removeGlobalPartnerParameter(key, value)
+::::{function} removeGlobalPartnerParameter(key, value)
 :noindex:
 
 Removes a global partner parameter
 
-```{code-block} ts
-:name: web-removeGlobalPartnerParameter-invocation
+{#web-removeGlobalPartnerParameter-invocation}
 
+```typescript
 function removeGlobalPartnerParameter(key: string): void
 ```
 
@@ -195,59 +195,59 @@ function removeGlobalPartnerParameter(key: string): void
 
 % removeGlobalPartnerParameter snippet
 
-::::{tab-set}
-:::{tab-item} Javascript
-```{code-block} js
+:::{tab-set-code}
+
+```javascript
 Adjust.removeGlobalPartnerParameter('key1');
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method clearGlobalPartnerParameters
 
-:::::{function} clearGlobalPartnerParameters
+::::{function} clearGlobalPartnerParameters
 :noindex:
 
 Removes all global partner parameters
 
-```{code-block} ts
-:name: web-clearGlobalPartnerParameters-invocation
+{#web-clearGlobalPartnerParameters-invocation}
 
+```typescript
 function clearGlobalPartnerParameters(): void
 ```
 
 % clearGlobalPartnerParameters snippet
 
-::::{tab-set}
-:::{tab-item} Javascript
-```{code-block} js
+:::{tab-set-code}
+
+```javascript
 Adjust.clearGlobalPartnerParameters();
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method getAttribution
 
-:::::{function} getAttribution
+::::{function} getAttribution
 :noindex:
 
 Returns the user's attribution information
 
-```{code-block} ts
-:name: web-getAttribution-invocation
+{#web-getAttribution-invocation}
 
+```typescript
 function getAttribution(): Attribution | undefined
 ```
 
@@ -256,23 +256,23 @@ function getAttribution(): Attribution | undefined
 
 % getAttribution snippet
 
-::::{tab-set}
-:::{tab-item} Javascript
-```{code-block} js
+:::{tab-set-code}
+
+```javascript
 const attribution = Adjust.getAttribution();
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 ## Interfaces
 
-(web-interface-EventParams)=
+(web-interface-eventparams)=
 % interface EventParams
 
 :::{js:class} EventParams (eventToken, revenue?, currency?, deuplicationId?, callbackParams?, partnerParams?)
@@ -294,8 +294,7 @@ const attribution = Adjust.getAttribution();
 :::
 % interfaceEnd
 
-
-(web-interface-GlobalParams)=
+(web-interface-globalparams)=
 % interface GlobalParams
 
 :::{js:class} GlobalParams (key, value)
@@ -309,7 +308,8 @@ const attribution = Adjust.getAttribution();
 
 % interfaceEnd
 
-(web-interface-Attribution)=
+(web-interface-attribution)=
+
 % interface Attribution
 
 :::{js:class} Attribution (adid, tracker_token, tracker_name, network?, campaign?, adgroup?, creative?, click_label?, state?)
@@ -329,7 +329,7 @@ const attribution = Adjust.getAttribution();
 :type adgroup: *String*
 :param creative: The creative associated with the attribution
 :type creative: *String*
-:param click_label: The [click label](https://help.adjust.com/en/article/user-rewards) associated with the attribution
+:param click_label: The [click label](hc:/user-rewards) associated with the attribution
 :type click_label: *String*
 :param state: The current state of the attribution. Either `installed` or `reattributed`
 :type state: *String*

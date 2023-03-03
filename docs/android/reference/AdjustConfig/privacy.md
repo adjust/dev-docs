@@ -7,9 +7,8 @@
 
 Sets the country or region of data residency. If called with a `URL_STRATEGY` parameter, sets the country/region where data will be sent preferentially.
 
-```{code-block} cs
-:name: android-setUrlStrategy-invocation
-
+{#android-seturlstrategy-invocation}
+```java
 public void setUrlStrategy(String urlStrategy)
 ```
 
@@ -20,9 +19,8 @@ public void setUrlStrategy(String urlStrategy)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
-:emphasize-lines: 4
-
+{emphasize-lines="4"}
+```kotlin
 val appToken = "{YourAppToken}"
 val environment = AdjustConfig.ENVIRONMENT_SANDBOX
 val config = AdjustConfig(this, appToken, environment)
@@ -31,9 +29,8 @@ config.setUrlStrategy(AdjustConfig.DATA_RESIDENCY_EU)
 Adjust.onCreate(config)
 ```
 
-```{code-block} java
-:emphasize-lines: 4
-
+{emphasize-lines="4"}
+```java
 String appToken = "{YourAppToken}";
 String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
@@ -42,9 +39,8 @@ config.setUrlStrategy(AdjustConfig.DATA_RESIDENCY_EU);
 Adjust.onCreate(config);
 ```
 
-```{code-block} javascript
-:emphasize-lines: 4
-
+{emphasize-lines="4"}
+```javascript
 var yourAppToken = yourAppToken;
 var environment = AdjustConfig.EnvironmentSandbox;
 var adjustConfig = new AdjustConfig(yourAppToken, environment);
@@ -88,9 +84,8 @@ adjustConfig.setUrlStrategy(AdjustConfig.DATA_RESIDENCY_EU);
 Enable {abbr}`COPPA (Children's Online Privacy Protection Act)` compliance in your app.
 :::
 
-```{code-block} java
-:name: android-setCoppaCompliantEnabled-invocation
-
+{#android-setcoppacompliantenabled-invocation}
+```java
 public void setCoppaCompliantEnabled(boolean coppaCompliantEnabled)
 ```
 
@@ -101,9 +96,8 @@ public void setCoppaCompliantEnabled(boolean coppaCompliantEnabled)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
-:emphasize-lines: 4
-
+{emphasize-lines="4"}
+```kotlin
 val appToken = "{YourAppToken}"
 val environment = AdjustConfig.ENVIRONMENT_SANDBOX
 val config = AdjustConfig(this, appToken, environment)
@@ -112,9 +106,8 @@ config.setCoppaCompliantEnabled(true)
 Adjust.onCreate(config)
 ```
 
-```{code-block} java
-:emphasize-lines: 4
-
+{emphasize-lines="4"}
+```java
 String appToken = "{YourAppToken}";
 String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
@@ -123,9 +116,8 @@ config.setCoppaCompliantEnabled(true);
 Adjust.onCreate(config);
 ```
 
-```{code-block} javascript
-:emphasize-lines: 4
-
+{emphasize-lines="4"}
+```javascript
 var yourAppToken = yourAppToken;
 var environment = AdjustConfig.EnvironmentSandbox;
 var adjustConfig = new AdjustConfig(yourAppToken, environment);
@@ -147,9 +139,8 @@ adjustConfig.setCoppaCompliantEnabled(true);
 
 Marks your app as a Kids App and disables reading device information
 
-```{code-block} java
-:name: android-setPlayStoreKidsAppEnabled-invocation
-
+{#android-setplaystorekidsappenabled-invocation}
+```java
 public void setPlayStoreKidsAppEnabled(boolean playStoreKidsAppEnabled)
 ```
 
@@ -160,9 +151,8 @@ public void setPlayStoreKidsAppEnabled(boolean playStoreKidsAppEnabled)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
-:emphasize-lines: 4
-
+{emphasize-lines="4"}
+```kotlin
 val appToken = "{YourAppToken}"
 val environment = AdjustConfig.ENVIRONMENT_SANDBOX
 val config = AdjustConfig(this, appToken, environment)
@@ -171,9 +161,8 @@ config.setPlayStoreKidsAppEnabled(true)
 Adjust.onCreate(config)
 ```
 
-```{code-block} java
-:emphasize-lines: 4
-
+{emphasize-lines="4"}
+```java
 String appToken = "{YourAppToken}";
 String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
@@ -182,9 +171,8 @@ config.setPlayStoreKidsAppEnabled(true);
 Adjust.onCreate(config);
 ```
 
-```{code-block} javascript
-:emphasize-lines: 4
-
+{emphasize-lines="4"}
+```javascript
 var yourAppToken = yourAppToken;
 var environment = AdjustConfig.EnvironmentSandbox;
 var adjustConfig = new AdjustConfig(yourAppToken, environment);

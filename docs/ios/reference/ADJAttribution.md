@@ -4,10 +4,10 @@ The `ADJAttribution` class contains details about the current attribution status
 
 ## Properties
 
-The following properties can be accessed by calling the [`attribution` method](ios-attribution-invocation). Any values that aren't populated for the user are returned as a null value.
+The following properties can be accessed by calling the [`attribution` method](#ios-attribution-invocation). Any values that aren't populated for the user are returned as a null value.
 
 :::{note}
-The following values can only be accessed if the [`needsCost`](ios-setNeedsCost-invocation) property on your `ADJConfig` instance is `true`:
+The following values can only be accessed if the [`needsCost`](#ios-setneedscost-invocation) property on your `ADJConfig` instance is `true`:
 
 * `costType`
 * `costAmount`
@@ -40,7 +40,7 @@ The following values can only be accessed if the [`needsCost`](ios-setNeedsCost-
    - The name of the creative to which the device is currently attributed
 * - `clickLabel`
    - String
-   - The [click label](https://help.adjust.com/en/article/user-rewards) that the install is tagged with
+   - The [click label](hc:/user-rewards) that the install is tagged with
 * - `adid`
    - String
    - The unique Adjust ID assigned to the device

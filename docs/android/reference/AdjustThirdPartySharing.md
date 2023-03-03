@@ -1,6 +1,6 @@
 # AdjustThirdPartySharing class
 
-Use this class to communicate a user's third party sharing preferences. Send this information to Adjust's servers using the [`trackThirdPartySharing` method](android-trackThirdPartySharing-invocation).
+Use this class to communicate a user's third party sharing preferences. Send this information to Adjust's servers using the [`trackThirdPartySharing` method](#android-trackthirdpartysharing-invocation).
 
 % Class method AdjustThirdPartySharing
 
@@ -9,9 +9,8 @@ Use this class to communicate a user's third party sharing preferences. Send thi
 
 Creates a third party sharing object initialized with an optional **boolean** value
 
-```{code-block} java
-:name: android-AdjustThirdPartySharing-invocation
-
+{#android-adjustthirdpartysharing-invocation}
+```java
 public AdjustThirdPartySharing(final Boolean isEnabled)
 ```
 
@@ -22,17 +21,17 @@ public AdjustThirdPartySharing(final Boolean isEnabled)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val adjustThirdPartySharing = AdjustThirdPartySharing(true)
 Adjust.trackThirdPartySharing(adjustThirdPartySharing)
 ```
 
-```{code-block} java
+```java
 AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(true);
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
-```{code-block} javascript
+```javascript
 let adjustThirdPartySharing = new AdjustThirdPartySharing(true);
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
@@ -45,17 +44,17 @@ Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val adjustThirdPartySharing = AdjustThirdPartySharing(false)
 Adjust.trackThirdPartySharing(adjustThirdPartySharing)
 ```
 
-```{code-block} java
+```java
 AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(false);
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
-```{code-block} javascript
+```javascript
 let adjustThirdPartySharing = new AdjustThirdPartySharing(false);
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
@@ -75,9 +74,8 @@ Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 
 Adds additional key-value pairs of information to share with third parties. You can add multiple parameters by calling this method multiple times.
 
-```{code-block} java
-:name: android-addGranularOption-invocation
-
+{#android-addgranularoption-invocation}
+```java
 public void addGranularOption(final String partnerName,
                               final String key,
                               final String value)
@@ -94,19 +92,19 @@ public void addGranularOption(final String partnerName,
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val adjustThirdPartySharing = AdjustThirdPartySharing(true)
 adjustThirdPartySharing.addGranularOption("PartnerA", "foo", "bar")
 Adjust.trackThirdPartySharing(adjustThirdPartySharing)
 ```
 
-```{code-block} java
+```java
 AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(true);
 adjustThirdPartySharing.addGranularOption("PartnerA", "foo", "bar");
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
-```{code-block} javascript
+```javascript
 let adjustThirdPartySharing = new AdjustThirdPartySharing(true);
 adjustThirdPartySharing.addGranularOption('PartnerA', 'foo', 'bar');
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
@@ -122,21 +120,21 @@ You can use this method to toggle Facebook data processing options.
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val adjustThirdPartySharing = AdjustThirdPartySharing(true)
 adjustThirdPartySharing.addGranularOption("facebook", "data_processing_options_country", "1")
 adjustThirdPartySharing.addGranularOption("facebook", "data_processing_options_state", "1000")
 Adjust.trackThirdPartySharing(adjustThirdPartySharing)
 ```
 
-```{code-block} java
+```java
 AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(true);
 adjustThirdPartySharing.addGranularOption("facebook", "data_processing_options_country", "1");
 adjustThirdPartySharing.addGranularOption("facebook", "data_processing_options_state", "1000");
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
-```{code-block} javascript
+```javascript
 let adjustThirdPartySharing = new AdjustThirdPartySharing(true);
 adjustThirdPartySharing.addGranularOption('facebook', 'data_processing_options_country', '1');
 adjustThirdPartySharing.addGranularOption('facebook', 'data_processing_options_state', '1000');
@@ -160,9 +158,8 @@ Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 Adds additional key-value pairs of settings to share with third parties. You can add multiple settings by calling this method multiple times.
 :::
 
-```{code-block} java
-:name: android-addPartnerSharingSetting-invocation
-
+{#android-addpartnersharingsetting-invocation}
+```java
 public void addPartnerSharingSetting(final String partnerName,
                                     final String key,
                                     final boolean value)
@@ -179,7 +176,7 @@ public void addPartnerSharingSetting(final String partnerName,
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val adjustThirdPartySharing = AdjustThirdPartySharing(true)
 adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "install", true)
 adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "events", true)
@@ -187,7 +184,7 @@ adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "sessions", true)
 Adjust.trackThirdPartySharing(adjustThirdPartySharing)
 ```
 
-```{code-block} java
+```java
 AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(true);
 adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "install", true);
 adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "events", true);
@@ -195,7 +192,7 @@ adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "sessions", true);
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
-```{code-block} javascript
+```javascript
 let adjustThirdPartySharing = new AdjustThirdPartySharing(true);
 adjustThirdPartySharing.addPartnerSharingSetting('PartnerA', 'install', true);
 adjustThirdPartySharing.addPartnerSharingSetting('PartnerA', 'events', true);

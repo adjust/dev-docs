@@ -1,6 +1,6 @@
 # ADJEvent class
 
-This class contains information about events triggered in your application. You can send this information to Adjust's servers by passing an `ADJEvent` object to the [`trackEvent` method](ios-trackEvent-invocation).
+This class contains information about events triggered in your application. You can send this information to Adjust's servers by passing an `ADJEvent` object to the [`trackEvent` method](#ios-trackevent-invocation).
 
 % Class method eventWithEventToken
 
@@ -9,9 +9,8 @@ This class contains information about events triggered in your application. You 
 
 Creates an event object initialized with an Adjust event token
 
-```{code-block} objc
-:name: ios-eventWithEventToken-invocation
-
+{#ios-eventwitheventtoken-invocation}
+```objective-c
 + (nullable ADJEvent *)eventWithEventToken:(nonnull NSString *)eventToken;
 ```
 
@@ -29,14 +28,13 @@ Creates an event object initialized with an Adjust event token
 
 % Class method setRevenue
 
-:::::{function} setRevenue (amount, currency)
+::::{function} setRevenue (amount, currency)
 :noindex:
 
 Sets the revenue and currency associated with the event
 
-```{code-block} objc
-:name: ios-ADJEvent-setRevenue-invocation
-
+{#ios-adjevent-setrevenue-invocation}
+```objective-c
 - (void)setRevenue:(double)amount currency:(nonnull NSString *)currency;
 ```
 
@@ -47,54 +45,44 @@ Sets the revenue and currency associated with the event
 
 % setRevenue snippet
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 let event = ADJEvent(eventToken: "abc123")
 event?.setRevenue(0.01, currency: "EUR")
 Adjust.trackEvent(event)
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
 
-```{code-block} objc
+```objective-c
 ADJEvent *event = [ADJEvent eventWithEventToken:@"abc123"];
 [event setRevenue:0.01 currency:@"EUR"];
 [Adjust trackEvent:event];
 ```
-:::
-:::{tab-item} Javascript
-:sync: js
 
-```{code-block} js
+```javascript
 var adjustEvent = new AdjustEvent(eventToken);
 adjustEvent.setRevenue(0.01, 'EUR');
 Adjust.trackEvent(adjustEvent);
 ```
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method addCallbackParameter
 
-:::::{function} addCallbackParameter (key, value)
+::::{function} addCallbackParameter (key, value)
 :noindex:
 
 Adds key-value callback parameters to the event object. You can add multiple parameters by calling this method multiple times.
 
 Event callback parameters override session callback parameters that have the same key.
 
-```{code-block} objc
-:name: ios-ADJEvent-addCallbackParameter-invocation
-
+{#ios-adjevent-addcallbackparameter-invocation}
+```objective-c
 - (void)addCallbackParameter:(nonnull NSString *)key value:(nonnull NSString *)value;
 ```
 
@@ -105,55 +93,45 @@ Event callback parameters override session callback parameters that have the sam
 
 % addCallbackParameter snippet
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 let event = ADJEvent(eventToken: "abc123")
 event?.addCallbackParameter("key", value: "value")
 event?.addCallbackParameter("foo", value: "bar")
 Adjust.trackEvent(event)
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
 
-```{code-block} objc
+```objective-c
 ADJEvent *event = [ADJEvent eventWithEventToken:@"abc123"];
 [event addCallbackParameter:@"key" value:@"value"];
 [event addCallbackParameter:@"foo" value:@"bar"];
 [Adjust trackEvent:event];
 ```
-:::
-:::{tab-item} Javascript
-:sync: js
 
-```{code-block} js
+```javascript
 var adjustEvent = new AdjustEvent(eventToken);
 adjustEvent.addCallbackParameter('key', 'value');
 adjustEvent.addCallbackParameter('foo', 'bar');
 Adjust.trackEvent(adjustEvent);
 ```
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method addPartnerParameter
 
-:::::{function} addPartnerParameter (key, value)
+::::{function} addPartnerParameter (key, value)
 :noindex:
 
 Adds key-value partner parameters to the event object. You can add multiple parameters by calling this method multiple times.
 
-```{code-block} objc
-:name: ios-ADJEvent-addPartnerParameter-invocation
-
+{#ios-adjevent-addpartnerparameter-invocation}
+```objective-c
 - (void)addPartnerParameter:(nonnull NSString *)key value:(nonnull NSString *)value;
 ```
 
@@ -164,55 +142,45 @@ Adds key-value partner parameters to the event object. You can add multiple para
 
 % addPartnerParameter snippet
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 let event = ADJEvent(eventToken: "abc123")
 event?.addPartnerParameter("key", value: "value")
 event?.addPartnerParameter("foo", value: "bar")
 Adjust.trackEvent(event)
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
 
-```{code-block} objc
+```objective-c
 ADJEvent *event = [ADJEvent eventWithEventToken:@"abc123"];
 [event addPartnerParameter:@"key" value:@"value"];
 [event addPartnerParameter:@"foo" value:@"bar"];
 [Adjust trackEvent:event];
 ```
-:::
-:::{tab-item} Javascript
-:sync: js
 
-```{code-block} js
+```javascript
 var adjustEvent = new AdjustEvent(eventToken);
 adjustEvent.addPartnerParameter('key', 'value');
 adjustEvent.addPartnerParameter('foo', 'bar');
 Adjust.trackEvent(adjustEvent);
 ```
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method setTransactionId
 
-:::::{function} setTransactionId (transactionId)
+::::{function} setTransactionId (transactionId)
 :noindex:
 
 Sets a deduplication ID on your event to avoid recording duplicates. The SDK stores the last ten identifiers and skips revenue events with duplicate IDs.
 
-```{code-block} objc
-:name: ios-setTransactionId-invocation
-
+{#ios-settransactionid-invocation}
+```objective-c
 - (void)setTransactionId:(nonnull NSString *)transactionId;
 ```
 
@@ -221,52 +189,42 @@ Sets a deduplication ID on your event to avoid recording duplicates. The SDK sto
 
 % setTransactionId snippet
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 let event = ADJEvent(eventToken: "abc123")
 event?.setTransactionId(eventIdentifier)
 Adjust.trackEvent(event)
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
 
-```{code-block} objc
+```objective-c
 ADJEvent *event = [ADJEvent eventWithEventToken:@"abc123"];
 [event setTransactionId:eventIdentifier];
 [Adjust trackEvent:event];
 ```
-:::
-:::{tab-item} Javascript
-:sync: js
 
-```{code-block} js
+```javascript
 var adjustEvent = new AdjustEvent(eventToken);
 adjustEvent.setTransactionId(eventIdentifier);
 Adjust.trackEvent(adjustEvent);
 ```
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method setCallbackId
 
-:::::{function} setCallbackId (callbackId)
+::::{function} setCallbackId (callbackId)
 :noindex:
 
 Sets a custom identifier for your event object. Adjust's servers can report on this identifier in event callbacks.
 
-```{code-block} objc
-:name: ios-setCallbackId-invocation
-
+{#ios-setcallbackid-invocation}
+```objective-c
 - (void)setCallbackId:(nonnull NSString *)callbackId;
 ```
 
@@ -275,38 +233,29 @@ Sets a custom identifier for your event object. Adjust's servers can report on t
 
 % setCallbackId snippet
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 let event = ADJEvent(eventToken: "abc123")
 event?.setCallbackId("Your-Custom-ID")
 Adjust.trackEvent(event)
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
 
-```{code-block} objc
+```objective-c
 ADJEvent *event = [ADJEvent eventWithEventToken:@"abc123"];
 [event setCallbackId:@"Your-Custom-ID"];
 [Adjust trackEvent:event];
 ```
-:::
-:::{tab-item} Javascript
-:sync: js
 
-```{code-block} js
+```javascript
 var adjustEvent = new AdjustEvent('abc123')
 adjustEvent.setCallbackId('Your-Custom-ID')
 Adjust.trackEvent(adjustEvent)
 ```
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end

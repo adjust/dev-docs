@@ -5,11 +5,10 @@
 ::::{function} trackEvent (event)
 :noindex:
 
-Record event information using an `AdjustEvent` object and an [Adjust event token](https://help.adjust.com/en/article/basic-event-setup#create-an-event-token).
+Record event information using an `AdjustEvent` object and an [Adjust event token](hc:/basic-event-setup#create-an-event-token).
 
-```{code-block} java
-:name: android-trackEvent-invocation
-
+{#android-trackevent-invocation}
+```java
 public static void trackEvent(AdjustEvent event)
 ```
 
@@ -20,17 +19,17 @@ public static void trackEvent(AdjustEvent event)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val adjustEvent = AdjustEvent("abc123")
 Adjust.trackEvent(adjustEvent)
 ```
 
-```{code-block} java
+```java
 AdjustEvent adjustEvent = new AdjustEvent("abc123");
 Adjust.trackEvent(adjustEvent);
 ```
 
-```{code-block} javascript
+```javascript
 let adjustEvent = new AdjustEvent('abc123');
 Adjust.trackEvent(adjustEvent);
 ```
@@ -50,9 +49,8 @@ Adjust.trackEvent(adjustEvent);
 
 Adds callback parameters to send with each session recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
 
-```{code-block} java
-:name: android-addSessionCallbackParameter-invocation
-
+{#android-addsessioncallbackparameter-invocation}
+```java
 public static void addSessionCallbackParameter(String key, String value)
 ```
 
@@ -65,15 +63,15 @@ public static void addSessionCallbackParameter(String key, String value)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 Adjust.addSessionCallbackParameter("foo", "bar")
 ```
 
-```{code-block} java
+```java
 Adjust.addSessionCallbackParameter("foo", "bar");
 ```
 
-```{code-block} javascript
+```javascript
 Adjust.addSessionCallbackParameter('foo', 'bar');
 ```
 
@@ -92,9 +90,8 @@ Adjust.addSessionCallbackParameter('foo', 'bar');
 
 Removes a callback parameter
 
-```{code-block} java
-:name: android-removeSessionCallbackParameter-invocation
-
+{#android-removesessioncallbackparameter-invocation}
+```java
 public static void removeSessionCallbackParameter(String key)
 ```
 
@@ -105,15 +102,15 @@ public static void removeSessionCallbackParameter(String key)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 Adjust.removeSessionCallbackParameter("foo")
 ```
 
-```{code-block} java
+```java
 Adjust.removeSessionCallbackParameter("foo");
 ```
 
-```{code-block} javascript
+```javascript
 Adjust.removeSessionCallbackParameter('foo');
 ```
 
@@ -132,9 +129,8 @@ Adjust.removeSessionCallbackParameter('foo');
 
 Removes all callback parameters
 
-```{code-block} java
-:name: android-resetSessionCallbackParameters-invocation
-
+{#android-resetsessioncallbackparameters-invocation}
+```java
 public static void resetSessionCallbackParameters()
 ```
 
@@ -142,15 +138,15 @@ public static void resetSessionCallbackParameters()
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 Adjust.resetSessionCallbackParameters()
 ```
 
-```{code-block} java
+```java
 Adjust.resetSessionCallbackParameters();
 ```
 
-```{code-block} javascript
+```javascript
 Adjust.resetSessionCallbackParameters());
 ```
 
@@ -169,9 +165,8 @@ Adjust.resetSessionCallbackParameters());
 
 Adds partner parameters to send with each session recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
 
-```{code-block} java
-:name: android-addSessionPartnerParameter-invocation
-
+{#android-addsessionpartnerparameter-invocation}
+```java
 public static void addSessionPartnerParameter(String key, String value)
 ```
 
@@ -184,15 +179,15 @@ public static void addSessionPartnerParameter(String key, String value)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 Adjust.addSessionPartnerParameter("foo", "bar")
 ```
 
-```{code-block} java
+```java
 Adjust.addSessionPartnerParameter("foo", "bar");
 ```
 
-```{code-block} javascript
+```javascript
 Adjust.addSessionPartnerParameter('foo', 'bar');
 ```
 
@@ -211,9 +206,8 @@ Adjust.addSessionPartnerParameter('foo', 'bar');
 
 Removes a partner parameter
 
-```{code-block} java
-:name: android-removeSessionPartnerParameter-invocation
-
+{#android-removesessionpartnerparameter-invocation}
+```java
 public static void removeSessionPartnerParameter(String key)
 ```
 
@@ -224,15 +218,15 @@ public static void removeSessionPartnerParameter(String key)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 Adjust.removeSessionPartnerParameter("foo")
 ```
 
-```{code-block} java
+```java
 Adjust.removeSessionPartnerParameter("foo");
 ```
 
-```{code-block} javascript
+```javascript
 Adjust.removeSessionPartnerParameter('foo');
 ```
 
@@ -251,9 +245,8 @@ Adjust.removeSessionPartnerParameter('foo');
 
 Resets all partner parameters
 
-```{code-block} java
-:name: android-resetSessionPartnerParameters-invocation
-
+{#android-resetsessionpartnerparameters-invocation}
+```java
 public static void resetSessionPartnerParameters()
 ```
 
@@ -261,15 +254,15 @@ public static void resetSessionPartnerParameters()
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 Adjust.resetSessionPartnerParameters()
 ```
 
-```{code-block} java
+```java
 Adjust.resetSessionPartnerParameters();
 ```
 
-```{code-block} javascript
+```javascript
 Adjust.resetSessionPartnerParameters());
 ```
 
@@ -288,9 +281,8 @@ Adjust.resetSessionPartnerParameters());
 
 Record the details of an AdjustAdRevenue object
 
-```{code-block} java
-:name: android-trackAdRevenue-invocation
-
+{#android-trackadrevenue-invocation}
+```java
 public static void trackAdRevenue(AdjustAdRevenue adRevenue)
 ```
 
@@ -301,17 +293,17 @@ public static void trackAdRevenue(AdjustAdRevenue adRevenue)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val adjustAdRevenue = AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX)
 Adjust.trackAdRevenue(adjustAdRevenue)
 ```
 
-```{code-block} java
+```java
 AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX);
 Adjust.trackAdRevenue(adjustAdRevenue)
 ```
 
-```{code-block} javascript
+```javascript
 let adjustAdRevenue = new AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX)
 Adjust.trackAdRevenue(adjustAdRevenue);
 ```
@@ -331,9 +323,8 @@ Adjust.trackAdRevenue(adjustAdRevenue);
 
 Record an Play Store subscription object
 
-```{code-block} java
-:name: android-trackPlayStoreSubscription-invocation
-
+{#android-trackplaystoresubscription-invocation}
+```java
 public static void trackPlayStoreSubscription(final AdjustPlayStoreSubscription subscription)
 ```
 
@@ -344,7 +335,7 @@ public static void trackPlayStoreSubscription(final AdjustPlayStoreSubscription 
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val subscription = AdjustPlayStoreSubscription(
    price,
    currency,
@@ -357,7 +348,7 @@ subscription.setPurchaseTime(purchaseTime)
 Adjust.trackPlayStoreSubscription(subscription)
 ```
 
-```{code-block} java
+```java
 AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
    price,
    currency,
@@ -383,9 +374,8 @@ Adjust.trackPlayStoreSubscription(subscription);
 
 Fetches attribution data from the device
 
-```{code-block} java
-:name: android-getAttribution-invocation
-
+{#android-getattribution-invocation}
+```java
 public static AdjustAttribution getAttribution()
 ```
 
@@ -396,15 +386,15 @@ public static AdjustAttribution getAttribution()
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val attribution = Adjust.getAttribution()
 ```
 
-```{code-block} java
+```java
 AdjustAttribution attribution = Adjust.getAttribution();
 ```
 
-```{code-block} javascript
+```javascript
 let attribution = Adjust.getAttribution();
 ```
 

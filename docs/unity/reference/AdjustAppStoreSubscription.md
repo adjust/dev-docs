@@ -1,17 +1,16 @@
 # AdjustAppStoreSubscription class
 
-Use this class to store App Store subscription information. You can pass this to Adjust's servers using the [`trackAppStoreSubscription` method](unity-trackAppStoreSubscription-invocation).
+Use this class to store App Store subscription information. You can pass this to Adjust's servers using the [`trackAppStoreSubscription` method](#unity-trackappstoresubscription-invocation).
 
 % Class method AdjustAppStoreSubscription
 
-:::::{function} AdjustAppStoreSubscription (price, currency, transactionId, receipt)
+::::{function} AdjustAppStoreSubscription (price, currency, transactionId, receipt)
 :noindex:
 
 Initializes a subscription
 
-```{code-block} cs
-:name: unity-AdjustAppStoreSubscription-invocation
-
+{#unity-adjustappstoresubscription-invocation}
+```c#
 public AdjustAppStoreSubscription(string price, string currency, string transactionId, string receipt)
 ```
 
@@ -27,9 +26,9 @@ public AdjustAppStoreSubscription(string price, string currency, string transact
 
 % AdjustAppStoreSubscription snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
     price,
     currency,
@@ -37,24 +36,22 @@ AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
     receipt);
 ```
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method setTransactionDate
 
-:::::{function} setTransactionDate (transactionDate)
+::::{function} setTransactionDate (transactionDate)
 :noindex:
 
 Sets the date of the transaction in the subscription object
 
-```{code-block} cs
-:name: unity-setTransactionDate-invocation
-
+{#unity-settransactiondate-invocation}
+```c#
 public void setTransactionDate(string transactionDate)
 ```
 
@@ -63,9 +60,9 @@ public void setTransactionDate(string transactionDate)
 
 % setTransactionDate snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
     price,
     currency,
@@ -75,24 +72,22 @@ AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
 subscription.setTransactionDate(transactionDate);
 ```
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method setSalesRegion
 
-:::::{function} setSalesRegion (salesRegion)
+::::{function} setSalesRegion (salesRegion)
 :noindex:
 
 You can record the region in which the user purchased a subscription
 
-```{code-block} cs
-:name: unity-setSalesRegion-invocation
-
+{#unity-setsalesregion-invocation}
+```c#
 public void setSalesRegion(string salesRegion)
 ```
 
@@ -101,9 +96,9 @@ public void setSalesRegion(string salesRegion)
 
 % setSalesRegion snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
     price,
     currency,
@@ -113,24 +108,22 @@ AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
 subscription.setSalesRegion(salesRegion);
 ```
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method addCallbackParameter
 
-:::::{function} addCallbackParameter (key, value)
+::::{function} addCallbackParameter (key, value)
 :noindex:
 
 Adds key-value callback parameters to the subscription object. You can add multiple parameters by calling this method multiple times.
 
-```{code-block} cs
-:name: unity-AdjustAppStoreSubscription-addCallbackParameter-invocation
-
+{#unity-adjustappstoresubscription-addcallbackparameter-invocation}
+```c#
 public void addCallbackParameter(string key, string value)
 ```
 
@@ -141,9 +134,9 @@ public void addCallbackParameter(string key, string value)
 
 % addCallbackParameter snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
     price,
     currency,
@@ -153,25 +146,24 @@ AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
 subscription.addCallbackParameter("key1", "value1");
 subscription.addCallbackParameter("key2", "value2");
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method addPartnerParameter
 
-:::::{function} addPartnerParameter (key, value)
+::::{function} addPartnerParameter (key, value)
 :noindex:
 
 Adds key-value partner parameters to the subscription object. You can add multiple parameters by calling this method multiple times.
 
-```{code-block} cs
-:name: unity-AdjustAppStoreSubscription-addPartnerParameter-invocation
-
+{#unity-adjustappstoresubscription-addpartnerparameter-invocation}
+```c#
 public void addPartnerParameter(string key, string value)
 ```
 
@@ -182,9 +174,9 @@ public void addPartnerParameter(string key, string value)
 
 % addPartnerParameter snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
     price,
     currency,
@@ -195,10 +187,9 @@ subscription.addPartnerParameter("key1", "value1");
 subscription.addPartnerParameter("key2", "value2");
 ```
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end

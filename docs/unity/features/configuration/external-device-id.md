@@ -9,7 +9,7 @@ An external device identifier is a custom value that you can assign to a device 
 You can use an external device ID as a custom identifier for a device. This helps you keep continuity with your other systems.
 
 :::{seealso}
-See the [External device identifiers article](https://help.adjust.com/en/article/external-device-identifiers) for more information.
+See the [External device identifiers article](hc:/external-device-identifiers) for more information.
 :::
 
 ## Set external device identifier
@@ -18,7 +18,7 @@ See the [External device identifiers article](https://help.adjust.com/en/article
 You must set your external device ID **before** initializing the Adjust SDK.
 :::
 
-Your config object contains a **string** `externalDeviceId` property that you can use to store your external device ID. You can set property calling the [`setExternalDeviceId` method](unity-setExternalDeviceId-invocation) with your ID as an argument.
+Your config object contains a **string** `externalDeviceId` property that you can use to store your external device ID. You can set property calling the [`setExternalDeviceId` method](#unity-setexternaldeviceid-invocation) with your ID as an argument.
 
 The external device ID is case-sensitive. If you have imported external device IDs, make sure the value you pass matches the imported value.
 

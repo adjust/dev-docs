@@ -4,28 +4,28 @@ Use these methods to retrieve device information.
 
 % Class method getWebUUID
 
-:::::{function} getWebUUID
+::::{function} getWebUUID
 :noindex:
 
 Return the user's `web_uuid`  as a string
-```{code-block} ts
-:name: web-getWebUUID-invocation
 
+{#web-getwebuuid-invocation}
+```typescript
 function getWebUUID(): string | undefined
 ```
 
 % getWebUUID snippet
 
-::::{tab-set}
-:::{tab-item} Javascript
-```{code-block} js
+:::{tab-set-code}
+
+```javascript
 const webUUID = Adjust.getWebUUID();
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end

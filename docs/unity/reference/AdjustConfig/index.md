@@ -8,14 +8,13 @@ The methods in this class must be called **before** you initialize the SDK.
 
 % Class method AdjustConfig
 
-:::::{function} AdjustConfig(appToken, environment,allowSuppressLogLevel)
+::::{function} AdjustConfig(appToken, environment,allowSuppressLogLevel)
 :noindex:
 
 Initialize the configuration object with your Adjust app token.
 
-```{code-block} cs
-:name: unity-AdjustConfig-invocation
-
+{#unity-adjustconfig-invocation}
+```c#
 public AdjustConfig(string appToken, AdjustEnvironment environment, bool allowSuppressLogLevel)
 ```
 
@@ -30,18 +29,18 @@ public AdjustConfig(string appToken, AdjustEnvironment environment, bool allowSu
 
 % AdjustConfig snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 AdjustConfig config = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
 Adjust.start(config);
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 

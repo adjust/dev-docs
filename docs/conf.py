@@ -89,9 +89,12 @@ myst_enable_extensions = [
    "tasklist",
    "deflist",
    "fieldlist",
+   "attrs_inline",
+   "attrs_block",
 ]
 
 myst_heading_anchors = 3
+myst_enable_checkboxes = True
 
 images_config = {
     'override_image_directive': True,
@@ -119,3 +122,9 @@ tippy_anchor_parent_selector = "article.bd-article"
 tippy_tip_selector = "div.notranslate, dt, code"
 
 mermaid_version = ""
+
+myst_url_schemes = {
+    "http": None,
+    "https": None,
+    "hc": "https://help.adjust.com/en/article/{{path}}#{{fragment}}"
+}

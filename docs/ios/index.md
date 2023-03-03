@@ -13,7 +13,7 @@ To add the SDK using Swift's package manager:
 3. Select {guilabel}`Add Package Dependency`.
 4. In the box that appears, enter the SDK's GitHub address.
 
-  ```
+  ```html
   https://github.com/adjust/ios_sdk
   ```
 
@@ -44,7 +44,7 @@ pod 'Adjust/WebBridge', '~> {{ ios_version }}'
 
 To add the SDK using Carthage, add the following to your `Cartfile`:
 
-```{code-block} text
+```text
 github "adjust/ios_sdk"
 ```
 :::
@@ -77,34 +77,34 @@ Once you've added the Adjust SDK to your {program}`Xcode` project, you need to i
 Add the relevant import statements in your project files.
 
 ::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-item} SWIFT
+:sync: tabcode-swift
 
 To import the Adjust SDK, add the following to your bridging header file:
 
-```objc
+```objective-c
 #import <Adjust/Adjust.h>
 ```
 
 If you use the Adjust Web Bridge, add the following to your bridging header file:
 
-```objc
+```objective-c
 #import "AdjustBridge.h"
 ```
 
 :::
-:::{tab-item} Objective-C
-:sync: objc
+:::{tab-item} OBJECTIVE-C
+:sync: tabcode-objective-c
 
 To import the Adjust SDK, add the following to your `AppDelegate.h` file:
 
-```objc
+```objective-c
 #import <Adjust/Adjust.h>
 ```
 
 If you use the Adjust Web Bridge, add the following to your `AppDelegate.h` file:
 
-```objc
+```objective-c
 #import "AdjustBridge.h"
 ```
 
@@ -117,58 +117,58 @@ If you use the Adjust Web Bridge, add the following to your `AppDelegate.h` file
 Add the relevant import statements in your project files.
 
 ::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-item} SWIFT
+:sync: tabcode-swift
 
 To import the Adjust SDK, add the following to your bridging header file:
 
-```objc
+```objective-c
 #import <Adjust/Adjust.h>
 ```
 
 If you use the Adjust Web Bridge, add the following to your bridging header file:
 
-```objc
+```objective-c
 #import <AdjustSdkWebBridge/AdjustBridge.h>
 ```
 
 If you use the Adjust SDK in a tvOS app, add the following to your bridging header file:
 
-```objc
+```objective-c
 #import <AdjustSdkTv/Adjust.h>
 ```
 
 If you use the Adjust SDK in a iMessage app, add the following to your bridging header file:
 
-```objc
+```objective-c
 #import <AdjustSdkIm/Adjust.h>
 ```
 
 :::
-:::{tab-item} Objective-C
-:sync: objc
+:::{tab-item} OBJECTIVE-C
+:sync: tabcode-objective-c
 
 To import the Adjust SDK, add the following to your `AppDelegate.h` file:
 
-```objc
+```objective-c
 #import <AdjustSdk/Adjust.h>
 ```
 
 If you use the Adjust Web Bridge, add the following to your `AppDelegate.h` file:
 
-```objc
+```objective-c
 #import <AdjustSdkWebBridge/AdjustBridge.h>
 ```
 
 If you use the Adjust SDK in your tvOS app, add the following to your `AppDelegate.h` file:
 
-```objc
+```objective-c
 #import <AdjustSdkTv/Adjust.h>
 ```
 
 If you use the Adjust SDK in your iMessage app, add the following to your `AppDelegate.h` file:
 
-```objc
+```objective-c
 #import <AdjustSdkIm/Adjust.h>
 ```
 :::
@@ -207,7 +207,7 @@ The Adjust SDK depends on frameworks to access certain device information. To en
 
 To initialize the Adjust SDK, you need to create a config object. This object contains configuration options that control how the Adjust SDK behaves. Pass the following arguments for a minimal setup:
 
-- `appToken`: Your [app's token](https://help.adjust.com/en/article/app-settings#view-your-app-token).
+- `appToken`: Your [app's token](hc:/app-settings#view-your-app-token).
 - `environment`: The environment you want to run the SDK in. Set this to `ADJEnvironmentSandbox`.
 
 To initialize the Adjust SDK with this config object:
@@ -216,11 +216,9 @@ To initialize the Adjust SDK with this config object:
 2. Set the `logLevel` property on your config object to `ADJLogLevelVerbose` (verbose). You must enable verbose logging to retrieve device information.
 3. Pass the config object as an argument to the `appDidLaunch` method.
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
    let yourAppToken = "{YourAppToken}"
    let environment = ADJEnvironmentSandbox as? String
@@ -235,11 +233,7 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 }
 ```
 
-:::
-::: {tab-item} Objective-C
-:sync: objc
-
-```{code-block} objc
+```objective-c
 #import "Adjust.h"
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -255,7 +249,6 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 }
 ```
 :::
-::::
 
 ### Set up your iMessage app
 
@@ -274,11 +267,9 @@ The Adjust SDK isn't subscribed to iOS system notifications in iMessage apps. To
 
 Add a call to `trackSubsessionStart` inside your `didBecomeActiveWithConversation:` method:
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 func didBecomeActive(with conversation: MSConversation) {
     // Called when the extension is about to move from the inactive to active state.
     // This will happen when the extension is about to present UI.
@@ -287,12 +278,8 @@ func didBecomeActive(with conversation: MSConversation) {
     Adjust.trackSubsessionStart()
 }
 ```
-:::
 
-:::{tab-item} Objective-C
-:sync: objc
-
-```{code-block} objc
+```objective-c
 -(void)didBecomeActiveWithConversation:(MSConversation *)conversation {
     // Called when the extension is about to move from the inactive to active state.
     // This will happen when the extension is about to present UI.
@@ -302,15 +289,12 @@ func didBecomeActive(with conversation: MSConversation) {
 }
 ```
 :::
-::::
 
 Add a call to `trackSubsessionEnd` inside your `willResignActiveWithConversation:` method:
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 func willResignActive(with conversation: MSConversation) {
     // Called when the extension is about to move from the active to inactive state.
     // This will happen when the user dismisses the extension, changes to a different
@@ -323,11 +307,8 @@ func willResignActive(with conversation: MSConversation) {
     Adjust.trackSubsessionEnd()
 }
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
 
-```{code-block} objc
+```objective-c
 -(void)willResignActiveWithConversation:(MSConversation *)conversation {
     // Called when the extension is about to move from the active to inactive state.
     // This will happen when the user dismisses the extension, changes to a different
@@ -341,7 +322,6 @@ func willResignActive(with conversation: MSConversation) {
 }
 ```
 :::
-::::
 
 ### Set up the Adjust Web Bridge
 
@@ -355,11 +335,9 @@ In the Project Navigator:
 2. Add the `import` statement at the top of the file. 
 3. Add the following calls to `AdjustBridge` in the `viewDidLoad` or `viewWillAppear` method of your Web View Delegate:
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 func viewWillAppear(_ animated: Bool) {
     let webView = WKWebView(frame: view.bounds)
 
@@ -369,11 +347,8 @@ func viewWillAppear(_ animated: Bool) {
     // adjustBridge.loadWKWebViewBridge(webView, wkWebViewDelegate: self as? WKNavigationDelegate?);
 }
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
 
-```{code-block} objc
+```objective-c
 #import "AdjustBridge.h"
 // or #import <AdjustSdkWebBridge/AdjustBridge.h>
 
@@ -389,7 +364,6 @@ func viewWillAppear(_ animated: Bool) {
 // ...
 ```
 :::
-::::
 
 You can also use the included `WebViewJavascriptBridge` by setting the `bridgeRegister` property of your `AdjustBridge` instance. See the [library's documentation](https://github.com/marcuswestin/WebViewJavascriptBridge#usage) for usage information.
 
@@ -397,10 +371,9 @@ You can also use the included `WebViewJavascriptBridge` by setting the `bridgeRe
 
 To use the Javascript bridge in your web view, you need to configure the bridge. Add the following Javascript code to initialize the Adjust iOS web bridge:
 
-::::{tab-set}
-:::{tab-item} Javascript
+:::{tab-set-code}
 
-```{code-block} js
+```javascript
 function setupWebViewJavascriptBridge(callback) {
     if (window.WebViewJavascriptBridge) {
         return callback(WebViewJavascriptBridge);
@@ -430,7 +403,6 @@ setupWebViewJavascriptBridge(function(bridge) {
 });
 ```
 :::
-::::
 
 ## 5. Configure the Adjust SDK
 
@@ -438,9 +410,9 @@ Once you've added your config object and initialization logic, you can configure
 
 ## 6. Test the Adjust SDK
 
-Now that you've configured the Adjust SDK to record information about your app, it's time to test it. Adjust offers a [testing console](https://help.adjust.com/en/article/testing-console) and a [Device API](https://help.adjust.com/en/article/device-api) to help you test your app.
+Now that you've configured the Adjust SDK to record information about your app, it's time to test it. Adjust offers a [testing console](hc:/testing-console) and a [Device API](hc:/device-api) to help you test your app.
 
-Follow the [testing guide](https://help.adjust.com/en/article/test-the-adjust-sdk) to make sure Adjust receives the expected values back from your app.
+Follow the [testing guide](hc:/test-the-adjust-sdk) to make sure Adjust receives the expected values back from your app.
 
 ## 7. Build your app for production
 
@@ -451,11 +423,9 @@ Update the following values:
 - `environment`: Set this to `ADJEnvironmentProduction`.
 - `logLevel`: Choose a [logging level](features/configuration/log-level), or disable logging completely by passing an `allowSuppressLogLevel` argument in your config object.
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
    let yourAppToken = "{YourAppToken}"
    let environment = ADJEnvironmentProduction as? String
@@ -470,11 +440,8 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
    return true
 }
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
 
-```{code-block} objc
+```objective-c
 #import "Adjust.h"
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -491,15 +458,12 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 }
 ```
 :::
-::::
 
 You can use {program}`Xcode`'s build flags to dynamically update your config depending on whether you create a debug build or a production build.
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
    let yourAppToken = "{YourAppToken}"
    
@@ -524,11 +488,8 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
    return true
 }
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
 
-```{code-block} objc
+```objective-c
 #import "Adjust.h"
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -554,4 +515,3 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 }
 ```
 :::
-::::

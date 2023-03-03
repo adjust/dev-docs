@@ -43,6 +43,7 @@ Create an `AdjustAppStoreSubscription` object with the following properties
 :end-before: Snippet end
 :::
 ::::
+
 ::::{tab-item} Play Store
 :sync: playstore
 
@@ -89,17 +90,18 @@ You can record the date on which the user purchased a subscription. The SDK retu
 ::::{tab-item} App Store
 :sync: appstore
 
-Call the [`setTransactionDate` method](unity-setTransactionDate-invocation) method on your subscription object to record the timestamp of the subscription.
+Call the [`setTransactionDate` method](#unity-settransactiondate-invocation) method on your subscription object to record the timestamp of the subscription.
 
 :::{include} /unity/reference/AdjustAppStoreSubscription.md
 :start-after: setTransactionDate snippet
 :end-before: Snippet end
 :::
 ::::
+
 ::::{tab-item} Play Store
 :sync: playstore
 
-Call the [`setPurchaseTime` method](unity-setPurchaseTime-invocation) on your subscription object to record the timestamp of the subscription.
+Call the [`setPurchaseTime` method](#unity-setpurchasetime-invocation) on your subscription object to record the timestamp of the subscription.
 
 :::{include} /unity/reference/AdjustPlayStoreSubscription.md
 :start-after: setPurchaseTime snippet
@@ -110,7 +112,7 @@ Call the [`setPurchaseTime` method](unity-setPurchaseTime-invocation) on your su
 
 ### Record the purchase region (iOS only)
 
-You can record the region in which the user purchased a subscription. To do this, call the [`setSalesRegion` method](unity-setSalesRegion-invocation) on your subscription object and pass the country code as a **string**. This needs to be formatted as the [`countryCode`](https://developer.apple.com/documentation/foundation/nslocale/1643060-countrycode?language=swift) of the [`priceLocale`](https://developer.apple.com/documentation/storekit/skproduct/1506145-pricelocale?language=swift) object.
+You can record the region in which the user purchased a subscription. To do this, call the [`setSalesRegion` method](#unity-setsalesregion-invocation) on your subscription object and pass the country code as a **string**. This needs to be formatted as the [`countryCode`](https://developer.apple.com/documentation/foundation/nslocale/1643060-countrycode?language=swift) of the [`priceLocale`](https://developer.apple.com/documentation/storekit/skproduct/1506145-pricelocale?language=swift) object.
 
 :::{include} /unity/reference/AdjustAppStoreSubscription.md
 :start-after: setSalesRegion snippet
@@ -130,6 +132,7 @@ You can add callback parameters to your subscription object. The SDK appends the
 :end-before: Snippet end
 :::
 ::::
+
 ::::{tab-item} Play Store
 :sync: playstore
 
@@ -153,6 +156,7 @@ You can add partner parameters to your subscription object. The SDK sends these 
 :end-before: Snippet end
 :::
 ::::
+
 ::::{tab-item} Play Store
 :sync: playstore
 
@@ -171,17 +175,18 @@ Once you have set up your subscription object, you can record it using the Adjus
 :::::{tab-item} App Store
 :sync: appstore
 
-Pass your subscription object to the [`trackAppStoreSubscription` method](unity-trackAppStoreSubscription-invocation) method to record the user's subscription purchase.
+Pass your subscription object to the [`trackAppStoreSubscription` method](#unity-trackappstoresubscription-invocation) method to record the user's subscription purchase.
 
 :::{include} /unity/reference/Adjust/recording.md
 :start-after: trackAppStoreSubscription snippet
 :end-before: Snippet end
 :::
 :::::
+
 :::::{tab-item} Play Store
 :sync: playstore
 
-Pass your subscription object to the [`trackPlayStoreSubscription` method](unity-trackPlayStoreSubscription-invocation) method to record the user's subscription purchase.
+Pass your subscription object to the [`trackPlayStoreSubscription` method](#unity-trackplaystoresubscription-invocation) method to record the user's subscription purchase.
 
 :::{include} /unity/reference/Adjust/recording.md
 :start-after: trackPlayStoreSubscription snippet
@@ -189,4 +194,3 @@ Pass your subscription object to the [`trackPlayStoreSubscription` method](unity
 :::
 :::::
 ::::::
-
