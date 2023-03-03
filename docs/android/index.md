@@ -18,7 +18,7 @@ The minimum supported Android API level for the web view extension is 17 (Jelly 
 
 If you're using [Maven](https://maven.apache.org/), add the following to your {file}`build.gradle` file:
 
-```{code-block} groovy
+```groovy
 dependencies {
    implementation 'com.adjust.sdk:adjust-android:4.33.3'
    implementation 'com.android.installreferrer:installreferrer:2.2'
@@ -33,7 +33,7 @@ Apps that target the Google Play Store must use the {abbr}`gps_adid (Google Adve
 
 If you're using Maven, add the following to your {file}`build.gradle` file:
 
-```{code-block} groovy
+```groovy
 dependencies {
    implementation 'com.google.android.gms:play-services-ads-identifier:18.0.1'
 }
@@ -45,14 +45,14 @@ To give the Adjust SDK access to device information, you need to declare which p
 
 Add the following permissions to get access to online features:
 
-```{code-block} xml
+```xml
 <uses-permission android:name="android.permission.INTERNET"/>
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 ```
 
 If your app doesn't target the Google Play Store, add the following permission to access the device's network state:
 
-```{code-block} xml
+```xml
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 ```
 
@@ -60,7 +60,7 @@ If your app doesn't target the Google Play Store, add the following permission t
 The Adjust SDK includes the `com.google.android.gms.AD_ID` permission by default. If you need to make your app {abbr}`COPPA (Children's Online Privacy Protection Act)` compliant or if your app doesn't target the Google Play Store, you must remove this permission using a `remove` directive.
 :::
 
-```{code-block} xml
+```xml
 <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
 ```
 
@@ -68,7 +68,7 @@ The Adjust SDK includes the `com.google.android.gms.AD_ID` permission by default
 
 If you're using Proguard to optimize your app, you must add rules to prevent Proguard from removing classes.
 
-```{code-block} java
+```java
 -keep class com.adjust.sdk.** { *; }
 -keep class com.google.android.gms.common.ConnectionResult {
     int SUCCESS;
@@ -85,7 +85,7 @@ If you're using Proguard to optimize your app, you must add rules to prevent Pro
 
 If you're not publishing your app in the Google Play Store, add the following rule:
 
-```{code-block} java
+```java
 -keep public class com.adjust.sdk.** { *; }
 ```
 
@@ -101,7 +101,7 @@ The Google Play Referrer API is available to apps that target the Google Play St
 
 To support the Google Play Referrer API, add the following to your {file}`build.gradle` file:
 
-```{code-block} groovy
+```groovy
 dependencies {
    implementation 'com.android.installreferrer:installreferrer:2.2'
 }
@@ -109,7 +109,7 @@ dependencies {
 
 If you're using Proguard, remember to add a rule to prevent the dependency from being removed.
 
-```{code-block} java
+```java
 -keep public class com.android.installreferrer.** { *; }
 ```
 
@@ -147,7 +147,7 @@ The recommended way to initialize the Adjust SDK is inside a global Android [App
 2. Open the {file}`AndroidManifest.xml` file and locate the `<application>` element.
 3. Add the `android:name` attribute to the `<application>` element and set it to the name of your application class. For example, if your `Application` class is named `GlobalApplication`, you would set the following:
 
-   ```{code-block} xml
+   ```xml
    <application android:name=".GlobalApplication">
       <!-- ... -->
    </application>
@@ -160,7 +160,7 @@ The recommended way to initialize the Adjust SDK is inside a global Android [App
 
    :::{tab-set-code}
 
-   ```{code-block} kotlin
+   ```kotlin
    import com.adjust.sdk.Adjust;
    import com.adjust.sdk.AdjustConfig;
 
@@ -177,7 +177,7 @@ The recommended way to initialize the Adjust SDK is inside a global Android [App
    }
    ```
 
-   ```{code-block} java
+   ```java
    import com.adjust.sdk.Adjust;
    import com.adjust.sdk.AdjustConfig;
 
@@ -209,7 +209,7 @@ If your app uses web views, you need to use the Adjust Web View SDK to record in
 
    :::{tab-set-code}
 
-   ```{code-block} kotlin
+   ```kotlin
    class MainActivity : Activity() {
       override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
@@ -236,7 +236,7 @@ If your app uses web views, you need to use the Adjust Web View SDK to record in
    }
    ```
 
-   ```{code-block} java
+   ```java
    public class MainActivity extends Activity {
       @Override
       protected void onCreate(Bundle savedInstanceState) {
@@ -269,7 +269,7 @@ If your app uses web views, you need to use the Adjust Web View SDK to record in
 
 6. Import the Adjust Javascript files in your HTML:
 
-   ```{code-block} html
+   ```html
    <script type="text/javascript" src="adjust.js"></script>
    <script type="text/javascript" src="adjust_event.js"></script>
    <script type="text/javascript" src="adjust_third_party_sharing.js"></script>
@@ -278,7 +278,7 @@ If your app uses web views, you need to use the Adjust Web View SDK to record in
 
 7. You can now initialize the Adjust SDK in your web view by passing your `appToken` and `environment` to the `AdjustConfig` class:
 
-   ```{code-block} js
+   ```js
    let yourAppToken = '{YourAppToken}';
    let environment = AdjustConfig.EnvironmentSandbox;
    let adjustConfig = new AdjustConfig(yourAppToken, environment);
@@ -303,7 +303,7 @@ To set up session recording for API level 14 and above:
 
    :::{tab-set-code}
 
-   ```{code-block} kotlin
+   ```kotlin
    import com.adjust.sdk.Adjust;
    import com.adjust.sdk.AdjustConfig;
 
@@ -332,7 +332,7 @@ To set up session recording for API level 14 and above:
    }
    ```
 
-   ```{code-block} java
+   ```java
    import com.adjust.sdk.Adjust;
    import com.adjust.sdk.AdjustConfig;
 
@@ -380,7 +380,7 @@ To set up session recording in apps targeting API level 13 and below, follow the
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 import com.adjust.sdk.Adjust;
 
 class YourActivity : Activity () {
@@ -395,7 +395,7 @@ class YourActivity : Activity () {
 }
 ```
 
-```{code-block} java
+```java
 import com.adjust.sdk.Adjust;
 
 public class YourActivity extends Activity {
@@ -421,7 +421,7 @@ Once you've finished your testing, you can build your app for production. To do 
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val appToken = "{YourAppToken}"
 val environment = AdjustConfig.ENVIRONMENT_PRODUCTION;
 val config = AdjustConfig(this, appToken, environment)
@@ -429,7 +429,7 @@ config.setLogLevel(LogLevel.WARN)
 Adjust.onCreate(config)
 ```
 
-```{code-block} java
+```java
 String appToken = "{YourAppToken}";
 String environment = AdjustConfig.ENVIRONMENT_PRODUCTION;
 AdjustConfig config = new AdjustConfig(this, appToken, environment);

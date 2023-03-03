@@ -3,7 +3,7 @@
 You can associate your [Adjust event tokens](https://help.adjust.com/en/article/basic-event-setup#create-an-event-token) to actions in your app to record them. To record an event:
 
 * Create a new Adjust event instance and pass your event token as a string argument.
-* Call the [`trackEvent` method](android-trackEvent-invocation) with your event instance as an argument.
+* Call the [`trackEvent` method](#android-trackevent-invocation) with your event instance as an argument.
 
 :::{include} /android/reference/Adjust/recording.md
 :start-after: trackEvent snippet
@@ -16,21 +16,21 @@ This example demonstrates how to record an event with the token {{ eventToken }}
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 fun onTrackSimpleEventClick(v: View) {
    val event = AdjustEvent("g3mfiw")
    Adjust.trackEvent(event)
 }
 ```
 
-```{code-block} java
+```java
 public void onTrackSimpleEventClick(View v) {
    AdjustEvent event = new AdjustEvent("g3mfiw");
    Adjust.trackEvent(event);
 }
 ```
 
-```{code-block} javascript
+```javascript
 window.onload = function() {
       var btnTrackSimpleEvent = document.getElementById('btnTrackSimpleEvent')
       btnTrackSimpleEvent.onclick = function(e) {
@@ -48,7 +48,7 @@ window.onload = function() {
 
 You can record revenue associated with an event by setting the revenue and currency properties on your event instance. Use this feature to record revenue-generating actions in your app.
 
-To set these properties, call the [`setRevenue` method](android-AdjustEvent-setRevenue-invocation) and pass the following arguments:
+To set these properties, call the [`setRevenue` method](#android-adjustevent-setrevenue-invocation) and pass the following arguments:
 
 * The `revenue` amount (**number**)
 * The `currency` code (**string**)
@@ -70,7 +70,7 @@ This example demonstrates how to record an event with the token {{ eventToken }}
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 fun onTrackRevenueEventClick(v: View) {
    val event = AdjustEvent("g3mfiw")
    event.setRevenue(0.25, "EUR")
@@ -78,7 +78,7 @@ fun onTrackRevenueEventClick(v: View) {
 }
 ```
 
-```{code-block} java
+```java
 public void onTrackRevenueEventClick(View v) {
    AdjustEvent event = new AdjustEvent("g3mfiw");
    event.setRevenue(0.25, "EUR")
@@ -86,7 +86,7 @@ public void onTrackRevenueEventClick(View v) {
 }
 ```
 
-```{code-block} javascript
+```javascript
 window.onload = function() {
       var btnTrackRevenueEvent = document.getElementById('btnTrackRevenueEvent')
       btnTrackRevenueEvent.onclick = function(e) {
@@ -105,7 +105,7 @@ window.onload = function() {
 
 You can pass an optional identifier to avoid recording duplicate events. The SDK stores the last ten identifiers and skips revenue events with duplicate transaction IDs.
 
-To set the identifier, call the [`setOrderId` method](android-setOrderId-invocation) and pass your transaction ID as a **string** argument.
+To set the identifier, call the [`setOrderId` method](#android-setorderid-invocation) and pass your transaction ID as a **string** argument.
 
 :::{include} /android/reference/AdjustEvent.md
 :start-after: setOrderId snippet
@@ -114,11 +114,11 @@ To set the identifier, call the [`setOrderId` method](android-setOrderId-invocat
 
 ::::{dropdown} Example
 
-This example demonstrates how to record an event with the token {{ eventToken }} whenever a user interacts with a button. The function sets the `orderId` to {{ uniqueEventId }} using the [`setOrderId` method](android-setOrderId-invocation).
+This example demonstrates how to record an event with the token {{ eventToken }} whenever a user interacts with a button. The function sets the `orderId` to {{ uniqueEventId }} using the [`setOrderId` method](#android-setorderid-invocation).
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 fun onTrackUniqueEventClick(v: View) {
    val event = AdjustEvent("g3mfiw")
    event.setOrderId("5e85484b-1ebc-4141-aab7-25b869e54c49")
@@ -126,7 +126,7 @@ fun onTrackUniqueEventClick(v: View) {
 }
 ```
 
-```{code-block} java
+```java
 public void onTrackUniqueEventClick(View v) {
    AdjustEvent event = new AdjustEvent("g3mfiw");
    event.setOrderId("5e85484b-1ebc-4141-aab7-25b869e54c49")
@@ -134,7 +134,7 @@ public void onTrackUniqueEventClick(View v) {
 }
 ```
 
-```{code-block} javascript
+```javascript
 window.onload = function() {
       var btnTrackUniqueEvent = document.getElementById('btnTrackUniqueEvent')
       btnTrackUniqueEvent.onclick = function(e) {
@@ -155,7 +155,7 @@ If you [register a callback URL](https://help.adjust.com/en/article/set-up-callb
 
 You can configure callback parameters to send to your servers. Once you configure parameters on an event, the SDK appends them to your [callback URL](https://help.adjust.com/en/article/raw-data-exports). You can use this information to analyze your users' in-app behavior with your BI system.
 
-Add callback parameters to your event by calling the [`addCallbackParameter` method](android-AdjustEvent-addCallbackParameter-invocation) with **string** key-value arguments. You can add multiple parameters by calling this method multiple times.
+Add callback parameters to your event by calling the [`addCallbackParameter` method](#android-adjustevent-addcallbackparameter-invocation) with **string** key-value arguments. You can add multiple parameters by calling this method multiple times.
 
 :::{include} /android/reference/AdjustEvent.md
 :start-after: addCallbackParameter snippet
@@ -195,7 +195,7 @@ http://www.mydomain.com/callback?event_token=g3mfiw&revenue_amount=0.05
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 fun onTrackUniqueEventClick(v: View) {
    val event = AdjustEvent("g3mfiw")
    event.addCallbackParameter("event_token", "g3mfiw")
@@ -204,7 +204,7 @@ fun onTrackUniqueEventClick(v: View) {
 }
 ```
 
-```{code-block} java
+```java
 public void onTrackUniqueEventClick(View v) {
    AdjustEvent event = new AdjustEvent("g3mfiw");
    event.addCallbackParameter("event_token", "g3mfiw");
@@ -213,7 +213,7 @@ public void onTrackUniqueEventClick(View v) {
 }
 ```
 
-```{code-block} javascript
+```javascript
 window.onload = function() {
       var btnTrackUniqueEvent = document.getElementById('btnTrackUniqueEvent')
       btnTrackUniqueEvent.onclick = function(e) {
@@ -239,7 +239,7 @@ Adjust sends partner parameters to [external partners](https://help.adjust.com/e
 Partner parameters don't appear in raw data by default. You can add the `{partner_parameters}` placeholder to receive them as a single string.
 :::
 
-Add partner parameters to your event by calling the [`addPartnerParameter` method](android-AdjustEvent-addPartnerParameter-invocation) with **string** key-value arguments. You can add multiple parameters by calling this method multiple times.
+Add partner parameters to your event by calling the [`addPartnerParameter` method](#android-adjustevent-addpartnerparameter-invocation) with **string** key-value arguments. You can add multiple parameters by calling this method multiple times.
 
 :::{include} /android/reference/AdjustEvent.md
 :start-after: addPartnerParameter snippet
@@ -255,7 +255,7 @@ This example demonstrates how to record an event with the token {{ eventToken }}
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 fun onTrackUniqueEventClick(v: View) {
    val event = AdjustEvent("g3mfiw")
    event.addPartnerParameter("product_id", "29")
@@ -264,7 +264,7 @@ fun onTrackUniqueEventClick(v: View) {
 }
 ```
 
-```{code-block} java
+```java
 public void onTrackUniqueEventClick(View v) {
    AdjustEvent event = new AdjustEvent("g3mfiw");
    event.addPartnerParameter("product_id", "29");
@@ -273,7 +273,7 @@ public void onTrackUniqueEventClick(View v) {
 }
 ```
 
-```{code-block} javascript
+```javascript
 window.onload = function() {
       var btnTrackUniqueEvent = document.getElementById('btnTrackUniqueEvent')
       btnTrackUniqueEvent.onclick = function(e) {
@@ -294,7 +294,7 @@ window.onload = function() {
 
 You can add a custom string identifier to each event you want to measure. Adjust's servers can report on this identifier in event callbacks. This enables you to keep track of which events have been successfully measured.
 
-Set up this identifier by calling the [`setCallbackId` method](android-setCallbackId-invocation) with your ID as a **string** argument.
+Set up this identifier by calling the [`setCallbackId` method](#android-setcallbackid-invocation) with your ID as a **string** argument.
 
 :::{include} /android/reference/AdjustEvent.md
 :start-after: setCallbackId snippet
@@ -307,7 +307,7 @@ This example demonstrates how to record an event with the token {{ eventToken }}
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 fun onTrackUniqueEventClick(v: View) {
    val event = AdjustEvent("g3mfiw")
    event.setCallbackId("f2e728d8-271b-49ab-80ea-27830a215147")
@@ -315,7 +315,7 @@ fun onTrackUniqueEventClick(v: View) {
 }
 ```
 
-```{code-block} java
+```java
 public void onTrackUniqueEventClick(View v) {
    AdjustEvent event = new AdjustEvent("g3mfiw");
    event.setCallbackId("f2e728d8-271b-49ab-80ea-27830a215147")
@@ -323,7 +323,7 @@ public void onTrackUniqueEventClick(View v) {
 }
 ```
 
-```{code-block} javascript
+```javascript
 window.onload = function() {
       var btnTrackUniqueEvent = document.getElementById('btnTrackUniqueEvent')
       btnTrackUniqueEvent.onclick = function(e) {

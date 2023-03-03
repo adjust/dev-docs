@@ -50,7 +50,7 @@ This example demonstrates how to created a callback function `sessionSuccess` an
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val config = AdjustConfig(this, appToken, environment)
 
 config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
@@ -62,7 +62,7 @@ config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListe
 Adjust.onCreate(config)
 ```
 
-```{code-block} java
+```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
 
 config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
@@ -75,7 +75,7 @@ config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListe
 Adjust.onCreate(config)
 ```
 
-```{code-block} javascript
+```javascript
 function sessionSuccess(sessionSuccessResponseData) {
    console.log('Session recorded at ' + sessionSuccessResponseData.Timestamp)
 }
@@ -104,7 +104,7 @@ This example demonstrates how to created a callback function `sessionFailure` an
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val config = AdjustConfig(this, appToken, environment)
 
 config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
@@ -116,7 +116,7 @@ config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() 
 Adjust.onCreate(config)
 ```
 
-```{code-block} java
+```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
 
 config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
@@ -129,7 +129,7 @@ config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() 
 Adjust.onCreate(config)
 ```
 
-```{code-block} javascript
+```javascript
 function sessionFailure(sessionFailureResponseData) {
    console.log('Session recording failed. Response: ' + sessionFailureResponseData.Message)
 }
@@ -193,7 +193,7 @@ This example demonstrates how to created a callback function `eventSuccess` and 
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val config = AdjustConfig(this, appToken, environment)
 
 config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
@@ -205,7 +205,7 @@ config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener(
 Adjust.onCreate(config)
 ```
 
-```{code-block} java
+```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
 
 config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
@@ -218,7 +218,7 @@ config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener(
 Adjust.onCreate(config)
 ```
 
-```{code-block} javascript
+```javascript
 function eventSuccess(eventSuccessResponseData) {
    console.log('Event recorded at ' + eventSuccessResponseData.Timestamp)
 }
@@ -247,7 +247,7 @@ This example demonstrates how to created a callback function `eventFailure` and 
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val config = AdjustConfig(this, appToken, environment)
 
 config.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
@@ -259,7 +259,7 @@ config.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
 Adjust.onCreate(config)
 ```
 
-```{code-block} java
+```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
 
 config.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
@@ -272,7 +272,7 @@ config.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
 Adjust.onCreate(config)
 ```
 
-```{code-block} javascript
+```javascript
 function eventFailure(eventFailureResponseData) {
    console.log('Event recording failed. Response: ' + eventFailureResponseData.Message)
 }

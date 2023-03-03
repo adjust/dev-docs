@@ -47,7 +47,7 @@ Create an `AdjustPlayStoreSubscription` object with the following properties
 
 You can record the date on which the user purchased a subscription. The SDK returns this data for you to report on.
 
-Call the [`setPurchaseTime` method](android-setPurchaseTime-invocation) on your subscription object to record the timestamp of the subscription.
+Call the [`setPurchaseTime` method](#android-setpurchasetime-invocation) on your subscription object to record the timestamp of the subscription.
 
 :::{include} /android/reference/AdjustPlayStoreSubscription.md
 :start-after: setPurchaseTime snippet
@@ -56,7 +56,7 @@ Call the [`setPurchaseTime` method](android-setPurchaseTime-invocation) on your 
 
 ### Add callback parameters
 
-You can add callback parameters to your subscription object. The SDK appends these parameters to your callback URL. To add callback parameters, call the `addCallbackParameter` method on your subscription object. You can add multiple callback parameters by calling this method multiple times.
+You can add callback parameters to your subscription object. The SDK appends these parameters to your callback URL. To add callback parameters, call the [`addCallbackParameter` method](#android-adjustplaystoresubscription-addcallbackparameter-invocation) on your subscription object. You can add multiple callback parameters by calling this method multiple times.
 
 :::{include} /android/reference/AdjustPlayStoreSubscription.md
 :start-after: addCallbackParameter snippet
@@ -65,7 +65,7 @@ You can add callback parameters to your subscription object. The SDK appends the
 
 ### Add partner parameters
 
-You can add partner parameters to your subscription object. The SDK sends these to Adjust's servers when the user purchases a subscription. Adjust's servers forward the information on to your network partner. To add partner parameters, call the `addPartnerParameter` method on your subscription object. You can add multiple partner parameters by calling this method multiple times.
+You can add partner parameters to your subscription object. The SDK sends these to Adjust's servers when the user purchases a subscription. Adjust's servers forward the information on to your network partner. To add partner parameters, call the [`addPartnerParameter` method](#android-adjustplaystoresubscription-addpartnerparameter-invocation) on your subscription object. You can add multiple partner parameters by calling this method multiple times.
 
 :::{include} /android/reference/AdjustPlayStoreSubscription.md
 :start-after: addPartnerParameter snippet
@@ -76,7 +76,7 @@ You can add partner parameters to your subscription object. The SDK sends these 
 
 Once you have set up your subscription object, you can record it using the Adjust SDK.
 
-Pass your subscription object to the [`trackPlayStoreSubscription` method](android-trackPlayStoreSubscription-invocation) method to record the user's subscription purchase.
+Pass your subscription object to the [`trackPlayStoreSubscription` method](#android-trackplaystoresubscription-invocation) method to record the user's subscription purchase.
 
 :::{include} /android/reference/Adjust/recording.md
 :start-after: trackPlayStoreSubscription snippet

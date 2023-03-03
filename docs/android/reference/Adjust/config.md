@@ -9,9 +9,8 @@ Use these methods to update the Adjust SDK's configuration.
 
 Enable or disable the Adjust SDK. The SDK doesn't send any information while disabled.
 
-```{code-block} java
-:name: android-setEnabled-invocation
-
+{#android-setenabled-invocation}
+```java
 public static void setEnabled(boolean enabled)
 ```
 
@@ -22,15 +21,15 @@ public static void setEnabled(boolean enabled)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 Adjust.setEnabled(false)
 ```
 
-```{code-block} java
+```java
 Adjust.setEnabled(false);
 ```
 
-```{code-block} javascript
+```javascript
 Adjust.setEnabled(false);
 ```
 
@@ -49,9 +48,8 @@ Adjust.setEnabled(false);
 
 Call this method to check whether the Adjust SDK is enabled.
 
-```{code-block} java
-:name: android-isEnabled-invocation
-
+{#android-isenabled-invocation}
+```java
 public static boolean isEnabled()
 ```
 
@@ -62,15 +60,15 @@ public static boolean isEnabled()
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 Adjust.isEnabled()
 ```
 
-```{code-block} java
+```java
 Adjust.isEnabled();
 ```
 
-```{code-block} javascript
+```javascript
 Adjust.isEnabled();
 ```
 
@@ -89,9 +87,8 @@ Adjust.isEnabled();
 
 Controls whether the SDK is in offline mode. When in offline mode, the SDK queues all events in a file until offline mode is disabled. When offline mode is disabled, the SDK sends all queued events.
 
-```{code-block} java
-:name: android-setOfflineMode-invocation
-
+{#android-setofflinemode-invocation}
+```java
 public static void setOfflineMode(boolean enabled)
 ```
 
@@ -102,15 +99,15 @@ public static void setOfflineMode(boolean enabled)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 Adjust.setOfflineMode(true)
 ```
 
-```{code-block} java
+```java
 Adjust.setOfflineMode(true);
 ```
 
-```{code-block} javascript
+```javascript
 Adjust.setOfflineMode(true);
 ```
 
@@ -129,9 +126,8 @@ Adjust.setOfflineMode(true);
 
 Set your [push token](https://help.adjust.com/en/article/push-notifications) to record [uninstalls and reattributions](https://help.adjust.com/en/article/uninstalls-reinstalls). You can update this value at any time.
 
-```{code-block} java
-:name: android-setPushToken-invocation
-
+{#android-setpushtoken-invocation}
+```java
 public static void setPushToken(final String token, final Context context)
 ```
 
@@ -144,15 +140,15 @@ public static void setPushToken(final String token, final Context context)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 Adjust.setPushToken("{YourPushToken}", getApplicationContext())
 ```
 
-```{code-block} java
+```java
 Adjust.setPushToken("{YourPushToken}", getApplicationContext());
 ```
 
-```{code-block} javascript
+```javascript
 Adjust.setPushToken('{YourPushToken}');
 ```
 
@@ -175,9 +171,8 @@ This method has an effect only if you delay the start of the Adjust SDK.
 
 The Adjust SDK sends information to Adjust's servers as soon as it starts. If you delay the start of the SDK, you can use this method to send packages before the delay ends.
 
-```{code-block} java
-:name: android-sendFirstPackages-invocation
-
+{#android-sendfirstpackages-invocation}
+```java
 public static void sendFirstPackages()
 ```
 
@@ -185,15 +180,15 @@ public static void sendFirstPackages()
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 Adjust.sendFirstPackages()
 ```
 
-```{code-block} java
+```java
 Adjust.sendFirstPackages();
 ```
 
-```{code-block} javascript
+```javascript
 Adjust.sendFirstPackages();
 ```
 
@@ -216,9 +211,8 @@ Processes URLs to extract deep link information.
 You need to pass your app context to this method to use it.
 :::
 
-```{code-block} java
-:name: android-appWillOpenUrl-invocation
-
+{#android-appwillopenurl-invocation}
+```java
 public static void appWillOpenUrl(Uri url, Context context)
 ```
 
@@ -226,7 +220,7 @@ public static void appWillOpenUrl(Uri url, Context context)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 override fun onCreate(savedInstanceState: Bundle?) {
    super.onCreate(savedInstanceState)
    setContentView(R.layout.activity_main)
@@ -237,7 +231,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
 }
 ```
 
-```{code-block} java
+```java
 @Override
 protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -249,7 +243,7 @@ protected void onCreate(Bundle savedInstanceState) {
 }
 ```
 
-```{code-block} javascript
+```javascript
 Adjust.appWillOpenUrl(deeplinkUrl);
 ```
 

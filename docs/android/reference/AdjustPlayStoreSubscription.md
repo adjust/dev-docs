@@ -1,6 +1,6 @@
 # AdjustPlayStoreSubscription class
 
-Use this class to store Play Store subscription information. You can pass this to Adjust's servers using the [`trackPlayStoreSubscription` method](android-trackPlayStoreSubscription-invocation).
+Use this class to store Play Store subscription information. You can pass this to Adjust's servers using the [`trackPlayStoreSubscription` method](#android-trackplaystoresubscription-invocation).
 
 % Class method AdjustPlayStoreSubscription
 
@@ -9,9 +9,8 @@ Use this class to store Play Store subscription information. You can pass this t
 
 Initializes a subscription
 
-```{code-block} java
-:name: android-AdjustPlayStoreSubscription-invocation
-
+{#android-adjustplaystoresubscription-invocation}
+```java
 public AdjustPlayStoreSubscription(final long price,
                                        final String currency,
                                        final String sku,
@@ -37,7 +36,7 @@ public AdjustPlayStoreSubscription(final long price,
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val subscription = AdjustPlayStoreSubscription(
     price,
     currency,
@@ -50,7 +49,7 @@ subscription.setPurchaseTime(purchaseTime)
 Adjust.trackPlayStoreSubscription(subscription)
 ```
 
-```{code-block} java
+```java
 AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
     price,
     currency,
@@ -78,9 +77,8 @@ Adjust.trackPlayStoreSubscription(subscription);
 
 Sets the date of the transaction in the subscription object
 
-```{code-block} java
-:name: android-setPurchaseTime-invocation
-
+{#android-setpurchasetime-invocation}
+```java
 public void setPurchaseTime(final long purchaseTime)
 ```
 
@@ -91,11 +89,11 @@ public void setPurchaseTime(final long purchaseTime)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 subscription.setPurchaseTime("1677668234")
 ```
 
-```{code-block} java
+```java
 subscription.setPurchaseTime("1677668234");
 ```
 
@@ -114,9 +112,8 @@ subscription.setPurchaseTime("1677668234");
 
 Adds key-value callback parameters to the subscription object. You can add multiple parameters by calling this method multiple times.
 
-```{code-block} java
-:name: android-AdjustPlayStoreSubscription-addCallbackParameter-invocation
-
+{#android-adjustplaystoresubscription-addcallbackparameter-invocation}
+```java
 public void addCallbackParameter(String key, String value)
 ```
 
@@ -129,12 +126,12 @@ public void addCallbackParameter(String key, String value)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 subscription.addCallbackParameter("key", "value")
 subscription.addCallbackParameter("foo", "bar")
 ```
 
-```{code-block} java
+```java
 subscription.addCallbackParameter("key", "value");
 subscription.addCallbackParameter("foo", "bar");
 ```
@@ -154,9 +151,8 @@ subscription.addCallbackParameter("foo", "bar");
 
 Adds key-value partner parameters to the subscription object. You can add multiple parameters by calling this method multiple times.
 
-```{code-block} java
-:name: android-AdjustPlayStoreSubscription-addPartnerParameter-invocation
-
+{#android-adjustplaystoresubscription-addpartnerparameter-invocation}
+```java
 public void addPartnerParameter(String key, String value)
 ```
 
@@ -169,12 +165,12 @@ public void addPartnerParameter(String key, String value)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 subscription.addPartnerParameter("key", "value")
 subscription.addPartnerParameter("foo", "bar")
 ```
 
-```{code-block} java
+```java
 subscription.addPartnerParameter("key", "value");
 subscription.addPartnerParameter("foo", "bar");
 ```

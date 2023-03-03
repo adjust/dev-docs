@@ -4,10 +4,10 @@ The `AdjustAttribution` class contains details about the current attribution sta
 
 ## Properties
 
-The following properties can be accessed by calling the [`getAttribution` method](android-getAttribution-invocation). Any values that aren't populated for the user are returned as a null value.
+The following properties can be accessed by calling the [`getAttribution` method](#android-getattribution-invocation). Any values that aren't populated for the user are returned as a null value.
 
 :::{note}
-The following values can only be accessed if the [`needsCost`](android-setNeedsCost-invocation) property on your `AdjustConfig` instance is `true`:
+The following values can only be accessed if the [`needsCost`](#android-setneedscost-invocation) property on your `AdjustConfig` instance is `true`:
 
 * `costType`
 * `costAmount`

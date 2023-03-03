@@ -7,7 +7,7 @@ The Adjust SDK provides configurable log levels to return different amounts of i
 :end-before: tableEnd
 :::
 
-You can set your log level by calling the [`setLogLevel` method](android-setLogLevel-invocation) on your `AdjustConfig` instance.
+You can set your log level by calling the [`setLogLevel` method](#android-setloglevel-invocation) on your `AdjustConfig` instance.
 
 :::{include} /android/reference/AdjustConfig/setup.md
 :start-after: setLogLevel snippet

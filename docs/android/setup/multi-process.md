@@ -6,14 +6,14 @@ Calling the SDK in multiple processes without setting the process name initializ
 
 Android apps can consist of one or more processes. To run services or activities in a process other than the main one, you need to add a process name to your activity or service. To do this, add an `android:process` property to your `activity` or `service` node in your {file}`AndroidManifest.xml` file.
 
-```{code-block} xml
+```xml
 <activity
     android:name=".YourActivity"
     android:process=":YourProcessName">
 </activity>
 ```
 
-```{code-block} xml
+```xml
 <service
     android:name=".YourService"
     android:process=":YourProcessName">
@@ -28,7 +28,7 @@ The Adjust SDK doesn't currently support tracking for more than one process in a
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val appToken = "{YourAppToken}"
 val environment = AdjustConfig.ENVIRONMENT_SANDBOX
 
@@ -38,7 +38,7 @@ config.setProcessName("com.example.myapp")
 Adjust.onCreate(config)
 ```
 
-```{code-block} java
+```java
 String appToken = "{YourAppToken}";
 String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
 
@@ -48,7 +48,7 @@ config.setProcessName("com.example.myapp");
 Adjust.onCreate(config);
 ```
 
-```{code-block} javascript
+```javascript
 let appToken = "{YourAppToken}";
 let environment = AdjustConfig.EnvironmentSandbox;
 let adjustConfig = new AdjustConfig(appToken, environment);
@@ -61,7 +61,7 @@ Adjust.onCreate(adjustConfig)
 
 To change the name of your main process, modify the `android:process` property of the `application` node in your {file}`AndroidManifest.xml` file.
 
-```{code-block} xml
+```xml
 <application
   android:name=".YourApp"
   android:icon="@drawable/ic_launcher"
@@ -75,7 +75,7 @@ Then set your process name in your `AdjustConfig` object.
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val appToken = "{YourAppToken}"
 val environment = AdjustConfig.ENVIRONMENT_SANDBOX
 
@@ -85,7 +85,7 @@ config.setProcessName("com.example.myapp:YourMainProcessName")
 Adjust.onCreate(config)
 ```
 
-```{code-block} java
+```java
 String appToken = "{YourAppToken}";
 String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
 
@@ -95,7 +95,7 @@ config.setProcessName("com.example.myapp:YourMainProcessName");
 Adjust.onCreate(config);
 ```
 
-```{code-block} javascript
+```javascript
 let appToken = "{YourAppToken}";
 let environment = AdjustConfig.EnvironmentSandbox;
 let adjustConfig = new AdjustConfig(appToken, environment);
@@ -108,6 +108,6 @@ Adjust.onCreate(adjustConfig)
 
 This informs the Adjust SDK of the main process name. The SDK only initializes in the **main** process. If you try to use the SDK in another process you'll see the following in the output logs:
 
-```{code-block} text
+```text
 05-06 17:15:06.885    8743-8743/com.example.myapp:YourProcessName I/Adjust﹕ Skipping initialization in background process (com.example.myapp:YourProcessName)
 ```

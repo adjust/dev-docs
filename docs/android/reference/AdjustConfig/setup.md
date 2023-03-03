@@ -7,9 +7,8 @@
 
 Set the verbosity of logs you want to receive from the Adjust SDK
 
-```{code-block} java
-:name: android-setLogLevel-invocation
-
+{#android-setloglevel-invocation}
+```java
 public void setLogLevel(LogLevel logLevel)
 ```
 
@@ -20,9 +19,8 @@ public void setLogLevel(LogLevel logLevel)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
-:emphasize-lines: 4
-
+{emphasize-lines="4"}
+```kotlin
 val appToken = "{YourAppToken}"
 val environment = AdjustConfig.ENVIRONMENT_SANDBOX
 val config = AdjustConfig(this, appToken, environment)
@@ -31,9 +29,8 @@ config.setLogLevel(LogLevel.VERBOSE)
 Adjust.onCreate(config)
 ```
 
-```{code-block} java
-:emphasize-lines: 4
-
+{emphasize-lines="4"}
+```java
 String appToken = "{YourAppToken}";
 String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
@@ -42,9 +39,8 @@ config.setLogLevel(LogLevel.VERBOSE);
 Adjust.onCreate(config);
 ```
 
-```{code-block} javascript
-:emphasize-lines: 4
-
+{emphasize-lines="4"}
+```javascript
 var yourAppToken = yourAppToken;
 var environment = AdjustConfig.EnvironmentSandbox;
 var adjustConfig = new AdjustConfig(yourAppToken, environment);
@@ -102,9 +98,8 @@ adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
 Sets an external device identifier for reporting purposes
 :::
 
-```{code-block} java
-:name: android-setExternalDeviceId-invocation
-
+{#android-setexternaldeviceid-invocation}
+```java
 public void setExternalDeviceId(String externalDeviceId)
 ```
 
@@ -115,9 +110,8 @@ public void setExternalDeviceId(String externalDeviceId)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
-:emphasize-lines: 4
-
+{emphasize-lines="4"}
+```kotlin
 val appToken = "{YourAppToken}"
 val environment = AdjustConfig.ENVIRONMENT_SANDBOX
 val config = AdjustConfig(this, appToken, environment)
@@ -126,9 +120,8 @@ config.externalDeviceId("{YourExternalDeviceId}")
 Adjust.onCreate(config)
 ```
 
-```{code-block} java
-:emphasize-lines: 4
-
+{emphasize-lines="4"}
+```java
 String appToken = "{YourAppToken}";
 String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
@@ -137,9 +130,8 @@ config.externalDeviceId("{YourExternalDeviceId}");
 Adjust.onCreate(config);
 ```
 
-```{code-block} javascript
-:emphasize-lines: 4
-
+{emphasize-lines="4"}
+```javascript
 var yourAppToken = yourAppToken;
 var environment = AdjustConfig.EnvironmentSandbox;
 var adjustConfig = new AdjustConfig(yourAppToken, environment);
@@ -161,9 +153,8 @@ adjustConfig.externalDeviceId('{YourExternalDeviceId}');
 
 Sets event buffering. If enabled, the SDK stores events on the device and sends all requests once per minute.
 
-```{code-block} java
-:name: android-setEventBufferingEnabled-invocation
-
+{#android-seteventbufferingenabled-invocation}
+```java
 public void setEventBufferingEnabled(Boolean eventBufferingEnabled)
 ```
 
@@ -174,9 +165,8 @@ public void setEventBufferingEnabled(Boolean eventBufferingEnabled)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
-:emphasize-lines: 4
-
+{emphasize-lines="4"}
+```kotlin
 val appToken = "{YourAppToken}"
 val environment = AdjustConfig.ENVIRONMENT_SANDBOX
 val config = AdjustConfig(this, appToken, environment)
@@ -185,9 +175,8 @@ config.setEventBufferingEnabled(true)
 Adjust.onCreate(config)
 ```
 
-```{code-block} java
-:emphasize-lines: 4
-
+{emphasize-lines="4"}
+```java
 String appToken = "{YourAppToken}";
 String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
@@ -196,9 +185,8 @@ config.setEventBufferingEnabled(true);
 Adjust.onCreate(config);
 ```
 
-```{code-block} javascript
-:emphasize-lines: 4
-
+{emphasize-lines="4"}
+```javascript
 var yourAppToken = yourAppToken;
 var environment = AdjustConfig.EnvironmentSandbox;
 var adjustConfig = new AdjustConfig(yourAppToken, environment);
@@ -220,9 +208,8 @@ adjustConfig.setEventBufferingEnabled(true);
 
 Sets a default tracker token to record installs against
 
-```{code-block} java
-:name: android-setDefaultTracker-invocation
-
+{#android-setdefaulttracker-invocation}
+```java
 public void setDefaultTracker(String defaultTracker)
 ```
 
@@ -233,9 +220,8 @@ public void setDefaultTracker(String defaultTracker)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
-:emphasize-lines: 4
-
+{emphasize-lines="4"}
+```kotlin
 val appToken = "{YourAppToken}"
 val environment = AdjustConfig.ENVIRONMENT_SANDBOX
 val config = AdjustConfig(this, appToken, environment)
@@ -244,9 +230,8 @@ config.setDefaultTracker("{TrackerToken}")
 Adjust.onCreate(config)
 ```
 
-```{code-block} java
-:emphasize-lines: 4
-
+{emphasize-lines="4"}
+```java
 String appToken = "{YourAppToken}";
 String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
@@ -255,9 +240,8 @@ config.setDefaultTracker("{TrackerToken}");
 Adjust.onCreate(config);
 ```
 
-```{code-block} javascript
-:emphasize-lines: 4
-
+{emphasize-lines="4"}
+```javascript
 var yourAppToken = yourAppToken;
 var environment = AdjustConfig.EnvironmentSandbox;
 var adjustConfig = new AdjustConfig(yourAppToken, environment);
@@ -279,9 +263,8 @@ adjustConfig.setDefaultTracker('{TrackerToken}');
 
 Sets whether the SDK should send data while the app is running in the background
 
-```{code-block} java
-:name: android-setSendInBackground-invocation
-
+{#android-setsendinbackground-invocation}
+```java
 public void setSendInBackground(boolean sendInBackground)
 ```
 
@@ -292,9 +275,8 @@ public void setSendInBackground(boolean sendInBackground)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
-:emphasize-lines: 4
-
+{emphasize-lines="4"}
+```kotlin
 val appToken = "{YourAppToken}"
 val environment = AdjustConfig.ENVIRONMENT_SANDBOX
 val config = AdjustConfig(this, appToken, environment)
@@ -303,9 +285,8 @@ config.setSendInBackground(true)
 Adjust.onCreate(config)
 ```
 
-```{code-block} java
-:emphasize-lines: 4
-
+{emphasize-lines="4"}
+```java
 String appToken = "{YourAppToken}";
 String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
@@ -314,9 +295,8 @@ config.setSendInBackground(true);
 Adjust.onCreate(config);
 ```
 
-```{code-block} javascript
-:emphasize-lines: 4
-
+{emphasize-lines="4"}
+```javascript
 var yourAppToken = yourAppToken;
 var environment = AdjustConfig.EnvironmentSandbox;
 var adjustConfig = new AdjustConfig(yourAppToken, environment);
@@ -338,9 +318,8 @@ adjustConfig.setSendInBackground(true);
 
 Enables or disables preinstall tracking
 
-```{code-block} java
-:name: android-setPreinstallTrackingEnabled-invocation
-
+{#android-setpreinstalltrackingenabled-invocation}
+```java
 public void setPreinstallTrackingEnabled(boolean preinstallTrackingEnabled)
 ```
 
@@ -351,9 +330,8 @@ public void setPreinstallTrackingEnabled(boolean preinstallTrackingEnabled)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
-:emphasize-lines: 4
-
+{emphasize-lines="4"}
+```kotlin
 val appToken = "{YourAppToken}"
 val environment = AdjustConfig.ENVIRONMENT_SANDBOX
 val config = AdjustConfig(this, appToken, environment)
@@ -362,9 +340,8 @@ config.setPreinstallTrackingEnabled(true)
 Adjust.onCreate(config)
 ```
 
-```{code-block} java
-:emphasize-lines: 4
-
+{emphasize-lines="4"}
+```java
 String appToken = "{YourAppToken}";
 String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
@@ -373,9 +350,8 @@ config.setPreinstallTrackingEnabled(true);
 Adjust.onCreate(config);
 ```
 
-```{code-block} javascript
-:emphasize-lines: 4
-
+{emphasize-lines="4"}
+```javascript
 var yourAppToken = yourAppToken;
 var environment = AdjustConfig.EnvironmentSandbox;
 var adjustConfig = new AdjustConfig(yourAppToken, environment);
@@ -397,9 +373,8 @@ adjustConfig.setPreinstallTrackingEnabled(true);
 
 Defines a relative path where preinstall information is available. This directory must be world-readable
 
-```{code-block} java
-:name: android-setPreinstallFilePath-invocation
-
+{#android-setpreinstallfilepath-invocation}
+```java
 public void setPreinstallFilePath(String preinstallFilePath)
 ```
 
@@ -410,9 +385,8 @@ public void setPreinstallFilePath(String preinstallFilePath)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
-:emphasize-lines: 4
-
+{emphasize-lines="4"}
+```kotlin
 val appToken = "{YourAppToken}"
 val environment = AdjustConfig.ENVIRONMENT_SANDBOX
 val config = AdjustConfig(this, appToken, environment)
@@ -421,9 +395,8 @@ config.setPreinstallFilePath("../EngagementFile.xml")
 Adjust.onCreate(config)
 ```
 
-```{code-block} java
-:emphasize-lines: 4
-
+{emphasize-lines="4"}
+```java
 String appToken = "{YourAppToken}";
 String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
@@ -432,9 +405,8 @@ config.setPreinstallFilePath("../EngagementFile.xml");
 Adjust.onCreate(config);
 ```
 
-```{code-block} javascript
-:emphasize-lines: 4
-
+{emphasize-lines="4"}
+```javascript
 var yourAppToken = yourAppToken;
 var environment = AdjustConfig.EnvironmentSandbox;
 var adjustConfig = new AdjustConfig(yourAppToken, environment);
@@ -456,9 +428,8 @@ adjustConfig.setPreinstallFilePath('../EngagementFile.xml');
 
 Sets a delegate function that fires when a user's attribution information updates
 
-```{code-block} java
-:name: android-setOnAttributionChangedListener-invocation
-
+{#android-setonattributionchangedlistener-invocation}
+```java
 public void setOnAttributionChangedListener(OnAttributionChangedListener onAttributionChangedListener)
 ```
 
@@ -469,7 +440,7 @@ public void setOnAttributionChangedListener(OnAttributionChangedListener onAttri
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val config = AdjustConfig(this, appToken, environment)
 
 config.setOnAttributionChangedListener {
@@ -479,7 +450,7 @@ config.setOnAttributionChangedListener {
 Adjust.onCreate(config)
 ```
 
-```{code-block} java
+```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
 
 config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
@@ -490,7 +461,7 @@ config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
 Adjust.onCreate(config);
 ```
 
-```{code-block} javascript
+```javascript
 function attributionCallback(attribution) {}
 
 // ...
@@ -508,7 +479,7 @@ Adjust.onCreate(adjustConfig);
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val config = AdjustConfig(this, appToken, environment)
 
 config.setOnAttributionChangedListener {
@@ -527,7 +498,7 @@ fun extractFBInstallReferrerJSON(adjustAttribution: AdjustAttribution): JSONObje
 Adjust.onCreate(config)
 ```
 
-```{code-block} java
+```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
 
 config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
@@ -565,9 +536,8 @@ Adjust.onCreate(config);
 
 Sets whether the SDK should gather cost data. This is accessible in the user's attribution information.
 
-```{code-block} java
-:name: android-setNeedsCost-invocation
-
+{#android-setneedscost-invocation}
+```java
 public void setNeedsCost(boolean needsCost)
 ```
 
@@ -578,19 +548,19 @@ public void setNeedsCost(boolean needsCost)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val config = AdjustConfig(this, appToken, environment)
 config.setNeedsCost(true)
 Adjust.onCreate(config)
 ```
 
-```{code-block} java
+```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
 config.setNeedsCost(true);
 Adjust.onCreate(config);
 ```
 
-```{code-block} javascript
+```javascript
 var adjustConfig = new AdjustConfig(yourAppToken, environment);
 adjustConfig.setNeedsCost(true);
 Adjust.onCreate(adjustConfig);
@@ -611,9 +581,8 @@ Adjust.onCreate(adjustConfig);
 
 Sets a delay before the SDK starts to allow data to load before session information is sent to Adjust's servers. Maximum delay: 10 seconds
 
-```{code-block} java
-:name: android-setDelayStart-invocation
-
+{#android-setdelaystart-invocation}
+```java
 public void setDelayStart(double delayStart)
 ```
 
@@ -624,19 +593,19 @@ public void setDelayStart(double delayStart)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val config = AdjustConfig(this, appToken, environment)
 config.setDelayStart(5.5)
 Adjust.onCreate(config)
 ```
 
-```{code-block} java
+```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
 config.setDelayStart(5.5);
 Adjust.onCreate(config);
 ```
 
-```{code-block} javascript
+```javascript
 var adjustConfig = new AdjustConfig(yourAppToken, environment);
 adjustConfig.setDelayStart(5.5);
 Adjust.onCreate(adjustConfig);
@@ -657,9 +626,8 @@ Adjust.onCreate(adjustConfig);
 
 Sets up a success callback to trigger a function when the SDK records a session.
 
-```{code-block} java
-:name: android-setOnSessionTrackingSucceededListener-invocation
-
+{#android-setonsessiontrackingsucceededlistener-invocation}
+```java
 public void setOnSessionTrackingSucceededListener(OnSessionTrackingSucceededListener onSessionTrackingSucceededListener)
 ```
 
@@ -670,7 +638,7 @@ public void setOnSessionTrackingSucceededListener(OnSessionTrackingSucceededList
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val config = AdjustConfig(this, appToken, environment)
 
 config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
@@ -682,7 +650,7 @@ config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListe
 Adjust.onCreate(config)
 ```
 
-```{code-block} java
+```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
 
 config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
@@ -695,7 +663,7 @@ config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListe
 Adjust.onCreate(config)
 ```
 
-```{code-block} javascript
+```javascript
 function sessionSuccessCallback(sessionSuccessResponseData) {}
 
 let adjustConfig = new AdjustConfig(appToken, environment);
@@ -719,9 +687,8 @@ Adjust.onCreate(adjustConfig);
 
 Sets up a callback to trigger a function when the SDK fails to record a session.
 
-```{code-block} java
-:name: android-setOnSessionTrackingFailedListener-invocation
-
+{#android-setonsessiontrackingfailedlistener-invocation}
+```java
 public void setOnSessionTrackingFailedListener(OnSessionTrackingFailedListener onSessionTrackingFailedListener)
 ```
 
@@ -732,7 +699,7 @@ public void setOnSessionTrackingFailedListener(OnSessionTrackingFailedListener o
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val config = AdjustConfig(this, appToken, environment)
 
 config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
@@ -744,7 +711,7 @@ config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() 
 Adjust.onCreate(config)
 ```
 
-```{code-block} java
+```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
 
 config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
@@ -757,7 +724,7 @@ config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() 
 Adjust.onCreate(config)
 ```
 
-```{code-block} javascript
+```javascript
 function sessionFailureCallback(sessionFailureResponseData) {}
 
 let adjustConfig = new AdjustConfig(appToken, environment);
@@ -781,9 +748,8 @@ Adjust.onCreate(adjustConfig);
 
 Sets up a success callback to trigger a function when the SDK records an event.
 
-```{code-block} java
-:name: android-setOnEventTrackingSucceededListener-invocation
-
+{#android-setoneventtrackingsucceededlistener-invocation}
+```java
 public void setOnEventTrackingSucceededListener(OnEventTrackingSucceededListener onEventTrackingSucceededListener)
 ```
 
@@ -794,7 +760,7 @@ public void setOnEventTrackingSucceededListener(OnEventTrackingSucceededListener
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val config = AdjustConfig(this, appToken, environment)
 
 config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
@@ -806,7 +772,7 @@ config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener(
 Adjust.onCreate(config)
 ```
 
-```{code-block} java
+```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
 
 config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
@@ -819,7 +785,7 @@ config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener(
 Adjust.onCreate(config)
 ```
 
-```{code-block} javascript
+```javascript
 function eventSuccessCallback(eventSuccessResponseData) {}
 
 let adjustConfig = new AdjustConfig(appToken, environment);
@@ -843,9 +809,8 @@ Adjust.onCreate(adjustConfig);
 
 Sets up a callback to trigger a function when the SDK fails to record an event.
 
-```{code-block} java
-:name: android-setOnEventTrackingFailedListener-invocation
-
+{#android-setoneventtrackingfailedlistener-invocation}
+```java
 public void setOnEventTrackingFailedListener(OnEventTrackingFailedListener onEventTrackingFailedListener)
 ```
 
@@ -856,7 +821,7 @@ public void setOnEventTrackingFailedListener(OnEventTrackingFailedListener onEve
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val config = AdjustConfig(this, appToken, environment)
 
 config.setOnEventTrackingFailedListener (OnEventTrackingFailedListener() {
@@ -868,7 +833,7 @@ config.setOnEventTrackingFailedListener (OnEventTrackingFailedListener() {
 Adjust.onCreate(config)
 ```
 
-```{code-block} java
+```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
 
 config.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
@@ -881,7 +846,7 @@ config.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
 Adjust.onCreate(config)
 ```
 
-```{code-block} javascript
+```javascript
 function eventFailureCallback(eventFailureResponseData) {}
 
 let adjustConfig = new AdjustConfig(appToken, environment);
@@ -905,9 +870,8 @@ Adjust.onCreate(adjustConfig);
 
 Sets up a callback to trigger a function when the SDK receives a deferred deep link
 
-```{code-block} java
-:name: android-setOnDeeplinkResponseListener-invocation
-
+{#android-setondeeplinkresponselistener-invocation}
+```java
 public void setOnDeeplinkResponseListener(OnDeeplinkResponseListener onDeeplinkResponseListener)
 ```
 
@@ -918,7 +882,7 @@ public void setOnDeeplinkResponseListener(OnDeeplinkResponseListener onDeeplinkR
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val config = AdjustConfig(this, appToken, environment)
 
 config.setOnDeeplinkResponseListener { deeplink ->
@@ -931,7 +895,7 @@ config.setOnDeeplinkResponseListener { deeplink ->
 Adjust.onCreate(config)
 ```
 
-```{code-block} java
+```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
 
 // Evaluate the deeplink to be launched.
@@ -948,7 +912,7 @@ config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
 Adjust.onCreate(config);
 ```
 
-```{code-block} javascript
+```javascript
 function deferredDeeplinkCallback(deeplink) {}
 
 let adjustConfig = new AdjustConfig(yourAppToken, environment);

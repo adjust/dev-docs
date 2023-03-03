@@ -1,6 +1,6 @@
 # AdjustEvent class
 
-This class contains information about events triggered in your application. You can send this information to Adjust's servers by passing an `AdjustEvent` object to the [`trackEvent` method](android-trackEvent-invocation).
+This class contains information about events triggered in your application. You can send this information to Adjust's servers by passing an `AdjustEvent` object to the [`trackEvent` method](#android-trackevent-invocation).
 
 % Class method AdjustEvent
 
@@ -9,9 +9,8 @@ This class contains information about events triggered in your application. You 
 
 Creates an event object initialized with an Adjust event token
 
-```{code-block} java
-:name: android-AdjustEvent-invocation
-
+{#android-adjustevent-invocation}
+```java
 public AdjustEvent(String eventToken)
 ```
 
@@ -34,9 +33,8 @@ public AdjustEvent(String eventToken)
 
 Sets the revenue and currency associated with the event
 
-```{code-block} java
-:name: android-AdjustEvent-setRevenue-invocation
-
+{#android-adjustevent-setrevenue-invocation}
+```java
 public void setRevenue(double revenue, String currency)
 ```
 
@@ -49,7 +47,7 @@ public void setRevenue(double revenue, String currency)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val adjustEvent = AdjustEvent("abc123")
 //...
 adjustEvent.setRevenue(0.01, "EUR")
@@ -57,7 +55,7 @@ adjustEvent.setRevenue(0.01, "EUR")
 Adjust.trackEvent(adjustEvent)
 ```
 
-```{code-block} java
+```java
 AdjustEvent adjustEvent = new AdjustEvent("abc123");
 //...
 adjustEvent.setRevenue(0.01, "EUR");
@@ -65,7 +63,7 @@ adjustEvent.setRevenue(0.01, "EUR");
 Adjust.trackEvent(adjustEvent);
 ```
 
-```{code-block} javascript
+```javascript
 let adjustEvent = new AdjustEvent('abc123');
 adjustEvent.setRevenue(0.01, 'EUR');
 Adjust.trackEvent(adjustEvent);
@@ -88,9 +86,8 @@ Adds key-value callback parameters to the event object. You can add multiple par
 
 Event callback parameters override session callback parameters that have the same key.
 
-```{code-block} java
-:name: android-AdjustEvent-addCallbackParameter-invocation
-
+{#android-adjustevent-addcallbackparameter-invocation}
+```java
 public void addCallbackParameter(String key, String value)
 ```
 
@@ -103,21 +100,21 @@ public void addCallbackParameter(String key, String value)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val adjustEvent = AdjustEvent("abc123")
 adjustEvent.addCallbackParameter("key", "value")
 adjustEvent.addCallbackParameter("foo", "bar")
 Adjust.trackEvent(adjustEvent)
 ```
 
-```{code-block} java
+```java
 AdjustEvent adjustEvent = new AdjustEvent("abc123");
 adjustEvent.addCallbackParameter("key", "value");
 adjustEvent.addCallbackParameter("foo", "bar");
 Adjust.trackEvent(adjustEvent);
 ```
 
-```{code-block} javascript
+```javascript
 let adjustEvent = new AdjustEvent('abc123');
 adjustEvent.addCallbackParameter('key', 'value');
 adjustEvent.addCallbackParameter('foo', 'bar');
@@ -139,9 +136,8 @@ Adjust.trackEvent(adjustEvent);
 
 Adds key-value partner parameters to the event object. You can add multiple parameters by calling this method multiple times.
 
-```{code-block} java
-:name: android-AdjustEvent-addPartnerParameter-invocation
-
+{#android-adjustevent-addpartnerparameter-invocation}
+```java
 public void addPartnerParameter(String key, String value)
 ```
 
@@ -154,21 +150,21 @@ public void addPartnerParameter(String key, String value)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val adjustEvent = AdjustEvent("abc123")
 adjustEvent.addPartnerParameter("key", "value")
 adjustEvent.addPartnerParameter("foo", "bar")
 Adjust.trackEvent(adjustEvent)
 ```
 
-```{code-block} java
+```java
 AdjustEvent adjustEvent = new AdjustEvent("abc123");
 adjustEvent.addPartnerParameter("key", "value");
 adjustEvent.addPartnerParameter("foo", "bar");
 Adjust.trackEvent(adjustEvent);
 ```
 
-```{code-block} javascript
+```javascript
 let adjustEvent = new AdjustEvent('abc123');
 adjustEvent.addPartnerParameter('key', 'value');
 adjustEvent.addPartnerParameter('foo', 'bar');
@@ -190,9 +186,8 @@ Adjust.trackEvent(adjustEvent);
 
 Sets a deduplication ID on your event to avoid recording duplicates. The SDK stores the last ten identifiers and skips revenue events with duplicate IDs.
 
-```{code-block} java
-:name: android-setOrderId-invocation
-
+{#android-setorderid-invocation}
+```java
 public void setOrderId(String orderId)
 ```
 
@@ -203,21 +198,21 @@ public void setOrderId(String orderId)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val adjustEvent = AdjustEvent("abc123")
 adjustEvent.setRevenue(0.01, "EUR")
 adjustEvent.setOrderId("{OrderId}")
 Adjust.trackEvent(adjustEvent)
 ```
 
-```{code-block} java
+```java
 AdjustEvent adjustEvent = new AdjustEvent("abc123");
 adjustEvent.setRevenue(0.01, "EUR");
 adjustEvent.setOrderId("{OrderId}");
 Adjust.trackEvent(adjustEvent);
 ```
 
-```{code-block} javascript
+```javascript
 let adjustEvent = new AdjustEvent('abc123');
 adjustEvent.setRevenue(0.01, 'EUR');
 adjustEvent.setOrderId('{OrderId}');
@@ -239,9 +234,8 @@ Adjust.trackEvent(event);
 
 Sets a custom identifier for your event object. Adjust's servers can report on this identifier in event callbacks.
 
-```{code-block} java
-:name: android-setCallbackId-invocation
-
+{#android-setcallbackid-invocation}
+```java
 public void setCallbackId(String callbackId)
 ```
 
@@ -252,19 +246,19 @@ public void setCallbackId(String callbackId)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val adjustEvent = AdjustEvent("abc123")
 adjustEvent.setCallbackId("{Your-Custom-Id}")
 Adjust.trackEvent(adjustEvent)
 ```
 
-```{code-block} java
+```java
 AdjustEvent adjustEvent = new AdjustEvent("abc123");
 adjustEvent.setCallbackId("{Your-Custom-Id}");
 Adjust.trackEvent(adjustEvent);
 ```
 
-```{code-block} javascript
+```javascript
 let adjustEvent = new AdjustEvent('abc123');
 adjustEvent.setCallbackId('{Your-Custom-Id}');
 Adjust.trackEvent(adjustEvent);

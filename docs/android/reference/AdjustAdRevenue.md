@@ -1,6 +1,6 @@
 # ADJAdRevenue class
 
-Use this class to store ad revenue information. You can pass this to Adjust's servers using the [`trackAdRevenue` method](android-trackAdRevenue-invocation).
+Use this class to store ad revenue information. You can pass this to Adjust's servers using the [`trackAdRevenue` method](#android-trackadrevenue-invocation).
 
 % Class method AdjustAdRevenue
 
@@ -9,9 +9,8 @@ Use this class to store ad revenue information. You can pass this to Adjust's se
 
 Creates an ad revenue object initialized with an external ad revenue source
 
-```{code-block} java
-:name: android-AdjustAdRevenue-invocation
-
+{#android-adjustadrevenue-invocation}
+```java
 public AdjustAdRevenue(final String source)
 ```
 
@@ -22,17 +21,17 @@ public AdjustAdRevenue(final String source)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val adjustAdRevenue = AdjustAdRevenue("source")
 Adjust.trackAdRevenue(adjustAdRevenue)
 ```
 
-```{code-block} java
+```java
 AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue("source");
 Adjust.trackAdRevenue(adjustAdRevenue);
 ```
 
-```{code-block} javascript
+```javascript
 let adjustAdRevenue = new AdjustAdRevenue('source')
 Adjust.trackAdRevenue(adjustAdRevenue);
 ```
@@ -78,9 +77,8 @@ Adjust.trackAdRevenue(adjustAdRevenue);
 
 Creates an event object initialized with an Adjust event token
 
-```{code-block} java
-:name: android-AdjustAdRevenue-setRevenue-invocation
-
+{#android-adjustadrevenue-setrevenue-invocation}
+```java
 public void setRevenue(final Double revenue, final String currency)
 ```
 
@@ -93,19 +91,19 @@ public void setRevenue(final Double revenue, final String currency)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val adjustAdRevenue = AdjustAdRevenue("source")
 adjustAdRevenue.setRevenue(1.00, "EUR")
 Adjust.trackAdRevenue(adjustAdRevenue)
 ```
 
-```{code-block} java
+```java
 AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue("source");
 adjustAdRevenue.setRevenue(1.00, "EUR");
 Adjust.trackAdRevenue(adjustAdRevenue);
 ```
 
-```{code-block} javascript
+```javascript
 let adjustAdRevenue = new AdjustAdRevenue('source')
 adjustAdRevenue.setRevenue(1.00, 'EUR');
 Adjust.trackAdRevenue(adjustAdRevenue);
@@ -126,9 +124,8 @@ Adjust.trackAdRevenue(adjustAdRevenue);
 
 Sets the number of impressions received for an ad
 
-```{code-block} java
-:name: android-setAdImpressionsCount-invocation
-
+{#android-setadimpressionscount-invocation}
+```java
 public void setAdImpressionsCount(final Integer adImpressionsCount)
 ```
 
@@ -139,19 +136,19 @@ public void setAdImpressionsCount(final Integer adImpressionsCount)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val adjustAdRevenue = AdjustAdRevenue("source")
 adjustAdRevenue.setAdImpressionsCount(10)
 Adjust.trackAdRevenue(adjustAdRevenue)
 ```
 
-```{code-block} java
+```java
 AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue("source");
 adjustAdRevenue.setAdImpressionsCount(10);
 Adjust.trackAdRevenue(adjustAdRevenue);
 ```
 
-```{code-block} javascript
+```javascript
 let adjustAdRevenue = new AdjustAdRevenue('source')
 adjustAdRevenue.setAdImpressionsCount(10);
 Adjust.trackAdRevenue(adjustAdRevenue);
@@ -172,9 +169,8 @@ Adjust.trackAdRevenue(adjustAdRevenue);
 
 Sets the number of impressions received for an ad
 
-```{code-block} java
-:name: android-setAdRevenueNetwork-invocation
-
+{#android-setadrevenuenetwork-invocation}
+```java
 public void setAdRevenueNetwork(final String adRevenueNetwork)
 ```
 
@@ -185,19 +181,19 @@ public void setAdRevenueNetwork(final String adRevenueNetwork)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val adjustAdRevenue = AdjustAdRevenue("source")
 adjustAdRevenue.setAdRevenueNetwork("network1")
 Adjust.trackAdRevenue(adjustAdRevenue)
 ```
 
-```{code-block} java
+```java
 AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue("source");
 adjustAdRevenue.setAdRevenueNetwork("network1");
 Adjust.trackAdRevenue(adjustAdRevenue);
 ```
 
-```{code-block} javascript
+```javascript
 let adjustAdRevenue = new AdjustAdRevenue('source')
 adjustAdRevenue.setAdRevenueNetwork('network1');
 Adjust.trackAdRevenue(adjustAdRevenue);
@@ -218,9 +214,8 @@ Adjust.trackAdRevenue(adjustAdRevenue);
 
 Sets the ad unit ID associated with the ad revenue
 
-```{code-block} cs
-:name: android-setAdRevenueUnit-invocation
-
+{#android-setadrevenueunit-invocation}
+```java
 public void setAdRevenueUnit(final String adRevenueUnit)
 ```
 
@@ -231,19 +226,19 @@ public void setAdRevenueUnit(final String adRevenueUnit)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val adjustAdRevenue = AdjustAdRevenue("source")
 adjustAdRevenue.setAdRevenueUnit("unit1")
 Adjust.trackAdRevenue(adjustAdRevenue)
 ```
 
-```{code-block} java
+```java
 AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue("source");
 adjustAdRevenue.setAdRevenueUnit("unit1");
 Adjust.trackAdRevenue(adjustAdRevenue);
 ```
 
-```{code-block} javascript
+```javascript
 let adjustAdRevenue = new AdjustAdRevenue('source')
 adjustAdRevenue.setAdRevenueUnit('unit1');
 Adjust.trackAdRevenue(adjustAdRevenue);
@@ -264,9 +259,8 @@ Adjust.trackAdRevenue(adjustAdRevenue);
 
 Sets the placement of the ad associated with the ad revenue
 
-```{code-block} java
-:name: android-setAdRevenuePlacement-invocation
-
+{#android-setadrevenueplacement-invocation}
+```java
 public void setAdRevenuePlacement(final String adRevenuePlacement)
 ```
 
@@ -277,19 +271,19 @@ public void setAdRevenuePlacement(final String adRevenuePlacement)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val adjustAdRevenue = AdjustAdRevenue("source")
 adjustAdRevenue.setAdRevenuePlacement("banner")
 Adjust.trackAdRevenue(adjustAdRevenue)
 ```
 
-```{code-block} java
+```java
 AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue("source");
 adjustAdRevenue.setAdRevenuePlacement("banner");
 Adjust.trackAdRevenue(adjustAdRevenue);
 ```
 
-```{code-block} javascript
+```javascript
 let adjustAdRevenue = new AdjustAdRevenue('source')
 adjustAdRevenue.setAdRevenuePlacement('banner');
 Adjust.trackAdRevenue(adjustAdRevenue);
@@ -312,9 +306,8 @@ Adds key-value callback parameters to the ad revenue object. You can add multipl
 
 Event callback parameters override session callback parameters that have the same key.
 
-```{code-block} java
-:name: android-AdjustAdrevenue-addCallbackParameter-invocation
-
+{#android-adjustadrevenue-addcallbackparameter-invocation}
+```java
 public void addCallbackParameter(final String key, final String value)
 ```
 
@@ -327,19 +320,19 @@ public void addCallbackParameter(final String key, final String value)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val adjustAdRevenue = AdjustAdRevenue("source")
 adjustAdRevenue.addCallbackParameter("key", "value")
 Adjust.trackAdRevenue(adjustAdRevenue)
 ```
 
-```{code-block} java
+```java
 AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue("source");
 adjustAdRevenue.addCallbackParameter("key", "value");
 Adjust.trackAdRevenue(adjustAdRevenue);
 ```
 
-```{code-block} javascript
+```javascript
 let adjustAdRevenue = new AdjustAdRevenue('source')
 adjustAdRevenue.addCallbackParameter('key', 'value');
 Adjust.trackAdRevenue(adjustAdRevenue);
@@ -360,9 +353,8 @@ Adjust.trackAdRevenue(adjustAdRevenue);
 
 Adds key-value partner parameters to the ad revenue object. You can add multiple parameters by calling this method multiple times.
 
-```{code-block} java
-:name: android-AdjustAdRevenue-addPartnerParameter-invocation
-
+{#android-adjustadrevenue-addpartnerparameter-invocation}
+```java
 public void addPartnerParameter(String key, String value)
 ```
 
@@ -375,19 +367,19 @@ public void addPartnerParameter(String key, String value)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val adjustAdRevenue = AdjustAdRevenue("source")
 adjustAdRevenue.addPartnerParameter("key", "value")
 Adjust.trackAdRevenue(adjustAdRevenue)
 ```
 
-```{code-block} java
+```java
 AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue("source");
 adjustAdRevenue.addPartnerParameter("key", "value");
 Adjust.trackAdRevenue(adjustAdRevenue);
 ```
 
-```{code-block} javascript
+```javascript
 let adjustAdRevenue = new AdjustAdRevenue('source')
 adjustAdRevenue.addPartnerParameter('key', 'value');
 Adjust.trackAdRevenue(adjustAdRevenue);

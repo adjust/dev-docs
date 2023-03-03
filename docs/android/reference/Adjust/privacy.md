@@ -11,9 +11,8 @@ Use these methods to handle user privacy in your app.
 Disables sharing of information with third parties for all users.
 :::
 
-```{code-block} java
-:name: android-disableThirdPartySharing-invocation
-
+{#android-disablethirdpartysharing-invocation}
+```java
 public static void disableThirdPartySharing(final Context context)
 ```
 
@@ -24,15 +23,15 @@ public static void disableThirdPartySharing(final Context context)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 Adjust.disableThirdPartySharing()
 ```
 
-```{code-block} java
+```java
 Adjust.disableThirdPartySharing();
 ```
 
-```{code-block} javascript
+```javascript
 Adjust.disableThirdPartySharing();
 ```
 
@@ -51,9 +50,8 @@ Adjust.disableThirdPartySharing();
 
 Disable or enable sharing of information with third parties on a per-user basis. Accepts a third party sharing object initialized with a **boolean** value.
 
-```{code-block} java
-:name: android-trackThirdPartySharing-invocation
-
+{#android-trackthirdpartysharing-invocation}
+```java
 public static void trackThirdPartySharing(
             final AdjustThirdPartySharing adjustThirdPartySharing)
 ```
@@ -65,17 +63,17 @@ public static void trackThirdPartySharing(
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 val adjustThirdPartySharing = AdjustThirdPartySharing(true)
 Adjust.trackThirdPartySharing(adjustThirdPartySharing)
 ```
 
-```{code-block} java
+```java
 AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(true);
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
-```{code-block} javascript
+```javascript
 let adjustThirdPartySharing = new AdjustThirdPartySharing(true);
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
@@ -95,9 +93,8 @@ Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 
 Set whether [data collection and retention rules](https://help.adjust.com/en/article/manage-data-collection-and-retention) apply to a user.
 
-```{code-block} java
-:name: android-trackMeasurementConsent-invocation
-
+{#android-trackmeasurementconsent-invocation}
+```java
 public static void trackMeasurementConsent(final boolean consentMeasurement)
 ```
 
@@ -108,15 +105,15 @@ public static void trackMeasurementConsent(final boolean consentMeasurement)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 Adjust.trackMeasurementConsent(true)
 ```
 
-```{code-block} java
+```java
 Adjust.trackMeasurementConsent(true);
 ```
 
-```{code-block} javascript
+```javascript
 Adjust.trackMeasurementConsent(true);
 ```
 
@@ -135,9 +132,8 @@ Adjust.trackMeasurementConsent(true);
 
 Send an {abbr}`RTBF (Right To Be Forgotten)` request to Adjust's servers. This erases all information about the user the source app. The SDK stops sending requests for the user.
 
-```{code-block} java
-:name: android-gdprForgetMe-invocation
-
+{#android-gdprforgetme-invocation}
+```java
 public static void gdprForgetMe(final Context context)
 ```
 
@@ -148,15 +144,15 @@ public static void gdprForgetMe(final Context context)
 
 :::{tab-set-code}
 
-```{code-block} kotlin
+```kotlin
 Adjust.gdprForgetMe()
 ```
 
-```{code-block} java
+```java
 Adjust.gdprForgetMe();
 ```
 
-```{code-block} javascript
+```javascript
 Adjust.gdprForgetMe();
 ```
 

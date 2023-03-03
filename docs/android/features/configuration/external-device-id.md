@@ -10,7 +10,7 @@ You can use an external device ID as a custom identifier for a device. This help
 See the [External device identifiers article](https://help.adjust.com/en/article/external-device-identifiers) in the Adjust help center for more information.
 :::
 
-Your config object contains a **string** `externalDeviceId` property that you can use to store your external device ID. You can set property calling the [`setExternalDeviceId` method](android-setExternalDeviceId-invocation) with your ID as an argument.
+Your config object contains a **string** `externalDeviceId` property that you can use to store your external device ID. You can set property calling the [`setExternalDeviceId` method](#android-setexternaldeviceid-invocation) with your ID as an argument.
 
 :::{important}
 You must set your external device ID **before** initializing the Adjust SDK.

@@ -10,7 +10,7 @@ You can use this tool with any development framework that produces an APK.
 
 To get started, download the `adjust-dtt` tool from [GitHub](https://github.com/adjust/android_sdk/blob/master/tools/adjust-dtt). You need to make this file executable to use it. Run the following command to make the file executable:
 
-```{code-block} console
+```console
 chmod +x adjust-dtt
 ```
 
@@ -50,7 +50,7 @@ Follow the instructions for your distribution on the [ruby-lang website](https:/
 
 You can install Apktool using [Homebrew](https://brew.sh/).
 
-```{code-block} console
+```console
 brew install apktool
 ```
 
@@ -73,7 +73,7 @@ Follow the instructions for your distribution on [the Apktool website](https://i
 
 `jarsigner` is included as part of the {abbr}`JDK (Java Development Kit)`. It's available in both the OpenJDK and Oracle JDK implementations. You can install OpenJDK using [Homebrew](https://brew.sh). To do this, run the following command:
 
-```{code-block} console
+```console
 brew install openjdk@16
 ```
 
@@ -110,7 +110,7 @@ Next, you need to create a campaign link in your Adjust dashboard. You will use 
 Once you have your keystore file and your campaign token, you can create a configuration file. `adjust-dtt` uses an {file}`adjust-config.yaml` configuration file to read your settings. This file includes settings for the different app stores you need to set up.
 
 :::{list-table}
-:name: Parameter
+:name: Parameters
 
 * - Parameter
    - Data type
@@ -141,7 +141,7 @@ Once you have your keystore file and your campaign token, you can create a confi
 
 Here's an example {file}`adjust-config.yaml` file including settings for three stores named `store_1`,  `store_2`, and `store_3`.
 
-```{code-block} yaml
+```yaml
 apk_path: /Users/username/Desktop/apk/example-release.apk
 keystore_path: /Users/username/Desktop/apk/mykeystore.jks
 keystore_pass: mykeystorepass
@@ -157,7 +157,7 @@ stores:
 
 You can define global parameters in the root of the file if you want to use the same settings for each store. Parameters set on a store will override the global parameters for that store. For example:
 
-```{code-block} yaml
+```yaml
 apk_path: /Users/username/Desktop/apk/example-release.apk
 keystore_path: /Users/username/Desktop/apk/mykeystore.jks
 keystore_pass: mykeystorepass
@@ -180,7 +180,7 @@ In this example, the `adjust-dtt` tool uses `differentkeystore.jks`, `differentk
 
 The `adjust-dtt` tool takes the path to the your {file}`adjust-config.yaml` file as an argument. To add your campaign information to your APK, run the tool like this:
 
-```{code-block} console
+```console
 adjust-dtt adjust-config.yaml
 ```
 
