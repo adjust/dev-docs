@@ -421,7 +421,7 @@ Once you've finished your testing, you can build your app for production. To do 
 Update the following values:
 
 - `environment`: Set this to `ADJEnvironmentProduction`.
-- `logLevel`: Choose a [logging level](features/configuration/log-level), or disable logging completely by passing an `allowSuppressLogLevel` argument in your config object.
+- `logLevel`: Choose a [logging level](configuration/log-level), or disable logging completely by passing an `allowSuppressLogLevel` argument in your config object.
 
 :::{tab-set-code}
 
@@ -514,4 +514,14 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
    return YES;
 }
 ```
+:::
+
+:::{toctree}
+:maxdepth: 1
+:hidden: true
+
+configuration/index
+recording/index
+reference/index
+
 :::

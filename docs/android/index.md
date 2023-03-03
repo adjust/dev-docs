@@ -438,3 +438,14 @@ Adjust.onCreate(config);
 ```
 
 :::
+
+:::{toctree}
+:maxdepth: 1
+:hidden: true
+
+setup/index
+configuration/index
+recording/index
+reference/index
+
+:::

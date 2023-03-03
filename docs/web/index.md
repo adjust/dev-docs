@@ -79,4 +79,14 @@ You must add the following arguments to your `initSdk` call to initialize the SD
 :end-before: Snippet end
 :::
 
-To further customize your Adjust SDK setup, check out the guides in the [configuration features section](/web/features/configuration/index.md).
+To further customize your Adjust SDK setup, check out the guides in the [configuration features section](/web/configuration/index.md).
+
+:::{toctree}
+:maxdepth: 1
+:hidden: true
+
+configuration/index
+recording/index
+reference/index
+
+:::
