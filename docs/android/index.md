@@ -136,7 +136,7 @@ The Samsung referrer plugin enables you to record install referrer values for ap
 The following information is required to initialize the Adjust SDK:
 
 `appToken`
-   : Your [Adjust app token](https://help.adjust.com/en/article/app-settings#view-your-app-token).
+   : Your [Adjust app token](hc:/app-settings#view-your-app-token).
 
 `environment`
    : The environment your app is running in. Set this to `AdjustConfig.ENVIRONMENT_SANDBOX` to test your app locally.

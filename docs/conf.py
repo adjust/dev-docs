@@ -122,3 +122,9 @@ tippy_anchor_parent_selector = "article.bd-article"
 tippy_tip_selector = "div.notranslate, dt, code"
 
 mermaid_version = ""
+
+myst_url_schemes = {
+    "http": None,
+    "https": None,
+    "hc": "https://help.adjust.com/en/article/{{path}}#{{fragment}}"
+}

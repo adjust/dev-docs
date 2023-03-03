@@ -132,7 +132,7 @@ Adjust.setOfflineMode(true);
 ::::{function} setDeviceToken (deviceToken)
 :noindex:
 
-Set your [push token](https://help.adjust.com/en/article/push-notifications) to record [uninstalls and reattributions](https://help.adjust.com/en/article/uninstalls-reinstalls). You can update this value at any time.
+Set your [push token](hc:/push-notifications) to record [uninstalls and reattributions](hc:/uninstalls-reinstalls). You can update this value at any time.
 
 {#unity-setdevicetoken-invocation}
 ```c#

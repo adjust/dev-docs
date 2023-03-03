@@ -662,7 +662,7 @@ Adjust.start(adjustConfig);
 ::::{function} setLinkMeEnabled (linkMeEnabled)
 :noindex:
 
-Toggle support for Adjust's [LinkMe solution](https://help.adjust.com/en/article/linkme) for deep linking
+Toggle support for Adjust's [LinkMe solution](hc:/linkme) for deep linking
 
 {#unity-setlinkmeenabled-invocation}
 ```c#

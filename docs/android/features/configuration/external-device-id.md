@@ -7,7 +7,7 @@ An external device identifier is a custom value that you can assign to a device 
 You can use an external device ID as a custom identifier for a device. This helps you keep continuity with your other systems.
 
 :::{seealso}
-See the [External device identifiers article](https://help.adjust.com/en/article/external-device-identifiers) in the Adjust help center for more information.
+See the [External device identifiers article](hc:/external-device-identifiers) in the Adjust help center for more information.
 :::
 
 Your config object contains a **string** `externalDeviceId` property that you can use to store your external device ID. You can set property calling the [`setExternalDeviceId` method](#android-setexternaldeviceid-invocation) with your ID as an argument.
