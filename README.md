@@ -2,7 +2,7 @@
 
 This is the repository for Adjust's SDK documentation. Written with [Sphinx](https://www.sphinx-doc.org) and [MyST](https://myst-parser.readthedocs.io).
 
-![](screenshot.png)
+![](screenshot.jpg)
 
 ## Live preview
 
