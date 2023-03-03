@@ -20,7 +20,7 @@ You can restart the SDK at any time by calling the [`restart` method](#web-resta
 
 This example demonstrates how to stop and restart the Adjust SDK using buttons in the UI.
 
-```{code-block} html
+```html
 <head>
   <!-- Import the Adjust SDK from a CDN -->
 </head>

@@ -1,17 +1,16 @@
 # ADJThirdPartySharing class
 
-Use this class to communicate a user's third party sharing preferences. Send this information to Adjust's servers using the [`trackThirdPartySharing` method](ios-trackThirdPartySharing-invocation).
+Use this class to communicate a user's third party sharing preferences. Send this information to Adjust's servers using the [`trackThirdPartySharing` method](#ios-trackthirdpartysharing-invocation).
 
 % Class method initWithIsEnabledNumberBool
 
-:::::{function} initWithIsEnabledNumberBool (isEnabledNumberBool)
+::::{function} initWithIsEnabledNumberBool (isEnabledNumberBool)
 :noindex:
 
 Creates a third party sharing object initialized with a **nullable boolean** value
 
-```{code-block} objc
-:name: ios-initWithIsEnabledNumberBool-invocation
-
+{#ios-initwithisenablednumberbool-invocation}
+```objective-c
 - (nullable id)initWithIsEnabledNumberBool:(nullable NSNumber *)isEnabledNumberBool;
 ```
 
@@ -20,67 +19,49 @@ Creates a third party sharing object initialized with a **nullable boolean** val
 
 % initWithIsEnabledNumberBool true snippet
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 let adjustThirdPartySharing = ADJThirdPartySharing.initWithIsEnabledNumberBool(true)
 Adjust.trackThirdPartySharing(adjustThirdPartySharing)
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
 
-```{code-block} objc
+```objective-c
 ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc] initWithIsEnabledNumberBool:@YES];
 [Adjust trackThirdPartySharing:adjustThirdPartySharing];
 ```
-:::
-:::{tab-item} Javascript
-:sync: js
 
-```{code-block} js
+```javascript
 var adjustThirdPartySharing = new AdjustThirdPartySharing(true);
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 :::
-::::
 
 % Snippet end
 
 % initWithIsEnabledNumberBool false snippet
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 let adjustThirdPartySharing = ADJThirdPartySharing.initWithIsEnabledNumberBool(false)
 Adjust.trackThirdPartySharing(adjustThirdPartySharing)
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
 
-```{code-block} objc
+```objective-c
 ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc] initWithIsEnabledNumberBool:@NO];
 [Adjust trackThirdPartySharing:adjustThirdPartySharing];
 ```
-:::
-:::{tab-item} Javascript
-:sync: js
 
-```{code-block} js
+```javascript
 var adjustThirdPartySharing = new AdjustThirdPartySharing(false);
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
@@ -91,9 +72,8 @@ Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 
 Adds additional key-value pairs of information to share with third parties. You can add multiple parameters by calling this method multiple times.
 
-```{code-block} objc
-:name: ios-addGranularOption-invocation
-
+{#ios-addgranularoption-invocation}
+```objective-c
 - (void)addGranularOption:(nonnull NSString *)partnerName
                      key:(nonnull NSString *)key
                      value:(nonnull NSString *)value;
@@ -108,35 +88,26 @@ Adds additional key-value pairs of information to share with third parties. You 
 
 % addGranularOption snippet
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 let adjustThirdPartySharing = ADJThirdPartySharing.initWithIsEnabledNumberBool(nil)
 adjustThirdPartySharing.addGranularOption("PartnerA", key: "foo", value: "bar")
 Adjust.trackThirdPartySharing(adjustThirdPartySharing)
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
 
-```{code-block} objc
+```objective-c
 ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc] initWithIsEnabledNumberBool:nil];
 [adjustThirdPartySharing addGranularOption:@"PartnerA" key:@"foo" value:@"bar"];
 [Adjust trackThirdPartySharing:adjustThirdPartySharing];
 ```
-:::
-:::{tab-item} Javascript
-:sync: js
 
-```{code-block} js
+```javascript
 var adjustThirdPartySharing = new AdjustThirdPartySharing(null);
 adjustThirdPartySharing.addGranularOption('PartnerA', 'foo', 'bar');
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 :::
-::::
 
 % Snippet end
 
@@ -144,38 +115,29 @@ You can use this method to toggle Facebook data processing options.
 
 % addGranularOption Facebook snippet
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 let tps = ADJThirdPartySharing.initWithIsEnabledNumberBool(nil)
 tps.addGranularOption("facebook", key: "data_processing_options_country", value: "1")
 tps.addGranularOption("facebook", key: "data_processing_options_state", value: "1000")
 Adjust.trackThirdPartySharing(tps)
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
 
-```{code-block} objc
+```objective-c
 ADJThirdPartySharing *tps = [[ADJThirdPartySharing alloc] initWithIsEnabledNumberBool:@YES];
 [tps addGranularOption:@"facebook" key:@"data_processing_options_country" value:@"1"];
 [tps addGranularOption:@"facebook" key:@"data_processing_options_state" value:@"1000"];
 [Adjust trackThirdPartySharing:tps];
 ```
-:::
-:::{tab-item} Javascript
-:sync: js
 
-```{code-block} js
+```javascript
 var tps = new AdjustThirdPartySharing(null);
 tps.addGranularOption('facebook', 'data_processing_options_country', '1');
 tps.addGranularOption('facebook', 'data_processing_options_state', '1000');
 Adjust.trackThirdPartySharing(tps);
 ```
 :::
-::::
 
 ::::{dropdown} Options
 :::{list-table}
@@ -212,9 +174,8 @@ Adjust.trackThirdPartySharing(tps);
 Adds additional key-value pairs of settings to share with third parties. You can add multiple settings by calling this method multiple times.
 :::
 
-```{code-block} objc
-:name: ios-addPartnerSharingSetting-invocation
-
+{#ios-addpartnersharingsetting-invocation}
+```objective-c
 - (void)addPartnerSharingSetting:(nonnull NSString *)partnerName
                            key:(nonnull NSString *)key
                            value:(BOOL)value;
@@ -229,35 +190,26 @@ Adds additional key-value pairs of settings to share with third parties. You can
 
 % addPartnerSharingSetting snippet
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 let adjustThirdPartySharing = ADJThirdPartySharing.initWithIsEnabledNumberBool(nil)
 adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", key: "foo", value: false)
 Adjust.trackThirdPartySharing(adjustThirdPartySharing)
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
 
-```{code-block} objc
+```objective-c
 ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc] initWithIsEnabledNumberBool:nil];
 [adjustThirdPartySharing addPartnerSharingSetting:@"PartnerA" key:@"foo" value:@NO];
 [Adjust trackThirdPartySharing:adjustThirdPartySharing];
 ```
-:::
-:::{tab-item} Javascript
-:sync: js
 
-```{code-block} js
+```javascript
 var adjustThirdPartySharing = new AdjustThirdPartySharing(null);
 adjustThirdPartySharing.addPartnerSharingSetting('PartnerA', 'foo', false);
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 :::
-::::
 
 ::::{dropdown} Available partners
 :::{list-table}

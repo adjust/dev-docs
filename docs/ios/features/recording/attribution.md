@@ -4,34 +4,24 @@ When a user interacts with a campaign link, their attribution information update
 
 1. If you aren't using web views, add the `AdjustDelegate` declaration to your `AppDelegate` header file.
 
-   ::::{tab-set}
-   :::{tab-item} Swift
-   :sync: swift
-   ```{code-block} swift
-   :caption: AppDelegate.swift
+   :::{tab-set-code}
 
+   ```swift
    class AppDelegate: UIResponder, UIApplicationDelegate, AdjustDelegate {
    }
    ```
-   :::
-   :::{tab-item} Objective-C
-   :sync: objc
-   ```{code-block} objc
-   :caption: AppDelegate.h
 
+   ```objective-c
    @interface AppDelegate : UIResponder <UIApplicationDelegate, AdjustDelegate>
    ```
+
    :::
-   ::::
 
 2. Add the delegate callback function to your app delegate implementation.
 
-   ::::{tab-set}
-   :::{tab-item} Swift
-   :sync: swift
-   ```{code-block} swift
-   :caption: AppDelegate.swift
+   :::{tab-set-code}
 
+   ```swift
    class AppDelegate: UIResponder, UIApplicationDelegate, AdjustDelegate {
       //...
       func adjustAttributionChanged(_ attribution: ADJAttribution?) {
@@ -39,18 +29,14 @@ When a user interacts with a campaign link, their attribution information update
       }
    }
    ```
-   :::
-   :::{tab-item} Objective-C
-   :sync: objc
-   ```{code-block} objc
-   :caption: AppDelegate.m
 
+   ```objective-c
    - (void)adjustAttributionChanged:(ADJAttribution *)attribution {
       //...
    }
    ```
+   
    :::
-   ::::
 
 3. Set the delegate with your Adjust config instance.
 
@@ -64,7 +50,7 @@ Within your delegate function, you have access to the user's `Attribution` infor
 ## Get current attribution information
 
 :::{versionadded} v4.11.0
-When a user installs your app, Adjust attributes the install to a campaign. The Adjust SDK gives you access to campaign attribution details for your install. To return this information, call the [`attribution` method](ios-attribution-invocation).
+When a user installs your app, Adjust attributes the install to a campaign. The Adjust SDK gives you access to campaign attribution details for your install. To return this information, call the [`attribution` method](#ios-attribution-invocation).
 :::
 
 This method returns an Attribution object. See the [`ADJAttribution` class reference](/ios/reference/ADJAttribution.md) for a list of available properties.

@@ -9,9 +9,8 @@
 Sets whether the Adjust SDK can read the device {abbr}`IDFA (ID for Advertisers)`
 :::
 
-```{code-block} objc
-:name: ios-setUrlStrategy-invocation
-
+{#ios-seturlstrategy-invocation}
+```objective-c
 @property (nonatomic, copy, readwrite, nullable) NSString *urlStrategy;
 ```
 
@@ -20,12 +19,10 @@ Sets whether the Adjust SDK can read the device {abbr}`IDFA (ID for Advertisers)
 
 % setUrlStrategy snippet
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
-```{code-block} swift
-:emphasize-lines: 7
+:::{tab-set-code}
 
+{emphasize-lines="7"}
+```swift
 let yourAppToken = "{YourAppToken}"
 let environment = ADJEnvironmentSandbox as? String
 let adjustConfig = ADJConfig(
@@ -34,12 +31,9 @@ let adjustConfig = ADJConfig(
 // ...
 adjustConfig?.urlStrategy = ADJDataResidencyEU
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
-```{code-block} objc
-:emphasize-lines: 6
 
+{emphasize-lilnes="6"}
+```objective-c
 NSString *yourAppToken = @"{YourAppToken}";
 NSString *environment = ADJEnvironmentSandbox;
 *adjustConfig = [ADJConfig configWithAppToken:yourAppToken
@@ -47,12 +41,9 @@ NSString *environment = ADJEnvironmentSandbox;
 // ...
 [adjustConfig setUrlStrategy:ADJDataResidencyEU];
 ```
-:::
-:::{tab-item} Javascript
-:sync: js
-```{code-block} js
-:emphasize-lines: 6
 
+{emphasize-lines="6"}
+```javascript
 setupWebViewJavascriptBridge(function(bridge) {
    // ...
    var yourAppToken = yourAppToken;
@@ -62,7 +53,6 @@ setupWebViewJavascriptBridge(function(bridge) {
 });
 ```
 :::
-::::
 
 ::::{dropdown} Available URL strategies
 :::{list-table}
@@ -92,16 +82,15 @@ setupWebViewJavascriptBridge(function(bridge) {
 
 % Class method setCoppaCompliantEnabled
 
-:::::{function} setCoppaCompliantEnabled(coppaCompliantEnabled)
+::::{function} setCoppaCompliantEnabled(coppaCompliantEnabled)
 :noindex:
 
 :::{versionadded} v4.30.0
 Enable {abbr}`COPPA (Children's Online Privacy Protection Act)` compliance in your app.
 :::
 
-```{code-block} objc
-:name: ios-setCoppaCompliantEnabled-invocation
-
+{#ios-setcoppacompliantenabled-invocation}
+```objective-c
 @property (nonatomic, assign) BOOL coppaCompliantEnabled;
 ```
 
@@ -110,12 +99,10 @@ Enable {abbr}`COPPA (Children's Online Privacy Protection Act)` compliance in yo
 
 % setCoppaCompliantEnabled snippet
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
-```{code-block} swift
-:emphasize-lines: 7
+:::{tab-set-code}
 
+{emphasize-lines="7"}
+```swift
 let yourAppToken = "{YourAppToken}"
 let environment = ADJEnvironmentSandbox as? String
 let adjustConfig = ADJConfig(
@@ -124,12 +111,9 @@ let adjustConfig = ADJConfig(
 // ...
 adjustConfig?.coppaCompliantEnabled = true
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
-```{code-block} objc
-:emphasize-lines: 5
 
+{emphasize-lines="5"}
+```objective-c
 NSString *yourAppToken = @"{YourAppToken}";
 NSString *environment = ADJEnvironmentSandbox;
 *adjustConfig = [ADJConfig configWithAppToken:yourAppToken
@@ -137,12 +121,9 @@ NSString *environment = ADJEnvironmentSandbox;
 // ...
 [adjustConfig setCoppaCompliantEnabled:YES];
 ```
-:::
-:::{tab-item} Javascript
-:sync: js
-```{code-block} js
-:emphasize-lines: 6
 
+{emphasize-lines="6"}
+```javascript
 setupWebViewJavascriptBridge(function(bridge) {
    // ...
    var yourAppToken = yourAppToken;
@@ -152,10 +133,9 @@ setupWebViewJavascriptBridge(function(bridge) {
 });
 ```
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end

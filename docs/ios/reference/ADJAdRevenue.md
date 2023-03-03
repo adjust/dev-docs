@@ -1,6 +1,6 @@
 # ADJAdRevenue class
 
-Use this class to store ad revenue information. You can pass this to Adjust's servers using the [`trackAdRevenue` method](ios-trackAdRevenue-invocation).
+Use this class to store ad revenue information. You can pass this to Adjust's servers using the [`trackAdRevenue` method](#ios-trackadrevenue-invocation).
 
 
 % Class method initWithSource
@@ -10,9 +10,8 @@ Use this class to store ad revenue information. You can pass this to Adjust's se
 
 Creates an ad revenue object initialized with an external ad revenue source
 
-```{code-block} objc
-:name: ios-initWithSource-invocation
-
+{#ios-initwithsource-invocation}
+```objective-c
 - (nullable id)initWithSource:(nonnull NSString *)source;
 ```
 
@@ -21,26 +20,20 @@ Creates an ad revenue object initialized with an external ad revenue source
 
 % initWithSource snippet
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 let adRevenue = ADJAdRevenue(source: source);
 //...
 Adjust.trackAdRevenue(adRevenue);
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
 
-```{code-block} objc
+```objective-c
 ADJAdRevenue *adRevenue = [[ADJAdRevenue alloc] initWithSource:source];
 //...
 [Adjust trackAdRevenue:adRevenue];
 ```
 :::
-::::
 
 % Snippet end
 
@@ -81,14 +74,13 @@ ADJAdRevenue *adRevenue = [[ADJAdRevenue alloc] initWithSource:source];
 
 % Class method setRevenue
 
-:::::{function} setRevenue (amount, currency)
+::::{function} setRevenue (amount, currency)
 :noindex:
 
 Creates an event object initialized with an Adjust event token
 
-```{code-block} objc
-:name: ios-ADJAdRevenue-setRevenue-invocation
-
+{#ios-adjadrevenue-setrevenue-invocation}
+```objective-c
 - (void)setRevenue:(double)amount currency:(nonnull NSString *)currency;
 ```
 
@@ -99,43 +91,36 @@ Creates an event object initialized with an Adjust event token
 
 % setRevenue snippet
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 let adRevenue = ADJAdRevenue(source: source);
 adRevenue.setRevenue(1.6, currency: "USD");
 Adjust.trackAdRevenue(adRevenue);
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
 
-```{code-block} objc
+```objective-c
 ADJAdRevenue *adRevenue = [[ADJAdRevenue alloc] initWithSource:source];
 [adRevenue setRevenue:1.6 currency:@"USD"];
 [Adjust trackAdRevenue:adRevenue];
 ```
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method setAdImpressionsCount
 
-:::::{function} setAdImpressionsCount (adImpressionsCount)
+::::{function} setAdImpressionsCount (adImpressionsCount)
 :noindex:
 
 Sets the number of impressions received for an ad
 
-```{code-block} objc
-:name: ios-setAdImpressionsCount-invocation
-
+{#ios-setadimpressionscount-invocation}
+```objective-c
 - (void)setAdImpressionsCount:(int)adImpressionsCount;
 ```
 
@@ -144,42 +129,35 @@ Sets the number of impressions received for an ad
 
 % setAdImpressionsCount snippet
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 let adRevenue = ADJAdRevenue(source: source);
 adRevenue?.adImpressionsCount = 1;
 Adjust.trackAdRevenue(adRevenue);
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
 
-```{code-block} objc
+```objc
 ADJAdRevenue *adRevenue = [[ADJAdRevenue alloc] initWithSource:source];
 [adRevenue setAdImpressionsCount:1];
 [Adjust trackAdRevenue:adRevenue];
 ```
 :::
-::::
 
 % Snippet end
-:::::
+::::
 
 % Class method end
 
 % Class method setAdRevenueNetwork
 
-:::::{function} setAdRevenueNetwork (adRevenueNetwork)
+::::{function} setAdRevenueNetwork (adRevenueNetwork)
 :noindex:
 
 Sets the number of impressions received for an ad
 
-```{code-block} objc
-:name: ios-setAdRevenueNetwork-invocation
-
+{#ios-setadrevenuenetwork-invocation}
+```objective-c
 - (void)setAdRevenueNetwork:(nonnull NSString *)adRevenueNetwork;
 ```
 
@@ -188,43 +166,36 @@ Sets the number of impressions received for an ad
 
 % setAdRevenueNetwork snippet
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 let adRevenue = ADJAdRevenue(source: source);
 adRevenue?.adRevenueNetwork = "network1";
 Adjust.trackAdRevenue(adRevenue);
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
 
-```{code-block} objc
+```objective-c
 ADJAdRevenue *adRevenue = [[ADJAdRevenue alloc] initWithSource:source];
 [adRevenue setAdRevenueNetwork:@"network1"];
 [Adjust trackAdRevenue:adRevenue];
 ```
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method setAdRevenueUnit
 
-:::::{function} setAdRevenueUnit (adRevenueUnit)
+::::{function} setAdRevenueUnit (adRevenueUnit)
 :noindex:
 
 Sets the ad unit ID associated with the ad revenue
 
-```{code-block} objc
-:name: ios-setAdRevenueUnit-invocation
-
+{#ios-setadrevenueunit-invocation}
+```objective-c
 - (void)setAdRevenueUnit:(nonnull NSString *)adRevenueUnit;
 ```
 
@@ -233,43 +204,36 @@ Sets the ad unit ID associated with the ad revenue
 
 % setAdRevenueUnit snippet
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 let adRevenue = ADJAdRevenue(source: source);
 adRevenue?.adRevenueUnit = "unit1";
 Adjust.trackAdRevenue(adRevenue);
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
 
-```{code-block} objc
+```objective-c
 ADJAdRevenue *adRevenue = [[ADJAdRevenue alloc] initWithSource:source];
 [adRevenue setAdRevenueUnit:@"unit1"];
 [Adjust trackAdRevenue:adRevenue];
 ```
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method setAdRevenuePlacement
 
-:::::{function} setAdRevenuePlacement (adRevenuePlacement)
+::::{function} setAdRevenuePlacement (adRevenuePlacement)
 :noindex:
 
 Sets the placement of the ad associated with the ad revenue
 
-```{code-block} objc
-:name: ios-setAdRevenuePlacement-invocation
-
+{#ios-setadrevenueplacement-invocation}
+```objective-c
 - (void)setAdRevenuePlacement:(nonnull NSString *)adRevenuePlacement;
 ```
 
@@ -278,45 +242,38 @@ Sets the placement of the ad associated with the ad revenue
 
 % setAdRevenuePlacement snippet
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 let adRevenue = ADJAdRevenue(source: source);
 adRevenue?.adRevenuePlacement = "banner";
 Adjust.trackAdRevenue(adRevenue);
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
 
-```{code-block} objc
+```objective-c
 ADJAdRevenue *adRevenue = [[ADJAdRevenue alloc] initWithSource:source];
 [adRevenue setAdRevenuePlacement:@"banner"];
 [Adjust trackAdRevenue:adRevenue];
 ```
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method addCallbackParameter
 
-:::::{function} addCallbackParameter (key, value)
+::::{function} addCallbackParameter (key, value)
 :noindex:
 
 Adds key-value callback parameters to the ad revenue object. You can add multiple parameters by calling this method multiple times.
 
 Event callback parameters override session callback parameters that have the same key.
 
-```{code-block} objc
-:name: ios-ADJAdRevenue-addCallbackParameter-invocation
-
+{#ios-adjadrevenue-addcallbackparameter-invocation}
+```objective-c
 - (void)addCallbackParameter:(nonnull NSString *)key value:(nonnull NSString *)value;
 ```
 
@@ -327,43 +284,36 @@ Event callback parameters override session callback parameters that have the sam
 
 % addCallbackParameter snippet
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 let adRevenue = ADJAdRevenue(source: source);
 adRevenue.addCallbackParameter(key, value: value);
 Adjust.trackAdRevenue(adRevenue);
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
 
-```{code-block} objc
+```objective-c
 ADJAdRevenue *adRevenue = [[ADJAdRevenue alloc] initWithSource:source];
 [adRevenue addCallbackParameter:key value:value];
 [Adjust trackAdRevenue:adRevenue];
 ```
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method addPartnerParameter
 
-:::::{function} addPartnerParameter (key, value)
+::::{function} addPartnerParameter (key, value)
 :noindex:
 
 Adds key-value partner parameters to the ad revenue object. You can add multiple parameters by calling this method multiple times.
 
-```{code-block} objc
-:name: ios-ADJAdRevenue-addPartnerParameter-invocation
-
+{#ios-adjadrevenue-addpartnerparameter-invocation}
+```objective-c
 - (void)addPartnerParameter:(nonnull NSString *)key value:(nonnull NSString *)value;
 ```
 
@@ -374,29 +324,23 @@ Adds key-value partner parameters to the ad revenue object. You can add multiple
 
 % addPartnerParameter snippet
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 let adRevenue = ADJAdRevenue(source: source);
 adRevenue.addPartnerParameter(key, value: value);
 Adjust.trackAdRevenue(adRevenue);
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
 
-```{code-block} objc
+```objective-c
 ADJAdRevenue *adRevenue = [[ADJAdRevenue alloc] initWithSource:source];
 [adRevenue addPartnerParameter:key value:value];
 [Adjust trackAdRevenue:adRevenue];
 ```
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end

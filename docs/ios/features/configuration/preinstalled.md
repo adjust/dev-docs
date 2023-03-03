@@ -10,7 +10,7 @@ Configuring a default campaign enables you to attribute all preinstalls to a pre
    https://app.adjust.com/{token}
    ```
 
-2. Copy this token and pass it to the [`setDefaultTracker` method](ios-setDefaultTracker-invocation) in your app delegate file.
+2. Copy this token and pass it to the [`setDefaultTracker` method](#ios-setdefaulttracker-invocation) in your app delegate file.
 
    :::{include} /ios/reference/ADJConfig/setup.md
    :start-after: setDefaultTracker snippet

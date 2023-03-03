@@ -2,7 +2,7 @@
 
 The Adjust SDK runs by default when your app is open. You can disable and re-enable the Adjust SDK to pause and resume recording. When you disable the Adjust SDK, it doesn't send any data to Adjust's servers.
 
-You can enable or disable the SDK at any time by calling the [`setEnabled` method](ios-setEnabled-invocation) with a boolean argument.
+You can enable or disable the SDK at any time by calling the [`setEnabled` method](#ios-setenabled-invocation) with a boolean argument.
 
 :::{important}
 You can only call this method after the first session. This setting persists between sessions.
@@ -15,7 +15,7 @@ You can only call this method after the first session. This setting persists bet
 
 ## Check enabled status
 
-You can check if the Adjust SDK is enabled at any time by calling the [`isEnabled` method](ios-isEnabled-invocation). This method returns a boolean value.
+You can check if the Adjust SDK is enabled at any time by calling the [`isEnabled` method](#ios-isenabled-invocation). This method returns a boolean value.
 
 :::{include} /ios/reference/Adjust/config.md
 :start-after: isEnabled snippet
@@ -27,11 +27,10 @@ You can check if the Adjust SDK is enabled at any time by calling the [`isEnable
 This example demonstrates how to create buttons to enable or disable the SDK. A third button logs the current status of the SDK.
 
 ::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
-```{code-block} swift
-:caption: ViewControllerSwift.swift
+:::{tab-item} SWIFT
+:sync: tabcode-swift
 
+```swift
 import Adjust
 import UIKit
 
@@ -57,12 +56,12 @@ class ViewControllerSwift: UIViewController {
     }
 }
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
-```{code-block} objc
-:caption: ViewControllerObjC.m
 
+:::
+:::{tab-item} OBJECTIVE-C
+:sync: tabcode-objective-c
+
+```objective-c
 #import "Adjust.h"
 #import "Constants.h"
 #import "ViewControllerObjC.h"
@@ -104,12 +103,12 @@ class ViewControllerSwift: UIViewController {
 
 @end
 ```
-:::
-:::{tab-item} Javascript
-:sync: js
-```{code-block} html
-:caption: WebView.html
 
+:::
+:::{tab-item} JAVASCRIPT
+:sync: tabcode-javascript
+
+```html
 <html>
    <body>
       <script>
@@ -153,4 +152,6 @@ class ViewControllerSwift: UIViewController {
       </div>
    </body>
 </html>
-::::
+```
+
+:::

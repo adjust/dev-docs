@@ -4,7 +4,7 @@ The Adjust SDK contains helper methods that return device information. Use these
 
 ## ID For Advertisers
 
-The {abbr}`IDFA (ID for Advertisers)` is a device-specific identifier for Apple devices. Call the [`idfa` method](ios-idfa-invocation) to return this ID as a **string**.
+The {abbr}`IDFA (ID for Advertisers)` is a device-specific identifier for Apple devices. Call the [`idfa` method](#ios-idfa-invocation) to return this ID as a **string**.
 
 :::{include} /ios/reference/Adjust/device-info.md
 :start-after: idfa snippet
@@ -13,7 +13,7 @@ The {abbr}`IDFA (ID for Advertisers)` is a device-specific identifier for Apple 
 
 ## Adjust device identifier
 
-Adjust generates a unique {abbr}`ADID (Adjust Device ID)` for each device. Call the [`adid` method](ios-adid-invocation) to return this ID as a **string**.
+Adjust generates a unique {abbr}`ADID (Adjust Device ID)` for each device. Call the [`adid` method](#ios-adid-invocation) to return this ID as a **string**.
 
 :::{include} /ios/reference/Adjust/device-info.md
 :start-after: adid snippet

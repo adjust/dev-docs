@@ -2,22 +2,21 @@
 
 A helper class that assists with resolution of links which wrap Adjust deep links.
 
-```{code-block} objc
+```objective-c
 @interface ADJLinkResolution : NSObject
 ```
 
 % Class method resolveLinkWithUrl
 
-:::::{function} resolveLinkWithUrl (url)
+::::{function} resolveLinkWithUrl (url)
 :noindex:
 
 :::{versionadded} v4.29.2
 Enables the Adjust SDK to follow redirects to resolve email campaign links. This method follows up to 10 redirects and returns either the final domain or the 10th domain returned depending on which comes first.
 :::
 
-```{code-block} objc
-:name: ios-resolveLinkWithUrl-invocation
-
+{#ios-resolvelinkwithurl-invocation}
+```objective-c
 + (void)resolveLinkWithUrl:(nonnull NSURL *)url
      resolveUrlSuffixArray:(nullable NSArray<NSString *> *)resolveUrlSuffixArray
                   callback:(nonnull void (^)(NSURL *_Nullable resolvedLink))callback;
@@ -32,11 +31,9 @@ Enables the Adjust SDK to follow redirects to resolve email campaign links. This
 
 % resolveLinkWithUrl snippet
 
-::::{tab-set}
-:::{tab-item} Swift
-:sync: swift
+:::{tab-set-code}
 
-```{code-block} swift
+```swift
 ADJLinkResolution.resolveLink(
     withUrl: url,
     resolveUrlSuffixArray: ["example.com"],
@@ -44,11 +41,8 @@ ADJLinkResolution.resolveLink(
         Adjust.appWillOpen(resolvedLink)
     })
 ```
-:::
-:::{tab-item} Objective-C
-:sync: objc
 
-```{code-block} objc
+```objective-c
 [ADJLinkResolution
     resolveLinkWithUrl:url
     resolveUrlSuffixArray:@[@"example.com"]
@@ -57,11 +51,11 @@ ADJLinkResolution.resolveLink(
         [Adjust appWillOpenUrl:resolvedLink];
     }];
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
