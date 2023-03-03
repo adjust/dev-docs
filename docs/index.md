@@ -33,53 +33,20 @@ Web
 
 :::{toctree}
 :maxdepth: 1
-:caption: iOS
+:caption: 📚 Guides
 :hidden: true
 
-ios/index
-ios/features/index
-ios/reference/index
-
-:::
-
-:::{toctree}
-:maxdepth: 1
-:caption: Android
-:hidden: true
-
-android/index
-android/setup/index
-android/features/index
-android/reference/index
-
-:::
-
-:::{toctree}
-:maxdepth: 1
-:caption: Unity
-:hidden: true
-
-unity/index
-unity/features/index
-unity/reference/index
-
-:::
-
-:::{toctree}
-:maxdepth: 1
-:caption: Web
-:hidden: true
-
-web/index
-web/features/index
-web/reference/index
+iOS <ios/index>
+Android <android/index>
+Unity <unity/index>
+Web <web/index>
 
 :::
 
 :::{toctree}
 :maxdepth: 1
 :hidden: true
-:caption: Glossary
+:caption: 📖 Glossary
 
 glossary
 :::
