@@ -48,9 +48,8 @@ NSString *environment = ADJEnvironmentSandbox;
                                   environment:environment];
 ```
 
+{emphasize-lines="4"}
 ```javascript
-:emphasize-lines: 4
-
 setupWebViewJavascriptBridge(function(bridge) {
    var yourAppToken = yourAppToken;
    var environment = AdjustConfig.EnvironmentSandbox;
