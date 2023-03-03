@@ -4,7 +4,7 @@ The Adjust SDK contains helper methods that return device information. Use these
 
 ## Adjust device identifier
 
-Adjust generates a unique {abbr}`ADID (Adjust Device ID)` for each device. Call the [`getAdid` method](unity-getAdid-invocation) to return this ID as a **string**.
+Adjust generates a unique {abbr}`ADID (Adjust Device ID)` for each device. Call the [`getAdid` method](#unity-getadid-invocation) to return this ID as a **string**.
 
 :::{include} /unity/reference/Adjust/device-info.md
 :start-after: getAdid snippet
@@ -13,7 +13,7 @@ Adjust generates a unique {abbr}`ADID (Adjust Device ID)` for each device. Call 
 
 ## ID For Advertisers
 
-The {abbr}`IDFA (ID for Advertisers)` is a device-specific identifier for Apple devices. Call the [`getIdfa` method](unity-getIdfa-invocation) to return this ID as a **string**.
+The {abbr}`IDFA (ID for Advertisers)` is a device-specific identifier for Apple devices. Call the [`getIdfa` method](#unity-getidfa-invocation) to return this ID as a **string**.
 
 :::{include} /unity/reference/Adjust/device-info.md
 :start-after: getIdfa snippet
@@ -26,7 +26,7 @@ The {abbr}`GPS ADID (Google Play Services Advertising ID)` is a device-specific 
 
 Users can opt out of sharing their GPS ADID by toggling the "Opt out of Ads Personalization" setting on their device. When a user enables this setting, the Adjust SDK returns a string of zeros when trying to read the GPS ADID.
 
-You can access this value by calling the [`getGoogleAdId` method](unity-getGoogleAdId-invocation) in a background thread. Assign a delegate function to access the GPS ADID value.
+You can access this value by calling the [`getGoogleAdId` method](#unity-getgoogleadid-invocation) in a background thread. Assign a delegate function to access the GPS ADID value.
 
 :::{include} /unity/reference/Adjust/device-info.md
 :start-after: getGoogleAdId snippet
@@ -35,7 +35,7 @@ You can access this value by calling the [`getGoogleAdId` method](unity-getGoogl
 
 ## Amazon Advertiser ID
 
-The {abbr}`Amazon Ad ID (Amazon Advertising ID)` is a device-specific identifier for Android devices. Call the [`getAmazonAdId` method](unity-getAmazonAdId-invocation) to return this ID as a **string**.
+The {abbr}`Amazon Ad ID (Amazon Advertising ID)` is a device-specific identifier for Android devices. Call the [`getAmazonAdId` method](#unity-getamazonadid-invocation) to return this ID as a **string**.
 
 :::{include} /unity/reference/Adjust/device-info.md
 :start-after: getAmazonAdId snippet

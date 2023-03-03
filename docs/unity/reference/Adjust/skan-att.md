@@ -4,14 +4,13 @@ Use these methods to manage your [SKAdNetwork](https://help.adjust.com/en/articl
 
 % Class method requestTrackingAuthorizationWithCompletionHandler
 
-:::::{function} requestTrackingAuthorizationWithCompletionHandler (completion)
+::::{function} requestTrackingAuthorizationWithCompletionHandler (completion)
 :noindex:
 
 Receives the user's authorization status from the ATT prompt and passes it to a completion function
 
-```{code-block} cs
-:name: unity-requestTrackingAuthorizationWithCompletionHandler-invocation
-
+{#unity-requesttrackingauthorizationwithcompletionhandler-invocation}
+```c#
 public static void requestTrackingAuthorizationWithCompletionHandler(Action<int> statusCallback, string sceneName = "Adjust")
 ```
 
@@ -20,9 +19,9 @@ public static void requestTrackingAuthorizationWithCompletionHandler(Action<int>
 
 % requestTrackingAuthorizationWithCompletionHandler snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 Adjust.requestTrackingAuthorizationWithCompletionHandler((status) =>
 {
     switch (status)
@@ -42,25 +41,24 @@ Adjust.requestTrackingAuthorizationWithCompletionHandler((status) =>
     }
 });
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method getAppTrackingAuthorizationStatus
 
-:::::{function} getAppTrackingAuthorizationStatus
+::::{function} getAppTrackingAuthorizationStatus
 :noindex:
 
 Retrieves the user's current authorization status
 
-```{code-block} cs
-:name: unity-getAppTrackingAuthorizationStatus-invocation
-
+{#unity-getapptrackingauthorizationstatus-invocation}
+```c#
 public static int getAppTrackingAuthorizationStatus()
 ```
 
@@ -69,59 +67,57 @@ public static int getAppTrackingAuthorizationStatus()
 
 % getAppTrackingAuthorizationStatus snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 Adjust.getAppTrackingAuthorizationStatus();
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method checkForNewAttStatus
 
-:::::{function} checkForNewAttStatus
+::::{function} checkForNewAttStatus
 :noindex:
 
 Prompts the SDK to check the current state of `att_status`
 
-```{code-block} cs
-:name: unity-checkForNewAttStatus-invocation
-
+{#unity-checkfornewattstatus-invocation}
+```c#
 public static void checkForNewAttStatus()
 ```
 
 % checkForNewAttStatus snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 Adjust.checkForNewAttStatus();
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method updateConversionValue
 
-:::::{function} updateConversionValue(conversionValue)
+::::{function} updateConversionValue(conversionValue)
 :noindex:
 
 Updates the [conversion value](https://help.adjust.com/en/new/article/conversion-hub)
 
-```{code-block} cs
-:name: unity-updateConversionValue-invocation
-
+{#unity-updateconversionvalue-invocation}
+```c#
 public static void updateConversionValue(int conversionValue)
 ```
 
@@ -130,16 +126,16 @@ public static void updateConversionValue(int conversionValue)
 
 % updateConversionValue snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 Adjust.updateConversionValue(6);
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end

@@ -4,10 +4,10 @@ The `AdjustAttribution` class contains details about the current attribution sta
 
 ## Properties
 
-The following properties can be accessed by calling the [`getAttribution` method](unity-getAttribution-invocation). Any values that aren't populated for the user are returned as a null value.
+The following properties can be accessed by calling the [`getAttribution` method](#unity-getattribution-invocation). Any values that aren't populated for the user are returned as a null value.
 
 :::{note}
-The following values can only be accessed if the [`needsCost`](unity-setNeedsCost-invocation) property on your `AdjustConfig` instance is `true`:
+The following values can only be accessed if the [`needsCost`](#unity-setneedscost-invocation) property on your `AdjustConfig` instance is `true`:
 
 * `costType`
 * `costAmount`

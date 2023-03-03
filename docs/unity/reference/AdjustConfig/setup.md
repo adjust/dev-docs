@@ -7,9 +7,8 @@
 
 Set the verbosity of logs you want to receive from the Adjust SDK
 
-```{code-block} cs
-:name: unity-setLogLevel-invocation
-
+{#unity-setloglevel-invocation}
+```c#
 public void setLogLevel(AdjustLogLevel logLevel)
 ```
 
@@ -18,12 +17,10 @@ public void setLogLevel(AdjustLogLevel logLevel)
 
 % setLogLevel snippet
 
-::::{tab-set}
-:::{tab-item} C#
+:::{tab-set-code}
 
-```{code-block} cs
-:emphasize-lines: 3
-
+{emphasize-lines="3"}
+```c#
 AdjustConfig config = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
 //...
 config.setLogLevel(AdjustLogLevel.Error);
@@ -32,7 +29,6 @@ Adjust.start(config);
 ```
 
 :::
-::::
 
 ::::{dropdown} Available log levels
 :::{list-table}
@@ -66,14 +62,13 @@ Adjust.start(config);
 
 % Class method setLogDelegate
 
-:::::{function} setLogDelegate (logDelegate)
+::::{function} setLogDelegate (logDelegate)
 :noindex:
 
 Sets a delegate function ro program to handle log output
 
-```{code-block} cs
-:name: unity-setLogDelegate-invocation
-
+{#unity-setlogdelegate-invocation}
+```c#
 public void setLogDelegate(Action<String> logDelegate)
 ```
 
@@ -82,12 +77,10 @@ public void setLogDelegate(Action<String> logDelegate)
 
 % setLogDelegate snippet
 
-::::{tab-set}
-:::{tab-item} C#
+:::{tab-set-code}
 
-```{code-block} cs
-:emphasize-lines: 3
-
+{emphasize-lines="3"}
+```c#
 AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
 //...
 adjustConfig.setLogDelegate(msg => Debug.Log(msg));
@@ -96,24 +89,22 @@ Adjust.start(adjustConfig);
 ```
 
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method setDefaultTracker
 
-:::::{function} setDefaultTracker (defaultTracker)
+::::{function} setDefaultTracker (defaultTracker)
 :noindex:
 
 Sets a default tracker token to record installs against
 
-```{code-block} cs
-:name: unity-setDefaultTracker-invocation
-
+{#unity-setdefaulttracker-invocation}
+```c#
 public void setDefaultTracker(string defaultTracker)
 ```
 
@@ -122,11 +113,9 @@ public void setDefaultTracker(string defaultTracker)
 
 % setDefaultTracker snippet
 
-::::{tab-set}
-:::{tab-item} C#
+:::{tab-set-code}
 
-```{code-block} cs
-
+```c#
 AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
 //...
 adjustConfig.setDefaultTracker("{TrackerToken}");
@@ -135,24 +124,22 @@ Adjust.start(adjustConfig);
 ```
 
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method setSendInBackground
 
-:::::{function} setSendInBackground (sendInBackground)
+::::{function} setSendInBackground (sendInBackground)
 :noindex:
 
 Sets whether the SDK should send data while the app is running in the background
 
-```{code-block} cs
-:name: unity-setSendInBackground-invocation
-
+{#unity-setsendinbackground-invocation}
+```c#
 public void setSendInBackground(bool sendInBackground)
 ```
 
@@ -161,11 +148,9 @@ public void setSendInBackground(bool sendInBackground)
 
 % setSendInBackground snippet
 
-::::{tab-set}
-:::{tab-item} C#
+:::{tab-set-code}
 
-```{code-block} cs
-
+```c#
 AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
 //...
 adjustConfig.setSendInBackground(true);
@@ -174,24 +159,22 @@ Adjust.start(adjustConfig);
 ```
 
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method setSessionSuccessDelegate
 
-:::::{function} setSessionSuccessDelegate (sessionSuccessDelegate)
+::::{function} setSessionSuccessDelegate (sessionSuccessDelegate)
 :noindex:
 
 Sets up a success callback to trigger a function when the SDK records a session.
 
-```{code-block} cs
-:name: unity-setSessionSuccessDelegate-invocation
-
+{#unity-setsessionsuccessdelegate-invocation}
+```c#
 public void setSessionSuccessDelegate(Action<AdjustSessionSuccess> sessionSuccessDelegate, string sceneName = "Adjust")
 ```
 
@@ -200,12 +183,10 @@ public void setSessionSuccessDelegate(Action<AdjustSessionSuccess> sessionSucces
 
 % setSessionSuccessDelegate snippet
 
-::::{tab-set}
-:::{tab-item} C#
+{tab-set-code}
 
-```{code-block} cs
-:emphasize-lines: 3, 7-9
-
+{emphasize-lines="3, 7-9"}
+```c#
 AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
 adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
 adjustConfig.setSessionSuccessDelegate(SessionSuccessCallback);
@@ -218,22 +199,21 @@ public void SessionSuccessCallback (AdjustSessionSuccess sessionSuccessData) {
 ```
 
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method setSessionFailureDelegate
 
-:::::{function} setSessionFailureDelegate (sessionSuccessDelegate)
+::::{function} setSessionFailureDelegate (sessionSuccessDelegate)
 :noindex:
 
 Sets up a callback to trigger a function when the SDK fails to record a session.
 
-```{code-block} cs
+```c#
 :name: unity-setSessionFailureDelegate-invocation
 
 public void setSessionFailureDelegate(Action<AdjustSessionFailure> sessionFailureDelegate, string sceneName = "Adjust")
@@ -244,12 +224,10 @@ public void setSessionFailureDelegate(Action<AdjustSessionFailure> sessionFailur
 
 % setSessionFailureDelegate snippet
 
-::::{tab-set}
-:::{tab-item} C#
+:::{tab-set-code}
 
-```{code-block} cs
-:emphasize-lines: 3, 7-9
-
+{emphasize-lines="3, 7-9"}
+```c#
 AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
 adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
 adjustConfig.setSessionFailureDelegate(SessionFailureCallback);
@@ -262,24 +240,22 @@ public void SessionFailureCallback (AdjustSessionFailure sessionFailureData) {
 ```
 
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method setEventSuccessDelegate
 
-:::::{function} eventSuccessDelegate (eventSuccessDelegate)
+::::{function} eventSuccessDelegate (eventSuccessDelegate)
 :noindex:
 
 Sets up a success callback to trigger a function when the SDK records an event.
 
-```{code-block} cs
-:name: unity-setEventSuccessDelegate-invocation
-
+{#unity-seteventsuccessdelegate-invocation}
+```c#
 public void setEventSuccessDelegate(Action<AdjustEventSuccess> eventSuccessDelegate, string sceneName = "Adjust")
 ```
 
@@ -288,12 +264,10 @@ public void setEventSuccessDelegate(Action<AdjustEventSuccess> eventSuccessDeleg
 
 % setEventSuccessDelegate snippet
 
-::::{tab-set}
-:::{tab-item} C#
+:::{tab-set-code}
 
-```{code-block} cs
-:emphasize-lines: 3, 7-9
-
+{emphasize-lines="3, 7-9"}
+```c#
 AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
 adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
 adjustConfig.setEventSuccessDelegate(EventSuccessCallback);
@@ -306,24 +280,22 @@ public void EventSuccessCallback(AdjustEventSuccess eventSuccessData) {
 ```
 
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method setEventFailureDelegate
 
-:::::{function} setEventFailureDelegate (eventFailureDelegate)
+::::{function} setEventFailureDelegate (eventFailureDelegate)
 :noindex:
 
 Sets up a callback to trigger a function when the SDK fails to record an event.
 
-```{code-block} cs
-:name: unity-setEventFailureDelegate-invocation
-
+{#unity-seteventfailuredelegate-invocation}
+```c#
 public void setEventFailureDelegate(Action<AdjustEventFailure> eventFailureDelegate, string sceneName = "Adjust")
 ```
 
@@ -332,12 +304,10 @@ public void setEventFailureDelegate(Action<AdjustEventFailure> eventFailureDeleg
 
 % setEventFailureDelegate snippet
 
-::::{tab-set}
-:::{tab-item} C#
+{tab-set-code}
 
-```{code-block} cs
-:emphasize-lines: 3, 7-9
-
+{emphasize-lines="3, 7-9"}
+```c#
 AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
 adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
 adjustConfig.setEventFailureDelegate(EventFailureCallback);
@@ -350,24 +320,22 @@ public void EventFailureCallback(AdjustEventFailure eventFailureData) {
 ```
 
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method setDelayStart
 
-:::::{function} setDelayStart (delayStart)
+::::{function} setDelayStart (delayStart)
 :noindex:
 
 Sets a delay before the SDK starts to allow data to load before session information is sent to Adjust's servers. Maximum delay: 10 seconds
 
-```{code-block} cs
-:name: unity-setDelayStart-invocation
-
+{#unity-setdelaystart-invocation}
+```c#
 public void setDelayStart(double delayStart)
 ```
 
@@ -376,12 +344,10 @@ public void setDelayStart(double delayStart)
 
 % setDelayStart snippet
 
-::::{tab-set}
-:::{tab-item} C#
+:::{tab-set-code}
 
-```{code-block} cs
-:emphasize-lines: 3
-
+{emphasize-lines="3"}
+```c#
 AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
 //...
 adjustConfig.setDelayStart(5.5);
@@ -390,24 +356,22 @@ Adjust.start(adjustConfig);
 ```
 
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method setExternalDeviceId
 
-:::::{function} setExternalDeviceId (externalDeviceId)
+::::{function} setExternalDeviceId (externalDeviceId)
 :noindex:
 
 Sets an external device identifier for reporting purposes
 
-```{code-block} cs
-:name: unity-setExternalDeviceId-invocation
-
+{#unity-setexternaldeviceid-invocation}
+```c#
 public void setExternalDeviceId(string externalDeviceId)
 ```
 
@@ -416,12 +380,10 @@ public void setExternalDeviceId(string externalDeviceId)
 
 % setExternalDeviceId snippet
 
-::::{tab-set}
-:::{tab-item} C#
+:::{tab-set-code}
 
-```{code-block} cs
-:emphasize-lines: 3
-
+{emphasize-line="3"}
+```c#
 AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
 //...
 adjustConfig.setExternalDeviceId("{Your-External-Device-Id}");
@@ -430,24 +392,22 @@ Adjust.start(adjustConfig);
 ```
 
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method setEventBufferingEnabled
 
-:::::{function} setEventBufferingEnabled (eventBufferingEnabled)
+::::{function} setEventBufferingEnabled (eventBufferingEnabled)
 :noindex:
 
 Sets event buffering. If enabled, the SDK stores events on the device and sends all requests once per minute.
 
-```{code-block} cs
-:name: unity-setEventBufferingEnabled-invocation
-
+{#unity-seteventbufferingenabled-invocation}
+```c#
 public void setEventBufferingEnabled(bool eventBufferingEnabled)
 ```
 
@@ -456,11 +416,9 @@ public void setEventBufferingEnabled(bool eventBufferingEnabled)
 
 % setEventBufferingEnabled snippet
 
-::::{tab-set}
-:::{tab-item} C#
+:::{tab-set-code}
 
-```{code-block} cs
-
+```c#
 AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
 //...
 adjustConfig.setEventBufferingEnabled(true);
@@ -469,26 +427,24 @@ Adjust.start(adjustConfig);
 ```
 
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method setNeedsCost
 
-:::::{function} setNeedsCost (needsCost)
+::::{function} setNeedsCost (needsCost)
 :noindex:
 
 :::{versionadded} v4.24.0
 Sets whether the SDK should gather cost data. This is accessible in the user's attribution information.
 :::
 
-```{code-block} cs
-:name: unity-setNeedsCost-invocation
-
+{#unity-setneedscost-invocation}
+```c#
 public void setNeedsCost(bool needsCost)
 ```
 
@@ -497,35 +453,31 @@ public void setNeedsCost(bool needsCost)
 
 % setNeedsCost snippet
 
-::::{tab-set}
-:::{tab-item} C#
+:::{tab-set-code}
 
-```{code-block} cs
-
+```c#
 AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
 adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
 adjustConfig.setNeedsCost(true);
 ```
 
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method setAttributionChangedDelegate
 
-:::::{function} setAttributionChangedDelegate (attributionChangedDelegate)
+::::{function} setAttributionChangedDelegate (attributionChangedDelegate)
 :noindex:
 
 Sets a delegate function that fires when a user's attribution information updates
 
-```{code-block} cs
-:name: unity-setAttributionChangedDelegate-invocation
-
+{#unity-setattributionchangeddelegate-invocation}
+```c#
 public void setAttributionChangedDelegate(Action<AdjustAttribution> attributionChangedDelegate, string sceneName = "Adjust")
 ```
 
@@ -534,10 +486,9 @@ public void setAttributionChangedDelegate(Action<AdjustAttribution> attributionC
 
 % setAttributionChangedDelegate snippet
 
-::::{tab-set}
-:::{tab-item} C#
+:::{tab-set-code}
 
-```{code-block} cs
+```c#
 :emphasize-lines: 9, 13-16
 
 using com.adjust.sdk;
@@ -560,24 +511,22 @@ public class ExampleGUI : MonoBehaviour {
 ```
 
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method setPreinstallTrackingEnabled
 
-:::::{function} setPreinstallTrackingEnabled (preinstallTrackingEnabled)
+::::{function} setPreinstallTrackingEnabled (preinstallTrackingEnabled)
 :noindex:
 
 Enables or disables preinstall tracking
 
-```{code-block} cs
-:name: unity-setPreinstallTrackingEnabled-invocation
-
+{#unity-setpreinstalltrackingenabled-invocation}
+```c#
 public void setPreinstallTrackingEnabled(bool preinstallTrackingEnabled)
 ```
 
@@ -586,11 +535,9 @@ public void setPreinstallTrackingEnabled(bool preinstallTrackingEnabled)
 
 % setPreinstallTrackingEnabled snippet
 
-::::{tab-set}
-:::{tab-item} C#
+:::{tab-set-code}
 
-```{code-block} cs
-
+```c#
 AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
 //...
 adjustConfig.setPreinstallTrackingEnabled(true);
@@ -599,24 +546,22 @@ Adjust.start(adjustConfig);
 ```
 
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method setPreinstallFilePath
 
-:::::{function} setPreinstallFilePath (preinstallFilePath)
+::::{function} setPreinstallFilePath (preinstallFilePath)
 :noindex:
 
 Defines a relative path where preinstall information is available. This directory must be world-readable
 
-```{code-block} cs
-:name: unity-setPreinstallFilePath-invocation
-
+{#unity-setpreinstallfilepath-invocation}
+```c#
 public void setPreinstallFilePath(string preinstallFilePath)
 ```
 
@@ -625,11 +570,9 @@ public void setPreinstallFilePath(string preinstallFilePath)
 
 % setPreinstallFilePath snippet
 
-::::{tab-set}
-:::{tab-item} C#
+:::{tab-set-code}
 
-```{code-block} cs
-
+```c#
 AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
 //...
 adjustConfig.setPreinstallFilePath("../EngagementFile.xml");
@@ -638,35 +581,31 @@ Adjust.start(adjustConfig);
 ```
 
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method deactivateSKAdNetworkHandling
 
-:::::{function} deactivateSKAdNetworkHandling
+::::{function} deactivateSKAdNetworkHandling
 :noindex:
 
 Turns off communication with SKAdNetwork. Communication is *enabled* by default
 
-```{code-block} cs
-:name: unity-deactivateSKAdNetworkHandling-invocation
-
+{#unity-deactivateskadnetworkhandling-invocation}
+```c#
 public void deactivateSKAdNetworkHandling()
 ```
 
 % deactivateSKAdNetworkHandling snippet
 
-::::{tab-set}
-:::{tab-item} C#
+:::{tab-set-code}
 
-```{code-block} cs
-:emphasize-lines: 3
-
+{emphasize-lines="3"}
+```c#
 AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
 //...
 adjustConfig.deactivateSKAdNetworkHandling();
@@ -675,24 +614,22 @@ Adjust.start(adjustConfig);
 ```
 
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method setLaunchDeferredDeeplink
 
-:::::{function} setLaunchDeferredDeeplink (launchDeferredDeeplink)
+::::{function} setLaunchDeferredDeeplink (launchDeferredDeeplink)
 :noindex:
 
 Enables or disables launching deferred deep links with the SDK. If **enabled**, the SDK launches deep links the user interacts with
 
-```{code-block} cs
-:name: unity-setLaunchDeferredDeeplink-invocation
-
+{#unity-setlaunchdeferreddeeplink-invocation}
+```c#
 public void setLaunchDeferredDeeplink(bool launchDeferredDeeplink)
 ```
 
@@ -701,12 +638,10 @@ public void setLaunchDeferredDeeplink(bool launchDeferredDeeplink)
 
 % setLaunchDeferredDeeplink snippet
 
-::::{tab-set}
-:::{tab-item} C#
+:::{tab-set-code}
 
-```{code-block} cs
-:emphasize-lines: 3
-
+{emphasize-lines="3"}
+```c#
 AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
 //...
 adjustConfig.setLaunchDeferredDeeplink(true);
@@ -715,24 +650,22 @@ Adjust.start(adjustConfig);
 ```
 
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method setLinkMeEnabled
 
-:::::{function} setLinkMeEnabled (linkMeEnabled)
+::::{function} setLinkMeEnabled (linkMeEnabled)
 :noindex:
 
 Toggle support for Adjust's [LinkMe solution](https://help.adjust.com/en/article/linkme) for deep linking
 
-```{code-block} cs
-:name: unity-setLinkMeEnabled-invocation
-
+{#unity-setlinkmeenabled-invocation}
+```c#
 public void setLinkMeEnabled(bool linkMeEnabled)
 ```
 
@@ -741,12 +674,10 @@ public void setLinkMeEnabled(bool linkMeEnabled)
 
 % setLinkMeEnabled snippet
 
-::::{tab-set}
-:::{tab-item} C#
+:::{tab-set-code}
 
-```{code-block} cs
-:emphasize-lines: 3
-
+{emphasize-lines="3"}
+```c#
 AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
 //...
 adjustConfig.setLinkMeEnabled(true);
@@ -755,24 +686,22 @@ Adjust.start(adjustConfig);
 ```
 
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method setConversionValueUpdatedCallbackDelegate
 
-:::::{function} setConversionValueUpdatedCallbackDelegate(conversionValueUpdatedDelegate)
+::::{function} setConversionValueUpdatedCallbackDelegate(conversionValueUpdatedDelegate)
 :noindex:
 
 Sets a delegate function to call when the user's conversion value updates.
 
-```{code-block} cs
-:name: unity-setConversionValueUpdatedCallbackDelegate-invocation
-
+{#unity-setconversionvalueupdatedcallbackdelegate-invocation}
+```c#
 public void setConversionValueUpdatedDelegate(Action<int> conversionValueUpdatedDelegate, string sceneName = "Adjust")
 ```
 
@@ -781,11 +710,9 @@ public void setConversionValueUpdatedDelegate(Action<int> conversionValueUpdated
 
 % setConversionValueUpdatedDelegate snippet
 
-::::{tab-set}
-:::{tab-item} C#
+:::{tab-set-code}
 
-```{code-block} cs
-
+```c#
 AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
 //...
 adjustConfig.setConversionValueUpdatedDelegate(ConversionValueUpdatedCallback);
@@ -794,10 +721,9 @@ Adjust.start(adjustConfig);
 ```
 
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end

@@ -2,14 +2,13 @@
 
 % Class method trackEvent
 
-:::::{function} trackEvent (event)
+::::{function} trackEvent (event)
 :noindex:
 
 Record event information using an `AdjustEvent` object and an [Adjust event token](https://help.adjust.com/en/article/basic-event-setup#create-an-event-token).
 
-```{code-block} cs
-:name: unity-trackEvent-invocation
-
+{#unity-trackevent-invocation}
+```c#
 public static void trackEvent(AdjustEvent adjustEvent)
 ```
 
@@ -18,32 +17,31 @@ public static void trackEvent(AdjustEvent adjustEvent)
 
 % trackEvent snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 AdjustEvent adjustEvent = new AdjustEvent("abc123");
 //...
 Adjust.trackEvent(adjustEvent);
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method addSessionCallbackParameter
 
-:::::{function} addSessionCallbackParameter (key, value)
+::::{function} addSessionCallbackParameter (key, value)
 :noindex:
 
 Adds callback parameters to send with each session recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
 
-```{code-block} cs
-:name: unity-addSessionCallbackParameter-invocation
-
+{#unity-addsessioncallbackparameter-invocation}
+```c#
 public static void addSessionCallbackParameter(string key, string value)
 ```
 
@@ -54,30 +52,29 @@ public static void addSessionCallbackParameter(string key, string value)
 
 % addSessionCallbackParameter snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 Adjust.addSessionCallbackParameter("key", "value");
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method removeSessionCallbackParameter
 
-:::::{function} removeSessionCallbackParameter (key)
+::::{function} removeSessionCallbackParameter (key)
 :noindex:
 
 Removes a callback parameter
 
-```{code-block} cs
-:name: unity-removeSessionCallbackParameter-invocation
-
+{#unity-removesessioncallbackparameter-invocation}
+```c#
 public static void removeSessionCallbackParameter(string key)
 ```
 
@@ -86,59 +83,57 @@ public static void removeSessionCallbackParameter(string key)
 
 % removeSessionCallbackParameter snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 Adjust.removeSessionCallbackParameter("key");
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method resetSessionCallbackParameters
 
-:::::{function} resetSessionCallbackParameters
+::::{function} resetSessionCallbackParameters
 :noindex:
 
 Removes all callback parameters
 
-```{code-block} cs
-:name: unity-resetSessionCallbackParameters-invocation
-
+{#unity-resetsessioncallbackparameters-invocation}
+```c#
 public static void resetSessionCallbackParameters()
 ```
 
 % resetSessionCallbackParameters snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 Adjust.resetSessionCallbackParameters();
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method addSessionPartnerParameter
 
-:::::{function} addSessionPartnerParameter (key, value)
+::::{function} addSessionPartnerParameter (key, value)
 :noindex:
 
 Adds partner parameters to send with each session recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
 
-```{code-block} cs
-:name: unity-addSessionPartnerParameter-invocation
-
+{#unity-addsessionpartnerparameter-invocation}
+```c#
 public static void addSessionPartnerParameter(string key, string value)
 ```
 
@@ -149,30 +144,29 @@ public static void addSessionPartnerParameter(string key, string value)
 
 % addSessionPartnerParameter snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 Adjust.addSessionPartnerParameter("key", "value");
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method removeSessionPartnerParameter
 
-:::::{function} removeSessionPartnerParameter (key)
+::::{function} removeSessionPartnerParameter (key)
 :noindex:
 
 Removes a partner parameter
 
-```{code-block} cs
-:name: unity-removeSessionPartnerParameter-invocation
-
+{#unity-removesessionpartnerparameter-invocation}
+```c#
 public static void removeSessionPartnerParameter(string key)
 ```
 
@@ -181,59 +175,57 @@ public static void removeSessionPartnerParameter(string key)
 
 % removeSessionPartnerParameter snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+{tab-set-code}
+
+```c#
 Adjust.removeSessionPartnerParameter("key");
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method resetSessionPartnerParameters
 
-:::::{function} resetSessionPartnerParameters
+::::{function} resetSessionPartnerParameters
 :noindex:
 
 Resets all partner parameters
 
-```{code-block} cs
-:name: unity-resetSessionPartnerParameters-invocation
-
+{#unity-resetsessionpartnerparameters-invocation}
+```c#
 public static void resetSessionPartnerParameters()
 ```
 
 % resetSessionPartnerParameters snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 Adjust.resetSessionPartnerParameters();
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method trackAdRevenue
 
-:::::{function} trackAdRevenue(adRevenue)
+::::{function} trackAdRevenue(adRevenue)
 :noindex:
 
 Record the details of an AdjustAdRevenue object
 
-```{code-block} cs
-:name: unity-trackAdRevenue-invocation
-
+{#unity-trackadrevenue-invocation}
+```c#
 public static void trackAdRevenue(AdjustAdRevenue adRevenue)
 ```
 
@@ -242,32 +234,30 @@ public static void trackAdRevenue(AdjustAdRevenue adRevenue)
 
 % trackAdRevenue snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue("source");
 //...
 Adjust.trackAdRevenue(adjustAdRevenue);
 ```
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method trackAppStoreSubscription
 
-:::::{function} trackAppStoreSubscription(subscription)
+::::{function} trackAppStoreSubscription(subscription)
 :noindex:
 
 Record an App Store subscription object
 
-```{code-block} cs
-:name: unity-trackAppStoreSubscription-invocation
-
+{#unity-trackappstoresubscription-invocation}
+```c#
 public static void trackAppStoreSubscription(AdjustAppStoreSubscription subscription)
 ```
 
@@ -276,9 +266,9 @@ public static void trackAppStoreSubscription(AdjustAppStoreSubscription subscrip
 
 % trackAppStoreSubscription snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
     price,
     currency,
@@ -293,25 +283,24 @@ subscription.addPartnerParameter("key2", "value2");
 
 Adjust.trackAppStoreSubscription(subscription);
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method trackPlayStoreSubscription
 
-:::::{function} trackPlayStoreSubscription(subscription)
+::::{function} trackPlayStoreSubscription(subscription)
 :noindex:
 
 Record an Play Store subscription object
 
-```{code-block} cs
-:name: unity-trackPlayStoreSubscription-invocation
-
+{#unity-trackplaystoresubscription-invocation}
+```c#
 public static void trackPlayStoreSubscription(AdjustPlayStoreSubscription subscription)
 ```
 
@@ -320,9 +309,9 @@ public static void trackPlayStoreSubscription(AdjustPlayStoreSubscription subscr
 
 % trackPlayStoreSubscription snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
     price,
     currency,
@@ -338,23 +327,22 @@ subscription.addPartnerParameter("key2", "value2");
 
 Adjust.trackPlayStoreSubscription(subscription);
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method getAttribution
 
-:::::{function} getAttribution
+::::{function} getAttribution
 :noindex:
 
 Fetches attribution data from the device
 
-```{code-block} cs
-:name: unity-getAttribution-invocation
-
+{#unity-getattribution-invocation}
+```c#
 public static AdjustAttribution getAttribution()
 ```
 
@@ -363,14 +351,14 @@ public static AdjustAttribution getAttribution()
 
 % getAttribution snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 var attribution = Adjust.getAttribution();
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::

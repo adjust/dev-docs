@@ -1,17 +1,16 @@
 # AdjustPlayStoreSubscription class
 
-Use this class to store Play Store subscription information. You can pass this to Adjust's servers using the [`trackPlayStoreSubscription` method](unity-trackPlayStoreSubscription-invocation).
+Use this class to store Play Store subscription information. You can pass this to Adjust's servers using the [`trackPlayStoreSubscription` method](#unity-trackplaystoresubscription-invocation).
 
 % Class method AdjustPlayStoreSubscription
 
-:::::{function} AdjustPlayStoreSubscription (price, currency, sku, orderId, signature, purchaseToken)
+::::{function} AdjustPlayStoreSubscription (price, currency, sku, orderId, signature, purchaseToken)
 :noindex:
 
 Initializes a subscription
 
-```{code-block} cs
-:name: unity-AdjustPlayStoreSubscription-invocation
-
+{#unity-adjustplaystoresubscription-invocation}
+```c#
 public AdjustPlayStoreSubscription(string price, string currency, string sku, string orderId, string signature, string purchaseToken)
 ```
 
@@ -31,9 +30,9 @@ public AdjustPlayStoreSubscription(string price, string currency, string sku, st
 
 % AdjustPlayStoreSubscription snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
     price,
     currency,
@@ -42,25 +41,24 @@ AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
     signature,
     purchaseToken);
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method setPurchaseTime
 
-:::::{function} setPurchaseTime (purchaseTime)
+::::{function} setPurchaseTime (purchaseTime)
 :noindex:
 
 Sets the date of the transaction in the subscription object
 
-```{code-block} cs
-:name: unity-setPurchaseTime-invocation
-
+{#unity-setpurchasetime-invocation}
+```c#
 public void setPurchaseTime(string purchaseTime)
 ```
 
@@ -69,9 +67,9 @@ public void setPurchaseTime(string purchaseTime)
 
 % setPurchaseTime snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
     price,
     currency,
@@ -81,25 +79,24 @@ AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
     purchaseToken);
 subscription.setPurchaseTime(purchaseTime);
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method addCallbackParameter
 
-:::::{function} addCallbackParameter (key, value)
+::::{function} addCallbackParameter (key, value)
 :noindex:
 
 Adds key-value callback parameters to the subscription object. You can add multiple parameters by calling this method multiple times.
 
-```{code-block} cs
-:name: unity-AdjustPlayStoreSubscription-addCallbackParameter-invocation
-
+{#unity-adjustplaystoresubscription-addcallbackparameter-invocation}
+```c#
 public void addCallbackParameter(string key, string value)
 ```
 
@@ -110,9 +107,9 @@ public void addCallbackParameter(string key, string value)
 
 % addCallbackParameter snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
     price,
     currency,
@@ -124,25 +121,24 @@ AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
 subscription.addCallbackParameter("key1", "value1");
 subscription.addCallbackParameter("key2", "value2");
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end
 
 % Class method addPartnerParameter
 
-:::::{function} addPartnerParameter (key, value)
+::::{function} addPartnerParameter (key, value)
 :noindex:
 
 Adds key-value partner parameters to the subscription object. You can add multiple parameters by calling this method multiple times.
 
-```{code-block} cs
-:name: unity-AdjustPlayStoreSubscription-addPartnerParameter-invocation
-
+{#unity-adjustplaystoresubscription-addpartnerparameter-invocation}
+```c#
 public void addPartnerParameter(string key, string value)
 ```
 
@@ -153,9 +149,9 @@ public void addPartnerParameter(string key, string value)
 
 % addPartnerParameter snippet
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
     price,
     currency,
@@ -167,11 +163,11 @@ AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
 subscription.addPartnerParameter("key1", "value1");
 subscription.addPartnerParameter("key2", "value2");
 ```
+
 :::
-::::
 
 % Snippet end
 
-:::::
+::::
 
 % Class method end

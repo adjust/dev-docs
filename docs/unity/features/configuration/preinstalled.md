@@ -4,7 +4,7 @@
 You can use the Adjust SDK to record activity from apps that came preinstalled on a user's device. This enables you to record information from users who didn't download your app from a campaign.
 :::
 
-Your config object contains a **boolean** `preinstallTrackingEnabled` property that controls this feature. To enable preinstall measurement, call the [`setPreinstallTrackingEnabled` method](unity-setPreinstallTrackingEnabled-invocation) with a `true` argument.
+Your config object contains a **boolean** `preinstallTrackingEnabled` property that controls this feature. To enable preinstall measurement, call the [`setPreinstallTrackingEnabled` method](#unity-setpreinstalltrackingenabled-invocation) with a `true` argument.
 
 :::{include} /unity/reference/AdjustConfig/setup.md
 :start-after: setPreinstallTrackingEnabled snippet
@@ -29,7 +29,7 @@ The content provider method makes use of a read-only content provider. The SDK u
 
 To set the permissions, add the following to your {file}`AndroidManifest.xml` file.
 
-```{code-block} xml
+```xml
 :caption: AndroidManifest.xml
 
 <uses-permission android:name="com.adjust.preinstall.READ_PERMISSION"/>
@@ -41,7 +41,7 @@ The system installer method uses a broadcast receiver. The system installer broa
 
 To set up the receiver, add the following to your {file}`AndroidManifest.xml` file.
 
-```{code-block} xml
+```xml
 :caption: AndroidManifest.xml
 
 <receiver android:name="com.adjust.sdk.AdjustPreinstallReferrerReceiver"> 
@@ -55,7 +55,7 @@ To set up the receiver, add the following to your {file}`AndroidManifest.xml` fi
 
 Save attribution information for your preinstalled app in a world-readable directory. The SDK reads the information from this file at install to attribute the user. The system encryption protocol protects app data.
 
-Pass the file path at which your preinstall information can be found to the [`setPreinstallFilePath` method](unity-setPreinstallFilePath-invocation) to give the Adjust SDK access to the information.
+Pass the file path at which your preinstall information can be found to the [`setPreinstallFilePath` method](#unity-setpreinstallfilepath-invocation) to give the Adjust SDK access to the information.
 
 :::{include} /unity/reference/AdjustConfig/setup.md
 :start-after: setPreinstallFilePath snippet
@@ -72,7 +72,7 @@ Configuring a default campaign enables you to attribute all preinstalls to a pre
    https://app.adjust.com/{token}
    ```
 
-2. Copy this token and pass it to the [`setDefaultTracker` method](unity-setDefaultTracker-invocation) in your app delegate file.
+2. Copy this token and pass it to the [`setDefaultTracker` method](#unity-setdefaulttracker-invocation) in your app delegate file.
 
    :::{include} /unity/reference/AdjustConfig/setup.md
    :start-after: setDefaultTracker snippet

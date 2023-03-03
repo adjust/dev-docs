@@ -58,7 +58,7 @@ Android devices use a unique URI scheme to handle deep links. To set up deep lin
 
 ### Disable deferred deep linking
 
-The SDK opens deferred deep links by default. You can configure this by passing a **boolean** argument to the [`setLaunchDeferredDeeplink` method](unity-setLaunchDeferredDeeplink-invocation).
+The SDK opens deferred deep links by default. You can configure this by passing a **boolean** argument to the [`setLaunchDeferredDeeplink` method](#unity-setlaunchdeferreddeeplink-invocation).
 
 :::{include} /unity/reference/AdjustConfig/setup.md
 :start-after: setLaunchDeferredDeeplink snippet
@@ -69,11 +69,10 @@ The SDK opens deferred deep links by default. You can configure this by passing 
 
 You can configure the Adjust SDK to call a delegate function when it receives a deferred deep link. This delegate function receives the deep link as a **string** argument.
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
-:emphasize-lines: 1-3, 6
+:::{tab-set-code}
 
+{emphasize-lines="1-3, 6"}
+```c#
 private void DeferredDeeplinkCallback(string deeplinkURL) {
    //...
 }
@@ -82,16 +81,16 @@ AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment
 adjustConfig.setDeferredDeeplinkDelegate(DeferredDeeplinkCallback);
 Adjust.start(adjustConfig);
 ```
-:::
-::::
 
-:::::{dropdown} Example
+:::
+
+::::{dropdown} Example
 
 This example demonstrates how to log a deep link address when the user opens a deferred deep link.
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 private void LogDeepLink(string deepLinkURL) {
  Debug.Log("Deeplink URL: " + deeplinkURL);
 }
@@ -101,9 +100,9 @@ adjustConfig.setDeferredDeeplinkDelegate(LogDeepLink);
 //...
 Adjust.start(adjustConfig);
 ```
+
 :::
 ::::
-:::::
 
 ### Enable LinkMe
 
@@ -115,7 +114,7 @@ The Adjust SDK checks the pasteboard when a user opens the app for the first tim
 
 When a user clicks on a LinkMe URL they have the option to copy the link information to their system pasteboard. You can use the Adjust SDK to read the system pasteboard for deep link information. If deep link information is present, the SDK forwards the user to the correct page in your app.
 
-To enable pasteboard checking in your app, pass a true value to the [`setLinkMeEnabled` method](unity-setLinkMeEnabled-invocation) on your config object:
+To enable pasteboard checking in your app, pass a true value to the [`setLinkMeEnabled` method](#unity-setlinkmeenabled-invocation) on your config object:
 
 :::{include} /unity/reference/AdjustConfig/setup.md
 :start-after: setLinkMeEnabled snippet

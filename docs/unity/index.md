@@ -39,19 +39,15 @@ To set up the Adjust SDK, enter the following information:
 
 The Adjust SDK starts when the app's Awake event triggers by default. To override this behavior, check the {guilabel}`START SDK MANUALLY` option. This enables you to initialize the Adjust SDK by calling {code}`Adjust.start()` with your config instance as an argument.
 
-::::{tab-set}
+:::{tab-set-code}
 
-:::{tab-item} C#
-
-```{code-block} csharp
+```c#
 AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
 // ...
 Adjust.start(adjustConfig);
 ```
 
 :::
-
-::::
 
 ## 3. Set up Android devices
 
@@ -62,7 +58,7 @@ Apps that target the Google Play Store must use the {abbr}`gps_adid (Google Adve
 :::{dropdown} Google External Dependency Manager
 If you are using the [Google External Dependency Manager plugin](https://developers.google.com/unity/archive#external_dependency_manager_for_unity), add the following to your {file}`Dependencies.xml` file:
 
-```{code-block} xml
+```xml
 <androidPackages>
     <androidPackage spec="com.google.android.gms:play-services-ads-identifier:18.0.1" />
 </androidPackages>
@@ -79,7 +75,7 @@ To install the {abbr}`ARR (Android Archive)` manually, [download it from Maven](
 
 If you are using Proguard, add the following rules to your [custom Proguard file](https://docs.unity3d.com/Manual/class-PlayerSettingsAndroid.html#build).
 
-```{code-block} groovy
+```groovy
 -keep public class com.adjust.sdk.** { *; }
 -keep class com.google.android.gms.common.ConnectionResult {
     int SUCCESS;
@@ -107,7 +103,7 @@ There are 2 ways to add support for the Google Play Referrer API:
 
 1. Add the install referrer library as a dependency in a [custom `build.gradle` file](https://docs.unity3d.com/2023.1/Documentation/Manual/android-gradle-overview.html)
 
-```{code-block} groovy
+```groovy
 dependencies {
    implementation 'com.android.installreferrer:installreferrer:2.2'
 }

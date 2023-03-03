@@ -45,13 +45,13 @@ Set up success callbacks to trigger functions when the SDK records a session.
 :end-before: Snippet end
 :::
 
-:::::{dropdown} Example
+::::{dropdown} Example
 
 This example demonstrates how to created a callback function `sessionSuccess` and register it as a **success** callback. The function logs the timestamp at which the SDK recorded the session.
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
 adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
 adjustConfig.setSessionSuccessDelegate(sessionSuccess);
@@ -62,8 +62,9 @@ public void sessionSuccess (AdjustSessionSuccess sessionSuccessData) {
     Debug.Log("Session recorded at " + sessionSuccessData.Timestamp);
 }
 ```
+
+:::
 ::::
-:::::
 
 ### Failure callbacks
 
@@ -74,13 +75,13 @@ Set up failure callbacks to trigger functions when the SDK fails to record a ses
 :end-before: Snippet end
 :::
 
-:::::{dropdown} Example
+::::{dropdown} Example
 
 This example demonstrates how to created a callback function `sessionFailure` and register it as a **failure** callback. The function logs the session failure message.
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
 adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
 adjustConfig.setSessionFailureDelegate(sessionFailure);
@@ -91,8 +92,9 @@ public void sessionFailure (AdjustSessionFailure sessionFailureData) {
     Debug.Log("Session recording failed. Response: " + sessionFailureData.Message);
 }
 ```
+
+:::
 ::::
-:::::
 
 ## Event callbacks
 
@@ -138,13 +140,13 @@ Set up success callbacks to trigger functions when the SDK records an event.
 :end-before: Snippet end
 :::
 
-:::::{dropdown} Example
+::::{dropdown} Example
 
 This example demonstrates how to created a callback function `eventSuccess` and register it as a **success** callback. The function logs the timestamp at which the SDK recorded the event.
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
 adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
 adjustConfig.setEventSuccessDelegate(eventSuccess);
@@ -155,8 +157,9 @@ public void eventSuccess (AdjustEventSuccess eventSuccessData) {
     Debug.Log("Event recorded at " + eventSuccessData.Timestamp);
 }
 ```
+
+:::
 ::::
-:::::
 
 ### Failure callbacks
 
@@ -167,14 +170,13 @@ Set up failure callbacks to trigger functions when the SDK fails to record an ev
 :end-before: Snippet end
 :::
 
-
-:::::{dropdown} Example
+::::{dropdown} Example
 
 This example demonstrates how to created a callback function `eventFailure` and register it as a **failure** callback. The function logs the event failure message.
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
 adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
 adjustConfig.setEventFailureDelegate(eventFailure);
@@ -185,5 +187,6 @@ public void eventFailure (AdjustEventFailure eventFailureData) {
     Debug.Log("Event recording failed. Response: " + eventFailureData.Message);
 }
 ```
+
+:::
 ::::
-:::::

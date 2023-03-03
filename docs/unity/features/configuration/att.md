@@ -1,9 +1,8 @@
 # Set up App Tracking Transparency
 
 :::{versionadded} 4.26.0
-:::
-
 If you want to record the device's {abbr}`IDFA (ID for Advertisers)`, you must display a prompt to get your user's authorization. To do this, you need to include Apple's {abbr}`ATT (App Tracking Transparency)` framework in your app. The Adjust SDK stores the user's authorization status and sends it to Adjust's servers with each request.
+:::
 
 ::::{dropdown} Authorization statuses
 
@@ -54,13 +53,13 @@ The Adjust SDK also records the consent status if you use a custom prompt. If yo
 :end-before: Snippet end
 :::
 
-:::::{dropdown} Example
+::::{dropdown} Example
 
 This example demonstrates how to log a human-readable description of the user's authorization status when they interact with a prompt.
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 Adjust.requestTrackingAuthorizationWithCompletionHandler((status) =>
 {
     switch (status)
@@ -80,36 +79,36 @@ Adjust.requestTrackingAuthorizationWithCompletionHandler((status) =>
     }
 });
 ```
+
 :::
 ::::
-:::::
 
 ## Get current authorization status
 
-You can retrieve a user's current authorization status at any time. Call the [`getAppTrackingAuthorizationStatus` method](unity-getAppTrackingAuthorizationStatus-invocation) to return the authorization status code as an **integer**.
+You can retrieve a user's current authorization status at any time. Call the [`getAppTrackingAuthorizationStatus` method](#unity-getapptrackingauthorizationstatus-invocation) to return the authorization status code as an **integer**.
 
 :::{include} /unity/reference/Adjust/skan-att.md
 :start-after: getAppTrackingAuthorizationStatus snippet
 :end-before: Snippet end
 :::
 
-:::::{dropdown} Example
+::::{dropdown} Example
 
 This example demonstrates how to collect the user's authorization status and convert it to a `String`. This information is assigned to a variable called `authorizationStatus` and passed as a session partner parameter with the key `"status"`.
 
-::::{tab-set}
-:::{tab-item} C#
-```{code-block} cs
+:::{tab-set-code}
+
+```c#
 string authorizationStatus = Convert.ToString(Adjust.getAppTrackingAuthorizationStatus());
 Adjust.addSessionPartnerParameter("status", authorizationStatus);
 ```
+
 :::
 ::::
-:::::
 
 ## Check for authorization status changes
 
-If you use a custom ATT prompt, you need to inform the Adjust SDK of changes to the user's authorization status. Call the [`checkForNewAttStatus` method](unity-checkForNewAttStatus-invocation) to send the authorization status to Adjust's servers.
+If you use a custom ATT prompt, you need to inform the Adjust SDK of changes to the user's authorization status. Call the [`checkForNewAttStatus` method](#unity-checkfornewattstatus-invocation) to send the authorization status to Adjust's servers.
 
 :::{include} /unity/reference/Adjust/skan-att.md
 :start-after: checkForNewAttStatus snippet
