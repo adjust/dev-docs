@@ -31,7 +31,7 @@ Initialize the configuration object with your Adjust app token.
 
 % configWithAppToken snippet
 
-{tab-set-code}
+:::{tab-set-code}
 
 ```swift
 let yourAppToken = "{YourAppToken}"
@@ -64,14 +64,3 @@ setupWebViewJavascriptBridge(function(bridge) {
 ::::
 
 % Class method end
-
-:::{toctree}
----
-caption: Setup methods
-maxdepth: 2
----
-
-setup
-privacy
-
-:::

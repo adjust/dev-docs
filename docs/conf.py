@@ -35,6 +35,7 @@ extensions = [
    "sphinx_copybutton",
    "sphinxcontrib.mermaid",
    "sphinx_tippy",
+   "sphinx_external_toc"
 ]
 
 # Add any paths that contain templates here, relative to this directory.
