@@ -30,23 +30,3 @@ Unity
 Web
 :::
 ::::
-
-:::{toctree}
-:maxdepth: 1
-:caption: 📚 Guides
-:hidden: true
-
-iOS <ios/index>
-Android <android/index>
-Unity <unity/index>
-Web <web/index>
-
-:::
-
-:::{toctree}
-:maxdepth: 1
-:hidden: true
-:caption: 📖 Glossary
-
-glossary
-:::

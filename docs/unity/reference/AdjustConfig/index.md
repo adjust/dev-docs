@@ -43,14 +43,3 @@ Adjust.start(config);
 ::::
 
 % Class method end
-
-:::{toctree}
----
-caption: Class methods
-maxdepth: 1
----
-
-setup
-privacy
-
-:::

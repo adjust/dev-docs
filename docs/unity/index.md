@@ -215,13 +215,3 @@ To test that the Adjust SDK can receive a device's Google Advertising ID, set th
 If you are having issues retrieving the Google Advertising ID, open an issue in the [GitHub repository](https://github.com/adjust/unity_sdk) or contact <support@adjust.com>.
 
 :::
-
-:::{toctree}
-:maxdepth: 1
-:hidden: true
-
-configuration/index
-recording/index
-reference/index
-
-:::

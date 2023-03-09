@@ -515,13 +515,3 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 }
 ```
 :::
-
-:::{toctree}
-:maxdepth: 1
-:hidden: true
-
-configuration/index
-recording/index
-reference/index
-
-:::
