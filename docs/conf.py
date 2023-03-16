@@ -111,8 +111,6 @@ myst_substitutions = {
 tippy_anchor_parent_selector = "div.content"
 tippy_tip_selector = "div.notranslate, dt, code"
 
-mermaid_version = ""
-
 myst_url_schemes = {
     "http": None,
     "https": None,
