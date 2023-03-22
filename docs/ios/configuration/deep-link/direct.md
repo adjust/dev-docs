@@ -30,12 +30,13 @@ Follow these steps to add your deep link configuration to your {program}`Xcode` 
 5. Ensure that {guilabel}`All`is selected in the submenu below.
 6. Select the Add option ({guilabel}`+`) to add a capability.
 7. Select {guilabel}`Associated Domains`.
-8. Enter the Branded Link domain from your marketing team. Here is an example using the `example.go.link` domain: `applinks:example.go.link`.
+8. Enter the Adjust Universal Link domain with the prefix `applinks:`
+   * Here is an example using the `example.adj.st` domain: `applinks:example.adj.st`.
 :::
 
 ::::{dropdown} Custom URL scheme
 :::{tip}
-Check with your marketing team to see if a custom URL scheme is needed for the app and discuss what the scheme name should be.
+Check with your marketing team to see if a custom URL scheme is needed for the app and discuss what the scheme name should be. If your app targets Android devices as well, use the same scheme name for each platform.
 :::
 
 1. Open your app project in {program}`Xcode`.
@@ -65,7 +66,7 @@ If your app doesn't uses scenes, you need to update methods in your app delegate
 
 Update the `application(_:continue:restorationHandler:)` method in your app delegate to call the following methods in the Adjust SDK:
 
-* `ADJLinkResolution.resolveLink`: Call this method only if your your marketing team requires the use of Adjust's Link Resolution solution. If the deep link uses a domain that matches an element in the `resolveUrlSuffixArray`, then the method attempts to resolve the deep link, and returns the resolved link. If the deep link doesn't match an element in this array, then the method passes through the original deep link, so you can pass all deep links to this method.
+* `ADJLinkResolution.resolveLink`: Call this method only if your marketing team requires the use of Adjust's Link Resolution solution. If the deep link uses a domain that matches an element in the `resolveUrlSuffixArray`, then the method attempts to resolve the deep link, and returns the resolved link. If the deep link doesn't match an element in this array, then the method passes through the original deep link, so you can pass all deep links to this method.
 * `Adjust.appWillOpen` - Call this method to send deep links to Adjust's servers to record information. You can pass both Adjust and non-Adjust deep links to this method. Adjust's servers will ignore any deep links that don’t have Adjust parameters.
 
 When a user clicks on your universal link, iOS opens your app and delivers the deep link to `application(_:continue:restorationHandler:)`. This occurs whether the user has closed your app or has it running in the background.
@@ -196,7 +197,7 @@ If your app uses scenes, you need to update methods in your scene delegate.
 
 The above methods call the following methods in the Adjust SDK:
 
-* `ADJLinkResolution.resolveLink`: Call this method only if your your marketing team requires the use of Adjust's Link Resolution solution. If the deep link uses a domain that matches an element in the `resolveUrlSuffixArray`, then the method attempts to resolve the deep link, and returns the resolved link. If the deep link doesn't match an element in this array, then the method passes through the original deep link, so you can pass all deep links to this method.
+* `ADJLinkResolution.resolveLink`: Call this method only if your marketing team requires the use of Adjust's Link Resolution solution. If the deep link uses a domain that matches an element in the `resolveUrlSuffixArray`, then the method attempts to resolve the deep link, and returns the resolved link. If the deep link doesn't match an element in this array, then the method passes through the original deep link, so you can pass all deep links to this method.
 * `Adjust.appWillOpen` - Call this method to send deep links to Adjust's servers to record them. You can pass both Adjust and non-Adjust deep links to this method. Adjust's servers ignore any deep links that don’t have Adjust parameters.
 
 :::{tab-set-code}

@@ -19,13 +19,16 @@ This is how a deferred deep link works:
 When you set up Adjust deferred deep linking, you need to disable deferred deep linking in other SDKs in your app. You also need to disable any deep linking setup from other MMPs.
 :::
 
-### Your app doesn't have onboarding screens or requires user login, or handles this before opening the deep link
+:::{seealso}
+Check out the [Facebook deferred deep linking documentation](https://developers.facebook.com/docs/ios/deep-linking#deferred-deep-linking) for information about how to configure deep linking with your Facebook campaigns.
+:::
 
-No further set up is needed.
+There are 2 approaches to set up deferred deep linking in your app:
 
-Adjust's servers automatically pass the deferred deep link to the Adjust SDK. When the user opens your app, the Adjust SDK automatically calls the `open(_:options:completionHandler:)` method with the deep link.
+1. Adjust's servers automatically pass the deferred deep link to the Adjust SDK. When the user opens your app, the Adjust SDK automatically calls the `open(_:options:completionHandler:)` method with the deep link. If your app doesn't have preliminary content (for example: onboarding screens and user login), or if your app already handles this content before opening the deep link, then no further configuration is required, and you can skip the rest of this section.
+2. If your app has preliminary content (for example: onboarding screens and user login), but your app doesn't already handle this before handling the deep link, then you can add a deferred deep link listener.
 
-### Your app has onboarding screens or requires user login, but your app doesn't already handle this before opening the deep link
+### Set up a deferred deep link listener
 
 1. Set up a delegate callback for deferred deep linking. If you have already configured attribution callbacks, you can skip this step.
 
@@ -44,7 +47,7 @@ Adjust's servers automatically pass the deferred deep link to the Adjust SDK. Wh
 
    :::
 
-2. Create an instance of the `ADJConfig` class and set a delegate on the `ADJConfig` object in your app delegate. You need to set the delegate in `ADJConfig` before initializing the SDK.
+2. if you haven’t already done so, create an instance of the `ADJConfig` class and set a delegate on the `ADJConfig` object in your app delegate. You need to set the delegate in `ADJConfig` before initializing the SDK.
 
    :::{tab-set-code}
 
@@ -102,9 +105,13 @@ Adjust's servers automatically pass the deferred deep link to the Adjust SDK. Wh
    ```
    :::
 
-## Additional setup in iOS 15 and above
+## Set up Adjust LinkMe
 
-The Adjust SDK lets you copy deep link information from the device pasteboard. When combined with [Adjust’s LinkMe solution](hc:linkme), this feature enables deferred deep linking on devices running iOS 15 and above.
+:::{note}
+Discuss with your marketing team whether you need to implement LinkMe in your app.
+:::
+
+[Adjust’s LinkMe solution](hc:linkme) is an optional feature that ensures robust deferred deep linking performance by enabling your app to read deep link information from the device pasteboard.
 
 :::{important}
 The Adjust SDK checks the pasteboard when a user opens the app for the first time. The device displays a dialog asking if the user wants to allow the app to read the pasteboard.
@@ -112,7 +119,7 @@ The Adjust SDK checks the pasteboard when a user opens the app for the first tim
 
 When a user clicks on a LinkMe URL they have the option to copy the link information to their system pasteboard. You can use the Adjust SDK to read the system pasteboard for deep link information. If deep link information is present, the Adjust SDK forwards the user to the correct page in your app.
 
-To enable pasteboard checking in your app, pass a true value to the `setLinkMeEnabled` method on your `ADJConfig` object:
+To enable pasteboard checking in your app, pass a **true** value to the `setLinkMeEnabled` method on your `ADJConfig` object:
 
 :::{include} /ios/reference/ADJConfig/setup.md
 :start-after: setLinkMeEnabled snippet

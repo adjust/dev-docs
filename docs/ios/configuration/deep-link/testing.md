@@ -12,9 +12,9 @@ Here's what you need to do before getting started.
 
 1. Set your app environment to `sandbox` and log level to `verbose`.
 2. Build and run your app in {program}`Xcode`.
-3. Obtain an example deep link from your marketing team. Combine the deep link with your Adjust universal link domain or custom URL scheme and a test tracker token.
+3. Obtain an example deep link from your marketing team.
 
-   Example: `https://example.go.link/summer-clothes?promo=beach&adj_t=abc123`
+   Example: `https://example.go.link/summer-clothes?promo=beach
 
 ## Create a test link
 
@@ -33,7 +33,9 @@ To test your deep link implementation, you need to create a test link. To do thi
 11. Set {guilabel}`Probabilistic Matching` to {guilabel}`ON` under the {guilabel}`Click-based Attribution` section.
 12. Select {guilabel}`APPLY`.
 
-You need to append the tracker token to the deep link that you received from your marketing team.
+You need to append the link token to the deep link that you received from your marketing team.
+
+Example: `https://example.go.link/summer-clothes?promo=beach&adj_t=abc123`
 
 ## Test direct deep linking
 
@@ -45,7 +47,7 @@ You can test the following universal link configurations:
 ### Check universal link domain configuration
 
 :::{important}
-iOS doesn't open universal links as deep links if you enter them directly into your browser. You need to select the universal link as a link.
+iOS doesn't open universal links as deep links if you enter them directly into your browser. You need to click the universal link as a hyperlink.
 :::
 
 To check your universal link domain configuration, follow these steps.
@@ -78,13 +80,16 @@ If this option doesn't appear, check the following issues.
 
 ### Test direct deep linking in the app
 
-You can test direct deep linking when your app is closed or running in the background on the test device.
+You should test direct deep linking both when your app is closed and again when its running in the background on the test device.
 
 #### App closed
 
-In {program}`Apple Notes`, select the universal link. The app should open and display the deep link content.
+1. Copy and paste the universal link into Apple Notes.
+2. Tap the home button twice. If your app is open, swipe up on it to close it.
+3. Open {program}`Apple Notes`
+4. Click the universal link.
 
-If you don't see the correct page in the app, check the following:
+The app should open and display the deep link content. If you don't see the correct page in the app, check the following:
 
 * Verify that the path or parameters in the deep link are correct. Check if you have used the `?` symbol twice instead of the `&` symbol.
 * Check if your app handles the deep link via the following methods.
@@ -113,9 +118,13 @@ If you don't see these entries in your {program}`Xcode` logs, ensure the followi
 
 #### App running in background
 
-In {program}`Apple Notes`, select the universal link. The app should display the deep link content.
+1. Copy and paste the universal link into Apple Notes.
+2. Tap the home button.
+3. Open your app with the app icon.
+4. Tap the home button twice and open {program}`Apple Notes`.
+5. Click the universal link. 
 
-If you don't see the correct page in the app, check the following:
+The app should display the deep link content. If you don't see the correct page in the app, check the following:
 
 * Check if your app handles the deep link via the following methods.
    * **App doesn't use scenes**: `application(_:continue:restorationHandler:)` method
@@ -200,3 +209,4 @@ If you don't see the correct page in the app, check the following:
 * Adjust didn't attribute your install to the click. In the Testing Console, select {guilabel}`View Device Data`. The `TrackerName` field should display your test link. Before you start your test, ensure the following:
    * Probabilistic matching was enabled on your test link.
    * In the Testing Console, the `TrackerName` was set to `Organic`.
+
