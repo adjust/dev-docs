@@ -85,7 +85,7 @@ You should test direct deep linking both when your app is closed and again when 
 #### App closed
 
 1. Copy and paste the universal link into Apple Notes.
-2. Tap the home button twice.  If your app is open, swipe up on it to close it.
+2. Tap the home button twice. If your app is open, swipe up on it to close it.
 3. Open {program}`Apple Notes`
 4. Click the universal link.
 

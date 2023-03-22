@@ -1,6 +1,6 @@
 # Link resolution
 
-You need to set up link resolution for deep linking via email, SMS, QR codes, and platforms that shorten links. If you do not set up link resolution for such cases, a  redirect from a universal link sends all users to the App Store, even if they have your app installed. With link resolution, the redirect to the universal link occurs within your app, and existing users are not sent to the App Store.
+You need to set up link resolution for deep linking via email, SMS, QR codes, and platforms that shorten links. If you don't set up link resolution for such cases, a  redirect from a universal link sends all users to the App Store, even if they have your app installed. With link resolution, the redirect to the universal link occurs within your app, and existing users aren't sent to the App Store.
 
 :::{note}
 Check with your marketing team to see if link resolution is needed for the app. You can then set up link resolution domains for different use cases.
@@ -39,7 +39,7 @@ This is how link resolution works:
 4. Your app receives the returned URL and opens deep link content and displays it to the user. Your app also calls the [`appWillOpenUrl` method](#ios-appwillopenurl-invocation) in the Adjust SDK with the returned URL. This sends the resolved URL to Adjust's servers to be recorded.
 
 :::{note}
-If a user who does not have your app installed clicks on the redirect URL, iOS handles this as a normal web URL and redirects the user to the App Store. In this case, link resolution is not applicable.
+If a user who doesn't have your app installed clicks on the redirect URL, iOS handles this as a normal web URL and redirects the user to the App Store. In this case, link resolution isn't applicable.
 :::
 
 ## Use cases
@@ -51,7 +51,7 @@ Link resolution is applicable for the following cases:
 
 ### Email marketing
 
-When email marketers run campaigns, the email marketing platform typically wraps all links in the emails with its own click tracking redirect URL. This lets email marketers view click-through statistics in the email marketing platform. However, if the emails contain universal links, the redirect URL causes iOS to not resolve the universal links properly. 
+When email marketers run campaigns, the email marketing platform typically wraps all links in the emails with its own click tracking redirect URL. This lets email marketers view click-through statistics in the email marketing platform. However, if the emails contain universal links, the redirect URL causes iOS to not resolve the universal links. 
 
 Email marketing platform
    : The software that email marketers use to build their campaigns. This includes functionality such as email templates and audience targeting. 
@@ -104,13 +104,13 @@ For partner-specific instructions that correspond to the above instructions, ref
 
 ##### Support for email partners
 
-In order to use link resolution, your email partner needs to let you to set up the redirection domain (or subdomain) as a universal link domain. If this is the case, you can point their redirection service to your own custom domain.
+To use link resolution, your email partner needs to let you to set up the redirection domain (or subdomain) as a universal link domain. If this is the case, you can point their redirection service to your own custom domain.
 
 __Examples:__
 
 * Braze: Depending on which ESP Braze has assigned, set up your redirect domain with SendGrid or SparkPost, and point your own custom domain to it. You can then configure your custom domain as a universal link domain.
 * Iterable: Iterable provides the URL redirection service that supports custom domains.
-* Mailchimp: Link resolution is not available because Mailchimp does not allow you to configure their redirect domain as a universal link.
+* Mailchimp: Link resolution isn't available because Mailchimp doesn't allow you to configure their redirect domain as a universal link.
 
 :::{dropdown} Example
 1. The email marketer builds their email using a template. This template contains a link or an image with a universal link.
@@ -135,7 +135,7 @@ __Examples:__
 
 ### URL shorteners
 
-When marketers run certain types of campaigns, sometimes a short URL is required. For example, SMS has a 160 character limit. Sometimes, customers want to shorten a link and share it on team communication platforms, such as Slack. However, if the short URL redirects to a universal link, iOS does not resolve the universal link properly.
+When marketers run certain types of campaigns, sometimes a short URL is required. For example, SMS has a 160 character limit. Sometimes, customers want to shorten a link and share it on team communication platforms, such as Slack. However, if the short URL redirects to a universal link, iOS doesn't resolve the universal link.
 
 #### Setup
 
