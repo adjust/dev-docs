@@ -116,3 +116,5 @@ myst_url_schemes = {
     "https": None,
     "hc": "https://help.adjust.com/en/article/{{path}}#{{fragment}}"
 }
+
+mermaid_theme = "neutral"
