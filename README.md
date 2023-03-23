@@ -9,10 +9,9 @@ This is the repository for Adjust's SDK documentation. Written with [Sphinx](htt
 This project can be run in a Docker container to enable live editing. To do this:
 
 1. Download [Docker desktop](https://www.docker.com/products/docker-desktop/) and open it
-2. Open this repository in a terminal and run the following command to build the container:
+2. Open this repository in a terminal and run the following command in the root directory to build the container:
 
    ```console
-   $ cd docs
    $ make build
    ```
 
