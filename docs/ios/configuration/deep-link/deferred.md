@@ -47,7 +47,7 @@ There are 2 approaches to set up deferred deep linking in your app:
 
    :::
 
-2. if you haven’t already done so, create an instance of the `ADJConfig` class and set a delegate on the `ADJConfig` object in your app delegate. You need to set the delegate in `ADJConfig` before initializing the SDK.
+2. If you haven’t already done so, create an instance of the `ADJConfig` class and set a delegate on the `ADJConfig` object in your app delegate. You need to set the delegate in `ADJConfig` before initializing the SDK.
 
    :::{tab-set-code}
 
