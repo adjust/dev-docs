@@ -46,6 +46,12 @@ React Native
 :text-align: center
 Web
 :::
+:::{grid-item-card} {fab}`windows fa-5x`
+:link: windows/index
+:link-type: doc
+:text-align: center
+Windows
+:::
 ::::
 
 ## API documentation
