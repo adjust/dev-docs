@@ -71,6 +71,13 @@ sealed partial class App : Application
 
 ## 4. Configure the Adjust SDK
 
-Once you've added your config object and initialization logic, you can configure the Adjust SDK to record information about different parts of your app. Check out the guides for the SDK's configuration features and recording features to set up exactly what you want to record.
+Once you've added your config object and initialization logic, you can configure the Adjust SDK to record information about different parts of your app. Check out the guides for the SDK's [configuration features](configuration/index.md) and [recording features](recording/index.md) to set up exactly what you want to record.
 
+## 6. Build and debug your app
 
+Once you've integrated the Adjust SDK and set it up, you can start the Visual Studio debugger to check that the SDK is logging as expected. To do this:
+
+1. Select {menuselection}`Debug --> Start Debugging` to open the debugger.
+2. Check the {guilabel}`Output` tab to see your app's logs. Adjust SDK logs are displayed with an {guilabel}`[Adjust]` tag.
+
+![A screenshot of the Visual Studio debugger showing Adjust logs](logs.png)
