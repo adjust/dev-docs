@@ -1,6 +1,44 @@
 # Record events
 
-You can associate your [Adjust event tokens](https://help.adjust.com/en/article/basic-event-setup#create-an-event-token) to actions in your app to record them. To record an event:
+You can associate your [Adjust event tokens](https://help.adjust.com/en/article/basic-event-setup#create-an-event-token) to actions in your app to record them. The Adjust SDK can only send data to Adjust's servers when the app is in a **Resumed** state, or when it's in a **Paused** state if you have enabled [background recording](/android/configuration/background.md).
+
+:::{mermaid}
+flowchart TD
+   init([The onStart method is called]) --> config(The Adjust SDK is initialized\nwith configuration info)
+   config --> resume(The onResume method is called when\nthe user interacts with the app)
+   resume --> record(The Adjust SDK records event information)
+   record --> pause(The app is sent to the background and the\nonPause method is called to pause the app)
+   pause --> destroy(The app is fully closed by the user or the system\nand the onDestroy method ends the app lifecycle)
+:::
+
+:::{seealso}
+See Google's [Android activity lifecycle documentation](https://developer.android.com/guide/components/activities/activity-lifecycle) for more information about application states.
+:::
+
+If you send event data **before** the app enters the `onResume` part of the lifecycle, the Adjust SDK adds the information to a queue to send when the app enters a **Resumed** state.
+
+The Adjust SDK performs a check to determine whether the event data has a session associated with it. If the `trackEvent` method is called before the `onResume` method, the SDK adds a fake session to the queue in front of the event data. The SDK sends this queue when  `onResume` is next called. This means that the information won't be reflected in Adjust until the user interacts with the app.
+
+In the below example, the app is opened on 01-01-2023 and an event is recorded **before** the `onResume` method is called. This queues the items until the `onResume` method is called on 04-01-2023.
+
+:::{mermaid}
+%%{init: { 'theme': 'default', 'gitGraph': {'showBranches': false}} }%%
+gitGraph
+   commit id: "onStart" tag: "01-01-2023"
+   commit id: "The Adjust SDK is initialized"
+   commit id: "trackEvent"
+   branch queue
+   checkout queue
+   commit id: "The Adjust SDK creates a fake session"
+   commit id: "The fake session and event data are queued"
+   checkout main
+   merge queue id: "onResume" tag: "04-01-2023"
+   commit id: "Queue sent"
+:::
+
+## Record an event
+
+To record an event:
 
 * Create a new Adjust event instance and pass your event token as a string argument.
 * Call the [`trackEvent` method](#android-trackevent-invocation) with your event instance as an argument.
