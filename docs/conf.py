@@ -118,3 +118,5 @@ myst_url_schemes = {
 }
 
 mermaid_theme = "neutral"
+
+copybutton_exclude = '.linenos, .gp'
