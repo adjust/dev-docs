@@ -5,6 +5,7 @@
 # from the environment for the first two.
 SPHINXOPTS    ?=
 SPHINXBUILD   ?= sphinx-build
+AUTOBUILD ?= sphinx-autobuild
 SOURCEDIR     = docs
 BUILDDIR      = docs/_build
 
@@ -14,11 +15,17 @@ help:
 
 .PHONY: help Makefile
 
-build:
-	docker build -t docs .
+setup:
+	curl -sSL https://install.python-poetry.org | python3 -
+
+install:
+	poetry install
 
 preview:
-	docker run -ti -v ${PWD}/docs:/app/ -p 8000:8000 docs
+	rm -rf $(BUILDDIR) && poetry run $(AUTOBUILD) --host 0.0.0.0 $(SOURCEDIR) $(BUILDDIR)
+
+clean:
+	rm -rf $(BUILDDIR)
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
