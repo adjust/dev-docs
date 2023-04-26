@@ -1,3 +1,5 @@
+# Criteo
+
 ### Maven
 
 If you are using Maven, add the following dependency to your `build.gradle` file:
