@@ -6,13 +6,18 @@ This is the repository for Adjust's SDK documentation. Written with [Sphinx](htt
 
 ## Live preview
 
-This project can be run in a Docker container to enable live editing. To do this:
+You can run a live preview of this repository to enable live editing. To do this:
 
-1. Download [Docker desktop](https://www.docker.com/products/docker-desktop/) and open it
-2. Open this repository in a terminal and run the following command in the root directory to build the container:
+1. Open this repository in a terminal and run the following command in the root directory to install [Poetry](https://python-poetry.org):
 
    ```console
-   $ make build
+   $ make setup
+   ```
+
+2. Run the following command in the root directory to install all dependencies:
+
+   ```console
+   $ make install
    ```
 
 3. Once the container is built, run the following command to start the container:
@@ -23,4 +28,8 @@ This project can be run in a Docker container to enable live editing. To do this
 
 4. Open http://localhost:8000 to see your the local preview
 
-The preview updates as you save your changes.
+The preview updates as you save your changes. Running `make preview` removes the `_build` folder to ensure that nothing is missing. You can remove the `_build` folder at any time by running:
+
+```console
+$ make clean
+```
