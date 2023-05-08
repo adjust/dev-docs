@@ -103,7 +103,7 @@ If you're a **non-admin** user, follow these steps:
 :::
 ::::
 
-## User your API token to authenticate calls
+## Use your API token to authenticate calls
 
 Once you've got your Adjust API token, you can use it to authenticate your Report Service API calls. To do this, pass the token in the `Authorization` request header with your API calls.
 
