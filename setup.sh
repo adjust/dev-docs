@@ -5,8 +5,13 @@ PYTHON_INSTALLED=false
 POETRY_INSTALLED=false
 POETRY_IN_PATH=false
 
-PYTHON=/opt/homebrew/bin/python3
-POETRY=/opt/homebrew/bin/poetry
+ARCH=$(uname -m)
+if [ $ARCH="arm64" ]; then
+   PYTHON=/opt/homebrew/bin/python3
+else
+   PYTHON=/usr/local/bin/python3
+fi
+POETRY=$HOME/.local/bin/poetry
 
 printf "Checking prerequisites...\n"
 
