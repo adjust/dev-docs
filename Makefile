@@ -16,7 +16,7 @@ help:
 .PHONY: help Makefile
 
 setup:
-	curl -sSL https://install.python-poetry.org | python3 -
+	sh ./setup.sh
 
 install:
 	poetry install
