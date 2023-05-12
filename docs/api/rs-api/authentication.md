@@ -1,7 +1,7 @@
 ---
 myst:
    substitutions:
-      token_format: "`Authorization: Bearer {API_TOKEN}`"
+      token_format: "Authorization: Bearer {API_TOKEN}"
 ---
 
 # Report Service API authentication
@@ -109,7 +109,7 @@ Once you've got your Adjust API token, you can use it to authenticate your Repor
 
 The `Authorization` header uses the following format: {{ token_format }}
 
-```console
+:::{parsed-literal}
 $ curl https://api.adjust.com \
---header "Authorization: Bearer {API_TOKEN}"
-```
+--header "{{ token_format }}"
+:::
