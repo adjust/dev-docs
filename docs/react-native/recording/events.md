@@ -19,7 +19,7 @@ In this example, we measure an event with the token {code}`g3mfiw` whenever a us
 
 :::{tab-set-code}
 
-```js
+```jsx
  function _onPress_trackSimpleEvent() {
    var adjustEvent = new AdjustEvent("g3mfiw");
    Adjust.trackEvent(adjustEvent);
@@ -75,7 +75,7 @@ In this example, we measure an event with the token {code}`g3mfiw` whenever a us
 :::{tab-set-code}
 
 {emphasize-lines="2,3"}
-```js
+```jsx
 function _onPress_trackRevenueEvent() {
     var adjustEvent = new AdjustEvent("g3mfiw");
     adjustEvent.setRevenue(0.25, "EUR");
@@ -123,7 +123,7 @@ In this example, we measure an event with the token {code}`g3mfiw` whenever a us
 :::{tab-set-code}
 
 {emphasize-lines="2,3,4"}
-```js
+```jsx
 function _onPress_trackRevenueEvent() {
     var adjustEvent = new AdjustEvent("g3mfiw");
     var uniqueId = "5e85484b-1ebc-4141-aab7-25b869e54c49"
@@ -169,7 +169,7 @@ Adjust.trackEvent(adjustEvent);
 
 The Adjust SDK measures the event and sends a request to your URL with the callback parameters. For example, if you register the URL `http://www.mydomain.com/callback`, your callback looks like this:
 
-```uri
+```
 http://www.mydomain.com/callback?key=value&foo=bar
 ```
 
@@ -192,13 +192,13 @@ In this example, we measure an event with the token {code}`g3mfiw` whenever a us
 
 The resulting callback URL looks like this:
 
-```uri
+```
 http://www.mydomain.com/callback?event_token=g3mfiw&revenue_amount=0.05
 ```
 :::{tab-set-code}
 
 {emphasize-lines="2,3,4"}
-```js
+```jsx
 function _onPress_trackCallbackEvent() {
    var adjustEvent = new AdjustEvent("g3mfiw");
    adjustEvent.addCallbackParameter("event_token", "g3mfiw");
@@ -256,7 +256,7 @@ In this example, we measure an event with the token {code}`g3mfiw` whenever a us
 :::{tab-set-code}
 
 {emphasize-lines="2,3,4"}
-```js
+```jsx
 function _onPress_trackPartnerEvent() {
    var adjustEvent = new AdjustEvent("g3mfiw");
    adjustEvent.addPartnerParameter("product_id", "29");
@@ -305,7 +305,7 @@ In this example, we measure an event with the token {code}`g3mfiw` whenever a us
 :::{tab-set-code}
 
 {emphasize-lines="2,3,5"}
-```js
+```jsx
 function _onPress_trackUniqueCallbackEvent() {
    var adjustEvent = new AdjustEvent("g3mfiw");
    var callbackId = "f2e728d8-271b-49ab-80ea-27830a215147"
