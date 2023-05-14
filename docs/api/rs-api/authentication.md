@@ -2,6 +2,7 @@
 myst:
    substitutions:
       token_format: "Authorization: Bearer {API_TOKEN}"
+      api_name: "Report Service API"
 ---
 
 # Report Service API authentication
@@ -105,7 +106,7 @@ If you're a **non-admin** user, follow these steps:
 
 ## Use your API token to authenticate calls
 
-Once you've got your Adjust API token, you can use it to authenticate your Report Service API calls. To do this, pass the token in the `Authorization` request header with your API calls.
+Once you've got your Adjust API token, you can use it to authenticate your {{ api_name }} calls. To do this, pass the token in the `Authorization` request header with your API calls.
 
 The `Authorization` header uses the following format: {{ token_format }}
 

@@ -2,6 +2,7 @@
 myst:
    substitutions:
       token_format: "`Authorization: Token token={API_TOKEN}`"
+      api_name: "Blocklist API"
 ---
 
 # Blocklist API authentication
