@@ -1,0 +1,140 @@
+# Update existing trackers
+
+Use this endpoint to update existing trackers and subtrackers for your app. You can add new partners to trackers or control whether cost data is enabled.
+
+## Endpoint
+
+```text
+https://api.adjust.com/public/v1/apps/{app_token}/trackers/{tracker_token}
+```
+
+### PATCH request
+
+Update a tracker or subtracker associated to your app.
+
+:::{list-table} Parameters
+:header-rows: 1
+
+* - Parameter	Data type	In	Description
+* - `app_token`*
+   - String
+   - Path
+   - Your app's 12 digit identifier.
+* - `tracker_token`*
+   - String
+   - Path
+   - The token of the tracker you want to update.
+* - `partner_id`
+   - Integer
+   - Body
+   - The ID of the partner you want to attach to the tracker. You can use the partner's endpoint to retrieve a list of partners and their IDs.
+* - `cost_data_enabled`
+   - Boolean
+   - Body
+   - Whether to enable cost data for the tracker.
+:::
+
+```{code-block} json
+:caption: Success response
+
+{
+  "name": "String",
+  "token": "String",
+  "label": "String",
+  "level": 1,
+  "archived": false,
+  "has_subtrackers": false,
+  "partner_id": 3,
+  "cost_data_enabled": false,
+  "url": "String",
+  "click_url": "String",
+  "impression_url": "String",
+}
+```
+
+:::{list-table} Response parameters
+:header-rows: 1
+
+* - Field
+   - Data type
+   - Description
+   - Example
+* - `name`
+   - String
+   - The tracker's name.
+   - `Adroll`
+* - `label`
+   - String
+   - The last level part of the name of the tracker.
+   - `Adroll`
+* - `level`
+   - Integer
+   - The level of the tracker.
+      * Network = `1`
+      * Campaign = `2`
+      * Adgroup = `3`
+      * Creative = `4`
+   - `1`
+* - `archived`
+   - Boolean
+   - Whether the tracker is archived.
+   - `true`
+* - `has_subtrackers`
+   - Boolean
+   - Whether the tracker has subtrackers.
+   - `true`
+* - `partner_id`
+   - Integer
+   - The ID of the partner attached to the tracker.
+   - `3`
+* - `cost_data_enabled`
+   - Boolean
+   - Whether the tracker has cost_data enabled.
+   - `false`
+* - `impression_url`
+   - String
+   - URL of the tracker for impression tracking.
+   - `https://view.adjust.com/impression/abc123`
+* - `url`
+   - String
+   - URL of the tracker for tracking.
+   - `https://app.adjust.com/abc123`
+* - `click_url`
+   - String
+   - URL of the tracker for click tracking.
+   - `https://app.adjust.com/abc123`
+:::
+
+## Example
+
+```console
+$ curl --location --request PATCH 'https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers/klm789' \
+--header 'Authorization: Token token={API_TOKEN}' \
+--header 'Content-Type: application/json' \
+--data-raw '{"partner_id": 174, "cost_data_enabled": false}'
+```
+
+```json
+{
+  "data": {
+    "api_version": "1",
+    "request_id": "FcK55-tdJUDOWQIAABsB",
+    "timestamp": "2019-09-09T09:07:06Z",
+    "items": [
+      {
+        "name": "Adcolony",
+        "token": "klm789",
+        "label": "Adcolony",
+        "level": 1,
+        "archived": false,
+        "has_subtrackers": false,
+        "partner_id": 174,
+        "cost_data_enabled": true,
+        "url": "https://app.adjust.com/klm789",
+        "impression_url": "https://s2s.adjust.com/impression/klm789?s2s=1&idfa=[IDFA]&gps_adid=[GOOGLE_AD_ID]&ip_address=  [IP_ADDRESS]&adcolony_click_id=[CLICK_ID]&android_id_upper_sha1=[SHA1_ANDROID_ID]&cost_id=[CLICK_ID]&cost_type=[BID_TYPE]&cost_amount=[BID]&cost_currency=USD",
+        "click_url": "https://s2s.app.adjust.com/klm789?s2s=1&idfa=[IDFA]&gps_adid=[GOOGLE_AD_ID]&ip_address=[IP_ADDRESS]&adcolony_click_id=[CLICK_ID]&android_id_upper_sha1=[SHA1_ANDROID_ID]&cost_id=[CLICK_ID]&cost_type=[BID_TYPE]&cost_amount=[BID]&cost_currency=USD"
+      }
+    ]
+  }
+}
+```
