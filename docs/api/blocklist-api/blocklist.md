@@ -9,7 +9,7 @@ Blocklist a tracker to block engagement measurement, attribution and callbacks t
 
 ## Endpoint
 
-```html
+```text
 https://api.adjust.com/dashboard/api/trackers/{tracker}/blacklist
 ```
 

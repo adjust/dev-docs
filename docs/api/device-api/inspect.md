@@ -4,7 +4,7 @@ Use the Inspect device endpoint to see information about a device. Provide your 
 
 ## Endpoint
 
-```html
+```text
 https://api.adjust.com/device_service/api/v1/inspect_device
 ```
 

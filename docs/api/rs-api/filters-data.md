@@ -8,7 +8,7 @@ A full list of metrics is available in the [Datascape metrics glossary](hc:datas
 
 ## Endpoint
 
-```html
+```text
 https://dash.adjust.com/control-center/reports-service/filters_data
 ```
 

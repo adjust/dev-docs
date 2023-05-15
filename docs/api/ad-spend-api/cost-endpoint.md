@@ -12,7 +12,7 @@ Adjust accepts ad spend data for an engagement up to seven days after it happens
 
 ## Endpoint
 
-```html
+```text
 https://app.adjust.com/cost
 ```
 

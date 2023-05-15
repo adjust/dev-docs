@@ -8,7 +8,7 @@ You need **Admin** or **Editor** permissions to forget devices. If you have **Cu
 
 ## Endpoint
 
-```html
+```text
 https://api.adjust.com/device_service/api/v1/forget_device
 ```
 
@@ -52,6 +52,6 @@ $ curl --location --request POST "https://api.adjust.com/device_service/api/v1/f
 --data "adid=acf8534f2f052395e617a38730682ccc&app_token=gwzpeepw8uf8"
 ```
 
-```log
+```output
 Forgot device
 ```

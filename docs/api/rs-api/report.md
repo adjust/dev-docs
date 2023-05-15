@@ -6,7 +6,7 @@ The reports endpoint enables you to combine data from many services in a single 
 
 ## Endpoint
 
-```html
+```text
 https://dash.adjust.com/control-center/reports-service/report
 ```
 

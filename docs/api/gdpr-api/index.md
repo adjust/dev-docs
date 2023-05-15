@@ -13,7 +13,7 @@ This action is permanent. Adjust can't reinstate data previously associated with
 
 ## Endpoint
 
-```html
+```text
 https://gdpr.adjust.com/gdpr_forget_device
 ```
 

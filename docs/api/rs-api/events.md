@@ -4,7 +4,7 @@ Use the Events endpoint to retrieve event slugs to use in your report service qu
 
 ## Endpoint
 
-```html
+```text
 https://dash.adjust.com/control-center/reports-service/events
 ```
 

@@ -9,7 +9,7 @@ Unblocklist a tracker to re-enable engagement measurement, attribution and callb
 
 ## Endpoint
 
-```html
+```text
 https://api.adjust.com/dashboard/api/trackers/{tracker}/unblacklist
 ```
 
