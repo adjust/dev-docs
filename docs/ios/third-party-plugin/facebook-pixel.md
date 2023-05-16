@@ -54,7 +54,7 @@ fbq('set', 'mobileBridge', <YOUR_PIXEL_ID>, <YOUR_FB_APP_ID>);
 ```
 
 :::{important}
-You need to call `init` and then set immediately afterwards. The snippet provided by Facebook contains a `track` method. You can use this method to track a page view event right after you call the `init` method. To track the view event, you need to call `set` between `init` and `track`.
+You need to call `init` and then set immediately afterward. The snippet provided by Facebook contains a `track` method. You can use this method to track a page view event right after you call the `init` method. To track the view event, you need to call `set` between `init` and `track`.
 :::
 
 ## Adjust SDK integration

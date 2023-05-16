@@ -1,6 +1,6 @@
 # Samsung referrer plugin
 
-The Samsung referrer plugin enables the Adjust SDK to read Samsung Galaxy store install referrer values on a device. The SDK sends this information to the Adjust backend as part of the install payload.
+The Samsung referrer plugin enables the Adjust SDK to read Samsung Galaxy store install referrer values on a device. The SDK sends this information to the Adjust servers as part of the install payload.
 
 The Samsung install referrer is available on all devices that support the Samsung install referrer library.
 

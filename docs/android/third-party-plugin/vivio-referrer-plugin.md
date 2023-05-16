@@ -1,6 +1,6 @@
 # Vivo referrer plugin
 
-The Vivo referrer plugin enables the Adjust SDK to read Vivo app store install referrer values on a device. The SDK then sends this information to the Adjust backend as part of the install payload.
+The Vivo referrer plugin enables the Adjust SDK to read Vivo app store install referrer values on a device. The SDK then sends this information to the Adjust servers as part of the install payload.
 
 The Vivo install referrer is available on all devices with Vivo app store version 5.3.0.0 or above.
 

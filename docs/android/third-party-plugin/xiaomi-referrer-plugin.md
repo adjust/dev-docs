@@ -1,6 +1,6 @@
 # Xiaomi referrer plugin
 
-The Xiaomi referrer plugin enables the Adjust SDK to read Xiaomi install referrer values on a device. The SDK then sends this information to the Adjust backend as part of the install payload.
+The Xiaomi referrer plugin enables the Adjust SDK to read Xiaomi install referrer values on a device. The SDK then sends this information to the Adjust servers as part of the install payload.
 
 The Xiaomi install referrer is available on all devices using the Xiaomi install referrer library.
 
