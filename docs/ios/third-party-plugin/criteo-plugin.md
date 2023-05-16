@@ -1,19 +1,32 @@
 # Criteo
 
-### Maven
+You can integrate the Adjust iOS SDK with Criteo events by using the Adjust Criteo plugin.
 
-If you are using Maven, add the following dependency to your `build.gradle` file:
+## Set up your environment
+
+### CocoaPods
+
+If you are using CocoaPods, you can add the following line to your [file}`Podfile`:
 
 ```
-dependencies {
-   implementation 'com.adjust.sdk:adjust-android:4.28.2'
-   implementation 'com.adjust.sdk:adjust-android-criteo:4.28.2'
-}
+pod 'Adjust/Criteo'
 ```
 
-### Add as JAR
+### Carthage
 
-You can also add the plugin as a JAR file from our [releases page](https://github.com/adjust/android_sdk/releases).
+If you are using Carthage, you can add following line to your {file}`Cartfile`:
+
+```
+github "adjust/ios_sdk" "criteo"
+```
+
+### Install from source
+
+You can also integrate adjust with Criteo events by following these steps:
+
+1. Locate the plugin/Criteo folder inside the downloaded archive from the releases page.
+2. Drag the {file}`ADJCriteo.h` and {file}`ADJCriteo.m` files into the Adjust folder inside your project.
+3. In the dialog choose options for adding these files. Make sure to check the checkbox to __Copy items__ if needed and select the radio button to __Create groups__.
 
 ## Work with Criteo events
 
@@ -345,7 +358,7 @@ Adjust.trackEvent(event);
 
 ### Hashed email
 
-You can attach a hashed email to every Criteo event. To do this, call the `injectHashedEmailIntoCriteoEvents` method. The SDK will send a hashed email with every Criteo event for the duration of the app lifecycle. This means it will need to be set again when the app is re-launched. You can remove the hashed email by setting the `injectHashedEmailIntoCriteoEvents` value to `nil`.
+You can attach a hashed email to every Criteo event. To do this, call the `injectHashedEmailIntoCriteoEvents` method. The SDK will send a hashed email with every Criteo event throughout the app lifecycle. This means it will need to be set again when the app is re-launched. You can remove the hashed email by setting the `injectHashedEmailIntoCriteoEvents` value to `nil`.
 
 :::{tab-set-code}
 
@@ -369,7 +382,7 @@ AdjustCriteo.injectHashedEmailIntoCriteoEvents("8455938a1db5c475a87d76edacb6284e
 
 ### Search dates
 
-You can attach a check-in and check-out date to every Criteo event. To do this, call the `injectViewSearchDatesIntoCriteoEvent` method. The SDK will send the dates with every Criteo event for the duration of the app lifecycle. This means you will need to set them again when the app is re-launched.
+You can attach a check-in and check-out date to every Criteo event. To do this, call the `injectViewSearchDatesIntoCriteoEvent` method. The SDK will send the dates with every Criteo event throughout the app lifecycle. This means you will need to set them again when the app is re-launched.
 
 You can remove the search dates by setting the `injectViewSearchDatesIntoCriteoEvent` values to `nil`.
 
@@ -395,9 +408,9 @@ AdjustCriteo.injectViewSearchDatesIntoCriteoEvents("2015-01-01", "2015-01-07");
 
 ### Partner ID
 
-You can attach a partner ID to every Criteo event. To do this, call the injectPartnerIdIntoCriteoEvents method. The SDK will send the partner ID with every Criteo for the duration of the app lifecycle. This means you will need to set it again when the app is re-launched.
+You can attach a partner ID to every Criteo event. To do this, call the `injectPartnerIdIntoCriteoEvents` method. The SDK will send the partner ID with every Criteo throughout the app lifecycle. This means you will need to set it again when the app is re-launched.
 
-You can remove the partner ID by setting the injectPartnerIdIntoCriteoEvents value to null.
+You can remove the partner ID by setting the `injectPartnerIdIntoCriteoEvents` value to null.
 
 :::{tab-set-code}
 
@@ -421,7 +434,7 @@ AdjustCriteo.injectPartnerIdIntoCriteoEvents("{CriteoPartnerId}");
 
 ### Send deep link
 
-You can add deep link information to Criteo events. To do this, call the injectDeeplinkIntoEvent method with the event and URL.
+You can add deep link information to Criteo events. To do this, call the `injectDeeplinkIntoEvent` method with the event and URL.
 
 :::{tab-set-code}
 
@@ -477,9 +490,9 @@ protected void onCreate(Bundle savedInstanceState) {
 
 ### Customer ID
 
-You can attach a customer ID to every Criteo event. To do this, call the injectCustomerIdIntoCriteoEvents method. The SDK will send the customer ID with every Criteo event for the duration of the app lifecycle. This means you will need to set them again when the app is re-launched.
+You can attach a customer ID to every Criteo event. To do this, call the `injectCustomerIdIntoCriteoEvents` method. The SDK will send the customer ID with every Criteo event throughout the app lifecycle. This means you will need to set them again when the app is re-launched.
 
-You can remove the customer ID by setting the injectCustomerIdIntoCriteoEvents value to nil.
+You can remove the customer ID by setting the `injectCustomerIdIntoCriteoEvents` value to nil.
 
 :::{tab-set-code}
 
@@ -503,9 +516,9 @@ AdjustCriteo.injectCustomerIdIntoCriteoEvents("{CriteoCustomerId}");
 
 ### User segment 
 
-You can attach the user segment to every Criteo event. To do this, call the injectUserSegmentIntoCriteoEvents method. The SDK will send the user segment with every Criteo event for the duration of the app lifecycle. This means you will need to set it again when the app is re-launched.
+You can attach the user segment to every Criteo event. To do this, call the `injectUserSegmentIntoCriteoEvents` method. The SDK will send the user segment with every Criteo event throughout the app lifecycle. This means you will need to set it again when the app is re-launched.
 
-You can remove the user segment by setting the injectUserSegmentIntoCriteoEvents value to nil.
+You can remove the user segment by setting the `injectUserSegmentIntoCriteoEvents` value to nil.
 
 :::{tab-set-code}
 
@@ -526,4 +539,3 @@ AdjustCriteo.injectUserSegmentIntoCriteoEvents("{CriteoUserSegment}");
 ```
 
 :::
-

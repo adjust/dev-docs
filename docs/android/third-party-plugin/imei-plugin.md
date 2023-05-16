@@ -1,0 +1,82 @@
+# IMEI plugin integration
+
+:::{important}
+This plugin is only meant for apps that aren't targeting the Google Play Store.
+:::
+
+Mobile devices come with an International Mobile Equipment Identity (IMEI) and a Mobile Equipment Identifier (MEID). You can use an Android device's IMEI and MEID for attribution in certain markets. To use this feature, you first need to complete the required steps in your Adjust dashboard. Once you have completed the steps, you can use this plugin.
+
+The IMEI plugin provides the IMEI and MEID values of a device. The SDK will continue to use other identifiers as well as the IMEI and MEID.
+
+Before you use this plugin, make sure to follow the get started guide and integrate the Adjust SDK into your app.
+
+## Add IMEI plugin to your app
+
+### Maven
+
+If you are using Maven, add the following dependency to your {file}`build.gradle` file:
+
+```
+dependencies {
+   implementation 'com.adjust.sdk:adjust-android:4.28.2'
+   implementation 'com.adjust.sdk:adjust-android-imei:4.28.2'
+}
+```
+
+### Add as JAR
+
+You can also add the plugin as a JAR file from the [releases page](https://github.com/adjust/android_sdk/releases).
+
+## Add permission
+
+Ensure the following permission is present in your {file}`AndroidManifest.xml` file. If it isn't, add it.
+
+```
+<uses-permission android:name="android.permission.READ_PHONE_STATE" />
+```
+
+As of Android 6.0 you may need to [request app permission](https://developer.android.com/training/permissions/requesting). This isn't necessary if the OS has been set up to not require app permissions.
+
+## Proguard settings
+
+If your app isn't targeting the Google Play Store, you don't need to add all the rules set out in the get started guide. You can remove rules related to Google Play Services and install referrer libraries. You only need to keep the rules that apply to the Adjust SDK.
+
+```
+-keep public class com.adjust.sdk.** { *; }
+```
+
+## Use the plugin
+
+:::{important}
+The IMEI and MEID are persistent identifiers. You are responsible for ensuring that your collection and processing of this data is lawful.
+:::
+
+Once you have set up the plugin, you can gather the device's IMEI and MEID. To do this, call the `AdjustImei.readImeie` method before starting the Adjust SDK.
+
+:::{tab-set-code}
+
+```Java
+AdjustImei.readImei();
+// ...
+Adjust.onCreate(config);
+```
+
+```C#
+AdjustImei.ReadImei();
+// ...
+Adjust.start(config);
+```
+:::
+
+If you want to prevent the SDK from reading the IMEI and MEID, call the `AdjustImei.doNotReadImei` method.
+
+:::{tab-set-code}
+
+```Java
+AdjustImei.doNotReadImei();
+```
+
+```C#
+AdjustImei.doNotReadImei();
+```
+:::
