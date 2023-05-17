@@ -1,14 +1,18 @@
-# Report endpoint
+# Pivot reports endpoint
 
-Report Service provides an API to get aggregated data from different sources: KPI Service deliverables, KPI Service cohorts, SKAdNetwork, and Ad Spend.
+Pivot Report Service provides an API to get aggregated data from different sources: KPI Service deliverables, KPI Service cohorts, SKAdNetwork, and Ad Spend.
 
 The reports endpoint enables you to combine data from many services in a single report. Request installs, revenue, ad spend, and SKAdNetwork data divided by day, app, and ad network.
 
 ## Endpoint
 
 ```text
-https://dash.adjust.com/control-center/reports-service/report
+https://dash.adjust.com/control-center/reports-service/pivot_report
 ```
+
+## GET request
+
+The `GET` method returns filtered data from the report service in JSON format.
 
 ::::{dropdown} Filters
 
@@ -30,26 +34,30 @@ https://dash.adjust.com/control-center/reports-service/report
 * - `date_period`*
    - String
    - Start and end dates for the report with 3 supported formats:
-     * Logical dates
-     * Absolute dates
-     * Relative dates
-  - **Logical dates:**
-     * `this_month_until_yesterday`
-     * `today`
-     * `yesterday`
-     * `this_week`
-     * `last_week`
-     * `this_month`
-     * `last_month`  
-   **Absolute dates:**
-     * `2020-12-31:2021-01-01`  
-   **Relative dates:**
-     * `-10d:-3d (from 10 days ago to 3 days ago)`
+      * Logical dates
+      * Absolute dates
+      * Relative dates
+   - **Logical dates**:
+      * `this_month_until_yesterday`
+      * `today`
+      * `yesterday`
+      * `this_week`
+      * `last_week`
+      * `this_month`
+      * `last_month`  
+      **Absolute dates**:
+      * `2020-12-31:2021-01-01`
+      **Relative dates**:
+      * `-10d:-3d` (from 10 days ago to 3 days ago)
+* - `index`*
+   - String
+   - Comma-separated list of dimensions used to index the report.
+   - `index=network,campaign,adgroup`
 * - `cohort_maturity`
    - String	
-   -
-     * `immature`: displays current values of cumulative metrics for all cohorts, including immature cohorts.
-     * `mature`: displays the values of cumulative metrics only for mature cohorts and zeros for immature cohorts.
+   - 
+      * `immature`: displays current values of cumulative metrics for all cohorts, including immature cohorts.
+      * `mature`: displays the values of cumulative metrics only for mature cohorts and zeros for immature cohorts.
    - `cohort_maturity=immature`
 * - `utc_offset`
    - String
@@ -58,9 +66,9 @@ https://dash.adjust.com/control-center/reports-service/report
 * - `attribution_type`
    - String
    - The type of engagement the attribution awards.
-     * `click` (default)
-     * `impression`
-     * `all`
+      * `click` (default)
+      * `impression`
+      * `all`
    - `attribution_type=click`
 * - `attribution_source`
    - String
@@ -69,7 +77,7 @@ https://dash.adjust.com/control-center/reports-service/report
 * - `reattributed`
    - String
    - Filter for reattributed users only. Reattribution is when a user who has already installed your app returns to it through a new Adjust-tracked source.
-      * `all`  (default)
+      * `all` (default)
       * `false`
       * `true`
    - `reattributed=false`
@@ -96,21 +104,29 @@ https://dash.adjust.com/control-center/reports-service/report
       * `network`
       * `mixed`
    - `ad_spend_mode=network`
+* - `skad_time_adjustment`
+   - String
+   - The time adjustment for SKAdNetwork postbacks. Formatted as `{format}{period}`
+   - `skad_time_adjustment=H24`
 * - `sandbox`
    - Boolean
-   - Whether to use sandbox data or production data. Defaults to `false`.
+   - Whether to use sandbox data or production data. Defaults to false.
    - `sandbox=true`
 * - `sort`
    - String
    - Comma-separated list of metrics/dimensions to sort the report by. Use `-` to order descending.
    - `sort=-clicks,installs`
-* - `index`
+* - `drilldown`
    - String
-   - Comma-separated list of dimensions used to index the report.
-   - `index=network,campaign,adgroup`
+   - List of parameters to drill down into. Formatted as pipe-separated tuples.
+   - `drilldown=campaign:123|adgroup:234`
+* - `focus`
+   - String
+   - List of parameters to focus on. Formatted as pipe-separated tuples. Differs from drilldown as it doesn't add extra dimensions to the results.
+   - `focus=campaign:123|adgroup:234`
 * - `format_dates`
    - Boolean
-   - If set to `false`, all date dimensions are returned in ISO format.
+   - If set to false, all date dimensions are returned in ISO format.
    - `format_dates=false`
 * - `period_over_period`
    - String
@@ -126,7 +142,7 @@ https://dash.adjust.com/control-center/reports-service/report
    - `campaign__in=abc,def`
 * - `[dimension]__not_in`
    - String
-   - Comma-separated list of values to filter dimension's values (exclude exact match) for any dimension
+   - Comma-separated list of values to filter dimension's values (exclude exact match) for any dimension.
    - `campaign__not_in=abc,def`
 * - `[dimension]__contains`
    - String
@@ -176,17 +192,20 @@ https://dash.adjust.com/control-center/reports-service/report
    - String
    - "Not equal" filter for values relating to any metric.
    - `skad_installs__ne=100`
-
 :::
 
 ::::
 
 ::::{dropdown} Dimensions
-
 Dimensions allow a user to break down metrics into groups using one or several parameters. For example, the number of installs by date, country and network.
 
-:::{list-table} Dimensions
+:::{list-table}
+:header-rows: 1
 
+* - Dimension
+   - Type
+   - Description
+   - Example
 * - Dimension
    - Data type
    - Description
@@ -359,7 +378,6 @@ Dimensions allow a user to break down metrics into groups using one or several p
    - String
    - The device operating system/platform. See list of supported platforms below.
    - `android`
-
 :::
 
 :::{rubric} Platforms
@@ -386,23 +404,17 @@ Dimensions allow a user to break down metrics into groups using one or several p
 
 ::::
 
-::::{dropdown} Metrics
-
+:::{dropdown} Metrics
 Metrics are used to assess and compare the performance of campaigns you run and track with Adjust.
 
-At least 1 metric is required in each request. The most common metrics are:
+At least 1 metric is required in each API request. The most common metrics are:
 
-* `installs`
-* `clicks`
-* `impressions`
+- `installs`
+- `clicks`
+- `impressions`
 
-A full list of metrics is available in the [Datascape metrics glossary](hc:datascape-metrics-glossary). You can also use the [Filters data endpoint](filters-data) to find a full list of metrics.
-
-::::
-
-## GET request
-
-Returns filtered data from the report service in JSON format.
+A full list of metrics is available in the [Datascape metrics glossary](hc:datascape-metrics-glossary). You can also use the [filters_data endpoint](./filters-data.md) to find a full list of metrics.
+:::
 
 ### Responses
 
@@ -437,51 +449,91 @@ This endpoint returns the following responses:
    },
    "warnings":[
       
-   ]
+   ],
+   "totals_per_dimension": { }
 }
 ```
 
 ## Example
 
-::::{tab-set}
-:::{tab-item} cURL
-
 ```console
 $ curl \
 --header 'Authorization: Bearer <adjust_api_token>' \
---location --request GET 'https://dash.adjust.com/control-center/reports-service/report?cost_mode=network&app_token__in={app_token1},{app_token2}&date_period=2021-05-01:2021-05-02&dimensions=app,partner_name,campaign,campaign_id_network,campaign_network&metrics=installs,network_installs,network_cost,network_ecpi'
+--location --request GET 'https://dash.adjust.com/control-center/reports-service/pivot_report?cost_mode=network&app_token__in={app_token1},{app_token2}&date_period=2021-05-01:2021-05-02&dimensions=app,partner_name,campaign,campaign_id_network,campaign_network&metrics=installs,network_installs,network_cost,network_ecpi&index=app' \
 ```
-
-:::
-::::
 
 ```json
 {
-    "rows": [
-        {
-            "attr_dependency": {
-                "campaign_id_network": "unknown",
-                "partner_id": "-300",
-                "partner": "Organic"
-            },
-            "app": "Test app",
-            "partner_name": "Organic",
-            "campaign": "unknown",
-            "campaign_id_network": "unknown",
-            "campaign_network": "unknown",
-            "installs": "10",
-            "network_installs": "0",
-            "network_cost": "0.0",
-            "network_ecpi": "0.0"
-        }
-    ],
-    "totals": {
-        "installs": 10.0,
-        "network_installs": 0.0,
-        "network_cost": 0.0,
-        "network_ecpi": 0.0
-    },
-    "warnings": [],
-    "pagination": null
+   "rows": [
+       {
+           "Test App": {
+               "rows": [
+                   {
+                       "attr_dependency": {
+                           "app_network": [
+                               "google_play:com.test.app"
+                           ]
+                       },
+                       "campaign_id_network": "123",
+                       "campaign_network": "Campaign Name",
+                       "campaign": "Campaign Name (123)",
+                       "partner_name": "MyPartner",
+                       "installs": 10,
+                       "network_installs": 0,
+                       "network_cost": 0,
+                       "network_ecpi": 0
+                   }
+               ]
+           }
+       }
+   ],
+   "totals": {
+       "installs": 10,
+       "network_installs": 0,
+       "network_cost": 0,
+       "network_ecpi": 0
+   },
+   "totals_per_dimension": {
+       "campaign_id_network": {
+           "Organic": {
+               "installs": 10,
+               "network_installs": 0,
+               "network_cost": 0,
+               "network_ecpi": 0
+           }
+       },
+       "campaign_network": {
+           "Organic": {
+               "installs": 10,
+               "network_installs": 0,
+               "network_cost": 0,
+               "network_ecpi": 0
+           }
+       },
+       "app": {
+           "adjust Demo App": {
+               "installs": 10,
+               "network_installs": 0,
+               "network_cost": 0,
+               "network_ecpi": 0
+           }
+       },
+       "campaign": {
+           "Organic": {
+               "installs": 10,
+               "network_installs": 0,
+               "network_cost": 0,
+               "network_ecpi": 0
+           }
+       },
+       "partner_name": {
+           "Organic": {
+               "installs": 10,
+               "network_installs": 0,
+               "network_cost": 0,
+               "network_ecpi": 0
+           }
+       }
+   }
 }
 ```

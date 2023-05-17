@@ -1,14 +1,27 @@
-# Report endpoint
+# CSV report
 
-Report Service provides an API to get aggregated data from different sources: KPI Service deliverables, KPI Service cohorts, SKAdNetwork, and Ad Spend.
+The CSV Report Service provides an API to get aggregated data from different sources in CSV format.
 
-The reports endpoint enables you to combine data from many services in a single report. Request installs, revenue, ad spend, and SKAdNetwork data divided by day, app, and ad network.
+* KPI Service deliverables
+* KPI Service cohorts
+* SKAdNetwork
+* Ad Spend
+
 
 ## Endpoint
 
 ```text
-https://dash.adjust.com/control-center/reports-service/report
+https://dash.adjust.com/control-center/reports-service/csv_report
 ```
+
+## GET request
+
+The `GET` method returns filtered data from the report service in CSV format. The API returns columns of data for each parameter passed in the request. By default the parameter's slug is used as the column header. You can return human-readable names by passing `readable_names=true` in your request.
+
+:::{warning}
+Human-readable names can change depending on upstream requirements. Use slugs for long running reports to ensure consistency. You can use the [Events endpoint](events.md) to retrieve event slugs.
+:::
+
 
 ::::{dropdown} Filters
 
@@ -30,37 +43,51 @@ https://dash.adjust.com/control-center/reports-service/report
 * - `date_period`*
    - String
    - Start and end dates for the report with 3 supported formats:
-     * Logical dates
-     * Absolute dates
-     * Relative dates
-  - **Logical dates:**
-     * `this_month_until_yesterday`
-     * `today`
-     * `yesterday`
-     * `this_week`
-     * `last_week`
-     * `this_month`
-     * `last_month`  
-   **Absolute dates:**
-     * `2020-12-31:2021-01-01`  
-   **Relative dates:**
-     * `-10d:-3d (from 10 days ago to 3 days ago)`
+      * Logical dates
+      * Absolute dates
+      * Relative dates  
+   - **Logical dates**:
+      * `this_month_until_yesterday`
+      * `today`
+      * `yesterday`
+      * `this_week`
+      * `last_week`
+      * `this_month`
+      * `last_month`  
+
+      **Absolute dates**:
+      * `2020-12-31:2021-01-01`  
+
+      **Relative dates**:
+      * `-10d:-3d` (from 10 days ago to 3 days ago)
+* - `readable_names`
+   - Boolean
+   - Whether to return columns with their human-readable names. Defaults to `false`
+   - `readable_names=true`
 * - `cohort_maturity`
-   - String	
-   -
-     * `immature`: displays current values of cumulative metrics for all cohorts, including immature cohorts.
-     * `mature`: displays the values of cumulative metrics only for mature cohorts and zeros for immature cohorts.
+   - String
+   - 
+      * `immature`: displays current values of cumulative metrics for all cohorts, including immature cohorts
+      * `mature`: displays the values of cumulative metrics only for mature cohorts and zeros for immature cohorts.
    - `cohort_maturity=immature`
 * - `utc_offset`
    - String
-   - The timezone used in the report.
-   - `utc_offset=+01:00`
+   - The timezone used in the report.	`utc_offset=+01:00`
+   - 
+* - `timezone_id`
+   - String
+   - The ID of the timezone used in the report.	`timezone_id=1`
+   - 
+* - `hour__between`
+   - String
+   - Filter results between given hours of the day. `hour__between=-10h:-0h`
+   - 
 * - `attribution_type`
    - String
    - The type of engagement the attribution awards.
-     * `click` (default)
-     * `impression`
-     * `all`
+      * `click` (default)
+      * `impression`
+      * `all`
    - `attribution_type=click`
 * - `attribution_source`
    - String
@@ -69,10 +96,10 @@ https://dash.adjust.com/control-center/reports-service/report
 * - `reattributed`
    - String
    - Filter for reattributed users only. Reattribution is when a user who has already installed your app returns to it through a new Adjust-tracked source.
-      * `all`  (default)
+      * `all` (default)
       * `false`
       * `true`
-   - `reattributed=false`
+  - `reattributed=false`
 * - `ad_revenue_mode`
    - String
    - The percentage of gross ad revenue returned by the endpoint. Available options are:
@@ -102,7 +129,7 @@ https://dash.adjust.com/control-center/reports-service/report
    - `sandbox=true`
 * - `sort`
    - String
-   - Comma-separated list of metrics/dimensions to sort the report by. Use `-` to order descending.
+   - Comma-separated list of metrics/dimensions to sort the report by. Use`-` to order descending.
    - `sort=-clicks,installs`
 * - `index`
    - String
@@ -110,11 +137,11 @@ https://dash.adjust.com/control-center/reports-service/report
    - `index=network,campaign,adgroup`
 * - `format_dates`
    - Boolean
-   - If set to `false`, all date dimensions are returned in ISO format.
+   - If set to false, all date dimensions are returned in ISO format.
    - `format_dates=false`
 * - `period_over_period`
    - String
-   - The period for comparing report data.
+   - The period for comparing report data.	
    - `period_over_period=previous_week`
 * - `currency`
    - String
@@ -126,7 +153,7 @@ https://dash.adjust.com/control-center/reports-service/report
    - `campaign__in=abc,def`
 * - `[dimension]__not_in`
    - String
-   - Comma-separated list of values to filter dimension's values (exclude exact match) for any dimension
+   - Comma-separated list of values to filter dimension's values (exclude exact match) for any dimension.
    - `campaign__not_in=abc,def`
 * - `[dimension]__contains`
    - String
@@ -185,7 +212,8 @@ https://dash.adjust.com/control-center/reports-service/report
 
 Dimensions allow a user to break down metrics into groups using one or several parameters. For example, the number of installs by date, country and network.
 
-:::{list-table} Dimensions
+:::{list-table}
+:header-rows: 1
 
 * - Dimension
    - Data type
@@ -193,33 +221,27 @@ Dimensions allow a user to break down metrics into groups using one or several p
    - Example
 * - `hour`
    - Date
-   - Date value. Use `format_dates=false` to return the value in ISO format.  
-    `YYYY-MM-DDTHH:MM:SS`
+   - Date value in `YYYY-MM-DDTHH:MM:SS` format. Use `format_dates=false` to return the value in ISO format.
    - `2021-05-11T17:00:45`
 * - `day`
    - Date
-   - Date value. Use `format_dates=false` to return the value in ISO format.  
-    `YYYY-MM-DD`
+   - Date value in `YYYY-MM-DD` format. Use `format_dates=false` to return the value in ISO format.
    - `2021-05-11`
 * - `week`
    - Date
-   - Date value. Use `format_dates=false` to return the value in ISO format.  
-    `YYYY-MM-DD - YYYY-MM-DD`
+   - Date value in `YYYY-MM-DD - YYYY-MM-DD` format. Use `format_dates=false` to return the value in ISO format.
    - `2021-05-09 - 2021-05-15`
 * - `month`
    - Date
-   - Date value. Use `format_dates=false` to return the value in ISO format.  
-    `YYYY-MM`
+   - Date value in `YYYY-MM` format. Use `format_dates=false` to return the value in ISO format.
    - `2021-05`
 * - `year`
    - Date
-   - Date value. Use `format_dates=false` to return the value in ISO format.  
-    `YYYY`
+   - Date value in `YYYY` format. Use `format_dates=false` to return the value in ISO format.
    - `2021`
 * - `quarter`
    - String
-   - Date value. Use `format_dates=false` to return the value in ISO format.  
-   `Q<quarter_number> YYYY`
+   - Date value in `Q<quarter_number> YYYY`  format. Use `format_dates=false` to return the value in ISO format.
    - `Q2 2021`
 * - `os_name`
    - String
@@ -236,7 +258,7 @@ Dimensions allow a user to break down metrics into groups using one or several p
       * `webos`
       * `windows`
       * `windows-phone`
-   - 
+   - `os_name=ios`
 * - `device_type`
    - String
    - Possible values:
@@ -251,7 +273,7 @@ Dimensions allow a user to break down metrics into groups using one or several p
       * `tablet`
       * `tv`
       * `unknown`
-   - 
+   - `device_type=phone`
 * - `app`
    - String
    - Name of the app.
@@ -272,27 +294,23 @@ Dimensions allow a user to break down metrics into groups using one or several p
    - String
    - Currency name.
    - `Euro`
-* - `currency_code
+* - `currency_code`
    - String
    - 3-character value ISO 4217.
    - `EUR`
-* - `network`
-   - String
-   - The name of the advertising network.
-   - Organic, AppLovin, Facebook Installs, Instagram Installs.
 * - `campaign`
    - String
    - Tracker sub-level 1.  
       String value usually contains campaign name and id.
-   -
+   - 
 * - `campaign_network`
-  - String
-  - Campaign name from the network.
-  - 
+   - String
+   - Campaign name from the network.
+   -
 * - `campaign_id_network`
    - String
    - Campaign ID from the network.
-   - 
+   -
 * - `adgroup`
    - String
    - Tracker sub-level 2.  
@@ -303,9 +321,9 @@ Dimensions allow a user to break down metrics into groups using one or several p
    - Adgroup name from the network.
    - 
 * - `adgroup_id_network`
-   - String	
+   - String
    - Adgroup ID from the network.
-   -
+   - 
 * - `source_network`
    - String
    - Name of the source network. Optional value dependent on the network.
@@ -318,48 +336,47 @@ Dimensions allow a user to break down metrics into groups using one or several p
    - String
    - Tracker sub-level 3.  
       String value usually contains creative name and id.
-   -
+   - 
 * - `creative_network`
-   - String
+   -  String
    - Creative name from the network.
    - 
 * - `creative_id_network`
-   - String
-   - Creative ID from the network.
+   -  String
+   - Creative ID from the network
    - 
 * - `country`
-   - String
-   - Country name.
+   -  String
+   - Country name.	
    - `United States of America`
 * - `country_code`
-   - String
-   - 2-character value ISO 3166.
+   -  String
+   - 2-character value ISO 3166.	
    - `US`
 * - `region`
-   - String
-   - Business region.
+   -  String
+   - Business region.	
    - `APAC`
 * - `partner_name`
-   - String
-   - Partner's name in the Adjust system.
+   -  String
+   - Partner's name in the Adjust system.	
    - `AppLovin`
 * - `partner_id`
-   - String
-   - Partner’s id in the Adjust system.
+   -  Integer
+   - Partner’s id in the Adjust system.	
    - `34`
 * - `partner_slug`
-   - String
-   - The unique slug of the partner.
+   -  String
+   - The unique slug of the partner.	
    - `applovin`
 * - `channel`
-   - String
+   -  String
    - A combination of `partner_name` and `network`.
    - 
 * - `platform`
-   - String
-   - The device operating system/platform. See list of supported platforms below.
+   -  String
+   - The device operating system/platform. See list of supported platforms below.	
    - `android`
-
 :::
 
 :::{rubric} Platforms
@@ -381,107 +398,76 @@ Dimensions allow a user to break down metrics into groups using one or several p
 * `webos`
 * `windows`
 * `windows-phone`
-
 :::
 
 ::::
 
-::::{dropdown} Metrics
+:::{dropdown} Metrics
 
 Metrics are used to assess and compare the performance of campaigns you run and track with Adjust.
 
-At least 1 metric is required in each request. The most common metrics are:
+At least 1 metric is required in each API request. The most common metrics are:
 
-* `installs`
-* `clicks`
-* `impressions`
+- `installs`
+- `clicks`
+- `impressions`
 
-A full list of metrics is available in the [Datascape metrics glossary](hc:datascape-metrics-glossary). You can also use the [Filters data endpoint](filters-data) to find a full list of metrics.
+A full list of metrics is available in the [Datascape metrics glossary](hc:datascape-metrics-glossary). You can also use the [filters_data endpoint](filters-data.md) to find a full list of metrics.
 
-::::
-
-## GET request
-
-Returns filtered data from the report service in JSON format.
+:::
 
 ### Responses
-
-This endpoint returns the following responses:
 
 :::{include} /api/rs-api/filters-data.md
 :start-after: rs-api response codes
 :end-before: Snippet end
 :::
 
-```{code-block} json
-:caption: Success response
+```{code-block} csv
+:caption: success response
 
-{
-   "rows":[
-      {
-         "attr_dependency":{
-            
-         },
-         "app":"App Name",
-         "partner_name":"AppLovin",
-         "campaign":"Campaign Name (Campaign ID)",
-         "campaign_id_network":"Campaign ID",
-         "campaign_network":"Campaign Name",
-         "installs":"64",
-         "cost":"1000"
-      }
-   ],
-   "totals":{
-      "installs":64,
-      "cost":1000
-   },
-   "warnings":[
-      
-   ]
-}
+app,partner_name,campaign,campaign_id_network,campaign_network,installs,network_cost
+String,String,String,String,String,Number,Number
 ```
 
-## Example
+:::{list-table} Parameters
+:header-rows: 1
 
-::::{tab-set}
-:::{tab-item} cURL
+* - Parameter
+   - Data Type
+   - Description
+* - `app`
+   - String
+   - The name of the app
+* - `partner_name`
+   - String
+   - The name of the partner
+* - `campaign`
+   - String
+   - The name of the ID of the campaign
+* - `campaign_id_network`
+   - String
+   - The ID of the campaign
+* - `campaign_name`
+   - String
+   - The name of the campaign
+* - `installs`
+   - Number
+   - The number of installs
+* - `network_cost`
+   - Number
+   - The total network cost of the row
+:::
+
+## Example
 
 ```console
 $ curl \
 --header 'Authorization: Bearer <adjust_api_token>' \
---location --request GET 'https://dash.adjust.com/control-center/reports-service/report?cost_mode=network&app_token__in={app_token1},{app_token2}&date_period=2021-05-01:2021-05-02&dimensions=app,partner_name,campaign,campaign_id_network,campaign_network&metrics=installs,network_installs,network_cost,network_ecpi'
+--location --request GET 'https://dash.adjust.com/control-center/reports-service/csv_report?cost_mode=network&app_token__in={app_token1},{app_token2}&date_period=2021-05-01:2021-05-02&dimensions=app,partner_name,campaign,campaign_id_network,campaign_network&metrics=installs,network_cost'
 ```
 
-:::
-::::
-
-```json
-{
-    "rows": [
-        {
-            "attr_dependency": {
-                "campaign_id_network": "unknown",
-                "partner_id": "-300",
-                "partner": "Organic"
-            },
-            "app": "Test app",
-            "partner_name": "Organic",
-            "campaign": "unknown",
-            "campaign_id_network": "unknown",
-            "campaign_network": "unknown",
-            "installs": "10",
-            "network_installs": "0",
-            "network_cost": "0.0",
-            "network_ecpi": "0.0"
-        }
-    ],
-    "totals": {
-        "installs": 10.0,
-        "network_installs": 0.0,
-        "network_cost": 0.0,
-        "network_ecpi": 0.0
-    },
-    "warnings": [],
-    "pagination": null
-}
+```csv
+app,partner_name,campaign,campaign_id_network,campaign_network,installs,network_cost
+App Name,AppLovin,Campaign Name (Campaign ID),Campaign ID,Campaign Network,64,1000
 ```
