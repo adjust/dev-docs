@@ -15,7 +15,10 @@ Update a tracker or subtracker associated to your app.
 :::{list-table} Parameters
 :header-rows: 1
 
-* - Parameter	Data type	In	Description
+* - Parameter
+   - Data type
+   - In
+   - Description
 * - `app_token`*
    - String
    - Path
