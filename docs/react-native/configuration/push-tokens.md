@@ -1,8 +1,8 @@
 # Set up push tokens
 
-Push tokens are used for [Audience Builder](https://help.adjust.com/en/article/audience-builder) and client callbacks. they're also required for [Uninstall and reinstall tracking](https://help.adjust.com/en/article/uninstalls-reinstalls).
+Push tokens are used for [Audience Builder](hc:audience-builder) and client callbacks. they're also required for [Uninstall and reinstall tracking](hc:uninstalls-reinstalls).
 
-The {code}`AdjustConfig` object contains a string {code}`pushToken` property that you can use to store your push token. You can update this property at any time by calling the setPushToken method with your token as an argument.
+The {code}`AdjustConfig` object contains a string {code}`pushToken` property that you can use to store your push token. You can update this property at any time by calling the [`setPushToken` method](#react-native-setpushtoken-invocation) with your token as an argument.
 
 :::{tab-set-code}
 
@@ -14,8 +14,6 @@ Adjust.setPushToken("YourPushNotificationToken");
 Adjust.setPushToken("YourPushNotificationToken");
 ```
 :::
-
-**See also**: setPushToken method reference.
 
 ::::{dropdown} Example
 

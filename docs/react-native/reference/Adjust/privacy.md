@@ -45,7 +45,7 @@ trackThirdPartySharing: (adjustThirdPartySharing: AdjustThirdPartySharing) => vo
 ```
 
 :param thirdPartySharing: The third party sharing object
-:type thirdPartySharing: [*AdjustThirdPartySharing*](/unity/reference/AdjustThirdPartySharing.md)
+:type thirdPartySharing: [*AdjustThirdPartySharing*](/react-native/reference/AdjustThirdPartySharing.md)
 
 % trackThirdPartySharing snippet
 

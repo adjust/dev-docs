@@ -139,7 +139,7 @@ Adjust.create(adjustConfig);
 
 Enables or disables launching deferred deep links with the SDK. If **enabled**, the SDK launches deep links the user interacts with.
 
-{#react-native-setlaunchdeferreddeeplink-invocation}
+{#react-native-setshouldlaunchdeeplink-invocation}
 ```ts
 public setShouldLaunchDeeplink(shouldLaunchDeeplink: boolean): void
 ```
@@ -294,7 +294,7 @@ public setUserAgent(userAgent: string): void
 
 % setUserAgent snippet
 
-{tab-set-code}
+:::{tab-set-code}
 
 {emphasize-lines="3"}
 ```js
@@ -329,7 +329,7 @@ public setDeviceKnown(isDeviceKnown: boolean): void
 
 % setIsDeviceKnown snippet
 
-{tab-set-code}
+:::{tab-set-code}
 
 {emphasize-lines="3"}
 ```js
@@ -384,77 +384,38 @@ Adjust.create(adjustConfig);
 
 % Class method end
 
-% Class method setSessionSuccessDelegate
+% End of setup in original article
 
-::::{function} setSessionSuccessDelegate (sessionSuccessDelegate)
+% Class method setDeferredDeeplinkCallbackListener
+
+::::{function} setDeferredDeeplinkCallbackListener (uri)
 :noindex:
 
-Sets up a success callback to trigger a function when the SDK records a session.
+Define a listener function that the SDK calls when opening a deep link.
 
-{#react-native-setsessionsuccessdelegate-invocation}
-```c#
-public void setSessionSuccessDelegate(Action<AdjustSessionSuccess> sessionSuccessDelegate, string sceneName = "Adjust")
+{#react-native-setdeferreddeeplinkcallbacklistener-invocation}
+```ts
+public setDeferredDeeplinkCallbackListener(
+      callback: (uri: AdjustUri) => void
+    ): void
 ```
 
-:param sessionSuccessDelegate: The function to launch when the SDK successfully records a session
-:type sessionSuccessDelegate: Action
+:param uri: Contains the deep link `uri` that calls the listener to start
+:type uri: AdjustUri
 
-% setSessionSuccessDelegate snippet
-
-{tab-set-code}
-
-{emphasize-lines="3, 7-9"}
-```c#
-AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
-adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
-adjustConfig.setSessionSuccessDelegate(SessionSuccessCallback);
-//...
-Adjust.start(adjustConfig);
-//...
-public void SessionSuccessCallback (AdjustSessionSuccess sessionSuccessData) {
-    //...
-}
-```
-
-:::
-
-% Snippet end
-
-::::
-
-% Class method end
-
-% Class method setSessionFailureDelegate
-
-::::{function} setSessionFailureDelegate (sessionSuccessDelegate)
-:noindex:
-
-Sets up a callback to trigger a function when the SDK fails to record a session.
-
-```c#
-:name: react-native-setSessionFailureDelegate-invocation
-
-public void setSessionFailureDelegate(Action<AdjustSessionFailure> sessionFailureDelegate, string sceneName = "Adjust")
-```
-
-:param sessionFailureDelegate: The function to launch when the SDK fails to record a session
-:type sessionFailureDelegate: Action
-
-% setSessionFailureDelegate snippet
+% setDeferredDeeplinkCallbackListener snippet
 
 :::{tab-set-code}
 
-{emphasize-lines="3, 7-9"}
-```c#
-AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
-adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
-adjustConfig.setSessionFailureDelegate(SessionFailureCallback);
+{emphasize-lines="3,4,5"}
+```js
+const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+//..
+adjustConfig.setDeferredDeeplinkCallbackListener(function(deeplink) {
+    console.log("Deferred deep link URL content: " + deeplink);
+});
 //...
-Adjust.start(adjustConfig);
-//...
-public void SessionFailureCallback (AdjustSessionFailure sessionFailureData) {
-    //...
-}
+Adjust.create(adjustConfig);
 ```
 
 :::
@@ -465,125 +426,491 @@ public void SessionFailureCallback (AdjustSessionFailure sessionFailureData) {
 
 % Class method end
 
-% Class method setEventSuccessDelegate
+% Class method setAttributionCallbackListener
 
-::::{function} eventSuccessDelegate (eventSuccessDelegate)
-:noindex:
-
-Sets up a success callback to trigger a function when the SDK records an event.
-
-{#react-native-seteventsuccessdelegate-invocation}
-```c#
-public void setEventSuccessDelegate(Action<AdjustEventSuccess> eventSuccessDelegate, string sceneName = "Adjust")
-```
-
-:param eventSuccessDelegate: The function to launch when the SDK successfully records an event
-:type eventSuccessDelegate: Action
-
-% setEventSuccessDelegate snippet
-
-:::{tab-set-code}
-
-{emphasize-lines="3, 7-9"}
-```c#
-AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
-adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
-adjustConfig.setEventSuccessDelegate(EventSuccessCallback);
-//...
-Adjust.start(adjustConfig);
-//...
-public void EventSuccessCallback(AdjustEventSuccess eventSuccessData) {
-    //...
-}
-```
-
-:::
-
-% Snippet end
-
-::::
-
-% Class method end
-
-% Class method setEventFailureDelegate
-
-::::{function} setEventFailureDelegate (eventFailureDelegate)
-:noindex:
-
-Sets up a callback to trigger a function when the SDK fails to record an event.
-
-{#react-native-seteventfailuredelegate-invocation}
-```c#
-public void setEventFailureDelegate(Action<AdjustEventFailure> eventFailureDelegate, string sceneName = "Adjust")
-```
-
-:param eventFailureDelegate: The function to launch when the SDK fails to record an event
-:type eventFailureDelegate: Action
-
-% setEventFailureDelegate snippet
-
-{tab-set-code}
-
-{emphasize-lines="3, 7-9"}
-```c#
-AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
-adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
-adjustConfig.setEventFailureDelegate(EventFailureCallback);
-//...
-Adjust.start(adjustConfig);
-//...
-public void EventFailureCallback(AdjustEventFailure eventFailureData) {
-    //...
-}
-```
-
-:::
-
-% Snippet end
-
-::::
-
-% Class method end
-
-% Class method setAttributionChangedDelegate
-
-::::{function} setAttributionChangedDelegate (attributionChangedDelegate)
+::::{function} setAttributionCallbackListener (AdjustAttribution)
 :noindex:
 
 Sets a delegate function that fires when a user's attribution information updates
 
-{#react-native-setattributionchangeddelegate-invocation}
-```c#
-public void setAttributionChangedDelegate(Action<AdjustAttribution> attributionChangedDelegate, string sceneName = "Adjust")
+{#react-native-setAttributionCallbackListener-invocation}
+```ts
+public setAttributionCallbackListener(
+      callback: (attribution: AdjustAttribution) => void
+    ): void
 ```
 
-:param attributionChangedDelegate: The delegate function that the SDK calls when a the user's attribution information changes
-:type attributionChangedDelegate: Action
+:param attribution: The delegate function that the SDK calls when a the user's attribution information changes
+:type attribution: AdjustAttribution
 
-% setAttributionChangedDelegate snippet
+% setAttributionCallbackListener snippet
 
 :::{tab-set-code}
 
-```c#
-:emphasize-lines: 9, 13-16
+```js
+const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+//..
+adjustConfig.setAttributionCallbackListener(function(attribution) {
+    // Printing all attribution properties.
+    console.log("Attribution changed!");
+    console.log(attribution.trackerToken);
+    console.log(attribution.trackerName);
+    console.log(attribution.network);
+    console.log(attribution.campaign);
+    console.log(attribution.adgroup);
+    console.log(attribution.creative);
+    console.log(attribution.clickLabel);
+    console.log(attribution.adid);
+    console.log(attribution.costType);
+    console.log(attribution.costAmount);
+    console.log(attribution.costCurrency);
+    console.log(attribution.fbInstallReferrer);
+});
+//...
+Adjust.create(adjustConfig);
+```
 
-using com.adjust.sdk;
+:::
 
-public class ExampleGUI : MonoBehaviour {
-    void OnGUI() {
-        if (GUI.Button(new Rect(0, 0, Screen.width, Screen.height), "callback")) {
-            AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
-            adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
-            adjustConfig.setAttributionChangedDelegate(this.attributionChangedDelegate);
-            Adjust.start(adjustConfig);
-        }
-    }
+% Snippet end
 
-    public void attributionChangedDelegate(AdjustAttribution attribution) {
-        Debug.Log("Attribution changed");
-        // ...
-    }
-}
+::::
+
+% Class method end
+
+% Class method setEventTrackingSucceededCallbackListener
+
+::::{function} setEventTrackingSucceededCallbackListener (eventSuccess)
+:noindex:
+
+Sets up a success callback to trigger a function when the SDK records an event.
+
+{#react-native-setEventTrackingSucceededCallbackListener-invocation}
+```ts
+public setEventTrackingSucceededCallbackListener(
+      callback: (eventSuccess: AdjustEventTrackingSuccess) => void
+    ): void
+```
+
+:param eventSuccess: The function to launch when the SDK successfully records an event
+:type eventSuccess: AdjustEventTrackingSuccess
+
+% setEventTrackingSucceededCallbackListener snippet
+
+:::{tab-set-code}
+
+```js
+const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+//..
+adjustConfig.setEventTrackingSucceededCallbackListener(function(eventSuccess) {
+    // Printing all event success properties.
+    console.log("Event tracking succeeded!");
+    console.log(eventSuccess.message);
+    console.log(eventSuccess.timestamp);
+    console.log(eventSuccess.eventToken);
+    console.log(eventSuccess.callbackId);
+    console.log(eventSuccess.adid);
+    console.log(eventSuccess.jsonResponse);
+});
+//...
+Adjust.create(adjustConfig);
+```
+
+:::
+
+% Snippet end
+
+::::
+
+% Class method end
+
+% Class method setEventTrackingFailedCallbackListener
+
+::::{function} setEventTrackingFailedCallbackListener (eventFailed)
+:noindex:
+
+Sets up a callback to trigger a function when the SDK fails to record an event.
+
+{#react-native-setEventTrackingFailedCallbackListener-invocation}
+```ts
+public setEventTrackingFailedCallbackListener(
+      callback: (eventFailed: AdjustEventTrackingFailure) => void
+    ): void
+```
+
+:param eventFailed: The function to launch when the SDK fails to record an event
+:type eventFailed: AdjustEventTrackingFailure
+
+% setEventTrackingFailedCallbackListener snippet
+
+:::{tab-set-code}
+
+```js
+const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+//..
+adjustConfig.setEventTrackingFailedCallbackListener(function(eventFailure) {
+    // Printing all event failure properties.
+    console.log("Event tracking failed!");
+    console.log(eventFailure.message);
+    console.log(eventFailure.timestamp);
+    console.log(eventFailure.eventToken);
+    console.log(eventFailure.callbackId);
+    console.log(eventFailure.adid);
+    console.log(eventFailure.willRetry);
+    console.log(eventFailure.jsonResponse);
+});
+//...
+Adjust.create(adjustConfig);
+```
+
+:::
+
+% Snippet end
+
+::::
+
+% Class method end
+
+% Class method setSessionTrackingSucceededCallbackListener
+
+::::{function} setSessionTrackingSucceededCallbackListener (sessionSuccess)
+:noindex:
+
+Sets up a success callback to trigger a function when the SDK records a session.
+
+{#react-native-setSessionTrackingSucceededCallbackListener-invocation}
+```ts
+public setSessionTrackingSucceededCallbackListener(
+      callback: (sessionSuccess: AdjustSessionTrackingSuccess) => void
+    ): void
+```
+
+:param sessionSuccess: The function to launch when the SDK successfully records a session
+:type sessionSuccess: AdjustSessionTrackingSuccess
+
+% setSessionTrackingSucceededCallbackListener snippet
+
+:::{tab-set-code}
+
+```js
+const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+//..
+adjustConfig.setSessionTrackingSucceededCallbackListener(function(sessionSuccess) {
+    // Printing all session success properties.
+    console.log("Session tracking succeeded!");
+    console.log(sessionSuccess.message);
+    console.log(sessionSuccess.timestamp);
+    console.log(sessionSuccess.adid);
+    console.log(sessionSuccess.jsonResponse);
+});
+//...
+Adjust.create(adjustConfig);
+```
+
+:::
+
+% Snippet end
+
+::::
+
+% Class method end
+
+% Class method setSessionTrackingFailedCallbackListener
+
+::::{function} setSessionTrackingFailedCallbackListener (sessionFailed)
+:noindex:
+
+Sets up a callback to trigger a function when the SDK fails to record a session.
+
+{#unity-setSessionTrackingFailedCallbackListener-invocation}
+```ts
+public setSessionTrackingFailedCallbackListener(
+      callback: (sessionFailed: AdjustSessionTrackingFailure) => void
+    ): void
+```
+
+:param sessionFailed: The function to launch when the SDK fails to record a session
+:type sessionFailed: AdjustSessionTrackingFailure
+
+% setSessionTrackingFailedCallbackListener snippet
+
+:::{tab-set-code}
+
+```js
+const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+//..
+adjustConfig.setSessionTrackingFailedCallbackListener(function(sessionFailure) {
+    // Printing all session failure properties.
+    console.log("Session tracking failed!");
+    console.log(sessionFailure.message);
+    console.log(sessionFailure.timestamp);
+    console.log(sessionFailure.adid);
+    console.log(sessionFailure.willRetry);
+    console.log(sessionFailure.jsonResponse);
+});
+//...
+Adjust.create(adjustConfig);
+```
+
+:::
+
+% Snippet end
+
+::::
+
+% Class method end
+
+## iOS config methods
+
+% Class method setAllowiAdInfoReading
+
+::::{function} setAllowiAdInfoReading(allowiAdInfoReading)
+:noindex:
+
+:::{deprecated} v4.33.4
+Sets whether the Adjust SDK can read iAd framework data.
+:::
+
+{#react-native-setllowiadinforeading-invocation}
+```ts
+public setAllowiAdInfoReading(allowiAdInfoReading: boolean): void
+```
+
+:param allowiAdInfoReading: Whether iAd framework data is read by the Adjust SDK
+:type allowiAdInfoReading: Boolean
+
+% setAllowiAdInfoReading snippet
+
+:::{tab-set-code}
+
+{emphasize-lines="3"}
+```js
+const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+//..
+adjustConfig.setAllowiAdInfoReading(true);
+//...
+Adjust.create(adjustConfig);
+```
+
+:::
+
+% Snippet end
+
+::::
+
+% Class method end
+
+% Class method setAllowAdServicesInfoReading
+
+::::{function} setAllowAdServicesInfoReading(allowAdServicesInfoReading)
+:noindex:
+
+Sets whether the Adjust SDK can read [AdServices framework](https://developer.apple.com/documentation/ad_services) data.
+
+{#react-native-setallowadservicesinforeading-invocation}
+```ts
+public setAllowAdServicesInfoReading(allowAdServicesInfoReading: boolean): void
+```
+
+:param allowAdServicesInfoReading: Whether AdServices framework data is read by the Adjust SDK
+:type allowAdServicesInfoReading: BOOL
+
+% setAllowAdServicesInfoReading snippet
+
+:::{tab-set-code}
+
+{emphasize-lines="3"}
+```js
+const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+//..
+adjustConfig.setAllowAdServicesInfoReading(true);
+//...
+Adjust.create(adjustConfig);
+```
+
+:::
+
+% Snippet end
+
+::::
+
+% Class method end
+
+% Class method setAllowIdfaReading
+
+::::{function} setAllowIdfaReading(allowIdfaReading)
+:noindex:
+
+Sets whether the Adjust SDK can read the device {abbr}`IDFA (ID for Advertisers)`
+
+{#react-native-setallowidfareading-invocation}
+```ts
+public setAllowIdfaReading(allowIdfaReading: boolean): void
+```
+
+:param allowIdfaReading: Whether the Adjust SDK can read the device IDFA
+:type allowIdfaReading: BOOL
+
+% setAllowIdfaReading snippet
+
+:::{tab-set-code}
+
+{emphasize-lines="3"}
+```js
+const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+//..
+adjustConfig.setAllowIdfaReading(true);
+//...
+Adjust.create(adjustConfig);
+```
+
+:::
+
+% Snippet end
+
+::::
+
+% Class method end
+
+% Class method deactivateSKAdNetworkHandling
+
+::::{function} deactivateSKAdNetworkHandling
+:noindex:
+
+Turns off communication with SKAdNetwork. Communication is *enabled* by default.
+
+{#react-native-deactivateskadnetworkhandling-invocation}
+```ts
+public deactivateSKAdNetworkHandling(): void;
+```
+
+% deactivateSKAdNetworkHandling snippet
+
+:::{tab-set-code}
+
+{emphasize-lines="3"}
+```js
+const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+//..
+adjustConfig.deactivateSKAdNetworkHandling();
+//...
+Adjust.create(adjustConfig);
+```
+
+:::
+
+% Snippet end
+
+:::::
+
+% Class method end
+
+% Class method setLinkMeEnabled
+
+::::{function} setLinkMeEnabled (linkMeEnabled)
+:noindex:
+
+Toggle support for Adjust's [LinkMe solution](hc:linkme) for deep linking
+
+{#react-native-setlinkmeenabled-invocation}
+```ts
+public setLinkMeEnabled(linkMeEnabled: boolean): void;
+```
+
+:param linkMeEnabled: Whether LinkMe should be enabled
+:type linkMeEnabled: Boolean
+
+% setLinkMeEnabled snippet
+
+:::{tab-set-code}
+
+{emphasize-lines="3"}
+```js
+const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+//..
+adjustConfig.setLinkMeEnabled(true);
+//...
+Adjust.create(adjustConfig);
+```
+
+:::
+
+% Snippet end
+
+::::
+
+% Class method end
+
+% Class method setConversionValueUpdatedCallbackListener
+
+::::{function} setConversionValueUpdatedCallbackListener(conversionValue)
+:noindex:
+
+Sets a listener function to call when the user's conversion value updates.
+
+{#react-native-setconversionvalueupdatedcallbacklistener-invocation}
+```ts
+public setConversionValueUpdatedCallbackListener(
+      callback: (conversionValue: AdjustConversionValue) => void
+    ): void
+```
+
+:param conversionValue: The listener function the SDK launches when the conversion value updates
+:type conversionValue: AdjustConversionValue
+
+% setConversionValueUpdatedDelegate snippet
+
+:::{tab-set-code}
+
+{emphasize-lines="3-6"}
+```js
+const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+//..
+adjustConfig.setConversionValueUpdatedCallbackListener(function(conversionValue) {
+    console.log("Conversion value updated callback recveived");
+    console.log("Conversion value: " + conversionValue.conversionValue);
+  });
+//...
+Adjust.create(adjustConfig);
+
+```
+
+:::
+
+% Snippet end
+
+::::
+
+% Class method end
+
+## Android config methods
+
+% Class method setProcessName
+
+::::{function} setProcessName(processName)
+:noindex:
+
+Define the process name your app runs under. Defaults to the app's package name.
+
+{#react-native-setprocessname-invocation}
+```ts
+public setProcessName(processName: string): void
+```
+
+:param processName: The name of the main process
+:type processName: String
+
+% setProcessName snippet
+
+:::{tab-set-code}
+
+{emphasize-lines="3"}
+```js
+const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+//..
+adjustConfig.setProcessName("com.example.myapp");
+//...
+Adjust.create(adjustConfig);
 ```
 
 :::
@@ -602,8 +929,8 @@ public class ExampleGUI : MonoBehaviour {
 Enables or disables preinstall tracking
 
 {#react-native-setpreinstalltrackingenabled-invocation}
-```c#
-public void setPreinstallTrackingEnabled(bool preinstallTrackingEnabled)
+```ts
+public setPreinstallTrackingEnabled(preinstallTrackingEnabled: boolean): void
 ```
 
 :param preinstallTrackingEnabled: Whether preinstall tracking is enabled
@@ -613,12 +940,13 @@ public void setPreinstallTrackingEnabled(bool preinstallTrackingEnabled)
 
 :::{tab-set-code}
 
-```c#
-AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
-//...
+{emphasize-lines="3"}
+```js
+const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+//..
 adjustConfig.setPreinstallTrackingEnabled(true);
 //...
-Adjust.start(adjustConfig);
+Adjust.create(adjustConfig);
 ```
 
 :::
@@ -637,8 +965,8 @@ Adjust.start(adjustConfig);
 Defines a relative path where preinstall information is available. This directory must be world-readable
 
 {#react-native-setpreinstallfilepath-invocation}
-```c#
-public void setPreinstallFilePath(string preinstallFilePath)
+```ts
+public setPreinstallFilePath(preinstallFilePath: string): void
 ```
 
 :param preinstallFilePath: The path where the preinstall information is written
@@ -648,12 +976,13 @@ public void setPreinstallFilePath(string preinstallFilePath)
 
 :::{tab-set-code}
 
-```c#
-AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
-//...
+{emphasize-lines="3"}
+```js
+const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+//..
 adjustConfig.setPreinstallFilePath("../EngagementFile.xml");
 //...
-Adjust.start(adjustConfig);
+Adjust.create(adjustConfig);
 ```
 
 :::
@@ -662,108 +991,40 @@ Adjust.start(adjustConfig);
 
 ::::
 
-% Class method end
+% Class method end.
 
-% Class method deactivateSKAdNetworkHandling
+% Class method setPlayStoreKidsAppEnabled
 
-::::{function} deactivateSKAdNetworkHandling
+:::::{function} setPlayStoreKidsAppEnabled(playStoreKidsAppEnabled)
 :noindex:
 
-Turns off communication with SKAdNetwork. Communication is *enabled* by default
+Marks your app as a Kids App and disables reading device information
 
-{#react-native-deactivateskadnetworkhandling-invocation}
-```c#
-public void deactivateSKAdNetworkHandling()
+{#react-native-setplaystorekidsappenabled-invocation}
+```ts
+public setPlayStoreKidsAppEnabled(playStoreKidsAppEnabled: boolean): void
 ```
 
-% deactivateSKAdNetworkHandling snippet
+:param playStoreKidsAppEnabled: Whether the app is a Kids app
+:type playStoreKidsAppEnabled: boolean
+
+% setPlayStoreKidsAppEnabled snippet
 
 :::{tab-set-code}
 
 {emphasize-lines="3"}
-```c#
-AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
+```js
+const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+//..
+adjustConfig.setPlayStoreKidsAppEnabled(true);
 //...
-adjustConfig.deactivateSKAdNetworkHandling();
-//...
-Adjust.start(adjustConfig);
+Adjust.create(adjustConfig);
 ```
 
 :::
 
 % Snippet end
 
-::::
-
-% Class method end
-
-% Class method setLinkMeEnabled
-
-::::{function} setLinkMeEnabled (linkMeEnabled)
-:noindex:
-
-Toggle support for Adjust's [LinkMe solution](hc:linkme) for deep linking
-
-{#react-native-setlinkmeenabled-invocation}
-```c#
-public void setLinkMeEnabled(bool linkMeEnabled)
-```
-
-:param linkMeEnabled: Whether LinkMe should be enabled
-:type linkMeEnabled: Boolean
-
-% setLinkMeEnabled snippet
-
-:::{tab-set-code}
-
-{emphasize-lines="3"}
-```c#
-AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
-//...
-adjustConfig.setLinkMeEnabled(true);
-//...
-Adjust.start(adjustConfig);
-```
-
-:::
-
-% Snippet end
-
-::::
-
-% Class method end
-
-% Class method setConversionValueUpdatedCallbackDelegate
-
-::::{function} setConversionValueUpdatedCallbackDelegate(conversionValueUpdatedDelegate)
-:noindex:
-
-Sets a delegate function to call when the user's conversion value updates.
-
-{#react-native-setconversionvalueupdatedcallbackdelegate-invocation}
-```c#
-public void setConversionValueUpdatedDelegate(Action<int> conversionValueUpdatedDelegate, string sceneName = "Adjust")
-```
-
-:param conversionValueUpdatedDelegate: The delegate function the SDK launches when the conversion value updates
-:type conversionValueUpdatedDelegate: Action
-
-% setConversionValueUpdatedDelegate snippet
-
-:::{tab-set-code}
-
-```c#
-AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
-//...
-adjustConfig.setConversionValueUpdatedDelegate(ConversionValueUpdatedCallback);
-//...
-Adjust.start(adjustConfig);
-```
-
-:::
-
-% Snippet end
-
-::::
+:::::
 
 % Class method end

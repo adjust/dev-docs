@@ -215,16 +215,3 @@ To test that the Adjust SDK can receive a device's Google Advertising ID, set th
 
 If you are having issues retrieving the Google Advertising ID, open an issue in our [GitHub repository](https://github.com/adjust/react_native_sdk) or contact <support@adjust.com>.
 :::
-
-:::{mermaid}
-sequenceDiagram
-    Dev->>Adjust SDK: Calls onStart
-    Dev->>+Adjust Server: Calls onResume
-        Note right of Adjust Server: Queues<br/>sent session
-    alt onResume not called
-        Dev-->+Adjust SDK: Calls onStart but not onResume
-        Adjust SDK->>-Adjust SDK: Creates a fake session
-        Dev->>Adjust Server: Calls onResume 
-        Note right of Adjust Server: Queues sent session<br/>including fake sessions
-    end 
-:::

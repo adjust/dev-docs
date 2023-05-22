@@ -23,7 +23,7 @@ Adjust.create(adjustConfig);
 
 :::
 
-Within your listener function, you have access to the user's `Attribution` object. See the Attribution class reference for a list of available parameters.
+Within your listener function, you have access to the user's `Attribution` object. See the [`AdjustAttribution` class reference](/react-native/reference/AdjustAttribution.md) for a list of available parameters.
 
 ## Get current attribution information
 
@@ -41,4 +41,4 @@ AdjustAttribution attribution = Adjust.getAttribution();
 
 :::
 
-This method returns an `Attribution` object. See the Attribution class reference for a list of available parameters.
+This method returns an `Attribution` object. See the [`AdjustAttribution` class reference](/react-native/reference/AdjustAttribution.md) for a list of available parameters.

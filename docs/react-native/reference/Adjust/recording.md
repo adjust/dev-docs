@@ -15,7 +15,7 @@ trackEvent: (adjustEvent: AdjustEvent) => void
 ```
 
 :param event: An event object containing information you want to record
-:type event: [*AdjustEvent*](/unity/reference/AdjustEvent.md)
+:type event: [*AdjustEvent*](/react-native/reference/AdjustEvent.md)
 
 % trackEvent snippet
 
@@ -227,6 +227,93 @@ Adjust.resetSessionPartnerParameters();
 
 % Class method end
 
+% Class method trackAppStoreSubscription
+
+::::{function} trackAppStoreSubscription(subscription)
+:noindex:
+
+Record an App Store subscription object.
+
+{#react-native-trackappstoresubscription-invocation}
+```ts
+trackAppStoreSubscription: (subscription: AdjustAppStoreSubscription) => void
+```
+
+:param subscription: The ad revenue object containing the revenue details
+:type subscription: [AdjustAppStoreSubscription object](/react-native/reference/AdjustAppStoreSubscription.md)
+
+% trackAppStoreSubscription snippet
+
+:::{tab-set-code}
+
+```js
+var subscription = new AdjustAppStoreSubscription(
+   price, 
+   currency, 
+   transactionId, 
+   receipt);
+subscription.setTransactionDate(transactionDate);
+subscription.setSalesRegion(salesRegion);
+subscription.addCallbackParameter("key1", "value1");
+subscription.addCallbackParameter("key2", "value2");
+subscription.addPartnerParameter("key1", "value1");
+subscription.addPartnerParameter("key2", "value2");
+
+Adjust.trackAppStoreSubscription(subscription);
+```
+
+:::
+
+% Snippet end
+
+::::
+
+% Class method end
+
+% Class method trackPlayStoreSubscription
+
+::::{function} trackPlayStoreSubscription(subscription)
+:noindex:
+
+Record an Play Store subscription object.
+
+{#react-native-trackplaystoresubscription-invocation}
+```ts
+trackPlayStoreSubscription: (subscription: AdjustPlayStoreSubscription) => void
+```
+
+:param subscription: The ad revenue object containing the revenue details
+:type subscription: [trackPlayStoreSubscription object](/react-native/reference/AdjustPlayStoreSubscription.md)
+
+% trackPlayStoreSubscription snippet
+
+:::{tab-set-code}
+
+```js
+var subscription = new AdjustPlayStoreSubscription(
+    price,
+    currency,
+    sku,
+    orderId,
+    signature,
+    purchaseToken);
+subscription.setPurchaseTime(purchaseTime);
+subscription.addCallbackParameter("key1", "value1");
+subscription.addCallbackParameter("key2", "value2");
+subscription.addPartnerParameter("key1", "value1");
+subscription.addPartnerParameter("key2", "value2");
+
+Adjust.trackPlayStoreSubscription(subscription);
+```
+
+:::
+
+% Snippet end
+
+::::
+
+% Class method end
+
 % Class method getAttribution
 
 ::::{function} getAttribution
@@ -240,7 +327,7 @@ getAttribution: (callback: (attribution: AdjustAttribution) => void) => void
 ```
 
 :returns: An attribution object containing attribution data associated with the device
-:rtype: [`AdjustAttribution` object](/unity/reference/AdjustAttribution.md)
+:rtype: [`AdjustAttribution` object](/react-native/reference/AdjustAttribution.md)
 
 % getAttribution snippet
 
