@@ -32,7 +32,9 @@ Unity
 ::::{grid}
 :gutter: 5
 
-:::{grid-item-card} {fab}`unity fa-3x`
+:::{grid-item-card}
+:img-top: _images/react.svg
+:class-img-top: card-icon
 :link: react-native/index
 :link-type: doc
 :text-align: center
