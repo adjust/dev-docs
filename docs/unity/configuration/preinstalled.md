@@ -25,11 +25,9 @@ The Adjust SDK provides 5 methods for measuring preinstalled apps:
 
 ## Content provider
 
-:::{note}
-This method is available in Adjust SDK v4.23.0 and later.
-:::
-
+:::{versionadded} v4.23.0
 The content provider method makes use of a read-only content provider. The SDK uses a content resolver to gather preinstall information from the request.
+:::
 
 To set the permissions, add the following to your {file}`AndroidManifest.xml` file.
 
