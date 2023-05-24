@@ -35,7 +35,7 @@ To set up the Adjust SDK, enter the following information:
 2. Your **Environment**:
    * Choose **Sandbox** if you are testing your app and want to send test data. You need to enable sandbox mode in the dashboard to see test data.
    * Choose **Production** when you have finished testing and are ready to release your app.
-3. Your **Log Level**. This controls what logs you receive. See [](/unity/configuration/log-level) for more information.
+3. Your **Log Level**. This controls what logs you receive. See [](/unity/configuration/log-level.md) for more information.
 
 The Adjust SDK starts when the app's Awake event triggers by default. To override this behavior, check the {guilabel}`START SDK MANUALLY` option. This enables you to initialize the Adjust SDK by calling {code}`Adjust.start()` with your config instance as an argument.
 
@@ -202,7 +202,7 @@ The Adjust SDK provides tools for testing and troubleshooting issues with your i
 
 * Set your environment to **Sandbox**.
 * Add a sandbox filter to your Adjust dashboard results.
-* Set your [log level](/unity/configuration/log-level) to **verbose**.
+* Set your [log level](/unity/configuration/log-level.md) to **verbose**.
 
 :::{tip}
 If you encounter any issues, email <support@adjust.com> with all details and logs.
@@ -210,7 +210,7 @@ If you encounter any issues, email <support@adjust.com> with all details and log
 
 :::{dropdown} Test Google Play Services integration
 
-To test that the Adjust SDK can receive a device's Google Advertising ID, set the [log level](/unity/configuration/log-level) to **verbose** and the environment to **Sandbox**. Start your app and measure a session or an event. The SDK logs the {abbr}`gps_adid (Google Play Services Advertiser ID)` parameter if it has read the advertising ID.
+To test that the Adjust SDK can receive a device's Google Advertising ID, set the [log level](/unity/configuration/log-level.md) to **verbose** and the environment to **Sandbox**. Start your app and measure a session or an event. The SDK logs the {abbr}`gps_adid (Google Play Services Advertiser ID)` parameter if it has read the advertising ID.
 
 If you are having issues retrieving the Google Advertising ID, open an issue in the [GitHub repository](https://github.com/adjust/unity_sdk) or contact <support@adjust.com>.
 

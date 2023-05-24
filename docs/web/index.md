@@ -69,7 +69,7 @@ Once you've installed the SDK, you need to initialize it. To do this, call the [
 You must add the following arguments to your `initSdk` call to initialize the SDK:
 
 `appToken`
-   : Your [Adjust app token](hc:app-settings#view-your-app-token).
+   : Your [Adjust app token](https://help.adjust.com/en/article/app-settings#view-your-app-token).
 
 `environment`
    : The environment your app is running in. Set this to `sandbox` to test your app locally.

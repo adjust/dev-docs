@@ -31,7 +31,7 @@ Use this endpoint to create new tracker URLs for your app. If you are working wi
 * - `channel`*
    - String
    - Body
-   - See [Ad Networks](ad-networks) below.
+   - See [Ad Networks](#ad-networks) below.
 * - `campaign_name`
    - String
    - Body

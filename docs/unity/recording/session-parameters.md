@@ -1,6 +1,6 @@
 # Set up session parameters
 
-If you [register a callback URL](hc:best-practices-callbacks) in the Adjust dashboard, Adjust sends a GET request to your callback URL when the SDK measures a session.
+If you [register a callback URL](https://help.adjust.com/en/article/best-practices-callbacks) in the Adjust dashboard, Adjust sends a GET request to your callback URL when the SDK measures a session.
 
 You can configure callback parameters to your servers. Once you configure parameters on an event, the SDK appends them to your callback URL. You can use this information to analyze your users' in-app behavior with your BI system.
 
@@ -31,9 +31,9 @@ You can remove all session parameters if they're no longer required. To do this,
 
 ## Session partner parameters
 
-You can send extra information to your network partners by adding [partner parameters](hc:advanced-event-setup#receive-custom-data-with-partner-parameters).
+You can send extra information to your network partners by adding [partner parameters](https://help.adjust.com/en/article/advanced-event-setup#receive-custom-data-with-partner-parameters).
 
-Adjust sends partner parameters to [external partners](hc:integrated-partners) you've set up. This information is useful for more granular analysis and retargeting purposes. Adjust's servers forward these parameters once you've set them up and enabled them for a partner.
+Adjust sends partner parameters to [external partners](https://help.adjust.com/en/article/integrated-partners) you've set up. This information is useful for more granular analysis and retargeting purposes. Adjust's servers forward these parameters once you've set them up and enabled them for a partner.
 
 :::{note}
 Partner parameters don't appear in raw data by default. You can add the `{partner_parameters}` placeholder to receive them as a single string.

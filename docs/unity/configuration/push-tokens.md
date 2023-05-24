@@ -1,6 +1,6 @@
 # Set up push tokens
 
-Push tokens are used for [Audience Builder](hc:audience-builder) and client callbacks. They're also required for [Uninstall and reinstall tracking](hc:uninstalls-reinstalls).
+Push tokens are used for [Audience Builder](https://help.adjust.com/en/article/audience-builder) and client callbacks. They're also required for [Uninstall and reinstall tracking](https://help.adjust.com/en/article/uninstalls-reinstalls).
 
 Your config object contains a string `pushToken` property that you can use to store your push token. You can update this property at any time by calling the [`setDeviceToken` method](#unity-setdevicetoken-invocation) and passing your token as an argument.
 
