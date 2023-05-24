@@ -261,7 +261,7 @@ Record an App Store subscription object
 public static void trackAppStoreSubscription(AdjustAppStoreSubscription subscription)
 ```
 
-:param subscription: The ad revenue object containing the revenue details
+:param subscription: The subscription object containing the purchase details
 :type subscription: [AdjustAppStoreSubscription object](/unity/reference/AdjustAppStoreSubscription.md)
 
 % trackAppStoreSubscription snippet
@@ -304,7 +304,7 @@ Record an Play Store subscription object
 public static void trackPlayStoreSubscription(AdjustPlayStoreSubscription subscription)
 ```
 
-:param subscription: The ad revenue object containing the revenue details
+:param subscription: The subscription object containing the purchase details
 :type subscription: [trackPlayStoreSubscription object](/unity/reference/AdjustPlayStoreSubscription.md)
 
 % trackPlayStoreSubscription snippet

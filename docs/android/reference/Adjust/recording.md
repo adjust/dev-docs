@@ -328,7 +328,7 @@ Record an Play Store subscription object
 public static void trackPlayStoreSubscription(final AdjustPlayStoreSubscription subscription)
 ```
 
-:param subscription: The ad revenue object containing the revenue details
+:param subscription: The subscription object containing the purchase details
 :type subscription: [trackPlayStoreSubscription object](/android/reference/AdjustPlayStoreSubscription.md)
 
 % trackPlayStoreSubscription snippet
