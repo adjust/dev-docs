@@ -1,5 +1,7 @@
 # Adjust SDK documentation
 
+[![Check Links](https://github.com/adjust/dev-docs/actions/workflows/check_links.yml/badge.svg)](https://github.com/adjust/dev-docs/actions/workflows/check_links.yml)
+
 This is the repository for Adjust's SDK documentation. Written with [Sphinx](https://www.sphinx-doc.org) and [MyST](https://myst-parser.readthedocs.io).
 
 ![](screenshot.jpg)
