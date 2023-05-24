@@ -45,7 +45,7 @@ Adjust.updateConversionValue(6);
 
 ::::{dropdown} Example
 
-In this example, we update our conversion value to `10` in response to a user triggering an event.
+This example demonstrates how to update a conversion value to `10` in response to a user triggering an event.
 
 :::{tab-set-code}
 
@@ -65,7 +65,7 @@ You can configure the Adjust SDK to listen for when a user's conversion value up
 
 ::::{dropdown} Example
 
-In this example, we emit the following to the console when the conversion value updates:
+This example demonstrates how to log the following to the console when the conversion value updates:
 
 - A message confirming the conversion value updated
 - The new conversion value

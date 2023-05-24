@@ -7,6 +7,7 @@ Subscription record is available in Adjust SDK v4.22.0 and later.
 :::
 
 ## 1. Set up your subscription object
+
 To get started, create a subscription object containing details of the subscription purchase.
 
 :::::{tab-set}
@@ -245,6 +246,7 @@ subscription.addPartnerParameter("key2", "value2");
 :::
 
 ::::
+
 ## 2. record subscription information
 
 Once you have set up your subscription object, you can record it using the Adjust SDK.
@@ -277,7 +279,7 @@ Adjust.trackAppStoreSubscription(subscription);
 :::{tab-item} Play Store
 :sync: playstore
 
-Pass your subscription object to the `trackPlayStoreSubscription` method to measure a user’s subscription purchase.
+Pass your subscription object to the `trackPlayStoreSubscription` method to record a user’s subscription purchase.
 
 {emphasize-lines="14"}
 ```js

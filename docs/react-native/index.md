@@ -19,14 +19,14 @@ You can download the latest version of the SDK from Adjust's React Native SDK [G
 :::{dropdown} NPM
 Run the following command on your terminal:
 
-```bash
+```console
 $ npm install react-native-adjust --save
 ```
 :::
 
 2. Install the CocoaPods dependencies for your iOS app by running the following command on your terminal:
 
-```bash
+```console
 $ cd ios && pod install
 ```
 ## 2. Integrate the SDK
@@ -74,6 +74,7 @@ The Adjust SDK requires the following permissions. Add them to your {file}`Andro
 <uses-permission android:name="android.permission.INTERNET"/>
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 ```
+
 :::{note}
 The Adjust SDK doesn't require the {code}`ACCESS_WIFI_STATE` permission if you are targeting the __Google Play Store__ and using __Google Play Services__. If you don't need it anywhere else in your app, you can remove it.
 :::
@@ -83,7 +84,10 @@ The Adjust SDK includes the {code}`com.google.android.gms.AD_ID` permission by d
 ```xml
 <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
 ```
+
+:::{seealso}
 See Google's [`AdvertisingIdClient.Info`](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid) documentation for more information about this permission.
+:::
 
 ### Add Google Play Services
 
@@ -92,6 +96,7 @@ Apps that target the Google Play Store must use the [Google Advertising ID](http
 ```
 implementation 'com.google.android.gms:play-services-ads-identifier:18.0.1'
 ```
+
 :::{note}
 The Adjust SDK isn't tied to any version of the {code}`play-services-ads-identifier` dependency. You can use the any version of the Google Play Services library.
 :::
@@ -100,7 +105,7 @@ The Adjust SDK isn't tied to any version of the {code}`play-services-ads-identif
 
 If you are using Proguard, add the following rules to your Proguard file.
 
-```
+```java
 -keep class com.adjust.sdk.** { *; }
 -keep class com.google.android.gms.common.ConnectionResult {
     int SUCCESS;
@@ -114,6 +119,7 @@ If you are using Proguard, add the following rules to your Proguard file.
 }
 -keep public class com.android.installreferrer.** { *; }
 ```
+
 ### Set up install referrer
 
 The install referrer is an attribution mechanism you can use to attribute an app install to a source. It consists of two parts:
@@ -158,7 +164,7 @@ allprojects {
 ```
 3. If you are using Proguard, make sure you have added the following setting in your Proguard file:
 
-```cfg
+```java
 -keep public class com.android.installreferrer.** { *; }
 ```
 
@@ -170,7 +176,7 @@ As of v4.22.0, the Adjust SDK supports install tracking on Huawei devices using 
 
 ## 5. Add iOS frameworks
 
-The Adjust SDK is able to get extra information when you include certain iOS frameworks in your app. These frameworks enable certain SDK features, but they're not mandatory for the SDK to work normally. You can add the frameworks and then mark them as optional in __Project Settings > Build Phases > Link Binary With Libraries__.
+The Adjust SDK is able to get extra information when you include certain iOS frameworks in your app. These frameworks enable certain SDK features, but they're not mandatory for the SDK to work normally. You can add the frameworks and then mark them as optional in {menuselection}`Project Settings --> Build Phases --> Link Binary With Libraries`.
 
 :::{list-table}
 :header-rows: 1
@@ -211,7 +217,7 @@ If you encounter any issues, email <support@adjust.com> with all details and log
 :::
 
 :::{dropdown} Test Google Play Services integration
-To test that the Adjust SDK can receive a device's Google Advertising ID, set the log level to __verbose__ and the environment to __Sandbox__. Start your app and measure a session or an event. The SDK logs the {code}`gps_adid` parameter if it has read the advertising ID.
+To test that the Adjust SDK can receive a device's Google Advertising ID, set the log level to __verbose__ and the environment to __Sandbox__. Start your app and record a session or an event. The SDK logs the `gps_adid` parameter if it has read the advertising ID.
 
-If you are having issues retrieving the Google Advertising ID, open an issue in our [GitHub repository](https://github.com/adjust/react_native_sdk) or contact <support@adjust.com>.
+If you're having issues retrieving the Google Advertising ID, open an issue on the SDK [GitHub repository](https://github.com/adjust/react_native_sdk) or contact <support@adjust.com>.
 :::

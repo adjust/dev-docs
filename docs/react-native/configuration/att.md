@@ -71,7 +71,7 @@ Adjust.requestTrackingAuthorizationWithCompletionHandler(function(status) {
 
 ::::{dropdown} Example
 
-In this example, we log a human-readable description of the user's authorization status when they interact with the prompt.
+This example demonstrates how to log a human-readable description of the user's authorization status when they interact with the prompt.
 
 :::{tab-set-code}
 ```js
@@ -110,7 +110,7 @@ Adjust.getAppTrackingAuthorizationStatus();
 
 ::::{dropdown} Example
 
-In this example, we collect the user's authorization status and convert it to a {code}`String`. We store this as a variable called {code}`authorizationStatus` and pass it as a session partner parameter with the key {code}`"status"`.
+This example demonstrates how to collect the user's authorization status and convert it to a `String`. This information is assigned to a variable called `authorizationStatus` and passed as a session partner parameter with the key `"status"`.
 
 :::{tab-set-code}
 

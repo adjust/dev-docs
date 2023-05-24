@@ -1,6 +1,6 @@
 # Disable the SDK
 
-The Adjust SDK runs when your app is open by default. You can disable and re-enable the Adjust SDK to pause and resume measurement. When you disable the Adjust SDK, it doesn't send any data to the Adjust server.
+The Adjust SDK runs when your app is open by default. You can disable and re-enable the Adjust SDK to pause and resume recording. When you disable the Adjust SDK, it doesn't send any data to Adjust's servers.
 
 You can enable or disable the SDK at any time by calling the {code}`setEnabled` method with a **boolean** argument.
 
@@ -18,7 +18,7 @@ Adjust.setEnabled(false);
 
 ## Example 
 
-In this example we generate a button to enable or disable the Adjust SDK. The button displays the correct action based on the value of the {code}`txtSetEnabled` variable.
+This example demonstrates how to generate a button to enable or disable the Adjust SDK. The button displays the correct action based on the value of the `txtSetEnabled` variable.
 
 - When `txtSetEnabled` =` "Disable SDK"`, the button disables the SDK and sets `txtSetEnabled` to `"Enable SDK"`.
 - When `txtSetEnabled` = `"Enable SDK"`, the button enables the SDK and sets `txtSetEnabled` to `"Disable SDK"`.

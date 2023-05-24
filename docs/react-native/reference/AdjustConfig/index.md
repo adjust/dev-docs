@@ -38,7 +38,7 @@ Adjust.create(adjustConfig);
    - Yes
 * - `environment`
    - Enum<String>
-   - The current environment your app. We use this environment to tell the difference between live traffic and test traffic. Ensure that you keep this value meaningful at all times. This is especially important if you are tracking revenue.
+   - The environment your app is running in
    - Yes
 
 :::

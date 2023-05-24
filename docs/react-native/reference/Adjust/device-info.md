@@ -166,8 +166,3 @@ Adjust.getSdkVersion(function(sdkVersion) {
 
 % Snippet end
 
-
-
-
-
-

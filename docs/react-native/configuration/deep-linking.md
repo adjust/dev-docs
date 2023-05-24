@@ -1,4 +1,5 @@
 # Set up deep linking
+
 You can create [deep links](https://help.adjust.com/en/article/deep-links) to take users to specific pages in your app. The Adjust SDK uses different logic depending on if the user already has your app installed on their device:
 
 - **Direct deep linking** occurs if the user already has your app installed. The link takes the user to the page specified in the link.
@@ -6,6 +7,7 @@ You can create [deep links](https://help.adjust.com/en/article/deep-links) to ta
 The SDK can read deep link data after a user opens your app from a tracker URL.
 
 ## Set up deep linking
+
 If a user has your app installed, it opens when they interact with a URL containing a deep link. The Adjust SDK contains tools to parse deep link information for use throughout your app.
 
 To set up deep linking on your React Native app:
@@ -53,7 +55,7 @@ Adjust.create(adjustConfig);
 :::
 
 ::::{dropdown} Example
-In this example, we log the deep link URL when the user opens a deferred deep link.
+This example demonstrates how to log a deep link address when the user opens a deferred deep link.
 
 :::{tab-set-code}
 

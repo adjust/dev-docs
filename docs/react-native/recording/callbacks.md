@@ -7,6 +7,7 @@ You must register your callbacks *before* initializing the SDK.
 :::
 
 ## Session callbacks
+
 Set up session callbacks to trigger functions when the SDK sends session information. You can create **success** callbacks and **failure** callbacks. **Success** callbacks trigger when the SDK sends information to the Adjust server. **Failure** callbacks trigger when the SDK encounters a problem while sending the information.
 
 Session callbacks have access to a response data object. You can use its properties in your callback function.
@@ -36,7 +37,7 @@ Session callbacks have access to a response data object. You can use its propert
 
 ### Success callbacks
 
-Set up success callbacks to trigger functions when the SDK measures a session.
+Set up success callbacks to trigger functions when the SDK records a session.
 
 :::{tab-set-code}
 
@@ -59,7 +60,7 @@ Adjust.create(adjustConfig);
 
 ::::{dropdown} Example
 
-In this example, we set up a callback function `sessionSuccess` and register it as a **success** callback. The function logs the timestamp at which the SDK measured the session.
+This example demonstrates how to created a callback function `sessionSuccess` and register it as a **success** callback. The function logs the timestamp at which the SDK recorded the session.
 
 :::{tab-set-code}
 
@@ -80,7 +81,7 @@ Adjust.create(adjustConfig);
 
 ### Failure callbacks
 
-Set up failure callbacks to trigger functions when the SDK fails to measure a session.
+Set up failure callbacks to trigger functions when the SDK fails to record a session.
 
 :::{tab-set-code}
 
@@ -104,7 +105,7 @@ Adjust.create(adjustConfig);
 
 ::::{dropdown} Example
 
-In this example, we set up a callback function `sessionFailure` and register it as a **failure** callback. The function logs the session failure message.
+This example demonstrates how to created a callback function `sessionFailure` and register it as a **failure** callback. The function logs the session failure message.
 
 :::{tab-set-code}
 
@@ -160,7 +161,7 @@ Event callbacks have access to a response data object. You can use its propertie
 
 ### Success callbacks
 
-Set up success callbacks to trigger functions when the SDK measures an event.
+Set up success callbacks to trigger functions when the SDK records an event.
 
 :::{tab-set-code}
 
@@ -185,7 +186,7 @@ Adjust.create(adjustConfig);
 
 ::::{dropdown} Example
 
-In this example, we set up a callback function `eventSuccess` and register it as a **success** callback. The function logs the timestamp at which the SDK measured the event.
+This example demonstrates how to created a callback function `eventSuccess` and register it as a **success** callback. The function logs the timestamp at which the SDK recorded the event.
 
 :::{tab-set-code}
 
@@ -206,7 +207,7 @@ Adjust.create(adjustConfig);
 
 ### Failure callbacks
 
-Set up failure callbacks to trigger functions when the SDK fails to measure an event.
+Set up failure callbacks to trigger functions when the SDK fails to record an event.
 
 :::{tab-set-code}
 
@@ -232,7 +233,7 @@ Adjust.create(adjustConfig);
 
 ::::{dropdown} Example
 
-In this example, we set up a callback function `eventFailure` and register it as a **failure** callback. The function logs the event failure message.
+This example demonstrates how to created a callback function `eventFailure` and register it as a **failure** callback. The function logs the event failure message.
 
 :::{tab-set-code}
 

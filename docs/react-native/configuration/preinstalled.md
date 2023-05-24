@@ -1,14 +1,12 @@
-# Measure preinstalled apps
+# Record preinstalled app activity
 
-You can use the Adjust SDK to measure apps that came preinstalled on a user's device. This enables you to record information from users who didn't download your app from a campaign.
+You can use the Adjust SDK to record activity from apps that came preinstalled on a user's device. This enables you to record information from users who didn't download your app from a campaign.
 
-## Default tracker
+## Default campaign token
 
-:::{note}
-This method is available in Adjust SDK v4.23.0 and later.
+:::{versionadded} v4.23.0
+Configuring a default campaign enables you to attribute all preinstalls to a predefined campaign token. Adjust records all information against this token until the attribution source changes. You can set up your default tracker in the SDK by passing it to the `setDefaultTracker` method.
 :::
-
-The default tracker method attributes all preinstalls to a predefined default tracker. Adjust records all information against this tracker until the attribution source changes. You can set up your default tracker in the SDK by passing it to the {code}`setDefaultTracker` method.
 
 :::{tab-set-code}
 
@@ -23,11 +21,11 @@ Adjust.start(adjustConfig);
 
 :::
 
-To set up a default tracker:
+To set up a default campaign token:
 
-1. Create a new tracker in your Adjust dashboard to use as the default. Record the six digit tracker token at the end of the tracker URL.
+1. Create a new campaign in your Adjust dashboard to use as the default. Record the six digit token at the end of the URL.
 2. Call the {code}`setDefaultTracker` method on your config object and pass your token as an argument.
-3. Build and run your app. If you have logging enabled, the SDK outputs your default tracker token.
+3. Build and run your app. If you have logging enabled, the SDK outputs your default campaign token.
 
 
 ```js

@@ -1,5 +1,6 @@
 # Set up session parameters
-If you [register a callback URL](https://help.adjust.com/en/article/best-practices-callbacks) in the Adjust dashboard, Adjust sends a GET request to your callback URL when the SDK measures a session.
+
+If you [register a callback URL](https://help.adjust.com/en/article/best-practices-callbacks) in the Adjust dashboard, Adjust sends a GET request to your callback URL when the SDK records a session.
 
 You can configure callback parameters to your servers. Once you configure parameters on an event, the SDK appends them to your callback URL. You can use this information to analyze your users' in-app behavior with your BI system.
 
@@ -9,8 +10,7 @@ The Adjust SDK merges session callback parameters with event callback parameters
 
 Add callback parameters to your event by calling the `addSessionCallbackParameter` method with **string** key-value arguments. You can add multiple parameters by calling this method multiple times.
 
-Javascript
-You can remove specific session callback parameters if they're' no longer required. To do this, pass the parameter key to the removeSessionCallbackParameter method.
+You can remove specific session callback parameters if they're no longer required. To do this, pass the parameter key to the `removeSessionCallbackParameter` method.
 
 :::{tab-set-code}
 
@@ -20,7 +20,7 @@ Adjust.removeSessionCallbackParameter("key");
 
 :::
 
-You can remove all session parameters if they're' no longer required. To do this, call the `resetSessionCallbackParameters` method.
+You can remove all session parameters if they're no longer required. To do this, call the `resetSessionCallbackParameters` method.
 
 :::{tab-set-code}
 

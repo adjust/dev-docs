@@ -1,4 +1,5 @@
 # Set external device identifiers
+
 :::{note}
 This feature is available in Adjust SDK v4.21.0 and later. Contact your Adjust representative to get started with external device IDs.
 :::

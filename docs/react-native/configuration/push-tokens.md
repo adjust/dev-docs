@@ -17,7 +17,7 @@ Adjust.setPushToken("YourPushNotificationToken");
 
 ::::{dropdown} Example
 
-In this example, we set a new push token with the value `HrFmrcq96tj723aWFfrw` to track our app's retention rates. We can update this token by passing it to the {code}`setPushToken` method as an argument:
+This example demonstrates how to set a new push token with the value _`HrFmrcq96tj723aWFfrw`_ to track your app's retention rates. You can update this value at any time by passing a new token to the `setPushToken` method as an argument:
 
 :::{tab-set-code}
 
