@@ -29,11 +29,11 @@ Return a list of filter items. These correspond to the KPIs you can access in Au
 * - `required_filters`*
    -  String
    -  Query
-   -  A comma separated list of filters. See the [Required filters table](rs-filters) below for a list of values.
+   -  A comma separated list of filters. See the [Required filters table](#rs-filters) below for a list of values.
 * -  `section`
    - Enum<String>
    - Query
-   - The section you want to filter items by. See the [Section table](rs-section) below for a list of values.
+   - The section you want to filter items by. See the [Section table](#rs-section) below for a list of values.
 * - `[required_filters]__contains`
    - String
    - Query

@@ -43,7 +43,7 @@ Send a POST request including your app token and device ID to remove all data as
 * - `device_token`*
    - String
    - Query
-   - ID of the device you want Adjust to forget. See [the table below](device-ids) for a list of accepted values
+   - ID of the device you want Adjust to forget. See [the table below](#device-ids) for a list of accepted values
 :::
 
 ::::{dropdown} Device identifiers

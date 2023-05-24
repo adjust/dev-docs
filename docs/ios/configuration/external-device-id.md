@@ -26,7 +26,7 @@ The external device ID is case-sensitive. If you have imported external device I
 If you want to use the external device ID in your business analytics, you can pass it as a session callback parameter. 
 
 :::{seealso}
-See [Session parameters](/ios/recording/session-parameters) for more information.
+See [Session parameters](/ios/recording/session-parameters.md) for more information.
 :::
 
 You can import existing external device IDs into Adjust. This ensures that the Adjust servers match future data to your existing device records. Contact your Adjust representative for more information.

@@ -19,7 +19,7 @@ You can use the Adjust SDK to record when a user changes their third-party shari
 
 ### Disable third-party sharing
 
-Some users may want to opt-out of sharing their data with third-parties. To communicate this to Adjust, call the [`trackThirdPartySharing` method](#unity-trackthirdpartysharing-invocation) with an [`AdjustThirdPartySharing` object](/unity/reference/AdjustThirdPartySharing) initialized with a `false` value. When Adjust's servers receive this information, Adjust stops sharing the user's data with third-parties. The Adjust SDK continues to work as expected.
+Some users may want to opt-out of sharing their data with third-parties. To communicate this to Adjust, call the [`trackThirdPartySharing` method](#unity-trackthirdpartysharing-invocation) with an [`AdjustThirdPartySharing` object](/unity/reference/AdjustThirdPartySharing.md) initialized with a `false` value. When Adjust's servers receive this information, Adjust stops sharing the user's data with third-parties. The Adjust SDK continues to work as expected.
 
 :::{include} /unity/reference/AdjustThirdPartySharing.md
 :start-after: AdjustThirdPartySharing false snippet
@@ -28,7 +28,7 @@ Some users may want to opt-out of sharing their data with third-parties. To comm
 
 ### Enable third-party sharing
 
-If a user opts into sharing with third-parties, call the [`trackThirdPartySharing` method](#unity-trackthirdpartysharing-invocation) with an [`AdjustThirdPartySharing` object](/unity/reference/AdjustThirdPartySharing) initialized with a `true` value. This updates the user's preferences.
+If a user opts into sharing with third-parties, call the [`trackThirdPartySharing` method](#unity-trackthirdpartysharing-invocation) with an [`AdjustThirdPartySharing` object](/unity/reference/AdjustThirdPartySharing.md) initialized with a `true` value. This updates the user's preferences.
 
 :::{include} /unity/reference/AdjustThirdPartySharing.md
 :start-after: AdjustThirdPartySharing true snippet
