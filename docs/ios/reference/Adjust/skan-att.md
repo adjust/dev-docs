@@ -151,7 +151,7 @@ Adjust.checkForNewAttStatus();
 :noindex:
 
 :::{versionadded} v4.26.0
-Updates the [conversion value](https://help.adjust.com/en/new/article/conversion-hub)
+Updates the [conversion value](https://help.adjust.com/en/suite/article/conversion-hub)
 :::
 
 {#ios-updateconversionvalue-invocation}
