@@ -1,6 +1,6 @@
 # Record ad revenue
 
-You can measure ad revenue for [supported network partners](hc:ad-revenue) using the Adjust SDK.
+You can measure ad revenue for [supported network partners](https://help.adjust.com/en/article/ad-revenue) using the Adjust SDK.
 
 :::{important}
 You need to perform some extra setup steps in your Adjust dashboard to measure ad revenue. Contact your Technical Account Manager or <support@adjust.com> to get started.
@@ -36,7 +36,7 @@ To set these properties, call the [`setRevenue` method](#ios-adjadrevenue-setrev
 You must format the currency code as a 3 character string that follows the [ISO 4217 standard](https://www.iban.com/currency-codes). Adjust's servers convert the reported revenue to your chosen reporting currency. 
 
 :::{seealso}
-Check the [guide to tracking purchases in different currencies](hc:currency-conversion) for more information.
+Check the [guide to tracking purchases in different currencies](https://help.adjust.com/en/article/currency-conversion) for more information.
 :::
 
 :::{include} /ios/reference/ADJAdRevenue.md
@@ -86,9 +86,9 @@ Record the placement of your ad by passing a **string** value to the [`setAdReve
 
 ## Add callback parameters
 
-If you [register a callback URL](hc:best-practices-callbacks) in the Adjust dashboard, the SDK sends a GET request to your callback URL when it records an event.
+If you [register a callback URL](https://help.adjust.com/en/article/best-practices-callbacks) in the Adjust dashboard, the SDK sends a GET request to your callback URL when it records an event.
 
-You can configure callback parameters to your servers. Once you configure parameters on an event, the SDK appends them to your [callback URL](hc:raw-data-exports). You can use this information to analyze your users' in-app behavior with your BI system.
+You can configure callback parameters to your servers. Once you configure parameters on an event, the SDK appends them to your [callback URL](https://help.adjust.com/en/article/raw-data-exports). You can use this information to analyze your users' in-app behavior with your BI system.
 
 Add callback parameters to your event by calling the [`addCallbackParameter` method](#ios-adjadrevenue-addcallbackparameter-invocation) with **string** key-value arguments. You can add multiple parameters by calling this method multiple times.
 
@@ -107,7 +107,7 @@ If you are using CSV uploads, make sure to add the parameters to your CSV defini
 Adjust supports many placeholders which you can use to pass information from the SDK to your URL. For example, the `{idfa}` placeholder for iOS and the `{gps_adid}` placeholder for Android. The `{publisher_parameter}` placeholder presents all callback parameters in a single string.
 
 :::{seealso}
-You can read more about using URL callbacks, including a full list of available values, in the [callbacks guide](hc:callbacks).
+You can read more about using URL callbacks, including a full list of available values, in the [callbacks guide](https://help.adjust.com/en/article/callbacks).
 :::
 
 :::{include} /ios/reference/ADJAdRevenue.md
@@ -117,9 +117,9 @@ You can read more about using URL callbacks, including a full list of available 
 
 ## Add partner parameters
 
-You can send extra information to your network partners by adding [partner parameters](hc:advanced-event-setup#receive-custom-data-with-partner-parameters).
+You can send extra information to your network partners by adding [partner parameters](https://help.adjust.com/en/article/advanced-event-setup#receive-custom-data-with-partner-parameters).
 
-Adjust sends partner parameters to [external partners](hc:integrated-partners) you have set up. This information is useful for more granular analysis and retargeting purposes. Adjust's servers forward these parameters once you have set them up and enabled them for a partner.
+Adjust sends partner parameters to [external partners](https://help.adjust.com/en/article/integrated-partners) you have set up. This information is useful for more granular analysis and retargeting purposes. Adjust's servers forward these parameters once you have set them up and enabled them for a partner.
 
 :::{note}
 Partner parameters don't appear in raw data by default. You can add the `{partner_parameters}` placeholder to receive them as a single string.

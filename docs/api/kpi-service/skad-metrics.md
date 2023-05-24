@@ -1,6 +1,6 @@
 # SKAdNetwork metrics endpoint
 
-Use this endpoint to retrieve [SKAdNetwork](hc:skadnetwork) metrics for your app.
+Use this endpoint to retrieve [SKAdNetwork](https://help.adjust.com/en/article/skadnetwork) metrics for your app.
 
 :::{tip}
 This endpoint returns JSON by default. You can return CSV by adding the following header to your call:

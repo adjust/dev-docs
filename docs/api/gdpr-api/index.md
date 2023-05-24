@@ -5,7 +5,7 @@ Adjust offers an API endpoint to facilitate {abbr}`RTBF (Right to be Forgotten)`
 * Permanently deletes all the user’s personal data from Adjust for the specified app.
 * Stops receiving the user’s information from the Adjust SDK for the specified app.
 * Removes all references to the user's data in the Adjust dashboard for the specified app.
-* Configure your server to send requests to this API endpoint when users send {abbr}`RTBF (Right to be Forgotten)` requests. See Adjust's [GDPR article](hc:gdpr) for more information about {abbr}`RTBF (Right to be Forgotten)` requests.
+* Configure your server to send requests to this API endpoint when users send {abbr}`RTBF (Right to be Forgotten)` requests. See Adjust's [GDPR article](https://help.adjust.com/en/article/gdpr) for more information about {abbr}`RTBF (Right to be Forgotten)` requests.
 
 :::{important}
 This action is permanent. Adjust can't reinstate data previously associated with a device or receive future requests from the device once a {abbr}`RTBF (Right to be Forgotten)` request is sent.

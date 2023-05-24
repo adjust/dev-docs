@@ -207,7 +207,7 @@ The Adjust SDK depends on frameworks to access certain device information. To en
 
 To initialize the Adjust SDK, you need to create a config object. This object contains configuration options that control how the Adjust SDK behaves. Pass the following arguments for a minimal setup:
 
-- `appToken`: Your [app's token](hc:app-settings#view-your-app-token).
+- `appToken`: Your [app's token](https://help.adjust.com/en/article/app-settings#view-your-app-token).
 - `environment`: The environment you want to run the SDK in. Set this to `ADJEnvironmentSandbox`.
 
 To initialize the Adjust SDK with this config object:
@@ -410,9 +410,9 @@ Once you've added your config object and initialization logic, you can configure
 
 ## 6. Test the Adjust SDK
 
-Now that you've configured the Adjust SDK to record information about your app, it's time to test it. Adjust offers a [testing console](hc:testing-console) and a [Device API](hc:device-api) to help you test your app.
+Now that you've configured the Adjust SDK to record information about your app, it's time to test it. Adjust offers a [testing console](https://help.adjust.com/en/article/testing-console) and a [Device API](https://help.adjust.com/en/article/device-api) to help you test your app.
 
-Follow the [testing guide](hc:test-the-adjust-sdk) to make sure Adjust receives the expected values back from your app.
+Follow the [testing guide](https://help.adjust.com/en/article/test-the-adjust-sdk) to make sure Adjust receives the expected values back from your app.
 
 ## 7. Build your app for production
 

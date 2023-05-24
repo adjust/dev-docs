@@ -1,6 +1,6 @@
 # Get attribution information
 
-When a user interacts with a campaign link, their attribution information updates. This can happen if the user interacts with a [deep link](hc:deep-links). The SDK can listen for attribution changes and call a function when it detects an update.
+When a user interacts with a campaign link, their attribution information updates. This can happen if the user interacts with a [deep link](https://help.adjust.com/en/article/deep-links). The SDK can listen for attribution changes and call a function when it detects an update.
 
 1. If you aren't using web views, add the `AdjustDelegate` declaration to your `AppDelegate` header file.
 

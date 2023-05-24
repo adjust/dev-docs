@@ -40,7 +40,7 @@ The following values can only be accessed if the [`needsCost`](#ios-setneedscost
    - The name of the creative to which the device is currently attributed
 * - `clickLabel`
    - String
-   - The [click label](hc:user-rewards) that the install is tagged with
+   - The [click label](https://help.adjust.com/en/article/user-rewards) that the install is tagged with
 * - `adid`
    - String
    - The unique Adjust ID assigned to the device

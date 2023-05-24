@@ -111,7 +111,7 @@ There are 2 approaches to set up deferred deep linking in your app:
 Discuss with your marketing team whether you need to implement LinkMe in your app.
 :::
 
-[Adjust’s LinkMe solution](hc:linkme) is an optional feature that ensures robust deferred deep linking performance by enabling your app to read deep link information from the device pasteboard.
+[Adjust’s LinkMe solution](https://help.adjust.com/en/article/linkme) is an optional feature that ensures robust deferred deep linking performance by enabling your app to read deep link information from the device pasteboard.
 
 :::{important}
 The Adjust SDK checks the pasteboard when a user opens the app for the first time. The device displays a dialog asking if the user wants to allow the app to read the pasteboard.
