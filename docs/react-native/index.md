@@ -75,6 +75,7 @@ The Adjust SDK requires the following permissions. Add them to your {file}`Andro
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 ```
 
+
 :::{note}
 The Adjust SDK doesn't require the {code}`ACCESS_WIFI_STATE` permission if you are targeting the __Google Play Store__ and using __Google Play Services__. If you don't need it anywhere else in your app, you can remove it.
 :::
@@ -86,7 +87,10 @@ The Adjust SDK includes the {code}`com.google.android.gms.AD_ID` permission by d
 ```
 
 :::{seealso}
+
+:::{seealso}
 See Google's [`AdvertisingIdClient.Info`](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid) documentation for more information about this permission.
+:::
 :::
 
 ### Add Google Play Services
@@ -96,6 +100,7 @@ Apps that target the Google Play Store must use the [Google Advertising ID](http
 ```
 implementation 'com.google.android.gms:play-services-ads-identifier:18.0.1'
 ```
+
 
 :::{note}
 The Adjust SDK isn't tied to any version of the {code}`play-services-ads-identifier` dependency. You can use the any version of the Google Play Services library.
@@ -119,6 +124,7 @@ If you are using Proguard, add the following rules to your Proguard file.
 }
 -keep public class com.android.installreferrer.** { *; }
 ```
+
 
 ### Set up install referrer
 

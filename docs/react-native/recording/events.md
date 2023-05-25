@@ -198,6 +198,7 @@ The resulting callback URL looks like this:
 http://www.mydomain.com/callback?event_token=g3mfiw&revenue_amount=0.05
 ```
 
+
 :::{tab-set-code}
 
 {emphasize-lines="2,3,4"}

@@ -8,6 +8,7 @@ Subscription record is available in Adjust SDK v4.22.0 and later.
 
 ## 1. Set up your subscription object
 
+
 To get started, create a subscription object containing details of the subscription purchase.
 
 :::::{tab-set}
@@ -246,6 +247,7 @@ subscription.addPartnerParameter("key2", "value2");
 :::
 
 ::::
+
 
 ## 2. record subscription information
 

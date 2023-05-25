@@ -1,5 +1,6 @@
 # Set up session parameters
 
+
 If you [register a callback URL](https://help.adjust.com/en/article/best-practices-callbacks) in the Adjust dashboard, Adjust sends a GET request to your callback URL when the SDK records a session.
 
 You can configure callback parameters to your servers. Once you configure parameters on an event, the SDK appends them to your callback URL. You can use this information to analyze your users' in-app behavior with your BI system.

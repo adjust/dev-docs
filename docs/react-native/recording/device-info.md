@@ -22,6 +22,7 @@ Adjust.getAdid((adid) => {
 
 ## iOS ID for Advertisers
 
+
 The [ID for Advertisers (IDFA)](https://developer.apple.com/documentation/adsupport/asidentifiermanager/1614151-advertisingidentifier) is a device-specific identifier for Apple devices. Call the `getIdfa` method to return this ID as a **string**.
 
 :::{tab-set-code}
@@ -55,6 +56,7 @@ Adjust.getGoogleAdId((googleAdId) => {
 :::
 
 ## Amazon Advertiser ID
+
 
 The [Amazon Advertising ID (Amazon Ad ID)](https://developer.amazon.com/docs/policy-center/advertising-id.html) is a device-specific identifier for Android devices. Call the getAmazonAdId method to return this ID as a **string**.
 

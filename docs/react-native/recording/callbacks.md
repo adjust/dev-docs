@@ -8,6 +8,7 @@ You must register your callbacks *before* initializing the SDK.
 
 ## Session callbacks
 
+
 Set up session callbacks to trigger functions when the SDK sends session information. You can create **success** callbacks and **failure** callbacks. **Success** callbacks trigger when the SDK sends information to the Adjust server. **Failure** callbacks trigger when the SDK encounters a problem while sending the information.
 
 Session callbacks have access to a response data object. You can use its properties in your callback function.

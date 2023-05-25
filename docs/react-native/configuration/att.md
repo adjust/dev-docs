@@ -4,7 +4,7 @@
 The App Tracking Transparency framework is only available on iOS devices with Adjust SDK v4.26.0 or later.
 :::
 
-If you want to record the device's ID for Advertisers (IDFA), you must display a prompt to get your user's authorization. To do this, you need to include Apple's [App Tracking Transparency (ATT) framework](https://help.adjust.com/en/article/app-tracking-transparency-att-framework) in your app. The Adjust SDK stores the user's authorization status and sends it to the Adjust server with each request.
+If you want to record the device's ID for Advertisers (IDFA), you must display a prompt to get your user's authorization. To do this, you need to include Apple's [App Tracking Transparency (ATT) framework](https://help.adjust.com/en/article/app-tracking-transparency-att-framework) in your app. The Adjust SDK stores the user's authorization status and sends it to Adjust's servers with each request.
 
 ::::{dropdown} Authorization statuses
 
