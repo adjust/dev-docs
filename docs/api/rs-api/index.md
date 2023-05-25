@@ -10,7 +10,7 @@ To use the Report Service API endpoints, you first need to get your Adjust API t
 
 Adjust supports a lot of metrics that you can use to filter your reports. Many of these metrics exist on a per-app or per-event basis.
 
-A full list of metrics is available in the [Datascape metrics glossary](hc:datascape-metrics-glossary). You can also use the Filters Data endpoint to search for KPIs. You can also use the Events endpoint to return the machine-generated slugs of your events for use in CSV reports.
+A full list of metrics is available in the [Datascape metrics glossary](https://help.adjust.com/en/article/datascape-metrics-glossary). You can also use the Filters Data endpoint to search for KPIs. You can also use the Events endpoint to return the machine-generated slugs of your events for use in CSV reports.
 
 ## 3. Choose your response format
 

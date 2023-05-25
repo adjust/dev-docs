@@ -111,12 +111,6 @@ myst_substitutions = {
 tippy_anchor_parent_selector = "div.content"
 tippy_tip_selector = "div.notranslate, dt, code"
 
-myst_url_schemes = {
-    "http": None,
-    "https": None,
-    "hc": "https://help.adjust.com/en/article/{{path}}#{{fragment}}"
-}
-
 mermaid_theme = "neutral"
 
 copybutton_exclude = '.linenos, .gp'

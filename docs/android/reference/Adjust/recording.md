@@ -5,7 +5,7 @@
 ::::{function} trackEvent (event)
 :noindex:
 
-Record event information using an `AdjustEvent` object and an [Adjust event token](hc:basic-event-setup#create-an-event-token).
+Record event information using an `AdjustEvent` object and an [Adjust event token](https://help.adjust.com/en/article/basic-event-setup#create-an-event-token).
 
 {#android-trackevent-invocation}
 ```java
@@ -328,7 +328,7 @@ Record an Play Store subscription object
 public static void trackPlayStoreSubscription(final AdjustPlayStoreSubscription subscription)
 ```
 
-:param subscription: The ad revenue object containing the revenue details
+:param subscription: The subscription object containing the purchase details
 :type subscription: [trackPlayStoreSubscription object](/android/reference/AdjustPlayStoreSubscription.md)
 
 % trackPlayStoreSubscription snippet

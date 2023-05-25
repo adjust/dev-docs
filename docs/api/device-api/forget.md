@@ -3,7 +3,7 @@
 Use the Adjust forget device endpoint to clear device history from Adjust and test multiple installs on the same device.
 
 :::{important}
-You need **Admin** or **Editor** permissions to forget devices. If you have **Custom editor** permissions, you need to have edit rights for the app you are targeting. See [User permissions](hc:users) for more information.
+You need **Admin** or **Editor** permissions to forget devices. If you have **Custom editor** permissions, you need to have edit rights for the app you are targeting. See [User permissions](https://help.adjust.com/en/article/users) for more information.
 :::
 
 ## Endpoint

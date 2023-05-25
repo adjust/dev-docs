@@ -413,7 +413,7 @@ At least 1 metric is required in each API request. The most common metrics are:
 - `clicks`
 - `impressions`
 
-A full list of metrics is available in the [Datascape metrics glossary](hc:datascape-metrics-glossary). You can also use the [filters_data endpoint](./filters-data.md) to find a full list of metrics.
+A full list of metrics is available in the [Datascape metrics glossary](https://help.adjust.com/en/article/datascape-metrics-glossary). You can also use the [filters_data endpoint](./filters-data.md) to find a full list of metrics.
 :::
 
 ### Responses

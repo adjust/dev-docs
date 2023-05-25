@@ -75,7 +75,7 @@ This endpoint returns the following responses:
    - The shortened name of the event.
 * - `section`
    - String
-   - The event section. See the [Sections table](rs-events-sections) for a summary of available values.
+   - The event section. See the [Sections table](#rs-events-sections) for a summary of available values.
 * - `formatting`
    - String
    - The format in which the event's data is stored.

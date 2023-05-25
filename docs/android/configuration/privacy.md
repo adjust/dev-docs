@@ -19,7 +19,7 @@ You can use the Adjust SDK to record when a user changes their third-party shari
 
 ### Disable third-party sharing
 
-Some users may want to opt-out of sharing their data with third-parties. To communicate this to Adjust, call the [`trackThirdPartySharing` method](#android-trackthirdpartysharing-invocation) with an [`AdjustThirdPartySharing` object](/android/reference/AdjustThirdPartySharing) initialized with a `false` value. When Adjust's servers receive this information, Adjust stops sharing the user's data with third-parties. The Adjust SDK continues to work as expected.
+Some users may want to opt-out of sharing their data with third-parties. To communicate this to Adjust, call the [`trackThirdPartySharing` method](#android-trackthirdpartysharing-invocation) with an [`AdjustThirdPartySharing` object](/android/reference/AdjustThirdPartySharing.md) initialized with a `false` value. When Adjust's servers receive this information, Adjust stops sharing the user's data with third-parties. The Adjust SDK continues to work as expected.
 
 :::{include} /android/reference/AdjustThirdPartySharing.md
 :start-after: AdjustThirdPartySharing false snippet
@@ -28,7 +28,7 @@ Some users may want to opt-out of sharing their data with third-parties. To comm
 
 ### Enable third-party sharing
 
-If a user opts into sharing with third-parties, call the [`trackThirdPartySharing` method](#android-trackthirdpartysharing-invocation) with an [`AdjustThirdPartySharing` object](/android/reference/AdjustThirdPartySharing) initialized with a `true` value. This updates the user's preferences.
+If a user opts into sharing with third-parties, call the [`trackThirdPartySharing` method](#android-trackthirdpartysharing-invocation) with an [`AdjustThirdPartySharing` object](/android/reference/AdjustThirdPartySharing.md) initialized with a `true` value. This updates the user's preferences.
 
 :::{include} /android/reference/AdjustThirdPartySharing.md
 :start-after: AdjustThirdPartySharing true snippet
@@ -141,7 +141,7 @@ To set your country of data residency, call the [`setUrlStrategy` method](#andro
 
 ## Consent measurement for specific users
 
-If you are using [Data Privacy settings](hc:manage-data-collection-and-retention) in your Adjust dashboard, you need to set up the Adjust SDK to work with them. This includes settings such as consent expiry period and user data retention period. To toggle this feature, call the [`trackMeasurementConsent` method](#android-trackmeasurementconsent-invocation). When enabled, the SDK communicates the data privacy settings to Adjust's servers. Adjust's servers then applies your data privacy rules to the user. The Adjust SDK continues to work as expected.
+If you are using [Data Privacy settings](https://help.adjust.com/en/article/manage-data-collection-and-retention) in your Adjust dashboard, you need to set up the Adjust SDK to work with them. This includes settings such as consent expiry period and user data retention period. To toggle this feature, call the [`trackMeasurementConsent` method](#android-trackmeasurementconsent-invocation). When enabled, the SDK communicates the data privacy settings to Adjust's servers. Adjust's servers then applies your data privacy rules to the user. The Adjust SDK continues to work as expected.
 
 :::{include} /android/reference/Adjust/privacy.md
 :start-after: trackMeasurementConsent snippet

@@ -11,7 +11,7 @@ You need a [bearer token](https://developer.mozilla.org/en-US/docs/Web/HTTP/Auth
 
 ## Before you begin
 
-Users need [Admin, Editor, Reader, or Custom permissions](hc:users#dashboard-permission-levels) to use an authorization token.
+Users need [Admin, Editor, Reader, or Custom permissions](https://help.adjust.com/en/article/users#dashboard-permission-levels) to use an authorization token.
 
 :::{note}
 Your bearer token has the same permissions as your Adjust user account.

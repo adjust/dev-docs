@@ -3,7 +3,7 @@
 The Filters data endpoint enables you to retrieve a list of valid metrics. You can use these metrics to filter calls to other endpoints in the Report Service API suite.
 
 :::{seealso}
-A full list of metrics is available in the [Datascape metrics glossary](hc:datascape-metrics-glossary).
+A full list of metrics is available in the [Datascape metrics glossary](https://help.adjust.com/en/article/datascape-metrics-glossary).
 :::
 
 ## Endpoint
@@ -29,11 +29,11 @@ Return a list of filter items. These correspond to the KPIs you can access in Au
 * - `required_filters`*
    -  String
    -  Query
-   -  A comma separated list of filters. See the [Required filters table](rs-filters) below for a list of values.
+   -  A comma separated list of filters. See the [Required filters table](#rs-filters) below for a list of values.
 * -  `section`
    - Enum<String>
    - Query
-   - The section you want to filter items by. See the [Section table](rs-section) below for a list of values.
+   - The section you want to filter items by. See the [Section table](#rs-section) below for a list of values.
 * - `[required_filters]__contains`
    - String
    - Query
