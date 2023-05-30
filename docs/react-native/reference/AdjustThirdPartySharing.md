@@ -10,11 +10,12 @@ Use this class to communicate a user's third party sharing preferences. Send thi
 Creates a third party sharing object initialized with an optional **boolean** value
 
 {#react-native-adjustthirdpartysharing-invocation}
+
 ```ts
-  export class AdjustThirdPartySharing {
-    constructor(isEnabled: boolean)
-    ..//
-  }
+export class AdjustThirdPartySharing {
+   constructor(isEnabled: boolean)
+   ..//
+}
 ```
 
 :param isEnabled: A nullable boolean value
@@ -60,6 +61,7 @@ Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 Adds additional key-value pairs of information to share with third parties. You can add multiple parameters by calling this method multiple times.
 
 {#react-native-addgranularoption-invocation}
+
 ```ts
 public addGranularOption(partnerName: string, key: string, value: string): void
 ```
@@ -101,6 +103,7 @@ Adds additional key-value pairs of settings to share with third parties. You can
 :::
 
 {#react-native-addpartnersharingsetting-invocation}
+
 ```ts
 public addPartnerSharingSetting(partnerName: string, key: string, value: boolean): void
 ```
@@ -118,9 +121,9 @@ public addPartnerSharingSetting(partnerName: string, key: string, value: boolean
 
 ```js Yes
 var adjustThirdPartySharing = new AdjustThirdPartySharing(null);
-adjustThirdPartySharing.addPartnerSharingSetting('PartnerA', 'install', true);
-adjustThirdPartySharing.addPartnerSharingSetting('PartnerA', 'events', true);
-adjustThirdPartySharing.addPartnerSharingSetting('PartnerA', 'sessions', true);
+adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "install", true);
+adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "events", true);
+adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "sessions", true);
 //...
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```

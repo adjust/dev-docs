@@ -8,7 +8,6 @@ Subscription record is available in Adjust SDK v4.22.0 and later.
 
 ## 1. Set up your subscription object
 
-
 To get started, create a subscription object containing details of the subscription purchase.
 
 :::::{tab-set}
@@ -20,31 +19,33 @@ Create an `AdjustAppStoreSubscription` object with the following properties
 :::{list-table}
 :header-rows: 1
 
-* - Parameter
-   - Data type
-   - Description
-* - `price`
-   - Number
-   - The price of the subscription
-* - `currency`
-   - String
-   - The currency of the subscription. Formatted as the [`currencyCode`](https://developer.apple.com/documentation/foundation/nslocale/1642836-currencycode?language=objc) of the [`priceLocale`](https://developer.apple.com/documentation/storekit/skproduct/1506145-pricelocale?language=objc) object
-* - `transactionId`
-   - String
-   - Your ID for the transaction
-* - `receipt`
-   - String
-   - The receipt information. See [Apple's App Store receipt documentation](https://developer.apple.com/documentation/foundation/nsbundle/1407276-appstorereceipturl).
+-  -  Parameter
+   -  Data type
+   -  Description
+-  -  `price`
+   -  Number
+   -  The price of the subscription
+-  -  `currency`
+   -  String
+   -  The currency of the subscription. Formatted as the [`currencyCode`](https://developer.apple.com/documentation/foundation/nslocale/1642836-currencycode?language=objc) of the [`priceLocale`](https://developer.apple.com/documentation/storekit/skproduct/1506145-pricelocale?language=objc) object
+-  -  `transactionId`
+   -  String
+   -  Your ID for the transaction
+-  -  `receipt`
+   -  String
+   -  The receipt information. See [Apple's App Store receipt documentation](https://developer.apple.com/documentation/foundation/nsbundle/1407276-appstorereceipturl).
+
 :::
 
 See the AdjustAppStoreSubscription class reference for more information.
 
 ```js
 var subscription = new AdjustAppStoreSubscription(
-   price, 
-   currency, 
-   transactionId, 
-   receipt);
+   price,
+   currency,
+   transactionId,
+   receipt
+);
 ```
 
 ::::
@@ -57,39 +58,41 @@ Create an `AdjustPlayStoreSubscription` object with the following properties:
 :::{list-table}
 :header-rows: 1
 
-* - Parameter
-   - Data type
-   - Description
-* - `price`
-   - Number
-   - The price of the subscription
-* - `currency`
-   - String
-   - The code of the currency used in the subscription
-* - `sku`
-   - String
+-  -  Parameter
+   -  Data type
+   -  Description
+-  -  `price`
+   -  Number
+   -  The price of the subscription
+-  -  `currency`
+   -  String
+   -  The code of the currency used in the subscription
+-  -  `sku`
+   -  String
    -  The ID of the product
-* - `orderId`
-   - String
-   - Your ID for the transaction
-* - `signature`
-   - String
-   - The signature of the purchase data
-* - `purchaseToken`
-   - String
-   - The unique token of the transaction. See [Google's documentation](https://developer.android.com/reference/com/android/billingclient/api/Purchase#getPurchaseToken()) for more information
+-  -  `orderId`
+   -  String
+   -  Your ID for the transaction
+-  -  `signature`
+   -  String
+   -  The signature of the purchase data
+-  -  `purchaseToken`
+   -  String
+   -  The unique token of the transaction. See [Google's documentation](<https://developer.android.com/reference/com/android/billingclient/api/Purchase#getPurchaseToken()>) for more information
+
 :::
 
 See the AdjustPlayStoreSubscription class reference for more information.
 
 ```js
 var subscription = new AdjustPlayStoreSubscription(
-   price, 
-   currency, 
-   sku, 
-   orderId, 
-   signature, 
-   purchaseToken);
+   price,
+   currency,
+   sku,
+   orderId,
+   signature,
+   purchaseToken
+);
 ```
 
 ::::
@@ -106,15 +109,18 @@ You can record the date on which the user purchased a subscription. The SDK retu
 Call the `setTransactionDate` method on your subscription object to record the timestamp of the subscription.
 
 {emphasize-lines="7"}
+
 ```js
 var subscription = new AdjustAppStoreSubscription(
-   price, 
-   currency, 
-   transactionId, 
-   receipt);
+   price,
+   currency,
+   transactionId,
+   receipt
+);
 //...
 subscription.setTransactionDate(transactionDate);
 ```
+
 :::
 
 :::{tab-item} Play Store
@@ -123,14 +129,16 @@ subscription.setTransactionDate(transactionDate);
 Call the `setPurchaseTime` method on your subscription object to record the timestamp of the subscription.
 
 {emphasize-lines="9"}
+
 ```js
 var subscription = new AdjustPlayStoreSubscription(
-   price, 
-   currency, 
-   sku, 
-   orderId, 
-   signature, 
-   purchaseToken);
+   price,
+   currency,
+   sku,
+   orderId,
+   signature,
+   purchaseToken
+);
 //...
 subscription.setPurchaseTime(purchaseTime);
 ```
@@ -148,12 +156,14 @@ On iOS devices, you can record the region in which the user purchased a subscrip
 :sync: appstore
 
 {emphasize-lines="7"}
+
 ```js
 var subscription = new AdjustAppStoreSubscription(
-   price, 
-   currency, 
-   transactionId, 
-   receipt);
+   price,
+   currency,
+   transactionId,
+   receipt
+);
 //...
 subscription.setSalesRegion(salesRegion);
 ```
@@ -171,12 +181,14 @@ You can add callback parameters to your subscription object. The SDK appends the
 :sync: appstore
 
 {emphasize-lines="7,8"}
+
 ```js
 var subscription = new AdjustAppStoreSubscription(
-   price, 
-   currency, 
-   transactionId, 
-   receipt);
+   price,
+   currency,
+   transactionId,
+   receipt
+);
 //...
 subscription.addCallbackParameter("key1", "value1");
 subscription.addCallbackParameter("key2", "value2");
@@ -188,14 +200,16 @@ subscription.addCallbackParameter("key2", "value2");
 :sync: playstore
 
 {emphasize-lines="9,10"}
+
 ```js
 var subscription = new AdjustPlayStoreSubscription(
-   price, 
-   currency, 
-   sku, 
-   orderId, 
-   signature, 
-   purchaseToken);
+   price,
+   currency,
+   sku,
+   orderId,
+   signature,
+   purchaseToken
+);
 //...
 subscription.addCallbackParameter("key1", "value1");
 subscription.addCallbackParameter("key2", "value2");
@@ -214,12 +228,14 @@ You can add partner parameters to your subscription object. The SDK sends these 
 :sync: appstore
 
 {emphasize-lines="7,8"}
+
 ```js
 var subscription = new AdjustAppStoreSubscription(
-   price, 
-   currency, 
-   transactionId, 
-   receipt);
+   price,
+   currency,
+   transactionId,
+   receipt
+);
 //...
 subscription.addPartnerParameter("key1", "value1");
 subscription.addPartnerParameter("key2", "value2");
@@ -231,14 +247,16 @@ subscription.addPartnerParameter("key2", "value2");
 :sync: playstore
 
 {emphasize-lines="9,10"}
+
 ```js
 var subscription = new AdjustPlayStoreSubscription(
-   price, 
-   currency, 
-   sku, 
-   orderId, 
-   signature, 
-   purchaseToken);
+   price,
+   currency,
+   sku,
+   orderId,
+   signature,
+   purchaseToken
+);
 //..
 subscription.addPartnerParameter("key1", "value1");
 subscription.addPartnerParameter("key2", "value2");
@@ -247,7 +265,6 @@ subscription.addPartnerParameter("key2", "value2");
 :::
 
 ::::
-
 
 ## 2. record subscription information
 
@@ -260,12 +277,14 @@ Once you have set up your subscription object, you can record it using the Adjus
 Pass your subscription object to the `trackAppStoreSubscription` method to record a user’s subscription purchase.
 
 {emphasize-lines="13"}
+
 ```js
 var subscription = new AdjustAppStoreSubscription(
-   price, 
-   currency, 
-   transactionId, 
-   receipt);
+   price,
+   currency,
+   transactionId,
+   receipt
+);
 subscription.setTransactionDate(transactionDate);
 subscription.setSalesRegion(salesRegion);
 subscription.addCallbackParameter("key1", "value1");
@@ -284,14 +303,16 @@ Adjust.trackAppStoreSubscription(subscription);
 Pass your subscription object to the `trackPlayStoreSubscription` method to record a user’s subscription purchase.
 
 {emphasize-lines="14"}
+
 ```js
 var subscription = new AdjustPlayStoreSubscription(
-   price, 
-   currency, 
-   sku, 
-   orderId, 
-   signature, 
-   purchaseToken);
+   price,
+   currency,
+   sku,
+   orderId,
+   signature,
+   purchaseToken
+);
 subscription.setPurchaseTime(purchaseTime);
 subscription.addCallbackParameter("key", "value");
 subscription.addCallbackParameter("foo", "bar");
@@ -304,5 +325,3 @@ Adjust.trackPlayStoreSubscription(subscription);
 :::
 
 ::::
-
-

@@ -8,6 +8,7 @@
 Sets the country or region of data residency. If called with a `UrlStrategy` parameter, sets the country/region where data will be sent preferentially.
 
 {#react-native-seturlstrategy-invocation}
+
 ```ts
 public setUrlStrategy(urlStrategy: UrlStrategy): void
 ```
@@ -20,8 +21,12 @@ public setUrlStrategy(urlStrategy: UrlStrategy): void
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```js
-const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
 //..
 adjustConfig.setUrlStrategy(AdjustConfig.DataResidencyEU); // for EU data residency region
 //...
@@ -34,18 +39,18 @@ Adjust.create(adjustConfig);
 :::{list-table}
 :header-rows: 1
 
-* - Value
-   - Description
-* - `AdjustDataResidencyEU`
-   - Sets the area of data residency to **the EU**
-* - `AdjustDataResidencyTR`
-   - Sets the area of data residency to **Turkey**
-* - `AdjustDataResidencyUS`
-   - Sets the area of data residency to **the USA**
-* - `AdjustUrlStrategyChina`
-   - Sets the area of data residency to **China**
-* - `AdjustUrlStrategyIndia`
-   - Sets the area of data residency to **India**
+-  -  Value
+   -  Description
+-  -  `AdjustDataResidencyEU`
+   -  Sets the area of data residency to **the EU**
+-  -  `AdjustDataResidencyTR`
+   -  Sets the area of data residency to **Turkey**
+-  -  `AdjustDataResidencyUS`
+   -  Sets the area of data residency to **the USA**
+-  -  `AdjustUrlStrategyChina`
+   -  Sets the area of data residency to **China**
+-  -  `AdjustUrlStrategyIndia`
+   -  Sets the area of data residency to **India**
 
 :::
 ::::
@@ -66,6 +71,7 @@ Enable {abbr}`COPPA (Children's Online Privacy Protection Act)` compliance in yo
 :::
 
 {#react-native-setcoppacompliantenabled-invocation}
+
 ```ts
 public setCoppaCompliantEnabled(coppaCompliantEnabled: boolean): void
 ```
@@ -78,8 +84,12 @@ public setCoppaCompliantEnabled(coppaCompliantEnabled: boolean): void
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```js
-const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
 //..
 adjustConfig.setCoppaCompliantEnabled(true);
 //...

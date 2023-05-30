@@ -3,7 +3,7 @@
 You can associate your [Adjust event tokens](https://help.adjust.com/en/article/basic-event-setup#create-an-event-token) to actions in your app to record them. To record an event:
 
 1. Create a new Adjust event instance and pass your event token as a **string** argument.
-2. Call the {code}`trackEvent` method with your event instance as an argument.
+2. Call the `trackEvent` method with your event instance as an argument.
 
 :::{tab-set-code}
 
@@ -20,7 +20,7 @@ This example demonstrates how to record an event with the token {{ eventToken }}
 :::{tab-set-code}
 
 ```jsx
- function _onPress_trackSimpleEvent() {
+function _onPress_trackSimpleEvent() {
    var adjustEvent = new AdjustEvent("g3mfiw");
    Adjust.trackEvent(adjustEvent);
 }
@@ -43,16 +43,17 @@ This example demonstrates how to record an event with the token {{ eventToken }}
 
 You can record revenue associated with an event by setting the `revenue` and `currency` properties on your event instance. Use this feature to record revenue-generating actions in your app.
 
-To set these properties, call the {code}`setRevenue` method and pass the following arguments:
+To set these properties, call the `setRevenue` method and pass the following arguments:
 
-- The revenue amount (**number**)
-- The currency code (**string**)
+-  The revenue amount (**number**)
+-  The currency code (**string**)
 
 You must format the currency code as a 3 character string that follows the [ISO 4217 standard](https://www.iban.com/currency-codes). The Adjust server converts the reported revenue to your chosen reporting currency. Check [the guide to tracking purchases in different currencies](https://help.adjust.com/en/article/currency-conversion) for more information.
 
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```js
 var adjustEvent = new AdjustEvent("abc123");
 //...
@@ -67,7 +68,6 @@ Adjust.trackEvent(adjustEvent);
 If you are measuring in-app purchases, call trackEvent only **after** the purchase is complete.
 :::
 
-
 ::::{dropdown} Example
 
 This example demonstrates how to record an event with the token {{ eventToken }} whenever a user interacts with a button. The function sets the `revenue` property of this event to _`0.25`_ and the `currency` property to _`EUR`_.
@@ -75,22 +75,24 @@ This example demonstrates how to record an event with the token {{ eventToken }}
 :::{tab-set-code}
 
 {emphasize-lines="2,3"}
+
 ```jsx
 function _onPress_trackRevenueEvent() {
-    var adjustEvent = new AdjustEvent("g3mfiw");
-    adjustEvent.setRevenue(0.25, "EUR");
-    Adjust.trackEvent(adjustEvent);
+   var adjustEvent = new AdjustEvent("g3mfiw");
+   adjustEvent.setRevenue(0.25, "EUR");
+   Adjust.trackEvent(adjustEvent);
 }
 //...
 <>
    <View style={styles.container}>
       <TouchableHighlight
          style={styles.button}
-         onPress={_onPress_trackRevenueEvent}>
+         onPress={_onPress_trackRevenueEvent}
+      >
          <Text>Track Revenue Event</Text>
       </TouchableHighlight>
    </View>
-</>
+</>;
 ```
 
 :::
@@ -101,11 +103,12 @@ function _onPress_trackRevenueEvent() {
 
 You can pass an optional identifier to avoid measuring duplicate events. The SDK stores the last ten identifiers and skips revenue events with duplicate transaction IDs.
 
-To set the identifier, call the {code}`setTransactionId` method and pass your transaction ID as a **string** argument.
+To set the identifier, call the `setTransactionId` method and pass your transaction ID as a **string** argument.
 
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```js
 var adjustEvent = new AdjustEvent("abc123");
 //...
@@ -123,23 +126,25 @@ This example demonstrates how to record an event with the token {{ eventToken }}
 :::{tab-set-code}
 
 {emphasize-lines="2,3,4"}
+
 ```jsx
 function _onPress_trackRevenueEvent() {
-    var adjustEvent = new AdjustEvent("g3mfiw");
-    var uniqueId = "5e85484b-1ebc-4141-aab7-25b869e54c49"
-    adjustEvent.setTransactionId(uniqueId);
-    Adjust.trackEvent(adjustEvent);
+   var adjustEvent = new AdjustEvent("g3mfiw");
+   var uniqueId = "5e85484b-1ebc-4141-aab7-25b869e54c49";
+   adjustEvent.setTransactionId(uniqueId);
+   Adjust.trackEvent(adjustEvent);
 }
 //...
 <>
    <View style={styles.container}>
       <TouchableHighlight
          style={styles.button}
-         onPress={_onPress_trackRevenueEvent}>
+         onPress={_onPress_trackRevenueEvent}
+      >
          <Text>Track Revenue Event</Text>
       </TouchableHighlight>
    </View>
-</>
+</>;
 ```
 
 :::
@@ -152,11 +157,12 @@ If you [register a callback URL](https://help.adjust.com/en/article/set-up-callb
 
 You can configure callback parameters to your servers. Once you configure parameters on an event, the SDK appends them to your [callback URL](https://help.adjust.com/en/article/raw-data-exports). You can use this information to analyze your users' in-app behavior with your BI system.
 
-Add callback parameters to your event by calling the {code}`addCallbackParameter` method with **string** key-value arguments. You can add multiple parameters by calling this method multiple times.
+Add callback parameters to your event by calling the `addCallbackParameter` method with **string** key-value arguments. You can add multiple parameters by calling this method multiple times.
 
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```js
 var adjustEvent = new AdjustEvent("abc123");
 //...
@@ -175,7 +181,7 @@ http://www.mydomain.com/callback?key=value&foo=bar
 
 If you are using CSV uploads, make sure to [add the parameters to your CSV definition](https://help.adjust.com/en/article/csv-uploads#format-your-csv-definition).
 
-Adjust supports many placeholders which you can use to pass information from the SDK to your URL. For example, the {code}`{idfa}` placeholder for iOS and the {code}`{gps_adid}` placeholder for Android. The {code}`{publisher_parameter}` placeholder presents all callback parameters in a single string.
+Adjust supports many placeholders which you can use to pass information from the SDK to your URL. For example, the `{idfa}` placeholder for iOS and the `{gps_adid}` placeholder for Android. The `{publisher_parameter}` placeholder presents all callback parameters in a single string.
 
 :::{seealso}
 You can read more about using URL callbacks, including a full list of available values, in the [callbacks guide](https://help.adjust.com/en/article/callbacks).
@@ -189,8 +195,8 @@ Adjust doesn't store your custom callback parameters. Custom parameters are only
 
 This example demonstrates how to record an event with the token {{ eventToken }} whenever a user interacts with a button. The following callback parameters are added:
 
-- The {code}`event_token`
-- The {code}`revenue_amount` generated by the event
+-  The `event_token`
+-  The `revenue_amount` generated by the event
 
 The resulting callback URL looks like this:
 
@@ -198,10 +204,10 @@ The resulting callback URL looks like this:
 http://www.mydomain.com/callback?event_token=g3mfiw&revenue_amount=0.05
 ```
 
-
 :::{tab-set-code}
 
 {emphasize-lines="2,3,4"}
+
 ```jsx
 function _onPress_trackCallbackEvent() {
    var adjustEvent = new AdjustEvent("g3mfiw");
@@ -214,11 +220,12 @@ function _onPress_trackCallbackEvent() {
    <View style={styles.container}>
       <TouchableHighlight
          style={styles.button}
-         onPress={_onPress_trackCallbackEvent}>
+         onPress={_onPress_trackCallbackEvent}
+      >
          <Text>Track Callback Event</Text>
       </TouchableHighlight>
    </View>
-</>
+</>;
 ```
 
 :::
@@ -232,14 +239,15 @@ You can send extra information to your network partners by adding [partner param
 Adjust sends partner parameters to [external partners](https://help.adjust.com/en/article/integrated-partners) you have set up. This information is useful for more granular analysis and retargeting purposes. The server forwards these parameters once you have set them up and enabled them for a partner.
 
 :::{note}
-Partner parameters don't appear in raw data by default. You can add the {code}`{partner_parameters}` placeholder to receive them as a single string.
+Partner parameters don't appear in raw data by default. You can add the `{partner_parameters}` placeholder to receive them as a single string.
 :::
 
-Add partner parameters to your event by calling the {code}`addPartnerParameter` method with **string** key-value arguments. You can add multiple parameters by calling this method multiple times.
+Add partner parameters to your event by calling the `addPartnerParameter` method with **string** key-value arguments. You can add multiple parameters by calling this method multiple times.
 
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```js
 var adjustEvent = new AdjustEvent("abc123");
 //...
@@ -254,12 +262,13 @@ Adjust.trackEvent(adjustEvent);
 
 This example demonstrates how to record an event with the token {{ eventToken }} whenever a user interacts with a button. The following partner parameters are added:
 
-- The {code}`product_id` of the associated product
-- The {code}`user_id` of the user who triggered the event
+-  The `product_id` of the associated product
+-  The `user_id` of the user who triggered the event
 
 :::{tab-set-code}
 
 {emphasize-lines="2,3,4"}
+
 ```jsx
 function _onPress_trackPartnerEvent() {
    var adjustEvent = new AdjustEvent("g3mfiw");
@@ -272,11 +281,12 @@ function _onPress_trackPartnerEvent() {
    <View style={styles.container}>
       <TouchableHighlight
          style={styles.button}
-         onPress={_onPress_trackPartnerEvent}>
+         onPress={_onPress_trackPartnerEvent}
+      >
          <Text>Track Partner Event</Text>
       </TouchableHighlight>
    </View>
-</>
+</>;
 ```
 
 :::
@@ -287,11 +297,12 @@ function _onPress_trackPartnerEvent() {
 
 You can add a custom string identifier to each event you want to record. The Adjust server can report on this identifier in event callbacks. This enables you to keep track of which events have been successfully recorded.
 
-Set up this identifier by calling the {code}`setCallbackId` method with your ID as a **string** argument.
+Set up this identifier by calling the `setCallbackId` method with your ID as a **string** argument.
 
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```js
 var adjustEvent = new AdjustEvent("abc123");
 //...
@@ -309,10 +320,11 @@ This example demonstrates how to record an event with the token {{ eventToken }}
 :::{tab-set-code}
 
 {emphasize-lines="2,3,5"}
+
 ```jsx
 function _onPress_trackUniqueCallbackEvent() {
    var adjustEvent = new AdjustEvent("g3mfiw");
-   var callbackId = "f2e728d8-271b-49ab-80ea-27830a215147"
+   var callbackId = "f2e728d8-271b-49ab-80ea-27830a215147";
    //...
    adjustEvent.setCallbackId(callbackId);
    //...
@@ -322,11 +334,12 @@ function _onPress_trackUniqueCallbackEvent() {
    <View style={styles.container}>
       <TouchableHighlight
          style={styles.button}
-         onPress={_onPress_trackUniqueCallbackEvent}>
+         onPress={_onPress_trackUniqueCallbackEvent}
+      >
          <Text>Track Unique Callback Event</Text>
       </TouchableHighlight>
    </View>
-</>
+</>;
 ```
 
 :::

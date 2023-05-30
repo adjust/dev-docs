@@ -10,14 +10,15 @@ Use this class to store App Store subscription information. You can pass this to
 Initializes a subscription
 
 {#react-native-adjustappstoresubscription-invocation}
+
 ```ts
 export class AdjustAppStoreSubscription {
-    price: string, 
-    currency: string, 
-    transactionId: string, 
-    receipt: string
-  }
-  ```
+   price: string,
+   currency: string,
+   transactionId: string,
+   receipt: string
+}
+```
 
 :param price: The price of the subscription
 :type price: string
@@ -28,18 +29,19 @@ export class AdjustAppStoreSubscription {
 :param receipt: The receipt information
 :type receipt: string
 
-
 % AdjustAppStoreSubscription snippet
 
 :::{tab-set-code}
 
 ```js
 var subscription = new AdjustAppStoreSubscription(
-   price, 
-   currency, 
-   transactionId, 
-   receipt);
+   price,
+   currency,
+   transactionId,
+   receipt
+);
 ```
+
 :::
 
 % Snippet end
@@ -56,6 +58,7 @@ var subscription = new AdjustAppStoreSubscription(
 Sets the date of the transaction in the subscription object
 
 {#react-native-settransactiondate-invocation}
+
 ```ts
 public setTransactionDate(transactionDate: string): void
 ```
@@ -69,13 +72,15 @@ public setTransactionDate(transactionDate: string): void
 
 ```js
 var subscription = new AdjustAppStoreSubscription(
-   price, 
-   currency, 
-   transactionId, 
-   receipt);
+   price,
+   currency,
+   transactionId,
+   receipt
+);
 //...
 subscription.setTransactionDate(transactionDate);
 ```
+
 :::
 
 % Snippet end
@@ -92,6 +97,7 @@ subscription.setTransactionDate(transactionDate);
 You can record the region in which the user purchased a subscription
 
 {#react-native-setsalesregion-invocation}
+
 ```ts
 public setSalesRegion(salesRegion: string): void
 ```
@@ -105,13 +111,15 @@ public setSalesRegion(salesRegion: string): void
 
 ```js
 var subscription = new AdjustAppStoreSubscription(
-   price, 
-   currency, 
-   transactionId, 
-   receipt);
+   price,
+   currency,
+   transactionId,
+   receipt
+);
 //...
 subscription.setSalesRegion(salesRegion);
 ```
+
 :::
 
 % Snippet end
@@ -128,6 +136,7 @@ subscription.setSalesRegion(salesRegion);
 Adds key-value callback parameters to the subscription object. You can add multiple parameters by calling this method multiple times.
 
 {#react-native-adjustappstoresubscription-addcallbackparameter-invocation}
+
 ```ts
 public addCallbackParameter(key: string, value: string): void
 ```
@@ -143,10 +152,11 @@ public addCallbackParameter(key: string, value: string): void
 
 ```js
 var subscription = new AdjustAppStoreSubscription(
-   price, 
-   currency, 
-   transactionId, 
-   receipt);
+   price,
+   currency,
+   transactionId,
+   receipt
+);
 //...
 subscription.addCallbackParameter("key", "value");
 ```
@@ -167,6 +177,7 @@ subscription.addCallbackParameter("key", "value");
 Adds key-value partner parameters to the subscription object. You can add multiple parameters by calling this method multiple times.
 
 {#react-native-adjustappstoresubscription-addpartnerparameter-invocation}
+
 ```ts
 public addPartnerParameter(key: string, value: string): void
 ```
@@ -182,13 +193,15 @@ public addPartnerParameter(key: string, value: string): void
 
 ```js
 var subscription = new AdjustAppStoreSubscription(
-   price, 
-   currency, 
-   transactionId, 
-   receipt);
+   price,
+   currency,
+   transactionId,
+   receipt
+);
 //...
 subscription.addPartnerParameter("key", "value");
 ```
+
 :::
 
 % Snippet end

@@ -14,6 +14,7 @@ You can access the ADID only after the Adjust server tracks an install.
 :::
 
 {#react-native-getadid-invocation}
+
 ```ts
 getAdid: (callback: (adid: string) => void) => void
 ```
@@ -27,8 +28,8 @@ getAdid: (callback: (adid: string) => void) => void
 
 ```js
 Adjust.getAdid((adid) => {
-    console.log("Adid = " + adid);
-});;
+   console.log("Adid = " + adid);
+});
 ```
 
 :::
@@ -47,6 +48,7 @@ Adjust.getAdid((adid) => {
 Returns the {abbr}`IDFA (ID For Advertisers)` associated with the device.
 
 {#react-native-getidfa-invocation}
+
 ```ts
 getIdfa: (callback: (idfa: string) => void) => void
 ```
@@ -60,7 +62,7 @@ getIdfa: (callback: (idfa: string) => void) => void
 
 ```js
 Adjust.getIdfa((idfa) => {
-    console.log("IDFA = " + idfa);
+   console.log("IDFA = " + idfa);
 });
 ```
 
@@ -80,6 +82,7 @@ Adjust.getIdfa((idfa) => {
 Returns the {abbr}`GPS ADID (Google Play Services Advertising ID)` associated with the device. Must be called in a background thread.
 
 {#react-native-getgoogleadid-invocation}
+
 ```ts
 getGoogleAdId: (callback: (adid: string) => void) => void
 ```
@@ -93,7 +96,7 @@ getGoogleAdId: (callback: (adid: string) => void) => void
 
 ```js
 Adjust.getGoogleAdId((googleAdId) => {
-    console.log("Google Ad Id = " + googleAdId);
+   console.log("Google Ad Id = " + googleAdId);
 });
 ```
 
@@ -113,6 +116,7 @@ Adjust.getGoogleAdId((googleAdId) => {
 Returns the {abbr}`Amazon Ad ID (Amazon Advertising ID)` associated with the device.
 
 {#react-native-getamazonadid-invocation}
+
 ```ts
 getAmazonAdId: (callback: (adid: string) => void) => void
 ```
@@ -126,7 +130,7 @@ getAmazonAdId: (callback: (adid: string) => void) => void
 
 ```js
 Adjust.getAmazonAdId((amazonAdId) => {
-    console.log("Amazon Ad Id = " + amazonAdId);
+   console.log("Amazon Ad Id = " + amazonAdId);
 });
 ```
 
@@ -146,9 +150,11 @@ Adjust.getAmazonAdId((amazonAdId) => {
 Returns the version number of the Adjust SDK.
 
 {#react-native-sdkversion-invocation}
+
 ```ts
 getSdkVersion: (callback: (sdkVersion: string) => void) => void
 ```
+
 :returns: The Adjust SDK version
 :rtype: String
 
@@ -157,12 +163,11 @@ getSdkVersion: (callback: (sdkVersion: string) => void) => void
 :::{tab-set-code}
 
 ```js
-Adjust.getSdkVersion(function(sdkVersion) {
-    console.log("Adjust SDK version: " + sdkVersion);
+Adjust.getSdkVersion(function (sdkVersion) {
+   console.log("Adjust SDK version: " + sdkVersion);
 });
 ```
 
 :::
 
 % Snippet end
-

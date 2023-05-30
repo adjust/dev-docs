@@ -2,9 +2,9 @@
 
 You can create [deep links](https://help.adjust.com/en/article/deep-links) to take users to specific pages in your app. The Adjust SDK uses different logic depending on if the user already has your app installed on their device:
 
-- **Direct deep linking** occurs if the user already has your app installed. The link takes the user to the page specified in the link.
-- **Deferred deep linking** occurs if the user doesn't have your app installed. The link takes the user to a storefront to install your app first. After the user installs the app, it opens to the page specified in the link.
-The SDK can read deep link data after a user opens your app from a tracker URL.
+-  **Direct deep linking** occurs if the user already has your app installed. The link takes the user to the page specified in the link.
+-  **Deferred deep linking** occurs if the user doesn't have your app installed. The link takes the user to a storefront to install your app first. After the user installs the app, it opens to the page specified in the link.
+   The SDK can read deep link data after a user opens your app from a tracker URL.
 
 ## Set up deep linking
 
@@ -13,8 +13,8 @@ If a user has your app installed, it opens when they interact with a URL contain
 To set up deep linking on your React Native app:
 
 1. Set up deep linking on an app level. Follow the instructions linked below to set up deep linking on your target platform:
-   - [iOS](https://help.adjust.com/en/article/deep-linking-ios-sdk)
-   - [Android](https://help.adjust.com/en/article/deep-linking-android-sdk)
+   -  [iOS](https://help.adjust.com/en/article/deep-linking-ios-sdk)
+   -  [Android](https://help.adjust.com/en/article/deep-linking-android-sdk)
 2. Refer to the [React Native documentation](https://reactnative.dev/docs/linking.html) and follow the instructions to learn how to support both platforms.
 3. Use your obtained deep link URL in your JavaScript code.
 
@@ -27,13 +27,18 @@ The SDK opens deferred deep links by default. You can configure this by passing 
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```js
-const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
 //...
 adjustConfig.setShouldLaunchDeeplink(true);
 //...
 Adjust.create(adjustConfig);
 ```
+
 :::
 
 ### Set up a deferred deep link listener
@@ -43,15 +48,20 @@ You can configure the Adjust SDK to call a listener function when it receives a 
 :::{tab-set-code}
 
 {emphasize-lines="3,4,5"}
+
 ```js
-const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
 //...
-adjustConfig.setDeferredDeeplinkCallbackListener(function(deeplink) {
-    console.log("Deferred deep link URL content: " + deeplink);
+adjustConfig.setDeferredDeeplinkCallbackListener(function (deeplink) {
+   console.log("Deferred deep link URL content: " + deeplink);
 });
 //...
 Adjust.create(adjustConfig);
 ```
+
 :::
 
 ::::{dropdown} Example
@@ -60,15 +70,19 @@ This example demonstrates how to log a deep link address when the user opens a d
 :::{tab-set-code}
 
 ```js
-var LogDeepLink = function(deeplinkURL) {
-  console.log("Deeplink URL: " + deeplinkURL);
+var LogDeepLink = function (deeplinkURL) {
+   console.log("Deeplink URL: " + deeplinkURL);
 };
 //...
-const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
 adjustConfig.setDeferredDeeplinkCallbackListener(LogDeepLink);
 //...
 Adjust.create(adjustConfig);
 ```
+
 :::
 
 ::::
@@ -88,11 +102,16 @@ To enable pasteboard checking in your app, pass a true value to the setLinkMeEna
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```js
-const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
 //...
 adjustConfig.setLinkMeEnabled(true);
 //...
 Adjust.create(adjustConfig);
 ```
+
 :::

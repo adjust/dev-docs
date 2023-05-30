@@ -13,18 +13,22 @@ Take a look at the [External device identifiers](https://help.adjust.com/en/arti
 ## Set external device ID
 
 :::{important}
-You must set your external device ID __before__ initializing the Adjust SDK.
+You must set your external device ID **before** initializing the Adjust SDK.
 :::
 
-Your config object contains a __string__ {code}`externalDeviceId` property that you can use to store your external device ID. You can set property calling the {code}`setExternalDeviceId` method with your ID as an argument.
+Your config object contains a **string** `externalDeviceId` property that you can use to store your external device ID. You can set property calling the `setExternalDeviceId` method with your ID as an argument.
 
 The external device ID is case-sensitive. If you have imported external device IDs, make sure the value you pass matches the imported value.
 
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```js
-const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
 //...
 adjustConfig.setExternalDeviceId("{Your-External-Device-Id}");
 //...

@@ -10,11 +10,12 @@ This class contains information about events triggered in your application. You 
 Creates an event object initialized with an Adjust event token.
 
 {#react-native-adjustevent-invocation}
+
 ```ts
 export class AdjustEvent {
-    constructor(eventToken: string)
-    //...
-  }
+   constructor(eventToken: string);
+   //...
+}
 ```
 
 :param eventToken: A 6 character Adjust event token
@@ -37,6 +38,7 @@ export class AdjustEvent {
 Sets the revenue and currency associated with the event
 
 {#react-native-adjustevent-setrevenue-invocation}
+
 ```ts
 public setRevenue(revenue: number, currency: string): void
 ```
@@ -51,6 +53,7 @@ public setRevenue(revenue: number, currency: string): void
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```js
 var adjustEvent = new AdjustEvent("abc123");
 //...
@@ -58,6 +61,7 @@ adjustEvent.setRevenue(0.01, "EUR");
 //...
 Adjust.trackEvent(adjustEvent);
 ```
+
 :::
 
 % Snippet end
@@ -76,6 +80,7 @@ Adds key-value callback parameters to the event object. You can add multiple par
 Event callback parameters override session callback parameters that have the same key.
 
 {#react-native-adjustevent-addcallbackparameter-invocation}
+
 ```ts
 public addCallbackParameter(key: string, value: string): void
 ```
@@ -90,6 +95,7 @@ public addCallbackParameter(key: string, value: string): void
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```js
 var adjustEvent = new AdjustEvent("abc123");
 //..
@@ -116,6 +122,7 @@ Adds key-value partner parameters to the event object. You can add multiple para
 Event partner parameters override session partner parameters that have the same key.
 
 {#react-native-adjustevent-addpartnerparameter-invocation}
+
 ```ts
 public addPartnerParameter(key: string, value: string): void
 ```
@@ -130,6 +137,7 @@ public addPartnerParameter(key: string, value: string): void
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```js
 var adjustEvent = new AdjustEvent("abc123");
 //..
@@ -154,6 +162,7 @@ Adjust.trackEvent(adjustEvent);
 Sets a deduplication ID on your event to avoid recording duplicates. The SDK stores the last ten identifiers and skips revenue events with duplicate IDs.
 
 {#react-native-settransactionid-invocation}
+
 ```ts
 public setTransactionId(transactionId: string): void
 ```
@@ -166,6 +175,7 @@ public setTransactionId(transactionId: string): void
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```js
 var adjustEvent = new AdjustEvent("abc123");
 //..
@@ -190,6 +200,7 @@ Adjust.trackEvent(adjustEvent);
 Sets a custom identifier for your event object. Adjust's servers can report on this identifier in event callbacks.
 
 {#react-native-setcallbackid-invocation}
+
 ```ts
 public setCallbackId(callbackId: string): void
 ```
@@ -202,6 +213,7 @@ public setCallbackId(callbackId: string): void
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```js
 var adjustEvent = new AdjustEvent("abc123");
 //..
@@ -209,6 +221,7 @@ adjustEvent.setCallbackId("your_callback_id");
 //..
 Adjust.trackEvent(adjustEvent);
 ```
+
 :::
 
 % Snippet end

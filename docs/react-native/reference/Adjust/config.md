@@ -10,6 +10,7 @@ Use these methods to update the Adjust SDK's configuration.
 Enable or disable the Adjust SDK. The SDK doesn't send any information while disabled.
 
 {#react-native-setenabled-invocation}
+
 ```ts
 setEnabled: (enabled: boolean) => void
 ```
@@ -40,8 +41,8 @@ Adjust.setEnabled(false);
 
 Call this method to check whether the Adjust SDK is enabled. The method returns a **boolean** value indicating the SDK's status.
 
-
 {#react-native-isenabled-invocation}
+
 ```ts
 isEnabled: (callback: (enabled: boolean) => void) => void
 ```
@@ -77,6 +78,7 @@ This method has an effect only if you delay the start of the Adjust SDK.
 The Adjust SDK sends information to Adjust's servers as soon as it starts. If you delay the start of the SDK, you can use this method to send packages before the delay ends.
 
 {#react-native-sendfirstpackages-invocation}
+
 ```ts
 sendFirstPackages: () => void
 ```
@@ -105,6 +107,7 @@ Adjust.sendFirstPackages();
 Controls whether the SDK is in offline mode. When in offline mode, the SDK queues all events in a file until offline mode is disabled. When offline mode is disabled, the SDK sends all queued events.
 
 {#react-native-setofflinemode-invocation}
+
 ```js
 setOfflineMode: (enabled: boolean) => void
 ```
@@ -133,9 +136,10 @@ Adjust.setOfflineMode(true);
 ::::{function} setPushToken (token)
 :noindex:
 
-Set your [push token](hc:push-notifications) to record [uninstalls and reattributions](hc:uninstalls-reinstalls). You can update this value at any time.
+Set your [push token](https://help.adjust.com/en/article/push-notifications) to record [uninstalls and reattributions](https://help.adjust.com/en/article/uninstalls-reinstalls). You can update this value at any time.
 
 {#react-native-setpushtoken-invocation}
+
 ```ts
 setPushToken: (token: string) => void
 ```
@@ -149,7 +153,6 @@ setPushToken: (token: string) => void
 
 ```js
 Adjust.setPushToken("YourPushNotificationToken");
-
 ```
 
 :::

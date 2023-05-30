@@ -10,6 +10,7 @@ Use this class to store Play Store subscription information. You can pass this t
 Initializes a subscription.
 
 {#react-native-adjustplaystoresubscription-invocation}
+
 ```ts
 export class AdjustPlayStoreSubscription {
       price: string,
@@ -31,9 +32,8 @@ export class AdjustPlayStoreSubscription {
 :type orderId: string
 :param signature: The signature of the purchase data
 :type signature: string
-:param purchaseToken: The unique token of the transaction. See [Google's documentation](https://developer.android.com/reference/com/android/billingclient/api/Purchase#getPurchaseToken()) for more information
+:param purchaseToken: The unique token of the transaction. See [Google's documentation](<https://developer.android.com/reference/com/android/billingclient/api/Purchase#getPurchaseToken()>) for more information
 :type purchaseToken: string
-
 
 % AdjustPlayStoreSubscription snippet
 
@@ -41,12 +41,13 @@ export class AdjustPlayStoreSubscription {
 
 ```js
 var subscription = new AdjustPlayStoreSubscription(
-   price, 
-   currency, 
-   sku, 
-   orderId, 
-   signature, 
-   purchaseToken);
+   price,
+   currency,
+   sku,
+   orderId,
+   signature,
+   purchaseToken
+);
 ```
 
 :::
@@ -65,6 +66,7 @@ var subscription = new AdjustPlayStoreSubscription(
 Sets the date of the transaction in the subscription object.
 
 {#react-native-setpurchasetime-invocation}
+
 ```ts
 public setPurchaseTime(purchaseTime: string): void
 ```
@@ -78,12 +80,13 @@ public setPurchaseTime(purchaseTime: string): void
 
 ```js
 var subscription = new AdjustPlayStoreSubscription(
-   price, 
-   currency, 
-   sku, 
-   orderId, 
-   signature, 
-   purchaseToken);
+   price,
+   currency,
+   sku,
+   orderId,
+   signature,
+   purchaseToken
+);
 subscription.setPurchaseTime(purchaseTime);
 ```
 
@@ -103,6 +106,7 @@ subscription.setPurchaseTime(purchaseTime);
 Adds key-value callback parameters to the subscription object. You can add multiple parameters by calling this method multiple times.
 
 {#react-native-adjustplaystoresubscription-addcallbackparameter-invocation}
+
 ```ts
 public addCallbackParameter(key: string, value: string): void
 ```
@@ -118,13 +122,14 @@ public addCallbackParameter(key: string, value: string): void
 
 ```js
 var subscription = new AdjustPlayStoreSubscription(
-   price, 
-   currency, 
-   sku, 
-   orderId, 
-   signature, 
-   purchaseToken);
-   //..
+   price,
+   currency,
+   sku,
+   orderId,
+   signature,
+   purchaseToken
+);
+//..
 subscription.addCallbackParameter("key", "value");
 ```
 
@@ -144,6 +149,7 @@ subscription.addCallbackParameter("key", "value");
 Adds key-value partner parameters to the subscription object. You can add multiple parameters by calling this method multiple times.
 
 {#react-native-adjustplaystoresubscription-addpartnerparameter-invocation}
+
 ```ts
 public addPartnerParameter(key: string, value: string): void
 ```
@@ -159,13 +165,14 @@ public addPartnerParameter(key: string, value: string): void
 
 ```js
 var subscription = new AdjustPlayStoreSubscription(
-   price, 
-   currency, 
-   sku, 
-   orderId, 
-   signature, 
-   purchaseToken);
-   //..
+   price,
+   currency,
+   sku,
+   orderId,
+   signature,
+   purchaseToken
+);
+//..
 subscription.addPartnerParameter("key", "value");
 ```
 

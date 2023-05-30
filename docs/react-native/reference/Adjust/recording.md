@@ -7,15 +7,16 @@ Use these methods to record event and session information with the Adjust SDK.
 ::::{function} trackEvent (event)
 :noindex:
 
-Record event information using an `AdjustEvent` object and an [Adjust event token](hc:basic-event-setup#create-an-event-token).
+Record event information using an `AdjustEvent` object and an [Adjust event token](https://help.adjust.com/en/article/basic-event-setup#create-an-event-token).
 
 {#react-native-trackevent-invocation}
+
 ```ts
 trackEvent: (adjustEvent: AdjustEvent) => void
 ```
 
 :param event: An event object containing information you want to record
-:type event: [*AdjustEvent*](/react-native/reference/AdjustEvent.md)
+:type event: [_AdjustEvent_](/react-native/reference/AdjustEvent.md)
 
 % trackEvent snippet
 
@@ -47,6 +48,7 @@ If you have added an event callback parameter with the same key, the **event** p
 :::
 
 {#react-native-addsessioncallbackparameter-invocation}
+
 ```ts
 addSessionCallbackParameter: (key: string, value: string) => void
 ```
@@ -80,6 +82,7 @@ Adjust.addSessionCallbackParameter("key", "value");
 Removes a callback parameter.
 
 {#react-native-removesessioncallbackparameter-invocation}
+
 ```ts
 removeSessionCallbackParameter: (key: string) => void
 ```
@@ -111,6 +114,7 @@ Adjust.removeSessionCallbackParameter("key");
 Removes **all** callback parameters
 
 {#react-native-resetsessioncallbackparameters-invocation}
+
 ```ts
 resetSessionCallbackParameters: () => void
 ```
@@ -143,6 +147,7 @@ If you have added an event callback parameter with the same key, the **event** p
 :::
 
 {#react-native-addsessionpartnerparameter-invocation}
+
 ```ts
 addSessionPartnerParameter: (key: string, value: string) => void
 ```
@@ -176,6 +181,7 @@ Adjust.addSessionPartnerParameter("key", "value");
 Removes a partner parameter.
 
 {#react-native-removesessionpartnerparameter-invocation}
+
 ```ts
 removeSessionPartnerParameter: (key: string) => void
 ```
@@ -207,6 +213,7 @@ Adjust.removeSessionPartnerParameter("key");
 Resets **all** partner parameters
 
 {#react-native-resetsessionpartnerparameters-invocation}
+
 ```ts
 resetSessionPartnerParameters: () => void
 ```
@@ -235,6 +242,7 @@ Adjust.resetSessionPartnerParameters();
 Record an App Store subscription object.
 
 {#react-native-trackappstoresubscription-invocation}
+
 ```ts
 trackAppStoreSubscription: (subscription: AdjustAppStoreSubscription) => void
 ```
@@ -248,10 +256,11 @@ trackAppStoreSubscription: (subscription: AdjustAppStoreSubscription) => void
 
 ```js
 var subscription = new AdjustAppStoreSubscription(
-   price, 
-   currency, 
-   transactionId, 
-   receipt);
+   price,
+   currency,
+   transactionId,
+   receipt
+);
 subscription.setTransactionDate(transactionDate);
 subscription.setSalesRegion(salesRegion);
 subscription.addCallbackParameter("key1", "value1");
@@ -278,6 +287,7 @@ Adjust.trackAppStoreSubscription(subscription);
 Record an Play Store subscription object.
 
 {#react-native-trackplaystoresubscription-invocation}
+
 ```ts
 trackPlayStoreSubscription: (subscription: AdjustPlayStoreSubscription) => void
 ```
@@ -291,12 +301,13 @@ trackPlayStoreSubscription: (subscription: AdjustPlayStoreSubscription) => void
 
 ```js
 var subscription = new AdjustPlayStoreSubscription(
-    price,
-    currency,
-    sku,
-    orderId,
-    signature,
-    purchaseToken);
+   price,
+   currency,
+   sku,
+   orderId,
+   signature,
+   purchaseToken
+);
 subscription.setPurchaseTime(purchaseTime);
 subscription.addCallbackParameter("key1", "value1");
 subscription.addCallbackParameter("key2", "value2");
@@ -322,6 +333,7 @@ Adjust.trackPlayStoreSubscription(subscription);
 Fetches attribution data from the device.
 
 {#react-native-getattribution-invocation}
+
 ```ts
 getAttribution: (callback: (attribution: AdjustAttribution) => void) => void
 ```

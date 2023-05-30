@@ -8,6 +8,7 @@
 Set the verbosity of logs you want to receive from the Adjust SDK.
 
 {#react-native-setloglevel-invocation}
+
 ```ts
 public setLogLevel(level: LogLevel): void
 ```
@@ -20,8 +21,12 @@ public setLogLevel(level: LogLevel): void
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```js
-const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
 //...
 adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
 //...
@@ -34,22 +39,22 @@ Adjust.create(adjustConfig);
 :::{list-table}
 :header-rows: 1
 
-* - Log level
-   - Description
-* - `AdjustLogLevel.Verbose`
-   - Enable all logging
-* - `AdjustLogLevel.Debug`
-   - Enable debug logging
-* - `AdjustLogLevel.Info`
-   - Only show info level logs (default option)
-* - `AdjustLogLevel.Warn`
-   - Disable info logging
-* - `AdjustLogLevel.Error`
-   - Disable warning level logging and below
-* - `AdjustLogLevel.Assert`
-   - Disable error level logging and below
-* - `AdjustLogLevel.Suppress`
-   - Suppress all logging
+-  -  Log level
+   -  Description
+-  -  `AdjustLogLevel.Verbose`
+   -  Enable all logging
+-  -  `AdjustLogLevel.Debug`
+   -  Enable debug logging
+-  -  `AdjustLogLevel.Info`
+   -  Only show info level logs (default option)
+-  -  `AdjustLogLevel.Warn`
+   -  Disable info logging
+-  -  `AdjustLogLevel.Error`
+   -  Disable warning level logging and below
+-  -  `AdjustLogLevel.Assert`
+   -  Disable error level logging and below
+-  -  `AdjustLogLevel.Suppress`
+   -  Suppress all logging
 
 :::
 ::::
@@ -68,6 +73,7 @@ Adjust.create(adjustConfig);
 Define a default tracker token. Adjust assigns organic installs to this tracker token.
 
 {#react-native-setdefaulttracker-invocation}
+
 ```ts
 public setDefaultTracker(defaultTracked: string): void
 ```
@@ -80,8 +86,12 @@ public setDefaultTracker(defaultTracked: string): void
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```js
-const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
 //..
 adjustConfig.setDefaultTracker("{TrackerToken}");
 //...
@@ -104,6 +114,7 @@ Adjust.create(adjustConfig);
 Sets an external device identifier for reporting purposes.
 
 {#react-native-setexternaldeviceid-invocation}
+
 ```ts
 public setExternalDeviceId(externalDeviceId: string): void
 ```
@@ -116,8 +127,12 @@ public setExternalDeviceId(externalDeviceId: string): void
 :::{tab-set-code}
 
 {emphasize-line="3"}
+
 ```js
-const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
 //..
 adjustConfig.setExternalDeviceId("{Your-External-Device-Id}");
 //...
@@ -140,6 +155,7 @@ Adjust.create(adjustConfig);
 Enables or disables launching deferred deep links with the SDK. If **enabled**, the SDK launches deep links the user interacts with.
 
 {#react-native-setshouldlaunchdeeplink-invocation}
+
 ```ts
 public setShouldLaunchDeeplink(shouldLaunchDeeplink: boolean): void
 ```
@@ -152,8 +168,12 @@ public setShouldLaunchDeeplink(shouldLaunchDeeplink: boolean): void
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```js
-const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
 //..
 adjustConfig.setShouldLaunchDeeplink(true);
 //...
@@ -176,6 +196,7 @@ Adjust.create(adjustConfig);
 Sets whether the SDK should send data while the app is running in the background.
 
 {#react-native-setsendinbackground-invocation}
+
 ```ts
 public setSendInBackground(sendInBackground: boolean): void
 ```
@@ -188,8 +209,12 @@ public setSendInBackground(sendInBackground: boolean): void
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```js
-const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
 //..
 adjustConfig.setSendInBackground(true);
 //...
@@ -214,6 +239,7 @@ Sets whether the SDK should gather cost data. This is accessible in the user's a
 :::
 
 {#react-native-setneedscost-invocation}
+
 ```ts
 public setNeedsCost(needsCost: boolean): void
 ```
@@ -226,8 +252,12 @@ public setNeedsCost(needsCost: boolean): void
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```js
-const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
 //..
 adjustConfig.setNeedsCost(true);
 //...
@@ -250,6 +280,7 @@ Adjust.create(adjustConfig);
 Sets a delay before the SDK starts to allow data to load before session information is sent to Adjust's servers. Maximum delay: 10 seconds.
 
 {#react-native-setdelaystart-invocation}
+
 ```ts
 public setDelayStart(delayStart: number): void
 ```
@@ -262,8 +293,12 @@ public setDelayStart(delayStart: number): void
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```js
-const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
 //..
 adjustConfig.setDelayStart(5.5);
 //...
@@ -286,9 +321,11 @@ Adjust.create(adjustConfig);
 Define a user agent string to send with each request.
 
 {#react-native-setuseragent-invocation}
+
 ```ts
 public setUserAgent(userAgent: string): void
 ```
+
 :param userAgent: The user agent to send with a request
 :type userAgent: String
 
@@ -297,8 +334,12 @@ public setUserAgent(userAgent: string): void
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```js
-const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
 //..
 adjustConfig.userAgent("your-app/1.2.3");
 //...
@@ -321,9 +362,11 @@ Adjust.create(adjustConfig);
 Specify whether a device is already known.
 
 {#react-native-isdeviceknown-invocation}
+
 ```ts
 public setDeviceKnown(isDeviceKnown: boolean): void
 ```
+
 :param isDeviceKnown: Whether a device is already known
 :type isDeviceKnown: Boolean
 
@@ -332,8 +375,12 @@ public setDeviceKnown(isDeviceKnown: boolean): void
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```js
-const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
 //..
 adjustConfig.setIsDeviceKnown(true);
 //...
@@ -356,6 +403,7 @@ Adjust.create(adjustConfig);
 Sets event buffering. If enabled, the SDK stores events on the device and sends all requests once per minute.
 
 {#react-native-seteventbufferingenabled-invocation}
+
 ```ts
 public setEventBufferingEnabled(eventBufferingEnabled: boolean): void
 ```
@@ -368,8 +416,12 @@ public setEventBufferingEnabled(eventBufferingEnabled: boolean): void
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```js
-const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
 //..
 adjustConfig.setEventBufferingEnabled(true);
 //...
@@ -394,10 +446,11 @@ Adjust.create(adjustConfig);
 Define a listener function that the SDK calls when opening a deep link.
 
 {#react-native-setdeferreddeeplinkcallbacklistener-invocation}
+
 ```ts
 public setDeferredDeeplinkCallbackListener(
-      callback: (uri: AdjustUri) => void
-    ): void
+   callback: (uri: AdjustUri) => void
+): void
 ```
 
 :param uri: Contains the deep link `uri` that calls the listener to start
@@ -408,11 +461,15 @@ public setDeferredDeeplinkCallbackListener(
 :::{tab-set-code}
 
 {emphasize-lines="3,4,5"}
+
 ```js
-const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
 //..
-adjustConfig.setDeferredDeeplinkCallbackListener(function(deeplink) {
-    console.log("Deferred deep link URL content: " + deeplink);
+adjustConfig.setDeferredDeeplinkCallbackListener(function (deeplink) {
+   console.log("Deferred deep link URL content: " + deeplink);
 });
 //...
 Adjust.create(adjustConfig);
@@ -434,10 +491,11 @@ Adjust.create(adjustConfig);
 Sets a delegate function that fires when a user's attribution information updates
 
 {#react-native-setAttributionCallbackListener-invocation}
+
 ```ts
 public setAttributionCallbackListener(
-      callback: (attribution: AdjustAttribution) => void
-    ): void
+   callback: (attribution: AdjustAttribution) => void
+): void
 ```
 
 :param attribution: The delegate function that the SDK calls when a the user's attribution information changes
@@ -448,23 +506,26 @@ public setAttributionCallbackListener(
 :::{tab-set-code}
 
 ```js
-const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
 //..
-adjustConfig.setAttributionCallbackListener(function(attribution) {
-    // Printing all attribution properties.
-    console.log("Attribution changed!");
-    console.log(attribution.trackerToken);
-    console.log(attribution.trackerName);
-    console.log(attribution.network);
-    console.log(attribution.campaign);
-    console.log(attribution.adgroup);
-    console.log(attribution.creative);
-    console.log(attribution.clickLabel);
-    console.log(attribution.adid);
-    console.log(attribution.costType);
-    console.log(attribution.costAmount);
-    console.log(attribution.costCurrency);
-    console.log(attribution.fbInstallReferrer);
+adjustConfig.setAttributionCallbackListener(function (attribution) {
+   // Printing all attribution properties.
+   console.log("Attribution changed!");
+   console.log(attribution.trackerToken);
+   console.log(attribution.trackerName);
+   console.log(attribution.network);
+   console.log(attribution.campaign);
+   console.log(attribution.adgroup);
+   console.log(attribution.creative);
+   console.log(attribution.clickLabel);
+   console.log(attribution.adid);
+   console.log(attribution.costType);
+   console.log(attribution.costAmount);
+   console.log(attribution.costCurrency);
+   console.log(attribution.fbInstallReferrer);
 });
 //...
 Adjust.create(adjustConfig);
@@ -486,10 +547,11 @@ Adjust.create(adjustConfig);
 Sets up a success callback to trigger a function when the SDK records an event.
 
 {#react-native-setEventTrackingSucceededCallbackListener-invocation}
+
 ```ts
 public setEventTrackingSucceededCallbackListener(
-      callback: (eventSuccess: AdjustEventTrackingSuccess) => void
-    ): void
+   callback: (eventSuccess: AdjustEventTrackingSuccess) => void
+): void
 ```
 
 :param eventSuccess: The function to launch when the SDK successfully records an event
@@ -500,17 +562,20 @@ public setEventTrackingSucceededCallbackListener(
 :::{tab-set-code}
 
 ```js
-const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
 //..
-adjustConfig.setEventTrackingSucceededCallbackListener(function(eventSuccess) {
-    // Printing all event success properties.
-    console.log("Event tracking succeeded!");
-    console.log(eventSuccess.message);
-    console.log(eventSuccess.timestamp);
-    console.log(eventSuccess.eventToken);
-    console.log(eventSuccess.callbackId);
-    console.log(eventSuccess.adid);
-    console.log(eventSuccess.jsonResponse);
+adjustConfig.setEventTrackingSucceededCallbackListener(function (eventSuccess) {
+   // Printing all event success properties.
+   console.log("Event tracking succeeded!");
+   console.log(eventSuccess.message);
+   console.log(eventSuccess.timestamp);
+   console.log(eventSuccess.eventToken);
+   console.log(eventSuccess.callbackId);
+   console.log(eventSuccess.adid);
+   console.log(eventSuccess.jsonResponse);
 });
 //...
 Adjust.create(adjustConfig);
@@ -532,10 +597,11 @@ Adjust.create(adjustConfig);
 Sets up a callback to trigger a function when the SDK fails to record an event.
 
 {#react-native-setEventTrackingFailedCallbackListener-invocation}
+
 ```ts
 public setEventTrackingFailedCallbackListener(
-      callback: (eventFailed: AdjustEventTrackingFailure) => void
-    ): void
+   callback: (eventFailed: AdjustEventTrackingFailure) => void
+): void
 ```
 
 :param eventFailed: The function to launch when the SDK fails to record an event
@@ -546,18 +612,21 @@ public setEventTrackingFailedCallbackListener(
 :::{tab-set-code}
 
 ```js
-const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
 //..
-adjustConfig.setEventTrackingFailedCallbackListener(function(eventFailure) {
-    // Printing all event failure properties.
-    console.log("Event tracking failed!");
-    console.log(eventFailure.message);
-    console.log(eventFailure.timestamp);
-    console.log(eventFailure.eventToken);
-    console.log(eventFailure.callbackId);
-    console.log(eventFailure.adid);
-    console.log(eventFailure.willRetry);
-    console.log(eventFailure.jsonResponse);
+adjustConfig.setEventTrackingFailedCallbackListener(function (eventFailure) {
+   // Printing all event failure properties.
+   console.log("Event tracking failed!");
+   console.log(eventFailure.message);
+   console.log(eventFailure.timestamp);
+   console.log(eventFailure.eventToken);
+   console.log(eventFailure.callbackId);
+   console.log(eventFailure.adid);
+   console.log(eventFailure.willRetry);
+   console.log(eventFailure.jsonResponse);
 });
 //...
 Adjust.create(adjustConfig);
@@ -579,10 +648,11 @@ Adjust.create(adjustConfig);
 Sets up a success callback to trigger a function when the SDK records a session.
 
 {#react-native-setSessionTrackingSucceededCallbackListener-invocation}
+
 ```ts
 public setSessionTrackingSucceededCallbackListener(
-      callback: (sessionSuccess: AdjustSessionTrackingSuccess) => void
-    ): void
+   callback: (sessionSuccess: AdjustSessionTrackingSuccess) => void
+): void
 ```
 
 :param sessionSuccess: The function to launch when the SDK successfully records a session
@@ -593,15 +663,20 @@ public setSessionTrackingSucceededCallbackListener(
 :::{tab-set-code}
 
 ```js
-const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
 //..
-adjustConfig.setSessionTrackingSucceededCallbackListener(function(sessionSuccess) {
-    // Printing all session success properties.
-    console.log("Session tracking succeeded!");
-    console.log(sessionSuccess.message);
-    console.log(sessionSuccess.timestamp);
-    console.log(sessionSuccess.adid);
-    console.log(sessionSuccess.jsonResponse);
+adjustConfig.setSessionTrackingSucceededCallbackListener(function (
+   sessionSuccess
+) {
+   // Printing all session success properties.
+   console.log("Session tracking succeeded!");
+   console.log(sessionSuccess.message);
+   console.log(sessionSuccess.timestamp);
+   console.log(sessionSuccess.adid);
+   console.log(sessionSuccess.jsonResponse);
 });
 //...
 Adjust.create(adjustConfig);
@@ -623,10 +698,11 @@ Adjust.create(adjustConfig);
 Sets up a callback to trigger a function when the SDK fails to record a session.
 
 {#unity-setSessionTrackingFailedCallbackListener-invocation}
+
 ```ts
 public setSessionTrackingFailedCallbackListener(
-      callback: (sessionFailed: AdjustSessionTrackingFailure) => void
-    ): void
+   callback: (sessionFailed: AdjustSessionTrackingFailure) => void
+): void
 ```
 
 :param sessionFailed: The function to launch when the SDK fails to record a session
@@ -637,16 +713,21 @@ public setSessionTrackingFailedCallbackListener(
 :::{tab-set-code}
 
 ```js
-const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
 //..
-adjustConfig.setSessionTrackingFailedCallbackListener(function(sessionFailure) {
-    // Printing all session failure properties.
-    console.log("Session tracking failed!");
-    console.log(sessionFailure.message);
-    console.log(sessionFailure.timestamp);
-    console.log(sessionFailure.adid);
-    console.log(sessionFailure.willRetry);
-    console.log(sessionFailure.jsonResponse);
+adjustConfig.setSessionTrackingFailedCallbackListener(function (
+   sessionFailure
+) {
+   // Printing all session failure properties.
+   console.log("Session tracking failed!");
+   console.log(sessionFailure.message);
+   console.log(sessionFailure.timestamp);
+   console.log(sessionFailure.adid);
+   console.log(sessionFailure.willRetry);
+   console.log(sessionFailure.jsonResponse);
 });
 //...
 Adjust.create(adjustConfig);
@@ -672,6 +753,7 @@ Sets whether the Adjust SDK can read iAd framework data.
 :::
 
 {#react-native-setllowiadinforeading-invocation}
+
 ```ts
 public setAllowiAdInfoReading(allowiAdInfoReading: boolean): void
 ```
@@ -684,8 +766,12 @@ public setAllowiAdInfoReading(allowiAdInfoReading: boolean): void
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```js
-const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
 //..
 adjustConfig.setAllowiAdInfoReading(true);
 //...
@@ -708,6 +794,7 @@ Adjust.create(adjustConfig);
 Sets whether the Adjust SDK can read [AdServices framework](https://developer.apple.com/documentation/ad_services) data.
 
 {#react-native-setallowadservicesinforeading-invocation}
+
 ```ts
 public setAllowAdServicesInfoReading(allowAdServicesInfoReading: boolean): void
 ```
@@ -720,8 +807,12 @@ public setAllowAdServicesInfoReading(allowAdServicesInfoReading: boolean): void
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```js
-const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
 //..
 adjustConfig.setAllowAdServicesInfoReading(true);
 //...
@@ -744,6 +835,7 @@ Adjust.create(adjustConfig);
 Sets whether the Adjust SDK can read the device {abbr}`IDFA (ID for Advertisers)`
 
 {#react-native-setallowidfareading-invocation}
+
 ```ts
 public setAllowIdfaReading(allowIdfaReading: boolean): void
 ```
@@ -756,8 +848,12 @@ public setAllowIdfaReading(allowIdfaReading: boolean): void
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```js
-const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
 //..
 adjustConfig.setAllowIdfaReading(true);
 //...
@@ -777,9 +873,10 @@ Adjust.create(adjustConfig);
 ::::{function} deactivateSKAdNetworkHandling
 :noindex:
 
-Turns off communication with SKAdNetwork. Communication is *enabled* by default.
+Turns off communication with SKAdNetwork. Communication is _enabled_ by default.
 
 {#react-native-deactivateskadnetworkhandling-invocation}
+
 ```ts
 public deactivateSKAdNetworkHandling(): void;
 ```
@@ -789,8 +886,12 @@ public deactivateSKAdNetworkHandling(): void;
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```js
-const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
 //..
 adjustConfig.deactivateSKAdNetworkHandling();
 //...
@@ -810,9 +911,10 @@ Adjust.create(adjustConfig);
 ::::{function} setLinkMeEnabled (linkMeEnabled)
 :noindex:
 
-Toggle support for Adjust's [LinkMe solution](hc:linkme) for deep linking
+Toggle support for Adjust's [LinkMe solution](https://help.adjust.com/en/article/linkme) for deep linking
 
 {#react-native-setlinkmeenabled-invocation}
+
 ```ts
 public setLinkMeEnabled(linkMeEnabled: boolean): void;
 ```
@@ -825,8 +927,12 @@ public setLinkMeEnabled(linkMeEnabled: boolean): void;
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```js
-const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
 //..
 adjustConfig.setLinkMeEnabled(true);
 //...
@@ -849,10 +955,11 @@ Adjust.create(adjustConfig);
 Sets a listener function to call when the user's conversion value updates.
 
 {#react-native-setconversionvalueupdatedcallbacklistener-invocation}
+
 ```ts
 public setConversionValueUpdatedCallbackListener(
-      callback: (conversionValue: AdjustConversionValue) => void
-    ): void
+   callback: (conversionValue: AdjustConversionValue) => void
+): void
 ```
 
 :param conversionValue: The listener function the SDK launches when the conversion value updates
@@ -863,16 +970,21 @@ public setConversionValueUpdatedCallbackListener(
 :::{tab-set-code}
 
 {emphasize-lines="3-6"}
+
 ```js
-const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
 //..
-adjustConfig.setConversionValueUpdatedCallbackListener(function(conversionValue) {
-    console.log("Conversion value updated callback recveived");
-    console.log("Conversion value: " + conversionValue.conversionValue);
-  });
+adjustConfig.setConversionValueUpdatedCallbackListener(function (
+   conversionValue
+) {
+   console.log("Conversion value updated callback recveived");
+   console.log("Conversion value: " + conversionValue.conversionValue);
+});
 //...
 Adjust.create(adjustConfig);
-
 ```
 
 :::
@@ -893,6 +1005,7 @@ Adjust.create(adjustConfig);
 Define the process name your app runs under. Defaults to the app's package name.
 
 {#react-native-setprocessname-invocation}
+
 ```ts
 public setProcessName(processName: string): void
 ```
@@ -905,8 +1018,12 @@ public setProcessName(processName: string): void
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```js
-const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
 //..
 adjustConfig.setProcessName("com.example.myapp");
 //...
@@ -929,6 +1046,7 @@ Adjust.create(adjustConfig);
 Enables or disables preinstall tracking
 
 {#react-native-setpreinstalltrackingenabled-invocation}
+
 ```ts
 public setPreinstallTrackingEnabled(preinstallTrackingEnabled: boolean): void
 ```
@@ -941,8 +1059,12 @@ public setPreinstallTrackingEnabled(preinstallTrackingEnabled: boolean): void
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```js
-const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
 //..
 adjustConfig.setPreinstallTrackingEnabled(true);
 //...
@@ -965,6 +1087,7 @@ Adjust.create(adjustConfig);
 Defines a relative path where preinstall information is available. This directory must be world-readable
 
 {#react-native-setpreinstallfilepath-invocation}
+
 ```ts
 public setPreinstallFilePath(preinstallFilePath: string): void
 ```
@@ -977,8 +1100,12 @@ public setPreinstallFilePath(preinstallFilePath: string): void
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```js
-const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
 //..
 adjustConfig.setPreinstallFilePath("../EngagementFile.xml");
 //...
@@ -1001,6 +1128,7 @@ Adjust.create(adjustConfig);
 Marks your app as a Kids App and disables reading device information
 
 {#react-native-setplaystorekidsappenabled-invocation}
+
 ```ts
 public setPlayStoreKidsAppEnabled(playStoreKidsAppEnabled: boolean): void
 ```
@@ -1013,8 +1141,12 @@ public setPlayStoreKidsAppEnabled(playStoreKidsAppEnabled: boolean): void
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```js
-const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
 //..
 adjustConfig.setPlayStoreKidsAppEnabled(true);
 //...

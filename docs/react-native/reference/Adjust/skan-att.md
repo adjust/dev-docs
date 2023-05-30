@@ -1,6 +1,6 @@
 # SKAdNetwork and ATT methods
 
-Use these methods to manage your [SKAdNetwork](hc:skadnetwork) and [App Tracking Transparency](hc:app-tracking-transparency-att-framework) logic.
+Use these methods to manage your [SKAdNetwork](https://help.adjust.com/en/article/skadnetwork) and [App Tracking Transparency](https://help.adjust.com/en/article/app-tracking-transparency-att-framework) logic.
 
 ## App Tracking Transparency methods
 
@@ -9,21 +9,21 @@ These methods help you manage your App Tracking Transparency (ATT) implementatio
 :::{list-table}
 :header-rows: 1
 
-* - Status
-   - Code
-   - Description
-* - `ATTrackingManagerAuthorizationStatusNotDetermined`
-   - `0`
-   - The user hasn't responded to the access prompt yet.
-* - `ATTrackingManagerAuthorizationStatusRestricted`
-   - `1`
-   - Access to app-related data is blocked at the device level.
-* - `ATTrackingManagerAuthorizationStatusDenied`
-   - `2`
-   - The user has denied access to app-related data for device tracking.
-* - `ATTrackingManagerAuthorizationStatusAuthorized`
-   - `3`
-   - The user has approved access to app-related data for device tracking.
+-  -  Status
+   -  Code
+   -  Description
+-  -  `ATTrackingManagerAuthorizationStatusNotDetermined`
+   -  `0`
+   -  The user hasn't responded to the access prompt yet.
+-  -  `ATTrackingManagerAuthorizationStatusRestricted`
+   -  `1`
+   -  Access to app-related data is blocked at the device level.
+-  -  `ATTrackingManagerAuthorizationStatusDenied`
+   -  `2`
+   -  The user has denied access to app-related data for device tracking.
+-  -  `ATTrackingManagerAuthorizationStatusAuthorized`
+   -  `3`
+   -  The user has approved access to app-related data for device tracking.
 
 :::
 
@@ -35,6 +35,7 @@ These methods help you manage your App Tracking Transparency (ATT) implementatio
 Receives the user's authorization status from the ATT prompt and passes it to a completion function
 
 {#react-native-requesttrackingauthorizationwithcompletionhandler-invocation}
+
 ```ts
 requestTrackingAuthorizationWithCompletionHandler: (handler: (status: number) => void) => void
 ```
@@ -47,21 +48,21 @@ requestTrackingAuthorizationWithCompletionHandler: (handler: (status: number) =>
 :::{tab-set-code}
 
 ```js
-Adjust.requestTrackingAuthorizationWithCompletionHandler(function(status) {
-    switch (status) {
-        case 0:
-            // ATTrackingManagerAuthorizationStatusNotDetermined case
-            break;
-        case 1:
-            // ATTrackingManagerAuthorizationStatusRestricted case
-            break;
-        case 2:
-            // ATTrackingManagerAuthorizationStatusDenied case
-            break;
-        case 3:
-            // ATTrackingManagerAuthorizationStatusAuthorized case
-            break;
-    }
+Adjust.requestTrackingAuthorizationWithCompletionHandler(function (status) {
+   switch (status) {
+      case 0:
+         // ATTrackingManagerAuthorizationStatusNotDetermined case
+         break;
+      case 1:
+         // ATTrackingManagerAuthorizationStatusRestricted case
+         break;
+      case 2:
+         // ATTrackingManagerAuthorizationStatusDenied case
+         break;
+      case 3:
+         // ATTrackingManagerAuthorizationStatusAuthorized case
+         break;
+   }
 });
 ```
 
@@ -81,6 +82,7 @@ Adjust.requestTrackingAuthorizationWithCompletionHandler(function(status) {
 Retrieves the user's current authorization status
 
 {#react-native-getapptrackingauthorizationstatus-invocation}
+
 ```ts
 getAppTrackingAuthorizationStatus: (callback: (authorizationStatus: number) => void) => void
 ```
@@ -112,6 +114,7 @@ Adjust.getAppTrackingAuthorizationStatus();
 Prompts the SDK to check the current state of `att_status`
 
 {#react-native-checkfornewattstatus-invocation}
+
 ```ts
 checkForNewAttStatus: () => void
 ```
@@ -139,9 +142,10 @@ Adjust.checkForNewAttStatus();
 ::::{function} updateConversionValue(conversionValue)
 :noindex:
 
-Updates the [conversion value](https://help.adjust.com/en/new/article/conversion-hub). Accepts **integer** values between **0** and *63*.
+Updates the [conversion value](https://help.adjust.com/en/new/article/conversion-hub). Accepts **integer** values between **0** and _63_.
 
 {#react-native-updateconversionvalue-invocation}
+
 ```ts
 updateConversionValue: (conversionValue: number) => void
 ```

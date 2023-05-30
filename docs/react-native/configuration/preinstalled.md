@@ -11,8 +11,12 @@ Configuring a default campaign enables you to attribute all preinstalls to a pre
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```js
-const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
 //...
 adjustConfig.setDefaultTracker("{TrackerToken}");
 //...
@@ -24,9 +28,8 @@ Adjust.start(adjustConfig);
 To set up a default campaign token:
 
 1. Create a new campaign in your Adjust dashboard to use as the default. Record the six digit token at the end of the URL.
-2. Call the {code}`setDefaultTracker` method on your config object and pass your token as an argument.
+2. Call the `setDefaultTracker` method on your config object and pass your token as an argument.
 3. Build and run your app. If you have logging enabled, the SDK outputs your default campaign token.
-
 
 ```js
 Default tracker: 'abc123'

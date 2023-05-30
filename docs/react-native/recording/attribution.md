@@ -13,9 +13,9 @@ To configure your callback function, call the `setAttributionCallbackListener` w
 ```js
 var adjustConfig = new AdjustConfig(appToken, environment);
 
-adjustConfig.setAttributionCallbackListener(function() {
-    // Printing all attribution properties.
-    console.log("Attribution property");
+adjustConfig.setAttributionCallbackListener(function () {
+   // Printing all attribution properties.
+   console.log("Attribution property");
 });
 
 Adjust.create(adjustConfig);
@@ -30,7 +30,7 @@ Within your listener function, you have access to the user's `Attribution` objec
 When a user installs your app, Adjust attributes the install to a campaign. The Adjust SDK gives you access to campaign attribution details for your install. To return this information, call the `getAttribution` method.
 
 :::{note}
-You can get information about current attribution only after Ajust tracks an app install and an attribution callback has been already triggered.
+You can get information about current attribution only after Adjust tracks an app install and an attribution callback has been already triggered.
 :::
 
 :::{tab-set-code}

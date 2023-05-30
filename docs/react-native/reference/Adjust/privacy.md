@@ -12,6 +12,7 @@ Disables sharing of information with third parties for all users.
 :::
 
 {#react-native-disablethirdpartysharing-invocation}
+
 ```ts
 disableThirdPartySharing: () => void
 ```
@@ -40,12 +41,13 @@ Adjust.disableThirdPartySharing();
 Disable or enable sharing of information with third parties on a per-user basis. Accepts a third party sharing object initialized with a **boolean** value.
 
 {#react-native-trackthirdpartysharing-invocation}
+
 ```ts
 trackThirdPartySharing: (adjustThirdPartySharing: AdjustThirdPartySharing) => void
 ```
 
 :param thirdPartySharing: The third party sharing object
-:type thirdPartySharing: [*AdjustThirdPartySharing*](/react-native/reference/AdjustThirdPartySharing.md)
+:type thirdPartySharing: [_AdjustThirdPartySharing_](/react-native/reference/AdjustThirdPartySharing.md)
 
 % trackThirdPartySharing snippet
 
@@ -69,9 +71,10 @@ Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ::::{function} trackMeasurementConsent(enabled)
 :noindex:
 
-Set whether [data collection and retention rules](hc:manage-data-collection-and-retention) apply to a user.
+Set whether [data collection and retention rules](https://help.adjust.com/en/article/manage-data-collection-and-retention) apply to a user.
 
 {#react-native-trackmeasurementconsent-invocation}
+
 ```ts
 trackMeasurementConsent: (measurementConsent: boolean) => void
 ```
@@ -105,6 +108,7 @@ Send an {abbr}`RTBF (Right To Be Forgotten)` request to Adjust's servers. This e
 :::
 
 {#react-native-gdprforgetme-invocation}
+
 ```ts
 trackMeasurementConsent: (measurementConsent: boolean) => void
 ```
