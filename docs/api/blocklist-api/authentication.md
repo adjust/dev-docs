@@ -3,6 +3,7 @@ myst:
    substitutions:
       token_format: "`Authorization: Token token={API_TOKEN}`"
       api_name: "Blocklist API"
+      endpoint: "https://api.adjust.com/dashboard/api/trackers/"
 ---
 
 # Blocklist API authentication

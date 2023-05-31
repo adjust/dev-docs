@@ -3,6 +3,7 @@ myst:
    substitutions:
       token_format: "`Authorization: Bearer {API_TOKEN}`"
       api_name: "Device API"
+      endpoint: "https://api.adjust.com/device_service/api/v1/"
 ---
 
 # Device API authentication

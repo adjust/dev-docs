@@ -3,6 +3,7 @@ myst:
    substitutions:
       token_format: "Authorization: Bearer {API_TOKEN}"
       api_name: "Report Service API"
+      endpoint: "https://dash.adjust.com/control-center/reports-service"
 ---
 
 # Report Service API authentication
@@ -111,6 +112,6 @@ Once you've got your Adjust API token, you can use it to authenticate your {{ ap
 The `Authorization` header uses the following format: {{ token_format }}
 
 :::{parsed-literal}
-$ curl https://api.adjust.com \
+$ curl {{ endpoint }} \
 --header "{{ token_format }}"
 :::

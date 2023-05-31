@@ -3,6 +3,7 @@ myst:
    substitutions:
       token_format: "`Authorization: Token token={API_TOKEN}`"
       api_name: "KPI Service"
+      endpoint: "https://api.adjust.com/kpis/v1/"
 ---
 
 # KPI Service authentication
