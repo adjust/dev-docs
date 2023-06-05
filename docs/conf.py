@@ -28,14 +28,14 @@ author = 'Adjust GmbH'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-   "myst_parser",
-   "sphinx_design",
-   "sphinx_multiversion",
-   "sphinxcontrib.images",
-   "sphinx_copybutton",
-   "sphinxcontrib.mermaid",
-   "sphinx_tippy",
-   "sphinx_external_toc"
+    "myst_parser",
+    "sphinx_design",
+    "sphinx_multiversion",
+    "sphinxcontrib.images",
+    "sphinx_copybutton",
+    "sphinxcontrib.mermaid",
+    "sphinx_tippy",
+    "sphinx_external_toc"
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -74,13 +74,13 @@ html_css_files = [
 # -- Options for MyST parser -------------------------------------------------
 
 myst_enable_extensions = [
-   "colon_fence",
-   "substitution",
-   "tasklist",
-   "deflist",
-   "fieldlist",
-   "attrs_inline",
-   "attrs_block",
+    "colon_fence",
+    "substitution",
+    "tasklist",
+    "deflist",
+    "fieldlist",
+    "attrs_inline",
+    "attrs_block",
 ]
 
 myst_heading_anchors = 3
@@ -110,7 +110,5 @@ myst_substitutions = {
 
 tippy_anchor_parent_selector = "div.content"
 tippy_tip_selector = "div.notranslate, dt, code"
-
-mermaid_theme = "neutral"
 
 copybutton_exclude = '.linenos, .gp'
