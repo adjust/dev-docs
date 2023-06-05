@@ -67,7 +67,7 @@ html_theme_options = {
     "sidebar_hide_name": True,
 }
 html_css_files = [
-    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css",
+    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css",
     "css/custom.css",
 ]
 
