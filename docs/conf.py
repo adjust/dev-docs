@@ -17,7 +17,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'Adjust SDK documentation'
+project = 'Adjust developer documentation'
 copyright = '2023, Adjust GmbH'
 author = 'Adjust GmbH'
 
@@ -59,7 +59,7 @@ html_static_path = ['_static']
 
 html_theme = "furo"
 html_theme_options = {
-    "source_repository": "https://github.com/adjust/sdk-docs/",
+    "source_repository": "https://github.com/adjust/dev-docs/",
     "source_branch": "main",
     "source_directory": "docs/",
     "dark_logo": "logo-dark.svg",
