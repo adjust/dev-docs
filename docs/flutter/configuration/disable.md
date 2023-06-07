@@ -1,0 +1,1 @@
+# Disable the Adjust SDK

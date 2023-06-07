@@ -23,6 +23,12 @@ Android
 :text-align: center
 Unity
 :::
+:::{grid-item-card} {fab}`flutter fa-5x`
+:link: flutter/index
+:link-type: doc
+:text-align: center
+Flutter
+:::
 :::{grid-item-card} {fab}`js fa-5x`
 :link: web/index
 :link-type: doc

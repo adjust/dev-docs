@@ -1,0 +1,1 @@
+# Record preinstalled app activity
