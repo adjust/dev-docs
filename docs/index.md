@@ -33,7 +33,7 @@ Unity
 :gutter: 5
 
 :::{grid-item-card}
-:img-top: _images/react.svg
+:img-top: _images/flutter.svg
 :class-img-top: card-icon
 :link: flutter/index
 :link-type: doc
