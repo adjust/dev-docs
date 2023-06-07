@@ -1,6 +1,10 @@
-# Adjust SDK documentation
+---
+hide-toc: true
+---
 
-Welcome to the Adjust SDK documentation portal!
+# Adjust developer documentation
+
+## SDK documentation
 
 ::::{grid} 3
 :gutter: 5
@@ -23,16 +27,33 @@ Android
 :text-align: center
 Unity
 :::
-:::{grid-item-card} {fab}`flutter fa-5x`
+::::
+
+::::{grid}
+:gutter: 5
+
+:::{grid-item-card}
+:img-top: _images/react.svg
+:class-img-top: card-icon
 :link: flutter/index
 :link-type: doc
 :text-align: center
 Flutter
 :::
-:::{grid-item-card} {fab}`js fa-5x`
+:::{grid-item-card}
+:img-top: _images/react.svg
+:class-img-top: card-icon
+:link: react-native/index
+:link-type: doc
+:text-align: center
+React Native
+:::
+:::{grid-item-card} {fab}`js fa-3x`
 :link: web/index
 :link-type: doc
 :text-align: center
 Web
 :::
 ::::
+
+## API documentation

@@ -1,6 +1,6 @@
 # SKAdNetwork and ATT methods
 
-Use these methods to manage your [SKAdNetwork](hc:skadnetwork) and [App Tracking Transparency](hc:app-tracking-transparency-att-framework) logic.
+Use these methods to manage your [SKAdNetwork](https://help.adjust.com/en/article/skadnetwork) and [App Tracking Transparency](https://help.adjust.com/en/article/app-tracking-transparency-att-framework) logic.
 
 % Class method requestTrackingAuthorizationWithCompletionHandler
 
@@ -114,7 +114,7 @@ Adjust.checkForNewAttStatus();
 ::::{function} updateConversionValue(conversionValue)
 :noindex:
 
-Updates the [conversion value](https://help.adjust.com/en/new/article/conversion-hub)
+Updates the [conversion value](https://help.adjust.com/en/suite/article/conversion-hub)
 
 {#unity-updateconversionvalue-invocation}
 ```c#

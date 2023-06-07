@@ -8,7 +8,7 @@ This feature is only available on devices running iOS 14 and above.
 
 1. Apple gathers attribution information and notifies the relevant ad network.
 2. The network sends a postback with this information to Adjust.
-3. Adjust displays SKAdNetwork data in [Datascape](hc:welcome-to-datascape) and [Data Canvas](hc:data-canvas).
+3. Adjust displays SKAdNetwork data in [Datascape](https://help.adjust.com/en/suite/article/datascape) and [Data Canvas](https://help.adjust.com/en/article/data-canvas).
 
 ## Disable SKAdNetwork communication
 
