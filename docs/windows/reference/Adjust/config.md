@@ -10,6 +10,7 @@ Use these methods to update the Adjust SDK's configuration.
 Enable or disable the Adjust SDK. The SDK doesn't send any information while disabled.
 
 {#windows-setenabled-invocation}
+
 ```objective-c
 + (void) setEnabled: (BOOL) enabled
 ```
@@ -32,6 +33,7 @@ Adjust.setEnabled(false);
 ```javascript
 Adjust.setEnabled(false);
 ```
+
 :::
 
 % Snippet end
@@ -48,6 +50,7 @@ Adjust.setEnabled(false);
 Call this method to check whether the Adjust SDK is enabled.
 
 {#windows-isenabled-invocation}
+
 ```objective-c
 + (BOOL) isEnabled
 ```
@@ -91,6 +94,7 @@ This method has an effect only if you delay the start of the Adjust SDK.
 The Adjust SDK sends information to Adjust's servers as soon as it starts. If you delay the start of the SDK, you can use this method to send packages before the delay ends.
 
 {#windows-sendfirstpackages-invocation}
+
 ```c#
 public static void SendFirstPackages()
 ```
@@ -111,35 +115,28 @@ Adjust.SendFirstPackages()
 
 % Class method end
 
-% Class method setOfflineMode
+% Class method SetOfflineMode
 
-::::{function} setOfflineMode (enabled)
+::::{function} SetOfflineMode (offline)
 :noindex:
 
 Controls whether the SDK is in offline mode. When in offline mode, the SDK queues all events in a file until offline mode is disabled. When offline mode is disabled, the SDK sends all queued events.
 
 {#windows-setofflinemode-invocation}
-```objective-c
-+ (void) setOfflineMode: (BOOL) enabled
+
+```c#
+public void SetOfflineMode(bool offline)
 ```
 
-:param enabled: Whether the SDK should be enabled or not
-:type enabled: BOOL
+:param offline: Whether offline mode should be enabled
+:type offline: bool
 
-% setOfflineMode snippet
+% SetOfflineMode snippet
 
 :::{tab-set-code}
 
-```swift
-Adjust.setOfflineMode(true);
-```
-
-```objective-c
-[Adjust setOfflineMode:YES];
-```
-
-```javascript
-Adjust.setOfflineMode(true);
+```c#
+Adjust.SetOfflineMode(true);
 ```
 
 :::
@@ -158,6 +155,7 @@ Adjust.setOfflineMode(true);
 Set your [push token](https://help.adjust.com/en/article/push-notifications) to record [uninstalls and reattributions](https://help.adjust.com/en/article/uninstalls-reinstalls). You can update this value at any time.
 
 {#windows-setdevicetoken-invocation}
+
 ```objective-c
 + (void) setDeviceToken: (nonnull NSData *) deviceToken
 ```
@@ -170,6 +168,7 @@ Set your [push token](https://help.adjust.com/en/article/push-notifications) to 
 :::{tab-set-code}
 
 {emphasize-lines="2"}
+
 ```swift
 func application(_ app: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
    Adjust.deviceToken = deviceToken
@@ -177,6 +176,7 @@ func application(_ app: UIApplication, didRegisterForRemoteNotificationsWithDevi
 ```
 
 {emphasize-lines="2"}
+
 ```objective-c
 - (void)application:(UIApplication *)app didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
    [Adjust setDeviceToken:deviceToken];
@@ -186,6 +186,7 @@ func application(_ app: UIApplication, didRegisterForRemoteNotificationsWithDevi
 ```javascript
 Adjust.setDeviceToken(deviceToken);
 ```
+
 :::
 
 % Snippet end

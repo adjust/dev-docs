@@ -413,32 +413,35 @@ Adjust.start(adjustConfig);
 
 % Class method end
 
-% Class method setEventBufferingEnabled
+% Class method EventBufferingEnabled
 
-::::{function} setEventBufferingEnabled (eventBufferingEnabled)
+::::{function} EventBufferingEnabled { get; set; }
 :noindex:
 
 Sets event buffering. If enabled, the SDK stores events on the device and sends all requests once per minute.
 
-{#windows-seteventbufferingenabled-invocation}
+{#windows-eventbufferingenabled-invocation}
 
 ```c#
-public void setEventBufferingEnabled(bool eventBufferingEnabled)
+public bool EventBufferingEnabled { get; set; }
 ```
 
-:param eventBufferingEnabled: Whether event buffering is enabled or not
-:type eventBufferingEnabled: Boolean
+:param EventBufferingEnabled: Whether event buffering is enabled or not
+:type EventBufferingEnabled: bool
 
-% setEventBufferingEnabled snippet
+% EventBufferingEnabled snippet
 
 :::{tab-set-code}
 
+{emphasize-lines="4"}
+
 ```c#
-AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
-//...
-adjustConfig.setEventBufferingEnabled(true);
-//...
-Adjust.start(adjustConfig);
+var config = new AdjustConfig(appToken, environment,
+   msg => System.Diagnostics.Debug.WriteLine(msg), LogLevel.Verbose);
+
+config.EventBufferingEnabled = true;
+
+Adjust.ApplicationLaunching(config);
 ```
 
 :::
