@@ -1,67 +1,5 @@
 # Setup methods
 
-% Class method setLogLevel
-
-:::::{function} setLogLevel (logLevel)
-:noindex:
-
-Set the verbosity of logs you want to receive from the Adjust SDK
-
-{#windows-setloglevel-invocation}
-
-```c#
-public void setLogLevel(AdjustLogLevel logLevel)
-```
-
-:param logLevel: The verbosity of the logging
-:type logLevel: ADJLogLevel
-
-% setLogLevel snippet
-
-:::{tab-set-code}
-
-{emphasize-lines="3"}
-
-```c#
-AdjustConfig config = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
-//...
-config.setLogLevel(AdjustLogLevel.Error);
-//...
-Adjust.start(config);
-```
-
-:::
-
-::::{dropdown} Available log levels
-:::{list-table}
-:header-rows: 1
-
--  -  Log level
-   -  Description
--  -  `AdjustLogLevel.Verbose`
-   -  Enable all logging
--  -  `AdjustLogLevel.Debug`
-   -  Enable debug logging
--  -  `AdjustLogLevel.Info`
-   -  Only show info level logs (default option)
--  -  `AdjustLogLevel.Warn`
-   -  Disable info logging
--  -  `AdjustLogLevel.Error`
-   -  Disable warning level logging and below
--  -  `AdjustLogLevel.Assert`
-   -  Disable error level logging and below
--  -  `AdjustLogLevel.Suppress`
-   -  Suppress all logging
-
-:::
-::::
-
-% Snippet end
-
-:::::
-
-% Class method end
-
 % Class method setLogDelegate
 
 ::::{function} setLogDelegate (logDelegate)
@@ -196,18 +134,16 @@ public void setSessionSuccessDelegate(Action<AdjustSessionSuccess> sessionSucces
 
 {tab-set-code}
 
-{emphasize-lines="3, 7-9"}
+{emphasize-lines="3-6"}
 
 ```c#
-AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
-adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
-adjustConfig.setSessionSuccessDelegate(SessionSuccessCallback);
-//...
-Adjust.start(adjustConfig);
-//...
-public void SessionSuccessCallback (AdjustSessionSuccess sessionSuccessData) {
+var config = new AdjustConfig(appToken, environment,
+   msg => System.Diagnostics.Debug.WriteLine(msg), LogLevel.Verbose);
+config.SessionTrackingSucceeded = adjustSessionSuccess =>
+{
    //...
-}
+};
+Adjust.ApplicationLaunching(config);
 ```
 
 :::
@@ -238,18 +174,16 @@ public void setSessionFailureDelegate(Action<AdjustSessionFailure> sessionFailur
 
 :::{tab-set-code}
 
-{emphasize-lines="3, 7-9"}
+{emphasize-lines="3-6"}
 
 ```c#
-AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
-adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
-adjustConfig.setSessionFailureDelegate(SessionFailureCallback);
-//...
-Adjust.start(adjustConfig);
-//...
-public void SessionFailureCallback (AdjustSessionFailure sessionFailureData) {
+var config = new AdjustConfig(appToken, environment,
+   msg => System.Diagnostics.Debug.WriteLine(msg), LogLevel.Verbose);
+config.SessionTrackingFailed = adjustSessionFailure =>
+{
    //...
-}
+};
+Adjust.ApplicationLaunching(config);
 ```
 
 :::
@@ -280,18 +214,16 @@ public void setEventSuccessDelegate(Action<AdjustEventSuccess> eventSuccessDeleg
 
 :::{tab-set-code}
 
-{emphasize-lines="3, 7-9"}
+{emphasize-lines="3-6"}
 
 ```c#
-AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
-adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
-adjustConfig.setEventSuccessDelegate(EventSuccessCallback);
-//...
-Adjust.start(adjustConfig);
-//...
-public void EventSuccessCallback(AdjustEventSuccess eventSuccessData) {
+var config = new AdjustConfig(appToken, environment,
+   msg => System.Diagnostics.Debug.WriteLine(msg), LogLevel.Verbose);
+config.EventTrackingSucceeded = adjustEventSuccess =>
+{
    //...
-}
+};
+Adjust.ApplicationLaunching(config);
 ```
 
 :::
@@ -320,20 +252,18 @@ public void setEventFailureDelegate(Action<AdjustEventFailure> eventFailureDeleg
 
 % setEventFailureDelegate snippet
 
-{tab-set-code}
+:::{tab-set-code}
 
-{emphasize-lines="3, 7-9"}
+{emphasize-lines="3-6"}
 
 ```c#
-AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
-adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
-adjustConfig.setEventFailureDelegate(EventFailureCallback);
-//...
-Adjust.start(adjustConfig);
-//...
-public void EventFailureCallback(AdjustEventFailure eventFailureData) {
+var config = new AdjustConfig(appToken, environment,
+   msg => System.Diagnostics.Debug.WriteLine(msg), LogLevel.Verbose);
+config.EventTrackingFailed = adjustEventFailure =>
+{
    //...
-}
+};
+Adjust.ApplicationLaunching(config);
 ```
 
 :::
@@ -453,42 +383,6 @@ Adjust.ApplicationLaunching(config);
 
 % Class method end
 
-% Class method setNeedsCost
-
-::::{function} setNeedsCost (needsCost)
-:noindex:
-
-:::{versionadded} v4.24.0
-Sets whether the SDK should gather cost data. This is accessible in the user's attribution information.
-:::
-
-{#windows-setneedscost-invocation}
-
-```c#
-public void setNeedsCost(bool needsCost)
-```
-
-:param needsCost: Whether the SDK should gather cost data
-:type needsCost: bool
-
-% setNeedsCost snippet
-
-:::{tab-set-code}
-
-```c#
-AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
-adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
-adjustConfig.setNeedsCost(true);
-```
-
-:::
-
-% Snippet end
-
-::::
-
-% Class method end
-
 % Class method AttributionChanged
 
 ::::{function} AttributionChanged { get; set; }
@@ -549,113 +443,6 @@ private void AdjustAttributionChanged(AdjustAttribution attribution)
 
 % Class method end
 
-% Class method setPreinstallTrackingEnabled
-
-::::{function} setPreinstallTrackingEnabled (preinstallTrackingEnabled)
-:noindex:
-
-Enables or disables preinstall tracking
-
-{#windows-setpreinstalltrackingenabled-invocation}
-
-```c#
-public void setPreinstallTrackingEnabled(bool preinstallTrackingEnabled)
-```
-
-:param preinstallTrackingEnabled: Whether preinstall tracking is enabled
-:type preinstallTrackingEnabled: Boolean
-
-% setPreinstallTrackingEnabled snippet
-
-:::{tab-set-code}
-
-```c#
-AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
-//...
-adjustConfig.setPreinstallTrackingEnabled(true);
-//...
-Adjust.start(adjustConfig);
-```
-
-:::
-
-% Snippet end
-
-::::
-
-% Class method end
-
-% Class method setPreinstallFilePath
-
-::::{function} setPreinstallFilePath (preinstallFilePath)
-:noindex:
-
-Defines a relative path where preinstall information is available. This directory must be world-readable
-
-{#windows-setpreinstallfilepath-invocation}
-
-```c#
-public void setPreinstallFilePath(string preinstallFilePath)
-```
-
-:param preinstallFilePath: The path where the preinstall information is written
-:type preinstallFilePath: String
-
-% setPreinstallFilePath snippet
-
-:::{tab-set-code}
-
-```c#
-AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
-//...
-adjustConfig.setPreinstallFilePath("../EngagementFile.xml");
-//...
-Adjust.start(adjustConfig);
-```
-
-:::
-
-% Snippet end
-
-::::
-
-% Class method end
-
-% Class method deactivateSKAdNetworkHandling
-
-::::{function} deactivateSKAdNetworkHandling
-:noindex:
-
-Turns off communication with SKAdNetwork. Communication is _enabled_ by default
-
-{#windows-deactivateskadnetworkhandling-invocation}
-
-```c#
-public void deactivateSKAdNetworkHandling()
-```
-
-% deactivateSKAdNetworkHandling snippet
-
-:::{tab-set-code}
-
-{emphasize-lines="3"}
-
-```c#
-AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
-//...
-adjustConfig.deactivateSKAdNetworkHandling();
-//...
-Adjust.start(adjustConfig);
-```
-
-:::
-
-% Snippet end
-
-::::
-
-% Class method end
-
 % Class method setLaunchDeferredDeeplink
 
 ::::{function} setLaunchDeferredDeeplink (launchDeferredDeeplink)
@@ -682,80 +469,6 @@ public void setLaunchDeferredDeeplink(bool launchDeferredDeeplink)
 AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
 //...
 adjustConfig.setLaunchDeferredDeeplink(true);
-//...
-Adjust.start(adjustConfig);
-```
-
-:::
-
-% Snippet end
-
-::::
-
-% Class method end
-
-% Class method setLinkMeEnabled
-
-::::{function} setLinkMeEnabled (linkMeEnabled)
-:noindex:
-
-Toggle support for Adjust's [LinkMe solution](https://help.adjust.com/en/article/linkme) for deep linking
-
-{#windows-setlinkmeenabled-invocation}
-
-```c#
-public void setLinkMeEnabled(bool linkMeEnabled)
-```
-
-:param linkMeEnabled: Whether LinkMe should be enabled
-:type linkMeEnabled: Boolean
-
-% setLinkMeEnabled snippet
-
-:::{tab-set-code}
-
-{emphasize-lines="3"}
-
-```c#
-AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
-//...
-adjustConfig.setLinkMeEnabled(true);
-//...
-Adjust.start(adjustConfig);
-```
-
-:::
-
-% Snippet end
-
-::::
-
-% Class method end
-
-% Class method setConversionValueUpdatedCallbackDelegate
-
-::::{function} setConversionValueUpdatedCallbackDelegate(conversionValueUpdatedDelegate)
-:noindex:
-
-Sets a delegate function to call when the user's conversion value updates.
-
-{#windows-setconversionvalueupdatedcallbackdelegate-invocation}
-
-```c#
-public void setConversionValueUpdatedDelegate(Action<int> conversionValueUpdatedDelegate, string sceneName = "Adjust")
-```
-
-:param conversionValueUpdatedDelegate: The delegate function the SDK launches when the conversion value updates
-:type conversionValueUpdatedDelegate: Action
-
-% setConversionValueUpdatedDelegate snippet
-
-:::{tab-set-code}
-
-```c#
-AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
-//...
-adjustConfig.setConversionValueUpdatedDelegate(ConversionValueUpdatedCallback);
 //...
 Adjust.start(adjustConfig);
 ```
