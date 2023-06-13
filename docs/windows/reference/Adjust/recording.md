@@ -81,7 +81,7 @@ public static void RemoveSessionCallbackParameter(string key)
 ```
 
 :param key: The data key
-:type key: NSString
+:type key: string
 
 % RemoveSessionCallbackParameter snippet
 

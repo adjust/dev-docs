@@ -443,34 +443,44 @@ private void AdjustAttributionChanged(AdjustAttribution attribution)
 
 % Class method end
 
-% Class method setLaunchDeferredDeeplink
+% Class method DeeplinkResponse
 
-::::{function} setLaunchDeferredDeeplink (launchDeferredDeeplink)
+::::{function} DeeplinkResponse { get; set; }
 :noindex:
 
 Enables or disables launching deferred deep links with the SDK. If **enabled**, the SDK launches deep links the user interacts with
 
-{#windows-setlaunchdeferreddeeplink-invocation}
+{#windows-deeplinkresponse-invocation}
 
 ```c#
-public void setLaunchDeferredDeeplink(bool launchDeferredDeeplink)
+public Func<Uri, bool> DeeplinkResponse { get; set; }
 ```
 
-:param launchDeferredDeeplink: Whether to enable launching deferred deep links
-:type launchDeferredDeeplink: Boolean
+:param DeeplinkResponse: The function to call on receipt of a deferred deep link
+:type DeeplinkResponse: Func
 
-% setLaunchDeferredDeeplink snippet
+% DeeplinkResponse snippet
 
 :::{tab-set-code}
 
-{emphasize-lines="3"}
-
 ```c#
-AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
-//...
-adjustConfig.setLaunchDeferredDeeplink(true);
-//...
-Adjust.start(adjustConfig);
+var config = new AdjustConfig(appToken, environment,
+   msg => System.Diagnostics.Debug.WriteLine(msg), LogLevel.Verbose);
+
+config.DeeplinkResponse = deepLinkUri =>
+{
+   if (ShouldAdjustSdkLaunchTheDeeplink(deepLinkUri))
+   {
+      return true;
+   }
+   else
+   {
+      return false;
+   }
+};
+
+Adjust.ApplicationLaunching(config);
+// ...
 ```
 
 :::
