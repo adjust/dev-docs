@@ -9,8 +9,8 @@ Record event information using an `AdjustEvent` object and an [Adjust event toke
 
 {#windows-trackevent-invocation}
 
-```objective-c
-+ (void) trackEvent: (nullable ADJEvent *) event
+```c#
+public static void TrackEvent(AdjustEvent adjustEvent)
 ```
 
 :param event: An event object containing information you want to record
@@ -222,3 +222,33 @@ Adjust.ResetSessionPartnerParameters();
 ::::
 
 % Class method end
+
+% Class method GetAttribution
+
+::::{function} GetAttribution
+:noindex:
+
+Fetches attribution data from the device
+
+{#windows-getattribution-invocation}
+
+```c#
+public static AdjustAttribution GetAttribution()
+```
+
+:returns: An attribution object containing attribution data associated with the device
+:rtype: [`AdjustAttribution` object](/windows/reference/AdjustAttribution.md)
+
+% GetAttribution snippet
+
+:::{tab-set-code}
+
+```c#
+AdjustAttribution attribution = Adjust.GetAttribution();
+```
+
+:::
+
+% Snippet end
+
+::::

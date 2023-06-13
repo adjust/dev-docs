@@ -482,45 +482,55 @@ adjustConfig.setNeedsCost(true);
 
 % Class method end
 
-% Class method setAttributionChangedDelegate
+% Class method AttributionChanged
 
-::::{function} setAttributionChangedDelegate (attributionChangedDelegate)
+::::{function} AttributionChanged { get; set; }
 :noindex:
 
 Sets a delegate function that fires when a user's attribution information updates
 
-{#windows-setattributionchangeddelegate-invocation}
+{#windows-attributionchanged-invocation}
 
 ```c#
-public void setAttributionChangedDelegate(Action<AdjustAttribution> attributionChangedDelegate, string sceneName = "Adjust")
+public Action<AdjustAttribution> AttributionChanged { get; set; }
 ```
 
-:param attributionChangedDelegate: The delegate function that the SDK calls when a the user's attribution information changes
-:type attributionChangedDelegate: Action
+:param AdjustAttribution: The delegate function that the SDK calls when a the user's attribution information changes
+:type AdjustAttribution: Action
 
-% setAttributionChangedDelegate snippet
+% AttributionChanged snippet 1
 
 :::{tab-set-code}
 
+{emphasize-lines="3-4"}
+
 ```c#
-:emphasize-lines: 9, 13-16
+var config = new AdjustConfig(appToken, environment);
 
-using com.adjust.sdk;
+config.AttributionChanged = (attribution) =>
+   System.Diagnostics.Debug.WriteLine("attribution: " + attribution);
 
-public class ExampleGUI : MonoBehaviour {
-   void OnGUI() {
-      if (GUI.Button(new Rect(0, 0, Screen.width, Screen.height), "callback")) {
-         AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
-         adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
-         adjustConfig.setAttributionChangedDelegate(this.attributionChangedDelegate);
-         Adjust.start(adjustConfig);
-      }
-   }
+Adjust.ApplicationLaunching(config);
+```
 
-   public void attributionChangedDelegate(AdjustAttribution attribution) {
-   Debug.Log("Attribution changed");
-   // ...
-   }
+:::
+
+% Snippet end
+
+% AttributionChanged snippet 2
+
+:::{tab-set-code}
+
+{emphasize-lines="2, 5-8"}
+
+```c#
+var config = new AdjustConfig(appToken, environment);
+config.AttributionChanged = AdjustAttributionChanged;
+Adjust.ApplicationLaunching(config);
+
+private void AdjustAttributionChanged(AdjustAttribution attribution)
+{
+   //...
 }
 ```
 
