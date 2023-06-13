@@ -131,44 +131,28 @@ Adjust.SetOfflineMode(true);
 
 % Class method end
 
-% Class method setDeviceToken
+% Class method SetPushToken
 
-::::{function} setDeviceToken (deviceToken)
+::::{function} SetPushToken (PushToken)
 :noindex:
 
 Set your [push token](https://help.adjust.com/en/article/push-notifications) to record [uninstalls and reattributions](https://help.adjust.com/en/article/uninstalls-reinstalls). You can update this value at any time.
 
-{#windows-setdevicetoken-invocation}
+{#windows-setpushtoken-invocation}
 
-```objective-c
-+ (void) setDeviceToken: (nonnull NSData *) deviceToken
+```c#
+public static void SetPushToken(string pushToken)
 ```
 
-:param deviceToken: Your Apple push token
-:type deviceToken: NSData
+:param PushToken: Your notification push token
+:type PushToken: string
 
-% setDeviceToken snippet
+% SetPushToken snippet
 
 :::{tab-set-code}
 
-{emphasize-lines="2"}
-
-```swift
-func application(_ app: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-   Adjust.deviceToken = deviceToken
-}
-```
-
-{emphasize-lines="2"}
-
-```objective-c
-- (void)application:(UIApplication *)app didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-   [Adjust setDeviceToken:deviceToken];
-}
-```
-
-```javascript
-Adjust.setDeviceToken(deviceToken);
+```c#
+Adjust.SetPushToken("{YourDeviceToken}");
 ```
 
 :::
