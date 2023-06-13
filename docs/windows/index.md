@@ -13,7 +13,7 @@ To add the SDK using NuGet:
 1. Right click on the project in the {guilabel}`Solution Explorer` to open the {guilabel}`NuGet Package Manager` window.
 2. Select {guilabel}`Manage NuGet Packages...`.
 3. Select the {guilabel}`Browse` tab.
-4. Enter `adjust` in the search box and hit {kbd}`Return`  to search for the Adjust SDK.
+4. Enter `adjust` in the search box and hit {kbd}`Return` to search for the Adjust SDK.
 5. The Adjust SDK should appear at the top of the list. Select it and select {guilabel}`Install` to install the package.
 
 ![A screenshot of the NuGet Package Manager](NuGet.png)
@@ -41,8 +41,8 @@ Once you've added the Adjust SDK to your {program}`Visual Studio` project, you n
 
 To initialize the Adjust SDK, you need to create a config object. This object contains configuration options that control how the Adjust SDK behaves. Pass the following arguments for a minimal setup:
 
-- `appToken`: Your [app's token](hc:app-settings#view-your-app-token).
-- `environment`: The environment you want to run the SDK in. Set this to `AdjustConfig.EnvironmentSandbox`.
+-  `appToken`: Your [app's token](https://help.adjust.com/en/article/app-settings#view-your-app-token).
+-  `environment`: The environment you want to run the SDK in. Set this to `AdjustConfig.EnvironmentSandbox`.
 
 To initialize the Adjust SDK with this config object:
 
@@ -56,14 +56,14 @@ using AdjustSdk;
 
 sealed partial class App : Application
 {
-    protected override void OnLaunched(LaunchActivatedEventArgs e)
-    {
-        string appToken = "{YourAppToken}";
-        string environment = AdjustConfig.EnvironmentSandbox;
-        var config = new AdjustConfig(appToken, environment);
-        Adjust.ApplicationLaunching(config);
-        // ...
-    }
+   protected override void OnLaunched(LaunchActivatedEventArgs e)
+   {
+      string appToken = "{YourAppToken}";
+      string environment = AdjustConfig.EnvironmentSandbox;
+      var config = new AdjustConfig(appToken, environment);
+      Adjust.ApplicationLaunching(config);
+   // ...
+   }
 }
 ```
 
