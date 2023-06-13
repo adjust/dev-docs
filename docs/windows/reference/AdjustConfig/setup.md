@@ -100,9 +100,9 @@ Adjust.start(adjustConfig);
 
 % Class method end
 
-% Class method setDefaultTracker
+% Class method DefaultTracker
 
-::::{function} setDefaultTracker (defaultTracker)
+::::{function} DefaultTracker (defaultTracker)
 :noindex:
 
 Sets a default tracker token to record installs against
@@ -110,22 +110,23 @@ Sets a default tracker token to record installs against
 {#windows-setdefaulttracker-invocation}
 
 ```c#
-public void setDefaultTracker(string defaultTracker)
+public string DefaultTracker { get; set; }
 ```
 
-:param defaultTracker: The tracker token to which all preinstalled sessions are attributed
-:type defaultTracker: String
+:param defaultTracker: The campaign token to which all preinstalled sessions are attributed
+:type defaultTracker: string
 
-% setDefaultTracker snippet
+% DefaultTracker snippet
 
 :::{tab-set-code}
 
+{emphasize-lines="3"}
+
 ```c#
-AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
-//...
-adjustConfig.setDefaultTracker("{TrackerToken}");
-//...
-Adjust.start(adjustConfig);
+var config = new AdjustConfig(appToken, environment,
+   msg => System.Diagnostics.Debug.WriteLine(msg), LogLevel.Verbose);
+config.DefaultTracker = "{TrackerToken}";
+Adjust.ApplicationLaunching(config);
 ```
 
 :::
