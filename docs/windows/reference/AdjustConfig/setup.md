@@ -114,23 +114,23 @@ Adjust.ApplicationLaunching(config);
 
 % Class method end
 
-% Class method setSessionSuccessDelegate
+% Class method SessionTrackingSucceeded
 
-::::{function} setSessionSuccessDelegate (sessionSuccessDelegate)
+::::{function} SessionTrackingSucceeded { get; set; }
 :noindex:
 
 Sets up a success callback to trigger a function when the SDK records a session.
 
-{#windows-setsessionsuccessdelegate-invocation}
+{#windows-sessiontrackingsucceeded-invocation}
 
 ```c#
-public void setSessionSuccessDelegate(Action<AdjustSessionSuccess> sessionSuccessDelegate, string sceneName = "Adjust")
+public Action<AdjustSessionSuccess> SessionTrackingSucceeded { get; set; }
 ```
 
-:param sessionSuccessDelegate: The function to launch when the SDK successfully records a session
-:type sessionSuccessDelegate: Action
+:param AdjustSessionSuccess: The function to launch when the SDK successfully records a session
+:type AdjustSessionSuccess: Action
 
-% setSessionSuccessDelegate snippet
+% SessionTrackingSucceeded snippet
 
 {tab-set-code}
 
@@ -154,23 +154,23 @@ Adjust.ApplicationLaunching(config);
 
 % Class method end
 
-% Class method setSessionFailureDelegate
+% Class method SessionTrackingFailed
 
-::::{function} setSessionFailureDelegate (sessionSuccessDelegate)
+::::{function} SessionTrackingFailed { get; set; }
 :noindex:
 
 Sets up a callback to trigger a function when the SDK fails to record a session.
 
 ```c#
-:name: windows-setSessionFailureDelegate-invocation
+:name: windows-sessiontrackingfailed-invocation
 
-public void setSessionFailureDelegate(Action<AdjustSessionFailure> sessionFailureDelegate, string sceneName = "Adjust")
+public Action<AdjustSessionFailure> SessionTrackingFailed { get; set; }
 ```
 
-:param sessionFailureDelegate: The function to launch when the SDK fails to record a session
-:type sessionFailureDelegate: Action
+:param AdjustSessionFailure: The function to launch when the SDK fails to record a session
+:type AdjustSessionFailure: Action
 
-% setSessionFailureDelegate snippet
+% SessionTrackingFailed snippet
 
 :::{tab-set-code}
 
@@ -194,23 +194,23 @@ Adjust.ApplicationLaunching(config);
 
 % Class method end
 
-% Class method setEventSuccessDelegate
+% Class method EventTrackingSucceeded
 
-::::{function} eventSuccessDelegate (eventSuccessDelegate)
+::::{function} EventTrackingSucceeded { get; set; }
 :noindex:
 
 Sets up a success callback to trigger a function when the SDK records an event.
 
-{#windows-seteventsuccessdelegate-invocation}
+{#windows-eventtrackingsucceeded-invocation}
 
 ```c#
-public void setEventSuccessDelegate(Action<AdjustEventSuccess> eventSuccessDelegate, string sceneName = "Adjust")
+public Action<AdjustEventSuccess> EventTrackingSucceeded { get; set; }
 ```
 
-:param eventSuccessDelegate: The function to launch when the SDK successfully records an event
-:type eventSuccessDelegate: Action
+:param AdjustEventSuccess: The function to launch when the SDK successfully records an event
+:type AdjustEventSuccess: Action
 
-% setEventSuccessDelegate snippet
+% EventTrackingSucceeded snippet
 
 :::{tab-set-code}
 
@@ -234,23 +234,23 @@ Adjust.ApplicationLaunching(config);
 
 % Class method end
 
-% Class method setEventFailureDelegate
+% Class method EventTrackingFailed
 
-::::{function} setEventFailureDelegate (eventFailureDelegate)
+::::{function} EventTrackingFailed { get; set; }
 :noindex:
 
 Sets up a callback to trigger a function when the SDK fails to record an event.
 
-{#windows-seteventfailuredelegate-invocation}
+{#windows-eventtrackingfailed-invocation}
 
 ```c#
-public void setEventFailureDelegate(Action<AdjustEventFailure> eventFailureDelegate, string sceneName = "Adjust")
+public Action<AdjustEventFailure> EventTrackingFailed { get; set; }
 ```
 
-:param eventFailureDelegate: The function to launch when the SDK fails to record an event
+:param AdjustEventFailure: The function to launch when the SDK fails to record an event
 :type eventFailureDelegate: Action
 
-% setEventFailureDelegate snippet
+% EventTrackingFailed snippet
 
 :::{tab-set-code}
 

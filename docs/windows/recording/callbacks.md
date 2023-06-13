@@ -41,7 +41,7 @@ Session callbacks have access to a response data object. You can use its propert
 Set up success callbacks to trigger functions when the SDK records a session.
 
 :::{include} /windows/reference/AdjustConfig/setup.md
-:start-after: setSessionSuccessDelegate snippet
+:start-after: SessionTrackingSucceeded snippet
 :end-before: Snippet end
 :::
 
@@ -69,7 +69,7 @@ Adjust.ApplicationLaunching(config);
 Set up failure callbacks to trigger functions when the SDK fails to record a session.
 
 :::{include} /windows/reference/AdjustConfig/setup.md
-:start-after: setSessionFailureDelegate snippet
+:start-after: SessionTrackingFailed snippet
 :end-before: Snippet end
 :::
 
@@ -133,7 +133,7 @@ Event callbacks have access to a response data object. You can use its propertie
 Set up success callbacks to trigger functions when the SDK records an event.
 
 :::{include} /windows/reference/AdjustConfig/setup.md
-:start-after: setEventSuccessDelegate snippet
+:start-after: EventTrackingSucceeded snippet
 :end-before: Snippet end
 :::
 
@@ -161,7 +161,7 @@ Adjust.ApplicationLaunching(config);
 Set up failure callbacks to trigger functions when the SDK fails to record an event.
 
 :::{include} /windows/reference/AdjustConfig/setup.md
-:start-after: setEventFailureDelegate snippet
+:start-after: EventTrackingFailed snippet
 :end-before: Snippet end
 :::
 

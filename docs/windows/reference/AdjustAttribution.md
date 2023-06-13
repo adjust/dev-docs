@@ -6,14 +6,6 @@ The `AdjustAttribution` class contains details about the current attribution sta
 
 The following properties can be accessed by calling the [`GetAttribution` method](#windows-getattribution-invocation). Any values that aren't populated for the user are returned as a null value.
 
-:::{note}
-The following values can only be accessed if the [`needsCost`](#windows-setneedscost-invocation) property on your `AdjustConfig` instance is `true`:
-
--  `costType`
--  `costAmount`
--  `costCurrency`
-   :::
-
 :::{list-table}
 :header-rows: 1
 
