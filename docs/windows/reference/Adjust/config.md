@@ -2,36 +2,28 @@
 
 Use these methods to update the Adjust SDK's configuration.
 
-% Class method setEnabled
+% Class method SetEnabled
 
-::::{function} setEnabled (enabled)
+::::{function} SetEnabled (enabled)
 :noindex:
 
 Enable or disable the Adjust SDK. The SDK doesn't send any information while disabled.
 
 {#windows-setenabled-invocation}
 
-```objective-c
-+ (void) setEnabled: (BOOL) enabled
+```c#
+public static void SetEnabled(bool enabled)
 ```
 
 :param enabled: Whether the SDK should be enabled or not
-:type enabled: BOOL
+:type enabled: bool
 
-% setEnabled snippet
+% SetEnabled snippet
 
 :::{tab-set-code}
 
-```swift
-Adjust.setEnabled(false);
-```
-
-```objective-c
-[Adjust setEnabled:NO];
-```
-
-```javascript
-Adjust.setEnabled(false);
+```c#
+Adjust.SetEnabled(false);
 ```
 
 :::
@@ -42,36 +34,28 @@ Adjust.setEnabled(false);
 
 % Class method end
 
-% Class method isEnabled
+% Class method IsEnabled
 
-::::{function} isEnabled ()
+::::{function} IsEnabled ()
 :noindex:
 
 Call this method to check whether the Adjust SDK is enabled.
 
 {#windows-isenabled-invocation}
 
-```objective-c
-+ (BOOL) isEnabled
+```c#
+public static bool IsEnabled()
 ```
 
 :returns: Whether the SDK is currently enabled
-:rtype: BOOL
+:rtype: bool
 
-% isEnabled snippet
+% IsEnabled snippet
 
 :::{tab-set-code}
 
-```swift
-Adjust.isEnabled();
-```
-
-```objective-c
-[Adjust isEnabled];
-```
-
-```javascript
-Adjust.isEnabled();
+```c#
+Adjust.IsEnabled();
 ```
 
 :::
