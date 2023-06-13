@@ -136,32 +136,35 @@ Adjust.start(adjustConfig);
 
 % Class method end
 
-% Class method setSendInBackground
+% Class method SendInBackground
 
-::::{function} setSendInBackground (sendInBackground)
+::::{function} SendInBackground { get; set; }
 :noindex:
 
 Sets whether the SDK should send data while the app is running in the background
 
-{#windows-setsendinbackground-invocation}
+{#windows-sendinbackground-invocation}
 
 ```c#
-public void setSendInBackground(bool sendInBackground)
+public bool SendInBackground { get; set; }
 ```
 
-:param sendInBackground: Whether the SDK should send information when the app is running in the background
-:type sendInBackground: Boolean
+:param SendInBackground: Whether the SDK should send information when the app is running in the background
+:type SendInBackground: Boolean
 
-% setSendInBackground snippet
+% SendInBackground snippet
 
 :::{tab-set-code}
 
+{emphasize-lines="4"}
+
 ```c#
-AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
-//...
-adjustConfig.setSendInBackground(true);
-//...
-Adjust.start(adjustConfig);
+var config = new AdjustConfig(appToken, environment,
+   msg => System.Diagnostics.Debug.WriteLine(msg), LogLevel.Verbose);
+
+config.SendInBackground = true;
+
+Adjust.ApplicationLaunching(config);
 ```
 
 :::
