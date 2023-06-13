@@ -9,7 +9,7 @@ Use these methods to update the Adjust SDK's configuration.
 
 Enable or disable the Adjust SDK. The SDK doesn't send any information while disabled.
 
-{#ios-setenabled-invocation}
+{#windows-setenabled-invocation}
 ```objective-c
 + (void) setEnabled: (BOOL) enabled
 ```
@@ -47,7 +47,7 @@ Adjust.setEnabled(false);
 
 Call this method to check whether the Adjust SDK is enabled.
 
-{#ios-isenabled-invocation}
+{#windows-isenabled-invocation}
 ```objective-c
 + (BOOL) isEnabled
 ```
@@ -79,9 +79,9 @@ Adjust.isEnabled();
 
 % Class method end
 
-% Class method sendFirstPackages
+% Class method SendFirstPackages
 
-::::{function} sendFirstPackages ()
+::::{function} SendFirstPackages ()
 :noindex:
 
 :::{note}
@@ -90,25 +90,17 @@ This method has an effect only if you delay the start of the Adjust SDK.
 
 The Adjust SDK sends information to Adjust's servers as soon as it starts. If you delay the start of the SDK, you can use this method to send packages before the delay ends.
 
-{#ios-sendfirstpackages-invocation}
-```objective-c
-+ (void)sendFirstPackages;
+{#windows-sendfirstpackages-invocation}
+```c#
+public static void SendFirstPackages()
 ```
 
-% sendFirstPackages snippet
+% SendFirstPackages snippet
 
 :::{tab-set-code}
 
-```swift
-Adjust.sendFirstPackages()
-```
-
-```objective-c
-[Adjust sendFirstPackages];
-```
-
-```javascript
-Adjust.sendFirstPackages();
+```c#
+Adjust.SendFirstPackages()
 ```
 
 :::
@@ -126,7 +118,7 @@ Adjust.sendFirstPackages();
 
 Controls whether the SDK is in offline mode. When in offline mode, the SDK queues all events in a file until offline mode is disabled. When offline mode is disabled, the SDK sends all queued events.
 
-{#ios-setofflinemode-invocation}
+{#windows-setofflinemode-invocation}
 ```objective-c
 + (void) setOfflineMode: (BOOL) enabled
 ```
@@ -163,9 +155,9 @@ Adjust.setOfflineMode(true);
 ::::{function} setDeviceToken (deviceToken)
 :noindex:
 
-Set your [push token](hc:push-notifications) to record [uninstalls and reattributions](hc:uninstalls-reinstalls). You can update this value at any time.
+Set your [push token](https://help.adjust.com/en/article/push-notifications) to record [uninstalls and reattributions](https://help.adjust.com/en/article/uninstalls-reinstalls). You can update this value at any time.
 
-{#ios-setdevicetoken-invocation}
+{#windows-setdevicetoken-invocation}
 ```objective-c
 + (void) setDeviceToken: (nonnull NSData *) deviceToken
 ```
@@ -180,14 +172,14 @@ Set your [push token](hc:push-notifications) to record [uninstalls and reattribu
 {emphasize-lines="2"}
 ```swift
 func application(_ app: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-    Adjust.deviceToken = deviceToken
+   Adjust.deviceToken = deviceToken
 }
 ```
 
 {emphasize-lines="2"}
 ```objective-c
 - (void)application:(UIApplication *)app didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-    [Adjust setDeviceToken:deviceToken];
+   [Adjust setDeviceToken:deviceToken];
 }
 ```
 
