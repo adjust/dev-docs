@@ -22,7 +22,7 @@ To load the SDK through a CDN, add the following snippet between your web app's 
 </script>
 ```
 
-The Adjust SDK loads on each page and initates once per page load.
+The Adjust SDK loads on each page and initiates once per page load.
 
 #### Subresource Integrity
 
