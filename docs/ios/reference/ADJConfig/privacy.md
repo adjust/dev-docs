@@ -37,7 +37,7 @@ adjustConfig?.urlStrategy = ADJDataResidencyEU
 NSString *yourAppToken = @"{YourAppToken}";
 NSString *environment = ADJEnvironmentSandbox;
 *adjustConfig = [ADJConfig configWithAppToken:yourAppToken
-                                  environment:environment];
+                           environment:environment];
 // ...
 [adjustConfig setUrlStrategy:ADJDataResidencyEU];
 ```
@@ -67,9 +67,11 @@ setupWebViewJavascriptBridge(function(bridge) {
 * - `AdjustDataResidencyUS`
    - Sets the area of data residency to the USA
 * - `AdjustUrlStrategyChina`
-   - Sets the area of data residency to China
+   - Points the URL strategy to the `app.adjust.world` domain
+* - `AdjustUrlStrategyCn`
+   - Points the URL strategy to the `app.adjust.cn` domain
 * - `AdjustUrlStrategyIndia`
-   - Sets the area of data residency to India
+   - Points the URL strategy to the `app.adjust.net.in` domain
 
 :::
 ::::
@@ -117,7 +119,7 @@ adjustConfig?.coppaCompliantEnabled = true
 NSString *yourAppToken = @"{YourAppToken}";
 NSString *environment = ADJEnvironmentSandbox;
 *adjustConfig = [ADJConfig configWithAppToken:yourAppToken
-                                  environment:environment];
+                           environment:environment];
 // ...
 [adjustConfig setCoppaCompliantEnabled:YES];
 ```

@@ -62,9 +62,11 @@ adjustConfig.setUrlStrategy(AdjustConfig.DATA_RESIDENCY_EU);
 * - `AdjustConfig.DATA_RESIDENCY_US`
    - Sets the area of data residency to the USA
 * - `URL_STRATEGY_CHINA`
-   - Sets the URL strategy to China
+   - Points the URL strategy to the `app.adjust.world` domain
+* - `URL_STRATEGY_CN`
+   - Points the URL strategy to the `app.adjust.cn` domain
 * - `URL_STRATEGY_INDIA`
-   - Sets the URL strategy to India
+   - Points the URL strategy to the `app.adjust.net.in` domain
 
 :::
 ::::
