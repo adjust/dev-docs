@@ -60,17 +60,17 @@ setupWebViewJavascriptBridge(function(bridge) {
 
 * - Value
    - Description
-* - `AdjustDataResidencyEU`
+* - `ADJDataResidencyEU`
    - Sets the area of data residency to the EU
-* - `AdjustDataResidencyTR`
+* - `ADJDataResidencyTR`
    - Sets the area of data residency to Turkey
-* - `AdjustDataResidencyUS`
+* - `ADJDataResidencyUS`
    - Sets the area of data residency to the USA
-* - `AdjustUrlStrategyChina`
+* - `ADJUrlStrategyChina`
    - Points the URL strategy to the `app.adjust.world` domain
-* - `AdjustUrlStrategyCn`
+* - `ADJUrlStrategyCn`
    - Points the URL strategy to the `app.adjust.cn` domain
-* - `AdjustUrlStrategyIndia`
+* - `ADJUrlStrategyIndia`
    - Points the URL strategy to the `app.adjust.net.in` domain
 
 :::
