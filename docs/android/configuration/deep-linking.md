@@ -120,7 +120,7 @@ The Adjust SDK opens deferred deep links by default. No additional setup is requ
 
 You can configure the Adjust SDK to call a delegate function when it receives a deferred deep link. This delegate function receives the deep link as a **string** argument.
 
-If you want the delegate function to open the deep link, return `true` in your delegate function. If you don't want to open it, return `false`.
+If you want to open the deep link, return `true` in your delegate function. If you don't want to open it, return `false`.
 
 :::{include} /android/reference/AdjustConfig/setup.md
 :start-after: setOnDeeplinkResponseListener snippet
