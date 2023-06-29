@@ -38,7 +38,7 @@ Adjust.TrackEvent(adjustEvent);
 ::::{function} AddSessionCallbackParameter (key, value)
 :noindex:
 
-Adds callback parameters to send with each session recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
+Adds callback parameters to send with each {term}`session` recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
 
 {#windows-addsessioncallbackparameter-invocation}
 
@@ -133,7 +133,7 @@ Adjust.ResetSessionCallbackParameters();
 ::::{function} AddSessionPartnerParameter (key, value)
 :noindex:
 
-Adds partner parameters to send with each session recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
+Adds partner parameters to send with each {term}`session` recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
 
 {#windows-Addsessionpartnerparameter-invocation}
 

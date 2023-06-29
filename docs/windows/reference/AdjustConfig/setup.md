@@ -119,7 +119,7 @@ Adjust.ApplicationLaunching(config);
 ::::{function} SessionTrackingSucceeded { get; set; }
 :noindex:
 
-Sets up a success callback to trigger a function when the SDK records a session.
+Sets up a success callback to trigger a function when the SDK records a {term}`session`.
 
 {#windows-sessiontrackingsucceeded-invocation}
 
@@ -159,7 +159,7 @@ Adjust.ApplicationLaunching(config);
 ::::{function} SessionTrackingFailed { get; set; }
 :noindex:
 
-Sets up a callback to trigger a function when the SDK fails to record a session.
+Sets up a callback to trigger a function when the SDK fails to record a {term}`session`.
 
 ```c#
 :name: windows-sessiontrackingfailed-invocation
@@ -279,7 +279,7 @@ Adjust.ApplicationLaunching(config);
 ::::{function} DelayStart { get; set; }
 :noindex:
 
-Sets a delay before the SDK starts to allow data to load before session information is sent to Adjust's servers. Maximum delay: 10 seconds
+Sets a delay before the SDK starts to allow data to load before {term}`session` information is sent to Adjust's servers. Maximum delay: 10 seconds
 
 {#windows-setdelaystart-invocation}
 
