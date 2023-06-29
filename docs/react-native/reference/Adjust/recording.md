@@ -1,6 +1,6 @@
 # Recording methods
 
-Use these methods to record event and session information with the Adjust SDK.
+Use these methods to record event and {term}`session` information with the Adjust SDK.
 
 % Class method trackEvent
 
@@ -41,7 +41,7 @@ Adjust.trackEvent(myAdjustEvent);
 ::::{function} addSessionCallbackParameter (key, value)
 :noindex:
 
-Adds callback parameters to send with each session recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
+Adds callback parameters to send with each {term}`session` recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
 
 :::{note}
 If you have added an event callback parameter with the same key, the **event** parameter takes priority.
@@ -140,7 +140,7 @@ Adjust.resetSessionCallbackParameters();
 ::::{function} addSessionPartnerParameter (key, value)
 :noindex:
 
-Adds partner parameters to send with each session recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
+Adds partner parameters to send with each {term}`session` recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
 
 :::{note}
 If you have added an event callback parameter with the same key, the **event** parameter takes priority.

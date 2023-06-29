@@ -1,6 +1,6 @@
 # Set up callbacks
 
-Set up callbacks to trigger functions when the SDK sends information to Adjust. You can set up callbacks for **sessions** and **events**.
+Set up callbacks to trigger functions when the SDK sends information to Adjust. You can set up callbacks for **{term}`sessions <session>`** and **events**.
 
 :::{important}
 You must register your callbacks _before_ initializing the SDK.

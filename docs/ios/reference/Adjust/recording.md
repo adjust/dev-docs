@@ -47,12 +47,12 @@ Adjust.trackEvent(adjustEvent);
 ::::{function} addSessionCallbackParameter (key, value)
 :noindex:
 
-Adds callback parameters to send with each session recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
+Adds callback parameters to send with each {term}`session` recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
 
 {#ios-addsessioncallbackparameter-invocation}
 ```objective-c
 + (void) addSessionCallbackParameter: (nonnull NSString *) key
-                               value: (nonnull NSString *) value
+                              value: (nonnull NSString *) value
 ```
 
 :param key: The data key
@@ -162,12 +162,12 @@ Adjust.resetSessionCallbackParameters();
 ::::{function} addSessionPartnerParameter (key, value)
 :noindex:
 
-Adds partner parameters to send with each session recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
+Adds partner parameters to send with each {term}`session` recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
 
 {#ios-addsessionpartnerparameter-invocation}
 ```objective-c
 + (void) addSessionPartnerParameter: (nonnull NSString *) key
-                               value: (nonnull NSString *) value
+                              value: (nonnull NSString *) value
 ```
 
 :param key: The data key
@@ -369,11 +369,11 @@ Record the details of an ADJSubscription object
 
 ```swift
 let subscription = ADJSubscription(
-    price: price,
-    currency: currency,
-    transactionId: transactionId,
-    andReceipt: receipt)
- 
+   price: price,
+   currency: currency,
+   transactionId: transactionId,
+   andReceipt: receipt)
+
 subscription.setTransactionDate(transactionDate)
 subscription.setSalesRegion(salesRegion)
 
@@ -392,7 +392,7 @@ Adjust.trackSubscription(subscription)
 
 ```objective-c
 ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:price
-                                                              currency:currency
+                                                            currency:currency
                                                          transactionId:transactionId
                                                             andReceipt:receipt];
 [subscription setTransactionDate:transactionDate]; 

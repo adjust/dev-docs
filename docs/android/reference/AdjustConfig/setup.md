@@ -609,7 +609,7 @@ Adjust.onCreate(adjustConfig);
 ::::{function} setDelayStart (delayStart)
 :noindex:
 
-Sets a delay before the SDK starts to allow data to load before session information is sent to Adjust's servers. Maximum delay: 10 seconds
+Sets a delay before the SDK starts to allow data to load before {term}`session` information is sent to Adjust's servers. Maximum delay: 10 seconds
 
 {#android-setdelaystart-invocation}
 
@@ -717,7 +717,7 @@ Adjust.onCreate(adjustConfig);
 ::::{function} setOnSessionTrackingFailedListener (onSessionTrackingFailedListener)
 :noindex:
 
-Sets up a callback to trigger a function when the SDK fails to record a session.
+Sets up a callback to trigger a function when the SDK fails to record a {term}`session`.
 
 {#android-setonsessiontrackingfailedlistener-invocation}
 

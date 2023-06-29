@@ -1,6 +1,6 @@
 # Set up global parameters
 
-You can send additional information from the SDK with each session and event by registering global callback and partner parameters.
+You can send additional information from the SDK with each {term}`session` and event by registering global callback and partner parameters.
 
 ## Global callback parameters
 

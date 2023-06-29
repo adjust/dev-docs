@@ -5,7 +5,7 @@ The Adjust SDK runs by default when your app is open. You can disable and re-ena
 You can enable or disable the SDK at any time by calling the [`setEnabled` method](#unity-setenabled-invocation) with a boolean argument.
 
 :::{important}
-You can only call this method after the first session. This setting persists between sessions.
+You can only call this method after the first {term}`session`. This setting persists between sessions.
 :::
 
 :::{include} /unity/reference/Adjust/config.md
@@ -35,14 +35,14 @@ This exmpale demonstrates how to generate a button to enable or disable the Adju
 private string txtSetEnabled = "Disable SDK";
 
 if (GUI.Button(new Rect(0, Screen.height * 6 / numberOfButtons, Screen.width, Screen.height / numberOfButtons), txtSetEnabled)) {
-  if (string.Equals(txtSetEnabled, "Disable SDK", StringComparison.OrdinalIgnoreCase)) {
-    Adjust.setEnabled(false);
-    txtSetEnabled = "Enable SDK";
-  }
-  else {
-    Adjust.setEnabled(true);
-    txtSetEnabled = "Disable SDK";
-  }
+   if (string.Equals(txtSetEnabled, "Disable SDK", StringComparison.OrdinalIgnoreCase)) {
+      Adjust.setEnabled(false);
+      txtSetEnabled = "Enable SDK";
+   }
+   else {
+      Adjust.setEnabled(true);
+      txtSetEnabled = "Disable SDK";
+   }
 }
 ```
 
