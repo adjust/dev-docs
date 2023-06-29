@@ -224,7 +224,7 @@ If you encounter any issues, email <support@adjust.com> with all details and log
 :::
 
 :::{dropdown} Test Google Play Services integration
-To test that the Adjust SDK can receive a device's Google Advertising ID, set the log level to **verbose** and the environment to **Sandbox**. Start your app and record a session or an event. The SDK logs the `gps_adid` parameter if it has read the advertising ID.
+To test that the Adjust SDK can receive a device's Google Advertising ID, set the log level to **verbose** and the environment to **Sandbox**. Start your app and record a {term}`session` or an event. The SDK logs the `gps_adid` parameter if it has read the advertising ID.
 
 If you're having issues retrieving the Google Advertising ID, open an issue on the SDK [GitHub repository](https://github.com/adjust/react_native_sdk) or contact <support@adjust.com>.
 :::

@@ -1,6 +1,6 @@
 # Set up callbacks
 
-Set up callbacks to trigger functions when the SDK sends information to Adjust. You can set up callbacks for **sessions** and **events**.
+Set up callbacks to trigger functions when the SDK sends information to Adjust. You can set up callbacks for **{term}`sessions <session>`** and **events**.
 
 :::{important}
 You must register your callbacks **before** initializing the SDK.
@@ -59,7 +59,7 @@ adjustConfig.setSessionSuccessDelegate(sessionSuccess);
 Adjust.start(adjustConfig);
 // ...
 public void sessionSuccess (AdjustSessionSuccess sessionSuccessData) {
-    Debug.Log("Session recorded at " + sessionSuccessData.Timestamp);
+   Debug.Log("Session recorded at " + sessionSuccessData.Timestamp);
 }
 ```
 
@@ -89,7 +89,7 @@ adjustConfig.setSessionFailureDelegate(sessionFailure);
 Adjust.start(adjustConfig);
 // ...
 public void sessionFailure (AdjustSessionFailure sessionFailureData) {
-    Debug.Log("Session recording failed. Response: " + sessionFailureData.Message);
+   Debug.Log("Session recording failed. Response: " + sessionFailureData.Message);
 }
 ```
 
@@ -154,7 +154,7 @@ adjustConfig.setEventSuccessDelegate(eventSuccess);
 Adjust.start(adjustConfig);
 // ...
 public void eventSuccess (AdjustEventSuccess eventSuccessData) {
-    Debug.Log("Event recorded at " + eventSuccessData.Timestamp);
+   Debug.Log("Event recorded at " + eventSuccessData.Timestamp);
 }
 ```
 
@@ -184,7 +184,7 @@ adjustConfig.setEventFailureDelegate(eventFailure);
 Adjust.start(adjustConfig);
 // ...
 public void eventFailure (AdjustEventFailure eventFailureData) {
-    Debug.Log("Event recording failed. Response: " + eventFailureData.Message);
+   Debug.Log("Event recording failed. Response: " + eventFailureData.Message);
 }
 ```
 

@@ -222,7 +222,7 @@ Adjust.trackMeasurementConsent(true);
 
 If you need your app to be COPPA compliant, call the `setCoppaCompliantEnabled` method. This method performs the following actions:
 
-1. Disables third-party sharing **before** the user launches their first session.
+1. Disables third-party sharing **before** the user launches their first {term}`session`.
 2. Prevents the SDK from reading device and advertising IDs (For example: `gps_adid` and `android_id`).
 
 :::{tab-set-code}

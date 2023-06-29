@@ -5,7 +5,7 @@ The Adjust SDK runs by default when your app is open. You can disable and re-ena
 You can enable or disable the SDK at any time by calling the [`setEnabled` method](#ios-setenabled-invocation) with a boolean argument.
 
 :::{important}
-You can only call this method after the first session. This setting persists between sessions.
+You can only call this method after the first {term}`session`. This setting persists between sessions.
 :::
 
 :::{include} /ios/reference/Adjust/config.md
@@ -35,25 +35,25 @@ import Adjust
 import UIKit
 
 class ViewControllerSwift: UIViewController {
-    @IBOutlet weak var btnEnableSDK: UIButton?
-    @IBOutlet weak var btnDisableSDK: UIButton?
+   @IBOutlet weak var btnEnableSDK: UIButton?
+   @IBOutlet weak var btnDisableSDK: UIButton?
 
-    @IBAction func btnEnableSDKTapped(_sender: UIButton) {
-        Adjust.setEnabled(true);
-    }
-    
-    @IBAction func btnDisableSDKTapped(_sender: UIButton) {
-        Adjust.setEnabled(false);
-    }
-    
-    @IBAction func btnIsSDKEnabledTapped(_sender: UIButton) {
-        let isSDKEnabled = Adjust.isEnabled();
-        if (isSDKEnabled) {
-            NSLog("SDK is enabled!");
-        } else {
-            NSLog("SDK is disabled");
-        }
-    }
+   @IBAction func btnEnableSDKTapped(_sender: UIButton) {
+      Adjust.setEnabled(true);
+   }
+   
+   @IBAction func btnDisableSDKTapped(_sender: UIButton) {
+      Adjust.setEnabled(false);
+   }
+   
+   @IBAction func btnIsSDKEnabledTapped(_sender: UIButton) {
+      let isSDKEnabled = Adjust.isEnabled();
+      if (isSDKEnabled) {
+         NSLog("SDK is enabled!");
+      } else {
+         NSLog("SDK is disabled");
+      }
+   }
 }
 ```
 
@@ -77,28 +77,28 @@ class ViewControllerSwift: UIViewController {
 @implementation ViewControllerObjC
 
 - (IBAction)clickEnableSdk:(id)sender {
-    [Adjust setEnabled:YES];
+   [Adjust setEnabled:YES];
 }
 
 - (IBAction)clickDisableSdk:(id)sender {
-    [Adjust setEnabled:NO];
+   [Adjust setEnabled:NO];
 }
 
 - (IBAction)clickIsSdkEnabled:(id)sender {
-    NSString *message;
-    if ([Adjust isEnabled]) {
-        message = @"SDK is ENABLED!";
-    } else {
-        message = @"SDK is DISABLED!";
-    }
+   NSString *message;
+   if ([Adjust isEnabled]) {
+      message = @"SDK is ENABLED!";
+   } else {
+      message = @"SDK is DISABLED!";
+   }
 
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Is SDK Enabled?"
-                                                                   message:message
-                                                            preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
-                                                          handler:^(UIAlertAction *action) {}];
-    [alert addAction:defaultAction];
-    [self presentViewController:alert animated:YES completion:nil];
+   UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Is SDK Enabled?"
+                                                                  message:message
+                                                         preferredStyle:UIAlertControllerStyleAlert];
+   UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+                                                         handler:^(UIAlertAction *action) {}];
+   [alert addAction:defaultAction];
+   [self presentViewController:alert animated:YES completion:nil];
 }
 
 @end
@@ -140,15 +140,15 @@ class ViewControllerSwift: UIViewController {
          }
       </script>
       <div id='buttons'>
-        <div style="width:300px;height:35px;text-align:center;">
+         <div style="width:300px;height:35px;text-align:center;">
             <button id='btnEnableSdk'>Enable SDK</button>
-        </div>
-        <div style="width:300px;height:35px;text-align:center;">
+      </div>
+      <div style="width:300px;height:35px;text-align:center;">
             <button id='btnDisableSdk'>Disable SDK</button>
-        </div>
-        <div style="width:300px;height:35px;text-align:center;">
+      </div>
+      <div style="width:300px;height:35px;text-align:center;">
             <button id='btnIsSdkEnabled'>Is SDK Enabled?</button>
-        </div>
+      </div>
       </div>
    </body>
 </html>
