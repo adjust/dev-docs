@@ -3,10 +3,10 @@
 You can create deep links to take users to specific pages in your app. The Adjust SDK uses different logic depending on if the user already has your app installed on their device:
 
 Direct deep linking
-   : Occurs if the user already has your app installed. The link takes the user to the page specified in the link
+: Occurs if the user already has your app installed. The link takes the user to the page specified in the link
 
 Deferred deep linking
-   : Occurs if the user doesn't have your app installed. The link takes the user to a storefront to install your app first. After the user installs the app, it opens to the page specified in the link.
+: Occurs if the user doesn't have your app installed. The link takes the user to a storefront to install your app first. After the user installs the app, it opens to the page specified in the link.
 
 The SDK can read deep link data after a user opens your app from a link.
 
@@ -26,22 +26,22 @@ This example demonstrates how to set up an activity called `MainActivity` to ope
 
 ```xml
 <activity
-    android:name=".MainActivity"
-    android:configChanges="orientation|keyboardHidden"
-    android:label="@string/app_name"
-    android:screenOrientation="portrait">
+   android:name=".MainActivity"
+   android:configChanges="orientation|keyboardHidden"
+   android:label="@string/app_name"
+   android:screenOrientation="portrait">
 
-    <intent-filter>
-        <action android:name="android.intent.action.MAIN" />
-        <category android:name="android.intent.category.LAUNCHER" />
-    </intent-filter>
+   <intent-filter>
+      <action android:name="android.intent.action.MAIN" />
+      <category android:name="android.intent.category.LAUNCHER" />
+   </intent-filter>
 
-    <intent-filter>
-        <action android:name="android.intent.action.VIEW" />
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
-        <data android:scheme="adjustExample" />
-    </intent-filter>
+   <intent-filter>
+      <action android:name="android.intent.action.VIEW" />
+      <category android:name="android.intent.category.DEFAULT" />
+      <category android:name="android.intent.category.BROWSABLE" />
+      <data android:scheme="adjustExample" />
+   </intent-filter>
 </activity>
 ```
 
@@ -79,12 +79,12 @@ override fun onCreate(savedInstanceState: Bundle?) {
 ```java
 @Override
 protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_main);
+   super.onCreate(savedInstanceState);
+   setContentView(R.layout.activity_main);
 
-    Intent intent = getIntent();
-    Uri data = intent.getData();
-    // data.toString() -> This is your deep_link parameter value.
+   Intent intent = getIntent();
+   Uri data = intent.getData();
+   // data.toString() -> This is your deep_link parameter value.
 }
 ```
 
@@ -103,10 +103,10 @@ override fun onNewIntent(intent: Intent?) {
 ```java
 @Override
 protected void onNewIntent(Intent intent) {
-    super.onNewIntent(intent);
+   super.onNewIntent(intent);
 
-    Uri data = intent.getData();
-    // data.toString() -> This is your deep_link parameter value.
+   Uri data = intent.getData();
+   // data.toString() -> This is your deep_link parameter value.
 }
 ```
 
@@ -119,6 +119,8 @@ The Adjust SDK opens deferred deep links by default. No additional setup is requ
 ### Set up a deferred deep link callback
 
 You can configure the Adjust SDK to call a delegate function when it receives a deferred deep link. This delegate function receives the deep link as a **string** argument.
+
+If you want to open the deep link, return `true` in your delegate function. If you don't want to open it, return `false`.
 
 :::{include} /android/reference/AdjustConfig/setup.md
 :start-after: setOnDeeplinkResponseListener snippet
@@ -141,7 +143,7 @@ config.setOnDeeplinkResponseListener { deeplink ->
 config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
    @Override
    public boolean launchReceivedDeeplink(Uri deeplink) {
-         return false;
+      return false;
    }
 });
 ```
@@ -173,9 +175,9 @@ Some {abbr}`ESPs (Email Service Providers)` use their own custom tracking domain
 
 The `resolveLinkWithUrl` method takes the following parameters:
 
-* `url`: the deep link that opened the application.
-* `resolveUrlSuffixArray`: the custom domains of the configured campaigns that need to be resolved.
-* `adjustLinkResolutionCallback`: the callback that contains the final URL.
+-  `url`: the deep link that opened the application.
+-  `resolveUrlSuffixArray`: the custom domains of the configured campaigns that need to be resolved.
+-  `adjustLinkResolutionCallback`: the callback that contains the final URL.
 
 The method checks the deep link against the domains in the `resolveUrlSuffixArray`. If it doesn't find any matches, it forwards the deep link URL as is. If it does find a match, it attempts to resolve the link and return the resulting deep link. It then stores this in the callback parameter.
 
@@ -188,23 +190,19 @@ You can use the returned deep link to reattribute your user. To do this, pass th
 :::{tab-set-code}
 
 ```kotlin
-AdjustLinkResolution.resolveLink(url, 
-                                 arrayOf("example.com"),
-                                 object : AdjustLinkResolution.AdjustLinkResolutionCallback {
-                                     override fun resolvedLinkCallback(resolvedLink: Uri) {
-                                         Adjust.appWillOpenUrl(resolvedLink, applicationContext)
-                                     }
-                                 })
+AdjustLinkResolution.resolveLink(url, arrayOf("example.com"), object : AdjustLinkResolution.AdjustLinkResolutionCallback {
+   override fun resolvedLinkCallback(resolvedLink: Uri) {
+      Adjust.appWillOpenUrl(resolvedLink, applicationContext)
+      }
+   })
 ```
 
 ```java
-AdjustLinkResolution.resolveLink(url, 
-                                 new String[]{"example.com"},
-                                 new AdjustLinkResolution.AdjustLinkResolutionCallback() {
-    @Override
-    public void resolvedLinkCallback(Uri resolvedLink) {
-        Adjust.appWillOpenUrl(resolvedLink, getApplicationContext());
-    }
+AdjustLinkResolution.resolveLink(url, new String[]{"example.com"}, new AdjustLinkResolution.AdjustLinkResolutionCallback() {
+   @Override
+   public void resolvedLinkCallback(Uri resolvedLink) {
+      Adjust.appWillOpenUrl(resolvedLink, getApplicationContext());
+   }
 });
 ```
 

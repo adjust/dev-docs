@@ -6,7 +6,7 @@
 The first session always sends data to Adjust's servers even if offline mode is enabled.
 :::
 
-The Adjust SDK sends event and session data to Adjust's servers in real time. You can pause the sending of information by putting the SDK in offline mode. In offline mode, the SDK stores all data in the browser's IndexedDB, or in localStorage if IndexedDB isn't supported.
+The Adjust SDK sends event and {term}`session` data to Adjust's servers in real time. You can pause the sending of information by putting the SDK in offline mode. In offline mode, the SDK stores all data in the browser's IndexedDB, or in localStorage if IndexedDB isn't supported.
 
 Call the [`switchToOfflineMode` method](#web-switchtoofflinemode-invocation) to enable offline mode.
 

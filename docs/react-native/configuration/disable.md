@@ -5,7 +5,7 @@ The Adjust SDK runs when your app is open by default. You can disable and re-ena
 You can enable or disable the SDK at any time by calling the `setEnabled` method with a **boolean** argument.
 
 :::{important}
-You can only call this method after the first session. This setting persists between sessions.
+You can only call this method after the first {term}`session`. This setting persists between sessions.
 :::
 
 :::{tab-set-code}

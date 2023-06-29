@@ -152,7 +152,7 @@ If you are using [Data Privacy settings](https://help.adjust.com/en/article/mana
 
 If you need your app to be COPPA compliant, call the [`setCoppaCompliantEnabled` method](#android-setcoppacompliantenabled-invocation). This method performs the following actions:
 
-1. Disables third-party sharing **before** the user launches their first session.
+1. Disables third-party sharing **before** the user launches their first {term}`session`.
 2. Prevents the SDK from reading device and advertising IDs (for example: `gps_adid` and `android_id`).
 
 :::{include} /android/reference/AdjustConfig/privacy.md

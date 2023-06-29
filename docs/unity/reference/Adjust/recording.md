@@ -38,7 +38,7 @@ Adjust.trackEvent(adjustEvent);
 ::::{function} addSessionCallbackParameter (key, value)
 :noindex:
 
-Adds callback parameters to send with each session recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
+Adds callback parameters to send with each {term]`session` recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
 
 {#unity-addsessioncallbackparameter-invocation}
 ```c#
@@ -130,7 +130,7 @@ Adjust.resetSessionCallbackParameters();
 ::::{function} addSessionPartnerParameter (key, value)
 :noindex:
 
-Adds partner parameters to send with each session recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
+Adds partner parameters to send with each {term}`session` recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
 
 {#unity-addsessionpartnerparameter-invocation}
 ```c#
@@ -270,10 +270,10 @@ public static void trackAppStoreSubscription(AdjustAppStoreSubscription subscrip
 
 ```c#
 AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
-    price,
-    currency,
-    transactionId,
-    receipt);
+   price,
+   currency,
+   transactionId,
+   receipt);
 subscription.setTransactionDate(transactionDate);
 subscription.setSalesRegion(salesRegion);
 subscription.addCallbackParameter("key1", "value1");
@@ -313,12 +313,12 @@ public static void trackPlayStoreSubscription(AdjustPlayStoreSubscription subscr
 
 ```c#
 AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
-    price,
-    currency,
-    sku,
-    orderId,
-    signature,
-    purchaseToken);
+   price,
+   currency,
+   sku,
+   orderId,
+   signature,
+   purchaseToken);
 subscription.setPurchaseTime(purchaseTime);
 subscription.addCallbackParameter("key1", "value1");
 subscription.addCallbackParameter("key2", "value2");
