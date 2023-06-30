@@ -21,7 +21,7 @@ You need to set up deep linking on an app level. Follow the instructions linked 
 
 ## Reattribution using deep links
 
-Adjust enables you to run re-engagement campaigns with usage of deep links. For more information, see our [guide to appending attribution data to a deep link](/en/article/manage-reattributions#track-reattributions-via-deeplink-clicks).
+Adjust enables you to run re-engagement campaigns with usage of deep links. For more information, see our [guide to appending attribution data to a deep link](https://help.adjust.com/en/article/manage-reattributions#track-reattributions-via-deeplink-clicks).
 
 To reattribute your user, you need to make an extra call to the Adjust SDK within your app. Add a call to the `appWillOpenUrl(Uri, Context)` method when the app receives deep link content. The Adjust SDK will then look for new attribution data within the deep link. If the SDK finds new information, it will forward it to the Adjust server for reattribution.
 
