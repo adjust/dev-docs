@@ -15,7 +15,7 @@ static void setEnabled(bool isEnabled)
 ```
 
 :param isEnabled: Whether the SDK should be enabled or not
-:rtype isEnabled: Boolean
+:type isEnabled: Boolean
 
 % setEnabled snippet
 
@@ -142,7 +142,7 @@ static void setPushToken(String token)
 :param token: Your push token
 :type token: String
 
-% setDeviceToken snippet
+% setPushToken snippet
 
 :::{tab-set-code}
 

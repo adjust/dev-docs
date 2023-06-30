@@ -72,6 +72,7 @@ void addGranularOption(String partnerName, String key, String value)
 
 :::{tab-set-code}
 
+{emphasize-lines="3"}
 ```dart
 AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(null);
 //...
@@ -131,6 +132,8 @@ void addPartnerSharingSetting(String partnerName, String key, bool value)
 % addPartnerSharingSetting snippet
 
 :::{tab-set-code}
+
+{emphasize-lines="3"}
 
 ```dart
 AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(null);

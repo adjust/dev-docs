@@ -90,9 +90,75 @@ Adjust.start(adjustConfig);
 
 % Class method end
 
+% Class method externalDeviceId
+
+::::{function} externalDeviceId
+:noindex:
+
+Sets an [external device identifier](https://help.adjust.com/en/article/external-device-identifiers) for reporting purposes
+
+{#flutter-externaldeviceid-invocation}
+```dart
+String? externalDeviceId;
+```
+
+% externalDeviceId snippet
+
+:::{tab-set-code}
+
+{emphasize-lines="3"}
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
+//...
+adjustConfig.externalDeviceId = '{Your-External-Device-Id}';
+//...
+Adjust.start(adjustConfig);
+```
+
+:::
+
+% Snippet end
+
+::::
+
+% Class method end
+
+% Class method launchDeferredDeeplink
+
+::::{function} launchDeferredDeeplink()
+:noindex:
+
+Enables or disables launching deferred deep links with the SDK. If **enabled**, the SDK launches deep links the user interacts with
+
+{#flutter-launchdeferreddeeplink-invocation}
+```dart
+bool? launchDeferredDeeplink;
+```
+
+% setLaunchDeferredDeeplink snippet
+
+:::{tab-set-code}
+
+{emphasize-lines="3"}
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
+//...
+adjustConfig.launchDeferredDeeplink = true;
+//...
+Adjust.start(adjustConfig);
+```
+
+:::
+
+% Snippet end
+
+::::
+
+% Class method end
+
 % Class method sendInBackground
 
-::::{function} sendInBackground
+::::{function} sendInBackground()
 :noindex:
 
 Sets whether the SDK should send data while the app is running in the background
@@ -106,12 +172,287 @@ bool? sendInBackground;
 
 :::{tab-set-code}
 
-{emphasize-lines="4"}
+{emphasize-lines="3"}
 ```dart
 AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
 //...
 adjustConfig.sendInBackground = true;
 //...
+Adjust.start(adjustConfig);
+```
+
+:::
+
+% Snippet end
+
+::::
+
+% Class method end
+
+% Class method needsCost
+
+::::{function} needsCost()
+:noindex:
+
+Sets whether the SDK should gather cost data. This is accessible in the user's attribution information.
+:::
+
+{#flutter-needscost-invocation}
+```dart
+bool? needsCost;
+```
+
+% needsCost snippet
+
+:::{tab-set-code}
+
+{emphasize-lines="3"}
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
+//...
+adjustConfig.needsCost = true;
+//...
+Adjust.start(adjustConfig);
+```
+
+:::
+
+% Snippet end
+
+::::
+
+% Class method end
+
+% Class method delayStart
+
+::::{function} delayStart()
+:noindex:
+
+Sets a delay before the SDK starts to allow data to load before session information is sent to Adjust's servers. Maximum delay: 10 seconds
+
+{#flutter-delaystart-invocation}
+```dart
+double? delayStart;
+```
+
+% delayStart snippet
+
+:::{tab-set-code}
+
+{emphasize-lines="3"}
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
+//...
+adjustConfig.delayStart(5.5);
+//...
+Adjust.start(adjustConfig);
+```
+
+:::
+
+% Snippet end
+
+::::
+
+% Class method end
+
+% Class method userAgent
+
+::::{function} userAgent()
+:noindex:
+
+Define a user agent string to send with each request.
+
+{#flutter-useragent-invocation}
+
+```dart
+String? userAgent;
+```
+
+% userAgent snippet
+
+:::{tab-set-code}
+
+{emphasize-lines="3"}
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
+//...
+adjustConfig.userAgent = 'your-app/1.2.3"';
+//...
+Adjust.start(adjustConfig);
+```
+
+:::
+
+% Snippet end
+
+::::
+
+% Class method end
+
+% Class method isDeviceKnown
+
+::::{function} isDeviceKnown()
+:noindex:
+
+Specify whether a device is already known.
+
+{#flutter-isdeviceknown-invocation}
+
+```dart
+bool? isDeviceKnown;
+```
+
+% isDeviceKnown snippet
+
+:::{tab-set-code}
+
+{emphasize-lines="3"}
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
+//...
+adjustConfig.isDeviceKnown = true;
+//...
+Adjust.start(adjustConfig);
+```
+
+:::
+
+% Snippet end
+
+::::
+
+% Class method end
+
+% Class method setEventBufferingEnabled
+
+::::{function} eventBufferingEnabled()
+:noindex:
+
+Sets event buffering. If enabled, the SDK stores events on the device and sends all requests once per minute.
+
+{#flutter-eventbufferingenabled-invocation}
+```dart
+bool? eventBufferingEnabled;
+```
+
+:param eventBufferingEnabled: Whether event buffering is enabled or not
+:type eventBufferingEnabled: Boolean
+
+% eventBufferingEnabled snippet
+
+:::{tab-set-code}
+
+{emphasize-lines="3"}
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
+//...
+adjustConfig.eventBufferingEnabled = true;
+//...
+Adjust.start(adjustConfig);
+```
+
+:::
+
+% Snippet end
+
+::::
+
+% Class method end
+
+% Class method deferredDeeplinkCallback
+
+::::{function} deferredDeeplinkCallback(uri)
+:noindex:
+
+Define a function that the SDK calls when opening a deep link
+
+{#flutter-deferreddeeplinkcallback-invocation}
+
+```dart
+typedef void DeferredDeeplinkCallback(String? uri);
+DeferredDeeplinkCallback? deferredDeeplinkCallback;
+```
+
+:param uri: Contains the deep link `uri` that calls the listener to start
+:type uri: String
+
+% deferredDeeplinkCallback snippet
+
+:::{tab-set-code}
+
+{emphasize-lines="2,3,4"}
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
+adjustConfig.deferredDeeplinkCallback = (String uri) {
+   print('[Adjust]: Received deferred deeplink: ' + uri);
+};
+Adjust.start(adjustConfig);
+```
+
+:::
+
+% Snippet end
+
+::::
+
+% Class method end
+
+% Class method attributionCallback
+
+::::{function} attributionCallback (AdjustAttribution)
+:noindex:
+
+Define a function that the SDK calls when a user's attribution updates
+
+{#flutter-attributionCallback-invocation}
+
+```dart
+typedef void AttributionCallback(AdjustAttribution attributionData);
+AttributionCallback? attributionCallback;
+```
+
+:param attributionData: The delegate function that the SDK calls when a the user's attribution information changes
+:type attribution: AdjustAttribution
+
+% attributionCallback snippet
+
+:::{tab-set-code}
+
+{emphasize-lines="2-29"}
+```dart
+AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
+config.attributionCallback = (AdjustAttribution attributionChangedData) {
+   print('[Adjust]: Attribution changed!');
+
+   if (attributionChangedData.trackerToken != null) {
+      print('[Adjust]: Tracker token: ' + attributionChangedData.trackerToken);
+   }
+   if (attributionChangedData.trackerName != null) {
+      print('[Adjust]: Tracker name: ' + attributionChangedData.trackerName);
+   }
+   if (attributionChangedData.campaign != null) {
+      print('[Adjust]: Campaign: ' + attributionChangedData.campaign);
+   }
+   if (attributionChangedData.network != null) {
+      print('[Adjust]: Network: ' + attributionChangedData.network);
+   }
+   if (attributionChangedData.creative != null) {
+      print('[Adjust]: Creative: ' + attributionChangedData.creative);
+   }
+   if (attributionChangedData.adgroup != null) {
+      print('[Adjust]: Adgroup: ' + attributionChangedData.adgroup);
+   }
+   if (attributionChangedData.clickLabel != null) {
+      print('[Adjust]: Click label: ' + attributionChangedData.clickLabel);
+   }
+   if (attributionChangedData.adid != null) {
+      print('[Adjust]: Adid: ' + attributionChangedData.adid);
+   }
+};
 Adjust.start(adjustConfig);
 ```
 
@@ -141,27 +482,27 @@ SessionSuccessCallback? sessionSuccessCallback;
 
 % sessionSuccessCallback snippet
 
-{tab-set-code}
+:::{tab-set-code}
 
 {emphasize-lines="3-18"}
 ```dart
 AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
 
 config.sessionSuccessCallback = (AdjustSessionSuccess sessionSuccessData) {
-  print('[Adjust]: Session tracking success!');
+   print('[Adjust]: Session tracking success!');
 
-  if (sessionSuccessData.message != null) {
-    print('[Adjust]: Message: ' + sessionSuccessData.message);
-  }
-  if (sessionSuccessData.timestamp != null) {
-    print('[Adjust]: Timestamp: ' + sessionSuccessData.timestamp);
-  }
-  if (sessionSuccessData.adid != null) {
-    print('[Adjust]: Adid: ' + sessionSuccessData.adid);
-  }
-  if (sessionSuccessData.jsonResponse != null) {
-    print('[Adjust]: JSON response: ' + sessionSuccessData.jsonResponse);
-  }
+   if (sessionSuccessData.message != null) {
+      print('[Adjust]: Message: ' + sessionSuccessData.message);
+   }
+   if (sessionSuccessData.timestamp != null) {
+      print('[Adjust]: Timestamp: ' + sessionSuccessData.timestamp);
+   }
+   if (sessionSuccessData.adid != null) {
+      print('[Adjust]: Adid: ' + sessionSuccessData.adid);
+   }
+   if (sessionSuccessData.jsonResponse != null) {
+      print('[Adjust]: JSON response: ' + sessionSuccessData.jsonResponse);
+   }
 };
 
 Adjust.start(adjustConfig);
@@ -202,23 +543,23 @@ SessionFailureCallback? sessionFailureCallback;
 AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
 
 config.sessionFailureCallback = (AdjustSessionFailure sessionFailureData) {
-  print('[Adjust]: Session tracking failure!');
+   print('[Adjust]: Session tracking failure!');
 
-  if (sessionFailureData.message != null) {
-    print('[Adjust]: Message: ' + sessionFailureData.message);
-  }
-  if (sessionFailureData.timestamp != null) {
-    print('[Adjust]: Timestamp: ' + sessionFailureData.timestamp);
-  }
-  if (sessionFailureData.adid != null) {
-    print('[Adjust]: Adid: ' + sessionFailureData.adid);
-  }
-  if (sessionFailureData.willRetry != null) {
-    print('[Adjust]: Will retry: ' + sessionFailureData.willRetry.toString());
-  }
-  if (sessionFailureData.jsonResponse != null) {
-    print('[Adjust]: JSON response: ' + sessionFailureData.jsonResponse);
-  }
+   if (sessionFailureData.message != null) {
+      print('[Adjust]: Message: ' + sessionFailureData.message);
+   }
+   if (sessionFailureData.timestamp != null) {
+      print('[Adjust]: Timestamp: ' + sessionFailureData.timestamp);
+   }
+   if (sessionFailureData.adid != null) {
+      print('[Adjust]: Adid: ' + sessionFailureData.adid);
+   }
+   if (sessionFailureData.willRetry != null) {
+      print('[Adjust]: Will retry: ' + sessionFailureData.willRetry.toString());
+   }
+   if (sessionFailureData.jsonResponse != null) {
+      print('[Adjust]: JSON response: ' + sessionFailureData.jsonResponse);
+   }
 };
 
 Adjust.start(adjustConfig);
@@ -258,26 +599,26 @@ EventSuccessCallback? eventSuccessCallback;
 AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
 
 config.eventSuccessCallback = (AdjustEventSuccess eventSuccessData) {
-  print('[Adjust]: Event tracking success!');
+   print('[Adjust]: Event tracking success!');
 
-  if (eventSuccessData.eventToken != null) {
-    print('[Adjust]: Event token: ' + eventSuccessData.eventToken);
-  }
-  if (eventSuccessData.message != null) {
-    print('[Adjust]: Message: ' + eventSuccessData.message);
-  }
-  if (eventSuccessData.timestamp != null) {
-    print('[Adjust]: Timestamp: ' + eventSuccessData.timestamp);
-  }
-  if (eventSuccessData.adid != null) {
-    print('[Adjust]: Adid: ' + eventSuccessData.adid);
-  }
-  if (eventSuccessData.callbackId != null) {
-    print('[Adjust]: Callback ID: ' + eventSuccessData.callbackId);
-  }
-  if (eventSuccessData.jsonResponse != null) {
-    print('[Adjust]: JSON response: ' + eventSuccessData.jsonResponse);
-  }
+   if (eventSuccessData.eventToken != null) {
+      print('[Adjust]: Event token: ' + eventSuccessData.eventToken);
+   }
+   if (eventSuccessData.message != null) {
+      print('[Adjust]: Message: ' + eventSuccessData.message);
+   }
+   if (eventSuccessData.timestamp != null) {
+      print('[Adjust]: Timestamp: ' + eventSuccessData.timestamp);
+   }
+   if (eventSuccessData.adid != null) {
+      print('[Adjust]: Adid: ' + eventSuccessData.adid);
+   }
+   if (eventSuccessData.callbackId != null) {
+      print('[Adjust]: Callback ID: ' + eventSuccessData.callbackId);
+   }
+   if (eventSuccessData.jsonResponse != null) {
+      print('[Adjust]: JSON response: ' + eventSuccessData.jsonResponse);
+   }
 };
 
 Adjust.start(adjustConfig);
@@ -310,37 +651,37 @@ EventFailureCallback? eventFailureCallback;
 
 % eventFailureCallback snippet
 
-{tab-set-code}
+:::{tab-set-code}
 
-{emphasize-lines="3, 7-9"}
+{emphasize-lines="3-27"}
 ```dart
 
 AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
 
 config.eventFailureCallback = (AdjustEventFailure eventFailureData) {
-  print('[Adjust]: Event tracking failure!');
+   print('[Adjust]: Event tracking failure!');
 
-  if (eventFailureData.eventToken != null) {
-    print('[Adjust]: Event token: ' + eventFailureData.eventToken);
-  }
-  if (eventFailureData.message != null) {
-    print('[Adjust]: Message: ' + eventFailureData.message);
-  }
-  if (eventFailureData.timestamp != null) {
-    print('[Adjust]: Timestamp: ' + eventFailureData.timestamp);
-  }
-  if (eventFailureData.adid != null) {
-    print('[Adjust]: Adid: ' + eventFailureData.adid);
-  }
-  if (eventFailureData.callbackId != null) {
-    print('[Adjust]: Callback ID: ' + eventFailureData.callbackId);
-  }
-  if (eventFailureData.willRetry != null) {
-    print('[Adjust]: Will retry: ' + eventFailureData.willRetry.toString());
-  }
-  if (eventFailureData.jsonResponse != null) {
-    print('[Adjust]: JSON response: ' + eventFailureData.jsonResponse);
-  }
+   if (eventFailureData.eventToken != null) {
+      print('[Adjust]: Event token: ' + eventFailureData.eventToken);
+   }
+   if (eventFailureData.message != null) {
+      print('[Adjust]: Message: ' + eventFailureData.message);
+   }
+   if (eventFailureData.timestamp != null) {
+      print('[Adjust]: Timestamp: ' + eventFailureData.timestamp);
+   }
+   if (eventFailureData.adid != null) {
+      print('[Adjust]: Adid: ' + eventFailureData.adid);
+   }
+   if (eventFailureData.callbackId != null) {
+      print('[Adjust]: Callback ID: ' + eventFailureData.callbackId);
+   }
+   if (eventFailureData.willRetry != null) {
+      print('[Adjust]: Will retry: ' + eventFailureData.willRetry.toString());
+   }
+   if (eventFailureData.jsonResponse != null) {
+      print('[Adjust]: JSON response: ' + eventFailureData.jsonResponse);
+   }
 };
 
 Adjust.start(adjustConfig);
@@ -355,27 +696,36 @@ Adjust.start(adjustConfig);
 
 % Class method end
 
-% Class method delayStart
 
-::::{function} delayStart
+## iOS config methods
+
+% Class method allowiAdInfoReading
+
+::::{function} allowiAdInfoReading()
 :noindex:
 
-Sets a delay before the SDK starts to allow data to load before session information is sent to Adjust's servers. Maximum delay: 10 seconds
+Sets whether the Adjust SDK can read iAd framework data.
 
-{#flutter-delaystart-invocation}
+:::{important}
+The iAd framework was sunset by Apple on February 7th 2023. This property no longer has any effect.
+:::
+
+{#flutter-allowiAdInfoReading-invocation}
+
 ```dart
-double? delayStart;
+bool? allowiAdInfoReading
 ```
 
-% delayStart snippet
+% allowiAdInfoReading snippet
 
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```dart
 AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
 //...
-adjustConfig.delayStart(5.5);
+adjustConfig.allowiAdInfoReading = true;
 //...
 Adjust.start(adjustConfig);
 ```
@@ -388,27 +738,29 @@ Adjust.start(adjustConfig);
 
 % Class method end
 
-% Class method externalDeviceId
+% Class method allowAdServicesInfoReading
 
-::::{function} externalDeviceId
+::::{function} allowAdServicesInfoReading()
 :noindex:
 
-Sets an external device identifier for reporting purposes
+Sets whether the Adjust SDK can read [AdServices framework](https://developer.apple.com/documentation/ad_services) data.
 
-{#flutter-externaldeviceid-invocation}
+{#flutter-allowadservicesinforeading-invocation}
+
 ```dart
-String? externalDeviceId;
+bool? allowAdServicesInfoReading
 ```
 
-% externalDeviceId snippet
+% allowAdServicesInfoReading snippet
 
 :::{tab-set-code}
 
-{emphasize-line="3"}
+{emphasize-lines="3"}
+
 ```dart
 AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
 //...
-adjustConfig.externalDeviceId = '{Your-External-Device-Id}';
+adjustConfig.allowAdServicesInfoReading = true;
 //...
 Adjust.start(adjustConfig);
 ```
@@ -421,183 +773,29 @@ Adjust.start(adjustConfig);
 
 % Class method end
 
-% Class method setEventBufferingEnabled
+% Class method allowIdfaReading
 
-::::{function} setEventBufferingEnabled (eventBufferingEnabled)
+::::{function} allowIdfaReading()
 :noindex:
 
-Sets event buffering. If enabled, the SDK stores events on the device and sends all requests once per minute.
+Sets whether the Adjust SDK can read the device {abbr}`IDFA (ID for Advertisers)`
 
-{#flutter-seteventbufferingenabled-invocation}
+{#flutter-allowidfareading-invocation}
+
 ```dart
-public void setEventBufferingEnabled(bool eventBufferingEnabled)
+bool? allowIdfaReading
 ```
 
-:param eventBufferingEnabled: Whether event buffering is enabled or not
-:type eventBufferingEnabled: Boolean
-
-% setEventBufferingEnabled snippet
+% allowIdfaReading snippet
 
 :::{tab-set-code}
 
+{emphasize-lines="3"}
+
 ```dart
-AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
 //...
-adjustConfig.setEventBufferingEnabled(true);
-//...
-Adjust.start(adjustConfig);
-```
-
-:::
-
-% Snippet end
-
-::::
-
-% Class method end
-
-% Class method setNeedsCost
-
-::::{function} setNeedsCost (needsCost)
-:noindex:
-
-:::{versionadded} v4.24.0
-Sets whether the SDK should gather cost data. This is accessible in the user's attribution information.
-:::
-
-{#flutter-setneedscost-invocation}
-```dart
-public void setNeedsCost(bool needsCost)
-```
-
-:param needsCost: Whether the SDK should gather cost data
-:type needsCost: bool
-
-% setNeedsCost snippet
-
-:::{tab-set-code}
-
-```dart
-AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
-adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
-adjustConfig.setNeedsCost(true);
-```
-
-:::
-
-% Snippet end
-
-::::
-
-% Class method end
-
-% Class method setAttributionChangedDelegate
-
-::::{function} setAttributionChangedDelegate (attributionChangedDelegate)
-:noindex:
-
-Sets a delegate function that fires when a user's attribution information updates
-
-{#flutter-setattributionchangeddelegate-invocation}
-```dart
-public void setAttributionChangedDelegate(Action<AdjustAttribution> attributionChangedDelegate, string sceneName = "Adjust")
-```
-
-:param attributionChangedDelegate: The delegate function that the SDK calls when a the user's attribution information changes
-:type attributionChangedDelegate: Action
-
-% setAttributionChangedDelegate snippet
-
-:::{tab-set-code}
-
-```dart
-:emphasize-lines: 9, 13-16
-
-using com.adjust.sdk;
-
-public class ExampleGUI : MonoBehaviour {
-    void OnGUI() {
-        if (GUI.Button(new Rect(0, 0, Screen.width, Screen.height), "callback")) {
-            AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
-            adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
-            adjustConfig.setAttributionChangedDelegate(this.attributionChangedDelegate);
-            Adjust.start(adjustConfig);
-        }
-    }
-
-    public void attributionChangedDelegate(AdjustAttribution attribution) {
-        Debug.Log("Attribution changed");
-        // ...
-    }
-}
-```
-
-:::
-
-% Snippet end
-
-::::
-
-% Class method end
-
-% Class method setPreinstallTrackingEnabled
-
-::::{function} setPreinstallTrackingEnabled (preinstallTrackingEnabled)
-:noindex:
-
-Enables or disables preinstall tracking
-
-{#flutter-setpreinstalltrackingenabled-invocation}
-```dart
-public void setPreinstallTrackingEnabled(bool preinstallTrackingEnabled)
-```
-
-:param preinstallTrackingEnabled: Whether preinstall tracking is enabled
-:type preinstallTrackingEnabled: Boolean
-
-% setPreinstallTrackingEnabled snippet
-
-:::{tab-set-code}
-
-```dart
-AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
-//...
-adjustConfig.setPreinstallTrackingEnabled(true);
-//...
-Adjust.start(adjustConfig);
-```
-
-:::
-
-% Snippet end
-
-::::
-
-% Class method end
-
-% Class method setPreinstallFilePath
-
-::::{function} setPreinstallFilePath (preinstallFilePath)
-:noindex:
-
-Defines a relative path where preinstall information is available. This directory must be world-readable
-
-{#flutter-setpreinstallfilepath-invocation}
-```dart
-public void setPreinstallFilePath(string preinstallFilePath)
-```
-
-:param preinstallFilePath: The path where the preinstall information is written
-:type preinstallFilePath: String
-
-% setPreinstallFilePath snippet
-
-:::{tab-set-code}
-
-```dart
-AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
-//...
-adjustConfig.setPreinstallFilePath("../EngagementFile.xml");
+adjustConfig.allowIdfaReading = true;
 //...
 Adjust.start(adjustConfig);
 ```
@@ -615,11 +813,12 @@ Adjust.start(adjustConfig);
 ::::{function} deactivateSKAdNetworkHandling
 :noindex:
 
-Turns off communication with SKAdNetwork. Communication is *enabled* by default
+Turns off communication with [SKAdNetwork](https://help.adjust.com/en/article/skadnetwork). Communication is _enabled_ by default.
 
 {#flutter-deactivateskadnetworkhandling-invocation}
+
 ```dart
-public void deactivateSKAdNetworkHandling()
+void deactivateSKAdNetworkHandling()
 ```
 
 % deactivateSKAdNetworkHandling snippet
@@ -627,8 +826,9 @@ public void deactivateSKAdNetworkHandling()
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```dart
-AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox, true);
 //...
 adjustConfig.deactivateSKAdNetworkHandling();
 //...
@@ -639,34 +839,33 @@ Adjust.start(adjustConfig);
 
 % Snippet end
 
-::::
+:::::
 
 % Class method end
 
-% Class method setLaunchDeferredDeeplink
+% Class method linkMeEnabled
 
-::::{function} setLaunchDeferredDeeplink (launchDeferredDeeplink)
+::::{function} linkMeEnabled()
 :noindex:
 
-Enables or disables launching deferred deep links with the SDK. If **enabled**, the SDK launches deep links the user interacts with
+Toggle support for Adjust's [LinkMe solution](https://help.adjust.com/en/article/linkme) for deep linking
 
-{#flutter-setlaunchdeferreddeeplink-invocation}
+{#flutter-linkmeenabled-invocation}
+
 ```dart
-public void setLaunchDeferredDeeplink(bool launchDeferredDeeplink)
+bool? linkMeEnabled
 ```
 
-:param launchDeferredDeeplink: Whether to enable launching deferred deep links
-:type launchDeferredDeeplink: Boolean
-
-% setLaunchDeferredDeeplink snippet
+% linkMeEnabled snippet
 
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```dart
-AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
 //...
-adjustConfig.setLaunchDeferredDeeplink(true);
+adjustConfig.linkMeEnabled = true;
 //...
 Adjust.start(adjustConfig);
 ```
@@ -679,30 +878,69 @@ Adjust.start(adjustConfig);
 
 % Class method end
 
-% Class method setLinkMeEnabled
+% Class method ConversionValueUpdatedCallback
 
-::::{function} setLinkMeEnabled (linkMeEnabled)
+::::{function} conversionValueUpdatedCallback(conversionValue)
 :noindex:
 
-Toggle support for Adjust's [LinkMe solution](hc:linkme) for deep linking
+Sets a function to call when the user's conversion value updates.
 
-{#flutter-setlinkmeenabled-invocation}
+{#flutter-conversionvalueupdatedcallback-invocation}
+
 ```dart
-public void setLinkMeEnabled(bool linkMeEnabled)
+typedef void ConversionValueUpdatedCallback(num? conversionValue);
 ```
 
-:param linkMeEnabled: Whether LinkMe should be enabled
-:type linkMeEnabled: Boolean
+:param conversionValue: The listener function the SDK launches when the conversion value updates
+:type conversionValue: num
 
-% setLinkMeEnabled snippet
+% ConversionValueUpdatedCallback snippet
+
+:::{tab-set-code}
+
+{emphasize-lines="2-4"}
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
+config.conversionValueUpdatedCallback = (num? conversionValue) {
+   print('[Adjust]: Received conversion value update: ' + conversionValue!.toString());
+};
+Adjust.start(adjustConfig);
+```
+
+:::
+
+% Snippet end
+
+::::
+
+% Class method end
+
+## Android config methods
+
+% Class method processName
+
+::::{function} processName()
+:noindex:
+
+Define the process name your app runs under. Defaults to the app's package name.
+
+{#flutter-processname-invocation}
+
+```dart
+String? processName
+```
+
+% setProcessName snippet
 
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```dart
-AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
 //...
-adjustConfig.setLinkMeEnabled(true);
+adjustConfig.processName = '{com.example.myapp}';
 //...
 Adjust.start(adjustConfig);
 ```
@@ -715,29 +953,29 @@ Adjust.start(adjustConfig);
 
 % Class method end
 
-% Class method setConversionValueUpdatedCallbackDelegate
+% Class method preinstallTrackingEnabled
 
-::::{function} setConversionValueUpdatedCallbackDelegate(conversionValueUpdatedDelegate)
+::::{function} preinstallTrackingEnabled()
 :noindex:
 
-Sets a delegate function to call when the user's conversion value updates.
+Enables or disables preinstall tracking
 
-{#flutter-setconversionvalueupdatedcallbackdelegate-invocation}
+{#flutter-preinstalltrackingenabled-invocation}
+
 ```dart
-public void setConversionValueUpdatedDelegate(Action<int> conversionValueUpdatedDelegate, string sceneName = "Adjust")
+bool? preinstallTrackingEnabled
 ```
 
-:param conversionValueUpdatedDelegate: The delegate function the SDK launches when the conversion value updates
-:type conversionValueUpdatedDelegate: Action
-
-% setConversionValueUpdatedDelegate snippet
+% preinstallTrackingEnabled snippet
 
 :::{tab-set-code}
 
+{emphasize-lines="3"}
+
 ```dart
-AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
 //...
-adjustConfig.setConversionValueUpdatedDelegate(ConversionValueUpdatedCallback);
+adjustConfig.preinstallTrackingEnabled = true;
 //...
 Adjust.start(adjustConfig);
 ```
@@ -747,5 +985,75 @@ Adjust.start(adjustConfig);
 % Snippet end
 
 ::::
+
+% Class method end
+
+% Class method preinstallFilePath
+
+::::{function} preinstallFilePath()
+:noindex:
+
+Defines a relative path where preinstall information is available. This directory must be world-readable
+
+{#flutter-preinstallfilepath-invocation}
+
+```dart
+String? preinstallFilePath
+```
+
+% preinstallFilePath snippet
+
+:::{tab-set-code}
+
+{emphasize-lines="3"}
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
+//...
+adjustConfig.preinstallFilePath = '../EngagementFile.xml';
+//...
+Adjust.start(adjustConfig);
+```
+
+:::
+
+% Snippet end
+
+::::
+
+% Class method end.
+
+% Class method playStoreKidsAppEnabled
+
+:::::{function} playStoreKidsAppEnabled()
+:noindex:
+
+Marks your app as a Kids App and disables reading device information
+
+{#flutter-playstorekidsappenabled-invocation}
+
+```dart
+bool? playStoreKidsAppEnabled
+```
+
+% playStoreKidsAppEnabled snippet
+
+:::{tab-set-code}
+
+{emphasize-lines="3"}
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
+//...
+adjustConfig.playStoreKidsAppEnabled = true;
+//...
+Adjust.start(adjustConfig);
+```
+
+:::
+
+% Snippet end
+
+:::::
 
 % Class method end

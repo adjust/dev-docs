@@ -34,12 +34,12 @@ AdjustPlayStoreSubscription(String _price, String _currency, String _sku, String
 
 ```dart
 AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
-    price,
-    currency,
-    sku,
-    orderId,
-    signature,
-    purchaseToken);
+   price,
+   currency,
+   sku,
+   orderId,
+   signature,
+   purchaseToken);
 ```
 
 :::
@@ -69,14 +69,16 @@ void setPurchaseTime(String purchaseTime)
 
 :::{tab-set-code}
 
+{emphasize-lines="8"}
+
 ```dart
 AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
-    price,
-    currency,
-    sku,
-    orderId,
-    signature,
-    purchaseToken);
+   price,
+   currency,
+   sku,
+   orderId,
+   signature,
+   purchaseToken);
 subscription.setPurchaseTime(purchaseTime);
 ```
 
@@ -109,14 +111,16 @@ void addCallbackParameter(String key, String value)
 
 :::{tab-set-code}
 
+{emphasize-lines="9-10"}
+
 ```dart
 AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
-    price,
-    currency,
-    sku,
-    orderId,
-    signature,
-    purchaseToken);
+   price,
+   currency,
+   sku,
+   orderId,
+   signature,
+   purchaseToken);
 //...
 subscription.addCallbackParameter('key1', 'value1');
 subscription.addCallbackParameter('key2', 'value2');
@@ -151,14 +155,16 @@ void addPartnerParameter(String key, String value)
 
 :::{tab-set-code}
 
+{emphasize-lines="9-10"}
+
 ```dart
 AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
-    price,
-    currency,
-    sku,
-    orderId,
-    signature,
-    purchaseToken);
+   price,
+   currency,
+   sku,
+   orderId,
+   signature,
+   purchaseToken);
 //...
 subscription.addPartnerParameter('key1', 'value1');
 subscription.addPartnerParameter('key2', 'value2');

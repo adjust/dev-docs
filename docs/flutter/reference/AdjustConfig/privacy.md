@@ -16,6 +16,7 @@ String? urlStrategy;
 
 :::{tab-set-code}
 
+{emphasize-lines="3"}
 ```dart
 AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
 //...
@@ -54,22 +55,23 @@ Adjust.start(adjustConfig);
 
 % Class method setCoppaCompliantEnabled
 
-::::{function} setCoppaCompliantEnabled(coppaCompliantEnabled)
+::::{function} coppaCompliantEnabled()
 :noindex:
 
 :::{versionadded} v4.30.0
 Enable [{abbr}`COPPA (Children's Online Privacy Protection Act)` compliance](hc:apps-for-children) in your app.
 :::
 
-{#flutter-setcoppacompliantenabled-invocation}
+{#flutter-coppacompliantenabled-invocation}
 ```dart
 bool? coppaCompliantEnabled
 ```
 
-% setCoppaCompliantEnabled snippet
+% coppaCompliantEnabled snippet
 
 :::{tab-set-code}
 
+{emphasize-lines="3"}
 ```dart
 AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
 //...
