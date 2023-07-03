@@ -1,10 +1,8 @@
 # Record preinstalled app activity
 
-You can use the Adjust SDK to record activity from apps that came preinstalled on a user's device. This enables you to record information from users who didn't download your app from a campaign.
+You can use the Adjust SDK to record activity from apps that came preinstalled on a user's device by configuring a default campaign token. This enables you to attribute all preinstalls to a single campaign for analysis. Adjust records all information against this token until the attribution source changes. To set this up:
 
-Configuring a default campaign enables you to attribute all preinstalls to a predefined campaign token. Adjust records all information against this token until the attribution source changes. To set this up:
-
-1. Create a new campaign link in Datascape.
+1. Create a new campaign link in [Campaign Lab](https://help.adjust.com/en/suite/article/custom-link-setup).
 
    ```
    https://app.adjust.com/{token}
@@ -17,7 +15,7 @@ Configuring a default campaign enables you to attribute all preinstalls to a pre
    :end-before: Snippet end
    :::
 
-3. Build and run your app. If you have logging enabled, you should see a message in your log
+3. Build and run your app. If you have logging enabled, you should see a message in your log:
 
    ```
    Default tracker: 'abc123'.
