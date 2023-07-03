@@ -10,7 +10,7 @@ Deferred deep linking
 
 The SDK can read deep link data after a user opens your app from a link.
 
-## Set up deep linking
+## Direct deep linking
 
 If a user has your app installed, it opens when they interact with a link containing deep link information. The Adjust SDK contains tools to parse deep link information for use throughout your app. To configure deep linking in your app, you need to choose a **unique scheme name** and assign it to a specified handler method. To do this:
 
@@ -63,7 +63,7 @@ You can configure the Adjust SDK to call a delegate function when it receives a 
 
 ## Reattribution via deep links
 
-If you plan to run retargeting or re-engagement campaigns with deep links, you need to add a call to the `Adjust.AppWillOpenUrl` method when you receive deep link information. This prompts the SDK to check for new attribution inside the deep link. If the SDK finds new attribution information, it sends this information to Adjust's servers.
+If you plan to run retargeting or re-engagement campaigns with deep links, you need to add a call to the `Adjust.AppWillOpenUrl` method when you receive deep link information. This prompts the SDK to check for a new attribution source inside the deep link. If the SDK finds new attribution information, it sends this information to Adjust's servers.
 
 If the user needs to be reattributed due to clicking on an Adjust deep link, this triggers the [attribution callback](/windows/recording/attribution.md).
 
