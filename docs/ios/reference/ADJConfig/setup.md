@@ -35,7 +35,7 @@ adjustConfig?.logLevel = ADJLogLevelVerbose
 NSString *yourAppToken = @"{YourAppToken}";
 NSString *environment = ADJEnvironmentSandbox;
 *adjustConfig = [ADJConfig configWithAppToken:yourAppToken
-                                  environment:environment];
+                                 environment:environment];
 // ...
 [adjustConfig setLogLevel:ADJLogLevelVerbose];
 ```
@@ -100,7 +100,7 @@ Sets a default tracker token to record installs against
 @property (nonatomic, copy, nullable) NSString *defaultTracker;
 ```
 
-:param defaultTracker: The tracker token to which all preinstalled sessions are attributed
+:param defaultTracker: The tracker token to which all preinstalled {term}`sessions <session>` are attributed
 :type defaultTracker: NSString
 
 % setDefaultTracker snippet
@@ -112,8 +112,8 @@ Sets a default tracker token to record installs against
 let yourAppToken = "{YourAppToken}"
 let environment = ADJEnvironmentSandbox as? String
 let adjustConfig = ADJConfig(
-    appToken: yourAppToken,
-    environment: environment)
+   appToken: yourAppToken,
+   environment: environment)
 //...
 adjustConfig?.defaultTracker = "{Token}"
 //...
@@ -123,7 +123,7 @@ Adjust.appDidLaunch(adjustConfig)
 {emphasize-lines="4"}
 ```objective-c
 *adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
-                                  environment:ADJEnvironmentSandbox];
+                                 environment:ADJEnvironmentSandbox];
 //...
 [adjustConfig setDefaultTracker:@"{Token}"];
 //...
@@ -174,8 +174,8 @@ Sets a delegate function that the SDK calls when the user's attribution changes
 let yourAppToken = "{YourAppToken}"
 let environment = ADJEnvironmentSandbox as? String
 let adjustConfig = ADJConfig(
-    appToken: yourAppToken,
-    environment: environment)
+   appToken: yourAppToken,
+   environment: environment)
 //...
 adjustConfig?.delegate = self
 //...
@@ -185,7 +185,7 @@ Adjust.appDidLaunch(adjustConfig)
 {emphasize-lines="4"}
 ```objective-c
 *adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
-                                  environment:ADJEnvironmentSandbox];
+                                 environment:ADJEnvironmentSandbox];
 //...
 [adjustConfig setDelegate:self];
 //...
@@ -200,15 +200,15 @@ setupWebViewJavascriptBridge(function(bridge) {
    var environment = AdjustConfig.EnvironmentSandbox;
    var adjustConfig = new AdjustConfig(yourAppToken, environment);
    adjustConfig.setAttributionCallback(function(attribution) {
-    // In this example, we're just displaying alert with attribution content.
-    alert('Tracker token = ' + attribution.trackerToken + '\n' +
-          'Tracker name = ' + attribution.trackerName + '\n' +
-          'Network = ' + attribution.network + '\n' +
-          'Campaign = ' + attribution.campaign + '\n' +
-          'Adgroup = ' + attribution.adgroup + '\n' +
-          'Creative = ' + attribution.creative + '\n' +
-          'Click label = ' + attribution.clickLabel + '\n' +
-          'Adid = ' + attribution.adid);
+   // In this example, we're just displaying alert with attribution content.
+   alert('Tracker token = ' + attribution.trackerToken + '\n' +
+         'Tracker name = ' + attribution.trackerName + '\n' +
+         'Network = ' + attribution.network + '\n' +
+         'Campaign = ' + attribution.campaign + '\n' +
+         'Adgroup = ' + attribution.adgroup + '\n' +
+         'Creative = ' + attribution.creative + '\n' +
+         'Click label = ' + attribution.clickLabel + '\n' +
+         'Adid = ' + attribution.adid);
    });
 });
 ```
@@ -225,7 +225,7 @@ setupWebViewJavascriptBridge(function(bridge) {
 ::::{function} setDelayStart (delayStart)
 :noindex:
 
-Sets a delay before the SDK starts to allow data to load before session information is sent to Adjust's servers. Maximum delay: 10 seconds
+Sets a delay before the SDK starts to allow data to load before {term}`session` information is sent to Adjust's servers. Maximum delay: 10 seconds
 
 {#ios-setdelaystart-invocation}
 ```objective-c
@@ -244,8 +244,8 @@ Sets a delay before the SDK starts to allow data to load before session informat
 let yourAppToken = "{YourAppToken}"
 let environment = ADJEnvironmentSandbox as? String
 let adjustConfig = ADJConfig(
-    appToken: yourAppToken,
-    environment: environment)
+   appToken: yourAppToken,
+   environment: environment)
 //...
 adjustConfig?.delayStart = 5.5
 //...
@@ -255,7 +255,7 @@ Adjust.appDidLaunch(adjustConfig)
 {emphasize-lines="4"}
 ```objective-c
 *adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
-                                  environment:ADJEnvironmentSandbox];
+                                 environment:ADJEnvironmentSandbox];
 //...
 [adjustConfig setDelayStart:5.5];
 //...
@@ -317,7 +317,7 @@ adjustConfig?.externalDeviceId = "yourExternalDeviceId"
 NSString *yourAppToken = @"{YourAppToken}";
 NSString *environment = ADJEnvironmentSandbox;
 *adjustConfig = [ADJConfig configWithAppToken:yourAppToken
-                                  environment:environment];
+                                 environment:environment];
 // ...
 [adjustConfig setExternalDeviceId:@"yourExternalDeviceId"];
 ```
@@ -365,8 +365,8 @@ Sets event buffering. If enabled, the SDK stores events on the device and sends 
 let yourAppToken = "{YourAppToken}"
 let environment = ADJEnvironmentSandbox as? String
 let adjustConfig = ADJConfig(
-    appToken: yourAppToken,
-    environment: environment)
+   appToken: yourAppToken,
+   environment: environment)
 //...
 adjustConfig?.eventBufferingEnabled = true
 //...
@@ -376,7 +376,7 @@ Adjust.appDidLaunch(adjustConfig)
 {emphasize-lines="4"}
 ```objective-c
 *adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
-                                  environment:ADJEnvironmentSandbox];
+                                 environment:ADJEnvironmentSandbox];
 //...
 [adjustConfig setEventBufferingEnabled:YES];
 //...
@@ -436,7 +436,7 @@ adjustConfig?.sendInBackground = true
 NSString *yourAppToken = @"{YourAppToken}";
 NSString *environment = ADJEnvironmentSandbox;
 *adjustConfig = [ADJConfig configWithAppToken:yourAppToken
-                                  environment:environment];
+                                 environment:environment];
 // ...
 [adjustConfig setSendInBackground:YES];
 ```
@@ -496,7 +496,7 @@ adjustConfig?.needsCost = true
 NSString *yourAppToken = @"{YourAppToken}";
 NSString *environment = ADJEnvironmentSandbox;
 *adjustConfig = [ADJConfig configWithAppToken:yourAppToken
-                                  environment:environment];
+                                 environment:environment];
 // ...
 [adjustConfig setNeedsCost:NO];
 ```
@@ -556,7 +556,7 @@ adjustConfig?.linkMeEnabled = true
 NSString *yourAppToken = @"{YourAppToken}";
 NSString *environment = ADJEnvironmentSandbox;
 *adjustConfig = [ADJConfig configWithAppToken:yourAppToken
-                                  environment:environment];
+                                 environment:environment];
 // ...
 [adjustConfig setLinkMeEnabled:YES];
 ```
@@ -602,8 +602,8 @@ Turns off communication with SKAdNetwork. Communication is *enabled* by default.
 let yourAppToken = "{YourAppToken}"
 let environment = ADJEnvironmentSandbox as? String
 let adjustConfig = ADJConfig(
-    appToken: yourAppToken,
-    environment: environment)
+   appToken: yourAppToken,
+   environment: environment)
 //...
 adjustConfig.deactivateSKAdNetworkHandling()
 //...
@@ -613,7 +613,7 @@ Adjust.appDidLaunch(adjustConfig)
 {emphasize-lines="4"}
 ```objective-c
 *adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
-                                  environment:ADJEnvironmentSandbox];
+                                 environment:ADJEnvironmentSandbox];
 //...
 [adjustConfig.deactivateSKAdNetworkHandling];
 //...
@@ -651,8 +651,8 @@ Sets whether the Adjust SDK can read the device {abbr}`IDFA (ID for Advertisers)
 let yourAppToken = "{YourAppToken}"
 let environment = ADJEnvironmentSandbox as? String
 let adjustConfig = ADJConfig(
-    appToken: yourAppToken,
-    environment: environment)
+   appToken: yourAppToken,
+   environment: environment)
 //...
 adjustConfig.allowIdfaReading = true;
 //...
@@ -662,7 +662,7 @@ Adjust.appDidLaunch(adjustConfig)
 {emphasize-lines="4"}
 ```objective-c
 *adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
-                                  environment:ADJEnvironmentSandbox];
+                                 environment:ADJEnvironmentSandbox];
 //...
 [adjustConfig.setAllowIdfaReading:YES];
 //...
@@ -701,18 +701,18 @@ Sets whether the Adjust SDK can read AdServices framework data.
 let yourAppToken = "{YourAppToken}"
 let environment = ADJEnvironmentSandbox as? String
 let adjustConfig = ADJConfig(
-    appToken: yourAppToken,
-    environment: environment)
+   appToken: yourAppToken,
+   environment: environment)
 //...
 adjustConfig.allowAdServicesInfoReading = true;
 //...
 Adjust.appDidLaunch(adjustConfig)
 ```
 
-{empahsize-lines="4"}
+{emphasize-lines="4"}
 ```objective-c
 *adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
-                                  environment:ADJEnvironmentSandbox];
+                                 environment:ADJEnvironmentSandbox];
 //...
 [adjustConfig.setAllowAdServicesInfoReading:YES];
 //...
@@ -753,8 +753,8 @@ Sets whether the Adjust SDK can read iAd framework data.
 let yourAppToken = "{YourAppToken}"
 let environment = ADJEnvironmentSandbox as? String
 let adjustConfig = ADJConfig(
-    appToken: yourAppToken,
-    environment: environment)
+   appToken: yourAppToken,
+   environment: environment)
 //...
 adjustConfig.allowiAdInfoReading = true;
 //...
@@ -764,7 +764,7 @@ Adjust.appDidLaunch(adjustConfig)
 {emphasize-lines="4"}
 ```objective-c
 *adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
-                                  environment:ADJEnvironmentSandbox];
+                                 environment:ADJEnvironmentSandbox];
 //...
 [adjustConfig.setAllowiAdInfoReading:YES];
 //...

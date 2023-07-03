@@ -60,7 +60,7 @@ If you are using the [Google External Dependency Manager plugin](https://develop
 
 ```xml
 <androidPackages>
-    <androidPackage spec="com.google.android.gms:play-services-ads-identifier:18.0.1" />
+   <androidPackage spec="com.google.android.gms:play-services-ads-identifier:18.0.1" />
 </androidPackages>
 ```
 :::
@@ -78,14 +78,14 @@ If you are using Proguard, add the following rules to your [custom Proguard file
 ```groovy
 -keep public class com.adjust.sdk.** { *; }
 -keep class com.google.android.gms.common.ConnectionResult {
-    int SUCCESS;
+   int SUCCESS;
 }
 -keep class com.google.android.gms.ads.identifier.AdvertisingIdClient {
-    com.google.android.gms.ads.identifier.AdvertisingIdClient$Info getAdvertisingIdInfo(android.content.Context);
+   com.google.android.gms.ads.identifier.AdvertisingIdClient$Info getAdvertisingIdInfo(android.content.Context);
 }
 -keep class com.google.android.gms.ads.identifier.AdvertisingIdClient$Info {
-    java.lang.String getId();
-    boolean isLimitAdTrackingEnabled();
+   java.lang.String getId();
+   boolean isLimitAdTrackingEnabled();
 }
 -keep public class com.android.installreferrer.** { *; }
 ```
@@ -210,7 +210,7 @@ If you encounter any issues, email <support@adjust.com> with all details and log
 
 :::{dropdown} Test Google Play Services integration
 
-To test that the Adjust SDK can receive a device's Google Advertising ID, set the [log level](/unity/configuration/log-level.md) to **verbose** and the environment to **Sandbox**. Start your app and measure a session or an event. The SDK logs the {abbr}`gps_adid (Google Play Services Advertiser ID)` parameter if it has read the advertising ID.
+To test that the Adjust SDK can receive a device's Google Advertising ID, set the [log level](/unity/configuration/log-level.md) to **verbose** and the environment to **Sandbox**. Start your app and measure a {term}`session` or an event. The SDK logs the {abbr}`gps_adid (Google Play Services Advertiser ID)` parameter if it has read the advertising ID.
 
 If you are having issues retrieving the Google Advertising ID, open an issue in the [GitHub repository](https://github.com/adjust/unity_sdk) or contact <support@adjust.com>.
 

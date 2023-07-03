@@ -4,7 +4,7 @@ The Adjust Web SDK enables you to record attribution, events, and more in your w
 
 ## 1. Add the SDK to your project
 
-To get started, you need to add the SDK to your web app. The Adjust SDK works in both CommonJS and {abbr}`AMD (Asynchronous Module Definition)` environments and can be accessed through a global `Adjust` namespace when loaded through a {abbr}`CDN (Content Delivery Network)`. 
+To get started, you need to add the SDK to your web app. The Adjust SDK works in both CommonJS and {abbr}`AMD (Asynchronous Module Definition)` environments and can be accessed through a global `Adjust` namespace when loaded through a {abbr}`CDN (Content Delivery Network)`.
 
 ### Using a CDN
 
@@ -18,11 +18,59 @@ To load the SDK through a CDN, add the following snippet between your web app's 
 
 ```html
 <script type="application/javascript">
-!function(t,e,a,r,n,s,d,l,o,i,u){t.Adjust=t.Adjust||{},t.Adjust_q=t.Adjust_q||[];for(var c=0;c<l.length;c++)o(t.Adjust,t.Adjust_q,l[c]);i=e.createElement(a),u=e.getElementsByTagName(a)[0],i.async=!0,i.src="https://cdn.adjust.com/adjust-latest.min.js",i.onload=function(){for(var e=0;e<t.Adjust_q.length;e++)t.Adjust[t.Adjust_q[e][0]].apply(t.Adjust,t.Adjust_q[e][1]);t.Adjust_q=[]},u.parentNode.insertBefore(i,u)}(window,document,"script",0,0,0,0,["initSdk","getAttribution","getWebUUID","setReferrer","trackEvent","addGlobalCallbackParameters","addGlobalPartnerParameters","removeGlobalCallbackParameter","removeGlobalPartnerParameter","clearGlobalCallbackParameters","clearGlobalPartnerParameters","switchToOfflineMode","switchBackToOnlineMode","stop","restart","gdprForgetMe","disableThirdPartySharing","initSmartBanner","showSmartBanner","hideSmartBanner"],(function(t,e,a){t[a]=function(){e.push([a,arguments])}}));
+   !(function (t, e, a, r, n, s, d, l, o, i, u) {
+      (t.Adjust = t.Adjust || {}), (t.Adjust_q = t.Adjust_q || []);
+      for (var c = 0; c < l.length; c++) o(t.Adjust, t.Adjust_q, l[c]);
+      (i = e.createElement(a)),
+         (u = e.getElementsByTagName(a)[0]),
+         (i.async = !0),
+         (i.src = "https://cdn.adjust.com/adjust-latest.min.js"),
+         (i.onload = function () {
+            for (var e = 0; e < t.Adjust_q.length; e++)
+               t.Adjust[t.Adjust_q[e][0]].apply(t.Adjust, t.Adjust_q[e][1]);
+            t.Adjust_q = [];
+         }),
+         u.parentNode.insertBefore(i, u);
+   })(
+      window,
+      document,
+      "script",
+      0,
+      0,
+      0,
+      0,
+      [
+         "initSdk",
+         "getAttribution",
+         "getWebUUID",
+         "setReferrer",
+         "trackEvent",
+         "addGlobalCallbackParameters",
+         "addGlobalPartnerParameters",
+         "removeGlobalCallbackParameter",
+         "removeGlobalPartnerParameter",
+         "clearGlobalCallbackParameters",
+         "clearGlobalPartnerParameters",
+         "switchToOfflineMode",
+         "switchBackToOnlineMode",
+         "stop",
+         "restart",
+         "gdprForgetMe",
+         "disableThirdPartySharing",
+         "initSmartBanner",
+         "showSmartBanner",
+         "hideSmartBanner",
+      ],
+      function (t, e, a) {
+         t[a] = function () {
+            e.push([a, arguments]);
+         };
+      },
+   );
 </script>
 ```
 
-The Adjust SDK loads on each page and initates once per page load.
+The Adjust SDK loads on each page and initiates once per page load.
 
 #### Subresource Integrity
 
@@ -30,7 +78,57 @@ If you want to use [Subresource Integrity](https://developer.mozilla.org/en-US/d
 
 ```html
 <script type="application/javascript">
-!function(t,e,a,r,n,s,o,d,l,i,u){t.Adjust=t.Adjust||{},t.Adjust_q=t.Adjust_q||[];for(var c=0;c<d.length;c++)l(t.Adjust,t.Adjust_q,d[c]);i=e.createElement(a),u=e.getElementsByTagName(a)[0],i.async=!0,i.src="https://cdn.adjust.com/adjust-latest.min.js",i.crossOrigin="anonymous",i.integrity=s,i.onload=function(){for(var e=0;e<t.Adjust_q.length;e++)t.Adjust[t.Adjust_q[e][0]].apply(t.Adjust,t.Adjust_q[e][1]);t.Adjust_q=[]},u.parentNode.insertBefore(i,u)}(window,document,"script",0,0,"sha384-BqbTn9xyk5DPznti1ZP8ksxKiOFhKufLBFWm5eNMCnZABFSG1eqQfcu5dsiZJHu5",0,["initSdk","getAttribution","getWebUUID","setReferrer","trackEvent","addGlobalCallbackParameters","addGlobalPartnerParameters","removeGlobalCallbackParameter","removeGlobalPartnerParameter","clearGlobalCallbackParameters","clearGlobalPartnerParameters","switchToOfflineMode","switchBackToOnlineMode","stop","restart","gdprForgetMe","disableThirdPartySharing","initSmartBanner","showSmartBanner","hideSmartBanner"],(function(t,e,a){t[a]=function(){e.push([a,arguments])}}));
+   !(function (t, e, a, r, n, s, o, d, l, i, u) {
+      (t.Adjust = t.Adjust || {}), (t.Adjust_q = t.Adjust_q || []);
+      for (var c = 0; c < d.length; c++) l(t.Adjust, t.Adjust_q, d[c]);
+      (i = e.createElement(a)),
+         (u = e.getElementsByTagName(a)[0]),
+         (i.async = !0),
+         (i.src = "https://cdn.adjust.com/adjust-latest.min.js"),
+         (i.crossOrigin = "anonymous"),
+         (i.integrity = s),
+         (i.onload = function () {
+            for (var e = 0; e < t.Adjust_q.length; e++)
+               t.Adjust[t.Adjust_q[e][0]].apply(t.Adjust, t.Adjust_q[e][1]);
+            t.Adjust_q = [];
+         }),
+         u.parentNode.insertBefore(i, u);
+   })(
+      window,
+      document,
+      "script",
+      0,
+      0,
+      "sha384-BqbTn9xyk5DPznti1ZP8ksxKiOFhKufLBFWm5eNMCnZABFSG1eqQfcu5dsiZJHu5",
+      0,
+      [
+         "initSdk",
+         "getAttribution",
+         "getWebUUID",
+         "setReferrer",
+         "trackEvent",
+         "addGlobalCallbackParameters",
+         "addGlobalPartnerParameters",
+         "removeGlobalCallbackParameter",
+         "removeGlobalPartnerParameter",
+         "clearGlobalCallbackParameters",
+         "clearGlobalPartnerParameters",
+         "switchToOfflineMode",
+         "switchBackToOnlineMode",
+         "stop",
+         "restart",
+         "gdprForgetMe",
+         "disableThirdPartySharing",
+         "initSmartBanner",
+         "showSmartBanner",
+         "hideSmartBanner",
+      ],
+      function (t, e, a) {
+         t[a] = function () {
+            e.push([a, arguments]);
+         };
+      },
+   );
 </script>
 ```
 
@@ -69,10 +167,10 @@ Once you've installed the SDK, you need to initialize it. To do this, call the [
 You must add the following arguments to your `initSdk` call to initialize the SDK:
 
 `appToken`
-   : Your [Adjust app token](https://help.adjust.com/en/article/app-settings#view-your-app-token).
+: Your [Adjust app token](https://help.adjust.com/en/suite/article/app-token-and-reporting-currency).
 
 `environment`
-   : The environment your app is running in. Set this to `sandbox` to test your app locally.
+: The environment your app is running in. Set this to `sandbox` to test your app locally.
 
 :::{include} /web/reference/config.md
 :start-after: initSdk snippet

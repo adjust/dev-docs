@@ -30,7 +30,6 @@ Unity
 ::::
 
 ::::{grid}
-:gutter: 5
 
 :::{grid-item-card}
 :img-top: _images/flutter.svg
@@ -53,6 +52,12 @@ React Native
 :link-type: doc
 :text-align: center
 Web
+:::
+:::{grid-item-card} {fab}`windows fa-3x`
+:link: windows/index
+:link-type: doc
+:text-align: center
+Windows
 :::
 ::::
 

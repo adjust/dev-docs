@@ -47,7 +47,7 @@ Adjust.trackEvent(adjustEvent);
 ::::{function} addSessionCallbackParameter (key, value)
 :noindex:
 
-Adds callback parameters to send with each session recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
+Adds callback parameters to send with each {term}`session` recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
 
 {#android-addsessioncallbackparameter-invocation}
 ```java
@@ -163,7 +163,7 @@ Adjust.resetSessionCallbackParameters());
 :::::{function} addSessionPartnerParameter (key, value)
 :noindex:
 
-Adds partner parameters to send with each session recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
+Adds partner parameters to send with each {term}`session` recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
 
 {#android-addsessionpartnerparameter-invocation}
 ```java

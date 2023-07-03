@@ -1,6 +1,6 @@
 # Set up callbacks
 
-Set up callbacks to trigger functions when the SDK sends information to Adjust. You can set up callbacks for **sessions** and **events**.
+Set up callbacks to trigger functions when the SDK sends information to Adjust. You can set up callbacks for **{term}`sessions <session>`** and **events**.
 
 :::{important}
 You must register your callbacks **before** initializing the SDK.
@@ -54,9 +54,9 @@ This example demonstrates how to created a callback function `sessionSuccess` an
 val config = AdjustConfig(this, appToken, environment)
 
 config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
-    override fun sessionSuccess(sessionSuccessResponseData: AdjustSessionSuccess) {
+   override fun sessionSuccess(sessionSuccessResponseData: AdjustSessionSuccess) {
       Log.v("Session recorded at " + sessionSuccessResponseData.Timestamp)
-    }
+   }
 })
 
 Adjust.onCreate(config)
@@ -66,10 +66,10 @@ Adjust.onCreate(config)
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
 
 config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
-    @Override
-    public void sessionSuccess(AdjustSessionSuccess sessionSuccessResponseData) {
+   @Override
+   public void sessionSuccess(AdjustSessionSuccess sessionSuccessResponseData) {
       Log.v("Session recorded at " + sessionSuccessResponseData.Timestamp)
-    }
+   }
 });
 
 Adjust.onCreate(config)
@@ -108,9 +108,9 @@ This example demonstrates how to created a callback function `sessionFailure` an
 val config = AdjustConfig(this, appToken, environment)
 
 config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
-    override fun sessionFailure(sessionFailureResponseData: AdjustSessionFailure) {
+   override fun sessionFailure(sessionFailureResponseData: AdjustSessionFailure) {
       Log.v("Session recording failed. Response: " + sessionFailureResponseData.Message)
-    }
+   }
 })
 
 Adjust.onCreate(config)
@@ -120,10 +120,10 @@ Adjust.onCreate(config)
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
 
 config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
-    @Override
-    public void sessionFailure(AdjustSessionFailure sessionFailureResponseData) {
+   @Override
+   public void sessionFailure(AdjustSessionFailure sessionFailureResponseData) {
       Log.v("Session recording failed. Response: " + sessionFailureResponseData.Message)
-    }
+   }
 });
 
 Adjust.onCreate(config)
@@ -197,9 +197,9 @@ This example demonstrates how to created a callback function `eventSuccess` and 
 val config = AdjustConfig(this, appToken, environment)
 
 config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
-    override fun eventSuccess(eventSuccessResponseData: AdjustEventSuccess) {
+   override fun eventSuccess(eventSuccessResponseData: AdjustEventSuccess) {
       Log.v("Event recorded at " + eventSuccessResponseData.Timestamp)
-    }
+   }
 })
 
 Adjust.onCreate(config)
@@ -209,10 +209,10 @@ Adjust.onCreate(config)
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
 
 config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
-    @Override
-    public void eventSuccess(AdjustEventSuccess eventSuccessResponseData) {
+   @Override
+   public void eventSuccess(AdjustEventSuccess eventSuccessResponseData) {
       Log.v("Event recorded at " + eventSuccessResponseData.Timestamp)
-    }
+   }
 });
 
 Adjust.onCreate(config)
@@ -251,9 +251,9 @@ This example demonstrates how to created a callback function `eventFailure` and 
 val config = AdjustConfig(this, appToken, environment)
 
 config.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
-    override fun eventFailure(eventFailureResponseData: AdjustEventFailure) {
+   override fun eventFailure(eventFailureResponseData: AdjustEventFailure) {
       Log.v("Event recording failed. Response: " + eventFailureResponseData.Message)
-    }
+   }
 })
 
 Adjust.onCreate(config)
@@ -263,10 +263,10 @@ Adjust.onCreate(config)
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
 
 config.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
-    @Override
-    public void eventFailure(AdjustEventFailure eventFailureResponseData) {
+   @Override
+   public void eventFailure(AdjustEventFailure eventFailureResponseData) {
       Log.v("Event recording failed. Response: " + eventFailureResponseData.Message)
-    }
+   }
 });
 
 Adjust.onCreate(config)
