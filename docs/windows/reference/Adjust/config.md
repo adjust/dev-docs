@@ -136,7 +136,7 @@ Adjust.SetOfflineMode(true);
 ::::{function} SetPushToken (PushToken)
 :noindex:
 
-Set your [push token](https://help.adjust.com/en/article/push-notifications) to record [uninstalls and reattributions](https://help.adjust.com/en/article/uninstalls-reinstalls). You can update this value at any time.
+Set your [push token](https://help.adjust.com/en/article/push-notifications) to record [uninstalls and reinstalls](https://help.adjust.com/en/article/uninstalls-reinstalls). You can update this value at any time.
 
 {#windows-setpushtoken-invocation}
 
