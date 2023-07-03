@@ -14,10 +14,10 @@ The following properties can be accessed by calling the [`GetAttribution` method
    -  Description
 -  -  `TrackerToken`
    -  String
-   -  The token of the tracker to which the device is currently attributed
+   -  The link token to which the device is currently attributed
 -  -  `TrackerName`
    -  String
-   -  The name of the tracker to which the device is currently attributed
+   -  The link name to which the device is currently attributed
 -  -  `Network`
    -  String
    -  The name of the network to which the device is currently attributed
