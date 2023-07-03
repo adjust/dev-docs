@@ -1,6 +1,6 @@
 # Set up session parameters
 
-If you [register a callback URL](https://help.adjust.com/en/article/recommended-placeholders-callbacks) in the Adjust dashboard, Adjust sends a GET request to your callback URL when the SDK measures a {term}`session`.
+If you [register a callback URL](https://help.adjust.com/en/article/set-up-callbacks) in the Adjust dashboard, Adjust sends a GET request to your callback URL when the SDK measures a {term}`session`.
 
 You can configure callback parameters to your servers. Once you configure parameters on an event, the SDK appends them to your callback URL. You can use this information to analyze your users' in-app behavior with your BI system.
 
@@ -8,7 +8,7 @@ You can configure callback parameters to your servers. Once you configure parame
 The Adjust SDK merges session callback parameters with event callback parameters. Event callback parameters take priority over session callback parameters. This means that if you add a parameter key to both an event and a session, the SDK sends the event parameter.
 :::
 
-Add callback parameters to your event by calling the [`AddSessionCallbackParameter` method](#windows-addsessioncallbackparameter-invocation) with **string** key-value arguments. You can add multiple parameters by calling this method multiple times.
+Add callback parameters to a session by calling the [`AddSessionCallbackParameter` method](#windows-addsessioncallbackparameter-invocation) with **string** key-value arguments. You can add multiple parameters by calling this method multiple times.
 
 :::{include} /windows/reference/Adjust/recording.md
 :start-after: AddSessionCallbackParameter snippet
