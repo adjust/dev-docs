@@ -10,6 +10,7 @@ Use these methods to update the Adjust SDK's configuration.
 Enable or disable the Adjust SDK. The SDK doesn't send any information while disabled.
 
 {#flutter-setenabled-invocation}
+
 ```dart
 static void setEnabled(bool isEnabled)
 ```
@@ -41,6 +42,7 @@ Adjust.setEnabled(false);
 Call this method to check whether the Adjust SDK is enabled.
 
 {#flutter-isenabled-invocation}
+
 ```dart
 static Future<bool> isEnabled() async
 ```
@@ -76,6 +78,7 @@ This method has an effect only if you delay the start of the Adjust SDK.
 The Adjust SDK sends information to Adjust's servers as soon as it starts. If you delay the start of the SDK, you can use this method to send packages before the delay ends.
 
 {#flutter-sendfirstpackages-invocation}
+
 ```dart
 static void sendFirstPackages()
 ```
@@ -104,6 +107,7 @@ Adjust.sendFirstPackages();
 Controls whether the SDK is in offline mode. When in offline mode, the SDK queues all events in a file until offline mode is disabled. When offline mode is disabled, the SDK sends all queued events.
 
 {#flutter-setofflinemode-invocation}
+
 ```dart
 static void setOfflineMode(bool isOffline)
 ```
@@ -132,9 +136,10 @@ Adjust.setOfflineMode(true);
 ::::{function} setPushToken (token)
 :noindex:
 
-Set your [push token](hc:push-notifications) to record [uninstalls and reattributions](hc:uninstalls-reinstalls). You can update this value at any time.
+Set your [push token](https://help.adjust.com/en/article/push-notifications) to record [uninstalls and reattributions](https://help.adjust.com/en/article/uninstalls-reinstalls). You can update this value at any time.
 
 {#flutter-setpushtoken-invocation}
+
 ```dart
 static void setPushToken(String token)
 ```

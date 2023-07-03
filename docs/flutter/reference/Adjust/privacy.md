@@ -12,6 +12,7 @@ Disables sharing of information with third parties for all users.
 :::
 
 {#flutter-disablethirdpartysharing-invocation}
+
 ```dart
 static void disableThirdPartySharing()
 ```
@@ -40,12 +41,13 @@ Adjust.disableThirdPartySharing();
 Disable or enable sharing of information with third parties on a per-user basis. Accepts a third party sharing object initialized with a **boolean** value.
 
 {#flutter-trackthirdpartysharing-invocation}
+
 ```dart
 static void trackThirdPartySharing(AdjustThirdPartySharing thirdPartySharing)
 ```
 
 :param thirdPartySharing: The third party sharing object
-:type thirdPartySharing: [*AdjustThirdPartySharing*](/flutter/reference/AdjustThirdPartySharing.md)
+:type thirdPartySharing: [_AdjustThirdPartySharing_](/flutter/reference/AdjustThirdPartySharing.md)
 
 % trackThirdPartySharing snippet
 
@@ -70,9 +72,10 @@ Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ::::{function} trackMeasurementConsent(measurementConsent)
 :noindex:
 
-Set whether [data collection and retention rules](hc:manage-data-collection-and-retention) apply to a user.
+Set whether [data collection and retention rules](https://help.adjust.com/en/article/manage-data-collection-and-retention) apply to a user.
 
 {#flutter-trackmeasurementconsent-invocation}
+
 ```dart
 static void trackMeasurementConsent(bool measurementConsent)
 ```
@@ -101,10 +104,11 @@ Adjust.trackMeasurementConsent(true);
 ::::{function} gdprForgetMe
 :noindex:
 
-Send an [{abbr}` RTBF (Right To Be Forgotten)`](hc:gdpr) request to Adjust's servers. This erases all information about the user the source app. The SDK stops sending requests for the user.
+Send an [{abbr}` RTBF (Right To Be Forgotten)`](https://help.adjust.com/en/article/gdpr) request to Adjust's servers. This erases all information about the user the source app. The SDK stops sending requests for the user.
 :::
 
 {#flutter-gdprforgetme-invocation}
+
 ```dart
 static void gdprForgetMe()
 ```

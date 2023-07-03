@@ -5,9 +5,10 @@
 :::::{function} urlStrategy
 :noindex:
 
-Sets the country or region of [data residency](hc:data-residency). 
+Sets the country or region of [data residency](https://help.adjust.com/en/article/data-residency).
 
 {#flutter-seturlstrategy-invocation}
+
 ```dart
 String? urlStrategy;
 ```
@@ -17,6 +18,7 @@ String? urlStrategy;
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```dart
 AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
 //...
@@ -31,18 +33,18 @@ Adjust.start(adjustConfig);
 :::{list-table}
 :header-rows: 1
 
-* - Value
-   - Description
-* - `AdjustDataResidencyEU`
-   - Sets the area of data residency to the EU
-* - `AdjustDataResidencyTR`
-   - Sets the area of data residency to Turkey
-* - `AdjustDataResidencyUS`
-   - Sets the area of data residency to the USA
-* - `AdjustUrlStrategyChina`
-   - Sets the area of data residency to China
-* - `AdjustUrlStrategyIndia`
-   - Sets the area of data residency to India
+-  -  Value
+   -  Description
+-  -  `AdjustDataResidencyEU`
+   -  Sets the area of data residency to the EU
+-  -  `AdjustDataResidencyTR`
+   -  Sets the area of data residency to Turkey
+-  -  `AdjustDataResidencyUS`
+   -  Sets the area of data residency to the USA
+-  -  `AdjustUrlStrategyChina`
+   -  Sets the area of data residency to China
+-  -  `AdjustUrlStrategyIndia`
+   -  Sets the area of data residency to India
 
 :::
 ::::
@@ -59,10 +61,11 @@ Adjust.start(adjustConfig);
 :noindex:
 
 :::{versionadded} v4.30.0
-Enable [{abbr}`COPPA (Children's Online Privacy Protection Act)` compliance](hc:apps-for-children) in your app.
+Enable [{abbr}`COPPA (Children's Online Privacy Protection Act)` compliance](https://help.adjust.com/en/article/apps-for-children) in your app.
 :::
 
 {#flutter-coppacompliantenabled-invocation}
+
 ```dart
 bool? coppaCompliantEnabled
 ```
@@ -72,6 +75,7 @@ bool? coppaCompliantEnabled
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```dart
 AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
 //...

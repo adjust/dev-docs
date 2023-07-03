@@ -1,6 +1,6 @@
 # SKAdNetwork and ATT methods
 
-Use these methods to manage your [SKAdNetwork](hc:skadnetwork) and [App Tracking Transparency](hc:app-tracking-transparency-att-framework) logic.
+Use these methods to manage your [SKAdNetwork](https://help.adjust.com/en/article/skadnetwork) and [App Tracking Transparency](https://help.adjust.com/en/article/app-tracking-transparency-att-framework) logic.
 
 % Class method requestTrackingAuthorizationWithCompletionHandler
 
@@ -10,6 +10,7 @@ Use these methods to manage your [SKAdNetwork](hc:skadnetwork) and [App Tracking
 Receives the user's authorization status from the ATT prompt
 
 {#flutter-requesttrackingauthorizationwithcompletionhandler-invocation}
+
 ```dart
 static Future<num> requestTrackingAuthorizationWithCompletionHandler() async
 ```
@@ -20,22 +21,22 @@ static Future<num> requestTrackingAuthorizationWithCompletionHandler() async
 
 ```dart
 if (Platform.isIOS) {
-  Adjust.requestTrackingAuthorizationWithCompletionHandler().then((status) {
-    switch (status) {
-      case 0:
-        // ATTrackingManagerAuthorizationStatusNotDetermined case
-        break;
-      case 1:
-        // ATTrackingManagerAuthorizationStatusRestricted case
-        break;
-      case 2:
-        // ATTrackingManagerAuthorizationStatusDenied case
-        break;
-      case 3:
-        // ATTrackingManagerAuthorizationStatusAuthorized case
-        break;
-    }
-  });
+   Adjust.requestTrackingAuthorizationWithCompletionHandler().then((status) {
+      switch (status) {
+         case 0:
+            // ATTrackingManagerAuthorizationStatusNotDetermined case
+            break;
+         case 1:
+            // ATTrackingManagerAuthorizationStatusRestricted case
+            break;
+         case 2:
+            // ATTrackingManagerAuthorizationStatusDenied case
+            break;
+         case 3:
+            // ATTrackingManagerAuthorizationStatusAuthorized case
+            break;
+      }
+   });
 }
 ```
 
@@ -55,6 +56,7 @@ if (Platform.isIOS) {
 Retrieves the user's current authorization status
 
 {#flutter-getapptrackingauthorizationstatus-invocation}
+
 ```dart
 static Future<int> getAppTrackingAuthorizationStatus() async
 ```
@@ -86,6 +88,7 @@ Adjust.getAppTrackingAuthorizationStatus();
 Prompts the SDK to check the current state of `att_status`
 
 {#flutter-checkfornewattstatus-invocation}
+
 ```dart
 static void checkForNewAttStatus()
 ```
@@ -114,6 +117,7 @@ Adjust.checkForNewAttStatus();
 Updates the [conversion value](https://help.adjust.com/en/suite/article/conversion-hub)
 
 {#flutter-updateconversionvalue-invocation}
+
 ```dart
 static void updateConversionValue(int conversionValue)
 ```

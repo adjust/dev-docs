@@ -5,15 +5,16 @@
 ::::{function} trackEvent (event)
 :noindex:
 
-Record event information using an `AdjustEvent` object and an [Adjust event token](hc:basic-event-setup#create-an-event-token).
+Record event information using an `AdjustEvent` object and an [Adjust event token](https://help.adjust.com/en/article/basic-event-setup#create-an-event-token).
 
 {#flutter-trackevent-invocation}
+
 ```dart
 static void trackEvent(AdjustEvent event)
 ```
 
 :param event: An event object containing information you want to record
-:type event: [*AdjustEvent*](/flutter/reference/AdjustEvent.md)
+:type event: [_AdjustEvent_](/flutter/reference/AdjustEvent.md)
 
 % trackEvent snippet
 
@@ -45,6 +46,7 @@ If you have added an event callback parameter with the same key, the **event** p
 :::
 
 {#flutter-addsessioncallbackparameter-invocation}
+
 ```dart
 static void addSessionCallbackParameter(String key, String value)
 ```
@@ -78,6 +80,7 @@ Adjust.addSessionCallbackParameter('key', 'value');
 Removes a callback parameter
 
 {#flutter-removesessioncallbackparameter-invocation}
+
 ```dart
 static void removeSessionCallbackParameter(String key)
 ```
@@ -109,6 +112,7 @@ Adjust.removeSessionCallbackParameter('key');
 Removes all callback parameters
 
 {#flutter-resetsessioncallbackparameters-invocation}
+
 ```dart
 static void resetSessionCallbackParameters()
 ```
@@ -141,6 +145,7 @@ If you have added an event partner parameter with the same key, the **event** pa
 :::
 
 {#flutter-addsessionpartnerparameter-invocation}
+
 ```dart#
 static void addSessionPartnerParameter(String key, String value)
 ```
@@ -174,6 +179,7 @@ Adjust.addSessionPartnerParameter('key', 'value');
 Removes a partner parameter
 
 {#flutter-removesessionpartnerparameter-invocation}
+
 ```dart
 static void removeSessionPartnerParameter(String key)
 ```
@@ -205,6 +211,7 @@ Adjust.removeSessionPartnerParameter('key');
 Resets all partner parameters
 
 {#flutter-resetsessionpartnerparameters-invocation}
+
 ```dart
 static void resetSessionPartnerParameters()
 ```
@@ -233,6 +240,7 @@ Adjust.resetSessionPartnerParameters();
 Record an App Store subscription object
 
 {#flutter-trackappstoresubscription-invocation}
+
 ```dart
 static void trackAppStoreSubscription(AdjustAppStoreSubscription subscription)
 ```
@@ -246,10 +254,10 @@ static void trackAppStoreSubscription(AdjustAppStoreSubscription subscription)
 
 ```dart
 AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
-    price,
-    currency,
-    transactionId,
-    receipt);
+   price,
+   currency,
+   transactionId,
+   receipt);
 subscription.setTransactionDate(transactionDate);
 subscription.setSalesRegion(salesRegion);
 subscription.addCallbackParameter('key1', 'value1');
@@ -276,6 +284,7 @@ Adjust.trackAppStoreSubscription(subscription);
 Record a Play Store subscription object
 
 {#flutter-trackplaystoresubscription-invocation}
+
 ```dart
 static void trackPlayStoreSubscription(AdjustPlayStoreSubscription subscription)
 ```
@@ -289,12 +298,12 @@ static void trackPlayStoreSubscription(AdjustPlayStoreSubscription subscription)
 
 ```dart
 AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
-    price,
-    currency,
-    sku,
-    orderId,
-    signature,
-    purchaseToken);
+   price,
+   currency,
+   sku,
+   orderId,
+   signature,
+   purchaseToken);
 subscription.setPurchaseTime(purchaseTime);
 subscription.addCallbackParameter('key1', 'value1');
 subscription.addCallbackParameter('key2', 'value2');
@@ -318,6 +327,7 @@ Adjust.trackPlayStoreSubscription(subscription);
 Fetches attribution data from the device
 
 {#flutter-getattribution-invocation}
+
 ```dart
 static Future<AdjustAttribution> getAttribution() async
 ```
