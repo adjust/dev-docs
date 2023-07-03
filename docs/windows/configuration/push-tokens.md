@@ -1,6 +1,6 @@
 # Set up push tokens
 
-Push tokens are used for [Audience Builder](https://help.adjust.com/en/article/audience-builder) and client callbacks. They're also required for [Uninstall and reinstall tracking](https://help.adjust.com/en/article/uninstalls-reinstalls).
+Push tokens are used for [Audience Builder](https://help.adjust.com/en/article/audience-builder) and [reattribution callbacks](https://help.adjust.com/en/suite/article/server-callbacks). They're also required for [Uninstall and reinstall tracking](https://help.adjust.com/en/article/uninstalls-reinstalls).
 
 Your config object contains a string `PushToken` property that you can use to store your push token. You can update this property at any time by calling the [`SetPushToken` method](#windows-setpushtoken-invocation) and passing your token as an argument.
 
