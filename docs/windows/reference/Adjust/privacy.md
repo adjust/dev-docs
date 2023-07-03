@@ -7,7 +7,7 @@ Use these methods to handle user privacy in your app.
 ::::{function} GdprForgetMe
 :noindex:
 
-Send an {abbr}`RTBF (Right To Be Forgotten)` request to Adjust's servers. This erases all information about the user the source app. The SDK stops sending requests for the user.
+Send an {abbr}`RTBF (Right To Be Forgotten)` request to Adjust's servers. This erases all information about the user for the source app. The SDK stops sending requests for the user.
 
 {#windows-gdprforgetme-invocation}
 
