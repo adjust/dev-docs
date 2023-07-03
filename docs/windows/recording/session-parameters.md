@@ -33,7 +33,7 @@ You can remove all session parameters if they're no longer required. To do this,
 
 You can send extra information to your network partners by adding [partner parameters](https://help.adjust.com/en/article/advanced-event-setup#receive-custom-data-with-partner-parameters).
 
-Adjust sends partner parameters to [external partners](https://help.adjust.com/en/article/integrated-partners) you've set up. This information is useful for more granular analysis and retargeting purposes. Adjust's servers forward these parameters once you've set them up and enabled them for a partner.
+Adjust's servers forward partner parameters to any [external partners](https://help.adjust.com/en/article/integrated-partners) you enable them for. This information is useful for more granular analysis and retargeting purposes.
 
 :::{note}
 Partner parameters don't appear in raw data by default. You can add the `{partner_parameters}` placeholder to receive them as a single string.
