@@ -146,7 +146,7 @@ If you have added an event partner parameter with the same key, the **event** pa
 
 {#flutter-addsessionpartnerparameter-invocation}
 
-```dart#
+```dart
 static void addSessionPartnerParameter(String key, String value)
 ```
 

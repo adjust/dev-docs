@@ -67,7 +67,7 @@ Adjust.start(config);
                      style: _isSdkEnabled
                         ? new TextStyle(fontSize: 32.0, color: Colors.green)
                         : new TextStyle(fontSize: 32.0, color: Colors.red),
-                     ), 
+                     ),
                      new CupertinoSwitch(
                      value: _isSdkEnabled,
                      onChanged: (bool value) {
@@ -92,19 +92,18 @@ Adjust.start(config);
    }
 
    _showIsSdkEnabled() {
-   try {
-      Adjust.isEnabled().then((isEnabled) {
-         _isSdkEnabled = isEnabled;
-         _showDialogMessage('SDK Enabled?', 'Adjust is enabled = $isEnabled');
-      });
-   } on PlatformException {
-      _showDialogMessage(
-         'SDK Enabled?', 'No such method found in plugin: isEnabled');
+      try {
+         Adjust.isEnabled().then((isEnabled) {
+            _isSdkEnabled = isEnabled;
+            _showDialogMessage('SDK Enabled?', 'Adjust is enabled = $isEnabled');
+         });
+      } on PlatformException {
+         _showDialogMessage(
+            'SDK Enabled?', 'No such method found in plugin: isEnabled');
+      }
    }
-   }
-```
 
-++++<
+```
 
 :::
 

@@ -7,7 +7,7 @@ The `AdjustAttribution` class contains details about the current attribution sta
 The following properties can be accessed by calling the [`getAttribution` method](#flutter-getattribution-invocation). Any values that aren't populated for the user are returned as a null value.
 
 :::{note}
-The following properties can only be accessed if the [`needsCost`](#flutter-setneedscost-invocation) property on your `AdjustConfig` instance is `true`:
+The following properties can only be accessed if the [`needsCost`](#flutter-needscost-invocation) property on your `AdjustConfig` instance is `true`:
 
 -  `costType`
 -  `costAmount`

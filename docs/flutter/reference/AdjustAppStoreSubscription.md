@@ -10,6 +10,7 @@ Use this class to store App Store subscription information. You can pass this to
 Initializes a subscription
 
 {#flutter-adjustappstoresubscription-invocation}
+
 ```dart
 AdjustAppStoreSubscription(String _price, String _currency, String _transactionId, String _receipt)
 ```
@@ -23,18 +24,18 @@ AdjustAppStoreSubscription(String _price, String _currency, String _transactionI
 :param receipt: The receipt information
 :type receipt: string
 
-
 % AdjustAppStoreSubscription snippet
 
 :::{tab-set-code}
 
-````dart
+```dart
 AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
-    price,
-    currency,
-    transactionId,
-    receipt);
+   price,
+   currency,
+   transactionId,
+   receipt);
 ```
+
 :::
 
 % Snippet end
@@ -51,6 +52,7 @@ AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
 Sets the date of the transaction in the subscription object
 
 {#flutter-settransactiondate-invocation}
+
 ```dart
 void setTransactionDate(String _transactionDate)
 ```
@@ -63,15 +65,17 @@ void setTransactionDate(String _transactionDate)
 :::{tab-set-code}
 
 {emphasize-lines="7"}
+
 ```dart
 AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
-    price,
-    currency,
-    transactionId,
-    receipt);
+   price,
+   currency,
+   transactionId,
+   receipt);
 //...
 subscription.setTransactionDate(transactionDate);
 ```
+
 :::
 
 % Snippet end
@@ -88,6 +92,7 @@ subscription.setTransactionDate(transactionDate);
 You can record the region in which the user purchased a subscription
 
 {#flutter-setsalesregion-invocation}
+
 ```dart
 void setSalesRegion(String _salesRegion)
 ```
@@ -100,15 +105,17 @@ void setSalesRegion(String _salesRegion)
 :::{tab-set-code}
 
 {emphasize-lines="7"}
+
 ```dart
 AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
-    price,
-    currency,
-    transactionId,
-    receipt);
+   price,
+   currency,
+   transactionId,
+   receipt);
 //...
 subscription.setSalesRegion(salesRegion);
 ```
+
 :::
 
 % Snippet end
@@ -125,6 +132,7 @@ subscription.setSalesRegion(salesRegion);
 Adds key-value callback parameters to the subscription object. You can add multiple parameters by calling this method multiple times.
 
 {#flutter-adjustappstoresubscription-addcallbackparameter-invocation}
+
 ```dart
 void addCallbackParameter(String key, String value)
 ```
@@ -139,12 +147,13 @@ void addCallbackParameter(String key, String value)
 :::{tab-set-code}
 
 {emphasize-lines="7,8"}
+
 ```dart
 AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
-    price,
-    currency,
-    transactionId,
-    receipt);
+   price,
+   currency,
+   transactionId,
+   receipt);
 //...
 subscription.addCallbackParameter('key1', 'value1');
 subscription.addCallbackParameter('key2', 'value2');
@@ -166,6 +175,7 @@ subscription.addCallbackParameter('key2', 'value2');
 Adds key-value partner parameters to the subscription object. You can add multiple parameters by calling this method multiple times.
 
 {#flutter-adjustappstoresubscription-addpartnerparameter-invocation}
+
 ```dart
 void addPartnerParameter(String key, String value)
 ```
@@ -180,16 +190,18 @@ void addPartnerParameter(String key, String value)
 :::{tab-set-code}
 
 {emphasize-lines="7,8"}
+
 ```dart
 AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
-    price,
-    currency,
-    transactionId,
-    receipt);
+   price,
+   currency,
+   transactionId,
+   receipt);
 //...
 subscription.addPartnerParameter('key1', 'value1');
 subscription.addPartnerParameter('key2', 'value2');
 ```
+
 :::
 
 % Snippet end

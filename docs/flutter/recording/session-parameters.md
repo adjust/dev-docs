@@ -66,7 +66,7 @@ You can remove all session partner parameters if they're no longer required. To 
 You can delay the startup of the SDK by up to **10 seconds**.
 :::
 
-The Adjust SDK starts as soon as your app opens. If you want to send data that's not available at launch in session parameters, you can delay the start of the SDK. To do this, pass the delay time in seconds to the [`delayStart` method](#flutter-setdelaystart-invocation) on your config object.
+The Adjust SDK starts as soon as your app opens. If you want to send data that's not available at launch in session parameters, you can delay the start of the SDK. To do this, pass the delay time in seconds to the [`delayStart` method](#flutter-delaystart-invocation) on your config object.
 
 :::{include} /flutter/reference/AdjustConfig/setup.md
 :start-after: delayStart snippet

@@ -8,6 +8,7 @@
 Set the verbosity of logs you want to receive from the Adjust SDK
 
 {#flutter-loglevel-invocation}
+
 ```dart
 AdjustLogLevel? logLevel;
 ```
@@ -17,6 +18,7 @@ AdjustLogLevel? logLevel;
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```dart
 AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
 //...
@@ -31,22 +33,22 @@ Adjust.start(adjustConfig);
 :::{list-table}
 :header-rows: 1
 
-* - Log level
-   - Description
-* - `AdjustLogLevel.Verbose`
-   - Enable full logging
-* - `AdjustLogLevel.Debug`
-   - Enable debug logging
-* - `AdjustLogLevel.Info`
-   - Only show info level logs (default option)
-* - `AdjustLogLevel.Warn`
-   - Disable info logging
-* - `AdjustLogLevel.Error`
-   - Disable warning level logging and below
-* - `AdjustLogLevel.Assert`
-   - Disable error level logging and below
-* - `AdjustLogLevel.Suppress`
-   - Suppress all logging
+-  -  Log level
+   -  Description
+-  -  `AdjustLogLevel.Verbose`
+   -  Enable full logging
+-  -  `AdjustLogLevel.Debug`
+   -  Enable debug logging
+-  -  `AdjustLogLevel.Info`
+   -  Only show info level logs (default option)
+-  -  `AdjustLogLevel.Warn`
+   -  Disable info logging
+-  -  `AdjustLogLevel.Error`
+   -  Disable warning level logging and below
+-  -  `AdjustLogLevel.Assert`
+   -  Disable error level logging and below
+-  -  `AdjustLogLevel.Suppress`
+   -  Suppress all logging
 
 :::
 ::::
@@ -65,6 +67,7 @@ Adjust.start(adjustConfig);
 Sets a default tracker token to record organic installs against
 
 {#flutter-defaulttracker-invocation}
+
 ```dart
 String? defaultTracker;
 ```
@@ -74,6 +77,7 @@ String? defaultTracker;
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```dart
 AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
 //...
@@ -98,6 +102,7 @@ Adjust.start(adjustConfig);
 Sets an [external device identifier](https://help.adjust.com/en/article/external-device-identifiers) for reporting purposes
 
 {#flutter-externaldeviceid-invocation}
+
 ```dart
 String? externalDeviceId;
 ```
@@ -107,6 +112,7 @@ String? externalDeviceId;
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```dart
 AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
 //...
@@ -131,15 +137,17 @@ Adjust.start(adjustConfig);
 Enables or disables launching deferred deep links with the SDK. If **enabled**, the SDK launches deep links the user interacts with
 
 {#flutter-launchdeferreddeeplink-invocation}
+
 ```dart
 bool? launchDeferredDeeplink;
 ```
 
-% setLaunchDeferredDeeplink snippet
+% launchDeferredDeeplink snippet
 
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```dart
 AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
 //...
@@ -164,6 +172,7 @@ Adjust.start(adjustConfig);
 Sets whether the SDK should send data while the app is running in the background
 
 {#flutter-sendinbackground-invocation}
+
 ```dart
 bool? sendInBackground;
 ```
@@ -173,6 +182,7 @@ bool? sendInBackground;
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```dart
 AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
 //...
@@ -198,6 +208,7 @@ Sets whether the SDK should gather cost data. This is accessible in the user's a
 :::
 
 {#flutter-needscost-invocation}
+
 ```dart
 bool? needsCost;
 ```
@@ -207,6 +218,7 @@ bool? needsCost;
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```dart
 AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
 //...
@@ -231,6 +243,7 @@ Adjust.start(adjustConfig);
 Sets a delay before the SDK starts to allow data to load before session information is sent to Adjust's servers. Maximum delay: 10 seconds
 
 {#flutter-delaystart-invocation}
+
 ```dart
 double? delayStart;
 ```
@@ -240,6 +253,7 @@ double? delayStart;
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```dart
 AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
 //...
@@ -334,6 +348,7 @@ Adjust.start(adjustConfig);
 Sets event buffering. If enabled, the SDK stores events on the device and sends all requests once per minute.
 
 {#flutter-eventbufferingenabled-invocation}
+
 ```dart
 bool? eventBufferingEnabled;
 ```
@@ -346,6 +361,7 @@ bool? eventBufferingEnabled;
 :::{tab-set-code}
 
 {emphasize-lines="3"}
+
 ```dart
 AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
 //...
@@ -423,6 +439,7 @@ AttributionCallback? attributionCallback;
 :::{tab-set-code}
 
 {emphasize-lines="2-29"}
+
 ```dart
 AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
 config.attributionCallback = (AdjustAttribution attributionChangedData) {
@@ -472,6 +489,7 @@ Adjust.start(adjustConfig);
 Sets up a success callback to trigger a function when the SDK records a session.
 
 {#flutter-sessionsuccesscallback-invocation}
+
 ```dart
 typedef void SessionSuccessCallback(AdjustSessionSuccess successData);
 SessionSuccessCallback? sessionSuccessCallback;
@@ -485,6 +503,7 @@ SessionSuccessCallback? sessionSuccessCallback;
 :::{tab-set-code}
 
 {emphasize-lines="3-18"}
+
 ```dart
 AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
 
@@ -539,6 +558,7 @@ SessionFailureCallback? sessionFailureCallback;
 :::{tab-set-code}
 
 {emphasize-lines="3-21"}
+
 ```dart
 AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
 
@@ -582,6 +602,7 @@ Adjust.start(adjustConfig);
 Sets up a success callback to trigger a function when the SDK records an event.
 
 {#flutter-eventsuccesscallback-invocation}
+
 ```dart
 typedef void EventSuccessCallback(AdjustEventSuccess successData);
 EventSuccessCallback? eventSuccessCallback;
@@ -595,6 +616,7 @@ EventSuccessCallback? eventSuccessCallback;
 :::{tab-set-code}
 
 {emphasize-lines="3-24"}
+
 ```dart
 AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
 
@@ -641,6 +663,7 @@ Adjust.start(adjustConfig);
 Sets up a callback to trigger a function when the SDK fails to record an event.
 
 {#flutter-eventfailurecallback-invocation}
+
 ```dart
 typedef void EventFailureCallback(AdjustEventFailure failureData);
 EventFailureCallback? eventFailureCallback;
@@ -654,6 +677,7 @@ EventFailureCallback? eventFailureCallback;
 :::{tab-set-code}
 
 {emphasize-lines="3-27"}
+
 ```dart
 
 AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
@@ -695,7 +719,6 @@ Adjust.start(adjustConfig);
 ::::
 
 % Class method end
-
 
 ## iOS config methods
 
@@ -894,7 +917,7 @@ typedef void ConversionValueUpdatedCallback(num? conversionValue);
 :param conversionValue: The listener function the SDK launches when the conversion value updates
 :type conversionValue: num
 
-% ConversionValueUpdatedCallback snippet
+% conversionValueUpdatedCallback snippet
 
 :::{tab-set-code}
 

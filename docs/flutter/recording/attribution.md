@@ -4,7 +4,7 @@
 
 When a user interacts with a campaign link, their attribution information updates. This can happen if the user interacts with a [deep link](https://help.adjust.com/en/article/deep-links). The SDK can listen for attribution changes and call a function when it detects an update.
 
-To configure your callback function, call the [`attributionCallback` method](#flutter-setattributionchangeddelegate-invocation) with your function name as an argument.
+To configure your callback function, call the [`attributionCallback` method](#flutter-attributionCallback-invocation) with your function name as an argument.
 
 :::{important}
 You must call the `attributionCallback` method **before** initializing the Adjust SDK in your app.

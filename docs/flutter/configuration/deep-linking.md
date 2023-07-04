@@ -3,10 +3,10 @@
 You can create [deep links](https://help.adjust.com/en/article/deep-links) to take users to specific pages in your app. The Adjust SDK uses different logic depending on if the user already has your app installed on their device:
 
 Direct deep linking
-   : Occurs if the user already has your app installed. The link takes the user to the page specified in the link
+: Occurs if the user already has your app installed. The link takes the user to the page specified in the link
 
 Deferred deep linking
-   : Occurs if the user doesn't have your app installed. The link takes the user to a storefront to install your app first. After the user installs the app, it opens to the page specified in the link.
+: Occurs if the user doesn't have your app installed. The link takes the user to a storefront to install your app first. After the user installs the app, it opens to the page specified in the link.
 
 The SDK can read deep link data after a user opens your app from a link.
 
@@ -16,8 +16,8 @@ If a user has your app installed, it opens when they interact with a link contai
 
 You need to set up deep linking on an app level. Follow the instructions linked below to set up deep linking on your target platform:
 
-- [iOS](/ios/configuration/deep-link/index.md)
-- [Android](/android/configuration/deep-linking.md)
+-  [iOS](/ios/configuration/deep-link/index.md)
+-  [Android](/android/configuration/deep-linking.md)
 
 ## Reattribution using deep links
 
@@ -158,7 +158,7 @@ You can configure the Adjust SDK to call a function when it receives a deferred 
 
 :::{tab-set-code}
 
-{emphasize-lines="1-3, 6"}
+{emphasize-lines="2-4"}
 
 ```dart
 AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
