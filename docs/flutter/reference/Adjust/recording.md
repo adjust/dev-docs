@@ -189,7 +189,7 @@ static void removeSessionPartnerParameter(String key)
 
 % removeSessionPartnerParameter snippet
 
-{tab-set-code}
+:::{tab-set-code}
 
 ```dart
 Adjust.removeSessionPartnerParameter('key');

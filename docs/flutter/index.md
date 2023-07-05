@@ -17,11 +17,13 @@ To import the Adjust SDK to your Flutter project, follow these steps:
 ```yaml
 dependencies:
    adjust_sdk: ^4.31.0
+```
 
 2. Navigate to your project and run the following command. Visual Studio automatically runs this command after you edit the `pubspec.yaml` file.
 
 ```console
 $ flutter packages get
+```
 
 ## 2. Set up Android devices
 
@@ -31,6 +33,7 @@ Apps that target the Google Play Store must use the [Google Advertising ID](http
 
 ```groovy
 implementation 'com.google.android.gms:play-services-ads-identifier:18.0.1'
+```
 
 :::{note}
 The Adjust SDK isn't tied to any version of the `play-services-ads-identifier` dependency. You can use the any version of the Google Play Services library.
@@ -72,18 +75,20 @@ If you are using Proguard, add the following rules to your [custom Proguard file
    boolean isLimitAdTrackingEnabled();
 }
 -keep public class com.android.installreferrer.** { *; }
+```
 
 If you aren't publishing your app in the Google Play Store, add the following rule to your Proguard file.
 
 ```java
 -keep public class com.adjust.sdk.** { *; }
+```
 
 ### Set up install referrer
 
 The install referrer is a unique identifier which you can use to attribute an app install to a source. The Adjust SDK requires this information to perform attribution. There are three methods you can use to gather this information:
 
-* Use the [Google Play Referrer API](https://developer.android.com/google/play/installreferrer).
-* Use the Huawei Referrer API (only for Huawei devices).
+-  Use the [Google Play Referrer API](https://developer.android.com/google/play/installreferrer).
+-  Use the Huawei Referrer API (only for Huawei devices).
 
 :::{important}
 [Google has deprecated the `INSTALL_REFERRER` intent method](https://android-developers.googleblog.com/2019/11/still-using-installbroadcast-switch-to.html) of delivering referrer information for Google Play Services. If you are currently using this method, migrate to the Google Play Referrer API.
@@ -98,11 +103,13 @@ To support the Google Play Referrer API, add the following in your `build.gradle
 
 ```groovy
 implementation 'com.android.installreferrer:installreferrer:2.2'
+```
 
 If you are using Proguard, make sure you have added the following setting in your Proguard file:
 
 ```java
 -keep public class com.android.installreferrer.** { *; }
+```
 
 ::::
 
@@ -119,21 +126,21 @@ The Adjust SDK is able to get extra information when you include certain iOS fra
 :::{list-table}
 :header-rows: 1
 
-* - Framework
-   - Description
-   - Notes
-* - `AdSupport.framework`
-   - Enables access to the device's IDFA. Also enables access to LAT information on devices running iOS 14 or earlier
-   - Don't add this framework if your app targets the "Kids" category
-* - `AdServices.framework`
-   - Handles Apple Search Ads attribution
+-  -  Framework
+   -  Description
+   -  Notes
+-  -  `AdSupport.framework`
+   -  Enables access to the device's IDFA. Also enables access to LAT information on devices running iOS 14 or earlier
+   -  Don't add this framework if your app targets the "Kids" category
+-  -  `AdServices.framework`
+   -  Handles Apple Search Ads attribution
    -
-* - `StoreKit.framework`
-   - Enables access to the SKAdNetwork framework
-   - Required to allow the Adjust SDK to handle communication with SKAdNetwork on devices running iOS 14 or later
-* - `AppTrackingTransparency.framework`
-   - Required to allow the Adjust SDK to wrap user tracking consent dialog and access consent responses on devices running iOS 14 or later
-   - Don't add this framework if your app targets the "Kids" category
+-  -  `StoreKit.framework`
+   -  Enables access to the SKAdNetwork framework
+   -  Required to allow the Adjust SDK to handle communication with SKAdNetwork on devices running iOS 14 or later
+-  -  `AppTrackingTransparency.framework`
+   -  Required to allow the Adjust SDK to wrap user tracking consent dialog and access consent responses on devices running iOS 14 or later
+   -  Don't add this framework if your app targets the "Kids" category
 
 :::
 
@@ -228,16 +235,16 @@ To get started with the Adjust SDK signature, contact your Technical Account Man
 
 The Adjust SDK provides tools for testing and troubleshooting issues with your integration. To test your setup:
 
-* Set your environment to __Sandbox__.
-* Add a sandbox filter to your Adjust dashboard results.
-* Set your [log level](#flutter-loglevel-invocation) to __verbose__.
+-  Set your environment to **Sandbox**.
+-  Add a sandbox filter to your Adjust dashboard results.
+-  Set your [log level](#flutter-loglevel-invocation) to **verbose**.
 
 :::{tip}
 If you encounter any issues, email <support@adjust.com> with all details and logs.
 :::
 
 :::{dropdown} Test Google Play Services integration
-To test that the Adjust SDK can receive a device's Google Advertising ID, set the [log level](#flutter-loglevel-invocation) to __verbose__ and the environment to __Sandbox__. Start your app and measure a session or an event. The SDK logs the {abbr}`gps_adid (Google Play Services Advertiser ID)` parameter if it has read the advertising ID.
+To test that the Adjust SDK can receive a device's Google Advertising ID, set the [log level](#flutter-loglevel-invocation) to **verbose** and the environment to **Sandbox**. Start your app and measure a session or an event. The SDK logs the {abbr}`gps_adid (Google Play Services Advertiser ID)` parameter if it has read the advertising ID.
 
 If you're experiencing issues retrieving the Google Advertising ID, open an issue in the SDK [GitHub repository](https://github.com/adjust/flutter_sdk) or contact <support@adjust.com>.
 :::
