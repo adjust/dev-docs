@@ -8,7 +8,7 @@ The offline mode setting isn't remembered between sessions. Offline mode is disa
 
 The Adjust SDK sends event and session data to Adjust's servers in real time. You can pause the sending of information by putting the SDK in offline mode. In offline mode the SDK stores all data in a local file on the device. The SDK sends this information to Adjust's servers when you disable offline mode.
 
-Your config object contains a boolean `isOffline` property that controls this behavior. You can update this property at any time by calling the [`setOfflineMode` method](#flutter-setofflinemode-invocation) with a boolean argument. The SDK sends all saved information to Adjust's servers when you deactivate offline mode.
+Your config object contains a boolean `isOffline` property that controls this behavior. You can update this property at any time by calling the [`setOfflineMode` method](#flutter-setofflinemode-invocation) with a boolean argument. The SDK sends all saved information to Adjust's servers when you disable offline mode.
 
 :::{include} /flutter/reference/Adjust/config.md
 :start-after: setOfflineMode snippet
