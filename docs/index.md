@@ -32,6 +32,14 @@ Unity
 ::::{grid}
 
 :::{grid-item-card}
+:img-top: _images/flutter.svg
+:class-img-top: card-icon
+:link: flutter/index
+:link-type: doc
+:text-align: center
+Flutter
+:::
+:::{grid-item-card}
 :img-top: _images/react.svg
 :class-img-top: card-icon
 :link: react-native/index
