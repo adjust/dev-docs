@@ -1,6 +1,6 @@
 # Get started
 
-TThe Adjust Flutter SDK enables you to measure attribution, events, and much more in your Flutter app. Follow the steps in this guide to set up your app to work with the Adjust SDK. You can also check out our example apps [on GitHub](https://github.com/adjust/flutter_sdk/tree/master/example).
+The Adjust Flutter SDK enables you to measure attribution, events, and much more in your Flutter app. Follow the steps in this guide to set up your app to work with the Adjust SDK. You can also check out our example apps [on GitHub](https://github.com/adjust/flutter_sdk/tree/master/example).
 
 :::{important}
 The Adjust SDK supports iOS 9 or later and Android API level 9 (Gingerbread) or later.
@@ -14,26 +14,23 @@ To import the Adjust SDK to your Flutter project, follow these steps:
 
 1. Add the following to your `pubspec.yaml` file:
 
-```
+```yaml
 dependencies:
    adjust_sdk: ^4.31.0
-```
 
 2. Navigate to your project and run the following command. Visual Studio automatically runs this command after you edit the `pubspec.yaml` file.
 
-```dart
-flutter packages get
-```
+```console
+$ flutter packages get
 
 ## 2. Set up Android devices
 
 ### Add Google Play Services
 
-Apps that target the Google Play Store must use the [Google Advertising ID](https://support.google.com/googleplay/android-developer/answer/6048248?hl=en) (`gps_adid`) to identify devices. To do this, Add the following dependency to the `dependencies` section of your `build.gradle` file.
+Apps that target the Google Play Store must use the [Google Advertising ID](https://support.google.com/googleplay/android-developer/answer/6048248?hl=en) (`gps_adid`) to identify devices. To do this, add the following dependency to the `dependencies` section of your `build.gradle` file.
 
-```
+```groovy
 implementation 'com.google.android.gms:play-services-ads-identifier:18.0.1'
-```
 
 :::{note}
 The Adjust SDK isn't tied to any version of the `play-services-ads-identifier` dependency. You can use the any version of the Google Play Services library.
@@ -54,13 +51,15 @@ The Adjust SDK includes the `com.google.android.gms.AD_ID` permission by default
 <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
 ```
 
+:::{seealso}
 See Google's [`AdvertisingIdClient.Info documentation`](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid) for more information about this permission.
+:::
 
 ### Set up Proguard
 
 If you are using Proguard, add the following rules to your [custom Proguard file](https://docs.unity3d.com/Manual/class-PlayerSettingsAndroid.html#build).
 
-```groovy
+```java
 -keep public class com.adjust.sdk.** { *; }
 -keep class com.google.android.gms.common.ConnectionResult {
    int SUCCESS;
@@ -73,13 +72,11 @@ If you are using Proguard, add the following rules to your [custom Proguard file
    boolean isLimitAdTrackingEnabled();
 }
 -keep public class com.android.installreferrer.** { *; }
-```
 
 If you aren't publishing your app in the Google Play Store, add the following rule to your Proguard file.
 
-```
+```java
 -keep public class com.adjust.sdk.** { *; }
-```
 
 ### Set up install referrer
 
@@ -99,15 +96,13 @@ The install referrer is a unique identifier which you can use to attribute an ap
 
 To support the Google Play Referrer API, add the following in your `build.gradle` file:
 
-```text
+```groovy
 implementation 'com.android.installreferrer:installreferrer:2.2'
-```
 
 If you are using Proguard, make sure you have added the following setting in your Proguard file:
 
-```text
+```java
 -keep public class com.android.installreferrer.** { *; }
-```
 
 ::::
 
@@ -164,7 +159,7 @@ Adjust.start(config);
 You need to set up session tracking so that the SDK can pass session information to the Adjust server.
 
 :::{note}
-Session tracking for iOS devices is supported, by default.
+Session tracking for iOS devices is supported by default.
 :::
 
 To set up session tracking for Android devices, call the `Adjust.onResume()` method when the app is running in the foreground and make a call to the `Adjust.onPause()` method when the app isn't running in the foreground. You can do this globally or per widget.
@@ -244,5 +239,5 @@ If you encounter any issues, email <support@adjust.com> with all details and log
 :::{dropdown} Test Google Play Services integration
 To test that the Adjust SDK can receive a device's Google Advertising ID, set the [log level](#flutter-loglevel-invocation) to __verbose__ and the environment to __Sandbox__. Start your app and measure a session or an event. The SDK logs the {abbr}`gps_adid (Google Play Services Advertiser ID)` parameter if it has read the advertising ID.
 
-If you are having issues retrieving the Google Advertising ID, open an issue in our [GitHub repository](https://github.com/adjust/flutter_sdk) or contact <support@adjust.com>.
+If you're experiencing issues retrieving the Google Advertising ID, open an issue in the SDK [GitHub repository](https://github.com/adjust/flutter_sdk) or contact <support@adjust.com>.
 :::

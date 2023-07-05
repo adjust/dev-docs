@@ -23,7 +23,7 @@ You need to set up deep linking on an app level. Follow the instructions linked 
 
 Adjust enables you to run re-engagement campaigns with usage of deep links. For more information, see our [guide to appending attribution data to a deep link](https://help.adjust.com/en/article/manage-reattributions#track-reattributions-via-deeplink-clicks).
 
-To reattribute your user, you need to make an extra call to the Adjust SDK within your app. Add a call to the `appWillOpenUrl(Uri, Context)` method when the app receives deep link content. The Adjust SDK will then look for new attribution data within the deep link. If the SDK finds new information, it will forward it to the Adjust server for reattribution.
+To reattribute a user, you need to make an extra call to the Adjust SDK within your app. Add a call to the `appWillOpenUrl(Uri, Context)` method when the app receives deep link content. The Adjust SDK will then look for new attribution data within the deep link. If the SDK finds new information, it will forward it to Adjust's servers for reattribution.
 
 :::{dropdown} iOS
 
@@ -198,7 +198,7 @@ initPlatformState() async {
 
 ### Enable LinkMe
 
-The Adjust SDK lets you copy deep link information from the device pasteboard. When combined with Adjust’s LinkMe solution, this feature enables deferred deep linking on devices running iOS 15 and above.
+The Adjust SDK lets you copy deep link information from the device pasteboard. When combined with [Adjust’s LinkMe solution](https://help.adjust.com/en/article/linkme), this feature enables deferred deep linking on devices running iOS 15 and above.
 
 :::{important}
 The Adjust SDK checks the pasteboard when a user opens the app for the first time. The device displays a dialog asking if the user wants to allow the app to read the pasteboard.

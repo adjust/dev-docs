@@ -68,9 +68,8 @@ If you are using [Data Privacy settings](https://help.adjust.com/en/article/mana
 
 The Adjust SDK includes the `com.google.android.gms.permission.AD_ID` permission by default in version 4.32.0 and above. You can remove it by adding a remove directive if need to make your app COPPA-compliant or if you don't target the Google Play Store.
 
-```
+```xml
 <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
-```
 
 See Google's [`AdvertisingIdClient.Info documentation`](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid) for more information about this permission.
 

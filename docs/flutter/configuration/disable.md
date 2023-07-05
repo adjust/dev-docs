@@ -22,7 +22,7 @@ You can check if the Adjust SDK is enabled at any time by calling the [`isEnable
 :end-before: Snippet end
 :::
 
-:::{dropdown} Example
+::::{dropdown} Example
 
 This example demonstrates how to generate a button to enable or disable the Adjust SDK.
 
@@ -103,8 +103,3 @@ Adjust.start(config);
       }
    }
 
-```
-
-:::
-
-:::

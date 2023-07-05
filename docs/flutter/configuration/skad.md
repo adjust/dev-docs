@@ -4,7 +4,7 @@
 This feature is only available on devices running iOS 14 and above.
 :::
 
-[SKAdNetwork](https://help.adjust.com/en/article/skadnetwork)  is Apple's attribution framework for app install and reinstall attribution. The SKAdNetwork workflow goes like this:
+[SKAdNetwork](https://help.adjust.com/en/article/skadnetwork) is Apple's attribution framework for app install and reinstall attribution. The SKAdNetwork workflow goes like this:
 
 1. Apple gathers attribution information and notifies the relevant ad network.
 2. The network sends a postback with this information to Adjust.
