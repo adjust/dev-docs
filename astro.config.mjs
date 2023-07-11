@@ -4,6 +4,7 @@ import react from "@astrojs/react";
 import tailwind from "@astrojs/tailwind";
 import AutoImport from "astro-auto-import";
 import mdx from "@astrojs/mdx";
+import sitemap from "@astrojs/sitemap";
 import remarkMermaid from "astro-diagram/remark-mermaid";
 import {
   remarkDefinitionList,
@@ -45,8 +46,9 @@ export default defineConfig({
     mdx(),
     tailwind(),
     astroTabs(),
+    sitemap(),
   ],
-  site: `https://astro.build`,
+  site: `https://dev-docs-nine.vercel.app/`,
   markdown: {
     remarkPlugins: [remarkDefinitionList, remarkMermaid, ...astroDropdowns()],
     remarkRehype: {
