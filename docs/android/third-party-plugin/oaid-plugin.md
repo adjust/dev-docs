@@ -41,7 +41,7 @@ allprojects {
 dependencies {
    implementation 'com.adjust.sdk:adjust-android:4.33.4'
    implementation 'com.adjust.sdk:adjust-android-oaid:4.33.4'
-   implementation 'com.huawei.hms:ads-identifier:3.4.56.300'
+   implementation 'com.huawei.hms:ads-identifier:3.4.62.300'
 }
 ```
 
