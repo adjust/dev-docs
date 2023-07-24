@@ -8,6 +8,7 @@ These endpoints return JSON by default. You can return CSV by adding the followi
 ```text
 Accept: text/csv
 ```
+
 :::
 
 ## App overview endpoint
@@ -25,91 +26,92 @@ Returns metrics associated with an app. Metrics are returned in a `kpi_values` a
 :::{list-table}
 :header-rows: 1
 
-* - Parameter
-   - Format
-   - In
-   - Description
-* - `app_token`*
-   - String
-   - Path
-   - Your app's 10 character identifier.
-* - `start_date`
-   - Date
-   - Query
-   - The start date of the selected period. `YYYY-MM-DD` format.
-* - `end_date`
-   - Date
-   - Query
-   - The end date of the selected period. `YYYY-MM-DD` format.
-* - `utc_offset`
-   - Time
-   - Query
-   - UTC offset for timezones. `[+-]HH:MM` format.
-* - `kpis`
-   - String
-   - Query
-   - Comma-separated list of metrics. Available options are:
-      * App metrics
-      * Fraud metrics (requires the Fraud Prevention Suite)
-      * Ad spend metrics
-* - `event_kpis`
-   - String
-   - Query
-   - Comma-separated list of Event metrics. Prepend your event token to each metric. Example: `token1_revenue`.
-* - `reattributed`
-   - String
-   - Query
-   - Filter metrics by:
-      * installed users (`false`)
-      * reattributed users (`true`)
-      * all users (`default`)
-* - `sandbox`
-   - Boolean
-   - Query
-   - Whether results come from sandbox or production data. Defaults to production (`false`).
-* - `attribution_type`
-   - String
-   - Query
-   - The type of attribution to include in the results. Available options:
-      * `click`
-      * `impression`
-      * `all`
-* - `attribution_source`
-   - String
-   - Query
-   - Determines whether in-app activity is assigned to the user’s install source (`first`) or divided among the install source and subsequent sources of reattribution (`dynamic`). The default setting is `dynamic`.
-* - `countries`
-   - String
-   - Query
-   - Comma-separated list of ISO 3166 alpha-2 country names.
-* - `os_names`
-   - String
-   - Query
-   - Comma-separated list of OS names.
-* - `device_types`
-   - String
-   - Query
-   - Comma-separated list of device types.
-* - `regions`
-   - String
-   - Query
-   - Comma-separated list of standard or account-specific business regions. Add `+` or `-` before the region name to include (default) or exclude it.
-* - `grouping`
-   - String
-   - Query
-   - Grouping parameters. [See Result grouping](/api/kpi-service/grouping.md) for more information.
-* - `tracker_filter`
-   - String
-   - Query
-   - The tracker tokens of any trackers you want to include in your results. Only metrics relating to these trackers are returned.                                                                              |
-* - `cohort_revenue_period`
-   - String
-   - Query
-   - The number of days following reattribution to sum up revenue for.
-* - `human_readable_kpis`
-   - Boolean
-   - Query
-   - Replace metrics with human readable alternatives (for example "Lifetime Value" instead of `lifetime_value`).
+-  -  Parameter
+   -  Format
+   -  In
+   -  Description
+-  -  `app_token`\*
+   -  String
+   -  Path
+   -  Your app's 10 character identifier.
+-  -  `start_date`
+   -  Date
+   -  Query
+   -  The start date of the selected period. `YYYY-MM-DD` format.
+-  -  `end_date`
+   -  Date
+   -  Query
+   -  The end date of the selected period. `YYYY-MM-DD` format.
+-  -  `utc_offset`
+   -  Time
+   -  Query
+   -  UTC offset for timezones. `[+-]HH:MM` format.
+-  -  `kpis`
+   -  String
+   -  Query
+   -  Comma-separated list of metrics. Available options are:
+      -  App metrics
+      -  Fraud metrics (requires the Fraud Prevention Suite)
+      -  Ad spend metrics
+-  -  `event_kpis`
+   -  String
+   -  Query
+   -  Comma-separated list of Event metrics. Prepend your event token to each metric. Example: `token1_revenue`.
+-  -  `reattributed`
+   -  String
+   -  Query
+   -  Filter metrics by:
+      -  installed users (`false`)
+      -  reattributed users (`true`)
+      -  all users (`default`)
+-  -  `sandbox`
+   -  Boolean
+   -  Query
+   -  Whether results come from sandbox or production data. Defaults to production (`false`).
+-  -  `attribution_type`
+   -  String
+   -  Query
+   -  The type of attribution to include in the results. Available options:
+      -  `click`
+      -  `impression`
+      -  `all`
+-  -  `attribution_source`
+   -  String
+   -  Query
+   -  Determines whether in-app activity is assigned to the user’s install source (`first`) or divided among the install source and subsequent sources of reattribution (`dynamic`). The default setting is `dynamic`.
+-  -  `countries`
+   -  String
+   -  Query
+   -  Comma-separated list of ISO 3166 alpha-2 country names.
+-  -  `os_names`
+   -  String
+   -  Query
+   -  Comma-separated list of OS names.
+-  -  `device_types`
+   -  String
+   -  Query
+   -  Comma-separated list of device types.
+-  -  `regions`
+   -  String
+   -  Query
+   -  Comma-separated list of standard or account-specific business regions. Add `+` or `-` before the region name to include (default) or exclude it.
+-  -  `grouping`
+   -  String
+   -  Query
+   -  Grouping parameters. [See Result grouping](/api/kpi-service/grouping.md) for more information.
+-  -  `tracker_filter`
+   -  String
+   -  Query
+   -  The tracker tokens of any trackers you want to include in your results. Only metrics relating to these trackers are returned. |
+-  -  `cohort_revenue_period`
+   -  String
+   -  Query
+   -  The number of days following reattribution to sum up revenue for.
+-  -  `human_readable_kpis`
+   -  Boolean
+   -  Query
+   -  Replace metrics with human readable alternatives (for example "Lifetime Value" instead of `lifetime_value`).
+
 :::
 
 ::::
@@ -201,61 +203,62 @@ Returns metrics associated with multiple apps. Metrics are returned in a `kpi_va
 :::{list-table}
 :header-rows: 1
 
-* - Parameter
-   - Format
-   - In
-   - Description
-* - `app_tokens`*
-   - String
-   - Query
-   - A comma-separated list of app tokens.
-* - `start_date`
-   - Date
-   - Query
-   - The start date of the selected period. `YYYY-MM-DD` format.
-* - `end_date`
-   - Date
-   - Query
-   - The end date of the selected period. `YYYY-MM-DD` format.
-* - `utc_offset`
-   - Time
-   - Query
-   - UTC offset for timezones. `[+-]HH:MM` format.
-* - `kpis`
-   - String
-   - Query
-   - Comma-separated list of metrics. Available options are:
-      * App metrics
-      * Fraud metrics (requires the Fraud Prevention Suite)
-      * Ad spend metrics
-* - `sandbox`
-   - Boolean
-   - Query
-   - Whether results come from sandbox or production data. Defaults to production (`false`).
-* - `countries`
-   - String
-   - Query
-   - Comma-separated list of ISO 3166 alpha-2 country names.
-* - `os_names`
-   - String
-   - Query
-   - Comma-separated list of OS names.
-* - `device_types`
-   - String
-   - Query
-   - Comma-separated list of device types.
-* - `grouping`	
-   - String
-   - Query
-   - Grouping parameters. [See Result grouping](/api/kpi-service/grouping.md) for more information.
-* - `tracker_filter`	
-   - String
-   - Query
-   - The tracker tokens of any trackers you want to include in your results. Only metrics relating to these trackers are returned.
-* - `human_readable_kpis`	
-   - Boolean
-   - Query
-   - Replace metrics with human readable alternatives (for example "Lifetime Value" instead of `lifetime_value`).
+-  -  Parameter
+   -  Format
+   -  In
+   -  Description
+-  -  `app_tokens`\*
+   -  String
+   -  Query
+   -  A comma-separated list of app tokens.
+-  -  `start_date`
+   -  Date
+   -  Query
+   -  The start date of the selected period. `YYYY-MM-DD` format.
+-  -  `end_date`
+   -  Date
+   -  Query
+   -  The end date of the selected period. `YYYY-MM-DD` format.
+-  -  `utc_offset`
+   -  Time
+   -  Query
+   -  UTC offset for timezones. `[+-]HH:MM` format.
+-  -  `kpis`
+   -  String
+   -  Query
+   -  Comma-separated list of metrics. Available options are:
+      -  App metrics
+      -  Fraud metrics (requires the Fraud Prevention Suite)
+      -  Ad spend metrics
+-  -  `sandbox`
+   -  Boolean
+   -  Query
+   -  Whether results come from sandbox or production data. Defaults to production (`false`).
+-  -  `countries`
+   -  String
+   -  Query
+   -  Comma-separated list of ISO 3166 alpha-2 country names.
+-  -  `os_names`
+   -  String
+   -  Query
+   -  Comma-separated list of OS names.
+-  -  `device_types`
+   -  String
+   -  Query
+   -  Comma-separated list of device types.
+-  -  `grouping`
+   -  String
+   -  Query
+   -  Grouping parameters. [See Result grouping](/api/kpi-service/grouping.md) for more information.
+-  -  `tracker_filter`
+   -  String
+   -  Query
+   -  The tracker tokens of any trackers you want to include in your results. Only metrics relating to these trackers are returned.
+-  -  `human_readable_kpis`
+   -  Boolean
+   -  Query
+   -  Replace metrics with human readable alternatives (for example "Lifetime Value" instead of `lifetime_value`).
+
 :::
 
 ::::
@@ -341,95 +344,96 @@ Returns metrics associated with a specific tracker. Metrics are returned in a `k
 :::{list-table}
 :header-rows: 1
 
-* - Parameter
-   - Format
-   - In
-   - Description
-* - `app_token`
-   - String
-   - Path
-   - Your app's 10 character identifier.
-* - `tracker_token`
-   - String
-   - Path
-   - Your tracker's 6 character identifier.
-* - `start_date`
-   - Date
-   - Query
-   - The start date of the selected period. `YYYY-MM-DD` format.
-* - `end_date`
-   - Date
-   - Query
-   - The end date of the selected period. `YYYY-MM-DD` format.
-* - `utc_offset`
-   - Time
-   - Query
-   - UTC offset for timezones. `[+-]HH:MM` format.
-* - `kpis`
-   - String
-   - Query
-   - Comma-separated list of metrics. Available options are:
-      * App metrics
-      * Fraud metrics (requires the Fraud Prevention Suite)
-      * Ad spend metrics
-* - `event_kpis`
-   - String
-   - Query
-   - Comma-separated list of Event metrics. Prepend your event token to each metric. for example `token1_revenue`
-* - `reattributed`
-   - String
-   - Query
-   - Filter metrics by:
-      * installed users (`false`)
-      * reattributed users (`true`)
-      * all users (`default`)
-* - `sandbox`
-   - Boolean
-   - Query
-   - Whether results come from sandbox or production data. Defaults to production (`false`).
-* - `attribution_type`
-   - String
-   - Query
-   - The type of attribution to include in the results. Available options:
-      * `click`
-      * `impression`
-      * `all`
-* - `attribution_source`
-   - String
-   - Query
-   - Determines whether in-app activity is assigned to the user’s install source (`first`) or divided among the install source and subsequent sources of reattribution (`dynamic`). The default setting is `dynamic`.
-* - `countries`
-   - String
-   - Query
-   - Comma-separated list of ISO 3166 alpha-2 country names.
-* - `os_names`
-   - String
-   - Query
-   - Comma-separated list of OS names.
-* - `device_types`
-   - String
-   - Query
-   - Comma-separated list of device types.
-* - `regions`
-   - String
-   - Query
-   - Comma-separated list of standard or account-specific business regions. Add `+` or `-` before the region name to include (default) or exclude it.
-* - `grouping`
-   - String
-   - Query
-   - Grouping parameters. [See Result grouping](/api/kpi-service/grouping.md) for more information.
-* - `tracker_filter`
-   - String
-   - Query
-   - The tracker tokens of any trackers you want to include in your results. Only metrics relating to these trackers are returned.
-* - `cohort_revenue_period`
-   - String
-   - Query
-   - The number of days following reattribution to sum up revenue for.
-* - `human_readable_kpis`
-   - Boolean
-   - Query
-   - Replace metrics with human readable alternatives (for example: "Lifetime Value" instead of `lifetime_value`).
+-  -  Parameter
+   -  Format
+   -  In
+   -  Description
+-  -  `app_token`
+   -  String
+   -  Path
+   -  Your app's 10 character identifier.
+-  -  `tracker_token`
+   -  String
+   -  Path
+   -  Your tracker's 6 character identifier.
+-  -  `start_date`
+   -  Date
+   -  Query
+   -  The start date of the selected period. `YYYY-MM-DD` format.
+-  -  `end_date`
+   -  Date
+   -  Query
+   -  The end date of the selected period. `YYYY-MM-DD` format.
+-  -  `utc_offset`
+   -  Time
+   -  Query
+   -  UTC offset for timezones. `[+-]HH:MM` format.
+-  -  `kpis`
+   -  String
+   -  Query
+   -  Comma-separated list of metrics. Available options are:
+      -  App metrics
+      -  Fraud metrics (requires the Fraud Prevention Suite)
+      -  Ad spend metrics
+-  -  `event_kpis`
+   -  String
+   -  Query
+   -  Comma-separated list of Event metrics. Prepend your event token to each metric. for example `token1_revenue`
+-  -  `reattributed`
+   -  String
+   -  Query
+   -  Filter metrics by:
+      -  installed users (`false`)
+      -  reattributed users (`true`)
+      -  all users (`default`)
+-  -  `sandbox`
+   -  Boolean
+   -  Query
+   -  Whether results come from sandbox or production data. Defaults to production (`false`).
+-  -  `attribution_type`
+   -  String
+   -  Query
+   -  The type of attribution to include in the results. Available options:
+      -  `click`
+      -  `impression`
+      -  `all`
+-  -  `attribution_source`
+   -  String
+   -  Query
+   -  Determines whether in-app activity is assigned to the user’s install source (`first`) or divided among the install source and subsequent sources of reattribution (`dynamic`). The default setting is `dynamic`.
+-  -  `countries`
+   -  String
+   -  Query
+   -  Comma-separated list of ISO 3166 alpha-2 country names.
+-  -  `os_names`
+   -  String
+   -  Query
+   -  Comma-separated list of OS names.
+-  -  `device_types`
+   -  String
+   -  Query
+   -  Comma-separated list of device types.
+-  -  `regions`
+   -  String
+   -  Query
+   -  Comma-separated list of standard or account-specific business regions. Add `+` or `-` before the region name to include (default) or exclude it.
+-  -  `grouping`
+   -  String
+   -  Query
+   -  Grouping parameters. [See Result grouping](/api/kpi-service/grouping.md) for more information.
+-  -  `tracker_filter`
+   -  String
+   -  Query
+   -  The tracker tokens of any trackers you want to include in your results. Only metrics relating to these trackers are returned.
+-  -  `cohort_revenue_period`
+   -  String
+   -  Query
+   -  The number of days following reattribution to sum up revenue for.
+-  -  `human_readable_kpis`
+   -  Boolean
+   -  Query
+   -  Replace metrics with human readable alternatives (for example: "Lifetime Value" instead of `lifetime_value`).
+
 :::
 
 ::::
@@ -502,63 +506,49 @@ tracker_token,tracker_name,sessions,installs
 
 ```json
 {
-  "result_parameters": {
-    "kpis": [
-       "string",
-       "string"
-    ],
-    "start_date": "2022-01-01",
-    "end_date": "2022-01-31",
-    "sandbox": false,
-    "countries": [
-       "string"
-    ],
-    "trackers": [
-      {
-        "token": "string",
-        "name": "string",
-        "has_subtrackers": true
-      },
-      {
-        "token": "string",
-        "name": "string",
-        "has_subtrackers": true
-      }
-    ],
-    "grouping": [
-       "string"
-    ]
-  },
-  "result_set": {
-    "token": "string",
-    "name": "string",
-    "currency": "string",
-    "apps": [
-      {
-         "token": "string",
-         "name": "string",
-         "currency": "string",
-         "kpi_values": [
-            3
-         ]
-      },
-    "trackers": [
-      {
-        "token": "string",
-        "kpi_values": [
-           100,
-           130.24
-        ]
-      },
-      {
-        "token": "string",
-        "kpi_values": [
-           557, 
-           0.802
-        ]
-      }
-    ]
-  }
+   "result_parameters": {
+      "kpis": ["string", "string"],
+      "start_date": "2022-01-01",
+      "end_date": "2022-01-31",
+      "sandbox": false,
+      "countries": ["string"],
+      "trackers": [
+         {
+            "token": "string",
+            "name": "string",
+            "has_subtrackers": true
+         },
+         {
+            "token": "string",
+            "name": "string",
+            "has_subtrackers": true
+         }
+      ],
+      "grouping": ["string"]
+   },
+   "result_set": {
+      "token": "string",
+      "name": "string",
+      "currency": "string",
+      "apps": [
+         {
+            "token": "string",
+            "name": "string",
+            "currency": "string",
+            "kpi_values": [3]
+         }
+      ],
+      "trackers": [
+         {
+            "token": "string",
+            "kpi_values": [100, 130.24]
+         },
+         {
+            "token": "string",
+            "kpi_values": [557, 0.802]
+         }
+      ]
+   }
 }
 ```
 
@@ -569,25 +559,42 @@ string,string,39623,39623
 
 :::
 
+:::{list-table} Response codes
+
+-  -  Error codes
+   -  Description
+-  -  `400 Bad Request`
+   -  Malformed request passed by the client.
+-  -  `401 Unauthorized`
+   -  Authentication failed.
+-  -  `403 Forbidden`
+   -  Client doesn't have access to information such as KPIs, selected time period, or cohort period in the request.
+-  -  `404 Not Found`
+   -  Request data not found.
+-  -  `499 Client closed request`
+   -  The transaction closed before all information was returned by the server.
+
+:::
+
 ## Default parameters
 
 :::{list-table}
 :header-rows: 1
 
-* - Parameter
-   - Default values
-* - `kpis`
-   - 
-      * clicks
-      * installs
-      * click_conversion_rate
-      * reattributions
-      * sessions
-      * revenue_events
-      * revenue
-      * daus
-      * waus
-      * maus
+-  -  Parameter
+   -  Default values
+-  -  `kpis`
+   -  -  clicks
+      -  installs
+      -  click_conversion_rate
+      -  reattributions
+      -  sessions
+      -  revenue_events
+      -  revenue
+      -  daus
+      -  waus
+      -  maus
+
 :::
 
 ## Parameter values
@@ -596,18 +603,19 @@ string,string,39623,39623
 
 :::{hlist}
 
-* `android`
-* `bada`
-* `blackberry`
-* `ios`
-* `linux`
-* `macos`
-* `server`
-* `symbian`
-* `unknown`
-* `webos`
-* `windows`
-* `windows-phone`
+-  `android`
+-  `bada`
+-  `blackberry`
+-  `ios`
+-  `linux`
+-  `macos`
+-  `server`
+-  `symbian`
+-  `unknown`
+-  `webos`
+-  `windows`
+-  `windows-phone`
+
 :::
 
 ::::
@@ -616,17 +624,17 @@ string,string,39623,39623
 
 :::{hlist}
 
-* `bot`
-* `console`
-* `ipod`
-* `mac`
-* `pc`
-* `phone`
-* `server`
-* `simulator`
-* `tablet`
-* `tv`
-* `unknown`
+-  `bot`
+-  `console`
+-  `ipod`
+-  `mac`
+-  `pc`
+-  `phone`
+-  `server`
+-  `simulator`
+-  `tablet`
+-  `tv`
+-  `unknown`
 
 :::
 

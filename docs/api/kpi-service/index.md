@@ -22,8 +22,8 @@ The KPI service enables you to return metrics about your app. Adjust supplies di
 
    Call the KPI service to return metrics associated with your app. Choose from the following endpoints:
 
-   - [Overview metrics](https://help.adjust.com/en/article/overview-metrics-endpoints)
-   - [Event metrics](https://help.adjust.com/en/article/event-metrics-endpoints)
-   - [Cohort metrics](https://help.adjust.com/en/article/cohort-metrics-endpoints)
+   -  [Overview metrics](overview-metrics.md)
+   -  [Event metrics](event-metrics.md)
+   -  [Cohort metrics](cohort-metrics.md)
 
    You can specify how the service groups your data by passing [grouping options](https://help.adjust.com/en/article/result-grouping).
