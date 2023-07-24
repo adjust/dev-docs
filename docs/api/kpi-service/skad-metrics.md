@@ -8,6 +8,7 @@ This endpoint returns JSON by default. You can return CSV by adding the followin
 ```text
 Accept: text/csv
 ```
+
 :::
 
 ## Endpoint
@@ -25,71 +26,71 @@ Returns SKAdNetwork metrics associated with an app. Metrics are returned in a `k
 :::{list-table}
 :header-rows: 1
 
-* - Parameter
-   - Format
-   - In
-   - Description
-* - `app_token`
-   - String
-   - Path
-   - Your app's 10 character identifier.
-* - `start_date`
-   - Date
-   - Query
-   - The start date of the selected period. `YYYY-MM-DD` format.
-* - `end_date`
-   - Date
-   - Query
-   - The end date of the selected period. `YYYY-MM-DD` format.
-* - `utc_offset`
-   - Time
-   - Query
-   - UTC offset for timezones. `[+-]HH:MM` format.
-* - `kpis`
-   - String
-   - Query
-   - Comma-separated list of SKAdNetwork metrics. Available options are:
-      * SKAdNetwork app metrics
-      * SKAdNetwork event metrics
-* - `sandbox`
-   - Boolean
-   - Query
-   - Whether results come from sandbox or production data. Defaults to production (`false`).
-* - `attribution_type`
-   - String
-   - Query
-   - The type of attribution to include in the results. Available options:
-      * click
-      * impression
-      * all
-* - `attribution_source`
-   - String
-   - Query
-   - Determines whether in-app activity is assigned to the user’s install source (`first`) or divided among the install source and subsequent sources of reattribution (`dynamic`). The default setting is `dynamic`.
-* - `countries`
-   - String
-   - Query
-   - Comma-separated list of ISO 3166 alpha-2 country names.
-* - `device_types`
-   - String
-   - Query
-   - Comma-separated list of device types.
-* - `regions`
-   - String
-   - Query
-   - Comma-separated list of standard or account-specific business regions. Add `+` or `-` before the region name to include (default) or exclude it.
-* - `grouping`
-   - String
-   - Query
-   - Grouping parameters. [See Result grouping](/api/kpi-service/grouping.md) for more information.
-* - `human_readable_kpis`
-   - Boolean
-   - Query
-   - Replace metrics with human readable alternatives (for example "Lifetime Value" instead of `lifetime_value`).
+-  -  Parameter
+   -  Format
+   -  In
+   -  Description
+-  -  `app_token`
+   -  String
+   -  Path
+   -  Your app's 10 character identifier.
+-  -  `start_date`
+   -  Date
+   -  Query
+   -  The start date of the selected period. `YYYY-MM-DD` format.
+-  -  `end_date`
+   -  Date
+   -  Query
+   -  The end date of the selected period. `YYYY-MM-DD` format.
+-  -  `utc_offset`
+   -  Time
+   -  Query
+   -  UTC offset for timezones. `[+-]HH:MM` format.
+-  -  `kpis`
+   -  String
+   -  Query
+   -  Comma-separated list of SKAdNetwork metrics. Available options are:
+      -  SKAdNetwork app metrics
+      -  SKAdNetwork event metrics
+-  -  `sandbox`
+   -  Boolean
+   -  Query
+   -  Whether results come from sandbox or production data. Defaults to production (`false`).
+-  -  `attribution_type`
+   -  String
+   -  Query
+   -  The type of attribution to include in the results. Available options:
+      -  click
+      -  impression
+      -  all
+-  -  `attribution_source`
+   -  String
+   -  Query
+   -  Determines whether in-app activity is assigned to the user’s install source (`first`) or divided among the install source and subsequent sources of reattribution (`dynamic`). The default setting is `dynamic`.
+-  -  `countries`
+   -  String
+   -  Query
+   -  Comma-separated list of ISO 3166 alpha-2 country names.
+-  -  `device_types`
+   -  String
+   -  Query
+   -  Comma-separated list of device types.
+-  -  `regions`
+   -  String
+   -  Query
+   -  Comma-separated list of standard or account-specific business regions. Add `+` or `-` before the region name to include (default) or exclude it.
+-  -  `grouping`
+   -  String
+   -  Query
+   -  Grouping parameters. [See Result grouping](/api/kpi-service/grouping.md) for more information.
+-  -  `human_readable_kpis`
+   -  Boolean
+   -  Query
+   -  Replace metrics with human readable alternatives (for example "Lifetime Value" instead of `lifetime_value`).
+
 :::
 
 ::::
-
 
 ### Example
 
@@ -105,41 +106,45 @@ $ curl --location --request GET 'http://api.adjust.com/kpis/v1/2eb2na2w54c3/skad
 
 ```json
 {
-  "result_parameters": {
-    "kpis": ["valid_conversions","impression_conversion_rate","conversion_6"],
-    "start_date": "2022-05-01",
-    "end_date": "2022-05-31",
-    "sandbox": false,
-    "countries": ["de", "gb"],
-    "trackers": [
-      {
-        "token": "12djsk",
-        "name": "Network 1",
-        "has_subtrackers": true
-      },
-      {
-        "token": "15jvui",
-        "name": "Network 2",
-        "has_subtrackers": true
-      }
-    ],
-    "grouping": ["trackers"]
-  },
-  "result_set": {
-    "token": "2eb2na2w54c3",
-    "name": "app name",
-    "currency": "USD",
-    "trackers": [
-      {
-        "token": "12djsk",
-        "kpi_values": [1, 500, 31]
-      },
-      {
-        "token": "15jvui",
-        "kpi_values": [557, 880, 21]
-      }
-    ]
-  }
+   "result_parameters": {
+      "kpis": [
+         "valid_conversions",
+         "impression_conversion_rate",
+         "conversion_6"
+      ],
+      "start_date": "2022-05-01",
+      "end_date": "2022-05-31",
+      "sandbox": false,
+      "countries": ["de", "gb"],
+      "trackers": [
+         {
+            "token": "12djsk",
+            "name": "Network 1",
+            "has_subtrackers": true
+         },
+         {
+            "token": "15jvui",
+            "name": "Network 2",
+            "has_subtrackers": true
+         }
+      ],
+      "grouping": ["trackers"]
+   },
+   "result_set": {
+      "token": "2eb2na2w54c3",
+      "name": "app name",
+      "currency": "USD",
+      "trackers": [
+         {
+            "token": "12djsk",
+            "kpi_values": [1, 500, 31]
+         },
+         {
+            "token": "15jvui",
+            "kpi_values": [557, 880, 21]
+         }
+      ]
+   }
 }
 ```
 
@@ -168,64 +173,49 @@ tracker_token,tracker_name,valid_conversions,impression_conversion_rate,conversi
 
 ```json
 {
-    "result_parameters": {
-        "kpis": [
-            "string",
-            "string"
-        ],
-        "start_date": "2022-01-01",
-        "end_date": "2022-01-31",
-        "sandbox": false,
-        "countries": [
-            "string"
-        ],
-        "trackers": [
-            {
-                "token": "string",
-                "name": "string",
-                "has_subtrackers": true
-            },
-            {
-                "token": "string",
-                "name": "string",
-                "has_subtrackers": true
-            }
-        ],
-        "grouping": [
-            "string"
-        ]
-    },
-    "result_set": {
-        "token": "string",
-        "name": "string",
-        "currency": "string",
-        "apps": [
-            {
-                "token": "string",
-                "name": "string",
-                "currency": "string",
-                "kpi_values": [
-                    3
-                ]
-            }
-        ],
-        "trackers": [
-            {
-                "token": "string",
-                "kpi_values": [
-                    100,
-                    130.24
-                ]
-            },
-            {
-                "token": "string",
-                "kpi_values": [
-                    557,
-                    0.802
-                ]
-            }
-        ]
-    }
+   "result_parameters": {
+      "kpis": ["string", "string"],
+      "start_date": "2022-01-01",
+      "end_date": "2022-01-31",
+      "sandbox": false,
+      "countries": ["string"],
+      "trackers": [
+         {
+            "token": "string",
+            "name": "string",
+            "has_subtrackers": true
+         },
+         {
+            "token": "string",
+            "name": "string",
+            "has_subtrackers": true
+         }
+      ],
+      "grouping": ["string"]
+   },
+   "result_set": {
+      "token": "string",
+      "name": "string",
+      "currency": "string",
+      "apps": [
+         {
+            "token": "string",
+            "name": "string",
+            "currency": "string",
+            "kpi_values": [3]
+         }
+      ],
+      "trackers": [
+         {
+            "token": "string",
+            "kpi_values": [100, 130.24]
+         },
+         {
+            "token": "string",
+            "kpi_values": [557, 0.802]
+         }
+      ]
+   }
 }
 ```
 
@@ -233,6 +223,23 @@ tracker_token,tracker_name,valid_conversions,impression_conversion_rate,conversi
 tracker_token,tracker_name,kpi1,kpi2
 string,string,39623,39623
 ```
+
+:::
+
+:::{list-table} Response codes
+
+-  -  Error codes
+   -  Description
+-  -  `400 Bad Request`
+   -  Malformed request passed by the client.
+-  -  `401 Unauthorized`
+   -  Authentication failed.
+-  -  `403 Forbidden`
+   -  Client doesn't have access to information such as KPIs, selected time period, or cohort period in the request.
+-  -  `404 Not Found`
+   -  Request data not found.
+-  -  `499 Client closed request`
+   -  The transaction closed before all information was returned by the server.
 
 :::
 
