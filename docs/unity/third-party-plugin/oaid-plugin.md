@@ -67,7 +67,7 @@ repositories {
 
 ```
 dependencies {
-   implementation 'com.huawei.hms:ads-identifier:3.4.56.300'
+   implementation 'com.huawei.hms:ads-identifier:3.4.62.300'
 }
 ```
 
