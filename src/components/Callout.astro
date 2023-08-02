@@ -1,0 +1,99 @@
+---
+export interface Props {
+  type?: "info" | "note" | "tip" | "warning" | "important" | "seealso";
+  title?: string;
+}
+
+const { type = "info", title = `${type}` } = Astro.props as Props;
+
+// SVG icon paths based on GitHub Octicons
+const icons: Record<
+  NonNullable<Props["type"]>,
+  { viewBox: string; d: string }
+> = {
+  note: {
+    viewBox: "0 0 24 24",
+    d: "M12.75 8.5a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM14 16h-4v-1h1.5v-3H10v-1h2.5v4H14v1zM12 3c-4.962 0-9 4.038-9 9 0 4.963 4.038 9 9 9 4.963 0 9-4.037 9-9 0-4.962-4.037-9-9-9z",
+  },
+  info: {
+    viewBox: "0 0 24 24",
+    d: "M12.75 8.5a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM14 16h-4v-1h1.5v-3H10v-1h2.5v4H14v1zM12 3c-4.962 0-9 4.038-9 9 0 4.963 4.038 9 9 9 4.963 0 9-4.037 9-9 0-4.962-4.037-9-9-9z",
+  },
+  tip: {
+    viewBox: "0 0 24 24",
+    d: "M11.031 15.739l-2.884-2.886.707-.707 2.115 2.116 5.149-6.085.764.645-5.851 6.917zM12 3a9 9 0 100 18 9 9 0 000-18z",
+  },
+  warning: {
+    viewBox: "0 0 24 24",
+    d: "M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9.5 3.5V15h1v1h-1v-.5zm1-2.5V8h-1v5h1z",
+  },
+  important: {
+    viewBox: "0 0 24 24",
+    d: "M12.75 16.5a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM11.5 14h1V9h-1v5zm9.252 3.636l-7.366-13.65C13.047 3.359 12.543 3 12 3c-.543.001-1.048.36-1.386.987L3.27 17.638c-.317.589-.34 1.19-.067 1.649.271.453.8.713 1.453.713h14.711c.655 0 1.185-.261 1.455-.714.274-.46.248-1.061-.069-1.65z",
+  },
+  seealso: {
+    viewBox: "0 0 24 24",
+    d: "M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.486 2.486 0 0 1 4.5 9h8ZM5 12.25a.25.25 0 0 1 .25-.25h3.5a.25.25 0 0 1 .25.25v3.25a.25.25 0 0 1-.4.2l-1.45-1.087a.249.249 0 0 0-.3 0L5.4 15.7a.25.25 0 0 1-.4-.2Z",
+  },
+};
+const { viewBox, d } = icons[type];
+---
+
+<aside
+  aria-label={type}
+  class:list={[
+    "relative flex rounded-[12px] items-baseline",
+    {
+      "bg-primary": type === "note",
+      "bg-neutral": type === "info",
+      "bg-warning": type === "important",
+      "bg-negative": type === "warning",
+      "bg-success": type === "seealso" || type === "tip",
+    },
+  ]}
+>
+  <div class:list={["pl-[16px] pr-[12px] pt-[16px] pb-0 block"]}>
+    <div class:list={["inline-flex align-middle"]}>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox={viewBox}
+        width={24}
+        height={24}
+        class:list={[
+          "w-[24px] h-[24px]",
+          {
+            "text-icons-primary": type === "note",
+            "text-icons-neutral": type === "info",
+            "text-icons-warning": type === "important",
+            "text-icons-negative": type === "warning",
+            "text-icons-success": type === "seealso" || type === "tip",
+          },
+        ]}
+      >
+        <path fill="currentColor" fill-rule="evenodd" d={d}></path>
+      </svg>
+    </div>
+  </div>
+  <div
+    class:list={[
+      "flex flex-col flex-grow items-baseline pl-0 pt-[16px] pr-[16px] pb-[8px]",
+    ]}
+  >
+    <span
+      class:list={[
+        "mb-[8px] font-medium tracking-normal leading-[20px] text-[14px]",
+        {
+          "text-headers-primary": type === "note",
+          "text-headers-neutral": type === "info",
+          "text-headers-warning": type === "important",
+          "text-headers-negative": type === "warning",
+          "text-headers-success": type === "seealso" || type === "tip",
+        },
+      ]}>{title}</span
+    >
+    <slot />
+  </div>
+</aside>
+
+<style>
+</style>
