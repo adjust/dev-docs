@@ -35,6 +35,7 @@ export default defineConfig({
         tabsAutoImport,
         tabNameAutoImport,
         tabContentAutoImport,
+        "@components/Aside.astro",
       ],
     }),
     // Enable Preact to support Preact JSX components.
