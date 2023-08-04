@@ -15,7 +15,6 @@ import {
   astroCodeSnippets,
   codeSnippetAutoImport,
 } from "./integrations/astro-code-snippets";
-import { asideAutoImport, astroAsides } from "./integrations/astro-asides";
 import { astroDropdowns } from "./integrations/astro-dropdowns";
 import {
   tabsAutoImport,
@@ -28,14 +27,12 @@ import {
 export default defineConfig({
   integrations: [
     AutoImport({
-      imports: [asideAutoImport, codeSnippetAutoImport],
+      imports: [codeSnippetAutoImport],
       imports: [
-        asideAutoImport,
         codeSnippetAutoImport,
         tabsAutoImport,
         tabNameAutoImport,
         tabContentAutoImport,
-        "@components/Aside.astro",
         "@components/Callout.astro",
       ],
     }),
@@ -43,7 +40,6 @@ export default defineConfig({
     preact(),
     // Enable React for the Algolia search component.
     react(),
-    astroAsides(),
     astroCodeSnippets(),
     mdx(),
     tailwind(),
