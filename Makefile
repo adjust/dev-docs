@@ -5,9 +5,14 @@
 # the @-sign tells Make to not output the command before running it
 help:
 	@echo "Available commands:"
+	@echo "install: install all project dependencies"
 	@echo "preview: run the development environment"
 	@echo "build: build for production"
 	@echo "clean: remove the build directory"
+
+install:
+
+	npm install
 
 preview:
 	npm run dev
