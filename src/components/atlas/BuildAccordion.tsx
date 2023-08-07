@@ -8,7 +8,7 @@ import type { FC } from "react";
 const BuildAccordion: FC<{
   content: string;
   title: string;
-  badge: string;
+  badge?: string;
 }> = (props) => {
   // The Atlas component passes the body content as a string of HTML.
   // We convert this to HTML using the `dangerouslySetInnerHTML` function.
