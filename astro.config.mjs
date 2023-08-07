@@ -15,7 +15,6 @@ import {
   astroCodeSnippets,
   codeSnippetAutoImport,
 } from "./integrations/astro-code-snippets";
-import { astroDropdowns } from "./integrations/astro-dropdowns";
 import {
   tabsAutoImport,
   tabNameAutoImport,
@@ -49,7 +48,7 @@ export default defineConfig({
   ],
   site: `https://dev-docs-nine.vercel.app/`,
   markdown: {
-    remarkPlugins: [remarkDefinitionList, remarkMermaid, ...astroDropdowns()],
+    remarkPlugins: [remarkDefinitionList, remarkMermaid],
     remarkRehype: {
       handlers: {
         ...defListHastHandlers,
