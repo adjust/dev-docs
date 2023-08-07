@@ -1,6 +1,10 @@
 ---
 import BuildBanner from "@components/atlas/BuildBanner.jsx";
 
+// Declare a type that matches the type used in the Banner package.
+// All banners must be one of these types. See the Banner documentation.
+// https://atlas.adeven.com/docs/components/Banner
+
 declare type BannerKind =
   | "neutral"
   | "positive"
@@ -8,10 +12,18 @@ declare type BannerKind =
   | "negative"
   | "primary";
 
+// We have two props that must be present in all banners:
+// The type indicates the purpose and style of the banner
+// The title is the header that is applied to the banner
+// These are both optional as we provide default values below
+
 export interface Props {
   type?: string;
   title?: string;
 }
+
+// This map iterates through the different banner types the author might specify and maps them to a `BannerKind`
+// If the type is not present in this list, it will default to `neutral` below.
 
 let typeMap = new Map<String, BannerKind>([
   ["info", "neutral"],
@@ -22,22 +34,38 @@ let typeMap = new Map<String, BannerKind>([
   ["warning", "negative"],
 ]);
 
+// Declare properties used to build the banner.
+// The type is declared as "neutral" in case no type is provided.
+// If the author provides a type, it overrides this default.
+
 const { type = "neutral", title } = Astro.props as Props;
+
+// Iterate through the map and assign the type provided by the author to a BannerKind
+// If no type is found, default to "neutral"
 
 let bannerType: BannerKind = typeMap.get(type) || "neutral";
 
-let description = "";
+// Create a placeholder title that is title cased.
+// This takes the value of the type and capitalizes the first letter.
+// If no type has been specified, default to "Info".
 
-let placeholderTitle = type[0].toUpperCase() + type.slice(1);
+let placeholderTitle = type === "neutral" ? "Info": type[0].toUpperCase() + type.slice(1);
+
+// Store the content contained within the Callout as a string.
+// This string is converted to HTML inside the atlas/BuildBanner.jsx file.
+
+let description = "";
 
 if (Astro.slots.has("default")) {
   description = await Astro.slots.render("default");
 }
 ---
 
+<!-- Pass the assigned information to the BuildBanner React component -->
+
 <BuildBanner
   client:only="react"
-  title={title || placeholderTitle}
+  title={title ?? placeholderTitle}
   kind={bannerType}
   description={description}
 />
