@@ -1,10 +1,15 @@
 /** @jsxImportSource react */
 import { Accordion } from "@adjust/components";
+import type { FC } from "react";
 
 // We only need one type of Accordion currently.
 // This Accordion should contain a title, a body, and an optional badge
 
-export default function BuildAccordion(props) {
+const BuildAccordion: FC<{
+  content: string;
+  title: string;
+  badge: string;
+}> = (props) => {
   // The Atlas component passes the body content as a string of HTML.
   // We convert this to HTML using the `dangerouslySetInnerHTML` function.
 
@@ -18,6 +23,7 @@ export default function BuildAccordion(props) {
       id: 1,
       title: props.title,
       content: content,
+      badge: {},
     },
   ];
 
@@ -28,4 +34,6 @@ export default function BuildAccordion(props) {
   }
 
   return <Accordion data={data} type="headline" />;
-}
+};
+
+export default BuildAccordion;
