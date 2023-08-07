@@ -1,7 +1,12 @@
 /** @jsxImportSource react */
+import type { FC } from "react";
 import { Banner } from "@adjust/components";
 
-export default function BuildBanner(props) {
+const BuildBanner: FC<{
+  description: string;
+  title: string;
+  kind: BannerKind;
+}> = (props) => {
   // The Atlas component passes the body content as a string of HTML.
   // We convert this to HTML using the `dangerouslySetInnerHTML` function.
 
@@ -12,4 +17,6 @@ export default function BuildBanner(props) {
   return (
     <Banner title={props.title} kind={props.kind} description={description} />
   );
-}
+};
+
+export default BuildBanner;
