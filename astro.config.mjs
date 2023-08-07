@@ -34,6 +34,7 @@ export default defineConfig({
         tabContentAutoImport,
         "@components/Callout.astro",
         "@components/Accordion.astro",
+        "@components/ListTable.astro",
       ],
     }),
     // Enable Preact to support Preact JSX components.
