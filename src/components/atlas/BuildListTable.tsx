@@ -107,7 +107,6 @@ const BuildListTable: FC<{
         autoRowsHeight
         searchTerm={searchTerm}
         visualProperties={visualPropertiesBordered}
-        getFilteredData={(filteredValues) => console.log({ filteredValues })}
       />
     </div>
   );
