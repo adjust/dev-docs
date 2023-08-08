@@ -85,9 +85,9 @@ const BuildListTable: FC<{
   });
 
   return (
-    <div style={{ overflow: "auto" }}>
+    <div className="overflow-auto">
       {props.search && (
-        <div style={{ padding: "25px 15px 35px 15px" }}>
+        <div className="px-[15px] pt-[25px] pb-[35px]">
           <Input
             label="Search"
             type="search"
