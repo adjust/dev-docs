@@ -1,55 +1,57 @@
 ---
+import GitHubRender from "@components/GitHubRender.astro";
+
 interface Parameter {
-   parameter: string
-   type?: string
-   interface?: string
-   description: string
+  parameter: string;
+  type?: string;
+  interface?: string;
+  description: string;
 }
 
 interface ReturnValue {
-   value: string
-   type?: string
-   interface?: string
-   description: string
+  value: string;
+  type?: string;
+  interface?: string;
+  description: string;
 }
 
 export interface Props {
-   lang: string,
-   name: string,
-   parameters?: Array<Parameter>,
-   returns?: Array<ReturnValue>
+  lang: string;
+  name: string;
+  link: URL;
+  parameters?: Parameter[];
+  returns?: ReturnValue[];
 }
 
 const {
-   lang = "",
-   name = "",
-   parameters = null,
-   returns = null
-} = Astro.props
+  lang = "",
+  name = "",
+  link,
+  parameters = null,
+  returns = null,
+} = Astro.props;
 ---
 
-<dl class="{lang} function">
-   <dt class="sig-name descname">
-      <span class="pre">{name}</span>
-   </dt>
-   <dd>
-      <slot />
-      <slot name="snippet" />
-   </dd>
-   { parameters && 
+<dl class:list="[{lang}," "function"]>
+  <dt class="sig-name descname">
+    <span class="pre">{name}</span>
+  </dt>
+  <dd>
+    <slot />
+    <GitHubRender link={link} lang={lang} />
+  </dd>
+  {Astro.slots.has("parameters") &&
    <dl>
       <dt class="parameters">Parameters:</dt>
-      { parameters.map((item) => (
-         <dd class="parameters">{item.parameter} (<em>{item.type ? item.type : item.interface}</em>) – {item.description}</dd>
-      ))}
+      <slot name="parameters"></slot>
    </dl>
    }
-   { returns && 
-      <dl>
-         <dt class="returns">Returns:</dt>
-         { returns.map((item) => (
-            <dd class="returns">{item.value} (<em>{item.type ? item.type : item.interface}</em>) – {item.description}</dd>
-         ))}
-      </dl>
-      }
+  { Astro.slots.has("returns") &&
+   <dl>
+      <dt class="returnValues">Return values</dt>
+      <slot name="returns"></slot>
+   </dl>
+   }
+  <h3>Example</h3>
+  <slot name="snippet"></slot>
 </dl>

@@ -29,6 +29,7 @@ export default defineConfig({
         "@components/Callout.astro",
         "@components/Accordion.astro",
         "@components/ListTable.astro",
+        "@components/Function.astro",
       ],
     }),
     // Enable Preact to support Preact JSX components.

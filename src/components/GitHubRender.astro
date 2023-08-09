@@ -1,0 +1,70 @@
+---
+import { Code } from "astro/components";
+import type { Lang } from "shiki";
+
+export interface Props {
+  link: URL;
+  lang: Lang;
+}
+
+const { link, lang } = Astro.props as Props;
+
+function fixUrl(repoLink: URL) {
+  let link = repoLink.toString().replace("https://github.com/", "");
+  let words = link.split(/[/#]/);
+  let file = words.slice(4, -1).join("/");
+  return {
+    orgName: words[0],
+    repoName: words[1],
+    ref: words[3],
+    file: file,
+    range: words[words.length - 1].replaceAll("L", ""),
+  };
+}
+
+// Splits the content given the range a-b or just line number a
+const getSlice = (finalContent: string[], range: string) => {
+  if (range.includes("-")) {
+    var a = Number(range.split("-")[0]) - 1;
+    var b = Number(range.split("-")[1]);
+    return finalContent.slice(a, b).join("\r\n");
+  } else if (parseInt(range)) {
+    return finalContent[parseInt(range) - 1];
+  }
+};
+
+async function fetchContent(
+  orgName: string,
+  repoName: string,
+  file: string,
+  ref: string
+) {
+  const baseURL = `https://api.github.com/repos/${orgName}/${repoName}/contents/${file}?ref=${ref}`;
+  let res = await fetch(baseURL).catch((err) => {
+    throw new Error(`Error fetching content from ${baseURL}. ${err}`);
+  });
+
+  if (!res.ok) {
+    throw new Error(`Response status from ${baseURL}: ${res.status}`);
+  }
+
+  let body = await res.json();
+  // Content body from github is base64 encoded
+  return atob(body.content);
+}
+
+let params = fixUrl(link);
+
+let content = await fetchContent(
+  params.orgName,
+  params.repoName,
+  params.file,
+  params.ref
+);
+
+let finalContent = content.split("\n");
+
+const snippet = getSlice(finalContent, params.range)!;
+---
+
+<Code code={snippet} lang={lang} />
