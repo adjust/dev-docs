@@ -12,10 +12,6 @@ import {
 } from "remark-definition-list";
 
 import {
-  astroCodeSnippets,
-  codeSnippetAutoImport,
-} from "./integrations/astro-code-snippets";
-import {
   tabsAutoImport,
   tabNameAutoImport,
   tabContentAutoImport,
@@ -26,9 +22,7 @@ import {
 export default defineConfig({
   integrations: [
     AutoImport({
-      imports: [codeSnippetAutoImport],
       imports: [
-        codeSnippetAutoImport,
         tabsAutoImport,
         tabNameAutoImport,
         tabContentAutoImport,
@@ -41,7 +35,6 @@ export default defineConfig({
     preact(),
     // Enable React for the Algolia search component.
     react(),
-    astroCodeSnippets(),
     mdx(),
     tailwind(),
     astroTabs(),
