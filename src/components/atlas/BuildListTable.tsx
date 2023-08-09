@@ -15,6 +15,8 @@ const BuildListTable: FC<{
   search: boolean;
   resizable: boolean;
   bordered: boolean;
+  flex: boolean;
+  striped: boolean;
 }> = (props) => {
   // Set up a blank string for the search term
 
@@ -42,8 +44,9 @@ const BuildListTable: FC<{
   let columns: TableColumnTypes[] = [];
   let data: ColumnCell[] = [];
 
-  const visualPropertiesBordered = {
+  const visualProperties = {
     areColumnsBordered: props.bordered,
+    isStriped: props.striped,
   };
 
   // Loop through each selector
@@ -106,7 +109,8 @@ const BuildListTable: FC<{
         columns={columns}
         autoRowsHeight
         searchTerm={searchTerm}
-        visualProperties={visualPropertiesBordered}
+        visualProperties={visualProperties}
+        flex={props.flex}
       />
     </div>
   );
