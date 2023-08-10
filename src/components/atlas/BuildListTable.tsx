@@ -3,6 +3,7 @@ import { TableV2, Input } from "@adjust/components";
 import type { FC } from "react";
 import type { TableColumnTypes } from "@adjust/components";
 import { useState } from "react";
+import { toSnakeCase } from "@components/utils/convertCase";
 
 // Create an interface for the cells. These can be string pairs of any accessor and value.
 
@@ -58,9 +59,7 @@ const BuildListTable: FC<{
           // Take the written title as a header
           Header: value.children[i].innerHTML,
           // Use a snake case version of the header as an accessor
-          accessor: value.children[i]
-            .textContent!.toLowerCase()
-            .replace(" ", "_"),
+          accessor: toSnakeCase(value.children[i].textContent!),
           // We need to tell the Tables component to render this information as
           // HTML so that we can do advanced formatting
           Cell: ({ value }) => (
