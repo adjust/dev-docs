@@ -1,0 +1,144 @@
+---
+// This component fetches method signature code from the GitHub API
+// The resulting code is presented in a Code block
+
+import { Code } from "astro/components";
+import type { Lang } from "shiki";
+
+// This component takes a GitHub permalink URL and the method language as arguments
+// The language is used to highlight the code block correctly
+
+export interface Props {
+  link: URL;
+  lang: Lang;
+}
+
+const { link, lang } = Astro.props as Props;
+
+// Throw meaningful errors if either prop isn't present
+
+if (!lang) {
+  throw new Error("Missing prop `lang` on `<Function>` component.");
+}
+
+if (!link) {
+  throw new Error("Missing prop `link` on `<Function>` component.");
+}
+
+// This component alters the URL to fetch data from the API rather than scraping the HTML
+// To do this, we convert the URL to a string
+
+const stringLink = link.toString();
+
+// Check that the link is actually a GitHub link. If not, throw an error.
+
+if (!stringLink.includes("https://github.com")) {
+  throw new Error("Link in `<Function>` component isn't a Github link");
+}
+
+/* This function takes a string URL and extracts the useful data from it:
+* orgName: The name of the user or organization that owns the repository
+* repoName: The name of the repository
+* ref: The commit hash of the repository. Used to ensure that this information only changes when we update it
+* file: The file containing the code we want to present
+* range: The range of lines that contain the code
+
+Given the following URL:
+* https://github.com/adjust/ios_sdk/blob/76c95522216f0ac0a583954feb67f016d8955211/Adjust/Adjust.m#L250-L254
+
+This function returns
+
+{
+  orgName: "adjust",
+  repoName: "ios_sdk",
+  ref: "76c95522216f0ac0a583954feb67f016d8955211",
+  file: "Adjust/Adjust.m",
+  range: "250-254"
+}
+*/
+
+function getInfoFromUrl(repoLink: string) {
+  let link = repoLink.replace("https://github.com/", "");
+  let words = link.split(/[/#]/);
+  let file = words.slice(4, -1).join("/");
+  let range = words[words.length - 1].replaceAll("L", "");
+  return {
+    orgName: words[0],
+    repoName: words[1],
+    ref: words[3],
+    file: file,
+    range: range,
+  };
+}
+
+/*
+This function:
+* Takes the range from the getInfoFromUrl function
+* Checks if the value is separated by a hyphen
+  * Returns the content at the line number if the range contains only a single number
+* Converts the value to numbers and stores the beginning and end of the range if a hyphen is found
+* Returns the content between the range values
+*/
+
+const getSlice = (responseContent: string[], range: string) => {
+  if (range.includes("-")) {
+    var a = Number(range.split("-")[0]) - 1;
+    var b = Number(range.split("-")[1]);
+    return responseContent.slice(a, b).join("\r\n");
+  } else if (parseInt(range)) {
+    return responseContent[parseInt(range) - 1];
+  }
+};
+
+/*
+This function takes the information parsed by the getInfoFromUrl function and makes an authenticated call to the GitHub API.
+The content of the response is a Base64-encoded version of the file specified. This function decodes the information before returning it.
+*/
+
+async function fetchContent(
+  orgName: string,
+  repoName: string,
+  file: string,
+  ref: string
+) {
+  const baseURL = `https://api.github.com/repos/${orgName}/${repoName}/contents/${file}?ref=${ref}`;
+  const response = await fetch(baseURL, {
+    method: "GET",
+    headers: { Authorization: `Bearer ${import.meta.env.GITHUB_TOKEN}` },
+  }).catch((err) => {
+    throw new Error(`Error fetching content from ${baseURL}. ${err}`);
+  });
+
+  if (!response.ok) {
+    throw new Error(`Response status from ${baseURL}: ${response.status}`);
+  }
+
+  let body = await response.json();
+  // Content body from github is base64 encoded
+  return atob(body.content);
+}
+
+// Parse the useful information from the stringified URL
+
+let params = getInfoFromUrl(stringLink);
+
+// Fetch the information from the GitHub API
+
+let content = await fetchContent(
+  params.orgName,
+  params.repoName,
+  params.file,
+  params.ref
+);
+
+// Remove any newlines from the resulting code
+
+let responseContent = content.split("\n");
+
+// Return only the values at the specified ranges
+
+let snippet = getSlice(responseContent, params.range)!;
+---
+
+<!--Return a syntax highlighted code block containing the lines of code-->
+<Code code={snippet} lang={lang} />
