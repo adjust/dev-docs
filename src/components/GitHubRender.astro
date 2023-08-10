@@ -48,15 +48,19 @@ async function fetchContent(
   ref: string
 ) {
   const baseURL = `https://api.github.com/repos/${orgName}/${repoName}/contents/${file}?ref=${ref}`;
-  let res = await fetch(baseURL).catch((err) => {
+  const response = await fetch(baseURL,
+  {
+    method: 'GET',
+    headers: {'Authorization': `Bearer ${import.meta.env.GITHUB_TOKEN}`}
+  }).catch((err) => {
     throw new Error(`Error fetching content from ${baseURL}. ${err}`);
   });
 
-  if (!res.ok) {
-    throw new Error(`Response status from ${baseURL}: ${res.status}`);
+  if (!response.ok) {
+    throw new Error(`Response status from ${baseURL}: ${response.status}`);
   }
 
-  let body = await res.json();
+  let body = await response.json();
   // Content body from github is base64 encoded
   return atob(body.content);
 }
