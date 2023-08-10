@@ -8,3 +8,11 @@ declare type BannerKind =
   | "warning"
   | "negative"
   | "primary";
+
+declare interface ApiObject {
+  orgName: string;
+  repoName: string;
+  ref: string;
+  file: string;
+  range: string;
+}
