@@ -1,38 +1,17 @@
 ---
 import GitHubRender from "@components/GitHubRender.astro";
-
-interface Parameter {
-  parameter: string;
-  type?: string;
-  interface?: string;
-  description: string;
-}
-
-interface ReturnValue {
-  value: string;
-  type?: string;
-  interface?: string;
-  description: string;
-}
+import type { Lang } from "shiki";
 
 export interface Props {
-  lang: string;
+  lang: Lang;
   name: string;
   link: URL;
-  parameters?: Parameter[];
-  returns?: ReturnValue[];
 }
 
-const {
-  lang = "",
-  name = "",
-  link,
-  parameters = null,
-  returns = null,
-} = Astro.props;
+const { lang, name, link } = Astro.props;
 ---
 
-<dl class:list="[{lang}," "function"]>
+<dl class="function">
   <dt class="sig-name descname">
     <span class="pre">{name}</span>
   </dt>
@@ -40,18 +19,22 @@ const {
     <slot />
     <GitHubRender link={link} lang={lang} />
   </dd>
-  {Astro.slots.has("parameters") &&
-   <dl>
-      <dt class="parameters">Parameters:</dt>
-      <slot name="parameters"></slot>
-   </dl>
-   }
-  { Astro.slots.has("returns") &&
-   <dl>
-      <dt class="returnValues">Return values</dt>
-      <slot name="returns"></slot>
-   </dl>
-   }
+  {
+    Astro.slots.has("parameters") && (
+      <dl>
+        <dt class="parameters">Parameters:</dt>
+        <slot name="parameters" />
+      </dl>
+    )
+  }
+  {
+    Astro.slots.has("returns") && (
+      <dl>
+        <dt class="returnValues">Return values</dt>
+        <slot name="returns" />
+      </dl>
+    )
+  }
   <h3>Example</h3>
-  <slot name="snippet"></slot>
+  <slot name="snippet" />
 </dl>
