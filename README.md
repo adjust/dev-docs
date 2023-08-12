@@ -1,5 +1,6 @@
 # Adjust SDK documentation
 
+![Build status](https://vercelbadge.vercel.app/api/adjust/dev-docs)
 [![Style guide checks](https://github.com/adjust/dev-docs/actions/workflows/vale.yml/badge.svg)](https://github.com/adjust/dev-docs/actions/workflows/vale.yml)
 [![Check Links](https://github.com/adjust/dev-docs/actions/workflows/check_links.yml/badge.svg)](https://github.com/adjust/dev-docs/actions/workflows/check_links.yml)
 
