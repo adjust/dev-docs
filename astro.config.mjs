@@ -29,6 +29,7 @@ export default defineConfig({
         "@components/Callout.astro",
         "@components/Accordion.astro",
         "@components/ListTable.astro",
+        "@components/Icon.astro",
         "@components/Function.astro",
         "@components/Tile.astro",
       ],
