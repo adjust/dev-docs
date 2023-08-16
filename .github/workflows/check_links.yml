@@ -5,26 +5,29 @@ on:
   pull_request:
   workflow_dispatch:
 jobs:
-  capture_vercel_preview_url:
-    name: Capture Vercel preview URL
+  get_vercel_preview:
     if: ${{ github.event_name == 'pull_request' }}
-    runs-on: "ubuntu-latest"
+    runs-on: ubuntu-22.04
     steps:
-      - uses: aaimio/vercel-preview-url-action@v2.2.0
+      - run: sleep 30
+      - name: vercel-preview-url
+        uses: zentered/vercel-preview-url@v1.1.9
         id: vercel_preview_url
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          vercel_project_id: ${{ secrets.VERCEL_PROJECT_ID }}
   check-links:
+    if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - name: Lychee Broken Link Checker
-        if: ${{ github.event_name == 'pull_request' }}
         uses: lycheeverse/lychee-action@v1.8.0
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
-          args: --max-redirects 10 --exclude-mail --base ${{ steps.vercel_preview_url.outputs.vercel_preview_url }} './src/content/docs/en/**/*.mdx'
+          args: --max-redirects 10 --exclude-mail --base https://${{ steps.vercel_preview_url.outputs.preview_url }} './src/content/docs/en/**/*.mdx'
           fail: true
   check-live-links:
     runs-on: ubuntu-22.04
