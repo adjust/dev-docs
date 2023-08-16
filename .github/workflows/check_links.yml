@@ -3,21 +3,40 @@ on:
   push:
     branches: ["main"]
   pull_request:
-  schedule:
-    # Run every Wednesday at 10AM
-    - cron: "0 10 * * 3"
   workflow_dispatch:
 jobs:
+  capture_vercel_preview_url:
+    name: Capture Vercel preview URL
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: aaimio/vercel-preview-url-action@v2.2.0
+        id: vercel_preview_url
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   check-links:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - name: Lychee Broken Link Checker
+        if: ${{ github.event_name == 'pull_request' }}
         uses: lycheeverse/lychee-action@v1.8.0
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
-          args: --max-redirects 10 --exclude-mail --base 'file:///src/content/docs' './src/content/docs/en/**/*.mdx'
+          args: --max-redirects 10 --exclude-mail --base ${{ steps.vercel_preview_url.outputs.vercel_preview_url }} './src/content/docs/en/**/*.mdx'
+          fail: true
+  check-live-links:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Lychee Broken Link Checker
+        if: github.ref == 'refs/heads/main'
+        uses: lycheeverse/lychee-action@v1.8.0
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        with:
+          args: --max-redirects 10 --exclude-mail --base https://dev.adjust.com './src/content/docs/en/**/*.mdx'
           fail: true
       - name: Create issue to fix broken links
         # Don't run this step for pull requests. We don't want to generate an issue every time!
