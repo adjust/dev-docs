@@ -1,5 +1,6 @@
 /** @jsxImportSource react */
 import { Accordion } from "@adjust/components";
+import { htmlWithTitles } from "@components/utils/htmlWithTitles";
 import type { FC } from "react";
 
 // We only need one type of Accordion currently.
@@ -7,13 +8,11 @@ import type { FC } from "react";
 
 const BuildAccordion: FC<{
   content: string;
-  title: string;
-  badge?: string;
 }> = (props) => {
   // The Atlas component passes the body content as a string of HTML.
   // We convert this to HTML using the `dangerouslySetInnerHTML` function.
 
-  const content = <div dangerouslySetInnerHTML={{ __html: props.content }} />;
+  const content = htmlWithTitles(props.content);
 
   // Each accordion exists in its own list, so we can hardcode the value of `id` to 1.
   // If we want to create multi-accordion lists in future we will need to iterate the `id`.
@@ -21,16 +20,16 @@ const BuildAccordion: FC<{
   const data = [
     {
       id: 1,
-      title: props.title,
-      content: content,
+      title: content.title || "",
+      content: content.body,
       badge: {},
     },
   ];
 
   // Only add a badge if `props.badge` contains a value
 
-  if (props.badge) {
-    data[0].badge = { label: props.badge, color: "neutral" };
+  if (content.badge) {
+    data[0].badge = { label: content.badge, color: "neutral" };
   }
 
   return <Accordion data={data} type="headline" />;
