@@ -5,7 +5,8 @@ import tailwind from "@astrojs/tailwind";
 import AutoImport from "astro-auto-import";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
-import remarkMermaid from "astro-diagram/remark-mermaid";
+import remarkMermaid from "remark-mermaidjs";
+import rehypeMermaid from "rehype-mermaidjs";
 import {
   remarkDefinitionList,
   defListHastHandlers,
@@ -48,6 +49,7 @@ export default defineConfig({
   site: `https://dev-docs-nine.vercel.app/`,
   markdown: {
     remarkPlugins: [remarkDefinitionList, remarkMermaid],
+    rehypePlugins: [rehypeMermaid],
     remarkRehype: {
       handlers: {
         ...defListHastHandlers,
