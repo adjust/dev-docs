@@ -11,7 +11,7 @@ const BuildBanner: FC<{
   /* The Astro component passes the body content as a string of HTML.
   We use a helper function to convert this into usable HTML content*/
 
-  let content = htmlWithTitles(props.content);
+  const content = htmlWithTitles(props.content);
 
   return (
     <Tile
