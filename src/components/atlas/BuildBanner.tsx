@@ -1,21 +1,24 @@
 /** @jsxImportSource react */
 import type { FC } from "react";
+import { htmlWithTitles } from "@components/utils/htmlWithTitles";
 import { Banner } from "@adjust/components";
 
 const BuildBanner: FC<{
   description: string;
-  title: string;
+  typeTitle: string;
   kind: BannerKind;
 }> = (props) => {
-  // The Atlas component passes the body content as a string of HTML.
-  // We convert this to HTML using the `dangerouslySetInnerHTML` function.
+  /* The Astro component passes the body content as a string of HTML.
+  We use a helper function to convert this into usable HTML content*/
 
-  const description = (
-    <div dangerouslySetInnerHTML={{ __html: props.description }} />
-  );
+  const content = htmlWithTitles(props.description);
 
   return (
-    <Banner title={props.title} kind={props.kind} description={description} />
+    <Banner
+      title={content.title ? content.title : props.typeTitle}
+      kind={props.kind}
+      description={content.body}
+    />
   );
 };
 

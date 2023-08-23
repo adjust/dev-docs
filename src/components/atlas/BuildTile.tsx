@@ -1,22 +1,25 @@
 /** @jsxImportSource react */
-import { IconName, Tile } from "@adjust/components";
 import type { FC } from "react";
+import { htmlWithTitles } from "@components/utils/htmlWithTitles";
+import { Tile } from "@adjust/components";
+import type { IconName } from "@adjust/components";
 
-const BuildTile: FC<{
+const BuildBanner: FC<{
   content: string;
   icon?: IconName;
-  title?: string;
 }> = (props) => {
-  // The Atlas component passes the body content as a string of HTML.
-  // We convert this to HTML using the `dangerouslySetInnerHTML` function.
+  /* The Astro component passes the body content as a string of HTML.
+  We use a helper function to convert this into usable HTML content*/
 
-  const content = <div dangerouslySetInnerHTML={{ __html: props.content }} />;
+  const content = htmlWithTitles(props.content);
 
   return (
-    <Tile title={props.title} iconName={props.icon}>
-      {content}
-    </Tile>
+    <Tile
+      title={content.title ? content.title : ""}
+      iconName={props.icon}
+      children={content.body}
+    />
   );
 };
 
-export default BuildTile;
+export default BuildBanner;
