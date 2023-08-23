@@ -30,7 +30,7 @@ const BuildListTable: FC<{
 
   // In order to iterate through the list items, we create a new HTML document
 
-  var el = document.createElement("html");
+  const el = document.createElement("html");
 
   // Add the HTML string to the newly made document
 
