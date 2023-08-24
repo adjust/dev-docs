@@ -11,8 +11,7 @@ help:
 	@echo "clean: remove the build directory"
 
 install:
-
-	npm install
+	npm install && npx playwright install --with-deps chromium
 
 preview:
 	npm run dev
