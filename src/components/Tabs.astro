@@ -1,0 +1,39 @@
+---
+import BuildTabs from "@components/atlas/BuildTabs.tsx";
+
+export interface Props {
+  items: {
+    icon: string;
+    label: string;
+    sync: string;
+  }[];
+}
+
+const { items } = Astro.props as Props;
+
+// Store the content contained within the Accordion as a string.
+// This string is converted to HTML inside the atlas/BuildAccordion.jsx file.
+
+let content = "";
+
+if (Astro.slots.has("default")) {
+  content = await Astro.slots.render("default");
+}
+
+// need to parse Tab content to take translated labels and other props to the Tabs component
+const tabsItems = items.map((item) => {
+  const reg = new RegExp(`<h3 id="${item.sync}">(\\w*)</h3>`);
+  const translatedLabel = content.match(reg)![1];
+
+  // removing label from content
+  content = content.replace(reg, "");
+
+  return {
+    id: item.label,
+    iconName: item.icon,
+    label: translatedLabel,
+  };
+});
+---
+
+<BuildTabs client:only="react" content={content} items={tabsItems} />
