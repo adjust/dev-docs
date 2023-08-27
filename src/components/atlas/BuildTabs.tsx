@@ -2,8 +2,12 @@
 import { useState, type FC } from "react";
 import { htmlWithTitles } from "@components/utils/htmlWithTitles";
 import { Tabs } from "@adjust/components";
+import type { TabItemType } from "@adjust/components/build/Tabs/TabItem";
 
-const BuildTabs: FC<any> = (props) => {
+const BuildTabs: FC<{
+  content: string;
+  items: TabItemType[];
+}> = (props) => {
   const [currentTab, setCurrentTab] = useState("1");
   /* The Astro component passes the body content as a string of HTML.
   We use a helper function to convert this into usable HTML content*/
