@@ -32,7 +32,11 @@ const BuildAccordion: FC<{
     data[0].badge = { label: content.badge, color: "neutral" };
   }
 
-  return <Accordion data={data} type="headline" />;
+  return (
+    <div id={content.anchor}>
+      <Accordion data={data} type="headline" />
+    </div>
+  );
 };
 
 export default BuildAccordion;
