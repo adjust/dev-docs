@@ -19,6 +19,7 @@ export const htmlWithTitles = (content: string) => {
   const title = el.querySelector("body > h3");
 
   const label = title?.textContent?.toString();
+  const anchor = title?.id.toString();
 
   // If the next sibling of the header is a header 4, we need to store this.
 
@@ -43,6 +44,7 @@ export const htmlWithTitles = (content: string) => {
 
   return {
     title: label,
+    anchor: anchor,
     body: body,
     badge: badge,
   };
