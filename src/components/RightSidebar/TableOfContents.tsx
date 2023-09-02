@@ -1,16 +1,21 @@
+/** @jsxImportSource react */
 import type { MarkdownHeading } from "astro";
-import type { FunctionalComponent } from "preact";
+import type { FC } from "react";
 import { unescape } from "html-escaper";
-import { useState, useEffect, useRef } from "preact/hooks";
+import { useState, useEffect, useRef } from "react";
+import { useStore } from "@nanostores/react";
+import { $tabs } from "@store/tabStore";
 
 type ItemOffsets = {
   id: string;
   topOffset: number;
 };
 
-const TableOfContents: FunctionalComponent<{ headings: MarkdownHeading[] }> = ({
+const TableOfContents: FC<{ headings: MarkdownHeading[] }> = ({
   headings = [],
 }) => {
+  const [headingsLocal, setHeadingsLocal] = useState(headings);
+  const tabs = useStore($tabs);
   const toc = useRef<HTMLUListElement>(null);
   const onThisPageID = "on-this-page-heading";
   const itemOffsets = useRef<ItemOffsets[]>([]);
@@ -67,6 +72,18 @@ const TableOfContents: FunctionalComponent<{ headings: MarkdownHeading[] }> = ({
     return () => headingsObserver.disconnect();
   }, [toc.current]);
 
+  useEffect(() => {
+    if (tabs.items.length) {
+      // logic for removing tabs labels from TOC
+      const filteredHeadings = headings.filter(
+        (heading) =>
+          heading.depth === 3 &&
+          !tabs.items.find((tab) => tab.label === heading.text)
+      );
+      setHeadingsLocal(filteredHeadings);
+    }
+  }, [tabs]);
+
   const onLinkClick = (e) => {
     setCurrentID(e.target.getAttribute("href").replace("#", ""));
   };
@@ -77,7 +94,7 @@ const TableOfContents: FunctionalComponent<{ headings: MarkdownHeading[] }> = ({
         On this page
       </h2>
       <ul ref={toc}>
-        {headings
+        {headingsLocal
           .filter(({ depth }) => depth > 1 && depth < 4)
           .map((heading) => (
             <li

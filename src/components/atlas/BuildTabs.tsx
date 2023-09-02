@@ -4,7 +4,7 @@ import { Tabs } from "@adjust/components";
 import { useStore } from "@nanostores/react";
 
 import { htmlWithTitles } from "@components/utils/htmlWithTitles";
-import { $tabs, changeSyncValue } from "@store/tabStore";
+import { $tabs, changeSyncValue, updateTabItems } from "@store/tabStore";
 
 import type { TabItemType } from "@adjust/components/build/Tabs/TabItem";
 
@@ -51,10 +51,7 @@ const BuildTabs: FC<{
   };
 
   useEffect(() => {
-    if (
-      currentTabs.isTabsHaveSync &&
-      tabs.currentSync
-    ) {
+    if (currentTabs.isTabsHaveSync && tabs.currentSync) {
       const activeTabId = currentTabs.items.find(
         (tab) => tab.sync === tabs.currentSync
       )?.id;
@@ -66,6 +63,10 @@ const BuildTabs: FC<{
       handleTabChange(currentTabs.activeTab, false);
     }
   }, [tabs.currentSync]);
+
+  useEffect(() => {
+    updateTabItems(items);
+  }, []);
 
   return (
     <>
