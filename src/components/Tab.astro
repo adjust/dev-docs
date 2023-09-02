@@ -1,4 +1,6 @@
 ---
+import { randomUUID } from "crypto";
+
 import TabComponent from "@components/TabComponent";
 
 export interface Props {
@@ -13,13 +15,15 @@ const { sync, icon } = Astro.props as Props;
 
 let content = "";
 
+const uniqueId = randomUUID();
 if (Astro.slots.has("default")) {
   content = await Astro.slots.render("default");
+
   content = content.replace(
     /<h3 id=".*">(.*)\<\/h3>/,
-    `<h3 id="${sync ?? '$1'}" data-sync=${sync} data-icon=${icon ?? "Code"}>$1</h3>`
+    `<h3 id="${uniqueId}" data-type="tab" data-sync=${sync} data-icon=${icon ?? "Code"}>$1</h3>`
   );
 }
 ---
 
-<TabComponent client:load content={content} sync={sync} />
+<TabComponent client:load content={content} uniqueId={uniqueId} />
