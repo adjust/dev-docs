@@ -17,8 +17,13 @@ export const htmlWithTitles = (content: string) => {
    We need to extract the first header 3 and use it as the label */
 
   const title = el.querySelector("body > h3");
+  let label: string = "";
+  let anchor: string = "";
 
-  const label = title?.textContent?.toString();
+  if (title && title.textContent) {
+    label = title.textContent.toString();
+    anchor = title.id.toString();
+  }
 
   // If the next sibling of the header is a header 4, we need to store this.
 
@@ -43,6 +48,7 @@ export const htmlWithTitles = (content: string) => {
 
   return {
     title: label,
+    anchor: anchor,
     body: body,
     badge: badge,
   };

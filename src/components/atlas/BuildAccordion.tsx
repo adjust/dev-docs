@@ -1,5 +1,6 @@
 /** @jsxImportSource react */
 import { Accordion } from "@adjust/components";
+import type { AccordionItem } from "@adjust/components/build/Accordion/Item";
 import { htmlWithTitles } from "@components/utils/htmlWithTitles";
 import type { FC } from "react";
 
@@ -14,12 +15,9 @@ const BuildAccordion: FC<{
 
   const content = htmlWithTitles(props.content);
 
-  // Each accordion exists in its own list, so we can hardcode the value of `id` to 1.
-  // If we want to create multi-accordion lists in future we will need to iterate the `id`.
-
-  const data = [
+  const data: AccordionItem[] = [
     {
-      id: 1,
+      id: content.anchor,
       title: content.title || "",
       content: content.body,
       badge: {},
@@ -32,7 +30,11 @@ const BuildAccordion: FC<{
     data[0].badge = { label: content.badge, color: "neutral" };
   }
 
-  return <Accordion data={data} type="headline" />;
+  return (
+    <div id={content.anchor}>
+      <Accordion data={data} type="headline" />
+    </div>
+  );
 };
 
 export default BuildAccordion;
