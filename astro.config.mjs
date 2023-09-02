@@ -10,21 +10,11 @@ import {
   defListHastHandlers,
 } from "remark-definition-list";
 
-import {
-  tabsAutoImport,
-  tabNameAutoImport,
-  tabContentAutoImport,
-  astroTabs,
-} from "./integrations/astro-tabs";
-
 // https://astro.build/config
 export default defineConfig({
   integrations: [
     AutoImport({
       imports: [
-        tabsAutoImport,
-        tabNameAutoImport,
-        tabContentAutoImport,
         "@components/Callout.astro",
         "@components/Accordion.astro",
         "@components/ListTable.astro",
@@ -33,6 +23,8 @@ export default defineConfig({
         "@components/Tile.astro",
         "@components/GuiLabel.astro",
         "@components/MenuSelection.astro",
+        "@components/Tabs.astro",
+        "@components/Tab.astro",
         "@components/Abbr.astro",
         "@components/Badge.astro",
       ],
@@ -43,7 +35,6 @@ export default defineConfig({
     react(),
     mdx(),
     tailwind(),
-    astroTabs(),
     sitemap(),
   ],
   site: `https://dev-docs-nine.vercel.app/`,
