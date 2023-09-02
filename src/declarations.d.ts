@@ -16,3 +16,5 @@ declare interface ApiObject {
   file: string;
   range: string;
 }
+
+declare type BadgeColor = 'neutral' | 'negative' | 'positive' | 'warning' | 'primary';
