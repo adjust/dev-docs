@@ -34,6 +34,7 @@ export default defineConfig({
         "@components/GuiLabel.astro",
         "@components/MenuSelection.astro",
         "@components/Abbr.astro",
+        "@components/Badge.astro",
       ],
     }),
     // Enable Preact to support Preact JSX components.
