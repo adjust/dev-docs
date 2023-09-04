@@ -77,15 +77,16 @@ const TableOfContents: FC<{ headings: MarkdownHeading[] }> = ({
       // logic for removing tabs labels from TOC
       const filteredHeadings = headings.filter(
         (heading) =>
-          heading.depth === 3 &&
-          !tabs.items.find((tab) => tab.label === heading.text)
+          !tabs.items.find(
+            (tab) => tab.label === heading.text && heading.depth === 3
+          )
       );
       setHeadingsLocal(filteredHeadings);
     }
   }, [tabs]);
 
-  const onLinkClick = (e) => {
-    setCurrentID(e.target.getAttribute("href").replace("#", ""));
+  const onLinkClick = (e: HTMLLinkElement) => {
+    setCurrentID(e.href.replace("#", ""));
   };
 
   return (
