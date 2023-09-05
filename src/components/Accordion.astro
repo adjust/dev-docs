@@ -1,35 +1,34 @@
 ---
 import BuildAccordion from "@components/atlas/BuildAccordion";
 import type { AccordionItem } from "@adjust/components/build/Accordion/Item";
-import { randomUUID } from "crypto";
 
 // Creates a standard "headline" Accordion with an optional neutral badge
 // https://atlas.adeven.com/docs/components/Accordion
 
-const titleRegex = /(<h3 .*>(.*?)<\/h3>)/;
-const badgeRegex = /(<h4 .*>(.*?)<\/h4>)/;
-const uniqueId = randomUUID();
+const titleRegex = /(^<h3 id=\"(.*?)\">(.*?)<\/h3>)/;
+const badgeRegex = /(^<h4 .*?>(.*?)<\/h4>)/;
 
 let content = "";
 
 let items: AccordionItem[] = [
   {
-    id: uniqueId,
+    id: "",
     title: "",
   },
 ];
 
 if (Astro.slots.has("default")) {
   content = await Astro.slots.render("default");
-  let headerTitle = content.match(titleRegex);
-  if (headerTitle) {
-    items[0].title = headerTitle[2];
-    content = content.replace(headerTitle[1], "");
+  if (titleRegex.test(content)) {
+    let regex = titleRegex.exec(content);
+    items[0].title = regex?.[3]!;
+    items[0].id = regex?.[2]!
+    content = content.replace(regex?.[1]!, "");
   }
-  let badgeLabel = content.match(badgeRegex);
-  if (badgeLabel) {
-    items[0].badge = { label: badgeLabel[2], color: "neutral" };
-    content = content.replace(badgeLabel[1], "");
+  if (badgeRegex.test(content)) {
+    let regex = badgeRegex.exec(content);
+    items[0].badge = { label: regex?.[2]!, color: "neutral" };
+    content = content.replace(regex?.[1]!, "");
   }
 }
 ---

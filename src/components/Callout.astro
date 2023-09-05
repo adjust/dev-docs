@@ -45,14 +45,14 @@ const typeTitle = type === "neutral" ? "Info" : toSentenceCase(type);
 
 let content = "";
 let title = "";
-const titleRegex = /(<h3 .*>(.*?)<\/h3>)/;
+const titleRegex = /(^<h3 .*?>(.*?)<\/h3>)/;
 
 if (Astro.slots.has("default")) {
   content = await Astro.slots.render("default");
-  let headerTitle = content.match(titleRegex);
-  if (headerTitle) {
-    title = headerTitle[2];
-    content = content.replace(headerTitle[1], "");
+  if (titleRegex.test(content)) {
+    let regex = titleRegex.exec(content);
+    title = regex?.[2]!;
+    content = content.replace(regex?.[1]!, "");
   }
 }
 ---

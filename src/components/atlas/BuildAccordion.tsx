@@ -12,9 +12,9 @@ const BuildAccordion: FC<{
   AccordionData[0].content = props.content;
 
   return (
-    <>
+    <div id={AccordionData[0].id.toString()}>
       <Accordion data={AccordionData} type="headline" />
-    </>
+    </div>
   );
 };
 
