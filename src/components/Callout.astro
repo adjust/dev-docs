@@ -1,5 +1,5 @@
 ---
-import BuildBanner from "@components/atlas/BuildBanner.tsx";
+import { Banner } from "@adjust/components";
 import { toSentenceCase } from "@components/utils/convertCase";
 
 // We have two props that must be present in all banners:
@@ -38,23 +38,26 @@ const bannerType: BannerKind = typeMap.get(type) || "neutral";
 // This takes the value of the type and capitalizes the first letter.
 // If no type has been specified, default to "Info".
 
-const typeTitle =
-  type === "neutral" ? "Info" : toSentenceCase(type);
+const typeTitle = type === "neutral" ? "Info" : toSentenceCase(type);
 
 // Store the content contained within the Callout as a string.
 // This string is converted to HTML inside the atlas/BuildBanner.jsx file.
 
-let description = "";
+let content = "";
+let title = "";
+const titleRegex = /<h3 .*>(.*?)<\/h3>/;
 
 if (Astro.slots.has("default")) {
-  description = await Astro.slots.render("default");
+  content = await Astro.slots.render("default");
+  let headerTitle = content.match(titleRegex);
+  if (headerTitle) {
+    title = headerTitle[1];
+    content = content.replace(headerTitle[1], "");
+  }
 }
 ---
 
 <!-- Pass the assigned information to the BuildBanner React component -->
-<BuildBanner
-  client:only="react"
-  typeTitle={typeTitle}
-  kind={bannerType}
-  description={description}
-/>
+<Banner client:only="react" title={title ? title : typeTitle} kind={bannerType}>
+  <Fragment set:html={content} slot="description" />
+</Banner>

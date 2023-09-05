@@ -1,5 +1,5 @@
 ---
-import BuildTile from "@components/atlas/BuildTile";
+import { Tile as AtlasTile } from "@adjust/components";
 import type { IconName } from "@adjust/components";
 
 export interface Props {
@@ -9,10 +9,19 @@ export interface Props {
 const { icon } = Astro.props as Props;
 
 let content = "";
+let title = "";
+const titleRegex = /<h3 .*>(.*)<\/h3>/m
 
 if (Astro.slots.has("default")) {
   content = await Astro.slots.render("default");
+  let headerTitle = content.match(titleRegex)
+  if (headerTitle) {
+    title = headerTitle[1]
+    content = content.replace(headerTitle[1], "")
+  }
 }
 ---
 
-<BuildTile icon={icon} content={content} client:only="react" />
+<AtlasTile client:only="react" iconName={icon} title={title}>
+  <Fragment set:html={content} name="chidren" />
+</AtlasTile>
