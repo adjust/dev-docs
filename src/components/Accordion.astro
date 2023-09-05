@@ -1,21 +1,39 @@
 ---
-import BuildAccordion from "@components/atlas/BuildAccordion.tsx";
+import BuildAccordion from "@components/atlas/BuildAccordion";
+import type { AccordionItem } from "@adjust/components/build/Accordion/Item";
+import { randomUUID } from "crypto";
 
 // Creates a standard "headline" Accordion with an optional neutral badge
 // https://atlas.adeven.com/docs/components/Accordion
 
-// Store the content contained within the Accordion as a string.
-// This string is converted to HTML inside the atlas/BuildAccordion.jsx file.
+const titleRegex = /(<h3 .*>(.*?)<\/h3>)/;
+const badgeRegex = /(<h4 .*>(.*?)<\/h4>)/;
+const uniqueId = randomUUID();
 
 let content = "";
 
+let items: AccordionItem[] = [
+  {
+    id: uniqueId,
+    title: "",
+  },
+];
+
 if (Astro.slots.has("default")) {
   content = await Astro.slots.render("default");
+  let headerTitle = content.match(titleRegex);
+  if (headerTitle) {
+    items[0].title = headerTitle[2];
+    content = content.replace(headerTitle[1], "");
+  }
+  let badgeLabel = content.match(badgeRegex);
+  if (badgeLabel) {
+    items[0].badge = { label: badgeLabel[2], color: "neutral" };
+    content = content.replace(badgeLabel[1], "");
+  }
 }
 ---
 
-<!-- Pass the assigned information to the BuildAccordion React component -->
-<BuildAccordion
-  client:only="react"
-  content={content}
-/>
+<BuildAccordion client:only="react" data={items}>
+  <Fragment set:html={content} slot="content" />
+</BuildAccordion>

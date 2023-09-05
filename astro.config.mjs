@@ -17,7 +17,7 @@ export default defineConfig({
     // Enable Preact to support Preact JSX components.
     preact(),
   // Enable React for the Algolia search component.
-    react(), expressiveCode({
+    react({ experimentalReactChildren: true }), expressiveCode({
       plugins: [
         pluginCollapsibleSections()
       ]
