@@ -38,6 +38,8 @@ const BuildTable: FC<{
   let columns: TableColumnTypes[] = [];
   let data: ColumnCell[] = [];
 
+  // Store visual properties as an object
+
   const visualProperties = {
     areColumnsBordered: props.bordered,
     isStriped: props.striped,
@@ -80,13 +82,13 @@ const BuildTable: FC<{
       }
     });
   } else {
-    // Select any list item that is a child of a top-level list
+    // Select any values from HTML
 
     const headerItems = el.querySelectorAll("table > thead > tr");
     const bodyItems = el.querySelectorAll("table > tbody > tr");
     // Loop through each selector
     headerItems.forEach((value) => {
-      // The first row is always the header, so we create the columns array with these values
+      // Take the value of each header element.
       for (let i = 0; i < value.children.length; i++) {
         columns.push({
           // Take the written title as a header
@@ -106,7 +108,7 @@ const BuildTable: FC<{
         });
       }
     }),
-      // Loop through each list after the first one to fill out the table
+      // Take the value of each table body  element.
       bodyItems.forEach((value) => {
         // Initialize an empty object
         var row: ColumnCell = {};
