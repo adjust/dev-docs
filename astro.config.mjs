@@ -12,7 +12,7 @@ import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-s
 // https://astro.build/config
 export default defineConfig({
   integrations: [AutoImport({
-    imports: ["@components/Callout.astro", "@components/Accordion.astro", "@components/ListTable.astro", "@components/Table.astro", "@components/Icon.astro", "@components/Function.astro", "@components/Tile.astro", "@components/GuiLabel.astro", "@components/MenuSelection.astro", "@components/Tabs.astro", "@components/Tab.astro", "@components/Abbr.astro", "@components/Badge.astro"]
+    imports: ["@components/Callout.astro", "@components/Accordion.astro", "@components/Table.astro", "@components/Icon.astro", "@components/Function.astro", "@components/Tile.astro", "@components/GuiLabel.astro", "@components/MenuSelection.astro", "@components/Tabs.astro", "@components/Tab.astro", "@components/Abbr.astro", "@components/Badge.astro"]
   }),
     // Enable Preact to support Preact JSX components.
     preact(),
