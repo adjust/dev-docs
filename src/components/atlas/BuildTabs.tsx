@@ -3,7 +3,6 @@ import { type FC, useEffect, useState } from "react";
 import { Tabs } from "@adjust/components";
 import { useStore } from "@nanostores/react";
 
-import { htmlWithTitles } from "@components/utils/htmlWithTitles";
 import { $tabs, changeSyncValue, updateTabItems } from "@store/tabStore";
 
 import type { TabItemType } from "@adjust/components/build/Tabs/TabItem";
@@ -13,7 +12,7 @@ export interface TabItem extends TabItemType {
 }
 
 const BuildTabs: FC<{
-  content: string;
+  content: JSX.Element;
   items: TabItem[];
 }> = ({ content, items }) => {
   const tabs = useStore($tabs);
@@ -23,10 +22,6 @@ const BuildTabs: FC<{
     activeTab: items[0].id,
     isTabsHaveSync: isTabsHaveSync,
   });
-
-  /* The Astro component passes the body content as a string of HTML.
-  We use a helper function to convert this into usable HTML content*/
-  const contentParsed = htmlWithTitles(content);
 
   const handleTabChange = (tabId: string, withSync = true) => {
     // hiding inactive tabs from the current list
@@ -75,7 +70,7 @@ const BuildTabs: FC<{
         value={currentTabs.activeTab}
         onChange={(id) => handleTabChange(id, currentTabs.isTabsHaveSync)}
       />
-      {contentParsed.body}
+      {content}
     </>
   );
 };

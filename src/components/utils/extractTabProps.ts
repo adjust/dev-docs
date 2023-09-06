@@ -28,7 +28,7 @@ export const extractTabProps = async (content: string) => {
               label: children[0].value,
             });
 
-            remove(node);
+            remove(tree, node);
           }
         });
       };

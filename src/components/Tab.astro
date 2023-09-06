@@ -1,8 +1,6 @@
 ---
 import { randomUUID } from "crypto";
 
-import TabComponent from "@components/TabComponent";
-
 export interface Props {
   sync: string;
   icon: string;
@@ -20,10 +18,13 @@ if (Astro.slots.has("default")) {
   content = await Astro.slots.render("default");
 
   content = content.replace(
-    /<h3 id=".*">(.*)\<\/h3>/,
+    /^<h3 id=".*">(.*)\<\/h3>/,
     `<h3 id="${uniqueId}" data-type="tab" data-sync=${sync} data-icon=${icon ?? "Code"}>$1</h3>`
   );
 }
 ---
 
-<TabComponent client:load content={content} uniqueId={uniqueId} />
+<div id={uniqueId} class="hidden">
+  {/* additional div in case of adding styles to the content */}
+  <div id="tab-content" set:html={content} />
+</div>
