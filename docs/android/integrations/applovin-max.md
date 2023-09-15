@@ -3,7 +3,7 @@
 If you want to measure ad revenue with the AppLovin MAX SDK, you can use the SDK-to-SDK integration to pass this information to Adjust's servers. 
 
 :::{note}
-If you have any questions about ad revenue tracking with AppLovin MAX, please contact your dedicated Technical Account Manager or send an email to support@adjust.com.
+If you have any questions about ad revenue measurement with AppLovin MAX, please contact your dedicated Technical Account Manager or send an email to support@adjust.com.
 :::
 
 ## Before you begin
