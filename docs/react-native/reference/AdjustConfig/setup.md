@@ -78,7 +78,7 @@ Define a default tracker token. Adjust assigns organic installs to this tracker 
 public setDefaultTracker(defaultTracked: string): void
 ```
 
-:param defaultTracker: The tracker token to which all preinstalled sessions are attributed
+:param defaultTracker: The tracker token to which all preinstalled {term}`sessions <session>` are attributed
 :type defaultTracker: String
 
 % setDefaultTracker snippet
@@ -277,7 +277,7 @@ Adjust.create(adjustConfig);
 ::::{function} setDelayStart (delayStart)
 :noindex:
 
-Sets a delay before the SDK starts to allow data to load before session information is sent to Adjust's servers. Maximum delay: 10 seconds.
+Sets a delay before the SDK starts to allow data to load before {term}`session` information is sent to Adjust's servers. Maximum delay: 10 seconds.
 
 {#react-native-setdelaystart-invocation}
 
@@ -645,7 +645,7 @@ Adjust.create(adjustConfig);
 ::::{function} setSessionTrackingSucceededCallbackListener (sessionSuccess)
 :noindex:
 
-Sets up a success callback to trigger a function when the SDK records a session.
+Sets up a success callback to trigger a function when the SDK records a {term}`session`.
 
 {#react-native-setSessionTrackingSucceededCallbackListener-invocation}
 
@@ -695,7 +695,7 @@ Adjust.create(adjustConfig);
 ::::{function} setSessionTrackingFailedCallbackListener (sessionFailed)
 :noindex:
 
-Sets up a callback to trigger a function when the SDK fails to record a session.
+Sets up a callback to trigger a function when the SDK fails to record a {term}`session`.
 
 {#unity-setSessionTrackingFailedCallbackListener-invocation}
 

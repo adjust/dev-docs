@@ -3,6 +3,7 @@ myst:
    substitutions:
       token_format: "`AdjustAuthorization: Token {API_TOKEN}`"
       api_name: "App Automation API"
+      endpoint: "https://dash.adjust.com/control-center/adjust-app-automation/api/app"
 ---
 
 # App Automation API authentication

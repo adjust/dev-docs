@@ -5,7 +5,7 @@ The Adjust SDK runs by default when your app is open. You can disable and re-ena
 You can enable or disable the SDK at any time by calling the [`setEnabled` method](#android-setenabled-invocation) with a boolean argument.
 
 :::{important}
-You can only call this method after the first session. This setting persists between sessions.
+You can only call this method after the first {term}`session`. This setting persists between sessions.
 :::
 
 :::{include} /android/reference/Adjust/config.md

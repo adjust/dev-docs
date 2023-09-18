@@ -171,7 +171,7 @@ Adjust.start(adjustConfig);
 ::::{function} setSessionSuccessDelegate (sessionSuccessDelegate)
 :noindex:
 
-Sets up a success callback to trigger a function when the SDK records a session.
+Sets up a success callback to trigger a function when the SDK records a {term}`session`.
 
 {#unity-setsessionsuccessdelegate-invocation}
 ```c#
@@ -194,7 +194,7 @@ adjustConfig.setSessionSuccessDelegate(SessionSuccessCallback);
 Adjust.start(adjustConfig);
 //...
 public void SessionSuccessCallback (AdjustSessionSuccess sessionSuccessData) {
-    //...
+   //...
 }
 ```
 
@@ -211,7 +211,7 @@ public void SessionSuccessCallback (AdjustSessionSuccess sessionSuccessData) {
 ::::{function} setSessionFailureDelegate (sessionSuccessDelegate)
 :noindex:
 
-Sets up a callback to trigger a function when the SDK fails to record a session.
+Sets up a callback to trigger a function when the SDK fails to record a {term}`session`.
 
 ```c#
 :name: unity-setSessionFailureDelegate-invocation
@@ -235,7 +235,7 @@ adjustConfig.setSessionFailureDelegate(SessionFailureCallback);
 Adjust.start(adjustConfig);
 //...
 public void SessionFailureCallback (AdjustSessionFailure sessionFailureData) {
-    //...
+   //...
 }
 ```
 
@@ -275,7 +275,7 @@ adjustConfig.setEventSuccessDelegate(EventSuccessCallback);
 Adjust.start(adjustConfig);
 //...
 public void EventSuccessCallback(AdjustEventSuccess eventSuccessData) {
-    //...
+   //...
 }
 ```
 
@@ -315,7 +315,7 @@ adjustConfig.setEventFailureDelegate(EventFailureCallback);
 Adjust.start(adjustConfig);
 //...
 public void EventFailureCallback(AdjustEventFailure eventFailureData) {
-    //...
+   //...
 }
 ```
 
@@ -332,7 +332,7 @@ public void EventFailureCallback(AdjustEventFailure eventFailureData) {
 ::::{function} setDelayStart (delayStart)
 :noindex:
 
-Sets a delay before the SDK starts to allow data to load before session information is sent to Adjust's servers. Maximum delay: 10 seconds
+Sets a delay before the SDK starts to allow data to load before {term}`session` information is sent to Adjust's servers. Maximum delay: 10 seconds
 
 {#unity-setdelaystart-invocation}
 ```c#
@@ -494,19 +494,19 @@ public void setAttributionChangedDelegate(Action<AdjustAttribution> attributionC
 using com.adjust.sdk;
 
 public class ExampleGUI : MonoBehaviour {
-    void OnGUI() {
-        if (GUI.Button(new Rect(0, 0, Screen.width, Screen.height), "callback")) {
-            AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
-            adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
-            adjustConfig.setAttributionChangedDelegate(this.attributionChangedDelegate);
-            Adjust.start(adjustConfig);
-        }
-    }
+   void OnGUI() {
+      if (GUI.Button(new Rect(0, 0, Screen.width, Screen.height), "callback")) {
+         AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironmentSandbox);
+         adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
+         adjustConfig.setAttributionChangedDelegate(this.attributionChangedDelegate);
+         Adjust.start(adjustConfig);
+      }
+   }
 
-    public void attributionChangedDelegate(AdjustAttribution attribution) {
-        Debug.Log("Attribution changed");
-        // ...
-    }
+   public void attributionChangedDelegate(AdjustAttribution attribution) {
+      Debug.Log("Attribution changed");
+      // ...
+   }
 }
 ```
 

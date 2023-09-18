@@ -39,6 +39,20 @@ dependencies {
 }
 ```
 
+### Collect App Set Identifier
+
+:::{versionadded} v4.33.5
+The [App Set Identifier](https://developer.android.com/design-for-safety/privacy-sandbox/reference/adservices/appsetid/AppSetId) is a unique identifier that enables you to measure information from any of your apps that a user has installed on their device. All apps by the same developer share the same App Set ID, meaning you can gather meaningful insights from users across all your apps. To record a device's App Set ID, you need to add the following permission to your {file}`build.gradle` file:
+:::
+
+```groovy
+dependencies {
+   implementation 'com.google.android.gms:play-services-appset:16.0.2'
+}
+```
+
+If this permission is enabled, the App Set ID is sent to Adjust's servers as part of the device information payload.
+
 ## 3. Add permissions
 
 To give the Adjust SDK access to device information, you need to declare which permissions your app requires. To do this, add permissions to your {file}`AndroidManifest.xml` file.
@@ -71,14 +85,14 @@ If you're using Proguard to optimize your app, you must add rules to prevent Pro
 ```java
 -keep class com.adjust.sdk.** { *; }
 -keep class com.google.android.gms.common.ConnectionResult {
-    int SUCCESS;
+   int SUCCESS;
 }
 -keep class com.google.android.gms.ads.identifier.AdvertisingIdClient {
-    com.google.android.gms.ads.identifier.AdvertisingIdClient$Info getAdvertisingIdInfo(android.content.Context);
+   com.google.android.gms.ads.identifier.AdvertisingIdClient$Info getAdvertisingIdInfo(android.content.Context);
 }
 -keep class com.google.android.gms.ads.identifier.AdvertisingIdClient$Info {
-    java.lang.String getId();
-    boolean isLimitAdTrackingEnabled();
+   java.lang.String getId();
+   boolean isLimitAdTrackingEnabled();
 }
 -keep public class com.android.installreferrer.** { *; }
 ```
@@ -136,10 +150,10 @@ The Samsung referrer plugin enables you to record install referrer values for ap
 The following information is required to initialize the Adjust SDK:
 
 `appToken`
-   : Your [Adjust app token](https://help.adjust.com/en/article/app-settings#view-your-app-token).
+: Your [Adjust app token](https://help.adjust.com/en/article/app-settings#view-your-app-token).
 
 `environment`
-   : The environment your app is running in. Set this to `AdjustConfig.ENVIRONMENT_SANDBOX` to test your app locally.
+: The environment your app is running in. Set this to `AdjustConfig.ENVIRONMENT_SANDBOX` to test your app locally.
 
 The recommended way to initialize the Adjust SDK is inside a global Android [Application class](http://developer.android.com/reference/android/app/Application.html). If you haven't already set this up for your app, follow these steps:
 
@@ -154,9 +168,10 @@ The recommended way to initialize the Adjust SDK is inside a global Android [App
    ```
 
 4. Find the `onCreate` method in your `Application` class or add one if it doesn't exist. Pass the following parameters to initialize the Adjust SDK:
-   * Your `appToken`
-   * The `environment` you want to run the app in
-   * The `LogLevel` you want to record
+
+   -  Your `appToken`
+   -  The `environment` you want to run the app in
+   -  The `LogLevel` you want to record
 
    :::{tab-set-code}
 
@@ -279,7 +294,7 @@ If your app uses web views, you need to use the Adjust Web View SDK to record in
 7. You can now initialize the Adjust SDK in your web view by passing your `appToken` and `environment` to the `AdjustConfig` class:
 
    ```js
-   let yourAppToken = '{YourAppToken}';
+   let yourAppToken = "{YourAppToken}";
    let environment = AdjustConfig.EnvironmentSandbox;
    let adjustConfig = new AdjustConfig(yourAppToken, environment);
    adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
@@ -288,7 +303,7 @@ If your app uses web views, you need to use the Adjust Web View SDK to record in
 
 ## 7. Configure session recording
 
-To record session information, you need to call methods at different stages of your app's [activity lifecycle](https://developer.android.com/guide/components/activities/activity-lifecycle). These stages are different depending on the API level your app targets.
+To record {term}`session` information, you need to call methods at different stages of your app's [activity lifecycle](https://developer.android.com/guide/components/activities/activity-lifecycle). These stages are different depending on the API level your app targets.
 
 ### API level 14 and above
 
@@ -399,14 +414,14 @@ class YourActivity : Activity () {
 import com.adjust.sdk.Adjust;
 
 public class YourActivity extends Activity {
-    protected void onResume() {
-        super.onResume();
-        Adjust.onResume();
-    }
-    protected void onPause() {
-        super.onPause();
-        Adjust.onPause();
-    }
+   protected void onResume() {
+      super.onResume();
+      Adjust.onResume();
+   }
+   protected void onPause() {
+      super.onPause();
+      Adjust.onPause();
+   }
 }
 ```
 

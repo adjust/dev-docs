@@ -1,0 +1,130 @@
+# Set up App Tracking Transparency
+
+:::{versionadded} 4.23.0
+If you want to record the device's {abbr}`IDFA (ID for Advertisers)`, you must display a prompt to get your user's authorization. To do this, you need to include Apple's {abbr}`ATT (App Tracking Transparency)` framework in your app. The Adjust SDK stores the user's authorization status and sends it to Adjust's servers with each request.
+:::
+
+::::{dropdown} Authorization statuses
+
+:::{list-table}
+:header-rows: 1
+
+* - Status
+   - Code
+   - Description
+* - `ATTrackingManagerAuthorizationStatusNotDetermined`
+   - `0`
+   - The user hasn't responded to the access prompt yet
+* - `ATTrackingManagerAuthorizationStatusRestricted`
+   - `1`
+   - Access to app-related data is blocked at the device level
+* - `ATTrackingManagerAuthorizationStatusDenied`
+   - `2`
+   - The user has denied access to app-related data for device tracking
+* - `ATTrackingManagerAuthorizationStatusAuthorized`
+   - `3`
+   - The user has approved access to app-related data for device tracking
+:::
+
+:::{note}
+You might receive a status code of `-1` if the SDK is unable to retrieve the {abbr}`ATT (App Tracking Transparency)` status.
+:::
+
+::::
+
+## App-tracking authorization wrapper
+
+The Adjust SDK contains a wrapper around [Apple's `requestTrackingAuthorizationWithCompletionHandler` method](https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager/3547037-requesttrackingauthorizationwith). You can use this wrapper if you don't want to customize the ATT prompt.
+
+The callback method triggers when your user responds to the consent dialog. This method sends the user's consent status code to Adjust's servers. You can define responses to each status code within the callback function.
+
+:::{tip}
+The Adjust SDK also records the consent status if you use a custom prompt. If you show your prompt before initialization, the SDK sends the status with the install event. If you show it after initialization, the SDK sends the status to Adjust's servers as soon as the user updates it.
+:::
+
+
+:::{include} /flutter/reference/Adjust/skan-att.md
+:start-after: requestTrackingAuthorizationWithCompletionHandler snippet
+:end-before: Snippet end
+:::
+
+::::{dropdown} Example
+
+This example demonstrates how to log a human-readable description of the user's authorization status when they interact with a prompt.
+
+:::{tab-set-code}
+
+```dart
+// main.dart
+
+import 'package:adjust_sdk/adjust.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+initPlatformState() async {
+   AdjustConfig config =
+      new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox);
+      config.logLevel = AdjustLogLevel.verbose;
+
+Adjust.requestTrackingAuthorizationWithCompletionHandler().then((status) {
+      print('[Adjust]: Authorization status update!');
+      switch (status) {
+         case 0:
+         print(
+            'The user has not responded to the access prompt yet.');
+         break;
+         case 1:
+         print(
+            'Access to app-related data is blocked at the device level.');
+         break;
+         case 2:
+         print(
+            'The user has denied access to app-related data for device tracking.');
+         break;
+         case 3:
+         print(
+            'The user has approved access to app-related data for device tracking.');
+         break;
+      }
+   });
+
+   Adjust.start(config);
+}
+
+```
+
+:::
+::::
+
+## Get current authorization status
+
+You can retrieve a user's current authorization status at any time. Call the [`getAppTrackingAuthorizationStatus` method](#flutter-getapptrackingauthorizationstatus-invocation) to return the authorization status code as an **integer**.
+
+:::{include} /flutter/reference/Adjust/skan-att.md
+:start-after: getAppTrackingAuthorizationStatus snippet
+:end-before: Snippet end
+:::
+
+::::{dropdown} Example
+
+This example demonstrates how to collect the user's authorization status and convert it to a `String`. This information is assigned to a variable called `authorizationStatus` and passed as a session partner parameter with the key `"status"`.
+
+:::{tab-set-code}
+
+```dart
+String authorizationStatus = Convert.ToString(Adjust.getAppTrackingAuthorizationStatus());
+Adjust.addSessionPartnerParameter("status", authorizationStatus);
+```
+
+:::
+::::
+
+## Check for authorization status changes
+
+If you use a custom ATT prompt, you need to inform the Adjust SDK of changes to the user's authorization status. Call the [`checkForNewAttStatus` method](#flutter-checkfornewattstatus-invocation) to send the authorization status to Adjust's servers.
+
+:::{include} /flutter/reference/Adjust/skan-att.md
+:start-after: checkForNewAttStatus snippet
+:end-before: Snippet end
+:::

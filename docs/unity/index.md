@@ -33,8 +33,8 @@ To set up the Adjust SDK, enter the following information:
 
 1. Your **App Token**. See App settings for instructions on how to find your token.
 2. Your **Environment**:
-   * Choose **Sandbox** if you are testing your app and want to send test data. You need to enable sandbox mode in the dashboard to see test data.
-   * Choose **Production** when you have finished testing and are ready to release your app.
+   -  Choose **Sandbox** if you are testing your app and want to send test data. You need to enable sandbox mode in the dashboard to see test data.
+   -  Choose **Production** when you have finished testing and are ready to release your app.
 3. Your **Log Level**. This controls what logs you receive. See [](/unity/configuration/log-level.md) for more information.
 
 The Adjust SDK starts when the app's Awake event triggers by default. To override this behavior, check the {guilabel}`START SDK MANUALLY` option. This enables you to initialize the Adjust SDK by calling {code}`Adjust.start()` with your config instance as an argument.
@@ -56,19 +56,43 @@ Adjust.start(adjustConfig);
 Apps that target the Google Play Store must use the {abbr}`gps_adid (Google Advertising ID)` to identify devices. You need to add the play-services-ads-identifier AAR to your project to access the `gps_adid`.
 
 :::{dropdown} Google External Dependency Manager
+
 If you are using the [Google External Dependency Manager plugin](https://developers.google.com/unity/archive#external_dependency_manager_for_unity), add the following to your {file}`Dependencies.xml` file:
 
 ```xml
 <androidPackages>
-    <androidPackage spec="com.google.android.gms:play-services-ads-identifier:18.0.1" />
+   <androidPackage spec="com.google.android.gms:play-services-ads-identifier:18.0.1" />
 </androidPackages>
 ```
+
 :::
 
 :::{dropdown} Manual installation
 
 To install the {abbr}`ARR (Android Archive)` manually, [download it from Maven](https://maven.google.com/web/index.html#com.google.android.gms:play-services-ads-identifier:18.0.1 "A link to the AAR artifact on Maven.") and add it to the {file}`Assets/Plugins/Android` directory.
 
+:::
+
+### Collect App Set Identifier
+
+:::{versionadded} v4.33.1
+The [App Set Identifier](https://developer.android.com/design-for-safety/privacy-sandbox/reference/adservices/appsetid/AppSetId) is a unique identifier that enables you to measure information from any of your apps that a user has installed on their device. All apps by the same developer share the same App Set ID, meaning you can gather meaningful insights from users across all your apps.
+:::
+
+:::{dropdown} Google External Dependency Manager
+
+To record a device's App Set ID, you need to add the following dependency to your {file}`Dependencies.xml` file:
+
+```xml
+<androidPackages>
+   <androidPackage spec="com.google.android.gms:play-services-appset:16.0.2" />
+</androidPackages>
+```
+
+:::
+
+:::{dropdown} Manual installation
+To install the {abbr}`ARR (Android Archive)` manually, [download it from Maven](https://maven.google.com/web/index.html#com.google.android.gms:play-services-appset:16.0.2 "A link to the AAR artifact on Maven.") and add it to the {file}`Assets/Plugins/Android` directory.
 :::
 
 ### Set up Proguard
@@ -78,14 +102,14 @@ If you are using Proguard, add the following rules to your [custom Proguard file
 ```groovy
 -keep public class com.adjust.sdk.** { *; }
 -keep class com.google.android.gms.common.ConnectionResult {
-    int SUCCESS;
+   int SUCCESS;
 }
 -keep class com.google.android.gms.ads.identifier.AdvertisingIdClient {
-    com.google.android.gms.ads.identifier.AdvertisingIdClient$Info getAdvertisingIdInfo(android.content.Context);
+   com.google.android.gms.ads.identifier.AdvertisingIdClient$Info getAdvertisingIdInfo(android.content.Context);
 }
 -keep class com.google.android.gms.ads.identifier.AdvertisingIdClient$Info {
-    java.lang.String getId();
-    boolean isLimitAdTrackingEnabled();
+   java.lang.String getId();
+   boolean isLimitAdTrackingEnabled();
 }
 -keep public class com.android.installreferrer.** { *; }
 ```
@@ -94,8 +118,8 @@ If you are using Proguard, add the following rules to your [custom Proguard file
 
 The install referrer is a unique identifier which you can use to attribute an app install to a source. The Adjust SDK requires this information to perform attribution. There are two methods you can use to gather this information depending on which stores you target:
 
-- Use the [Google Play Referrer API](https://developer.android.com/google/play/installreferrer).
-- Use the Huawei Referrer API.
+-  Use the [Google Play Referrer API](https://developer.android.com/google/play/installreferrer).
+-  Use the Huawei Referrer API.
 
 :::{dropdown} Google Play Referrer API
 
@@ -126,7 +150,7 @@ To complete the app build process, the Adjust Unity package performs custom post
 This process is performed by the {code}`OnPostprocessBuild` method in {file}`AdjustEditor.cs`. Output logs show up in the Unity IDE console output window.
 
 :::{image} https://images.ctfassets.net/5s247im0esyq/5yFmvFN4y3LJSieJQcF4qE/bad5913682af34cfe61224daca312373/post-build-unity.png
-:alt:  A screenshot of the Adjust SDK post-build configuration script in the Unity editor. 
+:alt: A screenshot of the Adjust SDK post-build configuration script in the Unity editor.
 :::
 
 ::::{dropdown} iOS
@@ -137,19 +161,19 @@ To run the iOS post-build process, make sure that you have {guilabel}`iOS build 
 
 The iOS post-build process makes the following changes to your generated Xcode project:
 
-* Adds the other linker flag `-ObjC`: required to recognize Adjust Objective-C categories at build time.
-* Enables Objective-C exceptions.
+-  Adds the other linker flag `-ObjC`: required to recognize Adjust Objective-C categories at build time.
+-  Enables Objective-C exceptions.
 
 :::{rubric} Frameworks
 :::
 
 You can enable the following frameworks to access iOS features:
 
-* {guilabel}`AdServices.framework`: required for Apple Search Ads tracking
-* {guilabel}`AdSupport.framework`: required to read the device IDFA
-* {guilabel}`AppTrackingTransparency.framework`: required to ask for user's consent to be tracked and obtain consent status 
-* {guilabel}`StoreKit.framework`: required to communicate with the SKAdNetwork framework.
-* {guilabel}`iAd.framework` {bdg-warning}`Deprecated` - use AdServices.framework
+-  {guilabel}`AdServices.framework`: required for Apple Search Ads tracking
+-  {guilabel}`AdSupport.framework`: required to read the device IDFA
+-  {guilabel}`AppTrackingTransparency.framework`: required to ask for user's consent to be tracked and obtain consent status
+-  {guilabel}`StoreKit.framework`: required to communicate with the SKAdNetwork framework.
+-  {guilabel}`iAd.framework` {bdg-warning}`Deprecated` - use AdServices.framework
 
 :::{rubric} App Tracking Transparency consent dialog
 :::
@@ -161,9 +185,9 @@ If you are using the {abbr}`ATT (App Tracking Transparency)` wrapper, enter a **
 
 To enable deep linking, add the following information:
 
-* {guilabel}`iOS Universal Links Domain`: the associated domain used for universal links.
-* {guilabel}`iOS URL Identifier`: your app's bundle ID.
-* {guilabel}`iOS URL Schemes`: the URL scheme associated with your app.
+-  {guilabel}`iOS Universal Links Domain`: the associated domain used for universal links.
+-  {guilabel}`iOS URL Identifier`: your app's bundle ID.
+-  {guilabel}`iOS URL Schemes`: the URL scheme associated with your app.
 
 ::::
 
@@ -176,17 +200,17 @@ The Android post-build process checks for an {file}`AndroidManifest.xml` file in
 
 You can enable the following permissions to access Android features:
 
-* {guilabel}`android.permission.INTERNET`: required to connect to the internet.
-* {guilabel}`android.permission.ACCESS_NETWORK_STATE`: required to read the type of network the device is connected to.
-* {guilabel}`com.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE` {bdg-warning}`Deprecated`: required to fetch install referrer information via Google Play Store intent.
-* {guilabel}`com.google.android.gms.permission.AD_ID`: required to read the device advertising ID on Android 12 (API level 31) and above. See [Google's `AdvertisingIdClient.info` documentation](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid) for more information.
+-  {guilabel}`android.permission.INTERNET`: required to connect to the internet.
+-  {guilabel}`android.permission.ACCESS_NETWORK_STATE`: required to read the type of network the device is connected to.
+-  {guilabel}`com.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE` {bdg-warning}`Deprecated`: required to fetch install referrer information via Google Play Store intent.
+-  {guilabel}`com.google.android.gms.permission.AD_ID`: required to read the device advertising ID on Android 12 (API level 31) and above. See [Google's `AdvertisingIdClient.info` documentation](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid) for more information.
 
 :::{rubric} Deep linking
 :::
 
 To enable deep linking, add the following information:
 
-* {guilabel}`Android URI Schemes`: the destination of your deep link.
+-  {guilabel}`Android URI Schemes`: the destination of your deep link.
 
 ::::
 
@@ -200,9 +224,9 @@ To get started with the Adjust SDK signature, contact your Technical Account Man
 
 The Adjust SDK provides tools for testing and troubleshooting issues with your integration. To test your setup:
 
-* Set your environment to **Sandbox**.
-* Add a sandbox filter to your Adjust dashboard results.
-* Set your [log level](/unity/configuration/log-level.md) to **verbose**.
+-  Set your environment to **Sandbox**.
+-  Add a sandbox filter to your Adjust dashboard results.
+-  Set your [log level](/unity/configuration/log-level.md) to **verbose**.
 
 :::{tip}
 If you encounter any issues, email <support@adjust.com> with all details and logs.
@@ -210,7 +234,7 @@ If you encounter any issues, email <support@adjust.com> with all details and log
 
 :::{dropdown} Test Google Play Services integration
 
-To test that the Adjust SDK can receive a device's Google Advertising ID, set the [log level](/unity/configuration/log-level.md) to **verbose** and the environment to **Sandbox**. Start your app and measure a session or an event. The SDK logs the {abbr}`gps_adid (Google Play Services Advertiser ID)` parameter if it has read the advertising ID.
+To test that the Adjust SDK can receive a device's Google Advertising ID, set the [log level](/unity/configuration/log-level.md) to **verbose** and the environment to **Sandbox**. Start your app and measure a {term}`session` or an event. The SDK logs the {abbr}`gps_adid (Google Play Services Advertiser ID)` parameter if it has read the advertising ID.
 
 If you are having issues retrieving the Google Advertising ID, open an issue in the [GitHub repository](https://github.com/adjust/unity_sdk) or contact <support@adjust.com>.
 

@@ -3,6 +3,7 @@ myst:
    substitutions:
       token_format: "`Authorization: Token token={API_TOKEN}`"
       api_name: "Campaign API"
+      endpoint: "https://api.adjust.com/public/v1/apps/"
 ---
 
 # Campaign API authentication

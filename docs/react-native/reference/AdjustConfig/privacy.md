@@ -48,9 +48,11 @@ Adjust.create(adjustConfig);
 -  -  `AdjustDataResidencyUS`
    -  Sets the area of data residency to **the USA**
 -  -  `AdjustUrlStrategyChina`
-   -  Sets the area of data residency to **China**
+   -  Points the URL strategy to the `app.adjust.world` domain
+-  -  `AdjustUrlStrategyCn`
+   -  Points the URL strategy to the `app.adjust.cn` domain
 -  -  `AdjustUrlStrategyIndia`
-   -  Sets the area of data residency to **India**
+   -  Points the URL strategy to the `app.adjust.net.in` domain
 
 :::
 ::::

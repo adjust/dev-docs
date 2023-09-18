@@ -19,7 +19,7 @@ Record an event object with an [Adjust event token](https://help.adjust.com/en/a
 
 ```typescript
 function trackEvent (params: EventParamsT): Promise<void> {
-  return _internalTrackEvent(params)
+   return _internalTrackEvent(params)
 }
 ```
 
@@ -34,7 +34,7 @@ function trackEvent (params: EventParamsT): Promise<void> {
 
 ```javascript
 Adjust.trackEvent({
-  eventToken: '{YourEventToken}'
+   eventToken: '{YourEventToken}'
 })
 ```
 
@@ -51,7 +51,7 @@ Adjust.trackEvent({
 ::::{function} addGlobalCallbackParameters(Array<GlobalParams>)
 :noindex:
 
-Adds callback parameters to send with each session and event recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
+Adds callback parameters to send with each {term}`session` and event recorded by the Adjust SDK. You can add extra parameters by calling on this method multiple times.
 
 {#web-addGlobalCallbackParameters-invocation}
 
@@ -68,8 +68,8 @@ function addGlobalCallbackParameters(params: Array<GlobalParams>): void
 
 ```javascript
 Adjust.addGlobalCallbackParameters([
-  {key: 'key1', value: 'value1'},
-  {key: 'key2', value: 'value2'}
+   {key: 'key1', value: 'value1'},
+   {key: 'key2', value: 'value2'}
 ]);
 ```
 
@@ -164,8 +164,8 @@ function addGlobalPartnerParameters(params: Array<GlobalParams>): void
 
 ```javascript
 Adjust.addGlobalPartnerParameters([
-  {key: 'key1', value: 'value1'},
-  {key: 'key2', value: 'value2'}
+   {key: 'key1', value: 'value1'},
+   {key: 'key2', value: 'value2'}
 ]);
 ```
 
