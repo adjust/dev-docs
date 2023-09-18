@@ -1,0 +1,47 @@
+# AdMob SDK integration
+
+If you want to measure ad revenue with the AdMob SDK, you can use the SDK-to-SDK integration to pass this information to Adjust's servers. 
+
+:::{note}
+If you have any questions about ad revenue tracking with AdMob, please contact your dedicated account manager or send an email to support@adjust.com.
+:::
+
+## Before you begin
+
+To use this feature, you need to first reach out to your Google representative and request access. Once that's done, you can proceed with setup in Adjust. 
+
+__Requirements__
+
+- Adjust iOS SDK v4.29.2 and later 
+
+## Examples
+
+:::{tab-set-code}
+
+```Objective-C
+- (void)requestRewardedAd {
+   __weak ViewController *weakSelf = self;
+
+  GADRequest *request = [GADRequest request];
+  [GADRewardedAd
+   loadWithAdUnitID:@"ad unit ID"
+   request:request
+   completionHandler:^(GADRewardedAd *ad, NSError *error) {
+     self.rewardedAd = ad;
+     self.rewardedAd.paidEventHandler = ^void(GADAdValue *_Nonnull value) {
+        ViewController *strongSelf = weakSelf;
+          // for more information, please check AdMob official docs at:
+          // https://developers.google.com/admob/ios/impression-level-ad-revenue
+          GADAdNetworkResponseInfo *loadedAdNetworkResponseInfo = strongSelf.rewardedAd.responseInfo.loadedAdNetworkResponseInfo;
+
+          // send ad revenue info to Adjust
+          ADJAdRevenue *adRevenue = [[ADJAdRevenue alloc] initWithSource:ADJAdRevenueSourceAdMob];
+          [adRevenue setRevenue:value.value currency:value.currencyCode];
+          [adRevenue setAdRevenueNetwork:loadedAdNetworkResponseInfo.adSourceName]
+          [Adjust trackAdRevenue:adRevenue];
+      }
+    }
+  ];
+}
+```
+:::

@@ -1,6 +1,6 @@
 # Get started
 
-The Adjust Unity SDK enables you to record attribution, events, and more in your Android app. Follow the steps in this guide to set up your app to work with the Adjust SDK.
+The Adjust Android SDK enables you to record attribution, events, and more in your Android app. Follow the steps in this guide to set up your app to work with the Adjust SDK.
 
 :::{seealso}
 You can see an example of how to integrate the Adjust SDK [on GitHub](https://github.com/adjust/android_sdk/tree/master/Adjust).
@@ -8,7 +8,7 @@ You can see an example of how to integrate the Adjust SDK [on GitHub](https://gi
 
 ## 1. Get the Adjust SDK
 
-To use the Adjust SDK in your Unity app, you need to add it to your project. You can download the latest version from the [GitHub releases page](https://github.com/adjust/adjust_android_sdk/releases/latest).
+To use the Adjust SDK in your Android app, you need to add it to your project. You can download the latest version from the [GitHub releases page](https://github.com/adjust/adjust_android_sdk/releases/latest).
 
 :::{important}
 The minimum supported Android API level for the Adjust SDK integration is 9 (Gingerbread).

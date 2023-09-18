@@ -1,0 +1,58 @@
+# Unity SDK integration
+
+If you want to measure ad revenue with the Unity SDK, you can use the SDK-to-SDK integration to pass this information to Adjust's servers. 
+
+:::{note}
+If you have any questions about ad revenue measurement with Unity, please contact your dedicated account manager or send an email to support@adjust.com.
+:::
+
+## Before you begin
+
+To use this feature, you first need to download and set up the Adjust iOS SDK for your app.
+
+__Requirements__
+
+- Android SDK v4.29.7 or later 
+
+For more information, see the Unity [Mediation API](https://docs.unity.com/mediation/APIReferenceIOS.html) and [impression events](https://docs.unity.com/mediation/SDKIntegrationIOSImpressionEvents.html) documentation.
+
+## Examples
+
+:::{tab-set-code}
+
+```Objective-C
+
+@interface ViewController()
+
+@property(nonatomic, strong) UMSImpressionListenerWithBlocks * listener;
+
+@end
+
+@implementation ViewController
+
+- (void) viewDidLoad {
+    [super viewDidLoad];
+    
+    self.listener = [[UMSImpressionListenerWithBlocks alloc] init];
+    self.listener.onImpressionBlock = ^ (NSString *adUnitId, UMSImpressionData *impressionData) {
+        if (impressionData) {
+            NSLog(@ "impressionData: %@", [impressionData getJsonRepresentation]);
+            // send impression data to Adjust
+            ADJAdRevenue *adjustAdRevenue = [[ADJAdRevenue alloc] initWithSource:ADJAdRevenueSourceUnity];
+            adjustAdRevenue.setRevenue([impressionData.revenue doubleValue], impressionData.currency);
+            // optional fields
+            adjustAdRevenue.setAdRevenueNetwork(impressionData.adSourceName);
+            adjustAdRevenue.setAdRevenueUnit(impressionData.adUnitId);
+            adjustAdRevenue.setAdRevenuePlacement(impressionData.adSourceInstance);
+            // track Adjust ad revenue
+            Adjust.trackAdRevenue(adjustAdRevenue);
+        } else {
+            NSLog(@ "Data does not exist due to not enabling User-Level Reporting");
+        }
+    };
+    [UMSImpressionEventPublisher subscribe: self.listener];
+}
+
+@end
+```
+:::

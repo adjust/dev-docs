@@ -1,0 +1,109 @@
+# Samsung referrer plugin
+
+The Samsung referrer plugin enables the Adjust SDK to read Samsung Galaxy store install referrer values on a device. The SDK sends this information to the Adjust servers as part of the install payload.
+
+The Samsung install referrer is available on all devices that support the Samsung install referrer library.
+
+## Before you begin
+
+Follow the get started guide to integrate the Adjust SDK in your app.
+
+## Install the Samsung referrer plugin
+
+There are two ways to install the Samsung referrer plugin:
+
+### Maven
+
+Add the following dependency to your {file}`build.gradle` file under your Adjust SDK declaration.
+
+```groovy
+implementation 'com.adjust.sdk:adjust-android:4.33.4'
+
+implementation 'com.adjust.sdk:adjust-android-samsung-referrer:4.33.4'
+```
+
+### JAR
+
+The Samsung referrer plugin is available on the GitHub [releases page](https://github.com/adjust/android_sdk/releases/tag/v4.33.4).
+
+## Add the Samsung install referrer library
+
+You must add the Samsung install referrer to your app to read the referrer value. For more information, reach out to your Samsung representative or contact support@samsungdevelopers.com
+
+:::::{tab-set}
+
+::::{tab-item} Adjust SDK v4.33.4 and above
+
+:::{important}
+Adding the Samsung install referrer library via Maven is available only in Adjust SDK v4.33.4 and above.
+:::
+
+To install the Samsung install referrer library, you must add the following dependency to your {file}`build.gradle` file under your Adjust SDK declaration:
+
+```groovy
+implementation  'store.galaxy.samsung.installreferrer:samsung_galaxystore_install_referrer:3.0.1'
+```
+
+::::
+
+:::{tab-item} Adjust SDK v4.33.3 and below
+For instructions on how to install the Samsung referrer library with Adjust SDK v4.33.3 and below, reach out to your Samsung representative or contact support@samsungdevelopers.com.
+:::
+
+:::::
+
+## Proguard settings
+
+If you use Proguard, you must add rules to ensure that important classes aren't removed during build.
+
+Add the following rule to keep all Adjust classes.
+
+```java
+-keep public class com.adjust.sdk.** { *; }
+```
+
+Add the following rule to keep the Samsung install referrer library.
+
+```java
+-keep class com.sec.android.app.samsungapps.installreferrer.** { *; }
+```
+
+## Use the plugin
+
+The Samsung referrer plugin is __enabled__ by default. You can toggle reading Samsung install referrer information on and off using the `AdjustSamsungReferrer` class methods.
+
+To __disable__ reading the install referrer, call `AdjustSamsungReferrer.doNotReadSamsungReferrer()` __before__ you initialize the SDK.
+
+:::{tab-set-code}
+
+```java
+AdjustSamsungReferrer.doNotReadSamsungReferrer();
+//...
+Adjust.onCreate(config);
+```
+
+```kotlin
+AdjustSamsungReferrer.doNotReadSamsungReferrer()
+//...
+Adjust.onCreate(config)
+```
+
+:::
+
+To __reenable__ reading the install referrer, call `AdjustSamsungReferrer.readSamsungReferrer(applicationContext)` __before__ you initialize the SDK.
+
+:::{tab-set-code}
+
+```java
+AdjustSamsungReferrer.readSamsungReferrer(applicationContext);
+//...
+Adjust.onCreate(config);
+```
+
+```kotlin
+AdjustSamsungReferrer.readSamsungReferrer(applicationContext)
+//...
+Adjust.onCreate(config)
+```
+
+:::
