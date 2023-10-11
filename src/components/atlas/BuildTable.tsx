@@ -143,11 +143,10 @@ const BuildTable: FC<{
       <TableV2
         data={data}
         columns={columns}
-        autoRowsHeight
         searchTerm={searchTerm}
         visualProperties={visualProperties}
         flex={props.flex}
-        height={props.height ? Number(props.height) : "full-height"}
+        height={props.height}
       />
     </div>
   );
