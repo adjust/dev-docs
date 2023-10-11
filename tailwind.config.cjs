@@ -24,6 +24,10 @@ module.exports = {
       // => @media (min-width: 1280px) { ... }
     },
     extend: {},
+    fontFamily: {
+      body: ["ttnormspro, Helvetica, sans-serif"],
+      sans: ["Droid Sans Mono, monospace"],
+    },
     backgroundColor: (theme) => ({
       ...theme("colors"),
       success: "#d4f8f2",
