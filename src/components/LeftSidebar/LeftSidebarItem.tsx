@@ -22,19 +22,20 @@ const LeftSidebarItem: FC<{
         "sidebar.nav-tree-node": level > 1,
         "sidebar.main-nav-tree-node": level === 1,
       })}
-      className={classNames("list-none flex flex-col gap-y-[8px]", {
-        "level-0 pl-2": level === 1,
+      className={classNames("list-none flex flex-col items-start gap-y-[8px]", {
         "level-1 ml-6": level === 2,
-        "ml-4": level > 1,
+        "ml-4": level > 2,
       })}
     >
       <li
         key={sidebarData.title}
         className={classNames(
-          "font-body pl-4 relative hover:text-chart-7  min-h-[31px]",
+          "font-body relative hover:text-link-active  min-h-[31px]",
           {
-            "text-[#0B58FE]": currentPage === sidebarData.slug,
-            "pl-4": level > 1,
+            "text-link-active": currentPage === sidebarData.slug,
+            "pl-4":
+              level > 2 ||
+              (sidebarData?.children?.length && !sidebarData.topCategory),
             active: currentPage === sidebarData.slug,
           }
         )}
@@ -44,12 +45,11 @@ const LeftSidebarItem: FC<{
           <div
             data-testid="nav-tree-node.expand-collapse-button"
             className={classNames(
-              "absolute w-4 h-4 text-white flex justify-center items-center cursor-pointer"
+              "absolute w-4 h-4 text-white flex justify-center items-center cursor-pointer left-[-10px] top-[5%]"
             )}
-            style={{ left: "-10px", top: "5%" }}
             onClick={handleCollapse}
           >
-            <div className="z-10 text-lg font-medium relative">
+            <div className="z-10 text-lg font-medium text-secondary relative">
               {isOpen ? "↓" : ">"}
             </div>
           </div>
