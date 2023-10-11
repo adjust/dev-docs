@@ -1,9 +1,11 @@
-import { useState } from "preact/hooks";
-import type { ComponentType } from "preact";
+/** @jsxImportSource react */
+import { useState } from "react";
+import type { FC } from "react";
+import classNames from "classnames";
 
 import type { CategoryEntry } from "src/utils/helpers/navigation/types";
 
-const LeftSidebarItem: ComponentType<{
+const LeftSidebarItem: FC<{
   currentPage: string;
   sidebarData: CategoryEntry;
   level: number;
@@ -15,115 +17,75 @@ const LeftSidebarItem: ComponentType<{
   };
 
   return (
-    <ul style={{ marginLeft: `${level * 3}px` }} className="pt-3">
-      <li className="relative">
+    <ul
+      data-testid={classNames({
+        "sidebar.nav-tree-node": level > 1,
+        "sidebar.main-nav-tree-node": level === 1,
+      })}
+      className={classNames("list-none flex flex-col gap-y-[8px]", {
+        "level-0 pl-2": level === 1,
+        "level-1 ml-6": level === 2,
+        "ml-4": level > 1,
+      })}
+    >
+      <li
+        key={sidebarData.title}
+        className={classNames(
+          "font-body pl-4 relative hover:text-chart-7  min-h-[31px]",
+          {
+            "text-[#0B58FE]": currentPage === sidebarData.slug,
+            "pl-4": level > 1,
+            active: currentPage === sidebarData.slug,
+          }
+        )}
+      >
+        {/* collapse/expand button */}
+        {sidebarData?.children?.length && !sidebarData.topCategory && (
+          <div
+            data-testid="nav-tree-node.expand-collapse-button"
+            className={classNames(
+              "absolute w-4 h-4 text-white flex justify-center items-center cursor-pointer"
+            )}
+            style={{ left: "-10px", top: "5%" }}
+            onClick={handleCollapse}
+          >
+            <div className="z-10 text-lg font-medium relative">
+              {isOpen ? "↓" : ">"}
+            </div>
+          </div>
+        )}
         <a
           href={"/" + sidebarData.slug}
-          style={{
-            backgroundColor:
-              currentPage === sidebarData.slug ? "#2f3f54" : "#1f2937",
-          }}
           className="p-1.5 inline-block w-full text-[1rem] font-bold mb-[0.5rem] uppercase no-underline"
         >
           {sidebarData.title}
         </a>
-        {sidebarData?.children?.length && !sidebarData.topCategory ? (
-          <button
-            onClick={handleCollapse}
-            className="p-0 absolute top-[5px] right-[8px]"
-          >
-            {isOpen ? "-" : "+"}
-          </button>
-        ) : null}
-
-        {isOpen && (
-          <ul style={{ marginLeft: `${level * 3}px` }}>
-            {sidebarData?.children?.map((child) => {
-              const url = "/" + child.slug;
-              if (child?.children?.length) {
-                return (
-                  <LeftSidebarItem
-                    currentPage={currentPage}
-                    sidebarData={child}
-                    level={child.level}
-                  />
-                );
-              }
-              return (
-                <>
-                  <li className="nav-link">
-                    <a
-                      href={url}
-                      aria-current={currentPage === child.slug ? "page" : false}
-                      className={
-                        "block text-[1rem] m-[1px] py-[0.3rem] px-4 no-underline"
-                      }
-                    >
-                      {child.title}
-                    </a>
-                  </li>
-                </>
-              );
-            })}
-          </ul>
-        )}
       </li>
-      <style>
-        {`
-          .nav-groups {
-            padding: 2rem 0;
-            overflow-x: visible;
-            overflow-y: auto;
+      {isOpen &&
+        sidebarData?.children?.map((child) => {
+          const url = "/" + child.slug;
+          if (child?.children?.length) {
+            return (
+              <LeftSidebarItem
+                currentPage={currentPage}
+                sidebarData={child}
+                level={child.level}
+              />
+            );
           }
-
-          .nav-groups > li + li {
-            margin-top: 2rem;
-          }
-
-          .nav-groups > :first-child {
-            padding-top: 15px;
-          }
-
-          .nav-groups > :last-child {
-            margin-bottom: 3px;
-          }
-
-          .nav-group-title {
-            font-size: 1rem;
-            font-weight: 700;
-            padding: 0.1rem 1rem;
-            text-transform: uppercase;
-            margin-bottom: 0.5rem;
-          }
-
-          .nav-link a {
-            font-size: 1rem;
-            margin: 1px;
-            padding: 0.3rem 1rem;
-            font: inherit;
-            color: inherit;
-            text-decoration: none;
-            display: block;
-          }
-
-          .nav-link a:hover,
-          .nav-link a:focus {
-            background-color: var(--theme-bg-hover);
-          }
-
-          .nav-link a[aria-current="page"] {
-            color: var(--theme-text-accent);
-            background-color: var(--theme-bg-accent);
-            font-weight: 600;
-          }
-
-          @media (min-width: 50em) {
-            .nav-groups {
-              padding: 0;
-            }
-          }
-        `}
-      </style>
+          return (
+            <li className="nav-link">
+              <a
+                href={url}
+                className={
+                  "block text-[1rem] m-[1px] py-[0.3rem] px-4 no-underline"
+                }
+              >
+                {child.title}
+              </a>
+            </li>
+          );
+        })}
     </ul>
   );
 };

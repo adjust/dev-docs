@@ -1,4 +1,5 @@
-import type { ComponentType } from "preact";
+/** @jsxImportSource react */
+import type { FC } from "react";
 
 import { getLanguageFromURL } from "../../languages";
 import type { getNavigationEntries } from "../../utils/helpers/navigation/getNavigationEntries";
@@ -9,10 +10,7 @@ type Props = {
   navigationEntries: ReturnType<typeof getNavigationEntries>;
 };
 
-const LeftSidebar: ComponentType<Props> = ({
-  currentPage,
-  navigationEntries,
-}) => {
+const LeftSidebar: FC<Props> = ({ currentPage, navigationEntries }) => {
   const currentPageMatch = currentPage.endsWith("/")
     ? currentPage.slice(1, -1)
     : currentPage.slice(1);
