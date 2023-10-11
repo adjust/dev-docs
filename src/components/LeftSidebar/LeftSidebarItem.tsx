@@ -18,10 +18,6 @@ const LeftSidebarItem: FC<{
 
   return (
     <ul
-      data-testid={classNames({
-        "sidebar.nav-tree-node": level > 1,
-        "sidebar.main-nav-tree-node": level === 1,
-      })}
       className={classNames("list-none flex flex-col items-start gap-y-[8px]", {
         "level-1 ml-6": level === 2,
         "ml-4": level > 2,
@@ -29,34 +25,38 @@ const LeftSidebarItem: FC<{
     >
       <li
         key={sidebarData.title}
-        className={classNames(
-          "font-body relative hover:text-link-active  min-h-[31px]",
-          {
-            "text-link-active": currentPage === sidebarData.slug,
-            "pl-4":
-              level > 2 ||
-              (sidebarData?.children?.length && !sidebarData.topCategory),
-            active: currentPage === sidebarData.slug,
-          }
-        )}
+        className={classNames("relative hover:text-link-active  min-h-[31px]", {
+          "text-link-active": currentPage === sidebarData.slug,
+          "pl-4":
+            level > 2 ||
+            (sidebarData?.children?.length && !sidebarData.topCategory),
+          active: currentPage === sidebarData.slug,
+        })}
       >
         {/* collapse/expand button */}
         {sidebarData?.children?.length && !sidebarData.topCategory && (
           <div
-            data-testid="nav-tree-node.expand-collapse-button"
             className={classNames(
               "absolute w-4 h-4 text-white flex justify-center items-center cursor-pointer left-[-10px] top-[5%]"
             )}
             onClick={handleCollapse}
           >
-            <div className="z-10 text-lg font-medium text-secondary relative">
+            <div className="z-10 text-lg  text-secondary relative">
               {isOpen ? "↓" : ">"}
             </div>
           </div>
         )}
         <a
           href={"/" + sidebarData.slug}
-          className="p-1.5 inline-block w-full text-[1rem] font-bold mb-[0.5rem] uppercase no-underline"
+          className={classNames(
+            "p-1.5 inline-block w-full text-[1rem] mb-[0.5rem] uppercase hover:no-underline",
+            {
+              "text-link-active": currentPage === sidebarData.slug,
+              "font-bold": level === 1,
+              "font-medium": isOpen,
+              "font-normal": level > 1 && !isOpen,
+            }
+          )}
         >
           {sidebarData.title}
         </a>
@@ -77,9 +77,12 @@ const LeftSidebarItem: FC<{
             <li className="nav-link">
               <a
                 href={url}
-                className={
-                  "block text-[1rem] m-[1px] py-[0.3rem] px-4 no-underline"
-                }
+                className={classNames(
+                  "block text-[1rem] m-[1px] py-[0.3rem] px-4 no-underline hover:no-underline hover:text-link-active",
+                  {
+                    "text-link-active": currentPage === child.slug,
+                  }
+                )}
               >
                 {child.title}
               </a>

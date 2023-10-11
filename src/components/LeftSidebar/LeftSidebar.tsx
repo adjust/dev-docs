@@ -23,7 +23,7 @@ const LeftSidebar: FC<Props> = ({ currentPage, navigationEntries }) => {
     <div className="xs:h-screen lg:h-[calc(100vh-86px)] lg:sticky lg:top-[86px] border-r-[1.5px] border-[#E0EAFF] bg-secondary">
       <nav
         id="sidebar"
-        className="w-[294px] break-words lg:flex flex-col gap-y-[18px] pr-6  text-primary  lg:h-[calc(100%-62px)] lg:pb-6 lg:pl-[18px] lg:pt-12 xs:pt-4  xs:h-full lg:static xs:fixed xs:inset-y-0 xs:left-0 xs:z-30 xs:shadow-right xs:pl-3 lg:shadow-none overflow-y-auto print:hidden"
+        className="w-[294px] break-words lg:flex flex-col gap-y-[18px] pr-6 text-secondary  lg:h-[calc(100%-62px)] lg:pb-6 lg:pl-[18px] lg:pt-12 xs:pt-4 xs:h-full lg:static xs:fixed xs:inset-y-0 xs:left-0 xs:z-30 xs:shadow-right xs:pl-3 lg:shadow-none overflow-y-auto print:hidden"
       >
         {sidebar.children.map((child, i) => (
           <div
