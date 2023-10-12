@@ -1,4 +1,3 @@
-/** @jsxImportSource react */
 import { useState } from "react";
 import type { FC } from "react";
 import classNames from "classnames";
