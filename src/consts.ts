@@ -5,6 +5,7 @@ export const SITE = {
 } as const;
 
 export const CONTENT_PATH = "src/content/docs";
+export const HELP_CENTER_LINK = "https://help.adjust.com/";
 
 export const OPEN_GRAPH = {
   image: {

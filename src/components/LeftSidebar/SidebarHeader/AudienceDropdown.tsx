@@ -3,6 +3,7 @@ import classNames from "classnames";
 
 import { useOnClickOutside } from "@hooks/useOnClickOutside";
 import { useWaitToTrigger } from "@hooks/useWaitToTrigger";
+import { HELP_CENTER_LINK } from "src/consts";
 
 import "./audience.css";
 
@@ -10,9 +11,21 @@ const AudienceDropdown: FC = () => {
   const [isMenuShown, setIsMenuShown] = React.useState(false);
   const ref = useRef(null);
   const audiences = [
-    { titleId: "for Marketers", slug: "marketer" },
-    { titleId: "for Partners", slug: "partner" },
-    { titleId: "Classic dashboard", slug: "classic" },
+    {
+      titleId: "for Marketers",
+      slug: "marketer",
+      link: `${HELP_CENTER_LINK}en/marketer`,
+    },
+    {
+      titleId: "for Partners",
+      slug: "partner",
+      link: `${HELP_CENTER_LINK}en/partner`,
+    },
+    {
+      titleId: "Classic dashboard",
+      slug: "classic",
+      link: `${HELP_CENTER_LINK}en/classic`,
+    },
   ];
 
   const hide = () => {
@@ -66,9 +79,10 @@ const AudienceDropdown: FC = () => {
         {audiences.map((audience) => (
           <a
             aria-label={`audience picker item ${audience.slug}`}
-            href={`/en/${audience.slug}`}
+            href={audience.link}
             style={{
               backgroundColor: getAudienceColor(audience.slug).background,
+              color: "#000000",
             }}
             className={`header_audience item-${audience.slug} cursor-pointer min-w-[85px] w-full pr-2 pl-6 text-sm h-6 flex items-center`}
           >
