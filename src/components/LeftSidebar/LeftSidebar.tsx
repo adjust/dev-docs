@@ -30,7 +30,7 @@ const LeftSidebar: FC<LeftSidebarProps> = ({
       {/* Header with audience switch */}
       <SidebarHeader />
       {/* Search input */}
-      <SidebarSearch />
+      <SidebarSearch lang="en" />
       {/* Navigation */}
       <nav
         id="sidebar"
