@@ -5,13 +5,18 @@ import { getLanguageFromURL } from "../../languages";
 import type { getNavigationEntries } from "../../utils/helpers/navigation/getNavigationEntries";
 import NavigationItem from "./NavigationItem";
 import SidebarHeader from "./SidebarHeader";
+import LanguageSwitch from "./LanguageSwitch";
+import { LOCALE_NAMES } from "@i18n/locales";
 
-type Props = {
+interface LeftSidebarProps {
   currentPage: string;
   navigationEntries: ReturnType<typeof getNavigationEntries>;
-};
+}
 
-const LeftSidebar: FC<Props> = ({ currentPage, navigationEntries }) => {
+const LeftSidebar: FC<LeftSidebarProps> = ({
+  currentPage,
+  navigationEntries,
+}) => {
   const currentPageMatch = currentPage.endsWith("/")
     ? currentPage.slice(1, -1)
     : currentPage.slice(1);
@@ -20,7 +25,7 @@ const LeftSidebar: FC<Props> = ({ currentPage, navigationEntries }) => {
   const sidebar = navigationEntries[langCode];
 
   return (
-    <div className="xs:h-screen lg:h-[calc(100vh-86px)] lg:sticky lg:top-0 border-r-[1.5px] bg-secondary border-[#E0EAFF] ">
+    <div className="xs:h-screen lg:h-screen max-h-screen flex flex-col lg:sticky lg:top-0 border-r-[1.5px] bg-secondary border-[#E0EAFF]">
       <SidebarHeader />
       {/* Navigation */}
       <nav
@@ -42,6 +47,9 @@ const LeftSidebar: FC<Props> = ({ currentPage, navigationEntries }) => {
           </div>
         ))}
       </nav>
+      <div className="h-[63px] p-[22px] border-t-[1px] border-[#CDD0E0]">
+        <LanguageSwitch lang="en" locales={LOCALE_NAMES} onChange={() => {}} />
+      </div>
     </div>
   );
 };
