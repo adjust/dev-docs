@@ -1,9 +1,8 @@
 import type { FC } from "react";
 
-const AdjustLogo: FC<{ width?: number; height?: number }> = ({
-  width,
-  height,
-}) => {
+import type { IconProps } from "./types";
+
+const AdjustLogo: FC<IconProps> = ({ width, height }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

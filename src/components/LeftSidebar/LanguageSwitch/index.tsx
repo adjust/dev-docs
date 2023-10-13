@@ -3,7 +3,7 @@ import { FC, useRef, useState } from "react";
 
 import { useOnClickOutside } from "@hooks/useOnClickOutside";
 import { useWaitToTrigger } from "@hooks/useWaitToTrigger";
-import IconLanguage from "./IconLanguage";
+import IconLanguage from "@components/Icons/IconLanguage";
 
 import type { LanguageSwitchProps } from "./types";
 import type { Locales } from "@i18n/locales";

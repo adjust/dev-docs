@@ -1,11 +1,8 @@
 import type { FC } from "react";
 
-const IconLanguage: FC<{ width?: number; height?: number; color?: string }> = ({
-  width,
-  height,
-  color,
-  ...props
-}) => {
+import type { IconProps } from "./types";
+
+const IconLanguage: FC<IconProps> = ({ width, height, color, ...props }) => {
   const widthValue = width ?? 22;
   const heightValue = height ?? 22;
 
@@ -13,7 +10,7 @@ const IconLanguage: FC<{ width?: number; height?: number; color?: string }> = ({
     <svg
       width={widthValue}
       height={heightValue}
-      viewBox={`0 0 ${heightValue} ${widthValue}`}
+      viewBox={`0 0 ${widthValue} ${heightValue}`}
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       {...props}
