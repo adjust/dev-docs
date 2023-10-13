@@ -44,6 +44,7 @@ module.exports = {
     colors: {
       "link-active": "#0B58FE",
       white: "#FFFFFF",
+      "icon-neutral": "#6E7492",
       headers: {
         success: "#04585c",
         primary: "#0c2663",

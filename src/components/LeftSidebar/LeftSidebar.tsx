@@ -5,6 +5,7 @@ import { getLanguageFromURL } from "../../languages";
 import type { getNavigationEntries } from "../../utils/helpers/navigation/getNavigationEntries";
 import NavigationItem from "./NavigationItem";
 import SidebarHeader from "./SidebarHeader";
+import SidebarSearch from "./SidebarSearch";
 import LanguageSwitch from "./LanguageSwitch";
 import { LOCALE_NAMES } from "@i18n/locales";
 
@@ -26,7 +27,10 @@ const LeftSidebar: FC<LeftSidebarProps> = ({
 
   return (
     <div className="xs:h-screen lg:h-screen max-h-screen flex flex-col lg:sticky lg:top-0 border-r-[1.5px] bg-secondary border-[#E0EAFF]">
+      {/* Header with audience switch */}
       <SidebarHeader />
+      {/* Search input */}
+      <SidebarSearch />
       {/* Navigation */}
       <nav
         id="sidebar"
