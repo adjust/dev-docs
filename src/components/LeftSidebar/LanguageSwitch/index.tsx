@@ -46,9 +46,9 @@ const LanguageSwitch: FC<LanguageSwitchProps> = ({
         onMouseOver={() => setIsMenuShown(true)}
       >
         <div className="mr-[7px]">
-          {!hideIcon && <IconLanguage width={23} height={23} />}
+          {!hideIcon && <IconLanguage width={22} height={22} />}
         </div>
-        <div className="w-full text-secondary">
+        <div className="w-full text-secondary text-sm">
           {locales[lang as keyof Locales] || "English"}
         </div>
       </div>
@@ -60,7 +60,11 @@ const LanguageSwitch: FC<LanguageSwitchProps> = ({
       >
         <ul>
           {Object.keys(locales).map((locale) => (
-            <li key={locale} onClick={() => onChange(locale)}>
+            <li
+              key={locale}
+              className="text-sm"
+              onClick={() => onChange(locale)}
+            >
               {locales[locale as keyof Locales]}
             </li>
           ))}
