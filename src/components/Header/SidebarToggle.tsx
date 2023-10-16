@@ -16,7 +16,7 @@ const MenuToggle: FC = () => {
   return (
     <button
       type="button"
-      className="xs:block lg:hidden top-0 mb-2 z-40"
+      className="xs:block lg:hidden top-0 mb-2 z-40 p-0"
       id="menu-toggle"
       onClick={() => setSidebarShown(!sidebarShown)}
     >
