@@ -39,7 +39,7 @@ const LeftSidebarItem: FC<{
           className="flex flex-row items-center cursor-pointer gap-x-[5px]"
           onClick={handleCollapse}
         >
-          {sidebarData?.children?.length && !sidebarData.topCategory && (
+          {sidebarData?.children?.length && !sidebarData.topCategory ? (
             <>
               {isOpen ? (
                 <Icon name="ChevronDown" size="small" />
@@ -47,7 +47,7 @@ const LeftSidebarItem: FC<{
                 <Icon name="ChevronRight" size="small" />
               )}
             </>
-          )}
+          ) : null}
           <a
             href={"/" + sidebarData.slug}
             className={classNames(
@@ -64,34 +64,35 @@ const LeftSidebarItem: FC<{
           </a>
         </div>
       </li>
-      {isOpen &&
-        sidebarData?.children?.map((child) => {
-          const url = "/" + child.slug;
-          if (child?.children?.length) {
+      {isOpen
+        ? sidebarData?.children?.map((child) => {
+            const url = "/" + child.slug;
+            if (child?.children?.length) {
+              return (
+                <LeftSidebarItem
+                  currentPage={currentPage}
+                  sidebarData={child}
+                  level={child.level}
+                />
+              );
+            }
             return (
-              <LeftSidebarItem
-                currentPage={currentPage}
-                sidebarData={child}
-                level={child.level}
-              />
+              <li className={classNames("nav-link", { "pl-4": level > 2 })}>
+                <a
+                  href={url}
+                  className={classNames(
+                    "block text-sm m-[1px] py-[0.3rem] px-4 no-underline hover:no-underline hover:text-link-active",
+                    {
+                      "text-link-active": currentPage === child.slug,
+                    }
+                  )}
+                >
+                  {child.title}
+                </a>
+              </li>
             );
-          }
-          return (
-            <li className={classNames("nav-link", { "pl-4": level > 2 })}>
-              <a
-                href={url}
-                className={classNames(
-                  "block text-sm m-[1px] py-[0.3rem] px-4 no-underline hover:no-underline hover:text-link-active",
-                  {
-                    "text-link-active": currentPage === child.slug,
-                  }
-                )}
-              >
-                {child.title}
-              </a>
-            </li>
-          );
-        })}
+          })
+        : null}
     </ul>
   );
 };

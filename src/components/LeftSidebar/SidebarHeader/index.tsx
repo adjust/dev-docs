@@ -1,4 +1,4 @@
-import AdjustLogo from "@components/Icons/AdjustLogo";
+import AdjustLogo from "@components/Icons/react/AdjustLogo";
 import AudienceDropdown from "./AudienceDropdown";
 
 const SidebarHeader = () => {

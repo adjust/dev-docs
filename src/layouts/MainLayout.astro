@@ -4,10 +4,15 @@ import type { CollectionEntry } from "astro:content";
 import HeadCommon from "../components/HeadCommon.astro";
 import HeadSEO from "../components/HeadSEO.astro";
 import PageContent from "../components/PageContent/PageContent.astro";
-import LeftSidebar from "../components/LeftSidebar/LeftSidebar";
-import RightSidebar from "../components/RightSidebar/RightSidebar.astro";
+import Navigation from "../components/LeftSidebar/Navigation";
 import { GITHUB_EDIT_URL, SITE } from "../consts";
 import { getNavigationEntries } from "src/utils/helpers/navigation/getNavigationEntries";
+import SidebarHeader from "@components/LeftSidebar/SidebarHeader";
+import SidebarSearch from "@components/LeftSidebar/SidebarSearch/SidebarSearch.astro";
+import LanguageSwitch from "@components/LeftSidebar/LanguageSwitch";
+import { LOCALE_NAMES } from "@i18n/locales";
+import { getLanguageFromURL } from "src/languages";
+import MobileHeader from "@components/Header/MobileHeader.astro";
 
 type Props = CollectionEntry<"docs">["data"] & {
   headings: MarkdownHeading[];
@@ -21,6 +26,7 @@ const { headings, ...data } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const currentFile = `src/content/docs${currentPage.replace(/\/$/, "")}.md`;
 const githubEditUrl = `${GITHUB_EDIT_URL}/${currentFile}`;
+const currentLang = getLanguageFromURL(currentPage);
 ---
 
 <html dir={data.dir} lang={data.lang} class="initial">
@@ -30,106 +36,36 @@ const githubEditUrl = `${GITHUB_EDIT_URL}/${currentFile}`;
     <title>
       {`${data.title} 🚀 ${SITE.title}`}
     </title>
-    <style>
-      body {
-        width: 100%;
-        display: grid;
-        grid-template-rows: var(--theme-navbar-height) 1fr;
-        --gutter: 0.5rem;
-        --doc-padding: 2rem;
-      }
-
-      .layout {
-        display: grid;
-        grid-auto-flow: column;
-        grid-template-columns:
-          minmax(var(--gutter), 1fr) minmax(0, var(--max-width))
-          minmax(var(--gutter), 1fr);
-        overflow-x: hidden;
-      }
-
-      .grid-sidebar {
-        height: 100vh;
-        position: sticky;
-        top: 0;
-        padding: 0;
-      }
-
-      #grid-left {
-        position: fixed;
-        background-color: var(--theme-bg);
-        z-index: 10;
-        display: none;
-      }
-
-      #grid-main {
-        padding: var(--doc-padding) var(--gutter);
-        grid-column: 2;
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-      }
-
-      #grid-right {
-        display: none;
-      }
-
-      @media (min-width: 50em) {
-        .layout {
-          overflow: initial;
-          grid-template-columns: 20rem minmax(0, var(--max-width));
-          gap: 1em;
-        }
-
-        #grid-left {
-          display: flex;
-          padding-left: 2rem;
-          position: sticky;
-          grid-column: 1;
-        }
-      }
-
-      @media (min-width: 72em) {
-        .layout {
-          grid-template-columns: 20rem minmax(0, var(--max-width)) 18rem;
-          padding-left: 0;
-          padding-right: 0;
-          margin: 0 auto;
-        }
-
-        #grid-right {
-          grid-column: 3;
-          display: flex;
-        }
-      }
-    </style>
-    <style is:global>
-      .layout > * {
-        width: 100%;
-        height: 100%;
-      }
-
-      .mobile-sidebar-toggle {
-        overflow: hidden;
-      }
-
-      .mobile-sidebar-toggle #grid-left {
-        display: block;
-        top: 2rem;
-      }
-    </style>
   </head>
 
   <body class="font-body">
-    <main class="layout">
-      <aside id="grid-left" class="relative" title="Site Navigation">
-        <LeftSidebar
+    <main
+      class="flex xs:w-full xs:flex-col lg:flex-row mx-auto xxl:w-[1600px] p-0 gap-x-8"
+    >
+      <MobileHeader />
+      <aside
+        class="h-screen xs:hidden lg:flex lg:sticky xs:top-20 lg:top-0 flex flex-col border-r-[1.5px] bg-secondary border-[#E0EAFF] xs:relative"
+        title="Site Navigation"
+      >
+        {/* Header with audience switch */}
+        <SidebarHeader client:load />
+        {/* Search input */}
+        <SidebarSearch />
+        <Navigation
           client:only="react"
-          navigationEntries={navigationEntries}
           currentPage={currentPage}
+          navigationEntries={navigationEntries}
         />
+        <div class="h-[63px] p-[22px] border-t-[1px] border-[#CDD0E0]">
+          <LanguageSwitch
+            client:load
+            lang={currentLang}
+            locales={LOCALE_NAMES}
+            currentUrl={Astro.url.href}
+          />
+        </div>
       </aside>
-      <div id="grid-main">
+      <div id="grid-main" class="xs:pl-4 lg:pl-0 flex mt-9 mb-16 w-full pr-4">
         <PageContent
           title={data.title}
           headings={headings}
@@ -138,9 +74,6 @@ const githubEditUrl = `${GITHUB_EDIT_URL}/${currentFile}`;
           <slot />
         </PageContent>
       </div>
-      <aside id="grid-right" class="grid-sidebar" title="Table of Contents">
-        <RightSidebar headings={headings} githubEditUrl={githubEditUrl} />
-      </aside>
     </main>
   </body>
 </html>
