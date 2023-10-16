@@ -16,16 +16,16 @@ const MenuToggle: FC = () => {
   return (
     <button
       type="button"
-      className="xs:block lg:hidden top-0 mb-2"
+      className="xs:block lg:hidden top-0 mb-2 z-40"
       id="menu-toggle"
       onClick={() => setSidebarShown(!sidebarShown)}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="2em"
-        height="2em"
+        width="20px"
+        height="20px"
         fill="none"
-        viewBox="0 0 48 48"
+        viewBox="0 0 20 20"
         stroke="currentColor"
       >
         <path

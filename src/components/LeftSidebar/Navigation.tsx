@@ -23,8 +23,8 @@ const Navigation: FC<NavigationProps> = ({
 
   return (
     <nav
-      id="sidebar"
-      className="w-[294px] break-words flex flex-col gap-y-[18px] pr-6 text-secondary lg:h-[calc(100%-62px)] lg:pb-6 lg:pl-[18px] lg:pt-0 xs:pt-4 xs:h-full static xs:inset-y-0 xs:left-0 xs:z-30 xs:shadow-right xs:pl-3 lg:shadow-none overflow-y-auto print:hidden"
+      id="sidebar-navigation"
+      className="sidebar-navigation w-[294px] break-words flex flex-col gap-y-[18px] pr-6 text-secondary lg:h-[calc(100%-62px)] lg:pb-6 lg:pl-[18px] lg:pt-0 xs:pt-4 xs:h-full static xs:inset-y-0 xs:left-0 xs:z-30 xs:shadow-right xs:pl-3 lg:shadow-none overflow-y-auto print:hidden"
     >
       {sidebar.children.map((child, i) => (
         <div
