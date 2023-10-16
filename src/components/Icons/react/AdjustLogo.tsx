@@ -1,6 +1,6 @@
 import type { FC } from "react";
 
-import type { IconProps } from "./types";
+import type { IconProps } from "../types";
 
 const AdjustLogo: FC<IconProps> = ({ width, height }) => {
   return (

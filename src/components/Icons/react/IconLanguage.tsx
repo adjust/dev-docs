@@ -1,6 +1,6 @@
 import type { FC } from "react";
 
-import type { IconProps } from "./types";
+import type { IconProps } from "../types";
 
 const IconLanguage: FC<IconProps> = ({ width, height, color, ...props }) => {
   const widthValue = width ?? 22;
