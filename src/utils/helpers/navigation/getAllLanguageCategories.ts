@@ -1,4 +1,6 @@
-import { CONTENT_PATH, KNOWN_LANGUAGE_CODES } from "src/consts";
+import { KNOWN_LANGUAGE_CODES } from "@i18n/locales";
+import { CONTENT_PATH } from "src/consts";
+
 import type { CategoryEntry, NavigationEntry } from "./types";
 
 const getParentId = (url: string) => {
