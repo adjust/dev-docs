@@ -1,4 +1,4 @@
-import React, { FC, useRef } from "react";
+import { FC, useRef, useState } from "react";
 import classNames from "classnames";
 
 import { useOnClickOutside } from "@hooks/useOnClickOutside";
@@ -8,7 +8,7 @@ import { HELP_CENTER_LINK } from "src/consts";
 import "./audience.css";
 
 const AudienceDropdown: FC = () => {
-  const [isMenuShown, setIsMenuShown] = React.useState(false);
+  const [isMenuShown, setIsMenuShown] = useState(false);
   const ref = useRef(null);
   const audiences = [
     {
