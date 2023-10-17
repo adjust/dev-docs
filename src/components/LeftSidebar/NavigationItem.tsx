@@ -16,6 +16,8 @@ const LeftSidebarItem: FC<{
     setIsOpen(!isOpen);
   };
 
+  const isChilds = sidebarData?.children?.length && !sidebarData.topCategory;
+
   return (
     <ul
       className={classNames("list-none flex flex-col items-start gap-y-[8px]", {
@@ -39,7 +41,7 @@ const LeftSidebarItem: FC<{
           className="flex flex-row items-center cursor-pointer gap-x-[5px]"
           onClick={handleCollapse}
         >
-          {sidebarData?.children?.length && !sidebarData.topCategory ? (
+          {isChilds ? (
             <>
               {isOpen ? (
                 <Icon name="ChevronDown" size="small" />
@@ -57,6 +59,7 @@ const LeftSidebarItem: FC<{
                 "font-bold": level === 1,
                 "font-medium": isOpen,
                 "font-normal": level > 1 && !isOpen,
+                "ml-[21px]": level > 2 && !isChilds,
               }
             )}
           >
@@ -65,33 +68,13 @@ const LeftSidebarItem: FC<{
         </div>
       </li>
       {isOpen
-        ? sidebarData?.children?.map((child) => {
-            const url = "/" + child.slug;
-            if (child?.children?.length) {
-              return (
-                <LeftSidebarItem
-                  currentPage={currentPage}
-                  sidebarData={child}
-                  level={child.level}
-                />
-              );
-            }
-            return (
-              <li className={classNames("nav-link", { "pl-4": level > 2 })}>
-                <a
-                  href={url}
-                  className={classNames(
-                    "block text-sm m-[1px] py-[0.3rem] px-4 no-underline hover:no-underline hover:text-link-active",
-                    {
-                      "text-link-active": currentPage === child.slug,
-                    }
-                  )}
-                >
-                  {child.title}
-                </a>
-              </li>
-            );
-          })
+        ? sidebarData?.children?.map((child) => (
+            <LeftSidebarItem
+              currentPage={currentPage}
+              sidebarData={child}
+              level={child.level}
+            />
+          ))
         : null}
     </ul>
   );
