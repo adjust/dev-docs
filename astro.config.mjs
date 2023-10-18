@@ -11,6 +11,13 @@ import {
 import expressiveCode from "astro-expressive-code";
 import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-sections";
 
+const astroExpressiveCodeOptions = {
+  // This is where you can pass your plugin options
+  frames: {
+    extractFileNameFromCode: false
+  },
+}
+
 // https://astro.build/config
 export default defineConfig({
   integrations: [
@@ -32,9 +39,10 @@ export default defineConfig({
     }),
     // Enable React for the Algolia search component.
     react({ experimentalReactChildren: true }),
-    expressiveCode({
-      plugins: [pluginCollapsibleSections()],
-    }),
+    expressiveCode(astroExpressiveCodeOptions,
+      {
+        plugins: [pluginCollapsibleSections()],
+      }),
     mdx(),
     tailwind(),
     sitemap(),

@@ -78,6 +78,7 @@ const AudienceDropdown: FC = () => {
       >
         {audiences.map((audience) => (
           <a
+            key={audience.slug}
             aria-label={`audience picker item ${audience.slug}`}
             href={audience.link}
             style={{
