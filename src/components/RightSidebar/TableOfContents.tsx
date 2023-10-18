@@ -1,4 +1,3 @@
-/** @jsxImportSource react */
 import type { MarkdownHeading } from "astro";
 import type { FC } from "react";
 import { unescape } from "html-escaper";
