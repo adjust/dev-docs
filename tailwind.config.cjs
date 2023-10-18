@@ -23,41 +23,48 @@ module.exports = {
       xxxl: "2200px",
       // => @media (min-width: 1280px) { ... }
     },
-    extend: {},
     fontFamily: {
       body: ["ttnormspro, Helvetica, sans-serif"],
       sans: ["Droid Sans Mono, monospace"],
     },
-    backgroundColor: (theme) => ({
-      ...theme("colors"),
-      success: "#d4f8f2",
-      primary: "#ddebf9",
-      neutral: "#eceef4",
-      negative: "#ffe8ee",
-      warning: "#f9ebd6",
-      secondary: "#F9FAFC",
-    }),
-    textColor: (theme) => ({
-      ...theme("colors"),
-      secondary: "#565C78",
-    }),
-    colors: {
-      "link-active": "#0B58FE",
-      white: "#FFFFFF",
-      "icon-neutral": "#6E7492",
-      headers: {
-        success: "#04585c",
-        primary: "#0c2663",
-        neutral: "#21253a",
-        negative: "#660835",
-        warning: "#664b29",
+
+    extend: {
+      backgroundColor: {
+        success: "#d4f8f2",
+        primary: "#ddebf9",
+        neutral: "#eceef4",
+        negative: "#ffe8ee",
+        warning: "#f9ebd6",
+        secondary: "#F9FAFC",
       },
-      icons: {
-        success: "rgb(6, 166, 147);",
-        primary: "rgb(31, 81, 217)",
-        neutral: "rgb(86, 92, 120)",
-        negative: "rgb(203, 55, 99)",
-        warning: "rgb(193, 134, 47)",
+      colors: {
+        "link-active": "#0B58FE",
+        white: "#FFFFFF",
+        "icon-neutral": "#6E7492",
+        headers: {
+          success: "#04585c",
+          primary: "#0c2663",
+          neutral: "#21253a",
+          negative: "#660835",
+          warning: "#664b29",
+        },
+        icons: {
+          success: "rgb(6, 166, 147);",
+          primary: "rgb(31, 81, 217)",
+          neutral: "rgb(86, 92, 120)",
+          negative: "rgb(203, 55, 99)",
+          warning: "rgb(193, 134, 47)",
+        },
+      },
+      textColor: {
+        secondary: "#565C78",
+      },
+      fontSize: {
+        "heading-1": ["45px", { lineHeight: "49px" }],
+        "heading-2": ["33px", { lineHeight: "37px" }],
+        "heading-3": ["25px", { lineHeight: "29.5px" }],
+        "heading-4": ["22px", { lineHeight: "25.5px" }],
+        "heading-5": ["16px", { lineHeight: "20px" }],
       },
     },
   },
