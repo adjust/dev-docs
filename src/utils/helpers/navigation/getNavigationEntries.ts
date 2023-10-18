@@ -1,9 +1,11 @@
 import type { MDXInstance } from "astro";
 
-import { CONTENT_PATH, KNOWN_LANGUAGE_CODES } from "src/consts";
+import { CONTENT_PATH } from "src/consts";
+import { KNOWN_LANGUAGE_CODES } from "@i18n/locales";
 import { getNavigationTree } from "./getNavigationTree";
-import type { CategoryEntry, NavigationEntry } from "./types";
 import { getAllCategoriesUnderLanguages } from "./getAllLanguageCategories";
+
+import type { CategoryEntry, NavigationEntry } from "./types";
 
 const getLastPath = (value: string) => {
   return value?.replace(/\/[\w\d\-\.]*$/, "");
