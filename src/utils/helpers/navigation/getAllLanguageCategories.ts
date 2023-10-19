@@ -1,5 +1,3 @@
-import { uniqBy } from "lodash";
-
 import { KNOWN_LANGUAGE_CODES } from "@i18n/locales";
 import { CONTENT_PATH } from "src/consts";
 
@@ -128,7 +126,11 @@ export const getAllCategoriesUnderLanguages = (
   const sortedBreadcrumbs = breadcrumbs.sort((a, b) =>
     a.level > b.level ? 1 : -1
   );
-  const breadcrumbsUnique = uniqBy(sortedBreadcrumbs, "title");
+  // need to filter breadcrumbs from clones
+  const breadcrumbsUnique = sortedBreadcrumbs.filter(
+    (breadcrumb, index, arr) =>
+      arr.findIndex((element) => element.url === breadcrumb.url) === index
+  );
 
   return { categories, breadcrumbs: breadcrumbsUnique };
 };
