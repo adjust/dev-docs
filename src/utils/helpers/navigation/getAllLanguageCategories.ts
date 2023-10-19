@@ -132,5 +132,5 @@ export const getAllCategoriesUnderLanguages = (
       arr.findIndex((element) => element.url === breadcrumb.url) === index
   );
 
-  return { categories, breadcrumbs: breadcrumbsUnique };
+  return { categories, breadcrumbs: sortedBreadcrumbs };
 };
