@@ -1,0 +1,256 @@
+---
+title: Get started
+description: Use the Unity SDK to access Adjust's features in your Unity apps
+category-title: Unity SDK
+slug: en/sdk/unity/index
+---
+
+The Adjust Unity SDK enables you to record attribution, events, and more in your Unity app. Follow the steps in this guide to set up your app to work with the Adjust SDK.
+
+<Callout type="note">
+
+The Adjust SDK supports iOS 9 or later and Android API level 9 (Gingerbread) or later.
+
+</Callout>
+
+## 1. Get the Adjust SDK
+
+To use the Adjust SDK in your Unity app, you need to add it to your project. You can download the latest version from the [GitHub releases page](https://github.com/adjust/adjust_unity_sdk/releases/latest).
+
+To import the Adjust SDK to your Unity project:
+
+1. Open the Unity Editor.
+2. Select <MenuSelection>Assets --> Import Package --> Custom Package</MenuSelection>.
+3. Select the downloaded SDK package.
+
+## 2. Integrate the SDK
+
+The Adjust SDK contains a Unity [prefab](https://docs.unity3d.com/Manual/Prefabs.html) that includes a template game object and an Adjust script. You can use this script to configure the SDK. To open the prefab in the Unity editor:
+
+1. Add the prefab from `Assets/Adjust/Adjust.prefab` to your first scene.
+2. Open the prefab Inspector Menu.
+3. The prefab menu contains editable fields that control the behavior of the Adjust SDK.
+
+![A screenshot of the Adjust SDK prefab configuration script in the Unity editor.](https://images.ctfassets.net/5s247im0esyq/4sh9TsPWBDWrQSMz3HFWu7/69607cff5c78059a6fac9eed2ad2aa31/unity.png)
+
+To set up the Adjust SDK, enter the following information:
+
+1. Your <GuiLabel>App Token</GuiLabel>. See App settings for instructions on how to find your token.
+2. Your <GuiLabel>Environment</GuiLabel>:
+   -  Choose **Sandbox** if you are testing your app and want to send test data. You need to enable sandbox mode in the dashboard to see test data.
+   -  Choose **Production** when you have finished testing and are ready to release your app.
+3. Your <GuiLabel>Log Level</GuiLabel>. This controls what logs you receive. See [Set log level](/en/sdk/unity/configuration/log-level) for more information.
+
+The Adjust SDK starts when the app's Awake event triggers by default. To override this behavior, check the <GuiLabel>START SDK MANUALLY</GuiLabel> option. This enables you to initialize the Adjust SDK by calling `Adjust.start()` with your config instance as an argument.
+
+```c#
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+// ...
+Adjust.start(adjustConfig);
+```
+
+## 3. Set up Android devices
+
+### Add Google Play Services
+
+Apps that target the Google Play Store must use the <Abbr>gps_adid (Google Advertising ID)</Abbr> to identify devices. You need to add the `play-services-ads-identifier` AAR to your project to access the `gps_adid`.
+
+<Accordion>
+
+### Google External Dependency Manager
+
+If you are using the [Google External Dependency Manager plugin](https://developers.google.com/unity/archive#external_dependency_manager_for_unity), add the following to your `Dependencies.xml` file:
+
+```xml
+<androidPackages>
+   <androidPackage spec="com.google.android.gms:play-services-ads-identifier:18.0.1" />
+</androidPackages>
+```
+
+</Accordion>
+
+<Accordion> 
+
+### Manual installation
+
+To install the <Abbr>ARR (Android Archive)</Abbr> manually, [download it from Maven](https://maven.google.com/web/index.html#com.google.android.gms:play-services-ads-identifier:18.0.1 "A link to the AAR artifact on Maven.") and add it to the `Assets/Plugins/Android` directory.
+
+</Accordion>
+
+### Collect App Set Identifier
+
+The [App Set Identifier](https://developer.android.com/design-for-safety/privacy-sandbox/reference/adservices/appsetid/AppSetId) is a unique identifier that enables you to measure information from any of your apps that a user has installed on their device. All apps by the same developer share the same App Set ID, meaning you can gather meaningful insights from users across all your apps.
+
+<Accordion>
+
+### Google External Dependency Manager
+
+To record a device's App Set ID, you need to add the following dependency to your `Dependencies.xml` file:
+
+```xml
+<androidPackages>
+   <androidPackage spec="com.google.android.gms:play-services-appset:16.0.2" />
+</androidPackages>
+```
+
+</Accordion>
+
+<Accordion>
+
+### Manual installation
+
+To install the <Abbr>ARR (Android Archive)</Abbr> manually, [download it from Maven](https://maven.google.com/web/index.html#com.google.android.gms:play-services-appset:16.0.2 "A link to the AAR artifact on Maven.") and add it to the `Assets/Plugins/Android` directory.
+
+</Accordion>
+
+### Set up Proguard
+
+If you are using Proguard, add the following rules to your [custom Proguard file](https://docs.unity3d.com/Manual/class-PlayerSettingsAndroid.html#build).
+
+```groovy
+-keep public class com.adjust.sdk.** { *; }
+-keep class com.google.android.gms.common.ConnectionResult {
+   int SUCCESS;
+}
+-keep class com.google.android.gms.ads.identifier.AdvertisingIdClient {
+   com.google.android.gms.ads.identifier.AdvertisingIdClient$Info getAdvertisingIdInfo(android.content.Context);
+}
+-keep class com.google.android.gms.ads.identifier.AdvertisingIdClient$Info {
+   java.lang.String getId();
+   boolean isLimitAdTrackingEnabled();
+}
+-keep public class com.android.installreferrer.** { *; }
+```
+
+### Set up install referrer
+
+The install referrer is a unique identifier which you can use to attribute an app install to a source. The Adjust SDK requires this information to perform attribution. There are two methods you can use to gather this information depending on which stores you target:
+
+-  Use the [Google Play Referrer API](https://developer.android.com/google/play/installreferrer).
+-  Use the Huawei Referrer API.
+
+<Accordion>
+
+### Google Play Referrer API
+
+There are 2 ways to add support for the Google Play Referrer API:
+
+1. Add the install referrer library as a dependency in a [custom `build.gradle` file](https://docs.unity3d.com/2023.1/Documentation/Manual/android-gradle-overview.html)
+
+```groovy
+dependencies {
+   implementation 'com.android.installreferrer:installreferrer:2.2'
+}
+```
+
+2. Download the install referrer library from [Maven](https://maven.google.com/web/index.html?q=install#com.android.installreferrer:installreferrer) and put the <Abbr>ARR (Android Archive)</Abbr> file in your `Plugins/Android` folder.
+
+</Accordion>
+
+<Accordion>
+
+### Huawei Referrer API
+
+As of v4.21.1, the Adjust SDK supports install tracking on Huawei devices using Huawei App Gallery v10.4 and later. You don't need to make any changes to start using the Huawei Referrer API.
+
+</Accordion>
+
+## 4. Build your app
+
+To complete the app build process, the Adjust Unity package performs custom post-build actions to ensure the Adjust SDK works in your app.
+
+This process is performed by the `OnPostprocessBuild` method in `AdjustEditor.cs`. Output logs show up in the Unity IDE console output window.
+
+![A screenshot of the Adjust SDK post-build configuration script in the Unity editor.](https://images.ctfassets.net/5s247im0esyq/5yFmvFN4y3LJSieJQcF4qE/bad5913682af34cfe61224daca312373/post-build-unity.png)
+
+<Accordion>
+
+### iOS
+
+<Callout type="important">
+
+To run the iOS post-build process, make sure that you have <GuiLabel>iOS build support</GuiLabel> installed in the Unity Editor.
+
+</Callout>
+
+The iOS post-build process makes the following changes to your generated Xcode project:
+
+-  Adds the other linker flag `-ObjC`: required to recognize Adjust Objective-C categories at build time.
+-  Enables Objective-C exceptions.
+
+### Frameworks
+
+You can enable the following frameworks to access iOS features:
+
+-  <GuiLabel>AdServices.framework</GuiLabel>: required for Apple Search Ads tracking
+-  <GuiLabel>AdSupport.framework</GuiLabel>: required to read the device IDFA
+-  <GuiLabel>AppTrackingTransparency.framework</GuiLabel>: required to ask for user's consent to be tracked and obtain consent status
+-  <GuiLabel>StoreKit.framework</GuiLabel>: required to communicate with the SKAdNetwork framework.
+-  <GuiLabel>iAd.framework</GuiLabel> - **Deprecated**. Use `AdServices.framework`
+
+### App Tracking Transparency consent dialog
+
+If you are using the <Abbr>ATT (App Tracking Transparency)</Abbr> wrapper, enter a **User Tracking Description** message. This displays when you present the tracking consent dialog to your user.
+
+### Deep linking
+
+To enable deep linking, add the following information:
+
+-  <GuiLabel>iOS Universal Links Domain</GuiLabel>: the associated domain used for universal links.
+-  <GuiLabel>iOS URL Identifier</GuiLabel>: your app's bundle ID.
+-  <GuiLabel>iOS URL Schemes</GuiLabel>: the URL scheme associated with your app.
+
+</Accordion>
+
+<Accordion> 
+
+### Android
+
+The Android post-build process checks for an `AndroidManifest.xml` file in `Assets/Plugins/Android/`. If this file isn't present, it creates a copy from [`AdjustAndroidManifest.xml`](https://github.com/adjust/unity_sdk/blob/master/Assets/Adjust/Android/AdjustAndroidManifest.xml "A link to the AdjustAndroidManifest file on GitHub").
+
+### Permissions
+
+You can enable the following permissions to access Android features:
+
+-  <GuiLabel>android.permission.INTERNET</GuiLabel>: required to connect to the internet.
+-  <GuiLabel>android.permission.ACCESS_NETWORK_STATE</GuiLabel>: required to read the type of network the device is connected to.
+-  <GuiLabel>com.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE</GuiLabel>: **Deprecated**. Required to fetch install referrer information via Google Play Store intent.
+-  <GuiLabel>com.google.android.gms.permission.AD_ID</GuiLabel>: required to read the device advertising ID on Android 12 (API level 31) and above. See [Google's `AdvertisingIdClient.info` documentation](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid) for more information.
+
+### Deep linking
+
+To enable deep linking, add the following information:
+
+-  <GuiLabel>Android URI Schemes</GuiLabel>: the destination of your deep link.
+
+</Accordion>
+
+## 5. Add the Adjust SDK signature
+
+You can use the Adjust SDK signature to sign all communications sent by the Adjust SDK. This enables Adjust’s servers to detect and reject any install activity that's not legitimate.
+
+To get started with the Adjust SDK signature, contact your Technical Account Manager or support@adjust.com.
+
+## 6. Test your integration
+
+The Adjust SDK provides tools for testing and troubleshooting issues with your integration. To test your setup:
+
+-  Set your environment to **Sandbox**.
+-  Add a sandbox filter to your Adjust dashboard results.
+-  Set your [log level](/en/sdk/unity/configuration/log-level) to **verbose**.
+
+<Callout type="tip">
+
+If you encounter any issues, email support@adjust.com with all details and logs.
+
+</Callout>
+
+<Accordion>
+
+### Test Google Play Services integration
+
+To test that the Adjust SDK can receive a device's Google Advertising ID, set the [log level](/en/sdk/unity/configuration/log-level) to **verbose** and the environment to **Sandbox**. Start your app and measure a `session` or an event. The SDK logs the <Abbr>gps_adid (Google Play Services Advertiser ID)</Abbr> parameter if it has read the advertising ID.
+
+If you are having issues retrieving the Google Advertising ID, open an issue in the [GitHub repository](https://github.com/adjust/unity_sdk) or contact support@adjust.com.
+
+</Accordion>
