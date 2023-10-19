@@ -46,7 +46,7 @@ const BuildTable: FC<{
   };
 
   if (props.list) {
-    const listItems = el.querySelectorAll("ul > li > ul");
+    const listItems = el.querySelectorAll("body > ul > li > ul");
     listItems.forEach((value, key) => {
       // The first row is always the header, so we create the columns array with these values
       if (key === 0) {
@@ -147,6 +147,7 @@ const BuildTable: FC<{
         visualProperties={visualProperties}
         flex={props.flex}
         height={props.height}
+        autoRowsHeight
       />
     </div>
   );
