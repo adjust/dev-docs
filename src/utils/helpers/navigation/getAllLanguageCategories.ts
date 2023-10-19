@@ -103,7 +103,7 @@ export const getAllCategoriesUnderLanguages = (
         parts.forEach((part) => {
           if (
             child.path?.endsWith(part + "/index") ||
-            child.path?.endsWith(currentPage)
+            child.path?.endsWith(part)
           ) {
             isCollapsed = true;
             breadcrumbs.unshift({
@@ -131,8 +131,6 @@ export const getAllCategoriesUnderLanguages = (
     (breadcrumb, index, arr) =>
       arr.findIndex((element) => element.url === breadcrumb.url) === index
   );
-  console.log(breadcrumbsUnique, "breadcrumbsUnique");
-  console.log(currentPage, "currentPage");
 
   return { categories, breadcrumbs: breadcrumbsUnique };
 };
