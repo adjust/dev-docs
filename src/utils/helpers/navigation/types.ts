@@ -24,3 +24,12 @@ export interface NavigationEntry {
 export interface GroupedNavigationItems {
   [langKey: string]: { [categoryKey: string]: CategoryEntry };
 }
+
+export interface NavigationData {
+  languageTree: { [key: string]: CategoryEntry };
+  breadcrumbs: {
+    title: string;
+    url: string;
+    level: number;
+  }[];
+}
