@@ -1,7 +1,7 @@
 import { KNOWN_LANGUAGE_CODES } from "@i18n/locales";
 import { CONTENT_PATH } from "src/consts";
 
-import type { CategoryEntry, NavigationEntry } from "./types";
+import type { CategoryEntry, NavigationData, NavigationEntry } from "./types";
 
 const getParentId = (url: string) => {
   const parts = url.split("/");
@@ -34,7 +34,8 @@ export const getAllCategoriesUnderLanguages = (
   data: NavigationEntry[],
   currentPage: string
 ) => {
-  const obj: { [key: string]: CategoryEntry } = {};
+  const categories: { [key: string]: CategoryEntry } = {};
+  const breadcrumbs: NavigationData["breadcrumbs"] = [];
 
   KNOWN_LANGUAGE_CODES.forEach((languageKey) => {
     data.forEach((item) => {
@@ -52,8 +53,8 @@ export const getAllCategoriesUnderLanguages = (
       const usedTitle = sidebarLabel || categoryTitle || title;
 
       // creating language object
-      if (!obj[languageKey]) {
-        obj[languageKey] = {
+      if (!categories[languageKey]) {
+        categories[languageKey] = {
           children: [],
           position,
           title: usedTitle,
@@ -71,7 +72,7 @@ export const getAllCategoriesUnderLanguages = (
       if (url.includes(`${CONTENT_PATH}/${languageKey}`) && usedTitle) {
         const isTopCategory = path === `${CONTENT_PATH}/${languageKey}/index`;
 
-        obj[languageKey].children?.push({
+        categories[languageKey].children?.push({
           ...item,
           children: [],
           position,
@@ -95,21 +96,41 @@ export const getAllCategoriesUnderLanguages = (
       return result;
     }, [] as string[]);
 
-    obj[languageKey].children = obj[languageKey].children.map((child) => {
-      let isCollapsed = false;
+    categories[languageKey].children = categories[languageKey].children.map(
+      (child) => {
+        let isCollapsed = false;
 
-      parts.forEach((part) => {
-        if (child.path?.endsWith(part + "/index")) {
-          isCollapsed = true;
-        }
-      });
+        parts.forEach((part) => {
+          if (
+            child.path?.endsWith(part + "/index") ||
+            child.path?.endsWith(part)
+          ) {
+            isCollapsed = true;
+            breadcrumbs.unshift({
+              title: child.title,
+              url: child.slug,
+              level: child.level,
+            });
+          }
+        });
 
-      return {
-        ...child,
-        collapsed: isCollapsed,
-      };
-    });
+        return {
+          ...child,
+          collapsed: isCollapsed,
+        };
+      }
+    );
   });
 
-  return obj;
+  // need to sort breadcrumbs by level to make sure that the hierarchy is correct
+  const sortedBreadcrumbs = breadcrumbs.sort((a, b) =>
+    a.level > b.level ? 1 : -1
+  );
+  // need to filter breadcrumbs from clones
+  const breadcrumbsUnique = sortedBreadcrumbs.filter(
+    (breadcrumb, index, arr) =>
+      arr.findIndex((element) => element.url === breadcrumb.url) === index
+  );
+
+  return { categories, breadcrumbs: breadcrumbsUnique };
 };

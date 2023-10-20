@@ -5,7 +5,7 @@ import { KNOWN_LANGUAGE_CODES } from "@i18n/locales";
 import { getNavigationTree } from "./getNavigationTree";
 import { getAllCategoriesUnderLanguages } from "./getAllLanguageCategories";
 
-import type { CategoryEntry, NavigationEntry } from "./types";
+import type { CategoryEntry, NavigationData, NavigationEntry } from "./types";
 
 const getLastPath = (value: string) => {
   return value?.replace(/\/[\w\d\-\.]*$/, "");
@@ -14,7 +14,7 @@ const getLastPath = (value: string) => {
 export const getNavigationEntries = (
   pages: MDXInstance<Record<string, any>>[],
   currentPage: string
-) => {
+): NavigationData => {
   // getting data for the pages
   const pagesData = pages.map((page) => ({
     ...page.frontmatter,
@@ -22,7 +22,7 @@ export const getNavigationEntries = (
     url: page.url ? getLastPath(page.url) : "",
   }));
 
-  const categories = getAllCategoriesUnderLanguages(
+  const { categories, breadcrumbs } = getAllCategoriesUnderLanguages(
     pagesData as NavigationEntry[],
     currentPage
   );
@@ -40,5 +40,5 @@ export const getNavigationEntries = (
     return acc;
   }, {} as { [key: string]: CategoryEntry });
 
-  return languageTree;
+  return { languageTree, breadcrumbs };
 };

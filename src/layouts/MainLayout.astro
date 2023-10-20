@@ -1,11 +1,13 @@
 ---
 import type { MarkdownHeading } from "astro";
 import type { CollectionEntry } from "astro:content";
+
 import HeadCommon from "../components/HeadCommon.astro";
 import HeadSEO from "../components/HeadSEO.astro";
 import PageContent from "../components/PageContent/PageContent.astro";
+import PageBreadcrumbs from "@components/PageBreadcrumbs/PageBreadcrumbs.astro";
 import Navigation from "../components/LeftSidebar/Navigation.astro";
-import { GITHUB_EDIT_URL, SITE } from "../consts";
+import { SITE } from "../consts";
 import { getNavigationEntries } from "src/utils/helpers/navigation/getNavigationEntries";
 import SidebarHeader from "@components/LeftSidebar/SidebarHeader/SidebarHeader.astro";
 import SidebarSearch from "@components/LeftSidebar/SidebarSearch/SidebarSearch.astro";
@@ -23,11 +25,8 @@ type Props = CollectionEntry<"docs">["data"] & {
 const pages = await Astro.glob("../content/docs/**/*.mdx");
 const currentPage = Astro.url.pathname;
 const navigationEntries = getNavigationEntries(pages, currentPage);
-
 const { headings, ...data } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-const currentFile = `src/content/docs${currentPage.replace(/\/$/, "")}.md`;
-const githubEditUrl = `${GITHUB_EDIT_URL}/${currentFile}`;
 const currentLang = getLanguageFromURL(currentPage);
 const homeUrl = `${Astro.url.origin}/${currentLang}`;
 ---
@@ -54,7 +53,7 @@ const homeUrl = `${Astro.url.origin}/${currentLang}`;
         <SidebarHeader homeUrl={homeUrl} />
         {/* Search input */}
         <SidebarSearch />
-        <Navigation navigationEntries={navigationEntries} />
+        <Navigation navigationEntries={navigationEntries?.languageTree} />
         <div class="h-[63px] p-[22px] border-t-[1px] border-[#CDD0E0]">
           <LanguageSwitch
             client:load
@@ -66,18 +65,15 @@ const homeUrl = `${Astro.url.origin}/${currentLang}`;
       </aside>
       <div
         id="content-main"
-        class="article-main xs:pl-4 lg:pl-0 pr-4 flex mt-9 mb-16 xs:w-full lg:w-[calc(100%-326px-272px)]"
+        class="xs:pl-4 lg:pl-0 pr-4 flex flex-col mt-14 mb-16 xs:w-full lg:w-[calc(100%-326px-272px)]"
       >
-        <PageContent
-          title={data.title}
-          headings={headings}
-          githubEditUrl={githubEditUrl}
-        >
+        <PageBreadcrumbs breadcrumbs={navigationEntries?.breadcrumbs} />
+        <PageContent title={data.title} headings={headings}>
           <slot />
         </PageContent>
       </div>
       <aside class="relative pl-8 w-[272px]" title="Table of Contents">
-        <RightSidebar headings={headings} githubEditUrl={githubEditUrl} />
+        <RightSidebar headings={headings} />
       </aside>
     </main>
   </body>

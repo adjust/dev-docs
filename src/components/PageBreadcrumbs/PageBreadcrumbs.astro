@@ -1,0 +1,45 @@
+---
+import classNames from "classnames";
+
+import type { NavigationData } from "src/utils/helpers/navigation/types";
+
+import "./breadcrumbs.css";
+
+interface BreadcrumbsProps {
+  breadcrumbs: NavigationData["breadcrumbs"];
+}
+
+const { breadcrumbs } = Astro.props as BreadcrumbsProps;
+const currentPage = Astro.url.pathname;
+const currentPageMatch = currentPage.endsWith("/")
+  ? currentPage.slice(1, -1)
+  : currentPage.slice(1);
+---
+
+<div aria-label="breadcrumbs" class="mb-8">
+  <nav>
+    <ul class="flex flex-row gap-x-6">
+      {
+        breadcrumbs.map((breadcrumb, i) => (
+          <li
+            class={classNames(" relative", {
+              "breadcrumbs-item":
+                breadcrumbs.length > 1 && i !== breadcrumbs.length - 1,
+            })}
+          >
+            <a
+              class={classNames("cursor-pointer  text-sm", {
+                "text-black font-semibold": currentPageMatch === breadcrumb.url,
+                "text-secondary font-medium":
+                  currentPageMatch !== breadcrumb.url,
+              })}
+              href={`/${breadcrumb.url}`}
+            >
+              {breadcrumb.title}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</div>

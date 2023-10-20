@@ -1,4 +1,3 @@
-/** @jsxImportSource react */
 import type { MarkdownHeading } from "astro";
 import type { FC } from "react";
 import { unescape } from "html-escaper";
@@ -100,7 +99,9 @@ const TableOfContents: FC<{ headings: MarkdownHeading[] }> = ({
           .map((heading) => (
             <li
               key={heading.slug}
-              className={`header-link depth-${heading.depth} ${
+              className={`header-link before:content-none depth-${
+                heading.depth
+              } ${
                 currentID === heading.slug ? "current-header-link" : ""
               }`.trim()}
             >
