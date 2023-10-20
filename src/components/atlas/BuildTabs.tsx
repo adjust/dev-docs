@@ -64,14 +64,14 @@ const BuildTabs: FC<{
   }, []);
 
   return (
-    <>
+    <div id="tabs-container">
       <Tabs
         items={currentTabs.items}
         value={currentTabs.activeTab}
         onChange={(id) => handleTabChange(id, currentTabs.isTabsHaveSync)}
       />
       {content}
-    </>
+    </div>
   );
 };
 
