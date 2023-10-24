@@ -10,8 +10,8 @@ const BuildTooltip: FC<{
     <>
       <Tooltip
         position={props.position ? props.position : "top"}
-        content={props.content}
         zIndex={100}
+        content={<div style={{ maxWidth: "fit-content" }}>{props.content}</div>}
       >
         <span className="underline decoration-dashed">{props.children}</span>
       </Tooltip>
