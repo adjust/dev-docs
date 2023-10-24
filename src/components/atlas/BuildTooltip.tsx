@@ -6,7 +6,6 @@ const BuildTooltip: FC<{
   children: ReactElement;
   position?: Position;
 }> = (props) => {
-  console.log(props);
   return (
     <>
       <Tooltip
