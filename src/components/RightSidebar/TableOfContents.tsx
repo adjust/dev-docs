@@ -109,27 +109,7 @@ const TableOfContents: FC<{ headings: MarkdownHeading[]; title: string }> = ({
               onClick={() => setIsOpened(false)}
               className="toc-state-button rounded-md -ml-8 mt-8  bg-white relative w-6 h-6"
             >
-              <svg
-                width={24}
-                height={24}
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M9.735 4.822L16.36 12l-6.626 7.178-1.47-1.356L13.64 12 8.265 6.178l1.47-1.356z"
-                  fill="currentColor"
-                />
-                <rect
-                  x={0.5}
-                  y={0.5}
-                  width={23}
-                  height={23}
-                  rx={2.5}
-                  stroke="#000"
-                />
-              </svg>
+              <ChevronRight />
             </button>
           </div>
           <div className="pl-4 pr-4 h-full overflow-y-auto flex flex-col">
@@ -162,28 +142,7 @@ const TableOfContents: FC<{ headings: MarkdownHeading[]; title: string }> = ({
             onClick={() => setIsOpened(true)}
             className="toc-state-button absolute rounded-md mt-8 -ml-4 bg-white z-50 w-6 h-6"
           >
-            <svg
-              width={24}
-              height={24}
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fillRule="evenodd"
-                clipRule="evenodd"
-                d="M14.265 19.178L7.64 12l6.626-7.178 1.47 1.356L10.36 12l5.374 5.822-1.47 1.356z"
-                fill="currentColor"
-              />
-              <rect
-                x={23.5}
-                y={23.5}
-                width={23}
-                height={23}
-                rx={2.5}
-                transform="rotate(-180 23.5 23.5)"
-                stroke="#000"
-              />
-            </svg>
+            <ChevronLeft />
           </button>
         </div>
       )}
