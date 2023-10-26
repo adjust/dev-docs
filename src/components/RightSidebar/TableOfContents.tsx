@@ -4,6 +4,11 @@ import { unescape } from "html-escaper";
 import { useState, useEffect, useRef } from "react";
 import { useStore } from "@nanostores/react";
 import { $tabs } from "@store/tabStore";
+import classNames from "classnames";
+import ChevronLeft from "@components/Icons/react/ChevronLeft";
+import ChevronRight from "@components/Icons/react/ChevronRight";
+
+import "./right-sidebar.css";
 
 type ItemOffsets = {
   id: string;
@@ -19,6 +24,7 @@ const TableOfContents: FC<{ headings: MarkdownHeading[] }> = ({
   const onThisPageID = "on-this-page-heading";
   const itemOffsets = useRef<ItemOffsets[]>([]);
   const [currentID, setCurrentID] = useState("overview");
+  const [isOpened, setIsOpened] = useState(true);
   useEffect(() => {
     const getItemOffsets = () => {
       const titles = document.querySelectorAll("article :is(h1, h2, h3, h4)");
@@ -90,27 +96,49 @@ const TableOfContents: FC<{ headings: MarkdownHeading[] }> = ({
 
   return (
     <>
-      <h2 id={onThisPageID} className="heading">
-        CONTENTS
-      </h2>
-      <ul ref={toc}>
-        {headingsLocal
-          .filter(({ depth }) => depth > 1 && depth < 4)
-          .map((heading) => (
-            <li
-              key={heading.slug}
-              className={`header-link before:content-none depth-${
-                heading.depth
-              } ${
-                currentID === heading.slug ? "current-header-link" : ""
-              }`.trim()}
+      <div className="flex flex-row items-center justify-between pb-2">
+        <h2 id={onThisPageID} className="text-base font-medium">
+          CONTENTS
+        </h2>
+        <div className="w-6 h-6">
+          {!isOpened ? (
+            <span
+              className="open-button hover:cursor-pointer"
+              onClick={() => setIsOpened(true)}
             >
-              <a href={`#${heading.slug}`} onClick={onLinkClick}>
-                {unescape(heading.text)}
-              </a>
-            </li>
-          ))}
-      </ul>
+              <ChevronLeft />
+            </span>
+          ) : (
+            <span
+              className="close-button hover:cursor-pointer"
+              onClick={() => setIsOpened(false)}
+            >
+              <ChevronRight />
+            </span>
+          )}
+        </div>
+      </div>
+      {isOpened ? (
+        <ul ref={toc}>
+          {headingsLocal
+            .filter(({ depth }) => depth > 1 && depth < 4)
+            .map((heading) => (
+              <li
+                key={heading.slug}
+                className={classNames(
+                  `header-link before:content-none text-secondary depth-${heading.depth}`,
+                  {
+                    "current-header-link": currentID === heading.slug,
+                  }
+                )}
+              >
+                <a href={`#${heading.slug}`} onClick={onLinkClick}>
+                  {unescape(heading.text)}
+                </a>
+              </li>
+            ))}
+        </ul>
+      ) : null}
     </>
   );
 };
