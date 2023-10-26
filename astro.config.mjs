@@ -35,6 +35,7 @@ export default defineConfig({
         "@components/Tab.astro",
         "@components/Abbr.astro",
         "@components/Badge.astro",
+        "@components/Tooltip.astro",
       ],
     }),
     // Enable React for the Algolia search component.
