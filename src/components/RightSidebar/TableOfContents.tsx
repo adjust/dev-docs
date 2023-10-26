@@ -15,8 +15,9 @@ type ItemOffsets = {
   topOffset: number;
 };
 
-const TableOfContents: FC<{ headings: MarkdownHeading[] }> = ({
+const TableOfContents: FC<{ headings: MarkdownHeading[]; title: string }> = ({
   headings = [],
+  title,
 }) => {
   const [headingsLocal, setHeadingsLocal] = useState(headings);
   const tabs = useStore($tabs);
@@ -96,49 +97,55 @@ const TableOfContents: FC<{ headings: MarkdownHeading[] }> = ({
 
   return (
     <>
-      <div className="flex flex-row items-center justify-between pb-2">
-        <h2 id={onThisPageID} className="text-base font-medium">
-          CONTENTS
-        </h2>
-        <div className="w-6 h-6">
-          {!isOpened ? (
-            <span
-              className="open-button hover:cursor-pointer"
-              onClick={() => setIsOpened(true)}
-            >
-              <ChevronLeft />
-            </span>
-          ) : (
-            <span
-              className="close-button hover:cursor-pointer"
+      {isOpened ? (
+        <nav
+          className={classNames(
+            "transition duration-100 fixed top-[128px] lg:right-0 xxl:left-0 xxl:ml-[calc(100vw-304px-(100vw-100rem+2rem)/2)] z-10 w-[304px] h-[calc(100vh-112px)] md:right-0 xxl:ml-open-toc z-25 px-4 bg-white max-h-screen border-t border-l border-bluish-grey rounded-tl-lg xs:hidden lg:block xxxl:hidden"
+          )}
+        >
+          <div className="absolute top-0 bottom-0 flex items-start">
+            <button
+              data-testid="table-of-contents.expand-collapse-button"
               onClick={() => setIsOpened(false)}
+              className="half-border rounded-md -ml-8 mt-8  bg-white relative text-dark-blue hover:text-white hover:bg-link-active"
             >
               <ChevronRight />
-            </span>
-          )}
+            </button>
+          </div>
+          <div className="pl-4 pr-4 h-full overflow-y-auto flex flex-col">
+            <ul className="w-full mt-8" ref={toc}>
+              <li className="text-lg font-medium mb-4 leading-6">{title}</li>
+              {headingsLocal
+                .filter(({ depth }) => depth > 1 && depth < 4)
+                .map((heading) => (
+                  <li
+                    key={heading.slug}
+                    className={classNames(
+                      `header-link before:content-none depth-${heading.depth}`,
+                      {
+                        "current-header-link": currentID === heading.slug,
+                      }
+                    )}
+                  >
+                    <a href={`#${heading.slug}`} onClick={onLinkClick}>
+                      {unescape(heading.text)}
+                    </a>
+                  </li>
+                ))}
+            </ul>
+            <div className="flex-grow" />
+          </div>
+        </nav>
+      ) : (
+        <div className="fixed top-0 bottom-0 md:right-0 xxl:left-0 mt-32 xxl:ml-[calc(100vw-2rem-(100vw-100rem+2rem)/2)] items-start w-8 xxxl:hidden sm:hidden lg:flex z-10 border-l border-t rounded-tl-lg border-bluish-grey">
+          <button
+            onClick={() => setIsOpened(true)}
+            className="half-border absolute rounded-md mt-8 -ml-4 bg-white  z-50 text-dark-blue hover:text-white hover:bg-link-active"
+          >
+            <ChevronLeft />
+          </button>
         </div>
-      </div>
-      {isOpened ? (
-        <ul ref={toc}>
-          {headingsLocal
-            .filter(({ depth }) => depth > 1 && depth < 4)
-            .map((heading) => (
-              <li
-                key={heading.slug}
-                className={classNames(
-                  `header-link before:content-none text-secondary depth-${heading.depth}`,
-                  {
-                    "current-header-link": currentID === heading.slug,
-                  }
-                )}
-              >
-                <a href={`#${heading.slug}`} onClick={onLinkClick}>
-                  {unescape(heading.text)}
-                </a>
-              </li>
-            ))}
-        </ul>
-      ) : null}
+      )}
     </>
   );
 };

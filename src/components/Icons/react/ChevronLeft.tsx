@@ -16,7 +16,7 @@ const ChevronLeft: FC<IconProps> = (props) => {
         fillRule="evenodd"
         clipRule="evenodd"
         d="M14.265 19.178L7.64 12l6.626-7.178 1.47 1.356L10.36 12l5.374 5.822-1.47 1.356z"
-        fill="#191D2F"
+        fill="currentColor"
       />
       <rect
         x={23.5}
