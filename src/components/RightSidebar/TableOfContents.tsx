@@ -107,7 +107,7 @@ const TableOfContents: FC<{ headings: MarkdownHeading[]; title: string }> = ({
             <button
               data-testid="table-of-contents.expand-collapse-button"
               onClick={() => setIsOpened(false)}
-              className="half-border rounded-md -ml-8 mt-8  bg-white relative text-dark-blue hover:text-white hover:bg-link-active"
+              className="half-border rounded-md -ml-8 mt-8  bg-white relative text-dark-blue hover:text-white hover:bg-link-active w-6 h-6"
             >
               <ChevronRight />
             </button>
@@ -140,7 +140,7 @@ const TableOfContents: FC<{ headings: MarkdownHeading[]; title: string }> = ({
         <div className="fixed top-0 bottom-0 md:right-0 xxl:left-0 mt-32 xxl:ml-[calc(100vw-2rem-(100vw-100rem+2rem)/2)] items-start w-8 xxxl:hidden sm:hidden lg:flex z-10 border-l border-t rounded-tl-lg border-bluish-grey">
           <button
             onClick={() => setIsOpened(true)}
-            className="half-border absolute rounded-md mt-8 -ml-4 bg-white  z-50 text-dark-blue hover:text-white hover:bg-link-active"
+            className="half-border absolute rounded-md mt-8 -ml-4 bg-white z-50 text-dark-blue hover:text-white hover:bg-link-active w-6 h-6"
           >
             <ChevronLeft />
           </button>
