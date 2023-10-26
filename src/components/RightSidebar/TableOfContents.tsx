@@ -107,9 +107,29 @@ const TableOfContents: FC<{ headings: MarkdownHeading[]; title: string }> = ({
             <button
               data-testid="table-of-contents.expand-collapse-button"
               onClick={() => setIsOpened(false)}
-              className="half-border rounded-md -ml-8 mt-8  bg-white relative text-dark-blue hover:text-white hover:bg-link-active w-6 h-6"
+              className="toc-state-button rounded-md -ml-8 mt-8  bg-white relative w-6 h-6"
             >
-              <ChevronRight />
+              <svg
+                width={24}
+                height={24}
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M9.735 4.822L16.36 12l-6.626 7.178-1.47-1.356L13.64 12 8.265 6.178l1.47-1.356z"
+                  fill="currentColor"
+                />
+                <rect
+                  x={0.5}
+                  y={0.5}
+                  width={23}
+                  height={23}
+                  rx={2.5}
+                  stroke="#000"
+                />
+              </svg>
             </button>
           </div>
           <div className="pl-4 pr-4 h-full overflow-y-auto flex flex-col">
@@ -140,9 +160,30 @@ const TableOfContents: FC<{ headings: MarkdownHeading[]; title: string }> = ({
         <div className="fixed top-0 bottom-0 md:right-0 xxl:left-0 mt-32 xxl:ml-[calc(100vw-2rem-(100vw-100rem+2rem)/2)] items-start w-8 xxxl:hidden sm:hidden lg:flex z-10 border-l border-t rounded-tl-lg border-bluish-grey">
           <button
             onClick={() => setIsOpened(true)}
-            className="half-border absolute rounded-md mt-8 -ml-4 bg-white z-50 text-dark-blue hover:text-white hover:bg-link-active w-6 h-6"
+            className="toc-state-button absolute rounded-md mt-8 -ml-4 bg-white z-50 w-6 h-6"
           >
-            <ChevronLeft />
+            <svg
+              width={24}
+              height={24}
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M14.265 19.178L7.64 12l6.626-7.178 1.47 1.356L10.36 12l5.374 5.822-1.47 1.356z"
+                fill="currentColor"
+              />
+              <rect
+                x={23.5}
+                y={23.5}
+                width={23}
+                height={23}
+                rx={2.5}
+                transform="rotate(-180 23.5 23.5)"
+                stroke="#000"
+              />
+            </svg>
           </button>
         </div>
       )}
