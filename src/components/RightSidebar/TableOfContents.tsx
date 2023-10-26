@@ -91,7 +91,7 @@ const TableOfContents: FC<{ headings: MarkdownHeading[] }> = ({
   return (
     <>
       <h2 id={onThisPageID} className="heading">
-        On this page
+        CONTENTS
       </h2>
       <ul ref={toc}>
         {headingsLocal
