@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import type { FC } from "react";
 import { useState, useEffect } from "react";
 
@@ -16,7 +17,10 @@ const MenuToggle: FC = () => {
   return (
     <button
       type="button"
-      className="xs:block lg:hidden top-0 mb-2 z-40 p-0"
+      className={classNames("xs:block lg:hidden top-0 mb-2 z-40 p-0", {
+        "bg-secondary": sidebarShown,
+        "bg-white": !sidebarShown,
+      })}
       id="menu-toggle"
       onClick={() => setSidebarShown(!sidebarShown)}
     >
