@@ -100,7 +100,7 @@ const TableOfContents: FC<{ headings: MarkdownHeading[]; title: string }> = ({
       {isOpened ? (
         <nav
           className={classNames(
-            "transition duration-100 fixed top-[128px] lg:right-0 xxl:left-0 xxl:ml-[calc(100vw-304px-(100vw-100rem+2rem)/2)] z-10 w-[304px] h-[calc(100vh-112px)] md:right-0 xxl:ml-open-toc z-25 px-4 bg-white max-h-screen border-t border-l border-bluish-grey rounded-tl-lg xs:hidden lg:block xxxl:hidden"
+            "transition duration-100 fixed top-[128px] lg:right-0 xxl:left-0 xxl:ml-[calc(100vw-304px-(100vw-100rem+2rem)/2)] z-10 w-[304px] h-[calc(100vh-112px)] md:right-0 xxl:ml-open-toc z-25 px-4 bg-white max-h-screen border-t border-[1px] border-bluish-grey rounded-tl-lg xs:hidden lg:block xxxl:hidden"
           )}
         >
           <div className="absolute top-0 bottom-0 flex items-start">
@@ -137,7 +137,7 @@ const TableOfContents: FC<{ headings: MarkdownHeading[]; title: string }> = ({
           </div>
         </nav>
       ) : (
-        <div className="fixed top-0 bottom-0 md:right-0 xxl:left-0 mt-32 xxl:ml-[calc(100vw-2rem-(100vw-100rem+2rem)/2)] items-start w-8 xxxl:hidden sm:hidden lg:flex z-10 border-l border-t rounded-tl-lg border-bluish-grey">
+        <div className="fixed top-0 bottom-0 md:right-0 xxl:left-0 mt-32 xxl:ml-[calc(100vw-2rem-(100vw-100rem+2rem)/2)] items-start w-8 xxxl:hidden sm:hidden lg:flex z-10 border-[1px] border-t rounded-tl-lg border-bluish-grey">
           <button
             onClick={() => setIsOpened(true)}
             className="toc-state-button absolute rounded-md mt-8 -ml-4 bg-white z-50 w-6 h-6"
