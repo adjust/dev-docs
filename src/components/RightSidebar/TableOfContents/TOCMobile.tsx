@@ -20,7 +20,7 @@ const TableOfContentsMobile: FC<TableOfContentsMobileProps> = ({
   onLinkClick,
 }) => {
   return (
-    <div className="xs:block lg:hidden border-[1px] p-2">
+    <div className="xs:block lg:hidden border-[1px] p-2 my-4">
       <h2 id={onThisPageID} className="heading">
         On this page
       </h2>
