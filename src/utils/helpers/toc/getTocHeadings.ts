@@ -1,3 +1,5 @@
+import type { MarkdownHeading } from "astro";
+
 export const getTocHeadings = () => {
   // this selector is more accurate cause we don`t need nested headers
   const headings = document.querySelectorAll(
