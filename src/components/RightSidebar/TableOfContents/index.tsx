@@ -12,6 +12,8 @@ import CollapsedTOC from "./CollapsedTOC";
 import { getTocHeadings } from "@utils/helpers/toc/getTocHeadings";
 import { useScrollSpy } from "@hooks/useScrollSpy";
 
+const HEADER_HEIGHT = 110;
+
 const TableOfContents: FC<{ headings: MarkdownHeading[]; title: string }> = ({
   headings = [],
   title,
@@ -19,7 +21,9 @@ const TableOfContents: FC<{ headings: MarkdownHeading[]; title: string }> = ({
   const [headingsLocal, setHeadingsLocal] = useState(headings);
   const toc = useRef<HTMLUListElement>(null);
   const onThisPageID = "on-this-page-heading";
-  const [currentID, setCurrentID] = useState("overview");
+  const [currentID, setCurrentID] = useState(
+    headingsLocal[0].slug ?? "overview"
+  );
   const [isOpened, setIsOpened] = useState(true);
   const tocEntryIds = headingsLocal.map((heading) => heading.slug);
 
@@ -27,20 +31,30 @@ const TableOfContents: FC<{ headings: MarkdownHeading[]; title: string }> = ({
     useScrollSpy(tocEntryIds);
 
   const recalcHeadings = () => {
-    if (document.readyState === "complete") {
-      headingsLocal.forEach((entry) => unregisterHeading(entry.slug));
+    headingsLocal.forEach((entry) => unregisterHeading(entry.slug));
 
-      headingsLocal.forEach((entry) => {
-        const element = document.getElementById(entry.slug);
+    headingsLocal.forEach((entry) => {
+      const element = document.getElementById(entry.slug);
 
-        if (element) {
-          registerHeading(
-            entry.slug.replace("#", ""),
-            element.getBoundingClientRect().top + window.pageYOffset
-          );
-        }
+      if (element) {
+        registerHeading(
+          entry.slug.replace("#", ""),
+          element.getBoundingClientRect().top + window.pageYOffset
+        );
+      }
+    });
+  };
+
+  const handleClick = (id: string) => {
+    // need to scroll to the element without sticky header height
+    setTimeout(() => {
+      window.scroll({
+        top: window.scrollY + HEADER_HEIGHT,
+        behavior: "smooth",
       });
-    }
+    });
+
+    setCurrentID(id);
   };
 
   const handler = debounce(recalcHeadings, 500);
@@ -87,10 +101,10 @@ const TableOfContents: FC<{ headings: MarkdownHeading[]; title: string }> = ({
       // required for the smooth scroll to the active header
       setTimeout(() => {
         window.scroll({
-          top: window.scrollY - 80,
+          top: window.scrollY + HEADER_HEIGHT,
           behavior: "smooth",
         });
-      });
+      }, 300);
     }
   }, []);
 
@@ -130,7 +144,10 @@ const TableOfContents: FC<{ headings: MarkdownHeading[]; title: string }> = ({
                       }
                     )}
                   >
-                    <a href={`#${heading.slug}`} onClick={onLinkClick}>
+                    <a
+                      href={`#${heading.slug}`}
+                      onClick={() => handleClick(heading.slug)}
+                    >
                       {unescape(heading.text)}
                     </a>
                   </li>
