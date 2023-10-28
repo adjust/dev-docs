@@ -4,11 +4,13 @@ import { unescape } from "html-escaper";
 import { useState, useEffect, useRef } from "react";
 import classNames from "classnames";
 import ChevronRight from "@components/Icons/react/ChevronRight";
+import { debounce } from "lodash-es";
 
 import "../right-sidebar.css";
 import TableOfContentsMobile from "./TOCMobile";
 import CollapsedTOC from "./CollapsedTOC";
 import { getTocHeadings } from "@utils/helpers/toc/getTocHeadings";
+import { useScrollSpy } from "@hooks/useScrollSpy";
 
 const TableOfContents: FC<{ headings: MarkdownHeading[]; title: string }> = ({
   headings = [],
@@ -19,6 +21,29 @@ const TableOfContents: FC<{ headings: MarkdownHeading[]; title: string }> = ({
   const onThisPageID = "on-this-page-heading";
   const [currentID, setCurrentID] = useState("overview");
   const [isOpened, setIsOpened] = useState(true);
+  const tocEntryIds = headingsLocal.map((heading) => heading.slug);
+
+  const { currentSection, registerHeading, unregisterHeading } =
+    useScrollSpy(tocEntryIds);
+
+  const recalcHeadings = () => {
+    if (document.readyState === "complete") {
+      headingsLocal.forEach((entry) => unregisterHeading(entry.slug));
+
+      headingsLocal.forEach((entry) => {
+        const element = document.getElementById(entry.slug);
+
+        if (element) {
+          registerHeading(
+            entry.slug.replace("#", ""),
+            element.getBoundingClientRect().top + window.pageYOffset
+          );
+        }
+      });
+    }
+  };
+
+  const handler = debounce(recalcHeadings, 500);
 
   useEffect(() => {
     const headingsParsed = getTocHeadings();
@@ -27,8 +52,47 @@ const TableOfContents: FC<{ headings: MarkdownHeading[]; title: string }> = ({
   }, []);
 
   const onLinkClick = (e: HTMLLinkElement) => {
-    setCurrentID(e.href.replace("#", ""));
+    setCurrentID(e.href);
   };
+
+  useEffect(() => {
+    document.addEventListener("readystatechange", recalcHeadings);
+    window.addEventListener("resize", handler);
+
+    return () => {
+      document.removeEventListener("readystatechange", recalcHeadings);
+      window.removeEventListener("resize", handler);
+    };
+  }, [toc]);
+
+  useEffect(() => {
+    headingsLocal.forEach((entry) => {
+      const element = document.getElementById(entry.slug);
+
+      if (element) {
+        registerHeading(
+          entry.slug.replace("#", ""),
+          element.getBoundingClientRect().top + window.pageYOffset
+        );
+      }
+    });
+
+    return () => {
+      headingsLocal.forEach((entry) => unregisterHeading(entry.slug));
+    };
+  }, [toc]);
+
+  useEffect(() => {
+    if (window.location.hash) {
+      // required for the smooth scroll to the active header
+      setTimeout(() => {
+        window.scroll({
+          top: window.scrollY - 80,
+          behavior: "smooth",
+        });
+      });
+    }
+  }, []);
 
   if (!headingsLocal.length) {
     return null;
@@ -55,14 +119,14 @@ const TableOfContents: FC<{ headings: MarkdownHeading[]; title: string }> = ({
             <ul className="w-full mt-8" ref={toc}>
               <li className="text-lg font-medium mb-4 leading-6">{title}</li>
               {headingsLocal
-                .filter(({ depth }) => depth > 1 && depth < 4)
+                .filter(({ depth }) => depth > 1)
                 .map((heading) => (
                   <li
                     key={heading.slug}
                     className={classNames(
                       `header-link before:content-none depth-${heading.depth}`,
                       {
-                        "current-header-link": currentID === heading.slug,
+                        "current-header-link": currentSection === heading.slug,
                       }
                     )}
                   >
