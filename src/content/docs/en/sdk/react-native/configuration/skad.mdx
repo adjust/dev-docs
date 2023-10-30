@@ -1,0 +1,97 @@
+---
+title: Set up SKAdNetwork and conversion values
+description: Configure SKAdNetwork features for your iOS apps.
+slug: en/sdk/react-native/configuration/skad
+---
+
+import DeactivateSKAdNetworkHandling from "@react-native-examples/AdjustConfig/deactivateSKAdNetworkHandling.mdx";
+import DeactivateSKAdNetworkHandlingSig from "@react-native-signatures/AdjustConfig/deactivateSKAdNetworkHandling.mdx";
+import UpdateConversionValue from "@react-native-examples/Adjust/updateConversionValue.mdx";
+import UpdateConversionValueSig from "@react-native-signatures/Adjust/updateConversionValue.mdx";
+import SetConversionValueUpdatedCallbackListener from "@react-native-examples/AdjustConfig/setConversionValueUpdatedCallbackListener.mdx";
+import SetConversionValueUpdatedCallbackListenerSig from "@react-native-signatures/AdjustConfig/setConversionValueUpdatedCallbackListener.mdx";
+
+<Callout type="important">
+
+This feature is only available on devices running iOS 14 and above.
+
+</Callout>
+
+<Abbr>SKAdNetwork (StoreKit Ad Network)</Abbr> is Apple's attribution framework for
+app install and reinstall attribution. The SKAdNetwork workflow goes like this:
+
+1. Apple gathers attribution information and notifies the relevant ad network.
+2. The network sends a postback with this information to Adjust.
+3. Adjust displays SKAdNetwork data in [Datascape](https://help.adjust.com/en/suite/article/datascape) and [Data Canvas](https://help.adjust.com/en/classic/article/data-canvas-classic).
+
+## Disable SKAdNetwork communication
+
+The Adjust SDK communicates with SKAdNetwork by default on v4.23.0 and above. The SDK registers for SKAdNetwork attribution upon initialization.
+
+Your config object contains a boolean `isSKAdNetworkHandlingActive` property that controls this behavior. You can disable SKAdNetwork communication by calling the <Tooltip>`deactivateSKAdNetworkHandling` method || <DeactivateSKAdNetworkHandlingSig /></Tooltip> with no argument.
+
+<Callout type="important">
+
+You must call the `deactivateSKAdNetworkHandling` method _before_ initializing the Adjust SDK.
+
+</Callout>
+
+<DeactivateSKAdNetworkHandling />
+
+## Update conversion values
+
+Conversion values are a mechanism used to track user behavior in SKAdNetwork. You can map 64 conditions to values from 0 through 63 and send this integer value to SKAdNetwork on user install. This gives you insight into how your users interact with your app in the first few days.
+
+If you manage your conversion values with Adjust, the servers update this value in the SDK. You can also update this value by using the <Tooltip>`updateConversionValue` method || <UpdateConversionValueSig /></Tooltip>. This method wraps [Apple's `updateConversionValue` method](https://developer.apple.com/documentation/storekit/skadnetwork/3566697-updateconversionvalue). It accepts an integer argument representing your updated conversion value.
+
+<UpdateConversionValue />
+
+### Example
+
+This example demonstrates how to update a conversion value to `10` in response to a user triggering an event.
+
+```jsx {2}
+function _onPress_trackSimpleEvent() {
+   Adjust.updateConversionValue(10);
+}
+```
+
+## Listen for changes to conversion values
+
+If you use Adjust to manage conversion values, the Adjust's servers send conversion value updates to the SDK. You can set up a delegate function to listen for these changes using the <Tooltip>`setConversionValueUpdatedCallbackListener` method || <SetConversionValueUpdatedCallbackListenerSig /></Tooltip>. Pass your function as an argument.
+
+<SetConversionValueUpdatedCallbackListener />
+
+### Example
+
+This example demonstrates how to log the following when the conversion value updates:
+
+-  A message confirming the conversion value update
+-  The new conversion value
+
+```jsx
+import { Adjust, AdjustEvent, AdjustConfig } from "react-native-adjust";
+import { AdjustOaid } from "react-native-adjust-oaid";
+
+const App: () => React$Node = () => {
+   Adjust.getSdkVersion(function (sdkVersion) {
+      console.log("Adjust SDK version: " + sdkVersion);
+   });
+
+   const adjustConfig = new AdjustConfig(
+      "{YourAppToken}",
+      AdjustConfig.EnvironmentSandbox
+   );
+
+   adjustConfig.setConversionValueUpdatedCallbackListener(function (
+      conversionValue
+   ) {
+      console.log("Conversion value updated. Callback received");
+      console.log("Conversion value: " + conversionValue.conversionValue);
+   });
+
+   Adjust.create(adjustConfig);
+};
+
+export default App;
+```
