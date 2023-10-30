@@ -1,0 +1,32 @@
+---
+import type { Position } from "@adjust/components";
+import BuildTooltip from "@components/atlas/BuildTooltip";
+
+export interface Props {
+  position: Position;
+}
+
+const { position } = Astro.props as Props;
+
+let content = "";
+let toolTipContent = "";
+let body = "";
+
+// Matchs the pattern "text || text"
+const tooltipRegex = /(.*)\n?\s\|\|\s\n?((.|\n)*)/m;
+
+if (Astro.slots.has("default")) {
+  content = await Astro.slots.render("default");
+  if (tooltipRegex.test(content)) {
+    let regex = tooltipRegex.exec(content);
+    body = regex?.[1]!;
+    toolTipContent = regex?.[2]!;
+    content = body;
+  }
+}
+---
+
+<BuildTooltip position={position} client:only="react">
+  <Fragment set:html={body} name="children" />
+  <Fragment set:html={toolTipContent} slot="content" />
+</BuildTooltip>
