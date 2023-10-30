@@ -8,16 +8,12 @@ interface TableOfContentsMobileProps {
   onThisPageID: string;
   toc: React.RefObject<HTMLUListElement>;
   headingsLocal: MarkdownHeading[];
-  currentID: string;
-  onLinkClick: (e: HTMLLinkElement) => void;
 }
 
 const TableOfContentsMobile: FC<TableOfContentsMobileProps> = ({
   onThisPageID,
   toc,
   headingsLocal,
-  currentID,
-  onLinkClick,
 }) => {
   return (
     <div className="xs:block lg:hidden border-[1px] p-2 my-4">
@@ -30,15 +26,9 @@ const TableOfContentsMobile: FC<TableOfContentsMobileProps> = ({
           .map((heading) => (
             <li
               key={heading.slug}
-              className={`header-link before:content-none depth-${
-                heading.depth
-              } ${
-                currentID === heading.slug ? "current-header-link" : ""
-              }`.trim()}
+              className={`header-link before:content-none depth-${heading.depth}`}
             >
-              <a href={`#${heading.slug}`} onClick={onLinkClick}>
-                {unescape(heading.text)}
-              </a>
+              <a href={`#${heading.slug}`}>{unescape(heading.text)}</a>
             </li>
           ))}
       </ul>

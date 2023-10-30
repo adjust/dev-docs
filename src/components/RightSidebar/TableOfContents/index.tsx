@@ -3,16 +3,16 @@ import type { FC } from "react";
 import { unescape } from "html-escaper";
 import { useState, useEffect, useRef } from "react";
 import classNames from "classnames";
-import ChevronRight from "@components/Icons/react/ChevronRight";
-import { debounce } from "lodash-es";
 
-import "../right-sidebar.css";
 import TableOfContentsMobile from "./TOCMobile";
 import CollapsedTOC from "./CollapsedTOC";
 import { getTocHeadings } from "@utils/helpers/toc/getTocHeadings";
 import { useScrollSpy } from "@hooks/useScrollSpy";
+import ChevronRight from "@components/Icons/react/ChevronRight";
 
-const HEADER_HEIGHT = 110;
+import "../right-sidebar.css";
+
+const HEADER_HEIGHT = 80;
 
 const TableOfContents: FC<{ headings: MarkdownHeading[]; title: string }> = ({
   headings = [],
@@ -21,43 +21,23 @@ const TableOfContents: FC<{ headings: MarkdownHeading[]; title: string }> = ({
   const [headingsLocal, setHeadingsLocal] = useState(headings);
   const toc = useRef<HTMLUListElement>(null);
   const onThisPageID = "on-this-page-heading";
-  const [currentID, setCurrentID] = useState(
-    headingsLocal[0].slug ?? "overview"
-  );
+  const hashId = window.location?.hash?.replace("#", "") ?? "";
+  const [clickedId, setClickedId] = useState(hashId);
+
   const [isOpened, setIsOpened] = useState(true);
-  const tocEntryIds = headingsLocal.map((heading) => heading.slug);
 
-  const { currentSection, registerHeading, unregisterHeading } =
-    useScrollSpy(tocEntryIds);
-
-  const recalcHeadings = () => {
-    headingsLocal.forEach((entry) => unregisterHeading(entry.slug));
-
-    headingsLocal.forEach((entry) => {
-      const element = document.getElementById(entry.slug);
-
-      if (element) {
-        registerHeading(
-          entry.slug.replace("#", ""),
-          element.getBoundingClientRect().top + window.pageYOffset
-        );
-      }
-    });
-  };
+  const { activeId } = useScrollSpy();
 
   const handleClick = (id: string) => {
-    // need to scroll to the element without sticky header height
+    // need to scroll to the element without header height
     setTimeout(() => {
       window.scroll({
         top: window.scrollY + HEADER_HEIGHT,
         behavior: "smooth",
       });
-    });
-
-    setCurrentID(id);
+    }, 50);
+    setClickedId(id);
   };
-
-  const handler = debounce(recalcHeadings, 500);
 
   useEffect(() => {
     const headingsParsed = getTocHeadings();
@@ -65,46 +45,14 @@ const TableOfContents: FC<{ headings: MarkdownHeading[]; title: string }> = ({
     setHeadingsLocal(headingsParsed);
   }, []);
 
-  const onLinkClick = (e: HTMLLinkElement) => {
-    setCurrentID(e.href);
-  };
-
   useEffect(() => {
-    document.addEventListener("readystatechange", recalcHeadings);
-    window.addEventListener("resize", handler);
-
-    return () => {
-      document.removeEventListener("readystatechange", recalcHeadings);
-      window.removeEventListener("resize", handler);
-    };
-  }, [toc]);
-
-  useEffect(() => {
-    headingsLocal.forEach((entry) => {
-      const element = document.getElementById(entry.slug);
-
-      if (element) {
-        registerHeading(
-          entry.slug.replace("#", ""),
-          element.getBoundingClientRect().top + window.pageYOffset
-        );
-      }
-    });
-
-    return () => {
-      headingsLocal.forEach((entry) => unregisterHeading(entry.slug));
-    };
-  }, [toc]);
-
-  useEffect(() => {
-    if (window.location.hash) {
+    if (hashId) {
       // required for the smooth scroll to the active header
       setTimeout(() => {
-        window.scroll({
-          top: window.scrollY + HEADER_HEIGHT,
+        document.getElementById(hashId)?.scrollIntoView({
           behavior: "smooth",
         });
-      }, 300);
+      }, 100);
     }
   }, []);
 
@@ -140,7 +88,9 @@ const TableOfContents: FC<{ headings: MarkdownHeading[]; title: string }> = ({
                     className={classNames(
                       `header-link before:content-none depth-${heading.depth}`,
                       {
-                        "current-header-link": currentSection === heading.slug,
+                        "current-header-link": clickedId
+                          ? clickedId === heading.slug
+                          : activeId === heading.slug,
                       }
                     )}
                   >
@@ -163,8 +113,6 @@ const TableOfContents: FC<{ headings: MarkdownHeading[]; title: string }> = ({
         onThisPageID={onThisPageID}
         toc={toc}
         headingsLocal={headingsLocal}
-        currentID={currentID}
-        onLinkClick={onLinkClick}
       />
     </>
   );
