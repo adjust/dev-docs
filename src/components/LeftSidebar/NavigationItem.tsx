@@ -70,6 +70,7 @@ const LeftSidebarItem: FC<{
       {isOpen
         ? sidebarData?.children?.map((child) => (
             <LeftSidebarItem
+              key={child.path}
               currentPage={currentPage}
               sidebarData={child}
               level={child.level}
