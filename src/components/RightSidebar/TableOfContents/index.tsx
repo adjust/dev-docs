@@ -80,7 +80,9 @@ const TableOfContents: FC<{ headings: MarkdownHeading[]; title: string }> = ({
   useEffect(() => {
     const article = document.getElementById("article-content");
     article!.className =
-      isOpened && !isMobile ? "article-content pr-[275px]" : "article-content";
+      isOpened && !isMobile && headingsLocal.length
+        ? "article-content pr-[275px]"
+        : "article-content";
   }, [isOpened, isMobile]);
 
   if (!headingsLocal.length) {
