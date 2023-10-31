@@ -11,7 +11,11 @@ export const getTocHeadings = () => {
   // parsing data for the TOC
   for (const heading of headings) {
     const text = heading.textContent;
-    let slug = text?.toLocaleLowerCase().split(" ").join("-")!;
+    let slug = text
+      ?.toLocaleLowerCase()
+      .replace(/\W(?<!\s)/gi, "")
+      .split(" ")
+      .join("-")!;
 
     const isSavedHeading = !!headingsParsed.find(
       (savedHeading) => savedHeading.slug === slug
