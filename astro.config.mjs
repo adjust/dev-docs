@@ -48,7 +48,7 @@ export default defineConfig({
     tailwind(),
     sitemap(),
   ],
-  site: `https://dev-docs-nine.vercel.app/`,
+  site: `https://dev.adjust.com/`,
   markdown: {
     remarkPlugins: [remarkDefinitionList],
     remarkRehype: {
