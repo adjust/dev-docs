@@ -3,6 +3,7 @@ import type { FC } from "react";
 import { unescape } from "html-escaper";
 import { useState, useEffect, useRef } from "react";
 import classNames from "classnames";
+import { debounce } from "lodash-es";
 
 import TableOfContentsMobile from "./TOCMobile";
 import CollapsedTOC from "./CollapsedTOC";
@@ -14,11 +15,17 @@ import "../right-sidebar.css";
 
 const HEADER_HEIGHT = 80;
 
+const checkIsMobile = () => {
+  const { innerWidth: width } = window;
+  return width <= 1024;
+};
+
 const TableOfContents: FC<{ headings: MarkdownHeading[]; title: string }> = ({
   headings = [],
   title,
 }) => {
   const [headingsLocal, setHeadingsLocal] = useState(headings);
+  const [isMobile, setIsMobile] = useState(checkIsMobile());
   const toc = useRef<HTMLUListElement>(null);
   const onThisPageID = "on-this-page-heading";
   const hashId = window.location?.hash?.replace("#", "") ?? "";
@@ -55,6 +62,26 @@ const TableOfContents: FC<{ headings: MarkdownHeading[]; title: string }> = ({
       }, 100);
     }
   }, []);
+
+  const handleResize = () => {
+    setIsMobile(checkIsMobile());
+  };
+
+  const resizeHandler = debounce(handleResize, 500);
+
+  // required for the mobile design
+  useEffect(() => {
+    window.addEventListener("resize", resizeHandler);
+
+    return () => window.removeEventListener("resize", resizeHandler);
+  }, []);
+
+  // need to add right padding for the article when TOC is opened
+  useEffect(() => {
+    const article = document.getElementById("article-content");
+    article!.className =
+      isOpened && !isMobile ? "article-content pr-[275px]" : "article-content";
+  }, [isOpened, isMobile]);
 
   if (!headingsLocal.length) {
     return null;
