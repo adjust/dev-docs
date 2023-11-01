@@ -1,6 +1,4 @@
-export enum NavItemTypes {
-  category,
-}
+export type NavItemTypes = "category";
 
 export interface CategoryEntry {
   children: CategoryEntry[];
@@ -39,5 +37,10 @@ export interface NavigationData {
     title: string;
     url: string;
     level: number;
+  }[];
+  childLinks: {
+    slug: string;
+    title: string;
+    description: string;
   }[];
 }

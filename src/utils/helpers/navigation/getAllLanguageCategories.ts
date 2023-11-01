@@ -32,11 +32,12 @@ const getLevel = (url: string, langKey: string) => {
  */
 export const getAllCategoriesUnderLanguages = (
   data: NavigationEntry[],
-  currentPage: string
+  currentPage: string,
+  currentPageType?: NavigationEntry["type"]
 ) => {
   const categories: { [key: string]: CategoryEntry } = {};
   const breadcrumbs: NavigationData["breadcrumbs"] = [];
-  const childLinks: { slug: string; title: string; description: string }[] = [];
+  const childLinks: NavigationData["childLinks"] = [];
 
   KNOWN_LANGUAGE_CODES.forEach((languageKey) => {
     data.forEach((item) => {
@@ -51,7 +52,6 @@ export const getAllCategoriesUnderLanguages = (
         description,
         type,
       } = item;
-      console.log(item, "item");
 
       const parentId = getParentId(path);
 
@@ -122,10 +122,11 @@ export const getAllCategoriesUnderLanguages = (
             });
           }
 
-          const splittedCurrentPage = currentPage.slice(1).split("/");
-          const splittedChildPage = child.slug?.split("/");
+          const splittedCurrentPage = currentPage.split("/");
+          const splittedChildPage = ("/" + child.slug)?.split("/");
 
           if (
+            currentPageType === "category" &&
             splittedCurrentPage.length + 1 === splittedChildPage.length &&
             child.slug?.includes(currentPage.slice(1))
           ) {

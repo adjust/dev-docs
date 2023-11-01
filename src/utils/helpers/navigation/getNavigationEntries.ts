@@ -13,7 +13,8 @@ const getLastPath = (value: string) => {
 
 export const getNavigationEntries = (
   pages: MDXInstance<Record<string, any>>[],
-  currentPage: string
+  currentPage: string,
+  currentPageType?: NavigationEntry["type"]
 ): NavigationData => {
   // getting data for the pages
   const pagesData = pages.map((page) => ({
@@ -23,7 +24,11 @@ export const getNavigationEntries = (
   }));
 
   const { categories, breadcrumbs, childLinks } =
-    getAllCategoriesUnderLanguages(pagesData as NavigationEntry[], currentPage);
+    getAllCategoriesUnderLanguages(
+      pagesData as NavigationEntry[],
+      currentPage,
+      currentPageType
+    );
 
   const languageTree = KNOWN_LANGUAGE_CODES.reduce((acc, langKey) => {
     const langItem = categories[langKey];
