@@ -9,12 +9,13 @@ const LeftSidebarItem: FC<{
   currentPage: string;
   sidebarData: CategoryEntry;
   level: number;
-}> = ({ currentPage, sidebarData, level = 1 }) => {
+}> = ({ currentPage, sidebarData, level = 1, currentPage2 }) => {
   const [isOpen, setIsOpen] = useState(sidebarData.collapsed);
 
   const handleCollapse = () => {
     setIsOpen(!isOpen);
   };
+  console.log(currentPage2, "currentPage2");
 
   const isChilds = sidebarData?.children?.length && !sidebarData.topCategory;
 
