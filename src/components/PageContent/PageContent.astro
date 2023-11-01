@@ -1,14 +1,17 @@
 ---
 import type { MarkdownHeading } from "astro";
+import classNames from "classnames";
 
 import RightSidebar from "@components/RightSidebar/RightSidebar.astro";
+
+import "./article.css";
 
 type Props = {
   title: string;
   headings: MarkdownHeading[];
 };
 
-const { title, headings } = Astro.props;
+const { title, headings, childLinks } = Astro.props;
 ---
 
 <article id="article" class="article-main w-full">
@@ -19,8 +22,26 @@ const { title, headings } = Astro.props;
     <aside title="Table of Contents">
       <RightSidebar headings={headings} title={title} />
     </aside>
-    <div class="article-content" id="article-content">
+    <div
+      class={classNames({ "article-content": !childLinks.length })}
+      id="article-content"
+    >
       <slot />
+
+      <div class="article-categories w-full flex flex-wrap gap-y-4">
+        {
+          childLinks.map((child) => (
+            <div class="xs:w-full lg:w-1/3 px-4 min-h-[144px]">
+              <a
+                href={"/" + child.slug}
+                class="flex h-full justify-center items-center rounded-lg border hover:shadow-lg"
+              >
+                {child.title}
+              </a>
+            </div>
+          ))
+        }
+      </div>
     </div>
   </section>
 </article>

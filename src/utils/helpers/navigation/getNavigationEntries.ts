@@ -22,10 +22,8 @@ export const getNavigationEntries = (
     url: page.url ? getLastPath(page.url) : "",
   }));
 
-  const { categories, breadcrumbs } = getAllCategoriesUnderLanguages(
-    pagesData as NavigationEntry[],
-    currentPage
-  );
+  const { categories, breadcrumbs, childLinks } =
+    getAllCategoriesUnderLanguages(pagesData as NavigationEntry[], currentPage);
 
   const languageTree = KNOWN_LANGUAGE_CODES.reduce((acc, langKey) => {
     const langItem = categories[langKey];
@@ -40,5 +38,5 @@ export const getNavigationEntries = (
     return acc;
   }, {} as { [key: string]: CategoryEntry });
 
-  return { languageTree, breadcrumbs };
+  return { languageTree, breadcrumbs, childLinks };
 };

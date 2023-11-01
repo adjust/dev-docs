@@ -36,6 +36,7 @@ export const getAllCategoriesUnderLanguages = (
 ) => {
   const categories: { [key: string]: CategoryEntry } = {};
   const breadcrumbs: NavigationData["breadcrumbs"] = [];
+  const childLinks: { slug: string; title: string }[] = [];
 
   KNOWN_LANGUAGE_CODES.forEach((languageKey) => {
     data.forEach((item) => {
@@ -112,6 +113,19 @@ export const getAllCategoriesUnderLanguages = (
               level: child.level,
             });
           }
+
+          const splittedCurrentPage = currentPage.slice(1).split("/");
+          const splittedChildPage = child.slug?.split("/");
+
+          if (
+            splittedCurrentPage.length + 1 === splittedChildPage.length &&
+            child.slug?.includes(currentPage.slice(1))
+          ) {
+            childLinks.push({
+              title: child.title,
+              slug: child.slug,
+            });
+          }
         });
 
         return {
@@ -132,5 +146,15 @@ export const getAllCategoriesUnderLanguages = (
       arr.findIndex((element) => element.url === breadcrumb.url) === index
   );
 
-  return { categories, breadcrumbs: breadcrumbsUnique };
+  const filteredChilds = childLinks.filter(
+    (childLink, index, childLinksArr) =>
+      childLinksArr.findIndex((element) => element.slug === childLink.slug) ===
+      index
+  );
+
+  return {
+    categories,
+    breadcrumbs: breadcrumbsUnique,
+    childLinks: filteredChilds,
+  };
 };
