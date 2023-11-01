@@ -22,6 +22,7 @@ export const getNavigationEntries = (
     path: page.url?.replace(".mdx", ""),
     url: page.url ? getLastPath(page.url) : "",
   }));
+  console.log(currentPage, "currentPage");
 
   const { categories, breadcrumbs, childLinks } =
     getAllCategoriesUnderLanguages(
