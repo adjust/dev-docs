@@ -122,7 +122,9 @@ export const getAllCategoriesUnderLanguages = (
             });
           }
 
-          const splittedCurrentPage = currentPage.split("/");
+          const splittedCurrentPage = currentPage
+            ?.replace(/\/$/g, "")
+            .split("/");
           const splittedChildPage = ("/" + child.slug)?.split("/");
 
           if (
