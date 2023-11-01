@@ -36,7 +36,7 @@ export const getAllCategoriesUnderLanguages = (
 ) => {
   const categories: { [key: string]: CategoryEntry } = {};
   const breadcrumbs: NavigationData["breadcrumbs"] = [];
-  const childLinks: { slug: string; title: string }[] = [];
+  const childLinks: { slug: string; title: string; description: string }[] = [];
 
   KNOWN_LANGUAGE_CODES.forEach((languageKey) => {
     data.forEach((item) => {
@@ -48,7 +48,11 @@ export const getAllCategoriesUnderLanguages = (
         "category-title": categoryTitle,
         url,
         path,
+        description,
+        type,
       } = item;
+      console.log(item, "item");
+
       const parentId = getParentId(path);
 
       const usedTitle = sidebarLabel || categoryTitle || title;
@@ -56,6 +60,8 @@ export const getAllCategoriesUnderLanguages = (
       // creating language object
       if (!categories[languageKey]) {
         categories[languageKey] = {
+          description,
+          type,
           children: [],
           position,
           title: usedTitle,
@@ -75,6 +81,8 @@ export const getAllCategoriesUnderLanguages = (
 
         categories[languageKey].children?.push({
           ...item,
+          description,
+          type,
           children: [],
           position,
           title: usedTitle,
@@ -124,6 +132,7 @@ export const getAllCategoriesUnderLanguages = (
             childLinks.push({
               title: child.title,
               slug: child.slug,
+              description: child.description,
             });
           }
         });

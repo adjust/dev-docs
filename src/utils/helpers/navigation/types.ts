@@ -1,3 +1,7 @@
+export enum NavItemTypes {
+  category,
+}
+
 export interface CategoryEntry {
   children: CategoryEntry[];
   title: string;
@@ -9,6 +13,8 @@ export interface CategoryEntry {
   path: string;
   url?: string;
   topCategory: boolean;
+  description: string;
+  type: NavItemTypes;
 }
 
 export interface NavigationEntry {
@@ -19,6 +25,8 @@ export interface NavigationEntry {
   slug: string;
   url: string;
   path: string;
+  description: string;
+  type: NavItemTypes;
 }
 
 export interface GroupedNavigationItems {
