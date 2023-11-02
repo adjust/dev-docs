@@ -87,7 +87,8 @@ export const getCategoriesUnderLanguage = (
         children: [],
         position,
         title: usedTitle,
-        slug,
+        // need to add lang param to the slug
+        slug: `/${currentLang}/${slug}`,
         parentId,
         topCategory: isTopCategory,
         collapsed: isTopCategory,
