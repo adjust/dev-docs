@@ -4,12 +4,14 @@ import classNames from "classnames";
 import { Icon } from "@adjust/components";
 
 import type { CategoryEntry } from "src/utils/helpers/navigation/types";
+import type { Locales } from "@i18n/locales";
 
 const LeftSidebarItem: FC<{
   currentPage: string;
   sidebarData: CategoryEntry;
   level: number;
-}> = ({ currentPage, sidebarData, level = 1 }) => {
+  langCode: keyof Locales;
+}> = ({ currentPage, sidebarData, level = 1, langCode }) => {
   const [isOpen, setIsOpen] = useState(sidebarData.collapsed);
 
   const handleCollapse = () => {
@@ -51,7 +53,7 @@ const LeftSidebarItem: FC<{
             </>
           ) : null}
           <a
-            href={"/" + sidebarData.slug}
+            href={`/${langCode}/` + sidebarData.slug}
             className={classNames(
               "inline-block w-full text-sm hover:no-underline",
               {
@@ -74,6 +76,7 @@ const LeftSidebarItem: FC<{
               currentPage={currentPage}
               sidebarData={child}
               level={child.level}
+              langCode={langCode}
             />
           ))
         : null}
