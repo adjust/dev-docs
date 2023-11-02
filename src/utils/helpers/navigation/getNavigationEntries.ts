@@ -3,7 +3,7 @@ import type { MDXInstance } from "astro";
 import { CONTENT_PATH } from "src/consts";
 import type { Locales } from "@i18n/locales";
 import { getNavigationTree } from "./getNavigationTree";
-import { getCategoriesUnderLanguage } from "./getAllLanguageCategories";
+import { getCategoriesUnderLanguage } from "./getCategoriesUnderLanguage";
 
 import type { NavigationData, NavigationEntry } from "./types";
 
