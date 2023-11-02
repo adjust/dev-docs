@@ -29,10 +29,7 @@ export const getCategoryChild = ({
     let isCollapsed = false;
 
     parts.forEach((part) => {
-      if (
-        child.path?.endsWith(part + "/index") ||
-        child.path?.includes(currentPageFixed)
-      ) {
+      if (child.path?.endsWith(part + "/index") || child.path?.endsWith(part)) {
         isCollapsed = true;
         breadcrumbs.unshift({
           title: child.title,
