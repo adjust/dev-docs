@@ -1,6 +1,7 @@
-import type { Locales } from "@i18n/locales";
 import { CONTENT_PATH } from "src/consts";
+import { getCategoryChild } from "./getCategoryChildrens";
 
+import type { Locales } from "@i18n/locales";
 import type { CategoryEntry, NavigationData, NavigationEntry } from "./types";
 
 const getParentId = (url: string) => {
@@ -95,55 +96,14 @@ export const getCategoriesUnderLanguage = (
     }
   });
 
-  const pathParts = currentPage.split("/").filter((part) => part !== "");
-
-  const parts = pathParts.reduce((result, _, index) => {
-    const fullPath = `/${pathParts.slice(0, index + 1).join("/")}`;
-
-    result.push(fullPath);
-
-    return result;
-  }, [] as string[]);
-
-  categories[currentLang].children = categories[currentLang].children.map(
-    (child) => {
-      let isCollapsed = false;
-
-      parts.forEach((part) => {
-        if (
-          child.path?.endsWith(part + "/index") ||
-          child.path?.endsWith(part)
-        ) {
-          isCollapsed = true;
-          breadcrumbs.unshift({
-            title: child.title,
-            url: child.slug,
-            level: child.level,
-          });
-        }
-
-        const splittedCurrentPage = currentPage?.replace(/\/$/g, "").split("/");
-        const splittedChildPage = ("/" + child.slug)?.split("/");
-
-        if (
-          currentPageType === "category" &&
-          splittedCurrentPage.length + 1 === splittedChildPage.length &&
-          child.slug?.includes(currentPage.slice(1))
-        ) {
-          childLinks.push({
-            title: child.title,
-            slug: child.slug,
-            description: child.description,
-          });
-        }
-      });
-
-      return {
-        ...child,
-        collapsed: isCollapsed,
-      };
-    }
-  );
+  categories[currentLang].children = getCategoryChild({
+    categories,
+    currentLang,
+    currentPage,
+    breadcrumbs,
+    childLinks,
+    currentPageType,
+  });
 
   // need to sort breadcrumbs by level to make sure that the hierarchy is correct
   const sortedBreadcrumbs = breadcrumbs.sort((a, b) =>
