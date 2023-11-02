@@ -1,4 +1,5 @@
 import { getPathParts } from "./getPathParts";
+import { CONTENT_PATH } from "src/consts";
 
 import type { Locales } from "@i18n/locales";
 import type { CategoryEntry, NavItemTypes, NavigationData } from "./types";
@@ -22,7 +23,7 @@ export const getCategoryChild = ({
 }: GetCategoryChildParams) => {
   const parts = getPathParts(currentPage);
   // we should remove the last slash for the Production/Preview deployment(something related to the SSR)
-  const currentPageFixed = currentPage?.replace(/\/$/g, "");
+  const currentPageFixed = CONTENT_PATH  + currentPage?.replace(/\/$/g, "");
   const splittedCurrentPage = currentPageFixed.split("/");
 
   return categories[currentLang].children.map((child) => {
@@ -37,13 +38,13 @@ export const getCategoryChild = ({
           level: child.level,
         });
       }
-
-      const splittedChildPage = ("/" + child.slug)?.split("/");
+      const childPageSlug = CONTENT_PATH + `/${currentLang}/` + child.slug
+      const splittedChildPage = (CONTENT_PATH + `/${currentLang}/` + child.slug)?.split("/");
 
       if (
         currentPageType === "category" &&
         splittedCurrentPage.length + 1 === splittedChildPage.length &&
-        child.slug?.includes(currentPage.slice(1))
+        childPageSlug?.includes(currentPage.slice(1))
       ) {
         childLinks.push({
           title: child.title,
