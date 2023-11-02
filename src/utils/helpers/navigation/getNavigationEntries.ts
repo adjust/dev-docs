@@ -1,11 +1,11 @@
 import type { MDXInstance } from "astro";
 
 import { CONTENT_PATH } from "src/consts";
-import { KNOWN_LANGUAGE_CODES } from "@i18n/locales";
+import type { Locales } from "@i18n/locales";
 import { getNavigationTree } from "./getNavigationTree";
-import { getAllCategoriesUnderLanguages } from "./getAllLanguageCategories";
+import { getCategoriesUnderLanguage } from "./getAllLanguageCategories";
 
-import type { CategoryEntry, NavigationData, NavigationEntry } from "./types";
+import type { NavigationData, NavigationEntry } from "./types";
 
 const getLastPath = (value: string) => {
   return value?.replace(/\/[\w\d\-\.]*$/, "");
@@ -14,6 +14,7 @@ const getLastPath = (value: string) => {
 export const getNavigationEntries = (
   pages: MDXInstance<Record<string, any>>[],
   currentPage: string,
+  currentLang: keyof Locales,
   currentPageType?: NavigationEntry["type"]
 ): NavigationData => {
   // getting data for the pages
@@ -23,25 +24,25 @@ export const getNavigationEntries = (
     url: page.url ? getLastPath(page.url) : "",
   }));
 
-  const { categories, breadcrumbs, childLinks } =
-    getAllCategoriesUnderLanguages(
-      pagesData as NavigationEntry[],
-      currentPage,
-      currentPageType
-    );
+  // data for the pages under current language root
+  const { categories, breadcrumbs, childLinks } = getCategoriesUnderLanguage(
+    pagesData as NavigationEntry[],
+    currentPage,
+    currentLang,
+    currentPageType
+  );
 
-  const languageTree = KNOWN_LANGUAGE_CODES.reduce((acc, langKey) => {
-    const langItem = categories[langKey];
-
-    acc[langKey] = {
+  // language object with a hierarchy for the categories
+  const langItem = categories[currentLang];
+  const languageTree = {
+    [currentLang]: {
       ...langItem,
       children: getNavigationTree(
         langItem!.children!,
-        `${CONTENT_PATH}/${langKey}`
+        `${CONTENT_PATH}/${currentLang}`
       ),
-    };
-    return acc;
-  }, {} as { [key: string]: CategoryEntry });
+    },
+  };
 
   return { languageTree, breadcrumbs, childLinks };
 };
