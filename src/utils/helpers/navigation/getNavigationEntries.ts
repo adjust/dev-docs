@@ -23,7 +23,7 @@ export const getNavigationEntries = (
     path: page.url?.replace(".mdx", ""),
     url: page.url ? getLastPath(page.url) : "",
   }));
-  
+
   // data for the pages under current language root
   const { categories, breadcrumbs, childLinks } = getCategoriesUnderLanguage(
     pagesData as NavigationEntry[],
