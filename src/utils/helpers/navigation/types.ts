@@ -31,6 +31,12 @@ export interface GroupedNavigationItems {
   [langKey: string]: { [categoryKey: string]: CategoryEntry };
 }
 
+export interface ChildLink {
+  slug: string;
+  title: string;
+  description: string;
+}
+
 export interface NavigationData {
   languageTree: { [key: string]: CategoryEntry };
   breadcrumbs: {
@@ -38,9 +44,5 @@ export interface NavigationData {
     url: string;
     level: number;
   }[];
-  childLinks: {
-    slug: string;
-    title: string;
-    description: string;
-  }[];
+  childLinks: ChildLink[];
 }
