@@ -83,7 +83,7 @@ const TableOfContents: FC<{ headings: MarkdownHeading[]; title: string }> = ({
       isOpened && !isMobile && headingsLocal.length
         ? "article-content pr-[275px]"
         : "article-content";
-  }, [isOpened, isMobile]);
+  }, [isOpened, isMobile, headingsLocal]);
 
   if (!headingsLocal.length) {
     return null;
