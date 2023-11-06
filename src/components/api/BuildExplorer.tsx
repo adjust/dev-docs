@@ -1,0 +1,33 @@
+import type { FC } from "react";
+import "rapidoc";
+
+const BuildExplorer: FC<{
+  link: string;
+}> = (props) => {
+  return (
+    <rapi-doc
+      spec-url={props.link}
+      render-style="view"
+      style={{ height: "100%", width: "100%" }}
+      show-header="false"
+      allow-try="false"
+      allow-authentication="false"
+      allow-server-selection="false"
+      allow-spec-file-download="true"
+      show-info="false"
+      theme="light"
+      regular-font="TTNormsPro"
+      allow-spec-url-load="false"
+      primary-color="#1F51D9"
+      bg-color="#fff"
+      text-color="#000000"
+      mono-font="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace"
+      default-schema-tab="schema"
+      font-size="large"
+      layout="row"
+      schema-style="table"
+    ></rapi-doc>
+  );
+};
+
+export default BuildExplorer;
