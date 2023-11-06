@@ -1,13 +1,21 @@
-import React, { useContext, useEffect, memo, FC } from "react";
-import { useRouter } from "next/router";
-import Cookies from "js-cookie";
+import classNames from "classnames";
+import { type FC, useState, useRef } from "react";
 
-import { I18NContext } from "i18n/components/I18nContextProvider";
-import { LOCALE_NAMES } from "i18n/locales";
-import CustomLanguageSwitch from "i18n/components/CustomLanguageSwitch";
-import { Icon } from "components/common/Atlas/Icon";
+import IconLanguage from "@components/Icons/react/IconLanguage";
+import { useOnClickOutside } from "@hooks/useOnClickOutside";
+import { useWaitToTrigger } from "@hooks/useWaitToTrigger";
 
-const FooterLanguageSwitch: FC = memo(() => {
+import type { Locales } from "@i18n/locales";
+import type { LanguageSwitchProps } from "./types";
+import LanguageSwitch from "../LanguageSwitch";
+
+const FooterLanguageSwitch: FC<LanguageSwitchProps> = ({
+  lang,
+  locales,
+  hideIcon = false,
+  isFooter,
+  currentUrl,
+}) => {
   const router = useRouter();
   const langContext = useContext(I18NContext);
 
@@ -36,16 +44,19 @@ const FooterLanguageSwitch: FC = memo(() => {
 
   return (
     <div className="footer_language-switch min-h-[36px] bg-white flex items-center rounded-3xl border-[1px] border-solid border-[#000] relative min-w-[107px] xs:mb-4 md:mb-0 hover:cursor-pointer">
-      <CustomLanguageSwitch
+      <LanguageSwitch
         onChange={handleLanguageChange}
         lang={langContext.language}
         locales={LOCALE_NAMES}
         hideIcon
         isFooter
       />
-      <Icon name="ChevronDown" css={{ position: "absolute", right: "10px", top: "5px" }} />
+      <Icon
+        name="ChevronDown"
+        css={{ position: "absolute", right: "10px", top: "5px" }}
+      />
     </div>
   );
-});
+};
 
 export default FooterLanguageSwitch;
