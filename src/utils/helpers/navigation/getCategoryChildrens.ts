@@ -39,7 +39,7 @@ export const getCategoryChild = ({
         });
       }
 
-      const splittedChildPage = child.slug?.split("/");
+      const splittedChildPage = ('/' + child.slug)?.split("/");
 
       if (
         currentPageType === "category" &&

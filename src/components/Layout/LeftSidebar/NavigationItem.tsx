@@ -51,7 +51,7 @@ const LeftSidebarItem: FC<{
             </>
           ) : null}
           <a
-            href={sidebarData.slug}
+            href={`/${sidebarData.slug}`}
             className={classNames(
               "inline-block w-full text-sm hover:no-underline",
               {
