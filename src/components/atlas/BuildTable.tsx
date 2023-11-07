@@ -20,7 +20,7 @@ const BuildTable: FC<{
   bordered: boolean;
   flex: boolean;
   striped: boolean;
-  height?: number | "full-height" | undefined;
+  height?: TableHeights;
   list?: boolean;
 }> = (props) => {
   // Set up a blank string for the search term
