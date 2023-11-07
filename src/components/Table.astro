@@ -7,7 +7,7 @@ export interface Props {
   noborder: boolean;
   noflex: boolean;
   striped: boolean;
-  height?: number | "full-height" | undefined;
+  height?: TableHeights
   list: boolean;
 }
 
@@ -26,6 +26,11 @@ const {
 
 let content = "";
 
+// Check to see if the height passed is a real number.
+// If it is, this needs to be passed as a number. If not, it should be passed as-is.
+
+let heightNumber = isNaN(Number(height));
+
 if (Astro.slots.has("default")) {
   content = await Astro.slots.render("default");
 }
@@ -38,7 +43,7 @@ if (Astro.slots.has("default")) {
   search={search}
   flex={!noflex && !resizable}
   striped={striped}
-  height={height ? Number(height) : "full-height"}
+  height={!heightNumber ? Number(height) : height}
   list={list}
 >
   <Fragment set:html={content} slot="content" />
