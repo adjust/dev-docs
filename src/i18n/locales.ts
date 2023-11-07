@@ -8,7 +8,7 @@ export const LOCALE_NAMES: Locales = {
   pt: "Português",
 };
 
-export const langPathRegex = /\/([a-z]{2}-?[A-Z]{0,2})\//;
+export const langPathRegex = /\/([a-z]{2}-?[A-Z]{0,2})(\/|$)/;
 
 export const KNOWN_LANGUAGE_CODES = Object.keys(LOCALE_NAMES);
 
