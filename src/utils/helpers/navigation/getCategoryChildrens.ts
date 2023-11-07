@@ -44,7 +44,7 @@ export const getCategoryChild = ({
       if (
         currentPageType === "category" &&
         splittedCurrentPage.length + 1 === splittedChildPage.length &&
-        child.slug?.includes(currentPage)
+        child.slug?.includes(currentPage.slice(1))
       ) {
         childLinks.push({
           title: child.title,
