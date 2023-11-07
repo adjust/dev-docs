@@ -13,7 +13,7 @@ interface GetCategoryChildParams {
   currentPageType?: NavItemTypes;
 }
 
-export const getCategoryChild = ({
+export const getCategoryChildrens = ({
   categories,
   currentLang,
   currentPage,
@@ -39,7 +39,7 @@ export const getCategoryChild = ({
         });
       }
 
-      const splittedChildPage = ('/' + child.slug)?.split("/");
+      const splittedChildPage = ("/" + child.slug)?.split("/");
 
       if (
         currentPageType === "category" &&
