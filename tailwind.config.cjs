@@ -30,6 +30,7 @@ module.exports = {
 
     extend: {
       backgroundColor: {
+        "body-main": "#f9fafb",
         success: "#d4f8f2",
         primary: "#ddebf9",
         neutral: "#eceef4",
