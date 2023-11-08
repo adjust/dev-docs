@@ -1,5 +1,5 @@
 import { CONTENT_PATH } from "src/consts";
-import { getCategoryChild } from "./getCategoryChildrens";
+import { getCategoryChildrens } from "./getCategoryChildrens";
 
 import type { Locales } from "@i18n/locales";
 import type { CategoryEntry, NavigationData, NavigationEntry } from "./types";
@@ -96,7 +96,7 @@ export const getCategoriesUnderLanguage = (
     }
   });
 
-  categories[currentLang].children = getCategoryChild({
+  categories[currentLang].children = getCategoryChildrens({
     categories,
     currentLang,
     currentPage,

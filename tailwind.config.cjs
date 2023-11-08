@@ -30,6 +30,7 @@ module.exports = {
 
     extend: {
       backgroundColor: {
+        "body-main": "#f9fafb",
         success: "#d4f8f2",
         primary: "#ddebf9",
         neutral: "#eceef4",
@@ -41,6 +42,7 @@ module.exports = {
         "link-active": "#0B58FE",
         white: "#FFFFFF",
         "icon-neutral": "#6E7492",
+        "main-blue-30": "#E0EAFF",
         headers: {
           success: "#04585c",
           primary: "#0c2663",
@@ -58,6 +60,7 @@ module.exports = {
       },
       textColor: {
         secondary: "#565C78",
+        primary: "#191D2F",
       },
       fontSize: {
         "heading-1": ["45px", { lineHeight: "49px" }],

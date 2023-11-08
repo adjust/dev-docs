@@ -1,0 +1,23 @@
+---
+import { CollectionEntry, getCollection } from "astro:content";
+import MainLayout from "./../../layouts/MainLayout.astro";
+import { KNOWN_LANGUAGE_CODES, langParamRegex } from "@i18n/locales";
+
+export async function getStaticPaths() {
+  const docs = await getCollection("docs");
+  return docs.map((entry) =>
+    KNOWN_LANGUAGE_CODES.map((langKey) => ({
+      params: { lang: langKey, slug: entry.slug?.replace(langParamRegex, '') },
+      props: entry,
+    }))
+  );
+}
+type Props = CollectionEntry<"docs">;
+
+const post = Astro.props;
+const { Content, headings } = await post.render();
+---
+
+<MainLayout headings={headings} {...post.data}>
+  <Content />
+</MainLayout>

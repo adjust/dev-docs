@@ -52,7 +52,12 @@ const LanguageSwitch: FC<LanguageSwitchProps> = ({
         <div className="mr-[7px]">
           {!hideIcon && <IconLanguage width={22} height={22} />}
         </div>
-        <div className="w-full text-secondary text-sm">
+        <div
+          className={classNames("w-full text-sm", {
+            "text-secondary": !isFooter,
+            "text-black": isFooter,
+          })}
+        >
           {locales[lang as keyof Locales] || "English"}
         </div>
       </div>

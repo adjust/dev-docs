@@ -51,11 +51,11 @@ const LeftSidebarItem: FC<{
             </>
           ) : null}
           <a
-            href={"/" + sidebarData.slug}
+            href={`/${sidebarData.slug}`}
             className={classNames(
               "inline-block w-full text-sm hover:no-underline",
               {
-                "text-link-active": currentPage === sidebarData.slug,
+                "text-link-active": currentPage?.slice(1) === sidebarData.slug,
                 "font-bold": level === 1,
                 "font-medium": isOpen,
                 "font-normal": level > 1 && !isOpen,

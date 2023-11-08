@@ -1,4 +1,5 @@
 import { getPathParts } from "./getPathParts";
+import { getCurrentPage } from "./getCurrentPage";
 
 import type { Locales } from "@i18n/locales";
 import type { CategoryEntry, NavItemTypes, NavigationData } from "./types";
@@ -12,7 +13,7 @@ interface GetCategoryChildParams {
   currentPageType?: NavItemTypes;
 }
 
-export const getCategoryChild = ({
+export const getCategoryChildrens = ({
   categories,
   currentLang,
   currentPage,
@@ -21,8 +22,8 @@ export const getCategoryChild = ({
   currentPageType,
 }: GetCategoryChildParams) => {
   const parts = getPathParts(currentPage);
-  // we should remove the last slash for the Production/Preview deployment(something related to the SSR)
-  const currentPageFixed = currentPage?.replace(/\/$/g, "");
+
+  const currentPageFixed = getCurrentPage(currentPage);
   const splittedCurrentPage = currentPageFixed.split("/");
 
   return categories[currentLang].children.map((child) => {
