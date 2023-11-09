@@ -21,6 +21,7 @@ const PlatformFilter = () => {
       selectedItems={selectedItems}
       showSearch={false}
       onApply={setSelectedItems}
+      showResetButton
     />
   );
 };
