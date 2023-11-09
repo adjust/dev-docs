@@ -1,0 +1,79 @@
+---
+import glossary from "@data/glossary.json";
+import BuildMetricTable from "@components/atlas/BuildMetricTable";
+import type { TableColumnTypes } from "@adjust/components";
+
+export interface Props {
+  section?: string;
+  search: boolean;
+  resizable: boolean;
+  noborder: boolean;
+  noflex: boolean;
+  striped: boolean;
+  height?: TableHeights;
+}
+
+const {
+  section = "",
+  search = false,
+  resizable = false,
+  noborder = false,
+  noflex = false,
+  striped = false,
+  height = undefined,
+} = Astro.props as Props;
+
+const columns: TableColumnTypes[] = [
+  {
+    Header: "Metric",
+    accessor: "metric",
+  },
+  {
+    Header: "Name",
+    accessor: "name",
+  },
+  {
+    Header: "Data type",
+    accessor: "data_type",
+  },
+  {
+    Header: "Description",
+    accessor: "description",
+  },
+];
+
+let data: ColumnCell[] = [];
+
+glossary.glossary
+  .filter(function (i) {
+    if (
+      (section && i.section.toLowerCase() !== section.toLowerCase()) ||
+      i.hidden
+    ) {
+      return false; // skip
+    }
+    return true;
+  })
+  .map((i) => {
+    data.push({
+      metric: i.id,
+      name: i.name,
+      data_type: i.formatting,
+      description: i.description,
+    });
+  });
+
+let heightNumber = isNaN(Number(height));
+---
+
+<BuildMetricTable
+  client:only="react"
+  columns={columns}
+  data={data}
+  resizable={resizable}
+  bordered={!noborder}
+  search={search}
+  flex={!noflex && !resizable}
+  striped={striped}
+  height={!heightNumber ? Number(height) : height}
+/>
