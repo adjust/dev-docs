@@ -17,6 +17,7 @@ const BuildMetricTable: FC<{
 }> = (props) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [data, setData] = useState(props.data);
+  const [sectionFilterSelected, setSectionSelected] = useState(false);
 
   const visualProperties = {
     areColumnsBordered: props.bordered,
@@ -35,6 +36,7 @@ const BuildMetricTable: FC<{
         iconName: "Cross",
         onClick: () => {
           setData(props.data);
+          setSectionSelected(false);
         },
       },
     ];
@@ -44,6 +46,7 @@ const BuildMetricTable: FC<{
         label: section,
         onClick: () => {
           setData(props.data.filter((i) => i.section === section));
+          setSectionSelected(true);
         },
       };
       items.unshift(item);
@@ -51,7 +54,12 @@ const BuildMetricTable: FC<{
 
     return (
       <ActionMenu items={items}>
-        <IconButton iconName="Filter" aria-label="Filter" size="small" />
+        <IconButton
+          iconName="Filter"
+          aria-label="Filter"
+          size="small"
+          isHighlighted={sectionFilterSelected}
+        />
       </ActionMenu>
     );
   };
