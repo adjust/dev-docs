@@ -19,6 +19,7 @@ const PlatformFilter = () => {
       multiple={false}
       items={platforms}
       selectedItems={selectedItems}
+      showSearch={false}
       onApply={setSelectedItems}
     />
   );
