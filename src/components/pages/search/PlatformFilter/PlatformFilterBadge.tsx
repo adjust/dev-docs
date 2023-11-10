@@ -3,8 +3,6 @@ import { Badge } from "@adjust/components";
 
 import type { PlatformFilterBadgeProps, PlatformLabelValue } from "./types";
 
-import "./platform-filter.css";
-
 const PlatformFilterBadge: FC<PlatformFilterBadgeProps> = ({ items }) => {
   const currentChoice = items[0];
 
@@ -22,7 +20,7 @@ const PlatformFilterBadge: FC<PlatformFilterBadgeProps> = ({ items }) => {
       style={{ display: "flex", alignItems: "center" }}
     >
       <span className="text-base font-medium">Platform</span>
-      <div className="search_platform-filter_badge text-sm">
+      <div className="text-sm [&_span]:font-body [&_span]:text-sm">
         <Badge
           color={getBadgeColor(currentChoice?.value) as BadgeColor}
           label={currentChoice?.label}
