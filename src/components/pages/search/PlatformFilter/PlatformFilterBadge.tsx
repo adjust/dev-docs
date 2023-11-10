@@ -26,7 +26,7 @@ const PlatformFilterBadge: FC<PlatformFilterBadgeProps> = ({ items }) => {
         <Badge
           color={getBadgeColor(currentChoice?.value) as BadgeColor}
           label={currentChoice?.label}
-          css={{ marginLeft: "11px", fontSize: "14px" }}
+          css={{ marginLeft: "11px" }}
         />
       </div>
     </div>
