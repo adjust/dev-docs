@@ -1,10 +1,23 @@
-import { useMemo } from "react";
+import { FC, useMemo } from "react";
 import classNames from "classnames";
-import { Icon, Tile } from "@adjust/components";
+import { Icon } from "@adjust/components";
+
+interface PaginationProps {
+  canRefine: boolean;
+  refine: (page: number) => void;
+  nbHits: number;
+  currentRefinement: number;
+  lang?: string;
+}
 
 export const DEFAULT_HITS_PER_PAGE = 6;
 
-const Pagination = ({ canRefine, refine, nbHits, currentRefinement, lang }) => {
+const Pagination: FC<PaginationProps> = ({
+  canRefine,
+  refine,
+  nbHits,
+  currentRefinement,
+}) => {
   const onPageChange = (page: number) => {
     return canRefine && refine(page);
   };
@@ -23,39 +36,36 @@ const Pagination = ({ canRefine, refine, nbHits, currentRefinement, lang }) => {
 
   return (
     <>
-      {" "}
       {isPaginaton && (
-        <Tile className="search__pagination mb-14">
-          <div className="flex justify-start items-center">
-            <span
-              className={classNames(
-                "mr-3  flex items-center justify-center min-h-[20px] min-w-[20px]",
-                {
-                  "hover:bg-[#fff] cursor-default": isFirstPage,
-                  "hover:bg-[#eceef4] cursor-pointer": !isFirstPage,
-                }
-              )}
-              onClick={() => onPageChange(currentRefinement - 1)}
-            >
-              <Icon name="ChevronLeft" size="small" color={iconLeftColor} />
-            </span>
-            <span className="text-base-sm font-medium flex items-center h-full">
-              Page {currentRefinement} of {totalPages}
-            </span>
-            <span
-              className={classNames(
-                "ml-3 flex items-center justify-center min-h-[20px] min-w-[20px]",
-                {
-                  "hover:bg-[#fff] cursor-default": isLastPage,
-                  "hover:bg-[#eceef4] cursor-pointer": !isLastPage,
-                }
-              )}
-              onClick={() => onPageChange(currentRefinement + 1)}
-            >
-              <Icon name="ChevronRight" size="small" color={iconRightColor} />
-            </span>
-          </div>
-        </Tile>
+        <div className="flex justify-start items-center">
+          <span
+            className={classNames(
+              "mr-3  flex items-center justify-center min-h-[20px] min-w-[20px]",
+              {
+                "hover:bg-[#fff] cursor-default": isFirstPage,
+                "hover:bg-[#eceef4] cursor-pointer": !isFirstPage,
+              }
+            )}
+            onClick={() => onPageChange(currentRefinement - 1)}
+          >
+            <Icon name="ChevronLeft" size="small" color={iconLeftColor} />
+          </span>
+          <span className="text-base-sm font-medium flex items-center h-full">
+            Page {currentRefinement} of {totalPages}
+          </span>
+          <span
+            className={classNames(
+              "ml-3 flex items-center justify-center min-h-[20px] min-w-[20px]",
+              {
+                "hover:bg-[#fff] cursor-default": isLastPage,
+                "hover:bg-[#eceef4] cursor-pointer": !isLastPage,
+              }
+            )}
+            onClick={() => onPageChange(currentRefinement + 1)}
+          >
+            <Icon name="ChevronRight" size="small" color={iconRightColor} />
+          </span>
+        </div>
       )}
     </>
   );
