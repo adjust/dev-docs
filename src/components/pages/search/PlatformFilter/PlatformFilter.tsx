@@ -1,6 +1,10 @@
 import { useState } from "react";
-
 import { FilterButton } from "@adjust/components";
+
+import PlatformFilterBadge from "./PlatformFilterBadge";
+import type { FilterItemGrouped } from "./types";
+
+import "./platform-filter.css";
 
 const platforms = [
   { label: "All", value: "all" },
@@ -17,8 +21,13 @@ const PlatformFilter = () => {
     <FilterButton
       name="Platform"
       multiple={false}
+      size="medium"
       items={platforms}
+      renderValue={(items) => (
+        <PlatformFilterBadge items={items as FilterItemGrouped[]} />
+      )}
       selectedItems={selectedItems}
+      aria-label="platform-filter"
       showSearch={false}
       onApply={setSelectedItems}
       showResetButton
