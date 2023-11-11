@@ -64,6 +64,7 @@ module.exports = {
       textColor: {
         secondary: "#565C78",
         primary: "#191D2F",
+        "search-primary": "#252525",
       },
       fontSize: {
         "heading-1": ["45px", { lineHeight: "49px" }],
