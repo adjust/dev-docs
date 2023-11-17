@@ -8,6 +8,7 @@ import HelpCenterBanner from "@components/pages/search/HelpCenterBanner.astro";
 import Pagination from "@components/pages/search/Pagination";
 import PlatformBadges from "@components/pages/search/PlatformBadges/PlatformBadges";
 import PlatformTabs from "@components/pages/search/PlatformTabs";
+import HelpCenterIndex from "@components/pages/search/HelpCenterHits/HelpCenterIndex";
 import { KNOWN_LANGUAGE_CODES } from "@i18n/locales";
 import { SITE } from "src/consts";
 
@@ -17,6 +18,11 @@ export const getStaticPaths = () => {
 
 const { lang } = Astro.params;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+
+const helpCenterAlgoliaKeys = {
+  appId: import.meta.env.HELP_CENTER_ALGOLIA_APP_ID,
+  apiKey: import.meta.env.HELP_CENTER_ALGOLIA_API_KEY,
+};
 ---
 
 <html dir={`/${lang}`} lang={lang} class="initial">
@@ -103,23 +109,10 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
           </div>
         </div>
         <hr class="border border-color-neutral-30 mb-8" />
-        <!-- {
-            MARKETING_INDEXES.map((indexName, id) => {
-              const isLastElement = id + 1 === MARKETING_INDEXES.length;
-
-              return (
-                <Index key={indexName} indexName={indexName}>
-                  <Configure {...searchState.indices.prod_indexes.configure} />
-                  {isLastElement && (
-                    <ConnectedSearchMarketingHits
-                      setMarketingHits={setMarketingHits}
-                    />
-                  )}
-                  {isLastElement && <ConnectedNoMarketingResult />}
-                </Index>
-              );
-            })
-          } -->
+        <HelpCenterIndex
+          algoliaKeys={helpCenterAlgoliaKeys}
+          client:only="react"
+        />
       </div>
     </div>
     <FooterMain language={lang} />
