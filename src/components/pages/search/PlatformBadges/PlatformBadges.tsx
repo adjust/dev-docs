@@ -18,10 +18,11 @@ const PlatformBadges = () => {
       {platforms.map((platform) => (
         <div
           className={classNames(
-            "border-[1px] border-black rounded-3xl px-5 py-1 hover:bg-[#1944C3] hover:text-white cursor-pointer bg-white",
+            "border-[1px] border-black rounded-3xl px-5 py-1 hover:bg-[#1944C3] hover:text-white cursor-pointer",
             {
               "bg-[#255EEE] text-white":
                 selectedPlatform.value === platform.value,
+              "bg-white text-black": selectedPlatform.value !== platform.value,
             }
           )}
           onClick={() => setSelectedPlatform(platform)}
