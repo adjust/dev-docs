@@ -10,8 +10,16 @@ const HelpCenterIndex: FC<HelpCenterIndexProps> = ({ algoliaKeys }) => {
   const searchClient = algoliasearch(algoliaKeys.appId, algoliaKeys.apiKey);
 
   return (
-    <InstantSearch indexName="prod_THC" searchClient={searchClient}>
-      <Configure query="" index="prod_THC" hitsPerPage={6} page={1} />
+    <InstantSearch
+      indexName={algoliaKeys.indexName}
+      searchClient={searchClient}
+    >
+      <Configure
+        query=""
+        index={algoliaKeys.indexName}
+        hitsPerPage={6}
+        page={1}
+      />
       <HelpCenterHits />
     </InstantSearch>
   );

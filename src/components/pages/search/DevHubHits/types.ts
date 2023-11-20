@@ -1,13 +1,12 @@
 import type { Hit } from "@algolia/client-search";
 
-export interface HelpCenterIndexProps {
-  algoliaKeys: {
-    appId: string;
-    apiKey: string;
-  };
+import type { AlgoliaKeys } from "../types";
+
+export interface DevHubIndexProps {
+  algoliaKeys: AlgoliaKeys;
 }
 
-export interface HelpCenterResultCardProps {
+export interface DevHubSearchResultCardProps {
   hit: Hit<any>;
   className: string;
 }

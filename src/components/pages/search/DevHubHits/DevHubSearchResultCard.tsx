@@ -1,8 +1,8 @@
 import { FC, useMemo } from "react";
 
-import type { HelpCenterResultCardProps } from "./types";
+import type { DevHubSearchResultCardProps } from "./types";
 
-const DevHubSearchResultCard: FC<HelpCenterResultCardProps> = ({ hit }) => {
+const DevHubSearchResultCard: FC<DevHubSearchResultCardProps> = ({ hit }) => {
   const url = useMemo(() => {
     return `https://help.adjust.com${hit.url}`;
   }, [hit]);
