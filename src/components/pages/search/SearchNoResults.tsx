@@ -1,0 +1,23 @@
+import type { FC } from "react";
+
+import { HELP_CENTER_LINK } from "src/consts";
+
+const SearchNoResults: FC<{ bodyText: string }> = ({ bodyText }) => {
+  return (
+    <div className="flex flex-col items-center xs:w-full xs:pl-4 lg:pl-0 lg:max-w-[1100px] bg-[#F4F7FD]">
+      <div className="">
+        <img src="/images/search/no-results-search.svg" />
+      </div>
+      <div className="text-[32px] text-primary pb-2">No results</div>
+      <div className="text-secondary mb-4">{bodyText}</div>
+      <a
+        href={`${HELP_CENTER_LINK}en/search`}
+        className="flex items-center  p-4 h-10 w-fit rounded-md font-semibold bg-white hover:bg-slate-200"
+      >
+        Open Help Center
+      </a>
+    </div>
+  );
+};
+
+export default SearchNoResults;
