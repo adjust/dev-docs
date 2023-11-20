@@ -4,16 +4,11 @@ const items = [
   { id: "1", label: "All", url: "#" },
   {
     id: "2",
-    label: "Guide",
-    url: "#guide",
-  },
-  {
-    id: "3",
     label: "API reference",
     url: "#api",
   },
   {
-    id: "4",
+    id: "3",
     label: "SDK",
     url: "#sdk",
   },
