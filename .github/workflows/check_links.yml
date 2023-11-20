@@ -9,23 +9,19 @@ jobs:
     if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-22.04
     steps:
-      - run: sleep 30
-      - name: Get Vercel preview URL
-        uses: zentered/vercel-preview-url@v1.1.9
-        id: vercel_preview_url
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      - name: Waiting for 200 from the Vercel Preview
+        uses: patrickedqvist/wait-for-vercel-preview@v1.3.1
+        id: waitForVercel
         with:
-          vercel_project_id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel_team_id: ${{ secrets.VERCEL_TEAM_ID }}
+          token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
       - name: Check for broken links
-        if: steps.vercel_preview_url.outcome == 'success'
+        if: steps.waitForVercel.outputs.url
         uses: lycheeverse/lychee-action@v1.8.0
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
-          args: --max-redirects 10 --exclude-mail --base https://${{ steps.vercel_preview_url.outputs.preview_url }} './src/content/docs/en/**/*.mdx'
+          args: --max-redirects 10 --exclude-mail --base https://${{ steps.waitForVercel.outputs.url }} './src/content/docs/en/**/*.mdx'
           fail: true
   check-live-links:
     runs-on: ubuntu-22.04
