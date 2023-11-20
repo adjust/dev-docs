@@ -25,6 +25,7 @@ const PlatformBadges = () => {
               "bg-white text-black": selectedPlatform.value !== platform.value,
             }
           )}
+          key={platform.value}
           onClick={() => setSelectedPlatform(platform)}
         >
           <span className="font-medium text-base-xs">{platform.label}</span>
