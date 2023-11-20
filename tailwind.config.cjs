@@ -57,6 +57,9 @@ module.exports = {
           negative: "rgb(203, 55, 99)",
           warning: "rgb(193, 134, 47)",
         },
+        neutral: {
+          30: "#e0e2ec"
+        }
       },
       textColor: {
         secondary: "#565C78",
