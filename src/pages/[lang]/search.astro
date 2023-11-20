@@ -11,6 +11,7 @@ import PlatformTabs from "@components/pages/search/PlatformTabs";
 import HelpCenterIndex from "@components/pages/search/HelpCenterHits/HelpCenterIndex";
 import { KNOWN_LANGUAGE_CODES } from "@i18n/locales";
 import { SITE } from "src/consts";
+import DevHubIndex from "@components/pages/search/DevHubHits/DevHubIndex";
 
 export const getStaticPaths = () => {
   return KNOWN_LANGUAGE_CODES.map((langKey) => ({ params: { lang: langKey } }));
@@ -18,6 +19,11 @@ export const getStaticPaths = () => {
 
 const { lang } = Astro.params;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+
+const devHubAlgoliaKeys = {
+  appId: import.meta.env.DEV_HUB_ALGOLIA_APP_ID,
+  apiKey: import.meta.env.DEV_HUB_ALGOLIA_API_KEY,
+};
 
 const helpCenterAlgoliaKeys = {
   appId: import.meta.env.HELP_CENTER_ALGOLIA_APP_ID,
@@ -46,7 +52,7 @@ const helpCenterAlgoliaKeys = {
         </div>
         <div class="mb-6 relative">
           <img
-            src="/images/icon-search.svg"
+            src="/images/search/icon-search.svg"
             class="absolute top-[18px] left-[33px]"
           />
           <input
@@ -67,7 +73,9 @@ const helpCenterAlgoliaKeys = {
       </div>
     </div>
     <main class="bg-white xs:px-4 xl:px-[192px] pt-[52px] pb-[78px]">
-      <div class="mb-16 flex flex-col gap-y-[41px]">Articles block</div>
+      <div class="mb-16 flex flex-col gap-y-[41px]">
+        <DevHubIndex algoliaKeys={devHubAlgoliaKeys} client:only="react" />
+      </div>
       <div class="mb-16">
         <Pagination
           canRefine
@@ -82,17 +90,9 @@ const helpCenterAlgoliaKeys = {
     </main>
     <!-- Help Center hits -->
     <div class="w-full bg-[#F4F7FD] flex justify-center pb-[68px] mb-4">
-      <div
-        data-testid="search-page.adjust-results-area"
-        class="mt-12 w-full xs:px-4 md:px-[120px]"
-      >
+      <div class="mt-12 w-full xs:px-4 md:px-[120px]">
         <div class="flex justify-between items-center mb-3">
-          <h1
-            data-testid="search-page.title-for-adjust"
-            class="text-grand font-medium"
-          >
-            Top Results from Help Center
-          </h1>
+          <h1 class="text-grand font-medium">Top Results from Help Center</h1>
           <div
             class="w-auto min-w-[136px] max-h-10 text-base rounded-full bg-white transition duration-300 hover:bg-slate-200 text-center font-medium"
           >
