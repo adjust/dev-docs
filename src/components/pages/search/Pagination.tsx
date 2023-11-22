@@ -1,37 +1,32 @@
-import { FC, useMemo } from "react";
+import type { FC } from "react";
 import classNames from "classnames";
+import { useHits } from "react-instantsearch";
 import { Icon } from "@adjust/components";
 
 interface PaginationProps {
   canRefine: boolean;
   refine: (page: number) => void;
-  nbHits: number;
   currentRefinement: number;
   lang?: string;
 }
 
 export const DEFAULT_HITS_PER_PAGE = 6;
 
-const Pagination: FC<PaginationProps> = ({
-  canRefine,
-  refine,
-  nbHits,
-  currentRefinement,
-}) => {
+const Pagination: FC<PaginationProps> = ({ canRefine, refine }) => {
+  const { results } = useHits();
+
   const onPageChange = (page: number) => {
     return canRefine && refine(page);
   };
 
-  const isPaginaton = nbHits > DEFAULT_HITS_PER_PAGE;
+  const currentPage = results!.page;
+  const isPaginaton = results!.nbHits > DEFAULT_HITS_PER_PAGE;
 
-  const totalPages = useMemo(
-    () => Math.trunc(nbHits / DEFAULT_HITS_PER_PAGE),
-    [nbHits]
-  );
+  const totalPages = results!.nbPages;
 
-  const isFirstPage = currentRefinement === 1;
+  const isFirstPage = currentPage === 1;
   const iconLeftColor = isFirstPage ? "#808080" : "#000";
-  const isLastPage = currentRefinement === totalPages;
+  const isLastPage = currentPage === totalPages;
   const iconRightColor = isLastPage ? "#808080" : "#000";
 
   return (
@@ -46,12 +41,12 @@ const Pagination: FC<PaginationProps> = ({
                 "hover:bg-[#eceef4] cursor-pointer": !isFirstPage,
               }
             )}
-            onClick={() => onPageChange(currentRefinement - 1)}
+            onClick={() => onPageChange(currentPage - 1)}
           >
             <Icon name="ChevronLeft" size="small" color={iconLeftColor} />
           </span>
           <span className="text-base-sm font-medium flex items-center h-full">
-            Page {currentRefinement} of {totalPages}
+            Page {currentPage} of {totalPages}
           </span>
           <span
             className={classNames(
@@ -61,7 +56,7 @@ const Pagination: FC<PaginationProps> = ({
                 "hover:bg-[#eceef4] cursor-pointer": !isLastPage,
               }
             )}
-            onClick={() => onPageChange(currentRefinement + 1)}
+            onClick={() => onPageChange(currentPage + 1)}
           >
             <Icon name="ChevronRight" size="small" color={iconRightColor} />
           </span>
