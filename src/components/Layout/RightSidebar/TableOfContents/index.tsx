@@ -99,7 +99,6 @@ const TableOfContents: FC<{ headings: MarkdownHeading[]; title: string }> = ({
         >
           <div className="absolute top-0 bottom-0 flex items-start">
             <button
-              data-testid="table-of-contents.expand-collapse-button"
               onClick={() => setIsOpened(false)}
               className="toc-state-button rounded-md -ml-8 mt-8  bg-white relative w-6 h-6"
             >
