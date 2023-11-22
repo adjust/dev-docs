@@ -1,17 +1,29 @@
 import classNames from "classnames";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const platforms = [
   { label: "All platforms", value: "all" },
   { label: "IOS", value: "ios" },
   { label: "Flutter", value: "flutter" },
-  { label: "React Native", value: "reactNative" },
+  { label: "React Native", value: "react-native" },
   { label: "Unity", value: "unity" },
   { label: "Web", value: "web" },
 ];
 
 const PlatformBadges = () => {
   const [selectedPlatform, setSelectedPlatform] = useState(platforms[0]);
+
+  const onPlatformChanges = (platform: { label: string; value: string }) => {
+    document.location.search = `platform=${platform.value}`;
+    setSelectedPlatform(platform);
+  };
+
+  useEffect(() => {
+    const query = new URLSearchParams(document.location.search);
+    setSelectedPlatform(
+      platforms.find((platform) => platform.value === query.get("platform"))!
+    );
+  });
 
   return (
     <div className="xs:px-2 md:px-0 flex flex-row flex-wrap gap-x-2.5 gap-y-3">
@@ -26,7 +38,7 @@ const PlatformBadges = () => {
             }
           )}
           key={platform.value}
-          onClick={() => setSelectedPlatform(platform)}
+          onClick={() => onPlatformChanges(platform)}
         >
           <span className="font-medium text-base-xs">{platform.label}</span>
         </div>
