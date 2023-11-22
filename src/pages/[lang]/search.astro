@@ -1,14 +1,18 @@
 ---
 import HeadCommon from "@components/HeadCommon.astro";
 import HeadSEO from "@components/HeadSEO.astro";
-import AtlasIcon from "@components/Icon.astro";
+import Icon from "@components/Icon.astro";
 import FooterMain from "@components/Layout/Footer/FooterMain.astro";
+import MainHeader from "@components/Layout/Header/MainHeader.astro";
 import HelpCenterBanner from "@components/pages/search/HelpCenterBanner.astro";
 import Pagination from "@components/pages/search/Pagination";
-import PlatformFilter from "@components/pages/search/PlatformFilter/PlatformFilter";
+import PlatformBadges from "@components/pages/search/PlatformBadges/PlatformBadges";
 import PlatformTabs from "@components/pages/search/PlatformTabs";
+import HelpCenterIndex from "@components/pages/search/HelpCenterHits/HelpCenterIndex";
 import { KNOWN_LANGUAGE_CODES } from "@i18n/locales";
 import { SITE } from "src/consts";
+import DevHubIndex from "@components/pages/search/DevHubHits/DevHubIndex";
+import SearchInput from "@components/pages/search/SearchInput";
 
 export const getStaticPaths = () => {
   return KNOWN_LANGUAGE_CODES.map((langKey) => ({ params: { lang: langKey } }));
@@ -16,6 +20,18 @@ export const getStaticPaths = () => {
 
 const { lang } = Astro.params;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+
+const devHubAlgoliaKeys = {
+  appId: import.meta.env.DEV_HUB_ALGOLIA_APP_ID,
+  apiKey: import.meta.env.DEV_HUB_ALGOLIA_API_KEY,
+  indexName: import.meta.env.DEV_HUB_ALGOLIA_INDEX_NAME,
+};
+
+const helpCenterAlgoliaKeys = {
+  appId: import.meta.env.HELP_CENTER_ALGOLIA_APP_ID,
+  apiKey: import.meta.env.HELP_CENTER_ALGOLIA_API_KEY,
+  indexName: import.meta.env.HELP_CENTER_ALGOLIA_INDEX_NAME,
+};
 ---
 
 <html dir={`/${lang}`} lang={lang} class="initial">
@@ -27,38 +43,22 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     </title>
   </head>
   <body class="font-body xs:w-full xxl:w-[1600px] mx-auto bg-body-main">
-    <div class="xs:px-4 xl:px-[192px] xs:pt-6 xl:pt-[103px]">
+    <MainHeader />
+    <div class="xs:px-4 xl:px-[192px] pt-8">
       <div class="bg-secondary">
         <div
-          class="flex gap-y-4 xs:justify-center xs:flex-col xl:flex-row xl:justify-between items-center w-full mb-[55px]"
+          class="flex gap-y-4 xs:justify-center xs:flex-col xl:flex-row xl:justify-center items-center w-full mb-[25px]"
         >
-          <h1 class="text-heading-1 font-bold">
+          <h1 class="text-heading-2 font-bold">
             What are you looking for today?
           </h1>
-          <a
-            href="/en"
-            class="h-[39px] min-w-[171px] border-2 border-black rounded-md flex justify-center items-center font-medium gap-x-[9px] bg-white hover:bg-slate-100"
-          >
-            Close search
-            <AtlasIcon name="Cross" />
-          </a>
         </div>
-        <div class="mb-[97px] relative">
-          <img
-            src="/images/icon-search.svg"
-            class="absolute top-[18px] left-[33px]"
-          />
-          <input
-            class="w-full h-[65px] bg-white rounded-[10px] text-heading-4 pl-[70px]"
-            type="text"
-            placeholder="Dev HUB search"
-          />
-        </div>
+        <SearchInput client:load />
         <div
-          class="search_platform-filter mb-16 flex flex-row gap-x-[29px] items-center"
+          class="search_platform-filter mb-16 flex flex-col gap-x-[29px] items-center"
         >
-          <span class="text-heading-2 font-bold">Show content for:</span>
-          <PlatformFilter client:only="react" />
+          <span class="text-base font-bold mb-2.5">Show content for</span>
+          <PlatformBadges client:only="react" />
         </div>
       </div>
       <div>
@@ -66,19 +66,44 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       </div>
     </div>
     <main class="bg-white xs:px-4 xl:px-[192px] pt-[52px] pb-[78px]">
-      <div class="mb-16 flex flex-col gap-y-[41px]">Articles block</div>
-      <div class="mb-16">
-        <Pagination
-          canRefine
-          refine={(page) => console.log(page, "page")}
-          nbHits={120}
-          currentRefinement={1}
+      <div class="mb-16 flex flex-col gap-y-[41px]">
+        <DevHubIndex
+          algoliaKeys={devHubAlgoliaKeys}
+          lang={lang}
           client:only="react"
         />
       </div>
       <hr class="text-main-blue-30 h-[1px] mb-[57px]" />
       <HelpCenterBanner />
     </main>
+    <!-- Help Center hits -->
+    <div class="w-full bg-[#F4F7FD] flex justify-center pb-[68px] mb-4">
+      <div class="mt-12 w-full xs:px-4 md:px-[120px]">
+        <div class="flex justify-between items-center mb-3">
+          <h1 class="text-grand font-medium">Top Results from Help Center</h1>
+          <div
+            class="w-auto min-w-[136px] max-h-10 text-base rounded-full bg-white transition duration-300 hover:bg-slate-200 text-center font-medium"
+          >
+            <a
+              class="h-full w-full px-[16px] py-[6px] text-[14px] flex justify-center"
+              aria-label="Close search button"
+              href="https://help.adjust.com/en/search"
+              rel="noreferrer"
+              target="_blank"
+            >
+              See more
+              <Icon name="ArrowRight" />
+            </a>
+          </div>
+        </div>
+        <hr class="border border-color-neutral-30 mb-8" />
+        <HelpCenterIndex
+          algoliaKeys={helpCenterAlgoliaKeys}
+          lang={lang}
+          client:only="react"
+        />
+      </div>
+    </div>
     <FooterMain language={lang} />
   </body>
 </html>

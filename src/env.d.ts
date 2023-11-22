@@ -3,9 +3,12 @@
 
 interface ImportMetaEnv {
   readonly GITHUB_TOKEN: string | undefined;
-  readonly ALGOLIA_INDEX_NAME: string | undefined;
-  readonly ALGOLIA_APP_ID: string | undefined;
-  readonly ALGOLIA_API_KEY: string | undefined;
+  readonly HELP_CENTER_ALGOLIA_APP_ID: string;
+  readonly HELP_CENTER_ALGOLIA_API_KEY: string;
+  readonly HELP_CENTER_ALGOLIA_INDEX_NAME: string;
+  readonly DEV_HUB_ALGOLIA_APP_ID: string;
+  readonly DEV_HUB_ALGOLIA_API_KEY: string;
+  readonly DEV_HUB_ALGOLIA_API_INDEX_NAME: string;
 }
 
 interface ImportMeta {

@@ -1,26 +1,35 @@
 import { Tabs } from "@adjust/components";
+import { useEffect, useState } from "react";
 
-const items = [
-  { id: "1", label: "All", url: "#" },
+import { getSearchParams, setSearchParams } from "./utils";
+
+const categoryItems = [
+  { id: "all", label: "All" },
   {
-    id: "2",
-    label: "Guide",
-    url: "#guide",
-  },
-  {
-    id: "3",
+    id: "api",
     label: "API reference",
-    url: "#api",
   },
   {
-    id: "4",
+    id: "sdk",
     label: "SDK",
-    url: "#sdk",
   },
 ];
 
 const PlatformTabs = () => {
-  return <Tabs items={items} value="1" />;
+  const [selectedTab, setSelectedTab] = useState("all");
+
+  const onTabChange = (tabId: string) => {
+    setSearchParams({ categoryValue: tabId });
+  };
+
+  useEffect(() => {
+    const { category } = getSearchParams();
+    setSelectedTab(category);
+  }, []);
+
+  return (
+    <Tabs items={categoryItems} value={selectedTab} onChange={onTabChange} />
+  );
 };
 
 export default PlatformTabs;
