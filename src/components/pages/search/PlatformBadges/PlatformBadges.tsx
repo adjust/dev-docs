@@ -1,6 +1,8 @@
 import classNames from "classnames";
 import { useEffect, useState } from "react";
 
+import { getSearchParams, setSearchParams } from "../utils";
+
 const platforms = [
   { label: "All platforms", value: "all" },
   { label: "IOS", value: "ios" },
@@ -14,14 +16,14 @@ const PlatformBadges = () => {
   const [selectedPlatform, setSelectedPlatform] = useState(platforms[0]);
 
   const onPlatformChanges = (platform: { label: string; value: string }) => {
-    document.location.search = `platform=${platform.value}`;
-    setSelectedPlatform(platform);
+    setSearchParams({ platformValue: platform.value });
   };
 
   useEffect(() => {
-    const query = new URLSearchParams(document.location.search);
+    const { platform } = getSearchParams();
+
     setSelectedPlatform(
-      platforms.find((platform) => platform.value === query.get("platform"))!
+      platforms.find((platformObject) => platformObject.value === platform)!
     );
   });
 
