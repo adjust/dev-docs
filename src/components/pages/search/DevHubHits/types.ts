@@ -10,3 +10,8 @@ export interface DevHubSearchResultCardProps {
   hit: Hit<any>;
   className: string;
 }
+
+export interface HitBreadcrumb {
+  url: string;
+  title: string;
+}

@@ -1,7 +1,7 @@
 import { FC, useMemo } from "react";
 import classNames from "classnames";
 
-import type { DevHubSearchResultCardProps } from "./types";
+import type { DevHubSearchResultCardProps, HitBreadcrumb } from "./types";
 
 const DevHubSearchResultCard: FC<DevHubSearchResultCardProps> = ({ hit }) => {
   const url = useMemo(() => {
@@ -13,7 +13,7 @@ const DevHubSearchResultCard: FC<DevHubSearchResultCardProps> = ({ hit }) => {
       <div aria-label="search-result-breadcrumbs" className="mb-8">
         <nav>
           <ul className="flex flex-row flex-wrap gap-x-6">
-            {hit.breadcrumbs.map((breadcrumb, i) => (
+            {hit.breadcrumbs.map((breadcrumb: HitBreadcrumb, i: number) => (
               <li
                 className={classNames(" relative", {
                   "breadcrumbs-item":
