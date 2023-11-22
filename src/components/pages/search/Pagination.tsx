@@ -3,30 +3,31 @@ import classNames from "classnames";
 import { useHits } from "react-instantsearch";
 import { Icon } from "@adjust/components";
 
+import { getSearchParams, setSearchParams } from "./utils";
+
 interface PaginationProps {
   canRefine: boolean;
-  refine: (page: number) => void;
   currentRefinement: number;
   lang?: string;
 }
 
 export const DEFAULT_HITS_PER_PAGE = 6;
 
-const Pagination: FC<PaginationProps> = ({ canRefine, refine }) => {
+const Pagination: FC<PaginationProps> = ({ canRefine }) => {
   const { results } = useHits();
 
   const onPageChange = (page: number) => {
-    return canRefine && refine(page);
+    return canRefine && setSearchParams({ pageValue: page });
   };
 
-  const currentPage = results!.page;
+  const { page } = getSearchParams();
   const isPaginaton = results!.nbHits > DEFAULT_HITS_PER_PAGE;
 
   const totalPages = results!.nbPages;
 
-  const isFirstPage = currentPage === 1;
+  const isFirstPage = page === 1;
   const iconLeftColor = isFirstPage ? "#808080" : "#000";
-  const isLastPage = currentPage === totalPages;
+  const isLastPage = page === totalPages;
   const iconRightColor = isLastPage ? "#808080" : "#000";
 
   return (
@@ -41,12 +42,12 @@ const Pagination: FC<PaginationProps> = ({ canRefine, refine }) => {
                 "hover:bg-[#eceef4] cursor-pointer": !isFirstPage,
               }
             )}
-            onClick={() => onPageChange(currentPage - 1)}
+            onClick={() => onPageChange(page - 1)}
           >
             <Icon name="ChevronLeft" size="small" color={iconLeftColor} />
           </span>
           <span className="text-base-sm font-medium flex items-center h-full">
-            Page {currentPage} of {totalPages}
+            Page {page} of {totalPages}
           </span>
           <span
             className={classNames(
@@ -56,7 +57,7 @@ const Pagination: FC<PaginationProps> = ({ canRefine, refine }) => {
                 "hover:bg-[#eceef4] cursor-pointer": !isLastPage,
               }
             )}
-            onClick={() => onPageChange(currentPage + 1)}
+            onClick={() => onPageChange(page + 1)}
           >
             <Icon name="ChevronRight" size="small" color={iconRightColor} />
           </span>

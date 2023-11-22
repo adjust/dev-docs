@@ -11,7 +11,6 @@ import Pagination from "../Pagination";
 const DevHubIndex: FC<DevHubIndexProps> = ({ algoliaKeys }) => {
   const { query } = getSearchParams();
   const searchClient = algoliasearch(algoliaKeys.appId, algoliaKeys.apiKey);
-  console.log(query, "query");
 
   return (
     <InstantSearch
@@ -20,17 +19,14 @@ const DevHubIndex: FC<DevHubIndexProps> = ({ algoliaKeys }) => {
     >
       <Configure
         query={query}
+        filters={``}
         index={algoliaKeys.indexName}
         hitsPerPage={6}
         page={1}
       />
       <DevHubHits />
       <div className="mb-16">
-        <Pagination
-          canRefine
-          refine={(page) => console.log(page, "page")}
-          currentRefinement={1}
-        />
+        <Pagination canRefine currentRefinement={1} />
       </div>
     </InstantSearch>
   );
