@@ -14,9 +14,9 @@ const HelpCenterResultCard: FC<HelpCenterResultCardProps> = ({
   return (
     <div className={className}>
       <a className="block" href={url} target="_blank" rel="noreferrer">
-        <div className="bg-white h-32 p-4 border border-slider rounded-lg overflow-hidden group  hover:shadow-card">
+        <div className="bg-white h-32 p-4 border rounded-lg overflow-hidden group  hover:shadow">
           <div
-            className="font-medium truncate whitespace-no-wrap mb-2 leading-5 text-primary group-hover:text-dark-blue"
+            className="font-medium truncate mb-2 leading-5 text-primary group-hover:text-link-active"
             title={hit.title}
           >
             {hit.title}
@@ -27,10 +27,9 @@ const HelpCenterResultCard: FC<HelpCenterResultCardProps> = ({
             </div>
           ) : (
             <div
-              className="text-base-sm text-primary font-light"
+              className="text-base-sm text-primary font-light overflow-hidden"
               style={{
                 height: "4.2rem",
-                overflowY: "hidden",
               }}
             >
               <Highlight hit={hit} attribute="content" />
