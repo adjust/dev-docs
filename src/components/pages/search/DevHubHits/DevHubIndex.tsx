@@ -2,14 +2,14 @@ import algoliasearch from "algoliasearch";
 import { Configure, InstantSearch } from "react-instantsearch";
 import type { FC } from "react";
 
-import { getSearchParams } from "../utils";
+import { getDevHubFilters, getSearchParams } from "../utils";
 import DevHubHits from "./DevHubHits";
-
-import type { DevHubIndexProps } from "./types";
 import Pagination from "../Pagination";
 
-const DevHubIndex: FC<DevHubIndexProps> = ({ algoliaKeys }) => {
-  const { query } = getSearchParams();
+import type { DevHubIndexProps } from "./types";
+
+const DevHubIndex: FC<DevHubIndexProps> = ({ algoliaKeys, lang }) => {
+  const { query, page } = getSearchParams();
   const searchClient = algoliasearch(algoliaKeys.appId, algoliaKeys.apiKey);
 
   return (
@@ -19,10 +19,10 @@ const DevHubIndex: FC<DevHubIndexProps> = ({ algoliaKeys }) => {
     >
       <Configure
         query={query}
-        filters={``}
+        filters={getDevHubFilters(lang)}
         index={algoliaKeys.indexName}
         hitsPerPage={6}
-        page={1}
+        page={page}
       />
       <DevHubHits />
       <div className="mb-16">
