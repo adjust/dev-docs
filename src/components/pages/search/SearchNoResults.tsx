@@ -4,7 +4,7 @@ import { HELP_CENTER_LINK } from "src/consts";
 
 const SearchNoResults: FC<{ bodyText: string }> = ({ bodyText }) => {
   return (
-    <div className="flex flex-col items-center xs:w-full xs:pl-4 lg:pl-0 lg:max-w-[1100px] bg-[#F4F7FD]">
+    <div className="flex flex-col items-center w-full xs:pl-4 lg:pl-0  bg-[#F4F7FD]">
       <div className="">
         <img src="/images/search/no-results-search.svg" />
       </div>
