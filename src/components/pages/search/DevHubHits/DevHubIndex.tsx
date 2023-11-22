@@ -25,9 +25,7 @@ const DevHubIndex: FC<DevHubIndexProps> = ({ algoliaKeys, lang }) => {
         page={page}
       />
       <DevHubHits />
-      <div className="mb-16">
-        <Pagination canRefine currentRefinement={1} />
-      </div>
+      <Pagination canRefine currentRefinement={1} />
     </InstantSearch>
   );
 };

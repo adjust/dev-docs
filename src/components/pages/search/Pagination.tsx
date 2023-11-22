@@ -33,7 +33,7 @@ const Pagination: FC<PaginationProps> = ({ canRefine }) => {
   return (
     <>
       {isPaginaton && (
-        <div className="flex justify-center items-center">
+        <div className="flex justify-center items-center mb-16">
           <span
             className={classNames(
               "mr-3  flex items-center justify-center min-h-[20px] min-w-[20px]",
