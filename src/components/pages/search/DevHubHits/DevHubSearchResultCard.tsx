@@ -20,6 +20,7 @@ const DevHubSearchResultCard: FC<DevHubSearchResultCardProps> = ({ hit }) => {
                     hit.breadcrumbs.length > 1 &&
                     i !== hit.breadcrumbs.length - 1,
                 })}
+                key={i}
               >
                 <a
                   className="cursor-pointer  text-sm hover:text-link-active text-secondary font-medium"
