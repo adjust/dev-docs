@@ -23,7 +23,7 @@ const Pagination: FC<PaginationProps> = ({ canRefine }) => {
   const { page } = getSearchParams();
   const isPaginaton = results!.nbHits > DEFAULT_HITS_PER_PAGE;
 
-  const totalPages = results!.nbPages;
+  const totalPages = results!.nbPages - 1;
 
   const isFirstPage = page === 1;
   const iconLeftColor = isFirstPage ? "#808080" : "#000";

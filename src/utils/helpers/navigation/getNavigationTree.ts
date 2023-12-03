@@ -8,7 +8,8 @@ import type { CategoryEntry } from "./types";
 export const getNavigationTree = (
   items: CategoryEntry[],
   parentId = "",
-  level = 1
+  // we start from the second level to skip the index page in the docs path: https://adjustcom.atlassian.net/browse/THC-865
+  level = 2
 ) => {
   const hierarchy: CategoryEntry[] = [];
 

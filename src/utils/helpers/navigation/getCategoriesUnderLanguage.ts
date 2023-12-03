@@ -15,7 +15,7 @@ const getParentId = (url: string) => {
 };
 
 const getLevel = (url: string, langKey: string) => {
-  const levelArr = url.replace(`src/content/docs/${langKey}`, "").split("/");
+  const levelArr = url.replace(`${CONTENT_PATH}/${langKey}`, "").split("/");
   if (levelArr.includes("index")) {
     return levelArr.length - 1;
   }
@@ -58,28 +58,26 @@ export const getCategoriesUnderLanguage = (
 
     const usedTitle = sidebarLabel || categoryTitle || title;
 
-    // creating language object
+    // creating language object for the docs root with language key
     if (!categories[currentLang]) {
       categories[currentLang] = {
         description,
         type,
         children: [],
         position,
-        title: usedTitle,
+        title: "Introduction",
         slug: "",
-        path,
+        path: `${CONTENT_PATH}/${currentLang}`,
         parentId: null,
         collapsed: true,
         topCategory: true,
-        level: getLevel(path, currentLang),
+        level: 1,
       };
     }
 
     //if current item has the current language key in the URL we
     // should store this value under current language
     if (url.includes(`${CONTENT_PATH}/${currentLang}`) && usedTitle) {
-      const isTopCategory = path === `${CONTENT_PATH}/${currentLang}/index`;
-
       categories[currentLang].children?.push({
         ...item,
         description,
@@ -89,8 +87,8 @@ export const getCategoriesUnderLanguage = (
         title: usedTitle,
         slug,
         parentId,
-        topCategory: isTopCategory,
-        collapsed: isTopCategory,
+        topCategory: false,
+        collapsed: false,
         level: getLevel(path, currentLang),
       });
     }

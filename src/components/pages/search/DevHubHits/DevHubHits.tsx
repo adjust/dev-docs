@@ -8,9 +8,9 @@ const DevHubHits: FC = () => {
   const { hits } = useHits();
 
   return (
-    <div className="w-full bg-[#F4F7FD]">
-      <div className="gap-x-[77px] gap-y-[43px] justify-center flex flex-wrap -mx-2">
-        {hits.map((hit) => (
+    <div className="w-full">
+      <div className="gap-x-[77px] gap-y-[43px] justify-start flex flex-col -mx-2">
+        {hits?.map((hit) => (
           <DevHubSearchResultCard
             className="xs:w-full md:w-[calc(33%-48px)] px-2 py-2"
             key={hit.objectID}

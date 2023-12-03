@@ -31,7 +31,7 @@ export const getNavigationEntries = (
     currentLang,
     currentPageType
   );
-    
+
   // language object with a hierarchy for the categories
   const langItem = categories[currentLang];
   const languageTree = {
