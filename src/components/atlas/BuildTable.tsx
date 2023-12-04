@@ -1,8 +1,7 @@
 /** @jsxImportSource react */
 import { TableV2, Input } from "@adjust/components";
-import type { FC } from "react";
 import type { TableColumnTypes } from "@adjust/components";
-import { useState } from "react";
+import { type FC, useState } from "react";
 import { toSnakeCase } from "@components/utils/convertCase";
 
 // Create an interface for the cells. These can be string pairs of any accessor and value.

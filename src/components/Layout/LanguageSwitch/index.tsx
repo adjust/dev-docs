@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { FC, useRef, useState } from "react";
+import { type FC, useRef, useState } from "react";
 
 import { useOnClickOutside } from "@hooks/useOnClickOutside";
 import { useWaitToTrigger } from "@hooks/useWaitToTrigger";

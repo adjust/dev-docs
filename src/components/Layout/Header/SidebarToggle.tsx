@@ -1,6 +1,5 @@
 import classNames from "classnames";
-import type { FC } from "react";
-import { useState, useEffect } from "react";
+import { type FC, useState, useEffect } from "react";
 
 const MenuToggle: FC = () => {
   const [sidebarShown, setSidebarShown] = useState(false);
