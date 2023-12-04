@@ -1,5 +1,4 @@
-import { useState } from "react";
-import type { FC } from "react";
+import { type FC, useState } from "react";
 import classNames from "classnames";
 import { Icon } from "@adjust/components";
 

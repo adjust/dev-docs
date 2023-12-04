@@ -1,4 +1,4 @@
-import { FC, useRef, useState } from "react";
+import { type FC, useRef, useState } from "react";
 import classNames from "classnames";
 
 import { useOnClickOutside } from "@hooks/useOnClickOutside";

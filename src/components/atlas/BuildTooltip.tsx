@@ -1,4 +1,4 @@
-import { Position, Tooltip } from "@adjust/components";
+import { type Position, Tooltip } from "@adjust/components";
 import type { FC, ReactNode, ReactElement } from "react";
 
 const BuildTooltip: FC<{

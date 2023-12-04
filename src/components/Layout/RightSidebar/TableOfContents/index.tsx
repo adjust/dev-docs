@@ -1,7 +1,6 @@
 import type { MarkdownHeading } from "astro";
-import type { FC } from "react";
 import { unescape } from "html-escaper";
-import { useState, useEffect, useRef } from "react";
+import { type FC, useState, useEffect, useRef } from "react";
 import classNames from "classnames";
 import { debounce } from "lodash-es";
 
