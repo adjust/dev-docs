@@ -1,13 +1,9 @@
-import { FC, useMemo } from "react";
+import type { FC } from "react";
 import classNames from "classnames";
 
 import type { DevHubSearchResultCardProps, HitBreadcrumb } from "./types";
 
 const DevHubSearchResultCard: FC<DevHubSearchResultCardProps> = ({ hit }) => {
-  const url = useMemo(() => {
-    return `https://help.adjust.com${hit.url}`;
-  }, [hit]);
-
   return (
     <div className="max-w-[956px]">
       <div aria-label="search-result-breadcrumbs">
@@ -24,7 +20,7 @@ const DevHubSearchResultCard: FC<DevHubSearchResultCardProps> = ({ hit }) => {
               >
                 <a
                   className="cursor-pointer  text-sm hover:text-link-active text-secondary font-medium"
-                  href={`/${breadcrumb.url}`}
+                  href={breadcrumb.url}
                 >
                   {breadcrumb.title}
                 </a>
@@ -33,7 +29,7 @@ const DevHubSearchResultCard: FC<DevHubSearchResultCardProps> = ({ hit }) => {
           </ul>
         </nav>
       </div>
-      <a href={url} className="group flex flex-col">
+      <a href={hit.url} className="group flex flex-col">
         <h5 className="text-heading-5 font-semibold text-search-primary mt-3 mb-4 group-hover:text-link-active">
           {hit.title}
         </h5>
