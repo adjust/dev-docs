@@ -15,6 +15,7 @@ const HelpCenterIndex: FC<HelpCenterIndexProps> = ({ algoliaKeys, lang }) => {
     <InstantSearch
       indexName={algoliaKeys.indexName}
       searchClient={searchClient}
+      future={{ preserveSharedStateOnUnmount: false }}
     >
       <Configure
         query={query}
