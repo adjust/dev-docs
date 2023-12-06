@@ -8,7 +8,7 @@ const SearchInput = () => {
   const [searchValue, setSearchValue] = useState("");
 
   const onSearchChanges = (value: string) => {
-    setSearchParams({ searchValue: value });
+    setSearchParams({ searchValue: value, pageValue: 1 });
   };
   const debouncedLogUrl = useCallback(debounce(onSearchChanges, 700), []);
 
