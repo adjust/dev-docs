@@ -50,6 +50,9 @@ export default defineConfig({
     sitemap(),
   ],
   site: `https://dev.adjust.com/`,
+  experimental: {
+    contentCollectionCache: true,
+  },
   markdown: {
     remarkPlugins: [remarkDefinitionList],
     remarkRehype: {
