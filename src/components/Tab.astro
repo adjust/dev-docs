@@ -2,11 +2,12 @@
 import { randomUUID } from "crypto";
 
 export interface Props {
-  sync: string;
-  icon: string;
+  title: string;
+  sync?: string;
+  icon?: string;
 }
 
-const { sync, icon } = Astro.props as Props;
+const { title, sync, icon } = Astro.props as Props;
 
 // Store the content contained within the Accordion as a string.
 // Replacing h3 element with populated sync value to make it accessible from Tabs component
@@ -16,15 +17,10 @@ let content = "";
 const uniqueId = randomUUID();
 if (Astro.slots.has("default")) {
   content = await Astro.slots.render("default");
-
-  content = content.replace(
-    /^<h3 id=".*">(.*)\<\/h3>/,
-    `<h3 id="${uniqueId}" data-type="tab" data-sync=${sync} data-icon=${icon ?? "Code"}>$1</h3>`
-  );
 }
 ---
 
 <div id={uniqueId} class="hidden">
   {/* additional div in case of adding styles to the content */}
-  <div id="tab-content" class="mt-4" set:html={content} />
+  <div id={uniqueId} title={title} class="mt-4" data-type="tab" data-sync={sync} data-icon={icon ?? "Code"} set:html={content} />
 </div>
