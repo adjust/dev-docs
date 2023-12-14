@@ -8,6 +8,7 @@ import { toSentenceCase } from "@components/utils/convertCase";
 // These are both optional as we provide default values below
 
 export interface Props {
+  title?: string;
   type?: string;
 }
 
@@ -27,7 +28,7 @@ const typeMap = new Map<String, BannerKind>([
 // The type is declared as "neutral" in case no type is provided.
 // If the author provides a type, it overrides this default.
 
-const { type = "neutral" } = Astro.props as Props;
+const { title, type = "neutral" } = Astro.props as Props;
 
 // Iterate through the map and assign the type provided by the author to a BannerKind
 // If no type is found, default to "neutral"
@@ -44,16 +45,9 @@ const typeTitle = type === "neutral" ? "Info" : toSentenceCase(type);
 // This string is converted to HTML inside the atlas/BuildBanner.jsx file.
 
 let content = "";
-let title = "";
-const titleRegex = /(^<h3 .*?>(.*?)<\/h3>)/;
 
 if (Astro.slots.has("default")) {
   content = await Astro.slots.render("default");
-  if (titleRegex.test(content)) {
-    let regex = titleRegex.exec(content);
-    title = regex?.[2]!;
-    content = content.replace(regex?.[1]!, "");
-  }
 }
 ---
 
