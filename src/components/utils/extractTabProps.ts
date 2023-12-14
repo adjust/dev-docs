@@ -1,6 +1,5 @@
 import { rehype } from "rehype";
 import { visit } from "unist-util-visit";
-import { remove } from "unist-util-remove";
 
 import type { Node } from "unist";
 import type { TabItem } from "@components/atlas/BuildTabs";
@@ -18,17 +17,15 @@ export const extractTabProps = async (content: string) => {
     .use(() => {
       return (tree) => {
         visit(tree, "element", (node: TreeNode) => {
-          if (node.tagName == "h3") {
-            const { properties, children } = node;
+          if (node.properties.dataType == "tab") {
+            const { properties } = node;
 
             tabItems.push({
               id: properties.id,
               sync: properties.dataSync,
               iconName: properties.dataIcon,
-              label: children[0].value,
+              label: properties.title,
             });
-
-            remove(tree, node);
           }
         });
       };
