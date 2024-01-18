@@ -17,7 +17,7 @@ export const changeVersionValue = (version: Option) => {
   $versions.set({ ...$versions.get(), currentVersion: version });
 };
 
-export const updateVersionItems = (newItems: Option[]) => {
+export const updateVersionsItems = (newItems: Option[]) => {
   const versionsStoredData = $versions.get();
   const versionsUnique = uniqBy(
     [...versionsStoredData.items, ...newItems],
