@@ -36,7 +36,7 @@ export default defineConfig({
         "@components/Abbr.astro",
         "@components/Badge.astro",
         "@components/Tooltip.astro",
-        "@components/VersionSwitch/Version.astro",
+        "@components/Version.astro",
         "@components/FigmaEmbed/FigmaEmbed.astro",
       ],
     }),
