@@ -10,7 +10,7 @@ interface VersionStore {
 
 export const $versions = map<VersionStore>({
   items: [],
-  currentVersion: { label: "v5", value: "v5" },
+  currentVersion: { label: "v4", value: "v4" },
 });
 
 export const changeVersionValue = (version: Option) => {
