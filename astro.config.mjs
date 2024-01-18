@@ -14,9 +14,9 @@ import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-s
 const astroExpressiveCodeOptions = {
   // This is where you can pass your plugin options
   frames: {
-    extractFileNameFromCode: false
+    extractFileNameFromCode: false,
   },
-}
+};
 
 // https://astro.build/config
 export default defineConfig({
@@ -36,15 +36,15 @@ export default defineConfig({
         "@components/Abbr.astro",
         "@components/Badge.astro",
         "@components/Tooltip.astro",
+        "@components/Version.astro",
         "@components/FigmaEmbed/FigmaEmbed.astro",
       ],
     }),
     // Enable React for the Algolia search component.
     react({ experimentalReactChildren: true }),
-    expressiveCode(astroExpressiveCodeOptions,
-      {
-        plugins: [pluginCollapsibleSections()],
-      }),
+    expressiveCode(astroExpressiveCodeOptions, {
+      plugins: [pluginCollapsibleSections()],
+    }),
     mdx(),
     tailwind(),
     sitemap(),
