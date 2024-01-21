@@ -4,22 +4,22 @@ description: Configure features that you can use to handle user privacy in your 
 slug: en/sdk/ios/configuration/privacy
 ---
 
-import GdprForgetMe from "@ios-examples/Adjust/gdprForgetMe.mdx"
-import GdprForgetMeSig from "@ios-signatures/Adjust/gdprForgetMe.mdx"
-import InitWithIsEnabledNumberBoolFalse from "@ios-examples/ADJThirdPartySharing/initWithIsEnabledNumberBoolFalse.mdx"
-import InitWithIsEnabledNumberBoolTrue from "@ios-examples/ADJThirdPartySharing/initWithIsEnabledNumberBoolTrue.mdx"
-import ConstructorSig from "@ios-signatures/ADJThirdPartySharing/constructor.mdx"
-import AddGranularOption from "@ios-examples/ADJThirdPartySharing/addGranularOption.mdx"
-import AddGranularOptionSig from "@ios-signatures/ADJThirdPartySharing/addGranularOption.mdx"
-import AddPartnerSharingSetting from "@ios-examples/ADJThirdPartySharing/addPartnerSharingSetting.mdx"
-import AddPartnerSharingSettingSig from "@ios-signatures/ADJThirdPartySharing/addPartnerSharingSetting.mdx"
-import AddGranularOptionFacebook from "@ios-examples/ADJThirdPartySharing/addGranularOptionFacebook.mdx"
-import DisableThirdPartySharing from "@ios-examples/Adjust/disableThirdPartySharing.mdx"
-import DisableThirdPartySharingSig from "@ios-signatures/Adjust/disableThirdPartySharing.mdx"
-import SetUrlStrategy from "@ios-examples/ADJConfig/setUrlStrategy.mdx"
-import SetUrlStrategySig from "@ios-signatures/ADJConfig/setUrlStrategy.mdx"
-import TrackMeasurementConsent from "@ios-examples/Adjust/trackMeasurementConsent.mdx"
-import TrackMeasurementConsentSig from "@ios-signatures/Adjust/trackMeasurementConsent.mdx"
+import GdprForgetMe from "@ios-examples/Adjust/gdprForgetMe.mdx";
+import GdprForgetMeSig from "@ios-signatures/Adjust/gdprForgetMe.mdx";
+import InitWithIsEnabledNumberBoolFalse from "@ios-examples/ADJThirdPartySharing/initWithIsEnabledNumberBoolFalse.mdx";
+import InitWithIsEnabledNumberBoolTrue from "@ios-examples/ADJThirdPartySharing/initWithIsEnabledNumberBoolTrue.mdx";
+import ConstructorSig from "@ios-signatures/ADJThirdPartySharing/constructor.mdx";
+import AddGranularOption from "@ios-examples/ADJThirdPartySharing/addGranularOption.mdx";
+import AddGranularOptionSig from "@ios-signatures/ADJThirdPartySharing/addGranularOption.mdx";
+import AddPartnerSharingSetting from "@ios-examples/ADJThirdPartySharing/addPartnerSharingSetting.mdx";
+import AddPartnerSharingSettingSig from "@ios-signatures/ADJThirdPartySharing/addPartnerSharingSetting.mdx";
+import AddGranularOptionFacebook from "@ios-examples/ADJThirdPartySharing/addGranularOptionFacebook.mdx";
+import DisableThirdPartySharing from "@ios-examples/Adjust/disableThirdPartySharing.mdx";
+import DisableThirdPartySharingSig from "@ios-signatures/Adjust/disableThirdPartySharing.mdx";
+import SetUrlStrategy from "@ios-examples/ADJConfig/setUrlStrategy.mdx";
+import SetUrlStrategySig from "@ios-signatures/ADJConfig/setUrlStrategy.mdx";
+import TrackMeasurementConsent from "@ios-examples/Adjust/trackMeasurementConsent.mdx";
+import TrackMeasurementConsentSig from "@ios-signatures/Adjust/trackMeasurementConsent.mdx";
 
 The Adjust SDK contains features that you can use to handle user privacy in your app.
 
@@ -57,7 +57,7 @@ You can use the Adjust SDK to update your third party sharing settings on a per-
 
 <AddPartnerSharingSetting />
 
-### Manage Facebook Limited Data Use
+#### Manage Facebook Limited Data Use
 
 <Callout type="important">
 
@@ -76,6 +76,51 @@ You can update the Facebook LDU status by passing arguments to the <Tooltip>`add
 If you call this method with a `0` value for **either** `data_processing_options_country` or `data_processing_options_state`, the Adjust SDK passes **both** fields back as `0`.
 
 </Callout>
+
+#### Google Digital Market Act consent
+
+<Callout type="important">
+
+Passing these options is required if you use Google Ads or Google Marketing Platform and have users located in the European Economic Area (EEA).
+
+</Callout>
+
+To comply with the EU's Digital Markets Act (DMA), Google Ads and the Google Marketing Platform require explicit consent to receive Adjust’s attribution requests to their APIs. To communicate this consent, you need to add the following granular options to your third party sharing instance for the partner `google_dma`.
+
+<Table>
+
+| Key                  | Value                            | Description                                                                                                                                                                                                             |
+| -------------------- | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `eea`                | `1` (positive) \| `0` (negative) | Informs Adjust whether users installing the app are within the European Economic Area.<br />This includes EU member states, Switzerland, Norway, Iceland and Slovenia.                                                  |
+| `ad_personalization` | `1` (positive) \| `0` (negative) | Informs Adjust whether users consented with being served personalized ads via Google Ads and/or Google Marketing Platform.<br />This parameter also informs the `npa` parameter reserved for Google Marketing Platform. |
+| `ad_user_data`       | `1` (positive) \| `0` (negative) | Informs Adjust whether users consented with their advertiser ID being leveraged for attribution purposes.                                                                                                               |
+
+</Table>
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let adjustThirdPartySharing = ADJThirdPartySharing.initWithIsEnabledNumberBool(nil)
+adjustThirdPartySharing.addGranularOption("google_dma", key: "eea", value: "1")
+adjustThirdPartySharing.addGranularOption("google_dma", key: "ad_personalization", value: "1")
+adjustThirdPartySharing.addGranularOption("google_dma", key: "ad_user_data", value: "1")
+Adjust.trackThirdPartySharing(adjustThirdPartySharing)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc] initWithIsEnabledNumberBool:nil];
+[adjustThirdPartySharing addGranularOption:@"google_dma" key:@"eea" value:@"1"];
+[adjustThirdPartySharing addGranularOption:@"google_dma" key:@"ad_personalization" value:@"1"];
+[adjustThirdPartySharing addGranularOption:@"google_dma" key:@"ad_user_data" value:@"1"];
+[Adjust trackThirdPartySharing:adjustThirdPartySharing];
+```
+
+</Tab>
+</Tabs>
 
 ## Disable third-party sharing
 
