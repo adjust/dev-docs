@@ -39,6 +39,7 @@ export default defineConfig({
         "@components/Tooltip.astro",
         "@components/Version.astro",
         "@components/FigmaEmbed/FigmaEmbed.astro",
+        "@components/MinorVersion.astro",
       ],
     }),
     // Enable React for the Algolia search component.
