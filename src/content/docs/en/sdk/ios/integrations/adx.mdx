@@ -4,36 +4,48 @@ description: Use the Ad(X) integration to pass AD(X) information to Adjust's ser
 slug: en/sdk/ios/integrations/adx
 ---
 
-<MinorVersion added="v4.36.0">
+<MinorVersion added="v4.35.3">
 
 You can use the Adjust SDK to send AD(X) data to Adjust as an `AdjustAdRevenue` instance. To do this:
 
 </MinorVersion>
 
 1. Create a new function that triggers when the `rewardedAd.OnPaidEvent` method is called in the AD(X) SDK. This function should receive the eCPM (Effective Cost Per Mille) amount as an argument.
-2. Instantiate an [`AdjustAdRevenue` object](/en/sdk/unity/features/ad-revenue) with the source `AdjustConfig.AdRevenueSourceAdx`.
+2. Instantiate an [`ADJAdRevenue` object](/en/sdk/ios/features/ad-revenue) with the source `ADJAdRevenueSourceADX`.
 3. Fill in the details of your `AdjustAdRevenue` object. Divide the `ecpm` value by 1000 to return the estimated revenue for the ad.
 4. Send the ad revenue information to Adjust by calling the `trackAdRevenue` method.
 
-<Callout type="seealso">
-
-For more information about the `rewardedAd.OnPaidEvent` method, see [AD(X)'s rewarded ad documentation](https://docs.adxcorp.kr/unity/sdk-integration/ad-formats/rewarded-ad/ad-x#4.-a-d-revenue-onpaidevent).
-
-</Callout>
-
 ## Example
 
-```cs
-rewardedAd.OnPaidEvent += RewardedAd_OnPaidEvent;
+<Tabs>
+<Tab title="Swift">
 
-void RewardedAd_OnPaidEvent(double ecpm)
-{
-  double revenue = ecpm / 1000f;
+```swift
+func rewardedAd.paidEventHandler(ecpm: double) {
+   let revenue: double = ecpm / 1000;
 
-  AdjustAdRevenue adRevenue = new AdjustAdRevenue(AdjustConfig.AdRevenueSourceAdx);
-  adRevenue.setRevenue(revenue, "USD");
-  adRevenue.setAdRevenueUnit("ADX Rewarded Ad");
+   let adjustAdRevenue = AJDAdRevenue(source: ADJAdRevenueSourceADX);
+   adjustAdRevenue.setRevenue(revenue, currency: "USD");
+   adjustAdRevenue.setAdRevenueUnit("ADX Rewarded Ad");
 
-  Adjust.trackAdRevenue(adRevenue);
+   Adjust.trackAdRevenue(adjustAdRevenue);
 }
 ```
+
+</Tab>
+<Tab title="Objective-C">
+
+```objc
+rewardedAd.paidEventHandler = ^(double ecpm) {
+   double revenue = ecpm / 1000;
+
+   ADJAdRevenue *adjustAdRevenue = [[ADJAdRevenue alloc] initWithSource: ADJAdRevenueSourceADX];
+   [adjustAdRevenue setRevenue:revenue currency:@"USD"];
+   [adjustAdRevenue setAdRevenueUnit:@"ADX Rewarded Ad"];
+
+   [Adjust trackAdRevenue: adjustAdRevenue];
+};
+```
+
+</Tab>
+</Tabs>
