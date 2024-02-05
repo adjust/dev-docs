@@ -21,7 +21,8 @@ export const getCategoryChildrens = ({
   childLinks,
   currentPageType,
 }: GetCategoryChildParams) => {
-  const parts = getPathParts(currentPage);
+  const parts = getPathParts(currentPage, currentLang);
+  console.log(parts, "parts");
 
   const currentPageFixed = getCurrentPage(currentPage);
   const splittedCurrentPage = currentPageFixed.split("/");
@@ -30,7 +31,10 @@ export const getCategoryChildrens = ({
     let isCollapsed = false;
 
     parts.forEach((part) => {
-      if (child.path?.endsWith(part + "/index") || child.path?.endsWith(part)) {
+      if (
+        child.path?.endsWith(part + `/index-${currentLang}`) ||
+        child.path?.endsWith(part)
+      ) {
         isCollapsed = true;
         breadcrumbs.unshift({
           title: child.title,

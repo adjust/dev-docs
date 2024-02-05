@@ -17,8 +17,15 @@ export const getNavigationEntries = (
   currentLang: keyof Locales,
   currentPageType?: NavigationEntry["type"]
 ): NavigationData => {
-  // getting data for the pages
-  const pagesData = pages.map((page) => ({
+  // filtering data by the current language
+  const filteredPagesData = pages.filter((pageData) => {
+    const data = pageData.frontmatter;
+    // as we have partials inside content structure we don`t need to parse this data for the tree
+    const isPage = Object.keys(data).length;
+    return isPage && pageData.frontmatter.slug.includes(`${currentLang}/`);
+  });
+  // getting formatted data for the pages
+  const pagesData = filteredPagesData.map((page) => ({
     ...page.frontmatter,
     path: page.url?.replace(".mdx", ""),
     url: page.url ? getLastPath(page.url) : "",
@@ -37,10 +44,7 @@ export const getNavigationEntries = (
   const languageTree = {
     [currentLang]: {
       ...langItem,
-      children: getNavigationTree(
-        langItem!.children!,
-        `${CONTENT_PATH}/${currentLang}`
-      ),
+      children: getNavigationTree(langItem!.children!, `${CONTENT_PATH}`),
     },
   };
 
