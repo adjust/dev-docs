@@ -10,7 +10,6 @@ const LeftSidebarItem: FC<{
   level: number;
 }> = ({ currentPage, sidebarData, level = 1 }) => {
   const [isOpen, setIsOpen] = useState(sidebarData.collapsed);
-  console.log(isOpen, "isOpen");
 
   const handleCollapse = () => {
     setIsOpen(!isOpen);

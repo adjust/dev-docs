@@ -1,7 +1,7 @@
 export const getPathParts = (currentPage: string, currentLang: string) => {
+  // we don`t need to use lang from the current page url
   const langReg = new RegExp(`/${currentLang}(/|)`);
   const pageWithoutLang = currentPage.replace(langReg, "");
-  console.log(pageWithoutLang, "pageWithoutLang");
 
   const pathParts = pageWithoutLang.split("/").filter((part) => part !== "");
 
