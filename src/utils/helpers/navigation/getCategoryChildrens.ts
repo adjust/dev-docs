@@ -26,7 +26,7 @@ export const getCategoryChildrens = ({
   const currentPageFixed = getCurrentPage(currentPage);
   const splittedCurrentPage = currentPageFixed.split("/");
 
-  return categories[currentLang].children.map((child) => {
+  return categories[currentLang]?.children.map((child) => {
     let isCollapsed = false;
 
     parts.forEach((part) => {

@@ -37,9 +37,18 @@ export const getCategoriesUnderLanguage = (
   currentLang: keyof Locales,
   currentPageType?: NavigationEntry["type"]
 ) => {
-  const categories: { [key: string]: CategoryEntry } = {};
+  const categories: { [key in keyof Partial<Locales>]: CategoryEntry } = {};
   const breadcrumbs: NavigationData["breadcrumbs"] = [];
   const childLinks: NavigationData["childLinks"] = [];
+
+  // when we don`t have data for this locale we return default empty objects/arrays
+  if (!data.length) {
+    return {
+      categories: { [currentLang]: { children: [] as CategoryEntry[] } },
+      breadcrumbs: [],
+      childLinks: [],
+    };
+  }
 
   data.forEach((item) => {
     const {
@@ -78,7 +87,7 @@ export const getCategoriesUnderLanguage = (
     //if current item has the current language key in the URL we
     // should store this value under current language
     if (url.includes(`${CONTENT_PATH}`) && usedTitle) {
-      categories[currentLang].children?.push({
+      categories[currentLang]!.children?.push({
         ...item,
         description,
         type,
@@ -93,9 +102,8 @@ export const getCategoriesUnderLanguage = (
       });
     }
   });
-  console.log(categories, "categories");
 
-  categories[currentLang].children = getCategoryChildrens({
+  categories[currentLang]!.children = getCategoryChildrens({
     categories,
     currentLang,
     currentPage,
