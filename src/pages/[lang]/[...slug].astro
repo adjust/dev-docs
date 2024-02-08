@@ -1,20 +1,45 @@
 ---
+import { differenceBy} from "lodash-es";
 import { type CollectionEntry, getCollection } from "astro:content";
 import MainLayout from "./../../layouts/MainLayout.astro";
 import { KNOWN_LANGUAGE_CODES, langParamRegex } from "@i18n/locales";
 
 export async function getStaticPaths() {
   const docs = await getCollection("docs");
-  return docs.flatMap((entry) =>
-    KNOWN_LANGUAGE_CODES.map((langKey) => ({
-      params: { lang: langKey, slug: entry.slug?.replace(langParamRegex, '') },
-      props: entry,
-    }))
-  );
+  const langsArrays = KNOWN_LANGUAGE_CODES.flatMap((langKey) => {
+    return {
+      lang: langKey,
+      docs: docs.filter((doc) => doc.slug.startsWith(`${langKey}/`)).map((doc) => ({...doc, slug: doc.slug?.replace(langParamRegex, "")})),
+    };
+  });
+
+  const defaultLangFallback = langsArrays.find((obj) => obj.lang === 'en')!.docs
+
+  const paths = langsArrays.flatMap((langObject) => {
+
+    const differenceWithOrigin = differenceBy(
+      defaultLangFallback,
+      langObject.docs,
+      'slug'
+    );
+    const usedArray = differenceWithOrigin.length ? [...langObject.docs, ...differenceWithOrigin] : langObject.docs
+    
+    return usedArray.map((doc) => ({
+      params: {
+        lang: langObject.lang,
+        slug: doc.slug,
+      },
+      props: doc,
+    }));
+  });
+
+  return paths;
 }
+
 type Props = CollectionEntry<"docs">;
 
 const post = Astro.props;
+
 const { Content, headings } = await post.render();
 ---
 
