@@ -123,7 +123,7 @@ const BuildTable: FC<{
   }
 
   return (
-    <div className="overflow-auto">
+    <div className="overflow-auto mb-7">
       {props.search && (
         <div className="px-[15px] pt-[25px] pb-[35px]">
           <Input
