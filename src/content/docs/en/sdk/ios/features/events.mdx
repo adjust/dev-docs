@@ -8,8 +8,6 @@ import TrackEvent from "@ios-examples/Adjust/trackEvent.mdx"
 import TrackEventSig from "@ios-signatures/Adjust/trackEvent.mdx"
 import SetRevenue from "@ios-examples/ADJEvent/setRevenue.mdx"
 import SetRevenueSig from "@ios-signatures/ADJEvent/setRevenue.mdx"
-import SetTransactionId from "@ios-examples/ADJEvent/setTransactionId.mdx"
-import SetTransactionIdSig from "@ios-signatures/ADJEvent/setTransactionId.mdx"
 import SetCallbackId from "@ios-examples/ADJEvent/setCallbackId.mdx"
 import SetCallbackIdSig from "@ios-signatures/ADJEvent/setCallbackId.mdx"
 import AddCallbackParameter from "@ios-examples/ADJEvent/addCallbackParameter.mdx"
@@ -60,7 +58,7 @@ class ViewControllerSwift: UIViewController {
 @implementation ViewControllerObjC
 
 - (IBAction)clickRecordSimpleEvent:(UIButton *)sender {
-    ADJEvent *event = [ADJEvent eventWithEventToken:@"g3mfiw"];
+    ADJEvent *event = [ADJEvent eventWithEventToken: @"g3mfiw"];
 
     [Adjust trackEvent:event];
 }
@@ -187,7 +185,7 @@ class ViewControllerSwift: UIViewController {
 ```
 
 </Tab>
-<Tab sync="objc">
+<Tab sync="objc" title="Objective-C">
 
 ```objective-c
 #import "Adjust.h"
@@ -245,108 +243,6 @@ class ViewControllerSwift: UIViewController {
 </Tab>
 </Tabs>
 
-```txt title="Event log" {7,8}
-Path:      /event
-ClientSdk: ios4.38.0
-Parameters:
-  environment      sandbox
-  event_count      3
-  event_token      abc123
-  revenue          0.25
-  currency         EUR
-```
-
-## Unique events
-
-You can pass an optional identifier to avoid recording duplicate events. The SDK stores the last ten identifiers and skips revenue events with duplicate transaction IDs.
-
-To set the identifier, call the <Tooltip>`setTransactionId` method || <SetTransactionIdSig /></Tooltip> and pass your transaction ID as a **string** argument.
-
-<SetTransactionId />
-
-### Example
-
-This example shows how to record an event with the token `g3mfiw` whenever a user interacts with a button. The function sets the `uniqueId` to `5e85484b-1ebc-4141-aab7-25b869e54c49` using the <Tooltip>`setTransactionId` method || <SetTransactionIdSig /></Tooltip>.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
-
-```swift
-import Adjust
-import UIKit
-
-class ViewControllerSwift: UIViewController {
-   @IBOutlet weak var btnRecordEventUnique: UIButton?
-
-   @IBAction func btnRecordEventUnique(_sender: UIButton) {
-      let event = ADJEvent(eventToken: "g3mfiw");
-      let uniqueId = "5e85484b-1ebc-4141-aab7-25b869e54c49";
-      event?.setTransactionId(uniqueId);
-      Adjust.trackEvent(event);
-   }
-}
-```
-
-</Tab>
-<Tab title="Objective-C" sync="objc">
-
-```objective-c
-#import "Adjust.h"
-#import "Constants.h"
-#import "ViewControllerObjC.h"
-
-@interface ViewControllerObjC ()
-
-@property (weak, nonatomic) IBOutlet UIButton *btnRecordUniqueEvent;
-
-@end
-
-@implementation ViewControllerObjC
-
-- (IBAction)clickRecordUniqueEvent:(UIButton *)sender {
-   ADJEvent *event = [ADJEvent eventWithEventToken:@"g3mfiw"];
-   [event setTransactionId:@"5e85484b-1ebc-4141-aab7-25b869e54c49"];
-   [Adjust trackEvent:event];
-}
-
-@end
-```
-
-</Tab>
-<Tab title="Javascript" sync="js">
-
-```html
-<html>
-   <body>
-      <script>
-         setupWebViewJavascriptBridge(function(bridge) {
-            let adjustConfig = new AdjustConfig('2fm9gkqubvpc', AdjustConfig.EnvironmentSandbox);
-            adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
-
-            Adjust.appDidLaunch(adjustConfig);
-
-            var btnRecordUniqueEvent = document.getElementById('btnRecordUniqueEvent')
-            btnRecordUniqueEvent.onclick = function(e) {
-                  e.preventDefault()
-                  var adjustEvent = new AdjustEvent('g3mfiw');
-                  let uniqueId = "5e85484b-1ebc-4141-aab7-25b869e54c49";
-                  adjustEvent.setTransactionId(uniqueId);
-                  Adjust.trackEvent(adjustEvent);
-            }
-         }
-      </script>
-      <div id='buttons'>
-        <div style="width:300px;height:35px;text-align:center;">
-            <button id='btnRecordUniqueEvent'>Record unique event</button>
-        </div>
-      </div>
-   </body>
-</html>
-```
-
-</Tab>
-</Tabs>
-
 ```txt title="Event log" {7}
 Path:      /event
 ClientSdk: ios4.38.0
@@ -354,8 +250,58 @@ Parameters:
   environment      sandbox
   event_count      3
   event_token      abc123
-  transaction_id   5e85484b-1ebc-4141-aab7-25b869e54c49
+  currency         EUR
+  revenue          0.25
 ```
+
+### Purchase verification
+
+<MinorVersion added="v3.34.0">
+
+If you've enabled [purchase verification](https://help.adjust.com/en/article/purchase-verification), you must send additional information with your purchase events to verify them. When Adjust's servers receive this information in an event object, they forward it to Apple to verify the purchase.
+
+</MinorVersion>
+
+`transactionId` (NSString)
+: The [`transactionIdentifier` value](https://developer.apple.com/documentation/storekit/skpaymenttransaction/1411288-transactionidentifier) of the successfully completed purchase
+
+`productId` (NSString)
+: The product identifier of the item that was successfully purchased
+
+`receipt` (NSData)
+: The [signed receipt](https://developer.apple.com/documentation/foundation/bundle/1407276-appstorereceipturl) containing the information about the successfully completed purchase
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let receiptURL = Bundle.main.appStoreReceiptURL;
+let receipt = try Data(contentsOf: receiptURL, options: .alwaysMapped)
+
+let event = ADJEvent(eventToken: "abc123")
+event?.setRevenue(6.0, currency: "EUR");
+event?.setTransactionId("transaction-id");
+event?.setProductId("product-id");
+event?.setReceipt(receipt);
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
+NSData *receipt = [NSData dataWithContentsOfURL:receiptURL];
+ADJEvent *event = [ADJEvent eventWithEventToken::@"your-event-token"];
+[event setRevenue:6.0 currency:@"EUR"];
+[event setTransactionId:@"transaction-id"];
+[event setProductId:@"product-id"];
+[event setReceipt:receipt];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+</Tabs>
 
 ## Add callback parameters
 
@@ -695,12 +641,12 @@ class ViewControllerSwift: UIViewController {
 </Tab>
 </Tabs>
 
-```txt title="Event log" {7}
+```txt title="Event log" {4}
 Path:      /event
 ClientSdk: ios4.38.0
 Parameters:
-  environment      sandbox
-  event_count      3
-  event_token      g3mfiw
   callback_id      f2e728d8-271b-49ab-80ea-27830a215147
+  environment      sandbox
+  event_count      1
+  event_token      g3mfiw
 ```
