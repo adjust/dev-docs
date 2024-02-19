@@ -10,12 +10,12 @@
 
 set -- ja ko zh
 
-for locale; do
+for locale do
 
    # Fix broken MDX components in all files
 
    find 'src/content/docs/' -name "*-$locale.mdx" -type f -exec sh -c \
-      'for file do echo '\''Fixing formatting for '"${locale}"' content'\''; \
+      'for file do \echo '\''Fixing formatting for '"${locale}"' content'\''; \
       sed -i -e "s/<abbr/<Abbr/g ; \
       s/[^\n]<accordion/\n\n<Accordion/g ; \
       s/<accordion/<Accordion/g ; \
