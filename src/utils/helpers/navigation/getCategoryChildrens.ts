@@ -32,6 +32,8 @@ export const getCategoryChildrens = ({
     parts.forEach((part) => {
       // need to check paths by the new file namings: https://adjustcom.atlassian.net/browse/THC-900
       if (
+        child.path?.endsWith(part + `/index`) ||
+        child.path?.endsWith(part) ||
         child.path?.endsWith(part + `/index-${currentLang}`) ||
         child.path?.endsWith(part + `-${currentLang}`)
       ) {
