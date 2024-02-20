@@ -1,11 +1,10 @@
-export type Locales = Record<"en" | "zh" | "ja" | "ko" | "pt", string>;
+export type Locales = Record<"en" | "zh" | "ja" | "ko", string>;
 
 export const LOCALE_NAMES: Locales = {
   en: "English",
   zh: "中文",
   ja: "日本語",
   ko: "한국어",
-  pt: "Português",
 };
 
 export const langPathRegex = /\/([a-z]{2}-?[A-Z]{0,2})(\/|$)/;
