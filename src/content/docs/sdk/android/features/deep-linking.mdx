@@ -1,19 +1,13 @@
 ---
 title: Set up deep linking
 description: Configure the SDK to use deep links.
-slug: en/sdk/android/configuration/deep-links
+slug: en/sdk/android/features/deep-links
 ---
-
-import SetOnDeeplinkResponseListenerSig from "@android-signatures/ADJConfig/setOnDeeplinkResponseListener.mdx"
-import SetOnDeeplinkResponseListener from "@android-examples/ADJConfig/setOnDeeplinkResponseListener.mdx"
-import AppWillOpenUrlSig from "@android-signatures/Adjust/appWillOpenUrl.mdx"
-import AppWillOpenUrl from "@android-examples/Adjust/appWillOpenUrl.mdx"
 
 You can create deep links to take users to specific pages in your app. The Adjust SDK uses different logic depending on if the user already has your app installed on their device:
 
-Direct deep linking: Occurs if the user already has your app installed. The link takes the user to the page specified in the link
-
-Deferred deep linking: Occurs if the user doesn't have your app installed. The link takes the user to a storefront to install your app first. After the user installs the app, it opens to the page specified in the link.
+- Direct deep linking: occurs if the user already has your app installed. The link takes the user to the page specified in the link
+- Deferred deep linking: occurs if the user doesn't have your app installed. The link takes the user to a storefront to install your app first. After the user installs the app, it opens to the page specified in the link.
 
 The SDK can read deep link data after a user opens your app from a link.
 
@@ -31,7 +25,7 @@ You can launch a specific activity when a user interacts with a deep link. To do
 
 This example shows how to set up an activity called `MainActivity` to open with the **scheme name** `adjustExample`.
 
-```xml '".MainActivity"' '"adjustExample"'
+```xml title="AndroidManifest.xml" '".MainActivity"' '"adjustExample"'
 <activity
    android:name=".MainActivity"
    android:configChanges="orientation|keyboardHidden"
@@ -133,15 +127,71 @@ protected void onNewIntent(Intent intent) {
 
 ## Deferred deep linking
 
-The Adjust SDK opens deferred deep links by default. No additional setup is required. If you want to disable this behavior, you need to set up a deferred deep link callback using the  `setOnDeeplinkResponseListener` method .
+The Adjust SDK opens deferred deep links by default. No additional setup is required. If you want to disable this behavior, you need to set up a deferred deep link callback using the `setOnDeeplinkResponseListener` method .
 
 ### Set up a deferred deep link callback
+
+```java title="Method signature"
+public void setOnDeeplinkResponseListener(OnDeeplinkResponseListener onDeeplinkResponseListener)
+```
 
 You can configure the Adjust SDK to call a delegate function when it receives a deferred deep link. This delegate function receives the deep link as a **string** argument.
 
 If you want to open the deep link, return `true` in your delegate function. If you don't want to open it, return `false`.
 
-<SetOnDeeplinkResponseListener />
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin {3-7}
+val config = AdjustConfig(this, appToken, environment)
+//...
+config.setOnDeeplinkResponseListener { deeplink ->
+   Log.d("example", "Deferred deep link callback called!")
+   Log.d("example", "Deep link URL: $deeplink")
+   true
+}
+//...
+Adjust.onCreate(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java {3-12}
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+//...
+// Evaluate the deeplink to be launched.
+config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
+   @Override
+   public boolean launchReceivedDeeplink(Uri deeplink) {
+      Log.d("example", "Deferred deep link callback called!");
+      Log.d("example", "Deep link URL: " + deeplink);
+      
+      return true;
+   }
+});
+//...
+Adjust.onCreate(config);
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js {1-4}
+function deferredDeeplinkCallback(deeplink) {
+   console.log("Deferred deep link callback called!");
+   console.log(`Deep link URL: ${deeplink}`);
+}
+//...
+let adjustConfig = new AdjustConfig(yourAppToken, environment);
+adjustConfig.setOpenDeferredDeeplink(true);
+adjustConfig.setDeferredDeeplinkCallback(deferredDeeplinkCallback);
+//...
+Adjust.start(adjustConfig);
+```
+
+</Tab>
+</Tabs>
 
 ### Example
 
@@ -173,21 +223,68 @@ config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
 
 ## Reattribution via deep links
 
+```java title="Method signature"
+public static void appWillOpenUrl(Uri url, Context context)
+```
+
 Adjust enables you to run re-engagement campaigns with usage of deep links. For more information, see the [guide to appending attribution data to a deep link](https://help.adjust.com/en/article/deeplink-generator#manage-your-deeplinks).
 
-To reattribute your user, you need to call the  `appWillOpenUrl` method when the app receives deep link content. The Adjust SDK then looks for new attribution data within the deep link. If the SDK finds new information, it forwards the information to Adjust's servers for reattribution.
+To reattribute your user, you need to call the `appWillOpenUrl` method when the app receives deep link content. The Adjust SDK then looks for new attribution data within the deep link. If the SDK finds new information, it forwards the information to Adjust's servers for reattribution.
 
-<AppWillOpenUrl />
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+override fun onCreate(savedInstanceState: Bundle?) {
+   super.onCreate(savedInstanceState)
+   setContentView(R.layout.activity_main)
+
+   val intent = intent
+   val data = intent.data
+   Adjust.appWillOpenUrl(data, getApplicationContext())
+}
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+
+    Intent intent = getIntent();
+    Uri data = intent.getData();
+    Adjust.appWillOpenUrl(data, getApplicationContext());
+}
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+Adjust.appWillOpenUrl(deeplinkUrl);
+```
+
+</Tab>
+</Tabs>
 
 ## Link resolution
 
-Some ESPs (Email Service Providers) use their own custom tracking domains for marketing campaigns. If you need to track clicks through a custom domain, you need to set the SDK up to resolve the link. To do this, call the `resolveLink` method of the `AdjustLinkResolution` class. The Adjust SDK will then follow the custom link and resolve it when opening the deep link. This ensures that you record the interaction with your email tracking campaign.
+```java title="Method signature"
+public static void resolveLink(final String url,
+                               final String[] resolveUrlSuffixArray,
+                               final AdjustLinkResolutionCallback adjustLinkResolutionCallback)
+```
 
-The `resolveLinkWithUrl` method takes the following parameters:
+Some Email Service Providers (ESPs) use their own custom tracking domains for marketing campaigns. If you need to track clicks through a custom domain, you need to set the SDK up to resolve the link. To do this, call the `resolveLink` method of the `AdjustLinkResolution` class. The Adjust SDK will then follow the custom link and resolve it when opening the deep link. This ensures that you record the interaction with your email tracking campaign.
 
--  `url`: the deep link that opened the application.
--  `resolveUrlSuffixArray`: the custom domains of the configured campaigns that need to be resolved.
--  `adjustLinkResolutionCallback`: the callback that contains the final URL.
+The `resolveLinkWithUrl` method takes the following arguments:
+
+-  `url` (**String**): the deep link that opened the application.
+-  `resolveUrlSuffixArray` (**String array**): the custom domains of the configured campaigns that need to be resolved.
+-  `adjustLinkResolutionCallback` (`AdjustLinkResolutionCallback`): the callback that returns the final URL.
 
 The method checks the deep link against the domains in the `resolveUrlSuffixArray`. If it doesn't find any matches, it forwards the deep link URL as is. If it does find a match, it attempts to resolve the link and return the resulting deep link. It then stores this in the callback parameter.
 
@@ -205,9 +302,9 @@ You can use the returned deep link to reattribute your user. To do this, pass th
 ```kotlin
 AdjustLinkResolution.resolveLink(url, arrayOf("example.com"), object : AdjustLinkResolution.AdjustLinkResolutionCallback {
    override fun resolvedLinkCallback(resolvedLink: Uri) {
-      Adjust.appWillOpenUrl(resolvedLink, applicationContext)
-      }
-   })
+         Adjust.appWillOpenUrl(resolvedLink, applicationContext)
+   }
+})
 ```
 
 </Tab>
