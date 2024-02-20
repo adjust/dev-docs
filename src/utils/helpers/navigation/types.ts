@@ -1,3 +1,5 @@
+import type { Locales } from "@i18n/locales";
+
 export type NavItemTypes = "category";
 
 export interface CategoryEntry {
@@ -38,7 +40,7 @@ export interface ChildLink {
 }
 
 export interface NavigationData {
-  languageTree: { [key: string]: CategoryEntry };
+  languageTree: { [key in keyof Partial<Locales>]: CategoryEntry };
   breadcrumbs: {
     title: string;
     url: string;

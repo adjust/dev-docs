@@ -21,16 +21,22 @@ export const getCategoryChildrens = ({
   childLinks,
   currentPageType,
 }: GetCategoryChildParams) => {
-  const parts = getPathParts(currentPage);
+  const parts = getPathParts(currentPage, currentLang);
 
   const currentPageFixed = getCurrentPage(currentPage);
   const splittedCurrentPage = currentPageFixed.split("/");
 
-  return categories[currentLang].children.map((child) => {
+  return categories[currentLang]?.children.map((child) => {
     let isCollapsed = false;
 
     parts.forEach((part) => {
-      if (child.path?.endsWith(part + "/index") || child.path?.endsWith(part)) {
+      // need to check paths by the new file namings: https://adjustcom.atlassian.net/browse/THC-900
+      if (
+        child.path?.endsWith(part + `/index`) ||
+        child.path?.endsWith(part) ||
+        child.path?.endsWith(part + `/index-${currentLang}`) ||
+        child.path?.endsWith(part + `-${currentLang}`)
+      ) {
         isCollapsed = true;
         breadcrumbs.unshift({
           title: child.title,

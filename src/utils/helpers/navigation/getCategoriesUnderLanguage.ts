@@ -4,9 +4,9 @@ import { getCategoryChildrens } from "./getCategoryChildrens";
 import type { Locales } from "@i18n/locales";
 import type { CategoryEntry, NavigationData, NavigationEntry } from "./types";
 
-const getParentId = (url: string) => {
+const getParentId = (url: string, currentLang: string) => {
   const parts = url.split("/");
-  if (parts.includes("index")) {
+  if (parts.includes(`index-${currentLang}`) || parts.includes(`index`)) {
     parts.splice(-2, 2);
     return parts.join("/");
   }
@@ -14,9 +14,9 @@ const getParentId = (url: string) => {
   return parts.join("/");
 };
 
-const getLevel = (url: string, langKey: string) => {
-  const levelArr = url.replace(`${CONTENT_PATH}/${langKey}`, "").split("/");
-  if (levelArr.includes("index")) {
+const getLevel = (url: string, currentLang: string) => {
+  const levelArr = url.replace(`${CONTENT_PATH}`, "").split("/");
+  if (levelArr.includes(`index-${currentLang}`) || levelArr.includes(`index`)) {
     return levelArr.length - 1;
   }
   return levelArr.length;
@@ -37,9 +37,18 @@ export const getCategoriesUnderLanguage = (
   currentLang: keyof Locales,
   currentPageType?: NavigationEntry["type"]
 ) => {
-  const categories: { [key: string]: CategoryEntry } = {};
+  const categories: { [key in keyof Partial<Locales>]: CategoryEntry } = {};
   const breadcrumbs: NavigationData["breadcrumbs"] = [];
   const childLinks: NavigationData["childLinks"] = [];
+
+  // when we don`t have data for this locale we return default empty objects/arrays
+  if (!data.length) {
+    return {
+      categories: { [currentLang]: { children: [] as CategoryEntry[] } },
+      breadcrumbs: [],
+      childLinks: [],
+    };
+  }
 
   data.forEach((item) => {
     const {
@@ -54,7 +63,7 @@ export const getCategoriesUnderLanguage = (
       type,
     } = item;
 
-    const parentId = getParentId(path);
+    const parentId = getParentId(path, currentLang);
 
     const usedTitle = sidebarLabel || categoryTitle || title;
 
@@ -67,7 +76,7 @@ export const getCategoriesUnderLanguage = (
         position,
         title: "Introduction",
         slug: "",
-        path: `${CONTENT_PATH}/${currentLang}`,
+        path: `${CONTENT_PATH}`,
         parentId: null,
         collapsed: true,
         topCategory: true,
@@ -77,8 +86,8 @@ export const getCategoriesUnderLanguage = (
 
     //if current item has the current language key in the URL we
     // should store this value under current language
-    if (url.includes(`${CONTENT_PATH}/${currentLang}`) && usedTitle) {
-      categories[currentLang].children?.push({
+    if (url.includes(`${CONTENT_PATH}`) && usedTitle) {
+      categories[currentLang]!.children?.push({
         ...item,
         description,
         type,
@@ -94,7 +103,7 @@ export const getCategoriesUnderLanguage = (
     }
   });
 
-  categories[currentLang].children = getCategoryChildrens({
+  categories[currentLang]!.children = getCategoryChildrens({
     categories,
     currentLang,
     currentPage,
