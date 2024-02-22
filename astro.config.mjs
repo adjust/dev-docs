@@ -21,6 +21,9 @@ const astroExpressiveCodeOptions = {
     extractFileNameFromCode: false,
   },
   styleOverrides: {
+    textMarkers: {
+      markBackground: "#ddebf9",
+    },
     frames: {
       editorTabBarBackground: "#f4f6f9",
       terminalTitlebarBackground: "#f4f6f9",
