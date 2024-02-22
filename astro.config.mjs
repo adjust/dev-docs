@@ -17,6 +17,9 @@ const astroExpressiveCodeOptions = {
   frames: {
     extractFileNameFromCode: false,
   },
+  themes: [
+    "github-light"
+  ]
 };
 
 // https://astro.build/config
