@@ -37,6 +37,7 @@ export interface ChildLink {
   slug: string;
   title: string;
   description: string;
+  position?: number;
 }
 
 export interface NavigationData {

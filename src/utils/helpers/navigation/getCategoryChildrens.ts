@@ -56,6 +56,7 @@ export const getCategoryChildrens = ({
           title: child.title,
           slug: child.slug,
           description: child.description,
+          position: child.position,
         });
       }
     });
