@@ -12,6 +12,9 @@ import expressiveCode from "astro-expressive-code";
 import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-sections";
 
 const astroExpressiveCodeOptions = {
+  defaultProps: {
+    wrap: true,
+  },
   // This is where you can pass your plugin options
   plugins: [pluginCollapsibleSections()],
   frames: {
