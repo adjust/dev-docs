@@ -32,9 +32,17 @@ export const getNavigationTree = (
       children.sort((a, b) => {
         // if we try to sort pages from the different folders we do nothing
         // if we see that page doesn`t have a position we do nothing
-        if (a.url !== b.url || !a?.position || !b?.position) {
+
+        if (item.level > 3 && (a.url !== b.url)) {
           return 0;
         }
+
+        if (!a.position && !b.position) {
+          return 0;
+        }
+
+        a.position = Number(a.position) || 0;
+        b.position = Number(b.position) || 0;
 
         return a?.position > b?.position ? 1 : -1;
       });
