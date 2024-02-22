@@ -17,6 +17,13 @@ const astroExpressiveCodeOptions = {
   frames: {
     extractFileNameFromCode: false,
   },
+  styleOverrides: {
+    frames: {
+      editorTabBarBackground: "#f4f6f9",
+      terminalTitlebarBackground: "#f4f6f9",
+      terminalBackground: "var(--code-background)",
+    }
+  },
   themes: [
     "github-light"
   ]
