@@ -42,6 +42,7 @@ const BuildTable: FC<{
   const visualProperties = {
     areColumnsBordered: props.bordered,
     isStriped: props.striped,
+    hasGreyBackgroundHeader: true
   };
 
   if (props.list) {
