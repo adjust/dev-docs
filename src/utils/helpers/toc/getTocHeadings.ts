@@ -13,7 +13,7 @@ export const getTocHeadings = () => {
     const text = heading.textContent;
     let slug = text
       ?.toLocaleLowerCase()
-      .replace(/\W(?<!\s)/gi, "")
+      .replace(/\p{P}(?<!\s)/giu, "")
       .split(" ")
       .join("-")!;
 
