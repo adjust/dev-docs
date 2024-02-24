@@ -4,11 +4,34 @@ description: Listen for attribution changes using the Adjust SDK
 slug: en/sdk/windows/features/attribution
 ---
 
-import Attribution from "@windows-examples/Adjust/GetAttribution.mdx";
-import AttributionSig from "@windows-signatures/Adjust/GetAttribution.mdx";
-import AttributionChanged from "@windows-examples/AdjustConfig/AttributionChanged.mdx";
+When a user interacts with an Adjust link, their attribution information updates. This can happen if the user interacts with a [deep link](https://help.adjust.com/en/article/deep-links). Information about a user's attribution is represented in the `AdjustAttribution` class.
 
-When a user interacts with a campaign link or a [deep link](https://help.adjust.com/en/article/deep-links), their attribution information updates. The SDK can listen for attribution changes and call a function when it detects an update.
+## AdjustAttribution class properties
+
+The `AdjustAttribution` class contains details about the current attribution status of the device. Any values that aren't populated for the user are returned as a `null` value.
+
+<Table>
+
+| Values         | Data type | Description                                                                                        |
+| -------------- | --------- | -------------------------------------------------------------------------------------------------- |
+| `TrackerToken` | String    | The token of the tracker to which the device is currently attributed                               |
+| `TrackerName`  | String    | The name of the tracker to which the device is currently attributed                                |
+| `Network`      | String    | The name of the network to which the device is currently attributed                                |
+| `Campaign`     | String    | The name of the campaign to which the device is currently attributed                               |
+| `Adgroup`      | String    | The name of the adgroup to which the device is currently attributed                                |
+| `Creative`     | String    | The name of the creative to which the device is currently attributed                               |
+| `ClickLabel`   | String    | The [click label](https://help.adjust.com/en/article/user-rewards) that the install is tagged with |
+| `Adid`         | String    | The unique Adjust ID assigned to the device                                                        |
+
+</Table>
+
+## Trigger a function when attribution changes
+
+```c# title="Property declaration"
+public Action<AdjustAttribution> AttributionChanged { get; set; }
+```
+
+The SDK can listen for attribution changes and call a function when it detects an update. To configure your callback function, assign your function to the `AttributionChanged` property on your config instance. You can pass the name of a function or write the function inline.
 
 <Callout type="important">
 
@@ -16,14 +39,47 @@ You must call the `AttributionChanged` method **before** initializing the Adjust
 
 </Callout>
 
-<AttributionChanged />
+<Tabs>
+<Tab title="Inline function">
 
-Within your delegate function, you have access to the user's Attribution object. See the [`AdjustAttribution` class reference](/en/sdk/windows/reference/adjustattribution) for a list of available parameters.
+```c# {3,4}
+var config = new AdjustConfig(appToken, environment);
+
+config.AttributionChanged = (attribution) =>
+   System.Diagnostics.Debug.WriteLine("attribution: " + attribution);
+
+Adjust.ApplicationLaunching(config);
+```
+
+</Tab>
+<Tab title="Function name">
+
+```c# "AdjustAttributionChanged"
+var config = new AdjustConfig(appToken, environment);
+config.AttributionChanged = AdjustAttributionChanged;
+Adjust.ApplicationLaunching(config);
+
+private void AdjustAttributionChanged(AdjustAttribution attribution)
+{
+   //...
+}
+```
+
+</Tab>
+</Tabs>
 
 ## Get current attribution information
 
-(Available from v4.12.0 and later.) When a user installs your app, Adjust attributes the install to a campaign. The Adjust SDK gives you access to campaign attribution details for your install. To return this information, call the `GetAttribution` method.
+```c# title="Method signature"
+public static AdjustAttribution GetAttribution();
+```
 
-This method returns an Attribution object. See the [`AdjustAttribution` class reference](/en/sdk/windows/reference/adjustattribution) for a list of available properties.
+<MinorVersion added="v4.12.0">
 
-<Attribution />
+When a user installs your app, Adjust attributes the install to a campaign. The Adjust SDK gives you access to campaign attribution details for your install. To return this information, call the `GetAttribution` method to return the attribution information as an `AdjustAttribution` object.
+
+</MinorVersion>
+
+```c#
+AdjustAttribution attribution = Adjust.GetAttribution();
+```
