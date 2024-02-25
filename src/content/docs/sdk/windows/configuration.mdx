@@ -1,0 +1,247 @@
+---
+title: Configuration
+description: Follow the guides in this section to configure the Adjust SDK.
+category-title: Configuration
+slug: en/sdk/windows/configuration
+sidebar-position: 1
+---
+
+Use the methods in this document to configure the behavior of the Adjust SDK.
+
+## Instantiate your config object
+
+```cs title="Method signature"
+public AdjustConfig(string appToken, string environment, Action<string> logDelegate = null, LogLevel? logLevel = null)
+```
+
+To configure the Adjust SDK, you need to instantiate an `AdjustConfig` object. This object contains the **read-only** configuration options that you need to pass to the Adjust SDK.
+
+To instantiate your config object, create a new `AdjustConfig` instance and pass the following parameters:
+
+- `appToken` (**String**): Your [Adjust app token](https://help.adjust.com/en/article/app-token-and-reporting-currency#view-your-app-details).
+- `environment` (**String**): The environment you want to run the SDK in. Pass `AdjustConfig.EnvironmentSandbox` to run the SDK in sandbox mode for testing. Pass `AdjustConfig.EnvironmentProduction` to run the SDK in production mode for release.
+- `logDelegate` (**Action**): A function to which logging is delegated. You can also configure this using the [`setLogDelegate` method](#configure-a-log-delegate).
+- `logLevel` (**LogLevel**): The level of logging you want to record. The following log levels are supported:
+
+<Table>
+
+| Log level           | Description                                   |
+| ------------------- | --------------------------------------------- |
+| `LogLevel.Verbose`  | Enable all logging                            |
+| `LogLevel.Debug`    | Enable debug logging                          |
+| `LogLevel.Info`     | Only show info level logging (default option) |
+| `LogLevel.Warn`     | Disable informational warnings                |
+| `LogLevel.Error`    | Disable warning level logging and below       |
+| `LogLevel.Assert`   | Disable error level logging and below         |
+| `LogLevel.Suppress` | Suppress all logging                          |
+
+</Table>
+
+```cs
+string appToken = "hmqwpvspxnuo";
+string environment = AdjustConfig.EnvironmentSandbox;
+var adjustConfig = new AdjustConfig(appToken, environment,
+   msg => System.Diagnostics.Debug.WriteLine(msg), LogLevel.Verbose);
+Adjust.ApplicationLaunching(adjustConfig);
+```
+
+## Read-only configuration
+
+**Read-only** configuration options are set in your `AdjustConfig` instance **before** the initialization of the SDK. They can't be changed while the SDK is running. You MUST configure any options you want to use before running `Adjust.ApplicationLaunching()`.
+
+### Configure a log delegate
+
+```cs title="Method signature"
+public void setLogDelegate(Action<String> logDelegate);
+```
+
+A log delegate is a function that the Adjust SDK calls to record logs. To configure a log delegate, pass your log function to the `setLogDelegate`. The Adjust SDK calls this function each time it outputs a log message.
+
+```cs {3}
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
+//...
+adjustConfig.setLogDelegate(msg => Debug.Log(msg));
+//...
+Adjust.ApplicationLaunching(config);
+```
+
+### Set external device identifier
+
+```cs title="Method signature"
+public void setExternalDeviceId(string externalDeviceId);
+```
+
+An external device identifier is a custom value that you can assign to a device or user. They help you recognize users across sessions and platforms. They can also help you deduplicate installs by user so that a user isn't counted as duplicate new installs. Contact your Adjust representative to get started with external device IDs.
+
+You can use an external device ID as a custom identifier for a device. This helps you keep continuity with your other systems. You can set property calling the `setExternalDeviceId` method with the following parameter:
+
+- `externalDeviceId` (String): Your external device identifier. This value is **case sensitive**. If you have imported external device IDs, make sure the value you pass matches the imported value.
+
+<Callout type="seealso">
+
+See the [External device identifiers article](https://help.adjust.com/en/article/external-device-identifiers) in the Adjust help center for more information.
+
+</Callout>
+
+```cs {3}
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
+//...
+adjustConfig.setExternalDeviceId("{Your-External-Device-Id}");
+//...
+Adjust.ApplicationLaunching(adjustConfig);
+```
+
+If you want to use the external device ID in your business analytics, you can pass it as a [session callback parameter](/en/sdk/android/features/session-parameters).
+
+You can import existing external device IDs into Adjust. This ensures that the Adjust servers match future data to your existing device records. Contact your Adjust representative for more information.
+
+### Set default link token
+
+```cs title="Property declaration"
+public string DefaultTracker { get; set; }
+```
+
+You can configure a default link token if your app is preinstalled on a device. When a user opens the preinstalled app for the first time, the install is attributed to the default link token. To set your default link token, assign your [Adjust link token](https://help.adjust.com/en/article/links#adjust-link-token) to the `DefaultTracker` property on your config instance.
+
+```cs {3}
+var adjustConfig = new AdjustConfig(appToken, environment,
+   msg => System.Diagnostics.Debug.WriteLine(msg), LogLevel.Verbose);
+adjustConfig.DefaultTracker = "{TrackerToken}";
+Adjust.ApplicationLaunching(adjustConfig);
+```
+
+### Enable background recording
+
+```cs title="Property declaration"
+public bool SendInBackground { get; set; }
+```
+
+By default, the Adjust SDK pauses the sending of requests when your app is running in the background. You can configure the SDK to send requests in the background by enabling the background recording. To enable background recording, assign a **Boolean** value to the `SendInBackground` property of your config instance.
+
+```cs {4}
+var adjustConfig = new AdjustConfig(appToken, environment,
+   msg => System.Diagnostics.Debug.WriteLine(msg), LogLevel.Verbose);
+//...
+adjustConfig.SendInBackground = true;
+//...
+Adjust.ApplicationLaunching(adjustConfig);
+```
+
+### Enable event buffering
+
+```cs title="Property declaration"
+public bool EventBufferingEnabled { get; set; }
+```
+
+The Adjust SDK sends event information as soon as a user triggers an event in your app. You can send event information on a schedule by enabling event buffering. Event buffering stores events in a local buffer on the device and sends all requests once per minute.
+
+Your config object contains a boolean `EventBufferingEnabled` property that controls this behavior. To enable event buffering, assign a **Boolean** value to the `EventBufferingEnabled` property of your config instance.
+
+- `EventBufferingEnabled` (**Boolean**): Set to `true` to enable event buffering or `false` to disable event buffering.
+
+```cs {4}
+var adjustConfig = new AdjustConfig(appToken, environment,
+   msg => System.Diagnostics.Debug.WriteLine(msg), LogLevel.Verbose);
+//...
+adjustConfig.EventBufferingEnabled = true;
+//...
+Adjust.ApplicationLaunching(adjustConfig);
+```
+
+### Delay the start of the SDK
+
+```cs title="Property declaration"
+public TimeSpan? DelayStart { get; set; }
+```
+
+By default, the Adjust SDK starts as soon as your app opens. If you want to send data that is not available at launch in [session parameters](/en/sdk/flutter/features/session-parameters), you can delay the start of the SDK. This can be helpful if you are sending information such as unique identifiers.
+
+To configure a startup delay, assign a **TimeSpan** value to the `DelayStart` property of your config instance.
+
+- `delayStart` (**TimeSpan**): The time (in seconds) by which to delay the start of the SDK. You can delay the start of the SDK by up to **10 seconds**.
+
+```cs
+adjustConfig.DelayStart = TimeSpan.FromSeconds(5.5);
+```
+
+## Dynamic configuration
+
+**Dynamic** configuration options may be changed during the SDK's lifecycle in response to events or actions taken by the user.
+
+### Toggle offline mode
+
+```cs title="Method signature"
+public void SetOfflineMode(bool offline);
+```
+
+<Callout type="important">
+
+The offline mode setting isn't remembered between sessions. Offline mode is disabled at the start of each new session.
+
+</Callout>
+
+The Adjust SDK sends event and session data to Adjust's servers in real time. You can pause the sending of information by putting the SDK in offline mode. In offline mode the SDK stores all data in a local file on the device. The SDK sends this information to Adjust's servers when you disable offline mode.
+
+You can toggle offline mode at any time by calling the `SetOfflineMode` method with the following argument:
+
+- `offline` (Boolean): Set to `true` to enable offline mode or `false` to disable offline mode.
+
+```cs
+Adjust.SetOfflineMode(true);
+```
+
+### Set push tokens
+
+```cs title="Method signature"
+public static void SetPushToken(string pushToken);
+```
+
+Push tokens are used for [Audience Builder](https://help.adjust.com/en/article/audience-builder) and client callbacks. They're also required for [Uninstall and reinstall tracking](https://help.adjust.com/en/article/uninstalls-reinstalls).
+
+Your config object contains a string `pushToken` property that you can use to store your push token. You can update this property at any time by calling the `setPushToken` method and passing the following arguments:
+
+- `pushToken` (String): Your push token.
+
+<Callout type="note">
+
+If you have access to the push token from the web view, you can call the `setPushToken` method in Javascript.
+
+</Callout>
+
+```cs
+Adjust.SetPushToken("{YourDeviceToken}");
+```
+
+### Disable or enable the SDK
+
+<Callout type="important">
+
+You can only call this method after the first session. This setting persists between sessions.
+
+</Callout>
+
+```cs title="Method signature"
+public static void SetEnabled(bool enabled);
+```
+
+The Adjust SDK runs by default when your app is open. You can disable and re-enable the Adjust SDK to pause and resume recording. When you disable the Adjust SDK, it doesn't send any data to Adjust's servers.
+
+You can enable or disable the SDK at any time by calling the `SetEnabled` method with the following argument:
+
+- `enabled` (Boolean): Set to `true` to enable the SDK or `false` to disable the SDK.
+
+```cs
+Adjust.SetEnabled(false);
+```
+
+#### Check enabled status
+
+```cs title="Method signature"
+public static bool IsEnabled();
+```
+
+You can check if the Adjust SDK is enabled at any time by calling the `isEnabled` method. This method returns a **boolean** value indicating if the SDK is **enabled** (`true`) or **disabled** (`false`).
+
+```cs
+Adjust.IsEnabled();
+```
