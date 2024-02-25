@@ -4,12 +4,7 @@ description: Set up callbacks to trigger functions when the SDK sends informatio
 slug: en/sdk/react-native/features/callbacks
 ---
 
-import SetSessionTrackingSucceededCallbackListener from "@react-native-examples/AdjustConfig/setSessionTrackingSucceededCallbackListener.mdx";
-import SetEventTrackingSucceededCallbackListener from "@react-native-examples/AdjustConfig/setEventTrackingSucceededCallbackListener.mdx";
-import SetSessionTrackingFailedCallbackListener from "@react-native-examples/AdjustConfig/setSessionTrackingFailedCallbackListener.mdx";
-import SetEventTrackingFailedCallbackListener from "@react-native-examples/AdjustConfig/setEventTrackingFailedCallbackListener.mdx";
-
-Set up callbacks to trigger functions when the SDK sends information to Adjust. You can set up callbacks for sessions and events.
+Set up callbacks to trigger functions when the SDK sends information to Adjust. You can set up callbacks for **sessions** and **events**.
 
 <Callout type="important">
 
@@ -30,16 +25,40 @@ Session callbacks have access to a response data object. You can use its propert
 | `Message`      | String                        | The message from the server or the error logged by the SDK.            |
 | `Timestamp`    | String                        | The timestamp from Adjust's servers.                                   |
 | `Adid`         | String                        | A unique device identifier provided by Adjust.                         |
-| `JsonResponse` | Dictionary \<string, object\> | The JSOaN object with the response from the server.                     |
+| `JsonResponse` | Dictionary `<string, object>` | The JSON object with the response from the server.                     |
 | `WillRetry`    | Boolean                       | Indicates whether there will be an attempt to resend a failed package. |
 
 </Table>
 
 ### Success callbacks
 
+```ts title="Method signature"
+public setSessionTrackingSucceededCallbackListener(
+   callback: (sessionSuccess: AdjustSessionTrackingSuccess) => void
+): void
+```
+
 Set up success callbacks to trigger functions when the SDK records a session.
 
-<SetSessionTrackingSucceededCallbackListener />
+```jsx {6-15}
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
+//...
+adjustConfig.setSessionTrackingSucceededCallbackListener(function (
+   sessionSuccess
+) {
+   // Printing all session success properties.
+   console.log("Session tracking succeeded!");
+   console.log(sessionSuccess.message);
+   console.log(sessionSuccess.timestamp);
+   console.log(sessionSuccess.adid);
+   console.log(sessionSuccess.jsonResponse);
+});
+//...
+Adjust.create(adjustConfig);
+```
 
 #### Example
 
@@ -62,9 +81,34 @@ Adjust.create(adjustConfig);
 
 ### Failure callbacks
 
+```ts title="Method signature"
+public setSessionTrackingFailedCallbackListener(
+   callback: (sessionFailed: AdjustSessionTrackingFailure) => void
+): void
+```
+
 Set up failure callbacks to trigger functions when the SDK fails to record a session.
 
-<SetSessionTrackingFailedCallbackListener />
+```jsx {6-16}
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
+//...
+adjustConfig.setSessionTrackingFailedCallbackListener(function (
+   sessionFailure
+) {
+   // Printing all session failure properties.
+   console.log("Session tracking failed!");
+   console.log(sessionFailure.message);
+   console.log(sessionFailure.timestamp);
+   console.log(sessionFailure.adid);
+   console.log(sessionFailure.willRetry);
+   console.log(sessionFailure.jsonResponse);
+});
+//...
+Adjust.create(adjustConfig);
+```
 
 #### Example
 
@@ -98,18 +142,42 @@ Event callbacks have access to a response data object. You can use its propertie
 | `Message`      | String                        | The message from the server or the error logged by the SDK.            |
 | `Timestamp`    | String                        | The timestamp from Adjust's servers.                                   |
 | `Adid`         | String                        | A unique device identifier provided by Adjust.                         |
-| `JsonResponse` | Dictionary \<string, object\> | The JSON object with the response from the server.                     |
 | `EventToken`   | String                        | The event token                                                        |
 | `CallbackId`   | String                        | The custom callback ID set on the event object                         |
+| `JsonResponse` | Dictionary `<string, object>` | The JSON object with the response from the server.                     |
 | `WillRetry`    | Boolean                       | Indicates whether there will be an attempt to resend a failed package. |
 
 </Table>
 
 ### Success callbacks
 
+```jsx title="Method signature"
+public setEventTrackingSucceededCallbackListener(
+   callback: (eventSuccess: AdjustEventTrackingSuccess) => void
+): void
+```
+
 Set up success callbacks to trigger functions when the SDK records an event.
 
-<SetEventTrackingSucceededCallbackListener />
+```jsx {6-15}
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox
+);
+//...
+adjustConfig.setEventTrackingSucceededCallbackListener(function (eventSuccess) {
+   // Printing all event success properties.
+   console.log("Event tracking succeeded!");
+   console.log(eventSuccess.message);
+   console.log(eventSuccess.timestamp);
+   console.log(eventSuccess.eventToken);
+   console.log(eventSuccess.callbackId);
+   console.log(eventSuccess.adid);
+   console.log(eventSuccess.jsonResponse);
+});
+//...
+Adjust.create(adjustConfig);
+```
 
 #### Example
 
@@ -130,9 +198,34 @@ Adjust.create(adjustConfig);
 
 ### Failure callbacks
 
+```ts title="Method signature"
+public setEventTrackingFailedCallbackListener(
+   callback: (eventFailed: AdjustEventTrackingFailure) => void
+): void
+```
+
 Set up failure callbacks to trigger functions when the SDK fails to record an event.
 
-<SetEventTrackingFailedCallbackListener />
+```jsx {6-16}
+const adjustConfig = new AdjustConfig(
+   "{Your App Token}",
+   AdjustConfig.EnvironmentSandbox
+);
+adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
+adjustConfig.setEventTrackingFailedCallbackListener(function (eventFailure) {
+   // Printing all event failure properties.
+   console.log("Event tracking failed!");
+   console.log(eventFailure.message);
+   console.log(eventFailure.timestamp);
+   console.log(eventFailure.eventToken);
+   console.log(eventFailure.callbackId);
+   console.log(eventFailure.adid);
+   console.log(eventFailure.willRetry);
+   console.log(eventFailure.jsonResponse);
+});
+//...
+Adjust.create(adjustConfig);
+```
 
 #### Example
 

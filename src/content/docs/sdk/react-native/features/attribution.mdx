@@ -4,14 +4,49 @@ description: Listen for attribution changes using the Adjust SDK
 slug: en/sdk/react-native/features/attribution
 ---
 
-import SetAttributionCallbackListener from "@react-native-examples/AdjustConfig/setAttributionCallbackListener.mdx";
-import SetAttributionCallbackListenerSig from "@react-native-signatures/AdjustConfig/setAttributionCallbackListener.mdx";
-import Attribution from "@react-native-examples/Adjust/getAttribution.mdx";
-import AttributionSig from "@react-native-signatures/Adjust/getAttribution.mdx";
+When a user interacts with an Adjust link, their attribution information updates. This can happen if the user interacts with a [deep link](https://help.adjust.com/en/article/deep-links). Information about a user's attribution is represented in the `AdjustAttribution` class.
 
-When a user interacts with a campaign link, their attribution information updates. This can happen if the user interacts with a [deep link](https://help.adjust.com/en/article/deep-links). The SDK can listen for attribution changes and call a function when it detects an update.
+## AdjustAttribution class properties
 
-To configure your callback function, call the `setAttributionCallbackListener` method with your function name as an argument.
+The `AdjustAttribution` class contains details about the current attribution status of the device. Any values that aren't populated for the user are returned as a `null` value.
+
+<Callout type="note">
+
+The following values can only be accessed if the [`needsCost` property on your `AdjustConfig` instance](/en/sdk/react-native/configuration#enable-cost-data-sending) is `true`:
+
+-  `costType`
+-  `costAmount`
+-  `costCurrency`
+
+</Callout>
+
+<Table>
+
+| Values              | Data type | Description                                                                                                    |
+| ------------------- | --------- | -------------------------------------------------------------------------------------------------------------- |
+| `trackerToken`      | String    | The token of the tracker to which the device is currently attributed                                           |
+| `trackerName`       | String    | The name of the tracker to which the device is currently attributed                                            |
+| `network`           | String    | The name of the network to which the device is currently attributed                                            |
+| `campaign`          | String    | The name of the campaign to which the device is currently attributed                                           |
+| `adgroup`           | String    | The name of the adgroup to which the device is currently attributed                                            |
+| `creative`          | String    | The name of the creative to which the device is currently attributed                                           |
+| `clickLabel`        | String    | The [click label](https://help.adjust.com/en/article/user-rewards) that the install is tagged with             |
+| `adid`              | String    | The unique Adjust ID assigned to the device                                                                    |
+| `costType`          | String    | The campaign pricing model (for example cpi)                                                                   |
+| `costAmount`        | Number    | The cost of the install.                                                                                       |
+| `costCurrency`      | String    | The [3 character ISO 4217 code](https://www.iban.com/currency-codes) of the currency associated with the cost. |
+| `fbInstallReferrer` | String    | The [Facebook install referrer](https://developers.facebook.com/docs/app-ads/install-referrer/).               |
+
+</Table>
+
+## Trigger a function when attribution changes
+
+```dart title="Property declaration"
+typedef void AttributionCallback(AdjustAttribution attributionData);
+AttributionCallback? attributionCallback;
+```
+
+The SDK can listen for attribution changes and call a function when it detects an update. To configure your callback function, call the `setAttributionCallbackListener` method with your function as an argument.
 
 <Callout type="important">
 
@@ -19,14 +54,46 @@ You must call the `setAttributionCallbackListener` method **before** initializin
 
 </Callout>
 
-<SetAttributionCallbackListener />
+```jsx {3-18}
+const adjustConfig = new AdjustConfig(appToken, environment);
 
-Within your delegate function, you have access to the user's `Attribution` information. See the [`AdjustAttribution` class reference](/en/sdk/react-native/reference/adjustattribution) for a list of available properties.
+adjustConfig.setAttributionCallbackListener(function (attribution) {
+   // Printing all attribution properties.
+   console.log("Attribution changed!");
+   console.log(attribution.trackerToken);
+   console.log(attribution.trackerName);
+   console.log(attribution.network);
+   console.log(attribution.campaign);
+   console.log(attribution.adgroup);
+   console.log(attribution.creative);
+   console.log(attribution.clickLabel);
+   console.log(attribution.adid);
+   console.log(attribution.costType);
+   console.log(attribution.costAmount);
+   console.log(attribution.costCurrency);
+   console.log(attribution.fbInstallReferrer);
+});
+
+Adjust.create(adjustConfig);
+```
 
 ## Get current attribution information
 
-When a user installs your app, Adjust attributes the install to a campaign. The Adjust SDK gives you access to campaign attribution details for your install. To return this information, call the `getAttribution` method.
+```ts title="Method signature"
+getAttribution: (callback: (attribution: AdjustAttribution) => void) => void
+```
 
-This method returns an Attribution object. See the [`AdjustAttribution` class reference](/en/sdk/react-native/reference/adjustattribution) for a list of available properties.
+When a user installs your app, Adjust attributes the install to a campaign. The Adjust SDK gives you access to campaign attribution details for your install. To return this information, call the `getAttribution` method to return the attribution information as an `AdjustAttribution` object.
 
-<Attribution />
+```jsx
+Adjust.getAttribution((attribution) => {
+   console.log("Tracker token = " + attribution.trackerToken);
+   console.log("Tracker name = " + attribution.trackerName);
+   console.log("Network = " + attribution.network);
+   console.log("Campaign = " + attribution.campaign);
+   console.log("Adgroup = " + attribution.adgroup);
+   console.log("Creative = " + attribution.creative);
+   console.log("Click label = " + attribution.clickLabel);
+   console.log("Adid = " + attribution.adid);
+});
+```
