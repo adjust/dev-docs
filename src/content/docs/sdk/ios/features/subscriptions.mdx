@@ -4,19 +4,6 @@ description: Use these methods send subscription information to Adjust.
 slug: en/sdk/ios/features/subscriptions
 ---
 
-import InitWithPrice from "@ios-examples/ADJSubscription/constructor.mdx"
-import InitWithPriceSig from "@ios-signatures/ADJSubscription/constructor.mdx"
-import SetTransactionDate from "@ios-examples/ADJSubscription/setTransactionDate.mdx"
-import SetTransactionDateSig from "@ios-signatures/ADJSubscription/setTransactionDate.mdx"
-import SetSalesRegion from "@ios-examples/ADJSubscription/setSalesRegion.mdx"
-import SetSalesRegionSig from "@ios-signatures/ADJSubscription/setSalesRegion.mdx"
-import AddCallbackParameter from "@ios-examples/ADJSubscription/addCallbackParameter.mdx"
-import AddCallbackParameterSig from "@ios-signatures/ADJSubscription/addCallbackParameter.mdx"
-import AddPartnerParameter from "@ios-examples/ADJSubscription/addPartnerParameter.mdx"
-import AddPartnerParameterSig from "@ios-signatures/ADJSubscription/addPartnerParameter.mdx"
-import TrackSubscription from "@ios-examples/Adjust/trackSubscription.mdx"
-import TrackSubscriptionSig from "@ios-signatures/Adjust/trackSubscription.mdx"
-
 <Callout type="important">
 
 The following steps only set up subscription tracking within the Adjust SDK. To enable the feature, Adjust need to set up app-specific information. Contact support@adjust.com or talk to your Technical Account manager to set this up.
@@ -25,38 +12,255 @@ The following steps only set up subscription tracking within the Adjust SDK. To 
 
 You can record App Store subscriptions and verify their validity with the Adjust SDK. After the user purchases a subscription, create an `ADJSubscription` instance containing the details.
 
-## 1. Set up your subscription object
+## 1. Instantiate a subscription object
 
-To get started, you need to create a subscription object containing details of the subscription purchase. To do this, initialize an `ADJSubscription` object using the `initWithPrice` method.
+```objc title="Method signature"
+- (nullable id)initWithPrice:(nonnull NSDecimalNumber *)price
+                    currency:(nonnull NSString *)currency
+               transactionId:(nonnull NSString *)transactionId
+                  andReceipt:(nonnull NSData *)receipt;
+```
 
-<InitWithPrice />
+To get started, you need to create a subscription object containing details of the subscription purchase. To do this, initialize an `ADJSubscription` object using the `initWithPrice` method. Pass the following arguments:
+
+<Table>
+
+| Parameter       | Data type | Description                                                                                                                                                                                                                                                                                         |
+| --------------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `price`         | Number    | The price of the subscription                                                                                                                                                                                                                                                                       |
+| `currency`      | String    | The currency of the subscription. Formatted as the [`currencyCode`](https://developer.apple.com/documentation/foundation/nslocale/1642836-currencycode?language=objc) of the [`priceLocale`](https://developer.apple.com/documentation/storekit/skproduct/1506145-pricelocale?language=objc) object |
+| `transactionId` | String    | Your ID for the transaction                                                                                                                                                                                                                                                                         |
+| `receipt`       | String    | The receipt information                                                                                                                                                                                                                                                                             |
+
+</Table>
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let subscription = ADJSubscription(
+    price: price,
+    currency: currency,
+    transactionId: transactionId,
+    andReceipt: receipt)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:price
+                                                              currency:currency
+                                                         transactionId:transactionId
+                                                            andReceipt:receipt];
+```
+
+</Tab>
+</Tabs>
 
 ### Record the purchase date
 
+```objc title="Method signature"
+- (void)setTransactionDate:(nonnull NSDate *)transactionDate;
+```
+
 You can record the date on which the user purchased a subscription. The SDK returns this data for you to report on. Call the `setTransactionDate` method with a timestamp to record this information.
 
-<SetTransactionDate />
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift {7}
+let subscription = ADJSubscription(
+    price: price,
+    currency: currency,
+    transactionId: transactionId,
+    andReceipt: receipt)
+// ...
+subscription.setTransactionDate(transactionDate)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc {6}
+ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:price
+                                                              currency:currency
+                                                         transactionId:transactionId
+                                                            andReceipt:receipt];
+/// ...
+[subscription setTransactionDate:transactionDate];
+```
+
+</Tab>
+</Tabs>
 
 ### Record the purchase region
 
+```objc title="Method signature"
+- (void)setSalesRegion:(nonnull NSString *)salesRegion;
+```
+
 You can record the region in which the user purchased a subscription. To do this, call the `setSalesRegion` method on your subscription object and pass the country code as a **string**. This needs to be formatted as the [`countryCode`](https://developer.apple.com/documentation/foundation/nslocale/1643060-countrycode?language=swift) of the [`priceLocale`](https://developer.apple.com/documentation/storekit/skproduct/1506145-pricelocale?language=swift) object.
 
-<SetSalesRegion />
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift {7}
+let subscription = ADJSubscription(
+    price: price,
+    currency: currency,
+    transactionId: transactionId,
+    andReceipt: receipt)
+// ...
+subscription.setSalesRegion(salesRegion)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc {6}
+ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:price
+                                                              currency:currency
+                                                         transactionId:transactionId
+                                                            andReceipt:receipt];
+/// ...
+[subscription setSalesRegion:salesRegion];
+```
+
+</Tab>
+</Tabs>
 
 ### Add callback parameters
 
+```objc title="Method signature"
+- (void)addCallbackParameter:(nonnull NSString *)key value:(nonnull NSString *)value;
+```
+
 You can add callback parameters to your subscription object. The SDK appends these parameters to your callback URL. To add callback parameters, call the `addCallbackParameter` method on your subscription object. You can add multiple callback parameters by calling this method multiple times.
 
-<AddCallbackParameter />
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift {7,8}
+let subscription = ADJSubscription(
+    price: price,
+    currency: currency,
+    transactionId: transactionId,
+    andReceipt: receipt)
+// ...
+subscription.addCallbackParameter("key1", value: "value1")
+subscription.addCallbackParameter("key2", value: "value2")
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc {6,7}
+ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:price
+                                                              currency:currency
+                                                         transactionId:transactionId
+                                                            andReceipt:receipt];
+/// ...
+[subscription addCallbackParameter:@"key1" value:@"value1"];
+[subscription addCallbackParameter:@"key2" value:@"value2"];
+```
+
+</Tab>
+</Tabs>
 
 ### Add partner parameters
 
+```objc title="Method signature"
+- (void)addPartnerParameter:(nonnull NSString *)key value:(nonnull NSString *)value;
+```
+
 You can add partner parameters to your subscription object. The SDK sends these to Adjust's servers when the user purchases a subscription. Adjust's servers forward the information on to your network partner. To add partner parameters, call the `addPartnerParameter` method on your subscription object. You can add multiple partner parameters by calling this method multiple times.
 
-<AddPartnerParameter />
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift {7,8}
+let subscription = ADJSubscription(
+    price: price,
+    currency: currency,
+    transactionId: transactionId,
+    andReceipt: receipt)
+// ...
+subscription.addParameterParameter("key1", value: "value1")
+subscription.addParameterParameter("key2", value: "value2")
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc {6,7}
+ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:price
+                                                              currency:currency
+                                                         transactionId:transactionId
+                                                            andReceipt:receipt];
+/// ...
+[subscription addParameterParameter:@"key1" value:@"value1"];
+[subscription addParameterParameter:@"key2" value:@"value2"];
+```
+
+</Tab>
+</Tabs>
 
 ## 2. Send subscription information
 
+```objc title="Method signature"
++ (void)trackSubscription:(nonnull ADJSubscription *)subscription;
+```
+
 Once you have set up your subscription object, you can send it to Adjust using the Adjust SDK. Pass your completed object to the `trackSubscription` method to record the user's subscription purchase.
 
-<TrackSubscription />
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift {20}
+let subscription = ADJSubscription(
+   price: price,
+   currency: currency,
+   transactionId: transactionId,
+   andReceipt: receipt)
+
+subscription.setTransactionDate(transactionDate)
+subscription.setSalesRegion(salesRegion)
+
+// Add callback parameters
+
+subscription.addCallbackParameter("key1", value: "value1")
+subscription.addCallbackParameter("key2", value: "value2")
+
+// Add partner parameters
+
+subscription.addPartnerParameter("key1", value: "value1")
+subscription.addCallbackParameter("key2", value: "value2")
+
+Adjust.trackSubscription(subscription)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc {16}
+ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:price
+                                                            currency:currency
+                                                         transactionId:transactionId
+                                                            andReceipt:receipt];
+[subscription setTransactionDate:transactionDate]; 
+[subscription setSalesRegion:salesRegion];
+
+/// Add callback parameters
+[subscription addCallbackParameter:@"key1" value:@"value1"];
+[subscription addCallbackParameter:@"key2" value:@"value2"];
+
+/// Add partner parameters
+[subscription addPartnerParameter:@"key1" value:@"value1"];
+[subscription addPartnerParameter:@"key2" value:@"value2"];
+
+[Adjust trackSubscription:subscription];
+```
+
+</Tab>
+</Tabs>
