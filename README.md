@@ -24,4 +24,4 @@ You can run a live preview of this repository to enable live editing. To do this
 
 3. Open http://localhost:4321 to see the local preview
 
-The preview updates as you save your changes for the files
+The preview updates as you save your changes for the files. [Check the wiki](https://github.com/adjust/dev-docs/wiki/) for more information.
