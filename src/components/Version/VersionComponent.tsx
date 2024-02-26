@@ -15,11 +15,11 @@ const VersionComponent: FC<{
     updateVersionsItems(versionOption);
   }, []);
 
-  if (version !== versionsStore.currentVersion.value) {
-    return null;
-  }
+  // We render the block as "none" rather than not rendering it at all.
+  // This prevents issues with elements which get styled at build time
+  // such as expressive code blocks
 
-  return <div className="py-4">{content}</div>;
+  return <div style={{display: (version == versionsStore.currentVersion.value) ? 'block' : 'none' }} className="py-4">{content}</div>;
 };
 
 export default VersionComponent;
