@@ -1,4 +1,3 @@
-/** @jsxImportSource react */
 import { Accordion } from "@adjust/components";
 import type { FC, ReactNode } from "react";
 import type { AccordionItem } from "@adjust/components/build/Accordion/Item";

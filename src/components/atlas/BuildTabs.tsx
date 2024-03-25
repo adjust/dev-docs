@@ -1,4 +1,3 @@
-/** @jsxImportSource react */
 import { type FC, useEffect, useState } from "react";
 import { Tabs } from "@adjust/components";
 import { useStore } from "@nanostores/react";

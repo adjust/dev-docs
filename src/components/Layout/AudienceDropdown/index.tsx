@@ -5,8 +5,6 @@ import { useOnClickOutside } from "@hooks/useOnClickOutside";
 import { useWaitToTrigger } from "@hooks/useWaitToTrigger";
 import { HELP_CENTER_LINK } from "src/consts";
 
-import "./audience.css";
-
 const AudienceDropdown: FC = () => {
   const [isMenuShown, setIsMenuShown] = useState(false);
   const ref = useRef(null);
@@ -85,7 +83,18 @@ const AudienceDropdown: FC = () => {
               backgroundColor: getAudienceColor(audience.slug).background,
               color: "#000000",
             }}
-            className={`header_audience item-${audience.slug} cursor-pointer min-w-[85px] w-full pr-2 pl-6 text-sm h-6 flex items-center`}
+            className={
+              "cursor-pointer min-w-[85px] w-full pr-2 pl-6 text-sm h-6 flex items-center hover:!no-underline active:!no-underline focus:!no-underline " +
+              (audience.slug == "marketer"
+                ? "hover:!bg-[#769ff6] active:!bg-[#e0eaff]"
+                : "") +
+              (audience.slug == "partner"
+                ? "hover:!bg-[#01b89c] active:!bg-[#d9ffef]"
+                : "") +
+              (audience.slug == "classic"
+                ? "hover:!bg-[#d5dae5] active:!bg-[#e6ebf6]"
+                : "")
+            }
           >
             {audience.titleId}
           </a>
