@@ -10,8 +10,6 @@ import { getTocHeadings } from "@utils/helpers/toc/getTocHeadings";
 import { useScrollSpy } from "@hooks/useScrollSpy";
 import ChevronRight from "@components/Icons/react/ChevronRight";
 
-import "../right-sidebar.css";
-
 const HEADER_HEIGHT = 80;
 
 const checkIsMobile = () => {
@@ -99,7 +97,7 @@ const TableOfContents: FC<{ headings: MarkdownHeading[]; title: string }> = ({
           <div className="absolute top-0 bottom-0 flex items-start">
             <button
               onClick={() => setIsOpened(false)}
-              className="toc-state-button rounded-md -ml-8 mt-8  bg-white relative w-6 h-6"
+              className="rounded-md -ml-8 mt-8  bg-white relative w-6 h-6 [&_svg]:hover:bg-[#0b58fe] [&_svg]:hover:text-white"
             >
               <ChevronRight />
             </button>
