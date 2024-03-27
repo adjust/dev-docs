@@ -2,8 +2,6 @@ import type { MarkdownHeading } from "astro";
 import type { FC } from "react";
 import { unescape } from "html-escaper";
 
-import "../right-sidebar.css";
-
 interface TableOfContentsMobileProps {
   onThisPageID: string;
   toc: React.RefObject<HTMLUListElement>;

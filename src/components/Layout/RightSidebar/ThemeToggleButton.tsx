@@ -1,7 +1,6 @@
+import classNames from "classnames";
 import type { FC } from "react";
 import { useState, useEffect } from "react";
-
-import "./ThemeToggleButton.css";
 
 const themes = ["light", "dark"];
 
@@ -54,16 +53,18 @@ const ThemeToggle: FC = () => {
   }, [theme]);
 
   return (
-    <div className="theme-toggle">
+    <div className="inline-flex items-center gap-[0.25em] py-[0.33em] px-[0.67em] rounded-[99em] bg-[var(--theme-code-inline-bg)]">
       {themes.map((t, i) => {
         const icon = icons[i];
         const checked = t === theme;
         return (
-          <label className={checked ? " checked" : ""}>
+          <label className={classNames("text-[var(--theme-code-inline-text)] relative flex items-center justify-center opacity-50 focus-within:outline focus-within:outline-2 focus-within:outline-transparent shadow-[0_0_0_0.08em_var(--theme-accent),_0_0_0_0.12em_white]",
+          checked ? "opacity-100 text-[var(--theme-accent)]" : "")}>
             {icon}
             <input
               type="radio"
               name="theme-toggle"
+              className="absolute opacity-0 t-0 b-0 l-0 r-0 -z-[1]"
               checked={checked}
               value={t}
               title={`Use ${t} theme`}

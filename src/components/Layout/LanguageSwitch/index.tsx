@@ -8,8 +8,6 @@ import IconLanguage from "@components/Icons/react/IconLanguage";
 import type { LanguageSwitchProps } from "./types";
 import type { Locales } from "@i18n/locales";
 
-import "./language-switch.css";
-
 const LanguageSwitch: FC<LanguageSwitchProps> = ({
   lang,
   locales,
@@ -63,14 +61,19 @@ const LanguageSwitch: FC<LanguageSwitchProps> = ({
       </div>
       <div
         className={classNames(
-          "lang-tooltip absolute rounded-sm leading-relaxed p-4 text-base z-50",
-          isMenuShown ? "block" : "hidden"
+          "bg-white absolute -right-[15px] -top-[170px] left-5 leading-5 w-[7.25rem] border border-solid border-[#f3f4f6] rounded-sm shadow-[0_0_15px_0_#1e3c9622] p-4 text-base z-50 after:-z-10 after:absolute after:-bottom-[6px] after:w-5 after:h-5 after:content-[''] after:bg-white after:border-t-0 after:-mt-[10px] after:shadow-[3px_3px_-5px_-1px_#1e3c9611] after:rotate-45 hover:block",
+          isMenuShown ? "block" : "hidden",
+          isFooter ? "bg-white -right-[15px] -top-[190px] -left-[2px] leading-5 w-[7.25rem] border border-solid border-[#f4f5f6] rounded-sm shadow-[0_0_15px_0_#1e3c9622" : "",
+          isFooter ? "after:-z-10 after:content-[''] after:absolute after:-bottom-[6px] after:w-5 after:h-5 after:bg-white after:border-t-0 -ml-[15px] after:-mt-[10px] after:shadow-[3px_3px_-5px_-1px_#1e3c9611] after:rotate-45" : ""
         )}
       >
         <ul>
           {Object.keys(locales).map((locale) => (
-            <li key={locale} className="text-sm">
-              <a href={getLanguageUrl(locale)} className="hover:no-underline">
+            <li key={locale} className="text-sm pt-[5px] pb-[5px] text-left">
+              <a
+                href={getLanguageUrl(locale)}
+                className="hover:no-underline hover:text-left hover:cursor-pointer hover:text-[#1a62ff]"
+              >
                 {locales[locale as keyof Locales]}
               </a>
             </li>
