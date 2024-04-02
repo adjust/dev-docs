@@ -8,13 +8,41 @@ sidebar-label: Get trackers
 
 Use this endpoint to get the network-level trackers for your specified app.
 
-```http title="Endpoint" "/{app_token}/trackers"
+<Version version="v2">
+
+```http title="Endpoint" "v2/apps/{app_token}/trackers"
+GET https://api.adjust.com/public/v2/apps/{app_token}/trackers
+```
+
+</Version>
+
+<Version version="v1">
+
+```http title="Endpoint" "v1/apps/{app_token}/trackers"
 GET https://api.adjust.com/public/v1/apps/{app_token}/trackers
 ```
+
+</Version>
 
 ## Fetch trackers
 
 Return a list of network-level trackers associated with your app.
+
+<Version version="v2">
+
+<Table>
+
+| Parameter     | Data type | In    | Description                                                                                |
+| ------------- | --------- | ----- | ------------------------------------------------------------------------------------------ |
+| `app_token`\* | String    | Path  | Your app's 12 digit identifier.                                                            |
+| `cursor`      | String    | Query | The unique cursor position containing a collection of results.                             |
+| `limit`       | Integer   | Query | The maximum number of elements included in the response. Must be a positive integer value. |
+
+</Table>
+
+</Version>
+
+<Version version="v1">
 
 <Table>
 
@@ -27,11 +55,32 @@ Return a list of network-level trackers associated with your app.
 
 </Table>
 
+</Version>
+
 ### Pagination
 
 Results from this endpoint are paginated using a cursor. Each page returns the location of the previous and next pages. You can include these in your calls to return specific pages. You can also limit the number of items included on a page. The default limit is `50`.
 
 Each results page contains a "paging" object containing the cursor positions. You can use these cursor positions to programatically move between pages. For example, the first page might contain results like this:
+
+<Version version="v2">
+
+```json title="Pagination example"
+"paging": {
+   "next": "https://api.adjust.com/public/v2/apps/yxs12pfewq/trackers?cursor=g2wAAAACYhW1_gxkAANuaWxq&limit=50",
+   "cursor": "g2wAAAACYhW1_gxkAANuaWxq"
+}
+```
+
+To go to the second page, follow the `next` link to return results from the next specified `cursor` position.
+
+```console title="cURL" "cursor=g2wAAAACYhW1_gxkAANuaWxq"
+$ curl "https://api.adjust.com/public/v2/apps/yxs12pfewq/trackers?cursor=g2wAAAACYhW1_gxkAANuaWxq&limit=50"
+```
+
+</Version>
+
+<Version version="v1">
 
 ```json title="Pagination example"
 "paging": {
@@ -53,33 +102,26 @@ To go to the second page, add the `after` value to the next request in the `afte
 $ curl "https://api.adjust.com/public/v1/apps/yxs12pfewq/trackers?after=g2wAAAACYhW1_gxkAANuaWxq"
 ```
 
+</Version>
+
 ### Response parameters
 
 <Table search>
 
-| Field               | Data type | Description                                                                                      | Example                                     |
-| ------------------- | --------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------- |
-| `name`              | String    | The tracker's name.                                                                              | `Adroll`                                    |
-| `label`             | String    | The last level part of the name of the tracker.                                                  | `Adroll`                                    |
-| `level`             | Integer   | The level of the tracker. The level of the tracker. See [Tracker levels] #tracker-levels) below. | `1`                                         |
-| `archived`          | Boolean   | Whether the tracker is archived.                                                                 | `true`                                      |
-| `has_subtrackers`   | Boolean   | Whether the tracker has subtrackers.                                                             | `true`                                      |
-| `partner_id`        | Integer   | The ID of the partner attached to the tracker.                                                   | `3`                                         |
-| `cost_data_enabled` | Boolean   | Whether the tracker has cost_data enabled.                                                       | `false`                                     |
-| `impression_url`    | String    | URL of the tracker for impression tracking.                                                      | `https://view.adjust.com/impression/abc123` |
-| `url`               | String    | URL of the tracker for tracking.                                                                 | `https://app.adjust.com/abc123`             |
-| `click_url`         | String    | URL of the tracker for click tracking.                                                           | `https://app.adjust.com/abc123`             |
+| Field               | Data type | Description                                                                                                                                                 | Example                                     |
+| ------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| `name`              | String    | The tracker's name.                                                                                                                                         | `Adroll`                                    |
+| `label`             | String    | The last level part of the name of the tracker.                                                                                                             | `Adroll`                                    |
+| `level`             | Integer   | The level of the tracker. The level of the tracker.<br/><ul><li>Network = `1`</li><li>Campaign = `2`</li><li>Adgroup = `3`</li><li>Creative = `4`</li></ul> | `1`                                         |
+| `archived`          | Boolean   | Whether the tracker is archived.                                                                                                                            | `true`                                      |
+| `has_subtrackers`   | Boolean   | Whether the tracker has subtrackers.                                                                                                                        | `true`                                      |
+| `partner_id`        | Integer   | The ID of the partner attached to the tracker.                                                                                                              | `3`                                         |
+| `cost_data_enabled` | Boolean   | Whether the tracker has cost_data enabled.                                                                                                                  | `false`                                     |
+| `impression_url`    | String    | URL of the tracker for impression tracking.                                                                                                                 | `https://view.adjust.com/impression/abc123` |
+| `url`               | String    | URL of the tracker for tracking.                                                                                                                            | `https://app.adjust.com/abc123`             |
+| `click_url`         | String    | URL of the tracker for click tracking.                                                                                                                      | `https://app.adjust.com/abc123`             |
 
 </Table>
-
-<Accordion title="Tracker levels">
-
--  Network = `1`
--  Campaign = `2`
--  Adgroup = `3`
--  Creative = `4`
-
-</Accordion>
 
 ```json title="Success response"
 {
@@ -98,6 +140,44 @@ $ curl "https://api.adjust.com/public/v1/apps/yxs12pfewq/trackers?after=g2wAAAAC
 ```
 
 ## Example
+
+<Version version="v2">
+
+```console title="cURL" "gwzpeepw8uf8"
+$ curl \
+--header 'Authorization: Token token={API_TOKEN}' \
+-L -X GET 'https://api.adjust.com/public/v2/apps/gwzpeepw8uf8/trackers?limit=1'
+```
+
+```json title="Success response"
+{
+   "data": {
+      "paging": {
+         "cursor": "g2wAAAACYhW1_gxkAANuaWxq",
+         "next": "https://api.adjust.com/public/v2/apps/gwzpeepw8uf8/trackers?after=g2wAAAACYhW1_gxkAANuaWxq&limit=1"
+      },
+      "items": [
+         {
+            "archived": false,
+            "has_subtrackers": false,
+            "partner_id": 3,
+            "cost_data_enabled": false,
+            "label": "Adroll",
+            "level": 1,
+            "name": "Adroll",
+            "token": "abc123",
+            "url": "https://app.adjust.com/abc123",
+            "click_url": "https://app.adjust.com/abc123?campaign={campaign_name}&idfa={idfa}&deeplink=http%3A%2F%2Fa.b%2Fc%3Fd%3D1%26e%3D%%MACROS%%",
+            "impression_url": "https://s2s.adjust.com/impression/abc123?campaign={campaign_name}&idfa={idfa}&s2s=1"
+         }
+      ]
+   }
+}
+```
+
+</Version>
+
+<Version version="v1">
 
 ```console title="cURL" "gwzpeepw8uf8"
 $ curl \
@@ -140,3 +220,5 @@ $ curl \
    }
 }
 ```
+
+</Version>
