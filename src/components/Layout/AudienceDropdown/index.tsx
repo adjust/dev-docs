@@ -19,11 +19,6 @@ const AudienceDropdown: FC = () => {
       slug: "partner",
       link: `${HELP_CENTER_LINK}en/partner`,
     },
-    {
-      titleId: "Classic dashboard",
-      slug: "classic",
-      link: `${HELP_CENTER_LINK}en/classic`,
-    },
   ];
 
   const hide = () => {
@@ -90,9 +85,6 @@ const AudienceDropdown: FC = () => {
                 : "") +
               (audience.slug == "partner"
                 ? "hover:!bg-[#01b89c] active:!bg-[#d9ffef]"
-                : "") +
-              (audience.slug == "classic"
-                ? "hover:!bg-[#d5dae5] active:!bg-[#e6ebf6]"
                 : "")
             }
           >
