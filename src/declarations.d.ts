@@ -17,6 +17,6 @@ declare interface ApiObject {
   range: string;
 }
 
-declare type BadgeColor = 'neutral' | 'negative' | 'positive' | 'warning' | 'primary';
+declare type BadgeColor = "neutral" | "negative" | "positive" | "warning" | "primary";
 
 declare type TableHeights = number | "full-height" | undefined;
