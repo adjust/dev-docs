@@ -58,7 +58,7 @@ export default defineConfig({
     tailwind(),
     sitemap(),
   ],
-  site: `https://dev.adjust.com/`,
+  site: "https://dev.adjust.com/",
   markdown: {
     remarkPlugins: [remarkDefinitionList],
     remarkRehype: {
