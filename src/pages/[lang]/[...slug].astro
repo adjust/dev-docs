@@ -1,5 +1,5 @@
 ---
-import { differenceBy} from "lodash-es";
+import { differenceBy } from "lodash-es";
 import { type CollectionEntry, getCollection } from "astro:content";
 import MainLayout from "./../../layouts/MainLayout.astro";
 import { KNOWN_LANGUAGE_CODES, langParamRegex } from "@i18n/locales";
@@ -7,20 +7,27 @@ import { SITE } from "src/consts";
 
 export async function getStaticPaths() {
   // we need to add updated slug for the further array compare by this value
-  const docs = (await getCollection("docs")).map((doc) => ({...doc, slugUpdated: doc.slug?.replace(langParamRegex, "")}));
+  const docs = (await getCollection("docs")).map((doc) => ({
+    ...doc,
+    slugUpdated: doc.slug?.replace(langParamRegex, ""),
+  }));
   // if some docs don`t have content in this language we are showing EN page
-  const defaultLangFallback = docs.filter((doc) => doc.slug.startsWith(`${SITE.defaultLanguageKey}/`));
+  const defaultLangFallback = docs.filter((doc) =>
+    doc.slug.startsWith(`${SITE.defaultLanguageKey}/`),
+  );
 
   return KNOWN_LANGUAGE_CODES.flatMap((langKey) => {
-    const docsByLang =  docs.filter((doc) => doc.slug.startsWith(`${langKey}/`));
+    const docsByLang = docs.filter((doc) => doc.slug.startsWith(`${langKey}/`));
 
     const differenceWithOrigin = differenceBy(
       defaultLangFallback,
       docsByLang,
-      'slugUpdated'
+      "slugUpdated",
     );
     // if we have differences between arrays we populating pages from EN array
-    const usedArray = differenceWithOrigin.length ? [...docsByLang, ...differenceWithOrigin] : docsByLang
+    const usedArray = differenceWithOrigin.length
+      ? [...docsByLang, ...differenceWithOrigin]
+      : docsByLang;
 
     return usedArray.map((doc) => ({
       params: {
