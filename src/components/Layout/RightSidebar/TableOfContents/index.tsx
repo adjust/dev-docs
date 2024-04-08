@@ -98,6 +98,7 @@ const TableOfContents: FC<{ headings: MarkdownHeading[]; title: string }> = ({
             <button
               onClick={() => setIsOpened(false)}
               className="rounded-md -ml-8 mt-8  bg-white relative w-6 h-6 [&_svg]:hover:bg-[#0b58fe] [&_svg]:hover:text-white"
+              aria-label="Toggle table of contents"
             >
               <ChevronRight />
             </button>
