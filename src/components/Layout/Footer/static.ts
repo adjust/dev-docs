@@ -21,17 +21,20 @@ export const footerLinks = [
 export const footerIcons = [
   {
     name: "wechat-icon",
+    readableName: "WeChat",
     link: "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzIzODg5ODQwMg==",
   },
-  { name: "facebook-icon", link: "https://www.facebook.com/adjustcom" },
-  { name: "twitter-icon", link: "https://twitter.com/adjustcom" },
-  { name: "instagram-icon", link: "https://www.instagram.com/adjustcom/" },
+  { name: "facebook-icon", readableName: "Facebook", link: "https://www.facebook.com/adjustcom" },
+  { name: "twitter-icon", readableName: "Twitter", link: "https://twitter.com/adjustcom" },
+  { name: "instagram-icon", readableName: "Instagram", link: "https://www.instagram.com/adjustcom/" },
   {
     name: "linkedin-icon",
+    readableName: "LinkedIn",
     link: "https://www.linkedin.com/company/adjustcom/",
   },
   {
     name: "youtube-icon",
+    readableName: "YouTube",
     link: "https://www.youtube.com/channel/UCLxY21pzKyjTuODjUytJIsA",
   },
 ];
