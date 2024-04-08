@@ -1,3 +1,5 @@
+import { getFallback } from 'astro:transitions/client';
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
@@ -26,6 +28,10 @@ module.exports = {
     fontFamily: {
       body: ["ttnormspro, Helvetica, sans-serif"],
       sans: ["Droid Sans Mono, monospace"],
+      mono: ["IBM Plex Mono", "Consolas", "Andale Mono WT", "Andale Mono",
+        "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono",
+        "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", "Monaco",
+        "Courier New", "Courier", "monospace"]
     },
 
     extend: {
@@ -37,12 +43,113 @@ module.exports = {
         negative: "#ffe8ee",
         warning: "#f9ebd6",
         secondary: "#F9FAFC",
+        code: "#6E7D911A",
+        selection: "hsla(212, 100%, 61%, 0.15)",
+        quote: "hsla(215, 14%, 95%, 1)"
       },
       colors: {
         "link-active": "#0B58FE",
         white: "#FFFFFF",
+        black: "#16191d",
+        blue: {
+          DEFAULT: "hsla(212, 100%, 61%, 1)",
+          5: "hsla(212, 100%, 5%, 1)",
+          10: "hsla(212, 100%, 10%, 1)",
+          20: "hsla(212, 100%, 20%, 1)",
+          30: "hsla(212, 100%, 30%, 1)",
+          40: "hsla(212, 100%, 40%, 1)",
+          50: "hsla(212, 100%, 50%, 1)",
+          60: "hsla(212, 100%, 60%, 1)",
+          70: "hsla(212, 100%, 70%, 1)",
+          80: "hsla(212, 100%, 80%, 1)",
+          90: "hsla(212, 100%, 90%, 1)",
+          95: "hsla(212, 100%, 95%, 1)"
+        },
+        gray: {
+          DEFAULT: "hsla(215, 14%, 100, 1)",
+          5: "hsla(215, 14%, 5%, 1)",
+          10: "hsla(215, 14%, 10%, 1)",
+          20: "hsla(215, 14%, 20%, 1)",
+          30: "hsla(215, 14%, 30%, 1)",
+          40: "hsla(215, 14%, 40%, 1)",
+          50: "hsla(215, 14%, 50%, 1)",
+          60: "hsla(215, 14%, 60%, 1)",
+          70: "hsla(215, 14%, 70%, 1)",
+          80: "hsla(215, 14%, 80%, 1)",
+          90: "hsla(215, 14%, 90%, 1)",
+          95: "hsla(215, 14%, 95%, 1)"
+        },
+        green: {
+          DEFAULT: "hsla(158, 79%, 100%, 1)",
+          5: "hsla(158, 79%, 5%, 1)",
+          10: "hsla(158, 79%, 10%, 1)",
+          20: "hsla(158, 79%, 20%, 1)",
+          30: "hsla(158, 79%, 30%, 1)",
+          40: "hsla(158, 79%, 40%, 1)",
+          50: "hsla(158, 79%, 50%, 1)",
+          60: "hsla(158, 79%, 60%, 1)",
+          70: "hsla(158, 79%, 70%, 1)",
+          80: "hsla(158, 79%, 80%, 1)",
+          90: "hsla(158, 79%, 90%, 1)",
+          95: "hsla(158, 79%, 95%, 1)"
+        },
+        orange: {
+          DEFAULT: "hsla(22, 100%, 100%, 1)",
+          5: "hsla(22, 100%, 5%, 1)",
+          10: "hsla(22, 100%, 10%, 1)",
+          20: "hsla(22, 100%, 20%, 1)",
+          30: "hsla(22, 100%, 30%, 1)",
+          40: "hsla(22, 100%, 40%, 1)",
+          50: "hsla(22, 100%, 50%, 1)",
+          60: "hsla(22, 100%, 60%, 1)",
+          70: "hsla(22, 100%, 70%, 1)",
+          80: "hsla(22, 100%, 80%, 1)",
+          90: "hsla(22, 100%, 90%, 1)",
+          95: "hsla(22, 100%, 95%, 1)"
+        },
+        purple: {
+          DEFAULT: "hsla(269, 79%, 100%, 1)",
+          5: "hsla(269, 79%, 5%, 1)",
+          10: "hsla(269, 79%, 10%, 1)",
+          20: "hsla(269, 79%, 20%, 1)",
+          30: "hsla(269, 79%, 30%, 1)",
+          40: "hsla(269, 79%, 40%, 1)",
+          50: "hsla(269, 79%, 50%, 1)",
+          60: "hsla(269, 79%, 60%, 1)",
+          70: "hsla(269, 79%, 70%, 1)",
+          80: "hsla(269, 79%, 80%, 1)",
+          90: "hsla(269, 79%, 90%, 1)",
+          95: "hsla(269, 79%, 95%, 1)"
+        },
+        red: {
+          DEFAULT: "hsla(351, 100%, 100%, 1)",
+          5: "hsla(351, 100%, 5%, 1)",
+          10: "hsla(351, 100%, 10%, 1)",
+          20: "hsla(351, 100%, 20%, 1)",
+          30: "hsla(351, 100%, 30%, 1)",
+          40: "hsla(351, 100%, 40%, 1)",
+          50: "hsla(351, 100%, 50%, 1)",
+          60: "hsla(351, 100%, 60%, 1)",
+          70: "hsla(351, 100%, 70%, 1)",
+          80: "hsla(351, 100%, 80%, 1)",
+          90: "hsla(351, 100%, 90%, 1)",
+          95: "hsla(351, 100%, 95%, 1)"
+        },
+        yellow: {
+          DEFAULT: "hsla(41, 100%, 100%, 1)",
+          5: "hsla(41, 100%, 5%, 1)",
+          10: "hsla(41, 100%, 10%, 1)",
+          20: "hsla(41, 100%, 20%, 1)",
+          30: "hsla(41, 100%, 30%, 1)",
+          40: "hsla(41, 100%, 40%, 1)",
+          50: "hsla(41, 100%, 50%, 1)",
+          60: "hsla(41, 100%, 60%, 1)",
+          70: "hsla(41, 100%, 70%, 1)",
+          80: "hsla(41, 100%, 80%, 1)",
+          90: "hsla(41, 100%, 90%, 1)",
+          95: "hsla(41, 100%, 95%, 1)"
+        },
         "icon-neutral": "#6E7492",
-        "main-blue-30": "#E0EAFF",
         headers: {
           success: "#04585c",
           primary: "#0c2663",
@@ -61,11 +168,6 @@ module.exports = {
           30: "#e0e2ec"
         }
       },
-      textColor: {
-        secondary: "#565C78",
-        primary: "#191D2F",
-        "search-primary": "#252525",
-      },
       fontSize: {
         "heading-1": ["45px", { lineHeight: "49px" }],
         "heading-2": ["33px", { lineHeight: "37px" }],
@@ -73,7 +175,28 @@ module.exports = {
         "heading-4": ["22px", { lineHeight: "25.5px" }],
         "heading-5": ["16px", { lineHeight: "20px" }],
       },
+      fontWeight: {
+        link: "450",
+      },
+      margin: {
+        code: "calc(0.2rem * -1) -0.125em"
+      },
+      textColor: {
+        secondary: "#565C78",
+        primary: "#191D2F",
+        "search-primary": "#252525",
+      },
     },
   },
-  plugins: [],
+  plugins: [
+    function ({ addVariant }) {
+      addVariant("sidebar-open", ".mobile-sidebar-toggle &")
+    },
+    function ({ addVariant }) {
+      addVariant("not-first", "&:not(:first-child)")
+    },
+    function ({ addVariant }) {
+      addVariant("not-last", "&:not(:last-child)")
+    }
+  ],
 };

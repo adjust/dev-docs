@@ -52,7 +52,7 @@ const LeftSidebarItem: FC<{
           <a
             href={`/${sidebarData.slug}`}
             className={classNames(
-              "inline-block w-full text-sm hover:no-underline",
+              "inline-block w-full text-sm hover:no-underline text-inherit",
               {
                 "text-link-active": currentPage?.slice(1) === sidebarData.slug,
                 "font-bold": level === 1,
