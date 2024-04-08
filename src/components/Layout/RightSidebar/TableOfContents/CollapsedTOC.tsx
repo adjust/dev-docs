@@ -12,6 +12,7 @@ const CollapsedTOC: FC<CollapsedTOCProps> = ({ setIsOpened }) => {
       <button
         onClick={() => setIsOpened(true)}
         className="[&_svg]:hover:bg-[#0b58fe] [&_svg]:hover:text-white absolute rounded-md mt-8 -ml-4 bg-white z-50 w-6 h-6"
+        aria-label="Toggle table of contents"
       >
         <ChevronLeft />
       </button>
