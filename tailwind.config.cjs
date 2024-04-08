@@ -45,7 +45,11 @@ module.exports = {
         secondary: "#F9FAFC",
         code: "#6E7D911A",
         selection: "hsla(212, 100%, 61%, 0.15)",
-        quote: "hsla(215, 14%, 95%, 1)"
+        quote: "hsla(215, 14%, 95%, 1)",
+        blue: {
+          light: "#F4F7FD",
+          30: "hsla(220.65, 100%, 93.92%, 1)"
+        }
       },
       colors: {
         "link-active": "#0B58FE",
