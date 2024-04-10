@@ -1,7 +1,7 @@
 import { useEffect, type FC } from "react";
 import { useStore } from "@nanostores/react";
 
-import { $versions, updateVersionsItems } from "@store/versionsStore";
+import { $versions, updateVersionsItems } from "@store/sdkVersionsStore";
 
 const VersionComponent: FC<{
   content?: JSX.Element;
@@ -19,7 +19,18 @@ const VersionComponent: FC<{
   // This prevents issues with elements which get styled at build time
   // such as expressive code blocks
 
-  return <div style={{display: (version == versionsStore.currentVersion.value) ? 'block' : 'none' }} className="py-4">{content}</div>;
+  return (
+    <div
+      style={{
+        display:
+          version == versionsStore.currentVersion.value ? "block" : "none",
+      }}
+      className="py-4"
+      role="SdkVersionSelector"
+    >
+      {content}
+    </div>
+  );
 };
 
 export default VersionComponent;

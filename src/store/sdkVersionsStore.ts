@@ -1,4 +1,4 @@
-import { map } from "nanostores";
+import { persistentMap } from "@nanostores/persistent";
 import uniqBy from "lodash-es/uniqBy";
 
 import type { Option } from "@adjust/components/build/ComboBox/ComboBox";
@@ -8,9 +8,12 @@ interface VersionStore {
   currentVersion: Option;
 }
 
-export const $versions = map<VersionStore>({
+export const $versions = persistentMap<VersionStore>("sdkVersion:", {
   items: [],
-  currentVersion: { label: "v4", value: "v4" },
+  currentVersion: { label: "v4", value: "v4" }
+}, {
+  encode: JSON.stringify,
+  decode: JSON.parse,
 });
 
 export const changeVersionValue = (version: Option) => {
