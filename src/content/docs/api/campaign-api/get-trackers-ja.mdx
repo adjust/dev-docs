@@ -1,0 +1,207 @@
+---
+title: "ネットワークトラッカーの取得"
+description: "このエンドポイントを使用して、指定したアプリのネットワークレベルのトラッカーを取得します。"
+slug: "en/api/campaign-api/get-trackers"
+sidebar-position: 2
+sidebar-label: "Get trackers"
+---
+このエンドポイントを使用して、指定したアプリのネットワークレベルのトラッカーを取得します。
+<apiversion version="v2"> 
+
+```http
+GET https://api.adjust.com/public/v2/apps/{app_token}/trackers
+```
+
+</ApiVersion> <apiversion version="v1"> 
+
+```http
+GET https://api.adjust.com/public/v1/apps/{app_token}/trackers
+```
+
+</ApiVersion> 
+
+トラッカーの取得
+--------
+
+アプリに関連するネットワークレベルのトラッカーの一覧を返します。
+<apiversion version="v2"> <table> 
+
+|     パラメーター     | データタイプ | 入力する値 |              説明              |
+|----------------|--------|-------|------------------------------|
+| `app_token`\* | 文字列    | パス    | アプリの12桁の識別子。                 |
+| `cursor`       | 文字列    | クエリ   | 結果の収集を含む一意のカーソル位置。           |
+| `limit`        | 整数     | クエリ   | レスポンスに含まれる要素の最大数。正の整数値であること。 |
+
+</Table> </ApiVersion> <apiversion version="v1"> <table> 
+
+|     パラメーター     | データタイプ | 入力する値 |              説明              |
+|----------------|--------|-------|------------------------------|
+| `app_token`\* | 文字列    | パス    | アプリの12桁の識別子。                 |
+| `after`        | 文字列    | クエリ   | 次のページから要素を取得するカーソル。          |
+| `before`       | 文字列    | クエリ   | 前のページから要素を取得するカーソル。          |
+| `limit`        | 整数     | クエリ   | レスポンスに含まれる要素の最大数。正の整数値であること。 |
+
+</Table> </ApiVersion> 
+
+### ページネーション
+
+このエンドポイントからの結果は、カーソルでページネーションされます。各ページには、前ページと次ページの位置が返されます。特定のページを返すには、これらを含めて呼び出してください。また、1 ページに含まれるアイテムの数を制限することも可能です。デフォルトの上限は`50`になります。
+
+各結果のページには、カーソル位置を含むpagingオブジェクトが含まれます。このカーソル位置を使って、プログラム上でページ間を移動することができます。たとえば、最初のページには、次のような結果が含まれます。
+<apiversion version="v2"> 
+
+```json
+"paging": {
+   "next": "https://api.adjust.com/public/v2/apps/yxs12pfewq/trackers?cursor=g2wAAAACYhW1_gxkAANuaWxq&limit=50",
+   "cursor": "g2wAAAACYhW1_gxkAANuaWxq"
+}
+```
+
+2ページ目に移動するには、`next`リンクをたどって、次に指定された`cursor`の位置から結果を返します。
+
+```console
+$ curl "https://api.adjust.com/public/v2/apps/yxs12pfewq/trackers?cursor=g2wAAAACYhW1_gxkAANuaWxq&limit=50"
+```
+
+</ApiVersion> <apiversion version="v1"> 
+
+```json
+"paging": {
+   "page_size": "50",
+   "collection_size": "49",
+   "total": "199",
+   "cursors": {
+      "after": "g2wAAAACYhW1_gxkAANuaWxq",
+      "before": null
+   },
+   "next": "https://api.adjust.com/public/v1/apps/yxs12pfewq/trackers?after=g2wAAAACYhW1_gxkAANuaWxq&limit=50",
+   "previous": null
+}
+```
+
+2ページ目に移動するには、`after`値を`after`パラメーター内の次のリクエストに追加します。例：
+
+```console
+$ curl "https://api.adjust.com/public/v1/apps/yxs12pfewq/trackers?after=g2wAAAACYhW1_gxkAANuaWxq"
+```
+
+</ApiVersion> 
+
+### レスポンスパラメーター
+
+<table search> 
+
+|        フィールド        | データタイプ  |                                                              説明                                                              |                      例                      |
+|---------------------|---------|------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------|
+| `name`              | 文字列     | トラッカーの名前。                                                                                                                    | `Adroll`                                    |
+| `label`             | 文字列     | トラッカー名の最後のレベルの部分。                                                                                                            | `Adroll`                                    |
+| `level`             | 整数      | トラッカーのレベル。トラッカーのレベル。<br/><ul><li>Network = `1`</li><li>Campaign = `2`</li><li>Adgroup = `3`</li><li>Creative = `4`</li></ul> | `1`                                         |
+| `archived`          | Boolean | トラッカーがアーカイブされたかどうか。                                                                                                          | `true`                                      |
+| `has_subtrackers`   | Boolean | トラッカーにサブトラッカーがあるかどうか。                                                                                                        | `true`                                      |
+| `partner_id`        | 整数      | トラッカーに付与されるパートナーのID。                                                                                                         | `3`                                         |
+| `cost_data_enabled` | Boolean | トラッカーでcost\_dataが有効になっているかどうか。                                                                                              | `false`                                     |
+| `impression_url`    | 文字列     | インプレッション計測用のトラッカーのURL。                                                                                                       | `https://view.adjust.com/impression/abc123` |
+| `url`               | 文字列     | 計測用のトラッカーのURL。                                                                                                               | `https://app.adjust.com/abc123`             |
+| `click_url`         | 文字列     | クリック計測用のトラッカーのURL。                                                                                                           | `https://app.adjust.com/abc123`             |
+
+</Table> 
+
+```json
+{
+   "name": "String",
+   "token": "String",
+   "label": "String",
+   "level": 1,
+   "archived": false,
+   "has_subtrackers": false,
+   "partner_id": 3,
+   "cost_data_enabled": false,
+   "url": "String",
+   "click_url": "String",
+   "impression_url": "String"
+}
+```
+
+例
+---
+
+<apiversion version="v2"> 
+
+```console
+$ curl \
+--header 'Authorization: Token token={API_TOKEN}' \
+-L -X GET 'https://api.adjust.com/public/v2/apps/gwzpeepw8uf8/trackers?limit=1'
+```
+
+```json
+{
+   "data": {
+      "paging": {
+         "cursor": "g2wAAAACYhW1_gxkAANuaWxq",
+         "next": "https://api.adjust.com/public/v2/apps/gwzpeepw8uf8/trackers?after=g2wAAAACYhW1_gxkAANuaWxq&limit=1"
+      },
+      "items": [
+         {
+            "archived": false,
+            "has_subtrackers": false,
+            "partner_id": 3,
+            "cost_data_enabled": false,
+            "label": "Adroll",
+            "level": 1,
+            "name": "Adroll",
+            "token": "abc123",
+            "url": "https://app.adjust.com/abc123",
+            "click_url": "https://app.adjust.com/abc123?campaign={campaign_name}&idfa={idfa}&deeplink=http%3A%2F%2Fa.b%2Fc%3Fd%3D1%26e%3D%%MACROS%%",
+            "impression_url": "https://s2s.adjust.com/impression/abc123?campaign={campaign_name}&idfa={idfa}&s2s=1"
+         }
+      ]
+   }
+}
+```
+
+</ApiVersion> <apiversion version="v1"> 
+
+```console
+$ curl \
+--header 'Authorization: Token token={API_TOKEN}' \
+-L -X GET 'https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers?limit=1'
+```
+
+```json
+{
+   "data": {
+      "api_version": "1",
+      "request_id": "FcK55-tdJUDOWQIAABsB",
+      "timestamp": "2019-09-09T09:07:06Z",
+      "paging": {
+         "page_size": "1",
+         "collection_size": "1",
+         "total": "199",
+         "next": "https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers?after=g2wAAAACYhW1_gxkAANuaWxq&limit=1",
+         "previous": null,
+         "cursors": {
+            "after": "g2wAAAACYhW1_gxkAANuaWxq",
+            "before": null
+         }
+      },
+      "items": [
+         {
+            "archived": false,
+            "has_subtrackers": false,
+            "partner_id": 3,
+            "cost_data_enabled": false,
+            "label": "Adroll",
+            "level": 1,
+            "name": "Adroll",
+            "token": "abc123",
+            "url": "https://app.adjust.com/abc123",
+            "click_url": "https://app.adjust.com/abc123?campaign={campaign_name}&idfa={idfa}&deeplink=http%3A%2F%2Fa.b%2Fc%3Fd%3D1%26e%3D%%MACROS%%",
+            "impression_url": "https://s2s.adjust.com/impression/abc123?campaign={campaign_name}&idfa={idfa}&s2s=1"
+         }
+      ]
+   }
+}
+```
+
+</ApiVersion>
+
