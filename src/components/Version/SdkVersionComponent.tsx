@@ -1,12 +1,10 @@
 import { useEffect, type FC } from "react";
+import classNames from "classnames";
 import { useStore } from "@nanostores/react";
 
 import { $versions, updateVersionsItems } from "@store/sdkVersionsStore";
 
-const VersionComponent: FC<{
-  content?: JSX.Element;
-  version: string;
-}> = ({ content, version }) => {
+const VersionComponent: FC<VersionProps> = ({ content, version }) => {
   const versionsStore = useStore($versions);
 
   const versionOption = [{ label: version, value: version }];
@@ -21,11 +19,10 @@ const VersionComponent: FC<{
 
   return (
     <div
-      style={{
-        display:
-          version == versionsStore.currentVersion.value ? "block" : "none",
-      }}
-      className="py-4"
+      className={
+        classNames("py-4 ") +
+        (version == versionsStore.currentVersion.value ? "block" : "hidden")
+      }
       role="SdkVersionSelector"
     >
       {content}
