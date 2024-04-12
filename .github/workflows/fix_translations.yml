@@ -9,7 +9,16 @@ jobs:
     if: startsWith(github.head_ref, 'smartling')
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
+      - name: Set up node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          registry-url: https://npm.pkg.github.com/
+          scope: "@adjust"
+      - name: Install dependencies
+        run: npm i
       - name: Checkout the latest commit
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
         with:
@@ -17,9 +26,6 @@ jobs:
       - name: Run translation fixes script
         run: sh .github/scripts/fix-i18n.sh
       - name: Lint code
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
         run: npx prettier --write $(git diff --name-only --diff-filter d | grep '\.mdx$' | xargs)
       - name: Check for modified files
         id: git-check
