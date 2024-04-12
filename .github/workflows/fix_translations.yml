@@ -16,6 +16,11 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
       - name: Run translation fixes script
         run: sh .github/scripts/fix-i18n.sh
+      - name: Lint code
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+        run: npx prettier --write $(git diff --name-only --diff-filter d | grep '\.mdx$' | xargs)
       - name: Check for modified files
         id: git-check
         run: echo "MODIFIED=$(if [ -n "$(git status --porcelain)" ]; then echo "true"; else echo "false"; fi)" >> "$GITHUB_OUTPUT"
