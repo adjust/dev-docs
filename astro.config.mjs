@@ -48,5 +48,8 @@ export default defineConfig({
         ...defListHastHandlers
       }
     }
+  },
+  experimental: {
+    contentCollectionCache: true
   }
 });
