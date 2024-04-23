@@ -8,6 +8,11 @@ import { remarkDefinitionList, defListHastHandlers } from "remark-definition-lis
 import expressiveCode from "astro-expressive-code";
 import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-sections";
 import playformCompress from "@playform/compress";
+import remarkReplaceVersions from "./src/integrations/remarkReplaceVersions";
+import { fetchVersions } from "./src/integrations/fetchSdkVersions";
+
+const versions = await fetchVersions()
+
 const astroExpressiveCodeOptions = {
   defaultProps: {
     wrap: true
@@ -42,7 +47,7 @@ export default defineConfig({
   }), expressiveCode(astroExpressiveCodeOptions), mdx(), tailwind(), sitemap(), playformCompress()],
   site: "https://dev.adjust.com/",
   markdown: {
-    remarkPlugins: [remarkDefinitionList],
+    remarkPlugins: [remarkDefinitionList, [remarkReplaceVersions, versions]],
     remarkRehype: {
       handlers: {
         ...defListHastHandlers

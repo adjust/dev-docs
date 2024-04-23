@@ -22,6 +22,10 @@ declare interface VersionProps {
   version: string;
 }
 
+declare interface VersionMap {
+  [key: string]: string
+}
+
 declare type BadgeColor = "neutral" | "negative" | "positive" | "warning" | "primary";
 
 declare type TableHeights = number | "full-height" | undefined;
