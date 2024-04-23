@@ -1,0 +1,261 @@
+---
+title: "开始使用"
+description: "Use the React Native SDK to access Adjust's features in your React Native apps"
+category-title: "React Native SDK"
+slug: "en/sdk/react-native"
+sidebar-position: 4
+---
+The Adjust React Native SDK enables you to track attribution, events, and much more in your React Native app. Follow the steps in this guide to set up your app to work with the Adjust SDK. You can also check out the example apps on [GitHub](https://github.com/adjust/react_native_sdk/tree/master/example).
+<callout type="important"> 
+
+Adjust SDK 支持 iOS 9 或更新版本，以及安卓 API 级别 9 \(Gingerbread\) 或更新版本。
+</Callout> 
+
+1\. Add the SDK to your project
+--------------------------------
+
+要在您的 React Native 应用中使用 Adjust SDK，请先将 SDK 加入项目。请按以下步骤添加：
+
+1. 使用以下方法之一下载 React Native 库。
+
+<tabs> <tab title="Github"> 
+
+You can download the latest version of the SDK from Adjust's React Native SDK [GitHub releases page](https://github.com/adjust/react_native_sdk/releases/latest).
+</Tab> <tab title="NPM"> 
+
+在您的终端运行以下指令：
+
+```console
+$ npm install react-native-adjust --save
+```
+
+</Tab> </Tabs> 
+
+2. 在您的终端运行以下指令来为您的 iOS 应用安装 CocoaPods 依赖：
+
+```console
+$ cd ios && pod install
+```
+
+2\. 集成 SDK
+-----------
+
+要将 SDK 集成进项目，您必须先将 Adjust 的 SDK 配置导入主要应用 Javascript 文件。
+
+在应用的`.js`文件开始处加入以下行：
+
+```js
+import { Adjust, AdjustEvent, AdjustConfig } from "react-native-adjust";
+```
+
+3\. 初始化 Adjust SDK
+-------------------
+
+请确保在 React Native 应用中尽快初始化 Adjust SDK。要进行 SDK 初始化，请使用应用识别码及您希望应用程序运行的环境来初始化 config 对象。
+向应用的`.js`文件中加入以下代码行：
+
+```js
+constructor(props) {
+   super(props);
+   const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+   Adjust.create(adjustConfig);
+}
+
+componentWillUnmount() {
+   Adjust.componentWillUnmount();
+}
+```
+
+传递`AdjustConfig`参数：
+
+* 用您的识别码替换 `{YourAppToken}` 。请查看[应用设置](https://help.adjust.com/en/article/app-settings#view-your-app-token)，了解查找识别码的办法。
+* Choose your Environment: 
+  * Use `AdjustConfig.EnvironmentSandbox` if you are testing your app and want to send test data. You need to enable [sandbox mode](https://help.adjust.com/en/article/filter-data#sandbox) in the dashboard to see test data.
+  * 如果您已经完成测试，准备发布应用，请使用`AdjustConfig.EnvironmentProduction`。
+
+<callout type="important"> 
+
+When running tests, ensure that your environment is set to `AdjustEnvironment.sandbox`. Change this to `AdjustEnvironment.production` before you submit your application to the app store.
+</Callout> 
+
+4\. Set up Android devices
+---------------------------
+
+### 添加权限
+
+The Adjust SDK requires certain permissions to access information. Add them to your `AndroidManifest.xml` file if they're not already present:
+
+```xml
+<uses-permission android:name="android.permission.INTERNET" id="sl-md0000000"/>
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" id="sl-md0000000"/>
+```
+
+<callout type="note"> 
+
+The Adjust SDK doesn't require the `ACCESS_WIFI_STATE` permission if you are targeting the **Google Play Store** and using **Google Play Services** . If you don't need it anywhere else in your app, you can remove it.
+</Callout> 
+
+The Adjust SDK includes the `com.google.android.gms.AD_ID` permission by default in version 4\.32\.0 and above. You can remove it by adding a `remove` directive if need to make your app COPPA\-compliant or if you don't target the Google Play Store.
+
+```xml
+<uses-permission android:name="com.google.android.gms.permission.AD_ID" id="sl-md0000000"/>
+```
+
+<callout type="seealso"> 
+
+See Google's [`AdvertisingIdClient.Info`](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid) documentation for more information about this permission.
+</Callout> 
+
+### 添加 Google Play 服务
+
+针对 Google Play 商店的应用必须使用 [Google 广告 ID](https://support.google.com/googleplay/android-developer/answer/6048248?hl=en) \(`gps_adid`\) 来识别设备。为此，请将以下 dependency 加入`build.gradle` 文件的 `dependencies` 部分。
+
+```groovy
+implementation 'com.google.android.gms:play-services-ads-identifier:18.0.1'
+```
+
+<callout type="note"> 
+
+The Adjust SDK isn't tied to any version of the `play-services-ads-identifier` dependency. You can use the any version of the Google Play Services library.
+</Callout> 
+
+### 设置 Proguard
+
+如果您使用的是 Proguard，请将以下规则添加至您的 Proguard 文件。
+
+```java
+-keep class com.adjust.sdk.** { *; }
+-keep class com.google.android.gms.common.ConnectionResult {
+   int SUCCESS;
+}
+-keep class com.google.android.gms.ads.identifier.AdvertisingIdClient {
+   com.google.android.gms.ads.identifier.AdvertisingIdClient$Info getAdvertisingIdInfo(android.content.Context);
+}
+-keep class com.google.android.gms.ads.identifier.AdvertisingIdClient$Info {
+   java.lang.String getId();
+   boolean isLimitAdTrackingEnabled();
+}
+-keep public class com.android.installreferrer.** { *; }
+```
+
+### 设置 Install Referrer
+
+Install Referrer 是一种归因机制，可用来将应用安装归因至来源。包含两部分：
+
+* [x]  A set of APIs from these app stores that allow developers to retrieve referral content in their apps.
+* [x]  A `referrer` parameter that app stores, such as Google Play and Huawei App Gallery, accept in their app page URLs on their store websites. Here is how the referrer parameter is populated: 
+  * When a user clicks on an Adjust Tracker, the Adjust server passes a unique identifier called `reftag`. This identifier is assigned to the click and into the referrer parameter. To know more about reftag, visit [Reftag](https://help.adjust.com/en/article/reftag).
+  * When you run [Google Ads](https://support.google.com/google-ads/answer/6357635?hl=en) campaigns, Google passes a unique identifier called `gclid` into the referrer parameter. You must have **Auto\-tagging** turned on in your Google Ads account.
+
+<callout type="note"> 
+
+Although install referrer isn't required, it's highly recommended to improve attribution precision.
+</Callout> 
+
+#### Google Play Referrer API
+
+<minorversion added="v4.12.0"> 
+
+要支持 [Google Play Referrer API](https://developer.android.com/google/play/installreferrer)：
+</MinorVersion> 
+
+1. 请在您的最高层级`build.gradle`文件的 **依赖区块** 中添加以下行：
+
+```groovy
+dependencies {
+//...
+implementation 'com.android.installreferrer:installreferrer:2.2'
+//...
+}
+```
+
+2. `installreferrer`库是 **Google Maven** 库的一部分。您需要将 Google Maven 库添加到应用的最高层级`build.gradle`文件来构建应用：
+
+```groovy
+allprojects {
+   repositories {
+      maven {
+         url "https://maven.google.com"
+      }
+   }
+}
+
+```
+
+3. 如果您使用的是 Proguard，请务必将下列设置加入您的 Proguard 文件：
+
+```java
+-keep public class com.android.installreferrer.** { *; }
+```
+
+#### 华为 Referrer API
+
+As of v4\.22\.0, the Adjust SDK supports install tracking on Huawei devices using Huawei App Gallery v10\.4 and later. You don't need to make any changes to start using the Huawei Referrer API.
+
+#### Meta referrer 集成
+
+<callout type="note"> 
+
+Adjust SDK 会捆绑[Meta 要求](https://developers.facebook.com/docs/app-ads/meta-install-referrer#step-1--add-the-meta-apps)的`<queries id="sl-md0000000">`元素。您无需将这些元素添加至`AndroidManifest.xml`。
+</Callout> <minorversion added="v4.37.0"> 
+
+The Adjust SDK supports the [Meta Install Referrer](https://developers.facebook.com/docs/app-ads/meta-install-referrer) in v4\.37\.0 and above. To enable this feature:
+</MinorVersion> 
+
+1. 在[应用控制面板](https://developers.facebook.com/apps)中找到您的 Meta app ID。更多信息，请参考 Meta 的[应用控制面板文档](https://developers.facebook.com/docs/development/create-an-app/app-dashboard)。
+
+2. 将应用 ID 作为 **字符串** 参数传递至`AdjustConfig.setFbAppId`方法。
+
+   ```jsx
+   const adjustConfig = new AdjustConfig(
+      "{YourAppToken}",
+      AdjustConfig.EnvironmentSandbox,
+   );
+   //...
+   adjustConfig.setFbAppId("<fb_app_id_string id="sl-md0000000">");
+   //...
+   Adjust.create(adjustConfig);
+   ```
+
+5\. Add iOS frameworks
+-----------------------
+
+The Adjust SDK is able to get extra information when you include certain iOS frameworks in your app. These frameworks enable certain SDK features, but they're not mandatory for the SDK to work normally. You can add the frameworks and then mark them as optional in **Project Settings \-\-> Build Phases \-\-> Link Binary With Libraries** .
+<table> 
+
+|                  框架                   |                                                                          描述                                                                          |                                         注意事项                                          |
+|---------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------|
+| **AdSupport.framework**               | This framework is needed so that the SDK can access the IDFA value and, before iOS 14, AT information.                                               | If your app is targeting the "Kids" category, you shouldn't implement this framework. |
+| **AdServices.framework**              | 该框架对于处理 Apple Search Ads 是必要的。                                                                                                                       |                                                                                       |
+| **StoreKit.framework**                | This framework is needed to access the SKAdNetwork framework and for the Adjust SDK to andle communication with it automatically in iOS 14 or later. |                                                                                       |
+| **AppTrackingTransparency.framework** | This framework is needed in iOS 14 and later for the SDK to be able to wrap he user tracking consent dialog and access the user’s consent response.  | If your app is targeting the "Kids" category, you shouldn't implement this framework. |
+
+</Table> 
+
+6\. Add the Adjust SDK signature
+---------------------------------
+
+You can use the Adjust SDK signature to sign all communications sent by the Adjust SDK. This enables Adjust’s servers to detect and reject any install activity that isn't legitimate.
+
+要开始使用 Adjust SDK 签名，请联系您的技术客户经理，或发送邮件至 [support@adjust.com](mailto:support@adjust.com)。
+
+7\. Test your integration
+--------------------------
+
+采用 Adjust SDK 提供的工具，您可以测试并排除集成出现的问题。要测试集成，请按照下列步骤操作：
+
+* 将环境设为 **Sandbox** 。
+* 在 Adjust 控制面板结果中添加 [sandbox 过滤器](https://help.adjust.com/en/article/filter-data#sandbox)。
+* Set your log level to **verbose** .
+
+<callout type="tip"> 
+
+如果遇到任何问题，请发送邮件至 [support@adjust.com](mailto:support@adjust.com)，并在邮件中说明所有详情和日志。
+</Callout> 
+
+### 测试 Google Play 服务集成
+
+To test that the Adjust SDK can receive a device's Google Advertising ID, set the log level to **verbose** and the environment to **Sandbox** . Start your app and record a session or an event. The SDK logs the `gps_adid` parameter if it has read the advertising ID.
+
+If you're having issues retrieving the Google Advertising ID, open an issue on the SDK [GitHub repository](https://github.com/adjust/react_native_sdk) or contact [support@adjust.com](mailto:support@adjust.com).
+
