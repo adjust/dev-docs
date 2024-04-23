@@ -3,13 +3,13 @@ import { Octokit } from "octokit";
 const octokit = new Octokit({ auth: import.meta.env.GITHUB_TOKEN });
 
 let versionReplacements: VersionMap = {
-   "android": "android_sdk_version",
-   "flutter": "flutter_sdk_version",
-   "ios": "ios_sdk_version",
-   "react_native": "react_native_sdk_version",
-   "unity": "unity_sdk_version",
-   "web": "web_sdk_version",
-   "windows": "windows_sdk_version"
+   "android": "vx.x.x",
+   "flutter": "vx.x.x",
+   "ios": "vx.x.x",
+   "react_native": "vx.x.x",
+   "unity": "vx.x.x",
+   "web": "vx.x.x",
+   "windows": "vx.x.x"
 }
 
 export async function fetchVersions() {
