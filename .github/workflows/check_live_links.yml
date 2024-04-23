@@ -1,0 +1,25 @@
+name: Check live links
+on:
+  push:
+    branches:
+      - main
+jobs:
+  check-live-links:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@1d96c772d19495a3b5c517cd2bc0cb401ea0529f # v4
+      - name: Lychee Broken Link Checker
+        uses: lycheeverse/lychee-action@v1.9.3
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        with:
+          args: --max-redirects 10 --base https://dev.adjust.com './src/content/docs/en/**/*.mdx'
+          fail: true
+      - name: Create issue to fix broken links
+        # Don't run this step for pull requests. We don't want to generate an issue every time!
+        if: ${{ failure() && env.lychee_exit_code != 0 && github.event_name != 'pull_request' }}
+        uses: peter-evans/create-issue-from-file@v5
+        with:
+          title: Link Checker Report
+          content-filepath: ./lychee/out.md
+          labels: report, automated issue
