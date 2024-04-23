@@ -13,7 +13,7 @@ const replaceTemplateStringsPlugin: Plugin<[VersionMap]> = (options) => {
 
          let newValue = node.value;
          for (const platform in versions) {
-            const replacementValue = versions[platform];
+            const replacementValue = versions[platform].substring(1);
             const oldValue = `$${platform.toUpperCase()}_VERSION`
             newValue = newValue.replaceAll(oldValue, replacementValue);
          }
