@@ -1,9 +1,13 @@
 import { debounce } from "lodash-es";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { type FC, useCallback, useEffect, useRef, useState } from "react";
+import { useTranslations } from "@i18n/utils";
+import type { Locales } from "@i18n/locales";
 
 import { getSearchParams, setSearchParams } from "./utils";
 
-const SearchInput = () => {
+const SearchInput: FC<{ lang: string }> = ({ lang }) => {
+  const t = useTranslations(lang as keyof Locales);
+
   const inputRef = useRef<HTMLInputElement>(null);
   const [searchValue, setSearchValue] = useState("");
 
@@ -41,7 +45,7 @@ const SearchInput = () => {
         type="text"
         id="search-input"
         ref={inputRef}
-        placeholder="Dev HUB search"
+        placeholder={t("search.placeholder")}
         value={searchValue}
         autoFocus
         onChange={({ target }) => debouncedChange(target.value)}

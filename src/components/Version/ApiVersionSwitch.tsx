@@ -1,10 +1,13 @@
 import { type FC, useEffect } from "react";
 import { ComboBox } from "@adjust/components";
 import { useStore } from "@nanostores/react";
+import type { Locales } from "@i18n/locales";
+import { useTranslations } from "@i18n/utils";
 
 import { $versions, changeVersionValue } from "@store/apiVersionsStore";
 
-const VersionSwitch: FC = () => {
+const VersionSwitch: FC<{ lang: string }> = ({ lang }) => {
+  const t = useTranslations(lang as keyof Locales);
   const versions = useStore($versions);
 
   if (versions.items.length < 1) {
@@ -22,7 +25,7 @@ const VersionSwitch: FC = () => {
     changeVersionValue(higherVersion);
   }, []);
 
-  let label = "Select your API version:";
+  let label = t("apiversionswitch.label");
 
   return (
     <div className="flex flex-col w-full min-h-90px justify-start gap-y-8 bg-slate-100 p-6 rounded-lg mb-14 md:flex-row md:items-center md:gap-x-8">

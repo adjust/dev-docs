@@ -1,10 +1,13 @@
 import { type FC, useEffect, useState } from "react";
 import { ComboBox } from "@adjust/components";
 import { useStore } from "@nanostores/react";
+import type { Locales } from "@i18n/locales";
+import { useTranslations } from "@i18n/utils";
 
 import { $versions, changeVersionValue } from "@store/sdkVersionsStore";
 
-const VersionSwitch: FC = () => {
+const VersionSwitch: FC<{ lang: string }> = ({ lang }) => {
+  const t = useTranslations(lang as keyof Locales);
   const versions = useStore($versions);
   const versionsPresent = false;
   const [versionsOnPage, setversionsPresent] = useState(versionsPresent);
@@ -20,7 +23,7 @@ const VersionSwitch: FC = () => {
     );
   });
 
-  let label = "Select your SDK version:";
+  let label = t("sdkversionswitch.label");
 
   return (
     <div

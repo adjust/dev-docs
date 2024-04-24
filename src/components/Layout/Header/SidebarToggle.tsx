@@ -1,7 +1,10 @@
 import classNames from "classnames";
 import { type FC, useState, useEffect } from "react";
+import { type Locales } from "@i18n/locales";
+import { useTranslations } from "@i18n/utils";
 
-const MenuToggle: FC = () => {
+const MenuToggle: FC<{ lang: string }> = ({ lang }) => {
+  const t = useTranslations(lang as keyof Locales);
   const [sidebarShown, setSidebarShown] = useState(false);
 
   useEffect(() => {
@@ -22,7 +25,7 @@ const MenuToggle: FC = () => {
       })}
       id="menu-toggle"
       onClick={() => setSidebarShown(!sidebarShown)}
-      aria-label="Toggle sidebar"
+      aria-label={t("sidebar.toggle-label")}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -39,7 +42,7 @@ const MenuToggle: FC = () => {
           d="M4 6h16M4 12h16M4 18h16"
         />
       </svg>
-      <span className="sr-only">Toggle sidebar</span>
+      <span className="sr-only">{t("sidebar.toggle-label")}</span>
     </button>
   );
 };

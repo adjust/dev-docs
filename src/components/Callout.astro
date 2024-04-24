@@ -1,6 +1,10 @@
 ---
 import { Banner } from "@adjust/components";
-import { toSentenceCase } from "@components/utils/convertCase";
+import { type Locales } from "@i18n/locales";
+import { useTranslations } from "@i18n/utils";
+
+const { lang } = Astro.params;
+const t = useTranslations(lang as keyof Locales);
 
 // We have two props that must be present in all banners:
 // The type indicates the purpose and style of the banner
@@ -9,13 +13,19 @@ import { toSentenceCase } from "@components/utils/convertCase";
 
 export interface Props {
   title?: string;
-  type?: string;
+  type?: CalloutType;
 }
+
+// Declare properties used to build the banner.
+// The type is declared as "neutral" in case no type is provided.
+// If the author provides a type, it overrides this default.
+
+const { title, type = "info" } = Astro.props as Props;
 
 // This map iterates through the different banner types the author might specify and maps them to a `BannerKind`
 // If the type is not present in this list, it will default to `neutral` below.
 
-const typeMap = new Map<String, BannerKind>([
+const typeMap = new Map<CalloutType, BannerKind>([
   ["info", "neutral"],
   ["note", "primary"],
   ["tip", "positive"],
@@ -24,22 +34,15 @@ const typeMap = new Map<String, BannerKind>([
   ["warning", "negative"],
 ]);
 
-// Declare properties used to build the banner.
-// The type is declared as "neutral" in case no type is provided.
-// If the author provides a type, it overrides this default.
-
-const { title, type = "neutral" } = Astro.props as Props;
-
 // Iterate through the map and assign the type provided by the author to a BannerKind
-// If no type is found, default to "neutral"
 
-const bannerType: BannerKind = typeMap.get(type) || "neutral";
+const bannerType: BannerKind = typeMap.get(type) as BannerKind;
 
 // Create a placeholder title that is title cased.
 // This takes the value of the type and capitalizes the first letter.
 // If no type has been specified, default to "Info".
 
-const typeTitle = type === "neutral" ? "Info" : toSentenceCase(type);
+const typeTitle = t(`callout.${type}`);
 ---
 
 <!-- Pass the assigned information to the BuildBanner React component -->

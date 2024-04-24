@@ -5,17 +5,23 @@ import { useOnClickOutside } from "@hooks/useOnClickOutside";
 import { useWaitToTrigger } from "@hooks/useWaitToTrigger";
 import { HELP_CENTER_LINK } from "src/consts";
 
-const AudienceDropdown: FC = () => {
+import { useTranslations } from "@i18n/utils";
+import { type Locales } from "@i18n/locales";
+
+const AudienceDropdown: FC<{
+  lang: string;
+}> = (props) => {
+  const t = useTranslations(props.lang as keyof Locales);
   const [isMenuShown, setIsMenuShown] = useState(false);
   const ref = useRef(null);
   const audiences = [
     {
-      titleId: "for Marketers",
+      titleId: t("header.audience-picker-marketer"),
       slug: "marketer",
       link: `${HELP_CENTER_LINK}en/marketer`,
     },
     {
-      titleId: "for Partners",
+      titleId: t("header.audience-picker-partner"),
       slug: "partner",
       link: `${HELP_CENTER_LINK}en/partner`,
     },
@@ -57,7 +63,7 @@ const AudienceDropdown: FC = () => {
         style={{ borderBottom: `2px solid ${color.title}` }}
         className="cursor-pointer mb-3 text-sm font-medium"
       >
-        for Developers
+        {t("header.audience-picker-developer")}
       </span>
       <div
         aria-label="audience picker wrapper"
@@ -66,7 +72,7 @@ const AudienceDropdown: FC = () => {
           {
             flex: isMenuShown,
             hidden: !isMenuShown,
-          }
+          },
         )}
       >
         {audiences.map((audience) => (

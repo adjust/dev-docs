@@ -1,4 +1,4 @@
-import { FC, useMemo } from "react";
+import { type FC, useMemo } from "react";
 import { Highlight } from "react-instantsearch";
 
 import type { HelpCenterResultCardProps } from "./types";

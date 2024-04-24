@@ -8,6 +8,14 @@ import CategoryCard from "@components/Cards/CategoryCard.astro";
 import SdkVersionSwitch from "@components/Version/SdkVersionSwitch";
 import ApiVersionSwitch from "@components/Version/ApiVersionSwitch";
 
+import { getLanguageFromURL } from "@i18n/utils";
+import { type Locales } from "@i18n/locales";
+import { useTranslations } from "@i18n/utils";
+
+const currentLang = getLanguageFromURL(Astro.url.pathname);
+
+const t = useTranslations(currentLang as keyof Locales);
+
 type Props = {
   title: string;
   headings: MarkdownHeading[];
@@ -34,7 +42,7 @@ const sortedLinks = childLinks.sort((a, b) => {
     <h1 class="text-heading-1 font-bold leading-[1] mb-4" id="overview">
       {title}
     </h1>
-    <aside title="Table of Contents">
+    <aside title={t("toc.header")}>
       <RightSidebar headings={headings} title={title} />
     </aside>
     <div
@@ -43,12 +51,12 @@ const sortedLinks = childLinks.sort((a, b) => {
     >
       {
         Astro.url.pathname.includes("sdk") && (
-          <SdkVersionSwitch client:only="react" />
+          <SdkVersionSwitch client:only="react" lang={currentLang} />
         )
       }
       {
         Astro.url.pathname.includes("api") && (
-          <ApiVersionSwitch client:only="react" />
+          <ApiVersionSwitch client:only="react" lang={currentLang} />
         )
       }
       <slot />

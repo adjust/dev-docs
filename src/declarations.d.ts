@@ -9,6 +9,8 @@ declare type BannerKind =
   | "negative"
   | "primary";
 
+declare type CalloutType = "info" | "note" | "tip" | "warning" | "important" | "seealso";
+
 declare interface ApiObject {
   orgName: string;
   repoName: string;

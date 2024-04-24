@@ -1,10 +1,13 @@
 import type { FC } from "react";
 import { useHits } from "react-instantsearch";
+import { useTranslations } from "@i18n/utils";
+import type { Locales } from "@i18n/locales";
 
 import HelpCenterResultCard from "./HelpCenterResultCard";
 import SearchNoResults from "../SearchNoResults";
 
-const HelpCenterHits: FC = () => {
+const HelpCenterHits: FC<{ lang: string }> = ({ lang }) => {
+  const t = useTranslations(lang as keyof Locales);
   const { hits } = useHits();
 
   return (
@@ -19,7 +22,10 @@ const HelpCenterHits: FC = () => {
         ))}
       </div>
       {!hits.length && (
-        <SearchNoResults bodyText="Sorry but there’s nothing on the Adjust Help Center matching your query" />
+        <SearchNoResults
+          lang={lang}
+          bodyText={t("search.help-center-no-match")}
+        />
       )}
     </div>
   );
