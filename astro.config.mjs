@@ -10,9 +10,8 @@ import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-s
 import playformCompress from "@playform/compress";
 import remarkReplaceVersions from "./src/integrations/remarkReplaceVersions";
 import { fetchVersions } from "./src/integrations/fetchSdkVersions";
-
-const versions = await fetchVersions()
-
+import playformInline from "@playform/inline";
+const versions = await fetchVersions();
 const astroExpressiveCodeOptions = {
   defaultProps: {
     wrap: true
@@ -44,7 +43,11 @@ export default defineConfig({
   // Enable React for the Algolia search component.
   react({
     experimentalReactChildren: true
-  }), expressiveCode(astroExpressiveCodeOptions), mdx(), tailwind(), sitemap(), playformCompress()],
+  }), expressiveCode(astroExpressiveCodeOptions), mdx(), tailwind(), sitemap(), playformCompress(), playformInline({
+    Critters: {
+      fonts: false
+    }
+  })],
   site: "https://dev.adjust.com/",
   markdown: {
     remarkPlugins: [remarkDefinitionList, [remarkReplaceVersions, versions]],
