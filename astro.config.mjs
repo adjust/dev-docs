@@ -39,7 +39,9 @@ const astroExpressiveCodeOptions = {
 // https://astro.build/config
 export default defineConfig({
   integrations: [AutoImport({
-    imports: ["@components/Callout.astro", "@components/Accordion.astro", "@components/Table.astro", "@components/Tile.astro", "@components/Tabs.astro", "@components/Tab.astro", "@components/ApiVersion.astro", "@components/SdkVersion.astro", "@components/FigmaEmbed/FigmaEmbed.astro", "@components/MinorVersion.astro"]
+    imports: [{
+      "@components/index": ["ApiVersion", "Accordion", "Callout", "FigmaEmbed", "MinorVersion", "SdkVersion", "Tab", "Table", "Tabs", "Tile"]
+    }],
   }),
   // Enable React for the Algolia search component.
   react({
