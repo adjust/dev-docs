@@ -40,7 +40,7 @@ const astroExpressiveCodeOptions = {
 export default defineConfig({
   integrations: [AutoImport({
     imports: [{
-      "@components/index": ["ApiVersion", "Accordion", "Callout", "FigmaEmbed", "MinorVersion", "SdkVersion", "Tab", "Table", "Tabs", "Tile"]
+      "@components/index": ["ApiVersion", "Accordion", "Callout", "FigmaEmbed", "InputCode", "MinorVersion", "SdkVersion", "Tab", "Table", "Tabs", "Tile"]
     }],
   }),
   // Enable React for the Algolia search component.
