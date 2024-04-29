@@ -1,7 +1,6 @@
 import algoliasearch from "algoliasearch";
 import { Configure, InstantSearch } from "react-instantsearch";
 import type { FC } from "react";
-
 import { getDevHubFilters, getSearchParams } from "../utils";
 import DevHubHits from "./DevHubHits";
 import Pagination from "../Pagination";
@@ -25,8 +24,8 @@ const DevHubIndex: FC<DevHubIndexProps> = ({ algoliaKeys, lang }) => {
         hitsPerPage={6}
         page={page}
       />
-      <DevHubHits />
-      <Pagination canRefine currentRefinement={1} />
+      <DevHubHits lang={lang} />
+      <Pagination canRefine currentRefinement={1} lang={lang} />
     </InstantSearch>
   );
 };

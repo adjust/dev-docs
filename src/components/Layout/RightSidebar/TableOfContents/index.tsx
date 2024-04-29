@@ -9,6 +9,8 @@ import CollapsedTOC from "./CollapsedTOC";
 import { getTocHeadings } from "@utils/helpers/toc/getTocHeadings";
 import { useScrollSpy } from "@hooks/useScrollSpy";
 import ChevronRight from "@components/Icons/react/ChevronRight";
+import { type Locales } from "@i18n/locales";
+import { useTranslations } from "@i18n/utils";
 
 const HEADER_HEIGHT = 80;
 
@@ -17,10 +19,12 @@ const checkIsMobile = () => {
   return width <= 1024;
 };
 
-const TableOfContents: FC<{ headings: MarkdownHeading[]; title: string }> = ({
-  headings = [],
-  title,
-}) => {
+const TableOfContents: FC<{
+  headings: MarkdownHeading[];
+  title: string;
+  lang: string;
+}> = ({ headings = [], title, lang }) => {
+  const t = useTranslations(lang as keyof Locales);
   const [headingsLocal, setHeadingsLocal] = useState(headings);
   const [isMobile, setIsMobile] = useState(checkIsMobile());
   const toc = useRef<HTMLUListElement>(null);
@@ -91,14 +95,14 @@ const TableOfContents: FC<{ headings: MarkdownHeading[]; title: string }> = ({
       {isOpened ? (
         <nav
           className={classNames(
-            "transition duration-100 fixed top-[128px] lg:right-0 xxl:left-0 xxl:ml-[calc(100vw-312px-(100vw-100rem)/2)] z-10 w-[304px] h-[calc(100vh-112px)] md:right-0 xxl:ml-open-toc z-25 px-4 bg-white max-h-screen border-t border-[1px] border-bluish-grey rounded-tl-lg xs:hidden lg:block"
+            "transition duration-100 fixed top-[128px] lg:right-0 xxl:left-0 xxl:ml-[calc(100vw-312px-(100vw-100rem)/2)] z-10 w-[304px] h-[calc(100vh-112px)] md:right-0 xxl:ml-open-toc z-25 px-4 bg-white max-h-screen border-t border-[1px] border-bluish-grey rounded-tl-lg xs:hidden lg:block",
           )}
         >
           <div className="absolute top-0 bottom-0 flex items-start">
             <button
               onClick={() => setIsOpened(false)}
               className="rounded-md -ml-8 mt-8  bg-white relative w-6 h-6 [&_svg]:hover:bg-[#0b58fe] [&_svg]:hover:text-white"
-              aria-label="Toggle table of contents"
+              aria-label={t("toc.toggle-label")}
             >
               <ChevronRight />
             </button>
@@ -117,7 +121,7 @@ const TableOfContents: FC<{ headings: MarkdownHeading[]; title: string }> = ({
                         "current-header-link": clickedId
                           ? clickedId === heading.slug
                           : activeId === heading.slug,
-                      }
+                      },
                     )}
                   >
                     <a
@@ -133,12 +137,13 @@ const TableOfContents: FC<{ headings: MarkdownHeading[]; title: string }> = ({
           </div>
         </nav>
       ) : (
-        <CollapsedTOC setIsOpened={setIsOpened} />
+        <CollapsedTOC setIsOpened={setIsOpened} lang={lang} />
       )}
       <TableOfContentsMobile
         onThisPageID={onThisPageID}
         toc={toc}
         headingsLocal={headingsLocal}
+        lang={lang}
       />
     </>
   );

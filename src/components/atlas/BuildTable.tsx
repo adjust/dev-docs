@@ -3,6 +3,8 @@ import { type FC, useState } from "react";
 import { toSnakeCase } from "@components/utils/convertCase";
 import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
+import type { Locales } from "@i18n/locales";
+import { useTranslations } from "@i18n/utils";
 
 // Create an interface for the cells. These can be string pairs of any accessor and value.
 
@@ -20,7 +22,9 @@ const BuildTable: FC<{
   flex: boolean;
   striped: boolean;
   height?: TableHeights;
+  lang: string;
 }> = (props) => {
+  const t = useTranslations(props.lang as keyof Locales);
   // Set up a blank string for the search term
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -89,7 +93,7 @@ const BuildTable: FC<{
       {props.search && (
         <div className="px-[15px] pt-[25px] pb-[35px]">
           <Input
-            label="Search"
+            label={t("table.search-label")}
             type="search"
             value={searchTerm}
             onClear={() => {

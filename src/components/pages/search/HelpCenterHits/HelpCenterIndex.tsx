@@ -24,7 +24,7 @@ const HelpCenterIndex: FC<HelpCenterIndexProps> = ({ algoliaKeys, lang }) => {
         hitsPerPage={6}
         page={1}
       />
-      <HelpCenterHits />
+      <HelpCenterHits lang={lang} />
     </InstantSearch>
   );
 };

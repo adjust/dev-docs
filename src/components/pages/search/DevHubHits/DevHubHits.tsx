@@ -1,10 +1,12 @@
 import type { FC } from "react";
 import { useHits } from "react-instantsearch";
-
 import DevHubSearchResultCard from "./DevHubSearchResultCard";
 import SearchNoResults from "../SearchNoResults";
+import { useTranslations } from "@i18n/utils";
+import type { Locales } from "@i18n/locales";
 
-const DevHubHits: FC = () => {
+const DevHubHits: FC<{ lang: string }> = ({ lang }) => {
+  const t = useTranslations(lang as keyof Locales);
   const { hits } = useHits();
 
   return (
@@ -19,7 +21,7 @@ const DevHubHits: FC = () => {
         ))}
       </div>
       {!hits.length && (
-        <SearchNoResults bodyText="Sorry but there’s nothing on the Dev Hub matching your query" />
+        <SearchNoResults bodyText={t("search.no-match")} lang={lang} />
       )}
     </div>
   );

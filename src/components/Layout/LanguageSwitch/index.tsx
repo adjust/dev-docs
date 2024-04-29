@@ -7,6 +7,7 @@ import IconLanguage from "@components/Icons/react/IconLanguage";
 
 import type { LanguageSwitchProps } from "./types";
 import type { Locales } from "@i18n/locales";
+import { useTranslations } from "@i18n/utils";
 
 const LanguageSwitch: FC<LanguageSwitchProps> = ({
   lang,
@@ -15,6 +16,8 @@ const LanguageSwitch: FC<LanguageSwitchProps> = ({
   isFooter,
   currentUrl,
 }) => {
+  const t = useTranslations(lang as keyof Locales);
+  const currentLang = locales[lang as keyof Locales].toString();
   const [isMenuShown, setIsMenuShown] = useState(false);
   const ref = useRef(null);
 
@@ -36,9 +39,7 @@ const LanguageSwitch: FC<LanguageSwitchProps> = ({
       ref={ref}
     >
       <label htmlFor="current-lang" className="hidden">
-        {`Chosen language in the language dropdown is ${
-          locales[lang as keyof Locales]
-        }`}
+        {t("languagepicker.label").replace("${language}", currentLang)}
       </label>
       <div
         id="current-lang"
@@ -63,8 +64,12 @@ const LanguageSwitch: FC<LanguageSwitchProps> = ({
         className={classNames(
           "bg-white absolute -right-[15px] -top-[170px] left-5 leading-5 w-[7.25rem] border border-solid border-[#f3f4f6] rounded-sm shadow-[0_0_15px_0_#1e3c9622] p-4 text-base z-50 after:-z-10 after:absolute after:-bottom-[6px] after:w-5 after:h-5 after:content-[''] after:bg-white after:border-t-0 after:-mt-[10px] after:shadow-[3px_3px_-5px_-1px_#1e3c9611] after:rotate-45 hover:block",
           isMenuShown ? "block" : "hidden",
-          isFooter ? "bg-white -right-[15px] -top-[190px] -left-[2px] leading-5 w-[7.25rem] border border-solid border-[#f4f5f6] rounded-sm shadow-[0_0_15px_0_#1e3c9622" : "",
-          isFooter ? "after:-z-10 after:content-[''] after:absolute after:-bottom-[6px] after:w-5 after:h-5 after:bg-white after:border-t-0 -ml-[15px] after:-mt-[10px] after:shadow-[3px_3px_-5px_-1px_#1e3c9611] after:rotate-45" : ""
+          isFooter
+            ? "bg-white -right-[15px] -top-[190px] -left-[2px] leading-5 w-[7.25rem] border border-solid border-[#f4f5f6] rounded-sm shadow-[0_0_15px_0_#1e3c9622"
+            : "",
+          isFooter
+            ? "after:-z-10 after:content-[''] after:absolute after:-bottom-[6px] after:w-5 after:h-5 after:bg-white after:border-t-0 -ml-[15px] after:-mt-[10px] after:shadow-[3px_3px_-5px_-1px_#1e3c9611] after:rotate-45"
+            : "",
         )}
       >
         <ul>

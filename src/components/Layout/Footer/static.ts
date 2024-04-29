@@ -1,19 +1,26 @@
 export const adjustLink = "https://www.adjust.com";
+import { defaultLang } from "@i18n/locales";
+import { ui } from "@i18n/ui";
 
-export const footerLinks = [
-  { text: "About Us", url: `${adjustLink}/company/` },
-  { text: "Security", url: `${adjustLink}/security/` },
+interface FooterLinks {
+  id: keyof (typeof ui)[typeof defaultLang];
+  url: string
+}
+
+export const footerLinks: FooterLinks[] = [
+  { id: "footer.about-us", url: `${adjustLink}/company/` },
+  { id: "footer.security", url: `${adjustLink}/security/` },
   {
-    text: "Privacy Policy",
+    id: "footer.privacy-policy",
     url: `${adjustLink}/terms/privacy-policy/`,
   },
   {
-    text: "Terms & Conditions",
+    id: "footer.terms",
     url: `${adjustLink}/terms/general-terms-and-conditions/`,
   },
-  { text: "CCPA & GDPR", url: `${adjustLink}/terms/ccpa/` },
+  { id: "footer.ccpa-gdpr", url: `${adjustLink}/terms/ccpa/` },
   {
-    text: "Legal Notice",
+    id: "footer.legal-notice",
     url: `${adjustLink}/terms/impressum/`,
   },
 ];
