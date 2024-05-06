@@ -1,30 +1,28 @@
 ---
 title: "开始使用"
-description: "Use the iOS SDK to access Adjust's features in your iOS apps"
+description: "使用 iOS SDK 在您的 iOS 应用中使用 Adjust 功能"
 category-title: "iOS SDK"
-slug: "zh/sdk/ios"
+slug: "en/sdk/ios"
 sidebar-position: 2
 ---
+通过 Adjust iOS SDK，您可以在 iOS 应用中记录归因、事件以及更多信息。该指南展示了如何将 Adjust SDK 集成至应用。
 
-The Adjust iOS SDK enables you to record attribution, events, and more in your iOS app. This guide shows you how to integrate the Adjust SDK with your app.
+1\. 添加 SDK 至您的项目
+-----------------
 
-## 1\. Add the SDK to your project
-
-To use the Adjust SDK in your iOS app, you need to add it to your Xcode project.
+要在您的 iOS 应用中使用 Adjust SDK，请先将 SDK 加入 Xcode 项目。
 
 要使用 Swift package manager 添加 SDK：
 
-1. Select **File \-\-> Swift Packages \-\-> Add Package Dependency**
-2. In the box that appears, enter the SDK's GitHub address: `https://github.com/adjust/ios_sdk`
-3. Select the version of the Adjust SDK you want to use in the **Version** dropdown. Check the [releases page](https://github.com/adjust/ios_sdk/releases) for the latest version.
+1. 选择 **File \-\-> Swift Packages \-\-> Add Package Dependency** 
+2. 在出现的文本框中输入 SDK 的 GitHub 地址： `https://github.com/adjust/ios_sdk`
+3. 在 **Version** 下拉菜单中选择要使用的 Adjust SDK 版本。请查看[发布页面](https://github.com/adjust/ios_sdk/releases)，找到最新版本。
 
-### Alternative installation methods
+### 其他安装方法
 
-<Tabs>
+<tabs> <tab title="Cocoapods" sync="cocoapods"> 
 
-<Tab title="Cocoapods" sync="cocoapods">
-
-To add the SDK using Cocoapods, specify the version you want to use in your `Podfile`:
+要使用 Cocoapods 添加 SDK，请在 `Podfile` 中指定要使用的版本：
 
 ```text
 // Get pod from repository
@@ -34,269 +32,221 @@ pod 'Adjust', '~> $IOS_VERSION'
 pod 'Adjust', :git => 'https://github.com/adjust/ios_sdk.git', :tag => 'v$IOS_VERSION'
 ```
 
-If you're using web views in your app, add the Adjust Web Bridge by adding the following:
+如果您在应用中使用的是 web 视图，请添加下列行以加入 Adjust Web Bridge：
 
 ```text
 pod 'Adjust/WebBridge', '~> $IOS_VERSION'
 ```
 
-</Tab>
+</Tab> <tab title="Carthage" sync="carthage"> 
 
-<Tab title="Carthage" sync="carthage">
-
-To add the SDK using Carthage, add the following to your `Cartfile`:
+要使用 Carthage 添加 SDK，请将下列内容添加至您的 `Cartfile`：
 
 ```text
 github "adjust/ios_sdk"
 ```
 
-</Tab>
+</Tab> <tab title="添加为框架" sync="framework"> <callout type="important"> 
 
-<Tab title="添加为框架" sync="framework">
+由于缺失[隐私清单](https://help.adjust.com/en/article/submit-privacy-details-to-apple#privacy-manifest)，静态框架分布将从自 4\.38\.0 版本起停用。
+</Callout> <minorversion removed="v4.38.0"> 
 
-<Callout type="important">
+您也可以把 Adjust SDK 作为框架添加至您的项目中，以进行集成。在[发布页面](https://github.com/adjust/ios_sdk/releases/latest)，您可以找到以下文档：
+</MinorVersion> 
 
-The distribution of static frameworks is deprecated from version 4\.38\.0, as a result of not including the [Privacy Manifest](https://help.adjust.com/zh/article/submit-privacy-details-to-apple#privacy-manifest).
+* `AdjustSdkStatic.framework.zip`：针对操作系统为 iOS 7 或更旧版本的设备
+* `AdjustSdkDynamic.framework.zip`：针对操作系统为 iOS 8 或更新版本的设备
+* `AdjustSdkTvDynamic.framework.zip`：tvOS 应用动态框架
+* `AdjustSdkTvStatic.framework.zip`：tvOS 应用的静态框架
+* `AdjustSdkImDynamic.framework.zip`：iMessage 应用动态框架
+* `AdjustSdkWebBridgeDynamic.framework.zip`：web 视图动态框架
 
-</Callout>
-
-<MinorVersion removed="v4.38.0">
-
-You can integrate the Adjust SDK by adding it to your project as a framework. You can find the following archives on the [releases page](https://github.com/adjust/ios_sdk/releases/latest):
-
-</MinorVersion>
-
--  `AdjustSdkStatic.framework.zip`: For devices running iOS 7 and below
--  `AdjustSdkDynamic.framework.zip`: For devices running iOS 8 and above
--  `AdjustSdkTvDynamic.framework.zip`: Dynamic framework for tvOS apps
--  `AdjustSdkTvStatic.framework.zip`: Static framework for tvOS apps
--  `AdjustSdkImDynamic.framework.zip`: Dynamic framework for iMessage apps
--  `AdjustSdkWebBridgeDynamic.framework.zip`: Dynamic framework for web views
-
-Choose the frameworks you need and add them to your `Xcode` project:
+选择您要使用的框架，然后将其加入您的 `Xcode` 项目：
 
 1. 从发布页面下载文档。
 2. 将压缩文件解压至您的电脑。
-3. Copy the `.framework` folder into your `Xcode` project.
+3. 将 `.framework` 文件夹复制到您的 `Xcode` 项目中。
 
-</Tab>
+</Tab> </Tabs> 
 
-</Tabs>
+2\. 集成 Adjust SDK
+------------------
 
-## 2\. Integrate the Adjust SDK
+将 Adjust SDK 添加到 `Xcode` 项目后，您需要将其集成至应用。
+<tabs> <tab title="Cocoapods" sync="cocoapods"> 
 
-Once you've added the Adjust SDK to your `Xcode` project, you need to integrate it in your app.
+在您的项目文件中添加相关导入语句：
+<tabs> <tab title="Swift" sync="swift"> 
 
-<Tabs>
-
-<Tab title="Cocoapods" sync="cocoapods">
-
-Add the relevant import statements in your project files.
-
-<Tabs>
-
-<Tab title="Swift" sync="swift">
-
-To import the Adjust SDK, add the following to your bridging header file:
+要导入 Adjust SDK，请将下列行添加至您的桥接标头文件：
 
 ```objc
 #import <Adjust/Adjust.h>
 ```
 
-If you use the Adjust Web Bridge, add the following to your bridging header file:
+如果您使用的是 Adjust Web Bridge，请将下列行添加至您的桥接标头文件：
 
 ```objc
 #import "AdjustBridge.h"
 ```
 
-</Tab>
+</Tab> <tab title="Objective-C" sync="objc"> 
 
-<Tab title="Objective-C" sync="objc">
-
-To import the Adjust SDK, add the following to your `AppDelegate.h` file:
+要导入 Adjust SDK，请将下列行添加至您的 `AppDelegate.h` 文件：
 
 ```objc
 #import <Adjust/Adjust.h>
 ```
 
-If you use the Adjust Web Bridge, add the following to your `AppDelegate.h` file:
+如果您使用的是 Adjust Web Bridge，请将下列行添加至 `AppDelegate.h` 文件：
 
 ```objc
 #import "AdjustBridge.h"
 ```
 
-</Tab>
+</Tab> </Tabs> </Tab> <tab title="Carthage" sync="carthage"> 
 
-</Tabs>
+在您的项目文件中添加相关导入语句：
+<tabs> <tab title="Swift" sync="swift"> 
 
-</Tab>
-
-<Tab title="Carthage" sync="carthage">
-
-Add the relevant import statements in your project files:
-
-<Tabs>
-
-<Tab title="Swift" sync="swift">
-
-To import the Adjust SDK, add the following to your bridging header file:
+要导入 Adjust SDK，请将下列行添加至您的桥接标头文件：
 
 ```objc
 #import <Adjust/Adjust.h>
 ```
 
-If you use the Adjust Web Bridge, add the following to your bridging header file:
+如果您使用的是 Adjust Web Bridge，请将下列行添加至您的桥接标头文件：
 
 ```objc
 #import <AdjustSdkWebBridge/AdjustBridge.h>
 ```
 
-If you use the Adjust SDK in a tvOS app, add the following to your bridging header file:
+如果您是在 tvOS 应用中使用 Adjust SDK，请将下列行添加至桥接标头文件：
 
 ```objc
 #import <AdjustSdkTv/Adjust.h>
 ```
 
-If you use the Adjust SDK in a iMessage app, add the following to your bridging header file:
+如果您是在 iMessage 应用中使用 Adjust SDK，请将下列行添加至桥接标头文件：
 
 ```objc
 #import <AdjustSdkIm/Adjust.h>
 ```
 
-</Tab>
+</Tab> <tab title="Objective-C" sync="objc"> 
 
-<Tab title="Objective-C" sync="objc">
-
-To import the Adjust SDK, add the following to your `AppDelegate.h` file:
+要导入 Adjust SDK，请将下列行添加至您的 `AppDelegate.h` 文件：
 
 ```objc
 #import <AdjustSdk/Adjust.h>
 ```
 
-If you use the Adjust Web Bridge, add the following to your `AppDelegate.h` file:
+如果您使用的是 Adjust Web Bridge，请将下列行添加至 `AppDelegate.h` 文件：
 
 ```objc
 #import <AdjustSdkWebBridge/AdjustBridge.h>
 ```
 
-If you use the Adjust SDK in your tvOS app, add the following to your `AppDelegate.h` file:
+如果您是在 tvOS 应用中使用 Adjust SDK，请将下列行添加至 `AppDelegate.h` 文件：
 
 ```objc
 #import <AdjustSdkTv/Adjust.h>
 ```
 
-If you use the Adjust SDK in your iMessage app, add the following to your `AppDelegate.h` file:
+如果您是在 iMessage 应用中使用 Adjust SDK，请将下列行添加至 `AppDelegate.h` 文件：
 
 ```objc
 #import <AdjustSdkIm/Adjust.h>
 ```
 
-</Tab>
+</Tab> </Tabs> </Tab> <tab title="框架导入" sync="framework"> 
 
-</Tabs>
+在您的项目文件中添加相关导入语句：
+<tabs> <tab title="Swift" sync="swift"> 
 
-</Tab>
-
-<Tab title="Framework import" sync="framework">
-
-Add the relevant import statements in your project files:
-
-<Tabs>
-
-<Tab title="Swift" sync="swift">
-
-To import the Adjust SDK, add the following to your bridging header file:
+要导入 Adjust SDK，请将下列行添加至您的桥接标头文件：
 
 ```objc
 #import <Adjust/Adjust.h>
 ```
 
-If you use the Adjust Web Bridge, add the following to your bridging header file:
+如果您使用的是 Adjust Web Bridge，请将下列行添加至您的桥接标头文件：
 
 ```objc
 #import <AdjustSdkWebBridge/AdjustBridge.h>
 ```
 
-If you use the Adjust SDK in a tvOS app, add the following to your bridging header file:
+如果您是在 tvOS 应用中使用 Adjust SDK，请将下列行添加至桥接标头文件：
 
 ```objc
 #import <AdjustSdkTv/Adjust.h>
 ```
 
-If you use the Adjust SDK in a iMessage app, add the following to your bridging header file:
+如果您是在 iMessage 应用中使用 Adjust SDK，请将下列行添加至桥接标头文件：
 
 ```objc
 #import <AdjustSdkIm/Adjust.h>
 ```
 
-</Tab>
+</Tab> <tab title="Objective-C" sync="objc"> 
 
-<Tab title="Objective-C" sync="objc">
-
-To import the Adjust SDK, add the following to your `AppDelegate.h` file:
+要导入 Adjust SDK，请将下列行添加至您的 `AppDelegate.h` 文件：
 
 ```objc
 #import <AdjustSdk/Adjust.h>
 ```
 
-If you use the Adjust Web Bridge, add the following to your `AppDelegate.h` file:
+如果您使用的是 Adjust Web Bridge，请将下列行添加至 `AppDelegate.h` 文件：
 
 ```objc
 #import <AdjustSdkWebBridge/AdjustBridge.h>
 ```
 
-If you use the Adjust SDK in your tvOS app, add the following to your `AppDelegate.h` file:
+如果您是在 tvOS 应用中使用 Adjust SDK，请将下列行添加至 `AppDelegate.h` 文件：
 
 ```objc
 #import <AdjustSdkTv/Adjust.h>
 ```
 
-If you use the Adjust SDK in your iMessage app, add the following to your `AppDelegate.h` file:
+如果您是在 iMessage 应用中使用 Adjust SDK，请将下列行添加至 `AppDelegate.h` 文件：
 
 ```objc
 #import <AdjustSdkIm/Adjust.h>
 ```
 
-</Tab>
+</Tab> </Tabs> </Tab> </Tabs> 
 
-</Tabs>
+3\. 添加 iOS 框架
+--------------
 
-</Tab>
+Adjust SDK 依赖各种框架读取具体设备信息。要启用设备信息读取，请添加对应框架，并将其标记为 **可选** 。
+<table height="500"> 
 
-</Tabs>
+|                 框架                  |                               描述                                |                             注意事项                             |
+|-------------------------------------|-----------------------------------------------------------------|--------------------------------------------------------------|
+| `AdSupport.framework`               | 允许读取设备 IDFA。对于操作系统为 iOS 14 及更早版本的设备，添加该框架也会允许读取 LAT 信息。         | 如果您的应用属于 "儿童" 类别，那么请勿添加该框架。                                  |
+| `AdServices.framework`              | 处理 ASA 归因。                                                      |                                                              |
+| `StoreKit.framework`                | 允许访问 SKAdNetwork 框架。                                            | 若要运行 Adjust 处理 iOS 14 或更早操作版本设备上与 SKAdNetwork 的通讯，那么必须添加该框架。 |
+| `AppTrackingTransparency.framework` | 若要允许 Adjust SDK 包装用户跟踪许可对话，并读取 iOS 14 或更新操作版本设备的许可响应，那么必须添加该框架。 | 如果您的应用属于 "儿童" 类别，那么请勿添加该框架                                   |
+| `WebKit.framework`                  | 允许在您的应用程序中使用 web 视图。                                            | 只有在应用使用 web 视图时才有必要                                          |
 
-## 3\. Add iOS frameworks
+</Table> 
 
-The Adjust SDK depends on frameworks to access certain device information. To enable reading this information, add the frameworks and mark them as **optional** .
-
-<Table height="500">
-
-| 框架                                | 描述                                                                                                                                  | 注意事项                                                                                                        |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `AdSupport.framework`               | Enables access to the device's IDFA. Also enables access to LAT information on devices running iOS 14 or earlier.                     | Don't add this framework if your app targets the "Kids" category.                                               |
-| `AdServices.framework`              | Handles ASA attribution.                                                                                                              |                                                                                                                 |
-| `StoreKit.framework`                | Enables access to the SKAdNetwork framework.                                                                                          | Required to allow the Adjust SDK to handle communication with SKAdNetwork on devices running iOS 14 or earlier. |
-| `AppTrackingTransparency.framework` | Required to allow the Adjust SDK to wrap user tracking consent dialog and access consent responses on devices running iOS 14 or later | Don't add this framework if your app targets the "Kids" category                                                |
-| `WebKit.framework`                  | Enables the use of web views in your application                                                                                      | Only required if your app uses web views                                                                        |
-
-</Table>
-
-## 4\. Initialize the Adjust SDK
+4\. 初始化 Adjust SDK
+-------------------
 
 要初始化 Adjust SDK，您需要创建一个 config 对象。该对象包含控制 Adjust SDK 行为的配置选项。发送以下参数能够保证最少的设置：
 
--  `appToken`: Your [app's token](https://help.adjust.com/zh/article/app-settings#view-your-app-token).
--  `environment`: SDK 运行的环境。将其发送至`ADJEnvironmentSandbox`。
+* `appToken`: [应用识别码](https://help.adjust.com/en/article/app-settings#view-your-app-token)。
+* `environment`: SDK 运行的环境。将其发送至`ADJEnvironmentSandbox`。
 
 要使用此 config 对象初始化 Adjust SDK：
 
-1. Declare your config object in the `didFinishLaunching` or `didFinishLaunchingWithOptions` method of your app delegate.
-2. Set the `logLevel` property on your config object to `ADJLogLevelVerbose` \(verbose\). You must enable verbose logging to retrieve device information.
+1. 在您应用委托的 `didFinishLaunching` 或 `didFinishLaunchingWithOptions` 方法中声明 config 对象。
+2. 将 config 对象的 `logLevel` 属性设置为 `ADJLogLevelVerbose` \(详细\)。您必须启用 verbose 日志记录，才能调取设备信息。
 3. 将 config 对象作为参数发送至`appDidLaunch`方法。
 
-<Tabs>
-
-<Tab title="Swift" sync="swift">
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -313,9 +263,7 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 }
 ```
 
-</Tab>
-
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 #import "Adjust.h"
@@ -333,32 +281,26 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 }
 ```
 
-</Tab>
+</Tab> </Tabs> 
 
-</Tabs>
+### 设置您的 iMessage 应用
 
-### Set up your iMessage app
+<callout type="important"> 
 
-<Callout type="important">
+iMessage 拓展拥有不同的 Bundle ID，并在不同的内容空间中运行。如果您在两者的配置中使用了同样的识别码，那么 SDK 就会返回混合数据。请务必在 Adjust 控制面板中为 iMessage 应用创建单独的应用，然后使用单独的识别码初始化 Adjust SDK。
+</Callout> 
 
-iMessage extensions have different bundle identifiers to apps and run in a different memory space. If you configure both with the same token, the SDK returns mixed data. You must create a separate app in the Adjust dashboard for your iMessage app and use its token when initializing the Adjust SDK.
+如果您的应用面向 iMessage，那么您还需要进行下列额外的配置：
 
-</Callout>
+* 如果您是从源代码添加 Adjust SDK，请确保您已在 iMessage 项目中添加了预处理宏 `ADJUST_IM=1`。
+* 如果您将 SDK 作为框架添加，请务必在 **Build Phases** 项目设置中添加 **New Copy Files Phase** 。将 `AdjustSdkIm.framework` 复制到 Frameworks 文件夹。
 
-If your app targets iMessage, there are some additional settings you must configure:
+#### 记录会话
 
--  If you added the Adjust SDK from source, add the `ADJUST_IM=1` pre\-processor macro to your iMessage project settings.
--  If you added the Adjust SDK as a framework, make sure to add **New Copy Files Phase** in your **Build Phases** project settings. Set the `AdjustSdkIm.framework` to be copied to the Frameworks folder.
+Adjust SDK 并未订阅 iMessage 应用中的 iOS 系统通知。要在应用进入或离开前台时通知 Adjust SDK，请调用 `trackSubsessionStart` 和 `trackSubsessionEnd` 方法。
 
-#### Record sessions
-
-The Adjust SDK isn't subscribed to iOS system notifications in iMessage apps. To notify the Adjust SDK when your app has entered or left the foreground, you need to call the `trackSubsessionStart` and `trackSubsessionEnd` methods.
-
-Add a call to `trackSubsessionStart` inside your `didBecomeActiveWithConversation:` method:
-
-<Tabs>
-
-<Tab title="Swift" sync="swift">
+在 `didBecomeActiveWithConversation:` 方法中添加对 `trackSubsessionStart` 的调用：
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 func didBecomeActive(with conversation: MSConversation) {
@@ -370,9 +312,7 @@ func didBecomeActive(with conversation: MSConversation) {
 }
 ```
 
-</Tab>
-
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 -(void)didBecomeActiveWithConversation:(MSConversation *)conversation {
@@ -384,15 +324,10 @@ func didBecomeActive(with conversation: MSConversation) {
 }
 ```
 
-</Tab>
+</Tab> </Tabs> 
 
-</Tabs>
-
-Add a call to `trackSubsessionEnd` inside your `willResignActiveWithConversation:` method:
-
-<Tabs>
-
-<Tab title="Swift" sync="swift">
+在 `willResignActiveWithConversation:` 方法中添加对 `trackSubsessionEnd` 的调用：
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 func willResignActive(with conversation: MSConversation) {
@@ -408,9 +343,7 @@ func willResignActive(with conversation: MSConversation) {
 }
 ```
 
-</Tab>
-
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 -(void)willResignActiveWithConversation:(MSConversation *)conversation {
@@ -426,25 +359,21 @@ func willResignActive(with conversation: MSConversation) {
 }
 ```
 
-</Tab>
+</Tab> </Tabs> 
 
-</Tabs>
+### 设置 Adjust Web Bridge
 
-### Set up the Adjust Web Bridge
+如果您的应用使用的是 web 视图，请务必设置 Adjust Web Bridge，以记录 web 视图中的信息。
 
-If your app uses web views, you must set up the Adjust Web Bridge to record activity inside the web view.
+#### 将 `AdjustBridge` 集成到您的应用中
 
-#### Integrate `AdjustBridge` into your app
+在项目导航中：
 
-In the Project Navigator:
+1. 打开您的视图控制器 \(View Controller\) 源文件。
+2. 在文件顶端添加 `import` 导入语句。
+3. 在 Web View Delegate 的 `viewDidLoad` 或 `viewWillAppear` 方法中，添加下列 `AdjustBridge` 调用：
 
-1. Open the source file of your View Controller.
-2. Add the `import` statement at the top of the file.
-3. Add the following calls to `AdjustBridge` in the `viewDidLoad` or `viewWillAppear` method of your Web View Delegate:
-
-<Tabs>
-
-<Tab title="Swift" sync="swift">
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 func viewWillAppear(_ animated: Bool) {
@@ -457,9 +386,7 @@ func viewWillAppear(_ animated: Bool) {
 }
 ```
 
-</Tab>
-
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 #import "AdjustBridge.h"
@@ -477,19 +404,14 @@ func viewWillAppear(_ animated: Bool) {
 // Your code here
 ```
 
-</Tab>
+</Tab> </Tabs> 
 
-</Tabs>
+您也可以使用其中包含的 `WebViewJavascriptBridge`。为此，请为 `AdjustBridge` 实例设置 `bridgeRegister` 属性。请查看关于库的文档了解使用方法。
 
-You can also use the included `WebViewJavascriptBridge` by setting the `bridgeRegister` property of your `AdjustBridge` instance. See the [library's documentation](https://github.com/marcuswestin/WebViewJavascriptBridge#usage) for usage information.
+#### 将 `AdjustBridge` 集成进您的 web 视图
 
-#### Integrate `AdjustBridge` into your web view
-
-To use the Javascript bridge in your web view, you need to configure the bridge. Add the following Javascript code to initialize the Adjust iOS web bridge:
-
-<Tabs>
-
-<Tab title="Javascript" sync="js">
+要在 web 视图上使用 Javascript bridge，您就需要配置 bridge。请添加下列 Javascript 代码，初始化 Adjust iOS web bridge：
+<tabs> <tab title="Javascript" sync="js"> 
 
 ```js
 function setupWebViewJavascriptBridge(callback) {
@@ -523,32 +445,31 @@ setupWebViewJavascriptBridge(function (bridge) {
 });
 ```
 
-</Tab>
+</Tab> </Tabs> 
 
-</Tabs>
+5\. 配置 Adjust SDK
+------------------
 
-## 5\. Configure the Adjust SDK
+添加 config 对象和初始化逻辑后，您可以配置 Adjust SDK 来记录应用不同部分的信息。查看 SDK 配置和记录功能指南，设置您想要记录的信息。
 
-Once you've added your config object and initialization logic, you can configure the Adjust SDK to record information about different parts of your app. Check out the guides for the SDK's configuration features and recording features to set up exactly what you want to record.
+6\. 测试 Adjust SDK
+------------------
 
-## 6\. Test the Adjust SDK
+完成配置，能通过 Adjust SDK 记录应用相关信息后，您就可以进行测试了。Adjust 为您提供[测试控制台](https://help.adjust.com/en/article/testing-console)和[设备 ID](https://help.adjust.com/en/article/device-api)，方便您测试应用。
 
-Now that you've configured the Adjust SDK to record information about your app, it's time to test it. Adjust offers a [testing console](https://help.adjust.com/zh/article/testing-console) and a [Device API](https://help.adjust.com/zh/article/device-api) to help you test your app.
+请按照[测试指南](https://help.adjust.com/en/article/test-the-adjust-sdk)中的说明操作，确保您的应用能将预期值发送给 Adjust。
 
-Follow the [testing guide](https://help.adjust.com/zh/article/test-the-adjust-sdk) to make sure Adjust receives the expected values back from your app.
+7\. 针对生产环境构建应用
+---------------
 
-## 7\. Build your app for production
+完成测试后，您就可以针对生产环境构建应用了。为此，请更新您的 config 对象。
 
-Once you've finished your testing, you can build your app for production. To do this, you need to update your config object.
+更新以下值：
 
-Update the following values:
+* `environment`：将其发送至 `ADJEnvironmentProduction`。
+* `logLevel`：选择[日志级别](/en/sdk/ios/configuration#set-your-logging-level)，或在 config 对象中传送 `allowSuppressLogLevel` 参数，以完全禁用日志记录。
 
--  `environment`: Set this to `ADJEnvironmentProduction`.
--  `logLevel`: Choose a [logging level](/zh/sdk/ios/configuration#set-your-logging-level), or disable logging completely by passing an `allowSuppressLogLevel` argument in your config object.
-
-<Tabs>
-
-<Tab title="Swift" sync="swift">
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -566,9 +487,7 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 }
 ```
 
-</Tab>
-
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 #import "Adjust.h"
@@ -587,15 +506,10 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 }
 ```
 
-</Tab>
+</Tab> </Tabs> 
 
-</Tabs>
-
-You can use `Xcode`'s build flags to dynamically update your config depending on whether you create a debug build or a production build.
-
-<Tabs>
-
-<Tab title="Swift" sync="swift">
+您可以使用 `Xcode` 版本标记 \(flag\)，根据您创建的版本 \(调试或生产版本\) 情况动态更新 config。
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -623,9 +537,7 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 }
 ```
 
-</Tab>
-
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 #import "Adjust.h"
@@ -653,6 +565,5 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 }
 ```
 
-</Tab>
+</Tab> </Tabs>
 
-</Tabs>
