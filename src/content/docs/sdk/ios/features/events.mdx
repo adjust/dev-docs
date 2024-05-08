@@ -114,7 +114,7 @@ class ViewControllerSwift: UIViewController {
 
 @interface ViewControllerObjC ()
 
-@property (weak, nonatomic) IBOutlet UIButton *btnRecordSimpleEvent;
+@property (weak, nonatomic) IBOutlet UIButton *btnRecordDeduplicatedEvent;
 
 @end
 
@@ -142,8 +142,8 @@ class ViewControllerSwift: UIViewController {
 
             Adjust.appDidLaunch(adjustConfig);
 
-            var btnRecordSimpleEvent = document.getElementById('btnRecordSimpleEvent')
-            btnRecordSimpleEvent.onclick = function(e) {
+            var btnRecordDeduplicatedEvent = document.getElementById('btnRecordDeduplicatedEvent')
+            btnRecordDeduplicatedEvent.onclick = function(e) {
                   e.preventDefault()
                   var adjustEvent = new AdjustEvent('g3mfiw')
                   Adjust.trackEvent(adjustEvent)
@@ -152,7 +152,7 @@ class ViewControllerSwift: UIViewController {
       </script>
       <div id="buttons">
          <div style="width:300px;height:35px;text-align:center;">
-            <button id="btnRecordSimpleEvent">Record simple event</button>
+            <button id="btnRecordDeduplicatedEvent">Record simple event</button>
          </div>
       </div>
    </body>
@@ -164,7 +164,7 @@ class ViewControllerSwift: UIViewController {
 
 ```txt collapse={6-40} title="Event log"
 Path:      /event
-ClientSdk: ios4.38.0
+ClientSdk: ios$IOS_VERSION
 Parameters:
   app_token        2fm9gkqubvpc
   app_version      1.0
@@ -337,7 +337,7 @@ class ViewControllerSwift: UIViewController {
 
 ```txt title="Event log" {7}
 Path:      /event
-ClientSdk: ios4.38.0
+ClientSdk: ios$IOS_VERSION
 Parameters:
   environment      sandbox
   event_count      3
@@ -389,6 +389,139 @@ ADJEvent *event = [ADJEvent eventWithEventToken::@"your-event-token"];
 
 </Tab>
 </Tabs>
+
+## Deduplicate revenue events
+
+```objc title="Method signature"
+- (void)setTransactionId:(nonnull NSString *)transactionId;
+```
+
+You can pass an optional identifier to avoid recording duplicate events. The SDK stores the last ten identifiers and skips revenue events with duplicate transaction IDs.
+
+To set the identifier, assign your transaction ID to the `setTransactionId` property of your event instance.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift {2}
+let event = ADJEvent(eventToken: "abc123")
+event?.setTransactionId(transaction.transactionIdentifier)
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc {2}
+ADJEvent *event = [ADJEvent eventWithEventToken:@"abc123"];
+[event setTransactionId:transaction.transactionIdentifier];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js {2}
+var adjustEvent = new AdjustEvent(eventToken);
+adjustEvent.setTransactionId(orderId);
+Adjust.trackEvent(adjustEvent);
+```
+
+</Tab>
+</Tabs>
+
+### Example
+
+This example shows how to record an event with the token `g3mfiw` whenever a user interacts with a button. The function sets the `uniqueId` to `5e85484b-1ebc-4141-aab7-25b869e54c49` using the `setTransactionId` method.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+import Adjust
+import UIKit
+
+class ViewControllerSwift: UIViewController {
+   @IBOutlet weak var btnRecordEventSimple: UIButton?
+
+   @IBAction func btnRecordEventSimple(_sender: UIButton) {
+      let event = ADJEvent(eventToken: "g3mfiw");
+      event.setTransactionId("5e85484b-1ebc-4141-aab7-25b869e54c49")
+      Adjust.trackEvent(event);
+   }
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objective-c
+#import "Adjust.h"
+#import "Constants.h"
+#import "ViewControllerObjC.h"
+
+@interface ViewControllerObjC ()
+
+@property (weak, nonatomic) IBOutlet UIButton *btnRecordDeduplicatedEvent;
+
+@end
+
+@implementation ViewControllerObjC
+
+- (IBAction)clickRecordSimpleEvent:(UIButton *)sender {
+    ADJEvent *event = [ADJEvent eventWithEventToken: @"g3mfiw"];
+    [event setTransactionId: @"5e85484b-1ebc-4141-aab7-25b869e54c49"]
+    [Adjust trackEvent:event];
+}
+
+@end
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```html
+<html>
+   <body>
+      <script>
+         setupWebViewJavascriptBridge(function(bridge) {
+            let adjustConfig = new AdjustConfig('2fm9gkqubvpc', AdjustConfig.EnvironmentSandbox);
+            adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
+
+            Adjust.appDidLaunch(adjustConfig);
+
+            var btnRecordDeduplicatedEvent = document.getElementById('btnRecordDeduplicatedEvent')
+            btnRecordDeduplicatedEvent.onclick = function(e) {
+                  e.preventDefault()
+                  var adjustEvent = new AdjustEvent('g3mfiw')
+                  adjustEvent.setTransactionId("5e85484b-1ebc-4141-aab7-25b869e54c49")
+                  Adjust.trackEvent(adjustEvent)
+            }
+         }
+      </script>
+      <div id="buttons">
+         <div style="width:300px;height:35px;text-align:center;">
+            <button id="btnRecordDeduplicatedEvent">
+               Record dedupicated event
+            </button>
+         </div>
+      </div>
+   </body>
+</html>
+```
+
+</Tab>
+</Tabs>
+
+```txt title="Event log" {7}
+Path:      /event
+ClientSdk: ios$IOS_VERSION
+Parameters:
+  environment      sandbox
+  event_count      3
+  event_token      abc123
+  transaction_id   5e85484b-1ebc-4141-aab7-25b869e54c49
+```
 
 ## Add callback parameters
 
@@ -555,7 +688,7 @@ class ViewControllerSwift: UIViewController {
 
 ```txt {4} title="Event log"
 Path:      /event
-ClientSdk: ios4.38.0
+ClientSdk: ios$IOS_VERSION
 Parameters:
   callback_params  {"event_token":"g3mfiw","revenue_amount":"0.05"}
   environment      sandbox
@@ -606,8 +739,8 @@ ADJEvent *event = [ADJEvent eventWithEventToken:@"abc123"];
 
 ```js {2,3}
 var adjustEvent = new AdjustEvent(eventToken);
-adjustEvent.addPartnerParameter('key', 'value');
-adjustEvent.addPartnerParameter('foo', 'bar');
+adjustEvent.addPartnerParameter("key", "value");
+adjustEvent.addPartnerParameter("foo", "bar");
 Adjust.trackEvent(adjustEvent);
 ```
 
@@ -705,7 +838,7 @@ class ViewControllerSwift: UIViewController {
 
 ```txt title="Event log" {4}
 Path:      /event
-ClientSdk: ios4.38.0
+ClientSdk: ios$IOS_VERSION
 Parameters:
   partner_params  {"product_id":"29","user_id":"835"}
   environment      sandbox
@@ -745,9 +878,9 @@ ADJEvent *event = [ADJEvent eventWithEventToken:@"abc123"];
 <Tab title="Javascript" sync="js">
 
 ```js {2}
-var adjustEvent = new AdjustEvent('abc123')
-adjustEvent.setCallbackId('Your-Custom-ID')
-Adjust.trackEvent(adjustEvent)
+var adjustEvent = new AdjustEvent("abc123");
+adjustEvent.setCallbackId("Your-Custom-ID");
+Adjust.trackEvent(adjustEvent);
 ```
 
 </Tab>
@@ -838,7 +971,7 @@ class ViewControllerSwift: UIViewController {
 
 ```txt title="Event log" {4}
 Path:      /event
-ClientSdk: ios4.38.0
+ClientSdk: ios$IOS_VERSION
 Parameters:
   callback_id      f2e728d8-271b-49ab-80ea-27830a215147
   environment      sandbox
