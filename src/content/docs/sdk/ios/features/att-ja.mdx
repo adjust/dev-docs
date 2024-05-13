@@ -1,29 +1,31 @@
 ---
 title: "App Tracking Transparencyの設定"
 description: "AppleのApp Tracking Transparencyフレームワークを使用するようにアプリを設定する"
-slug: "en/sdk/ios/features/att"
+slug: "ja/sdk/ios/features/att"
 ---
+
 広告識別子（IDFA）を記録したい場合は、ユーザーの許諾を得るためのプロンプトを表示する必要があります。これを行うには、アプリにAppleのApp Tracking Transparency（ATT）frameworkを組み込む必要があります。Adjust SDKはユーザーの許諾状況を保存し、リクエストごとにAdjustサーバーに送信します。
 
-承認ステータス
--------
+## 承認ステータス
 
-<table> 
+<Table>
 
-|                    ステータス（Status）                    | コード |                 説明                  |
-|-----------------------------------------------------|-----|-------------------------------------|
-| `ATTrackingManagerAuthorizationStatusNotDetermined` | `0` | ユーザーがアクセスプロンプトに応答していない。             |
-| `ATTrackingManagerAuthorizationStatusRestricted`    | `1` | アプリ関連データへのアクセスがデバイスレベルでブロックされている    |
-| `ATTrackingManagerAuthorizationStatusDenied`        | `2` | ユーザーがデバイストラッキングによるアプリ関連データへのアクセスを拒否 |
-| `ATTrackingManagerAuthorizationStatusAuthorized`    | `3` | ユーザーがデバイストラッキングによるアプリ関連データへのアクセスを承認 |
+| ステータス（Status）                                | コード | 説明                                                                   |
+| --------------------------------------------------- | ------ | ---------------------------------------------------------------------- |
+| `ATTrackingManagerAuthorizationStatusNotDetermined` | `0`    | ユーザーがアクセスプロンプトに応答していない。                         |
+| `ATTrackingManagerAuthorizationStatusRestricted`    | `1`    | アプリ関連データへのアクセスがデバイスレベルでブロックされている       |
+| `ATTrackingManagerAuthorizationStatusDenied`        | `2`    | ユーザーがデバイストラッキングによるアプリ関連データへのアクセスを拒否 |
+| `ATTrackingManagerAuthorizationStatusAuthorized`    | `3`    | ユーザーがデバイストラッキングによるアプリ関連データへのアクセスを承認 |
 
-</Table> <callout type="note"> 
+</Table>
+
+<Callout type="note">
 
 SDKがATTステータスを取得できない場合、`-1`のステータスコードを受け取る可能性があります。
-</Callout> 
 
-アプリトラッキング承認ラッパー
----------------
+</Callout>
+
+## アプリトラッキング承認ラッパー
 
 ```objc
 + (void)requestTrackingAuthorizationWithCompletionHandler:(void (^_Nullable)(NSUInteger status))completion;
@@ -34,10 +36,16 @@ Adjust SDKには、[Appleの`requestTrackingAuthorizationWithCompletionHandler`�
 コールバックメソッドは、ユーザーが同意ダイアログに応答した時にトリガーされ、ユーザーの同意ステータスコードをAdjustサーバーに送信します。コールバック関数内で各ステータスコードに対するレスポンスを定義することができます。
 
 トラッキング リクエスト ダイアログのテキスト内容を特性する必要があります。これを行うには、`Info.plist`ファイルで`NSUserTrackingUsageDescription`キーにテキストを追加します。
-<callout type="tip"> 
+
+<Callout type="tip">
 
 Adjust SDKは、カスタムプロンプトを使用した場合、同意ステータスも記録します。初期化前にプロンプトを表示した場合、SDKはインストールイベントと共にステータスを送信します。プロンプトを初期化後に表示した場合は、SDKはユーザーが更新した後に、即時にAdjustサーバーにステータスを送信します。
-</Callout> <tabs> <tab title="Swift" sync="swift"> 
+
+</Callout>
+
+<Tabs>
+
+<Tab title="Swift" sync="swift">
 
 ```swift
 Adjust.requestTrackingAuthorization() { status in
@@ -60,7 +68,9 @@ Adjust.requestTrackingAuthorization() { status in
 }
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 [Adjust requestTrackingAuthorizationWithCompletionHandler:^(NSUInteger status) {
@@ -81,78 +91,95 @@ Adjust.requestTrackingAuthorization() { status in
 }];
 ```
 
-</Tab> </Tabs> 
+</Tab>
 
-現在の承認ステータスを取得
--------------
+</Tabs>
+
+## 現在の承認ステータスを取得
 
 ```objc
 + (int)appTrackingAuthorizationStatus;
 ```
 
 ユーザーの現在の認証ステータスはいつでも取得することができます。`getAppTrackingAuthorizationStatus`メソッドを呼び出し、 **整数** で認証ステータスコードを返してください。
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+
+<Tab title="Swift" sync="swift">
 
 ```swift
 let authorizationStatus = Adjust.appTrackingAuthorizationStatus();
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 int authorizationStatus = [Adjust appTrackingAuthorizationStatus];
 ```
 
-</Tab> <tab title="Javascript" sync="js"> 
+</Tab>
+
+<Tab title="Javascript" sync="js">
 
 ```js
 var authorizationStatus = Adjust.appTrackingAuthorizationStatus();
 ```
 
-</Tab> </Tabs> 
+</Tab>
 
-承認ステータスの変更を確認する
----------------
+</Tabs>
+
+## 承認ステータスの変更を確認する
 
 ```objc
 + (void)checkForNewAttStatus;
 ```
 
 カスタムATTプロンプトを使用する場合、ユーザーの認証ステータスに変更があった場合、Adjust SDKに通知する必要があります。`checkForNewAttStatus`メソッドを呼び出し、Adjustサーバーに認証ステータスを送信してください。
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+
+<Tab title="Swift" sync="swift">
 
 ```swift
 Adjust.checkForNewAttStatus();
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 [Adjust checkForNewAttStatus];
 ```
 
-</Tab> </Tabs> 
+</Tab>
 
-iOS 17の同意への対応
--------------
+</Tabs>
 
-<minorversion added="v4.38.0"> 
+## iOS 17の同意への対応
+
+<MinorVersion added="v4.38.0">
 
 iOS 17のリリースに伴い、Appleは開発者がサードパーティに送信するデータに関する新しいルールを導入しました。 開発者がAppleのプライバシーガイドラインに準拠していることを容易に証明できるようにするために、Adjust SDKは **同意する** ユーザーと **同意しない** ユーザーに対して2つの個別のエンドポイントを使用します。
-</MinorVersion> 
+
+</MinorVersion>
 
 デフォルトでは、Adjust SDKは`analytics.adjust.com`エンドポイントを使用して、 **確率的モデリング** 向けに限られたデータセットをAdjustのサーバーに送信します。このエンドポイントは次の情報を受け取り **ません** 。
 
-* `idfa`：広告主のデバイスID（IDFA）。
-* `started_at`：デバイスの起動時間。
+-  `idfa`：広告主のデバイスID（IDFA）。
+-  `started_at`：デバイスの起動時間。
 
-ユーザーが[ATTに同意](#app-tracking-authorization-wrapper)した場合にのみ、Adjust SDKは **確定的アトリビューション** のためのidfaとstart\_atの両方のプロパティにアクセスできるようになり、 `consent.adjust.com`に完全なペイロードを送信します。
+ユーザーが[ATTに同意](#app-tracking-authorization-wrapper)した場合にのみ、Adjust SDKは **確定的アトリビューション** のためのidfaとstart_atの両方のプロパティにアクセスできるようになり、 `consent.adjust.com`に完全なペイロードを送信します。
 
-これらのエンドポイントはいずれも、全ての[URL戦略](/en/sdk/ios/features/privacy#data-residency)で利用可能です。
-<table> 
+これらのエンドポイントはいずれも、全ての[URL戦略](/ja/sdk/ios/features/privacy#data-residency)で利用可能です。
 
-|      urlStrategy      |        非同意のエンドポイント        |       同意したエンドポイント       |
-|-----------------------|---------------------------|-------------------------|
+<Table>
+
+| urlStrategy           | 非同意のエンドポイント    | 同意したエンドポイント  |
+| --------------------- | ------------------------- | ----------------------- |
 | `ADJDataResidencyEU`  | `analytics.eu.adjust.com` | `consent.eu.adjust.com` |
 | `ADJDataResidencyTR`  | `analytics.tr.adjust.com` | `consent.tr.adjust.com` |
 | `ADJDataResidencyUS`  | `analytics.us.adjust.com` | `consent.us.adjust.com` |
@@ -161,4 +188,3 @@ iOS 17のリリースに伴い、Appleは開発者がサードパーティに送
 | `ADJUrlStrategyIndia` | `analytics.adjust.net.in` | `consent.adjust.net.in` |
 
 </Table>
-
