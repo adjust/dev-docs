@@ -1,0 +1,177 @@
+---
+title: "コールバックの設定"
+description: "SDKがAdjustに情報を送信する時に関数をトリガーするコールバックを設定します。"
+slug: "en/sdk/windows/features/callbacks"
+---
+SDKがAdjustに情報を送信する時に関数をトリガーするコールバックを設定します。コールバックはセッションとイベントに対して設定できます。
+<callout type="important"> 
+
+SDKを初期化する **前** にコールバックパラメーターを登録することが必要です。
+</Callout> 
+
+セッションコールバック
+-----------
+
+SDKがセッション情報を送信した時に関数をトリガーする、セッションコールバックを設定します。 **Success** コールバックと **failure** コールバックが作成できます。 **Success** コールバックは、SDKが情報をAdjustのサーバーに送信する時にトリガーします。 **Failure** コールバックは、SDKが情報を送信している間に問題が発生した際にトリガーします。
+
+セッションコールバックは、レスポンス データ オブジェクトにアクセスできます。そのプロパティをコールバック関数内で使用することが可能です。
+<table> 
+
+|     プロパティ      |         データタイプ          |             説明             |
+|----------------|-------------------------|----------------------------|
+| `Message`      | 文字列                     | サーバーからのメッセージまたはSDKのエラーログ   |
+| `Timestamp`    | 文字列                     | Adjustのサーバーからのタイムスタンプ      |
+| `Adid`         | 文字列                     | Adjustから提供されるユニークデバイスID    |
+| `JsonResponse` | Dictionary <文字列、オブジェクト> | サーバーからのレスポンスを含むJSONオブジェクト  |
+| `WillRetry`    | Boolean                 | 失敗したパッケージの再送を試みるかどうかを示します。 |
+
+</Table> 
+
+### Successコールバック
+
+```cs
+public Action<adjustsessionsuccess id="sl-md0000000"> SessionTrackingSucceeded { get; set; }
+```
+
+SDKがセッションを記録した時に関数をトリガーする、successコールバックを設定します。
+
+```cs
+var config = new AdjustConfig(appToken, environment,
+   msg => System.Diagnostics.Debug.WriteLine(msg), LogLevel.Verbose);
+config.SessionTrackingSucceeded = adjustSessionSuccess =>
+{
+   //...
+};
+Adjust.ApplicationLaunching(config);
+```
+
+#### 例
+
+この例では、SDKがセッションを記録したタイムスタンプをログに記録する方法を示します。
+
+```cs
+var config = new AdjustConfig(appToken, environment,
+   msg => System.Diagnostics.Debug.WriteLine(msg), LogLevel.Verbose);
+config.SessionTrackingSucceeded = adjustSessionSuccess =>
+{
+   System.Diagnostics.Debug.WriteLine(adjustSessionSuccess.Timestamp)
+};
+Adjust.ApplicationLaunching(config);
+```
+
+### Failureコールバック
+
+```cs
+public Action<adjustsessionfailure id="sl-md0000000"> SessionTrackingFailed { get; set; }
+```
+
+SDKがセッションの記録に失敗した時に関数をトリガーする、failureコールバックを設定します。
+
+```cs
+var config = new AdjustConfig(appToken, environment,
+   msg => System.Diagnostics.Debug.WriteLine(msg), LogLevel.Verbose);
+config.EventTrackingFailed = adjustEventFailure =>
+{
+   //...
+};
+Adjust.ApplicationLaunching(config);
+```
+
+#### 例
+
+この例では、セッションの失敗メッセージをログに記録する方法を示します。
+
+```cs
+var config = new AdjustConfig(appToken, environment,
+   msg => System.Diagnostics.Debug.WriteLine(msg), LogLevel.Verbose);
+config.SessionTrackingFailed = adjustSessionFailure =>
+{
+   System.Diagnostics.Debug.WriteLine(adjustSessionFailure.Message)
+};
+Adjust.ApplicationLaunching(config);
+```
+
+イベントコールバック
+----------
+
+SDKがイベント情報を送信した時に関数をトリガーする、イベントコールバックを設定します。 **Success** コールバックと **failure** コールバックが作成できます。 **Success** コールバックは、SDKが情報をAdjustのサーバーに送信する時にトリガーします。 **Failure** コールバックは、SDKが情報を送信している間に問題が発生した際にトリガーします。
+
+イベントコールバックは、レスポンス データ オブジェクトにアクセスできます。そのプロパティをコールバック関数内で使用することが可能です。
+<table> 
+
+|     プロパティ      |         データタイプ          |              説明              |
+|----------------|-------------------------|------------------------------|
+| `Message`      | 文字列                     | サーバーからのメッセージまたはSDKのエラーログ     |
+| `Timestamp`    | 文字列                     | Adjustのサーバーからのタイムスタンプ        |
+| `Adid`         | 文字列                     | Adjustから提供されるユニークデバイスID      |
+| `JsonResponse` | Dictionary <文字列、オブジェクト> | サーバーからのレスポンスを含むJSONオブジェクト    |
+| `EventToken`   | 文字列                     | イベントトークン                     |
+| `CallbackId`   | 文字列                     | イベントオブジェクトに設定されたカスタムコールバックID |
+| `WillRetry`    | Boolean                 | 失敗したパッケージの再送を試みるかどうかを示します。   |
+
+</Table> 
+
+### Successコールバック
+
+```cs
+public Action<adjusteventsuccess id="sl-md0000000"> EventTrackingSucceeded { get; set; }
+```
+
+SDKがイベントを記録した時に関数をトリガーする、successコールバックを設定します。
+
+```cs
+var config = new AdjustConfig(appToken, environment,
+   msg => System.Diagnostics.Debug.WriteLine(msg), LogLevel.Verbose);
+config.EventTrackingSucceeded = adjustEventSuccess =>
+{
+   //...
+};
+Adjust.ApplicationLaunching(config);
+```
+
+#### 例
+
+この例では、SDKがイベントを記録したタイムスタンプをログに記録する方法を示します。
+
+```cs
+var config = new AdjustConfig(appToken, environment,
+   msg => System.Diagnostics.Debug.WriteLine(msg), LogLevel.Verbose);
+config.EventTrackingSucceeded = adjustEventSuccess =>
+{
+   System.Diagnostics.Debug.WriteLine(adjustEventSuccess.Timestamp)
+};
+Adjust.ApplicationLaunching(config);
+```
+
+### Failureコールバック
+
+```cs
+public Action<adjusteventfailure id="sl-md0000000"> EventTrackingFailed { get; set; }
+```
+
+SDKがセッションの記録に失敗した時に関数をトリガーする、failureコールバックを設定します。
+
+```cs
+var config = new AdjustConfig(appToken, environment,
+   msg => System.Diagnostics.Debug.WriteLine(msg), LogLevel.Verbose);
+config.EventTrackingFailed = adjustEventFailure =>
+{
+   //...
+};
+Adjust.ApplicationLaunching(config);
+```
+
+#### 例
+
+この例では、イベントの失敗メッセージをログに記録する方法を示します。
+
+```cs
+var config = new AdjustConfig(appToken, environment,
+   msg => System.Diagnostics.Debug.WriteLine(msg), LogLevel.Verbose);
+config.EventTrackingFailed = adjustEventFailure =>
+{
+   System.Diagnostics.Debug.WriteLine(adjustEventFailure.Message)
+};
+Adjust.ApplicationLaunching(config);
+```
+
