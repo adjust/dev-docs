@@ -1,0 +1,112 @@
+---
+title: "SKAdNetworkとconversion valueの設定"
+description: "iOSアプリのSKAdNetwork機能を設定します。"
+slug: "en/sdk/unity/features/skad"
+---
+<callout type="important"> 
+
+この機能は、iOS 14以降のiOSデバイスのみにおいて利用可能です。
+</Callout> 
+
+StoreKit AdNetwork（SKAdNetwork）は、アプリのインストールおよび再インストールアトリビューションのための、Appleのフレームワークです。SKAdNetworkのワークフローは以下のようになります：
+
+1. Appleがアトリビューション情報を収集し、関連するアドネットワークに通知します。
+2. ネットワークがこの情報をAdjustにポストバックで送信します。
+3. Adjustが[Datascape](https://help.adjust.com/en/suite/article/datascape)上にSKAdNetworkデータを表示します。
+
+SKAdNetworkの通信を無効化する
+--------------------
+
+```cs
+public void deactivateSKAdNetworkHandling();
+```
+
+<minorversion added="v4.23.0"> 
+
+Adjust SDKはv4\.23\.0以降ではデフォルトでSKAdNetworkと通信を行います。SDKは初期化時にSKAdNetworkのアトリビューションを記録します。
+</MinorVersion> 
+
+Configオブジェクトにはブーリアン値の`isSKAdNetworkHandlingActive`プロパティが含まれており、それが動作を制御します。SKAdNetworkとの通信を非有効化するには、引数なしで`deactivateSKAdNetworkHandling`メソッドを呼び出してください。
+<callout type="important"> 
+
+Adjust SDKを初期化する *前* に、`deactivateSKAdNetworkHandling`メソッドを呼び出す必要があります。
+</Callout> 
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
+//...
+adjustConfig.deactivateSKAdNetworkHandling();
+//...
+Adjust.start(adjustConfig);
+```
+
+Conversion valueを更新する
+---------------------
+
+```cs
+public static void updateConversionValue(int conversionValue);
+```
+
+Conversion valueは、SKAdNetworkでアプリ内のユーザー行動を計測するためのメカニズムです。64の条件を0～63の値に対応させ、ユーザーのインストール時にこの整数値をSKAdNetworkに送信することができます。これによって、はじめの3日間のユーザー行動に関するインサイトを取得することが可能です。
+
+Adjustでconversion valueを管理している場合、AdjustのサーバーはSDKでこの値を更新します。また、`updateConversionValue`メソッドを使用して、この値を更新することが可能です。このメソッドは[Appleの`updateConversionValue`メソッド](https://developer.apple.com/documentation/storekit/skadnetwork/3566697-updateconversionvalue)をラップしており、更新されたconversion valueを表す整数の引数を受け入れます。
+
+```cs
+Adjust.updateConversionValue(6);
+```
+
+### 例
+
+この例では、ユーザーがイベントをトリガーしたことに応じて、conversion valueを`10`に更新する方法を示しています。
+
+```cs
+public void OnButtonClick() {
+   Adjust.updateConversionValue(10);
+}
+```
+
+Conversion valueの変更を受信する
+------------------------
+
+```cs
+public void setConversionValueUpdatedDelegate(Action<int id="sl-md0000000"> conversionValueUpdatedDelegate, string sceneName = "Adjust");
+```
+
+Adjustを使用してconversion valueを管理している場合、Adjustのサーバーはconversion valueのアップデートをSDKに送信します。`setConversionValueUpdatedDelegate`メソッドを使用して、こうした変更を受信するデリゲート関数を設定できます。関数を引数としてパスしてください。
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
+//...
+adjustConfig.setConversionValueUpdatedDelegate(ConversionValueUpdatedCallback);
+//...
+Adjust.start(adjustConfig);
+```
+
+### 例
+
+この例は、conversion valueが更新されたときに以下を記録する方法です：
+
+* conversion valueのアップデートを確認するメッセージ
+* 新しいconversion value
+
+```cs
+using com.adjust.sdk;
+
+public class ExampleGUI : MonoBehaviour {
+    void OnGUI() {
+        if (GUI.Button(new Rect(0, 0, Screen.width, Screen.height), "callback")) {
+            AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
+            adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
+            adjustConfig.setConversionValueUpdatedDelegate(ConversionValueUpdatedCallback);
+
+            Adjust.start(adjustConfig);
+        }
+    }
+
+    private void ConversionValueUpdatedCallback(int conversionValue) {
+        Debug.Log("Conversion value updated. Callback received");
+        Debug.Log("Conversion value: " + conversionValue);
+    }
+}
+```
+
