@@ -56,7 +56,4 @@ export default defineConfig({
       }
     }
   },
-  experimental: {
-    contentCollectionCache: true
-  }
 });
