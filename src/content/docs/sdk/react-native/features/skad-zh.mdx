@@ -1,0 +1,129 @@
+---
+title: "设置 SKAdNetwork 和转化值"
+description: "为 iOS 应用配置 SKAdNetwork 功能。"
+slug: "zh/sdk/react-native/features/skad"
+---
+
+<Callout type="important">
+
+此功能只可用于 iOS 14 及更高版本设备。
+
+</Callout>
+
+StoreKit Ad Network \(SKAdNetwork\) 是 Apple 的归因框架，可针对应用安装和重装进行归因。SKAdNetwork 的工作流程如下：
+
+1. Apple 会收集归因信息，并通知相关广告渠道。
+2. 然后，广告渠道会通过回调将这些信息传输给 Adjust。
+3. Adjust 在 [Datascape](https://help.adjust.com/zh/suite/article/datascape) 中展示 SKAdNetwork 数据。
+
+## 关闭 SKAdNetwork 通讯
+
+```ts
+public deactivateSKAdNetworkHandling(): void
+```
+
+<MinorVersion added="v4.23.0">
+
+v4\.23\.0 及以上版本的 Adjust SDK 会默认与 SKAdNetwork 通讯。SDK 在初始化时会注册 SKAdNetwork 归因。
+
+</MinorVersion>
+
+您的 config 对象包含一个`isSKAdNetworkHandlingActive` 布尔属性，该属性控制此行为。您可以通过 no 参数调用 `deactivateSKAdNetworkHandling` 方法来禁用 SKAdNetwork 通讯。
+
+<Callout type="important">
+
+您必须在初始化 Adjust SDK _之前_ 调用 `deactivateSKAdNetworkHandling` 方法。
+
+</Callout>
+
+```jsx
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox,
+);
+//...
+adjustConfig.deactivateSKAdNetworkHandling();
+//...
+Adjust.create(adjustConfig);
+```
+
+## 更新转化值
+
+```ts
+updateConversionValue: (conversionValue: number) => void
+```
+
+转化值是用来在 SKAdNetwork 中跟踪用户行为的机制。您可以将 64 个条件映射至 0\-63 的转化值，并在用户安装时将此整数值发送至 SKAdNetwork。该信息可帮助您进一步了解用户在安装后的最初几日内是如何与应用交互的。
+
+如果您通过 Adjust 管理转化值，那么服务器会在 SDK 中更新该值。您也可以通过 `updateConversionValue` 方法更新转化值。该方法会包装 [Apple 的 `updateConversionValue` 方法](https://developer.apple.com/documentation/storekit/skadnetwork/3566697-updateconversionvalue)，接受代表更新后的转化值的整数参数。
+
+```jsx
+Adjust.updateConversionValue(6);
+```
+
+### 示例
+
+该示例展示了如何在用户触发事件后将转化值更新为 `10`。
+
+```jsx
+function _onPress_trackSimpleEvent() {
+   Adjust.updateConversionValue(10);
+}
+```
+
+## 监听转化值变更
+
+```ts
+public setConversionValueUpdatedCallbackListener(
+   callback: (conversionValue: AdjustConversionValue) => void
+): void
+```
+
+如果您使用 Adjust 管理转化值，那么 Adjust 服务器就会将转化值更新发送到 SDK。您可以设置委托函数，使用 `setConversionValueUpdatedCallbackListener` 方法监听更新。请以参数形式传送您的函数。
+
+```jsx
+const adjustConfig = new AdjustConfig(appToken, environment);
+
+adjustConfig.setConversionValueUpdatedCallbackListener(
+   function (conversionValue) {
+      console.log("Conversion value updated callback recveived");
+      console.log("Conversion value: " + conversionValue.conversionValue);
+   },
+);
+
+Adjust.create(adjustConfig);
+```
+
+### 示例
+
+该示例展示了如何在转化值更新时记录下列内容：
+
+-  确认转化值发生更新的消息
+-  新的转化值
+
+```jsx
+import { Adjust, AdjustEvent, AdjustConfig } from "react-native-adjust";
+import { AdjustOaid } from "react-native-adjust-oaid";
+
+const App: () => React$Node = () => {
+   Adjust.getSdkVersion(function (sdkVersion) {
+      console.log("Adjust SDK version: " + sdkVersion);
+   });
+
+   const adjustConfig = new AdjustConfig(
+      "{YourAppToken}",
+      AdjustConfig.EnvironmentSandbox
+   );
+
+   adjustConfig.setConversionValueUpdatedCallbackListener(function (
+      conversionValue
+   ) {
+      console.log("Conversion value updated. Callback received");
+      console.log("Conversion value: " + conversionValue.conversionValue);
+   });
+
+   Adjust.create(adjustConfig);
+};
+
+export default App;
+```
