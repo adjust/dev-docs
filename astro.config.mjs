@@ -10,6 +10,7 @@ import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-s
 import playformCompress from "@playform/compress";
 import remarkReplaceVersions from "./src/integrations/remarkReplaceVersions";
 import { fetchVersions } from "./src/integrations/fetchSdkVersions";
+import rehypeExternalLinks from 'rehype-external-links';
 
 const versions = await fetchVersions()
 
@@ -50,6 +51,24 @@ export default defineConfig({
   site: "https://dev.adjust.com/",
   markdown: {
     remarkPlugins: [remarkDefinitionList, [remarkReplaceVersions, versions]],
+    rehypePlugins: [[rehypeExternalLinks, {
+      content: {
+        type: "element",
+        tagName: "svg",
+        properties: {
+          style: "margin-bottom:5px;margin-left:0.25rem;display:inline-block;",
+          width: "16px",
+          height: "16px",
+        },
+        children: [{
+          type: "element",
+          tagName: "use",
+          properties: {
+            href: "#external-link"
+          }
+        }]
+      }
+    }]],
     remarkRehype: {
       handlers: {
         ...defListHastHandlers
