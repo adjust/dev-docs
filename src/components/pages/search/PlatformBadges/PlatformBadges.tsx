@@ -5,7 +5,8 @@ import { getSearchParams, setSearchParams } from "../utils";
 
 const platforms = [
   { label: "All platforms", value: "all" },
-  { label: "IOS", value: "ios" },
+  { label: "iOS", value: "ios" },
+  { label: "Android", value: "android" },
   { label: "Flutter", value: "flutter" },
   { label: "React Native", value: "react-native" },
   { label: "Unity", value: "unity" },
@@ -23,7 +24,7 @@ const PlatformBadges = () => {
     const { platform } = getSearchParams();
 
     setSelectedPlatform(
-      platforms.find((platformObject) => platformObject.value === platform)!
+      platforms.find((platformObject) => platformObject.value === platform)!,
     );
   });
 
@@ -37,7 +38,7 @@ const PlatformBadges = () => {
               "bg-[#255EEE] text-white":
                 selectedPlatform.value === platform.value,
               "bg-white text-black": selectedPlatform.value !== platform.value,
-            }
+            },
           )}
           key={platform.value}
           onClick={() => onPlatformChanges(platform)}
