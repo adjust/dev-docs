@@ -1,36 +1,44 @@
 ---
 title: "SKAdNetwork 및 전환값 설정"
 description: "iOS 앱의 SKAdNetwork 기능을 구성합니다."
-slug: "en/sdk/ios/features/skad"
+slug: "ko/sdk/ios/features/skad"
 ---
-<callout type="important"> 
+
+<Callout type="important">
 
 이 기능은 iOS 14 이상 버전의 기기에서만 사용할 수 있습니다.
-</Callout> 
+
+</Callout>
 
 SKAdNetwork\(StoreKit Ad Network\)는 앱 설치와 재설치를 어트리뷰션하는 Apple의 자체 어트리뷰션 프레임워크입니다. SKAdNetwork 워크플로우는 다음과 같습니다.
 
 1. Apple은 어트리뷰션 정보를 수집하고, 관련 광고 네트워크에게 이를 알립니다.
 2. 네트워크는 Adjust에 해당 정보와 함께 포스트백을 전송합니다.
-3. Adjust는 [Datascape](https://help.adjust.com/en/suite/article/datascape) 에 SKAdNetwork 데이터를 표시합니다.
+3. Adjust는 [Datascape](https://help.adjust.com/ko/suite/article/datascape) 에 SKAdNetwork 데이터를 표시합니다.
 
-SKAdNetwork 커뮤니케이션 비활성화
------------------------
+## SKAdNetwork 커뮤니케이션 비활성화
 
 ```objc
 - (void)deactivateSKAdNetworkHandling;
 ```
 
-<minorversion added="v4.23.0"> 
+<MinorVersion added="v4.23.0">
 
 Adjust SDK v4\.23\.0 및 이상 버전에서는 기본값에 따라 SKAdNetwork와 정보를 주고 받습니다.SDK는 초기화 시 SKAdNetwork의 어트리뷰션을 기록합니다.
-</MinorVersion> 
+
+</MinorVersion>
 
 config 객체에는 해당 동작을 제어하는 boolean `isSKAdNetworkHandlingActive` 속성이 포함되어 있습니다. 인수 없이 `deactivateSKAdNetworkHandling` 메서드를 호출하여 SKAdNetwork 커뮤니케이션을 비활성화할 수 있습니다.
-<callout type="important"> 
 
-`deactivateSKAdNetworkHandling` 메서드는 Adjust SDK를 초기화하기 *이전* 에 호출해야 합니다.
-</Callout> <tabs> <tab title="Swift" sync="swift"> 
+<Callout type="important">
+
+`deactivateSKAdNetworkHandling` 메서드는 Adjust SDK를 초기화하기 _이전_ 에 호출해야 합니다.
+
+</Callout>
+
+<Tabs>
+
+<Tab title="Swift" sync="swift">
 
 ```swift
 let yourAppToken = "{YourAppToken}"
@@ -44,7 +52,9 @@ adjustConfig.deactivateSKAdNetworkHandling()
 Adjust.appDidLaunch(adjustConfig)
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+
+<Tab title="Objective-C" sync="objc">
 
 ```objective-c
 *adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
@@ -54,10 +64,11 @@ Adjust.appDidLaunch(adjustConfig)
 [Adjust appDidLaunch:adjustConfig];
 ```
 
-</Tab> </Tabs> 
+</Tab>
 
-전환값 업데이트
---------
+</Tabs>
+
+## 전환값 업데이트
 
 ```objc
 + (void)updateConversionValue:(NSInteger)conversionValue;
@@ -66,24 +77,34 @@ Adjust.appDidLaunch(adjustConfig)
 Conversion values are a mechanism used to track user behavior in SKAdNetwork. You can map 64 conditions to values from `0` through `63` and send this integer value to SKAdNetwork on user install. This gives you insight into how your users interact with your app in the first few days.
 
 Adjust에서 전환값을 관리하는 경우 서버는 SDK에서 이 값을 업데이트합니다. `updateConversionValue` 메서드를 사용하여 이 값을 업데이트할 수도 있습니다. 이 메서드는 [Apple의 `updateConversionValue` 메서드](https://developer.apple.com/documentation/storekit/skadnetwork/3566697-updateconversionvalue)를 래핑하고 업데이트된 전환값을 나타내는 정수로된 인수를 받아들입니다.
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+
+<Tab title="Swift" sync="swift">
 
 ```swift
 Adjust.updateConversionValue(value)
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 [Adjust updateConversionValue:value];
 ```
 
-</Tab> </Tabs> 
+</Tab>
+
+</Tabs>
 
 ### 예시
 
 이 예시에서는 사용자가 이벤트를 트리거함에 따라 전환값을 `10`으로 업데이트하는 방법을 보여줍니다.
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+
+<Tab title="Swift" sync="swift">
 
 ```swift
 func onButtonClick() {
@@ -91,7 +112,9 @@ func onButtonClick() {
 }
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+
+<Tab title="Objective-C" sync="objc">
 
 ```objective-c
 - (void)onButtonClick {
@@ -99,33 +122,36 @@ func onButtonClick() {
 }
 ```
 
-</Tab> </Tabs> 
+</Tab>
 
-Completion Handler 설정
----------------------
+</Tabs>
+
+## Completion Handler 설정
 
 Adjust SDK는 Apple의 `updatePostbackConversionValue` 메서드에 대한 래퍼를 포함합니다. 이러한 메서드는 장애 처리 옵션 등 추가적인 SKAdNetwork 포스트백 핸들링 옵션을 포함하고 있습니다.
 
 다음은 지원되는 메서드입니다.
 
-* [`updatePostbackConversionValue(_:completionHandler:)`](https://developer.apple.com/documentation/storekit/skadnetwork/3919928-updatepostbackconversionvalue): 전환값을 업데이트하고 실패를 처리.
-* [`updatePostbackConversionValue(_:completionHandler:coarseValue:)`](https://developer.apple.com/documentation/storekit/skadnetwork/4090669-updatepostbackconversionvalue/) : fine 및 coarse 전환값을 전부 업데이트하고 실패를 처리. updatePostbackConversionValue
-* [`updatePostbackConversionValue(_:coarseValue:lockWindow:completionHandler:)`](https://developer.apple.com/documentation/storekit/skadnetwork/4097267-updatepostbackconversionvalue): fine & coarse grained 전환값을 모두 업데이트하고, 전환값 윈도우 종료 전에 포스트백을 전송할지 결정. 오류 핸들링.
+-  [`updatePostbackConversionValue(_:completionHandler:)`](https://developer.apple.com/documentation/storekit/skadnetwork/3919928-updatepostbackconversionvalue): 전환값을 업데이트하고 실패를 처리.
+-  [`updatePostbackConversionValue(_:completionHandler:coarseValue:)`](https://developer.apple.com/documentation/storekit/skadnetwork/4090669-updatepostbackconversionvalue/) : fine 및 coarse 전환값을 전부 업데이트하고 실패를 처리. updatePostbackConversionValue
+-  [`updatePostbackConversionValue(_:coarseValue:lockWindow:completionHandler:)`](https://developer.apple.com/documentation/storekit/skadnetwork/4097267-updatepostbackconversionvalue): fine & coarse grained 전환값을 모두 업데이트하고, 전환값 윈도우 종료 전에 포스트백을 전송할지 결정. 오류 핸들링.
 
-<table> 
+<Table>
 
-| 인수 \(Arguments\) |                                                           데이터 유형                                                            |                                                                                                              설명                                                                                                              |
-|--------------------|-----------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `fineValue`        | Integer                                                                                                                     | 전환값. `0` 및 `63` 사이의 값이어야 함.                                                                                                                                                                                                  |
+| 인수 \(Arguments\) | 데이터 유형                                                                                                                 | 설명                                                                                                                                                                                                                                                 |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fineValue`        | Integer                                                                                                                     | 전환값. `0` 및 `63` 사이의 값이어야 함.                                                                                                                                                                                                              |
 | `coarseValue`      | [`SKAdNetwork.CoarseConversionValue`](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue) | coarse\-grained 전환값. 앱의 설치 수가 Privacy Threshold를 충족하지 못하는 경우에 사용됩니다.<ul><li>`SKAdNetworkCoarseConversionValueLow`</li><li>`SKAdNetworkCoarseConversionValueMedium`</li><li>`SKAdNetworkCoarseConversionValueHigh`</li></ul> |
-| `lockWindow`       | Boolean                                                                                                                     | 전환값 윈도우가 종료되기 전에 포스트백을 전송할지 여부.전환값 윈도우가 종료될 때까지 기다리지 않고 시스템이 포스트백을 전송하도록 하려면 `true` 값을 사용하시기 바랍니다. 기본: `false`.                                                                                                              |
-| `completion`       | Function                                                                                                                    | 선택 사항. 전환값을 업데이트할 때 해당 메서드에 발생하는 모든 오류를 포착 및 핸들링하기 위해 제공하는 Completion Handler.핸들러를 제공하지 않는 경우 값을 `nil`로 설정하시기 바랍니다.                                                                                                          |
+| `lockWindow`       | Boolean                                                                                                                     | 전환값 윈도우가 종료되기 전에 포스트백을 전송할지 여부.전환값 윈도우가 종료될 때까지 기다리지 않고 시스템이 포스트백을 전송하도록 하려면 `true` 값을 사용하시기 바랍니다. 기본: `false`.                                                             |
+| `completion`       | Function                                                                                                                    | 선택 사항. 전환값을 업데이트할 때 해당 메서드에 발생하는 모든 오류를 포착 및 핸들링하기 위해 제공하는 Completion Handler.핸들러를 제공하지 않는 경우 값을 `nil`로 설정하시기 바랍니다.                                                               |
 
-</Table> 
+</Table>
 
 ### 예시
 
-<tabs> <tab title="Swift" sync="swift"> 
+<Tabs>
+
+<Tab title="Swift" sync="swift">
 
 ```swift
 if #available(iOS 16.1, *) {
@@ -140,7 +166,9 @@ if #available(iOS 16.1, *) {
 }
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+
+<Tab title="Objective-C" sync="objc">
 
 ```objective-c
 if (@available(iOS 16.1, *)) {
@@ -153,10 +181,11 @@ if (@available(iOS 16.1, *)) {
 }
 ```
 
-</Tab> </Tabs> 
+</Tab>
 
-전환값 변경 사항 수신
-------------
+</Tabs>
+
+## 전환값 변경 사항 수신
 
 전환값 관리에 Adjust 솔루션을 사용하는 경우, Adjust 서버는 전환값 업데이트를 SDK에 전송합니다. `adjustConversionValueUpdated` 메서드를 사용하면 델리게이트 함수를 설정하여 이러한 업데이트를 수신할 수 있습니다.
 
@@ -164,10 +193,12 @@ if (@available(iOS 16.1, *)) {
 
 이 예시에서는 전환값이 업데이트될 때 다음 항목을 로깅하는 방법을 보여줍니다.
 
-* 전환값 업데이트 확인 메세지
-* 새로운 전환값
+-  전환값 업데이트 확인 메세지
+-  새로운 전환값
 
-<tabs> <tab title="Swift" sync="swift"> 
+<Tabs>
+
+<Tab title="Swift" sync="swift">
 
 ```swift
 func adjustConversionValueUpdated(_ conversionValue: NSNumber?) {
@@ -175,7 +206,9 @@ func adjustConversionValueUpdated(_ conversionValue: NSNumber?) {
 }
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+
+<Tab title="Objective-C" sync="objc">
 
 ```objective-c
 - (void)adjustConversionValueUpdated:(NSNumber *)conversionValue {
@@ -183,26 +216,31 @@ func adjustConversionValueUpdated(_ conversionValue: NSNumber?) {
 }
 ```
 
-</Tab> </Tabs> 
+</Tab>
 
-SKAdNetwork 4\.0 콜백
---------------------
+</Tabs>
+
+## SKAdNetwork 4\.0 콜백
 
 SKAdNetwork 4\.0 포스트백은 광고주들에게 사용자 관련 인사이트를 더 많이 제공하기 위해 추가적인 정보를 포함하고 있습니다. Adjust 서버가 전환값을 업데이트할 때 이 추가 정보가 페이로드에 전송됩니다. `adjustConversionValueUpdated` 콜백 메서드로 이 정보에 액세스하실 수 있습니다.
-<table> 
 
-| 인수 \(Arguments\) |   데이터 유형   |                                                                         설명                                                                          |
-|--------------------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
-| `fineValue`        | `NSNumber` | Adjust의 서버가 전송하는 전환값                                                                                                                                |
-| `coarseValue`      | `NSString` | coarse\-grained 전환값. 앱의 설치 수가 Privacy Threshold를 충족하지 못하는 경우에 사용됩니다.<ul><li>`low`</li><li>`medium`</li><li>`high`</li></ul>                        |
-| `lockWindow`       | `NSNumber` | 전환값 윈도우가 종료되기 전에 포스트백을 전송할지 여부. `1`은 전환값 윈도우 종료 전에 포스트백이 전송됨을 의미합니다.<br/>SKAdNetwork 4\.0 포스트백에서는 `0`, 그 이전 SKAdNetwork 버전에서는 `nil`로 기본 설정되어 있습니다. |
+<Table>
 
-</Table> 
+| 인수 \(Arguments\) | 데이터 유형 | 설명                                                                                                                                                                                                                          |
+| ------------------ | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fineValue`        | `NSNumber`  | Adjust의 서버가 전송하는 전환값                                                                                                                                                                                               |
+| `coarseValue`      | `NSString`  | coarse\-grained 전환값. 앱의 설치 수가 Privacy Threshold를 충족하지 못하는 경우에 사용됩니다.<ul><li>`low`</li><li>`medium`</li><li>`high`</li></ul>                                                                          |
+| `lockWindow`       | `NSNumber`  | 전환값 윈도우가 종료되기 전에 포스트백을 전송할지 여부. `1`은 전환값 윈도우 종료 전에 포스트백이 전송됨을 의미합니다.<br/>SKAdNetwork 4\.0 포스트백에서는 `0`, 그 이전 SKAdNetwork 버전에서는 `nil`로 기본 설정되어 있습니다. |
+
+</Table>
 
 ### 예시
 
 본 예시에서 Adjust는 fine\-grained 전환값, coarse\-grained 전환값, SKAdNetwork 포스트백이 전환값 종료 전에 전송되도록 설정되었는지 여부를 로그합니다.
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+
+<Tab title="Swift" sync="swift">
 
 ```swift
 func adjustConversionValueUpdated(_ fineValue: NSNumber?, coarseValue: String?, lockWindow: NSNumber?) {
@@ -212,7 +250,9 @@ func adjustConversionValueUpdated(_ fineValue: NSNumber?, coarseValue: String?, 
 }
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+
+<Tab title="Objective-C" sync="objc">
 
 ```objective-c
 - (void)adjustConversionValueUpdated:(NSNumber *)fineValue coarseValue:(NSString *)coarseValue lockWindow:(NSNumber *)lockWindow {
@@ -222,15 +262,17 @@ func adjustConversionValueUpdated(_ fineValue: NSNumber?, coarseValue: String?, 
 }
 ```
 
-</Tab> </Tabs> 
+</Tab>
 
-다이렉트 설치 포스트백\(direct install postback\) 설정하기
-----------------------------------------------
+</Tabs>
 
-<callout type="note"> 
+## 다이렉트 설치 포스트백\(direct install postback\) 설정하기
+
+<Callout type="note">
 
 다이렉트 설치 포스트백은 SKAdNetwork 정보만 포함합니다. 캠페인 데이터와 같은 정보는 다이렉트 설치 포스트백에 포함되지 않습니다.
-</Callout> 
+
+</Callout>
 
 Adjust에 SKAdNetwork 콜백의 사본을 전송하도록 앱을 구성하면, 고객님의 애널리틱스에서 SKAdNetwork 정보를 사용하실 수 있습니다.
 
@@ -238,12 +280,12 @@ Adjust에 SKAdNetwork 콜백의 사본을 전송하도록 앱을 구성하면, �
 
 1. Xcode의 프로젝트 네비게이터\(Project navigator\)에서 **Info.plist** 를 선택하세요.
 2. 속성 리스트 에디터의 키 옆에 있는 추가 버튼\(\+\)을 선택한 후, `Return`을 누르세요.
-3. *`NSAdvertisingAttributionReportEndpoint`* 를 키 이름으로 입력하세요.
+3. _`NSAdvertisingAttributionReportEndpoint`_ 를 키 이름으로 입력하세요.
 4. 팝업 메뉴의 **Type** 을 **String** 으로 설정하세요.
-5. *`https://adjust-skadnetwork.com`* 주소를 입력하세요.
+5. _`https://adjust-skadnetwork.com`_ 주소를 입력하세요.
 
-<callout type="seealso"> 
+<Callout type="seealso">
 
 자세한 정보는 Apple의 [Configuring an Advertised App 설명서](https://developer.apple.com/documentation/storekit/skadnetwork/configuring_an_advertised_app)를 참조하시기 바랍니다.
-</Callout>
 
+</Callout>
