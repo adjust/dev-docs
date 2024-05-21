@@ -1,7 +1,11 @@
 import classNames from "classnames";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FC } from "react";
 
 import { getSearchParams, setSearchParams } from "../utils";
+
+interface PlatformBadgesProps {
+  lang: string;
+}
 
 const platforms = [
   { label: "All platforms", value: "all" },
@@ -13,20 +17,33 @@ const platforms = [
   { label: "Web", value: "web" },
 ];
 
-const PlatformBadges = () => {
+const PlatformBadges: FC<PlatformBadgesProps> = ({ lang }) => {
   const [selectedPlatform, setSelectedPlatform] = useState(platforms[0]);
 
   const onPlatformChanges = (platform: { label: string; value: string }) => {
-    setSearchParams({ platformValue: platform.value });
+    setSearchParams({ platformValue: platform.value, lang });
+    setSelectedPlatform(platform);
   };
 
   useEffect(() => {
-    const { platform } = getSearchParams();
+    const handleSearchChange = () => {
+      const { platform } = getSearchParams();
+      setSelectedPlatform(
+        platforms.find((platformObject) => platformObject.value === platform)!,
+      );
+    };
 
-    setSelectedPlatform(
-      platforms.find((platformObject) => platformObject.value === platform)!,
-    );
-  });
+    // Listen for changes to the URL
+    window.addEventListener("popstate", handleSearchChange);
+
+    // Initial load
+    handleSearchChange();
+
+    // Cleanup listener on unmount
+    return () => {
+      window.removeEventListener("popstate", handleSearchChange);
+    };
+  }, []);
 
   return (
     <div className="xs:px-2 md:px-0 flex flex-row flex-wrap gap-x-2.5 gap-y-3">
