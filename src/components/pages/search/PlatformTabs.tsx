@@ -25,12 +25,23 @@ const PlatformTabs = (props: PlatformTabProps) => {
   const [selectedTab, setSelectedTab] = useState("all");
 
   const onTabChange = (tabId: string) => {
-    setSearchParams({ categoryValue: tabId, lang: props.lang });
+    setSearchParams({ categoryValue: tabId, pageValue: 1, lang: props.lang });
   };
 
   useEffect(() => {
-    const { category } = getSearchParams();
-    setSelectedTab(category);
+    const handleSearchChange = () => {
+      const { category } = getSearchParams();
+      setSelectedTab(category);
+    };
+
+    // Listen for changes in the URL
+    window.addEventListener("popstate", handleSearchChange);
+    // Initial load
+    handleSearchChange();
+
+    return () => {
+      window.removeEventListener("popstate", handleSearchChange);
+    };
   }, []);
 
   return (

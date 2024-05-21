@@ -12,7 +12,7 @@ const SearchInput: FC<{ lang: string }> = ({ lang }) => {
   const [searchValue, setSearchValue] = useState("");
 
   const onSearchChanges = (value: string) => {
-    setSearchParams({ searchValue: value, pageValue: 1 });
+    setSearchParams({ searchValue: value, pageValue: 1, lang });
   };
   const debouncedLogUrl = useCallback(debounce(onSearchChanges, 700), []);
 
@@ -27,8 +27,19 @@ const SearchInput: FC<{ lang: string }> = ({ lang }) => {
   };
 
   useEffect(() => {
-    const { query } = getSearchParams();
-    setSearchValue(query);
+    const handleSearchChange = () => {
+      const { query } = getSearchParams();
+      setSearchValue(query);
+    };
+
+    // Listen for changes in the URL
+    window.addEventListener("popstate", handleSearchChange);
+    // Initial load
+    handleSearchChange();
+
+    return () => {
+      window.removeEventListener("popstate", handleSearchChange);
+    };
   }, []);
 
   return (
