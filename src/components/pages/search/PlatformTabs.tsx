@@ -25,7 +25,7 @@ const PlatformTabs = (props: PlatformTabProps) => {
   const [selectedTab, setSelectedTab] = useState("all");
 
   const onTabChange = (tabId: string) => {
-    setSearchParams({ categoryValue: tabId });
+    setSearchParams({ categoryValue: tabId, lang: props.lang });
   };
 
   useEffect(() => {
