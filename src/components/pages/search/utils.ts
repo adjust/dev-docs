@@ -30,20 +30,18 @@ export const setSearchParams = ({
   lang: string;
 }) => {
   const { query, category, platform, page } = getSearchParams();
+  const path = `/${lang}/search?query=${searchValue ?? query}&page=${
+    pageValue ?? page
+  }&category=${categoryValue ?? category}&platform=${
+    platformValue ?? platform
+  }`;
+
   window.history.pushState(
     {
-      path: `/${lang}/search?query=${searchValue ?? query}&page=${
-        pageValue ?? page
-      }&category=${categoryValue ?? category}&platform=${
-        platformValue ?? platform
-      }`,
+      path,
     },
     "",
-    `/${lang}/search?query=${searchValue ?? query}&page=${
-      pageValue ?? page
-    }&category=${categoryValue ?? category}&platform=${
-      platformValue ?? platform
-    }`,
+    path,
   );
   window.dispatchEvent(new PopStateEvent("popstate"));
 };

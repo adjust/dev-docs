@@ -21,7 +21,7 @@ const PlatformBadges: FC<PlatformBadgesProps> = ({ lang }) => {
   const [selectedPlatform, setSelectedPlatform] = useState(platforms[0]);
 
   const onPlatformChanges = (platform: { label: string; value: string }) => {
-    setSearchParams({ platformValue: platform.value, lang });
+    setSearchParams({ platformValue: platform.value, lang, pageValue: 1 });
     setSelectedPlatform(platform);
   };
 
@@ -33,13 +33,11 @@ const PlatformBadges: FC<PlatformBadgesProps> = ({ lang }) => {
       );
     };
 
-    // Listen for changes to the URL
+    // Listen for changes in the URL
     window.addEventListener("popstate", handleSearchChange);
-
     // Initial load
     handleSearchChange();
 
-    // Cleanup listener on unmount
     return () => {
       window.removeEventListener("popstate", handleSearchChange);
     };
