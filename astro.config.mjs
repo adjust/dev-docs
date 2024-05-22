@@ -56,9 +56,9 @@ export default defineConfig({
         type: "element",
         tagName: "svg",
         properties: {
-          style: "margin-bottom:5px;margin-left:0.25rem;display:inline-block;",
-          width: "16px",
-          height: "16px",
+          style: "margin-bottom:0.35rem;margin-left:0.15rem;margin-right:0.15rem;display:inline-block;",
+          width: "16",
+          height: "16",
         },
         children: [{
           type: "element",

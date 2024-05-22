@@ -85,7 +85,7 @@ const AudienceDropdown: FC<{
               color: "#000000",
             }}
             className={
-              "cursor-pointer min-w-[85px] w-full pr-2 pl-6 text-sm h-6 flex items-center hover:!no-underline active:!no-underline focus:!no-underline " +
+              "cursor-pointer min-w-[85px] w-full pr-4 pl-4 text-sm h-6 flex items-center hover:!no-underline active:!no-underline focus:!no-underline " +
               (audience.slug == "marketer"
                 ? "hover:!bg-[#769ff6] active:!bg-[#e0eaff]"
                 : "") +
