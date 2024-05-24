@@ -13,6 +13,7 @@ import { fetchVersions } from "./src/integrations/fetchSdkVersions";
 import rehypeExternalLinks from 'rehype-external-links';
 import rehypeSlug from 'rehype-slug';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
+import astroPluginCopyTranslations from "./src/integrations/astro-copy-translations";
 
 const versions = await fetchVersions()
 
@@ -49,8 +50,21 @@ export default defineConfig({
   // Enable React for the Algolia search component.
   react({
     experimentalReactChildren: true
-  }), expressiveCode(astroExpressiveCodeOptions), mdx(), tailwind(), sitemap(), playformCompress()],
+  }), expressiveCode(astroExpressiveCodeOptions), mdx(), tailwind(), sitemap(), playformCompress(), astroPluginCopyTranslations()],
   site: "https://dev.adjust.com/",
+  i18n: {
+    locales: ["en", "ja", "ko", "zh"],
+    defaultLocale: "en",
+    fallback: {
+      ja: "en",
+      ko: "en",
+      zh: "en"
+    },
+    routing: {
+      prefixDefaultLocale: true,
+      redirectToDefaultLocale: true,
+    }
+  },
   markdown: {
     remarkPlugins: [remarkDefinitionList, [remarkReplaceVersions, versions]],
     rehypePlugins: [rehypeSlug, [rehypeAutolinkHeadings, {

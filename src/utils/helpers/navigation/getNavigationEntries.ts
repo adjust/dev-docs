@@ -22,7 +22,7 @@ export const getNavigationEntries = (
     const data = pageData.frontmatter;
     // as we have partials inside content structure we don`t need to parse this data for the tree
     const isPage = Object.keys(data).length;
-    return isPage && pageData.frontmatter.slug.includes(`${currentLang}/`);
+    return isPage && data.slug.includes(`${currentLang}/`);
   });
   // getting formatted data for the pages
   const pagesData = filteredPagesData.map((page) => ({
@@ -44,7 +44,7 @@ export const getNavigationEntries = (
   const languageTree = {
     [currentLang]: {
       ...langItem,
-      children: getNavigationTree(langItem!.children!, `${CONTENT_PATH}`),
+      children: getNavigationTree(langItem!.children!, `${CONTENT_PATH}/${currentLang}`),
     },
   };
 

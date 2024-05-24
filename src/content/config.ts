@@ -9,7 +9,7 @@ const docs = defineCollection({
     "sidebar-position": z.number().optional(),
     "category-title": z.string().optional(),
     navPath: z.string().optional(),
-    lang: z.literal("en-us").default(SITE.defaultLanguage),
+    lang: z.string().default("en"),
     dir: z.union([z.literal("ltr"), z.literal("rtl")]).default("ltr"),
     image: z
       .object({

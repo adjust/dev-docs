@@ -1,0 +1,276 @@
+---
+title: "設定"
+description: "Adjust SDKを設定するには、このセクションのガイドに従ってください。"
+slug: "ja/sdk/flutter/configuration"
+sidebar-position: 1
+---
+
+Adjust SDKの動作を設定するには、このドキュメントに記載されたメソッドを使用してください。
+
+## Configオブジェクトをインスタンス化する
+
+```dart
+AdjustConfig(this._appToken, this._environment) {
+   _initCallbackHandlers();
+   _skAdNetworkHandling = true;
+}
+```
+
+Adjust SDKを設定するには、`AdjustConfig`オブジェクトをインスタンス化する必要があります。このオブジェクトには、Adjust SDKにパスする必要のある **読み取り専用** の設定オプションが含まれています。
+
+Configオブジェクトをインスタンス化するには、新しい`AdjustConfig`インスタンスを作成して以下のパラメーターをパスしてください：
+
+-  `appToken` \(`String`\): Your [Adjust app token](https://help.adjust.com/ja/article/app-token-and-reporting-currency#view-your-app-details).
+-  `environment` \(`String`\): The environment you want to run the SDK in. Pass `AdjustEnvironment.sandbox` to run the SDK in sandbox mode for testing. Pass `AdjustEnvironment.production` to run the SDK in production mode for release.
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox);
+//...
+Adjust.start(adjustConfig);
+```
+
+## 読み取り専用の設定
+
+**読み取り専用** の設定オプションは、SDKを初期化する **前に** `AdjustConfig`インスタンスで設定されます。これらのオプションは、SDKの実行中は変更できません。`Adjust.start()`を実行する前に、使用したいオプションを設定する必要があります。
+
+### ログレベルを設定する
+
+```dart
+AdjustLogLevel? logLevel;
+```
+
+Adjust SDKは、さまざまな量の情報を返すために、設定可能なログレベルを提供しています。以下のログレベルが利用可能です。
+
+<Table>
+
+| logLevel                  | 説明                                                   |
+| ------------------------- | ------------------------------------------------------ |
+| `AdjustLogLevel.verbose`  | ログを全て有効化する                                   |
+| `AdjustLogLevel.debug`    | デバッグのログを有効化する                             |
+| `AdjustLogLevel.info`     | 情報レベルのログのみを表示する（デフォルトオプション） |
+| `AdjustLogLevel.warn`     | 情報ログを無効化する                                   |
+| `AdjustLogLevel.error`    | 警告レベル以下のログを無効化する                       |
+| `AdjustLogLevel.assert`   | エラーレベル以下のログを無効化する                     |
+| `AdjustLogLevel.suppress` | 全てのログを無効化する                                 |
+
+</Table>
+
+Configインスタンスの`logLevel`プロパティに`AdjustLogLevel`値を割り当てることで、ログレベルを設定できます。
+
+-  `logLevel` \(`AdjustLogLevel`\): The log level you want to use.
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
+//...
+adjustConfig.logLevel = AdjustLogLevel.verbose;
+//...
+Adjust.start(adjustConfig);
+```
+
+### 外部デバイスIDを設定する
+
+```dart
+String? externalDeviceId;
+```
+
+外部デバイスIDは、デバイスまたはユーザーに割り当てることができるカスタム値です。セッションやプラットフォームを横断してユーザーを認識することができます。また、ユーザーが新規インストールとして2度カウントされないように、ユーザーごとにインストールの重複を排除することも可能です。外部デバイスIDの使用を開始する際は、Adjustの担当者にお問い合わせください。
+
+外部デバイスIDをデバイスのカスタム識別子として使用できます。これは、他のシステム上で継続性を保ちたい場合に役立ちます。Configインスタンスの`externalDeviceId`プロパティに外部デバイスIDを割り当てます。
+
+-  `externalDeviceId` \(`String`\): Your external device identifier. This value is **case sensitive** . If you have imported external device IDs, make sure the value you pass matches the imported value.
+
+<Callout type="seealso">
+
+詳細は、Adjustヘルプセンターの[外部デバイスIDのページ](https://help.adjust.com/ja/article/external-device-identifiers)をご覧ください。
+
+</Callout>
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
+//...
+adjustConfig.externalDeviceId = '{Your-External-Device-Id}';
+//...
+Adjust.start(adjustConfig);
+```
+
+外部デバイスIDをビジネスアナリティクスに使用する場合は、IDを[セッションコールバックパラメーター](/ja/sdk/flutter/features/session-parameters)としてパスすることができます。
+
+既存の外部デバイスIDをAdjustにインポートすることが可能です。これにより、Adjustサーバーが今後のデータを既存のデバイス記録と一致させることができます。この設定をご希望の場合は、Adjustの担当者にお問い合わせください。
+
+### デフォルトのリンクトークンを設定する
+
+```dart
+String? defaultTracker;
+```
+
+アプリがデバイスにプリインストールされている場合、デフォルトのリンクトークンを設定できます。ユーザーがプリインストールされたアプリを初めて起動すると、インストールはデフォルトのリンクトークンにアトリビュートされます。デフォルトのリンクトークンを、configインスタンスの`defaultTracker`プロパティに割り当てます。
+
+-  `defaultTracker` \(`String`\): The [Adjust link token](https://help.adjust.com/ja/article/links#adjust-link-token) you want to record preinstalled installs against.
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
+//...
+adjustConfig.defaultTracker = '{TrackerToken}';
+//...
+Adjust.start(adjustConfig);
+```
+
+### コストデータの送信を有効化する
+
+```dart
+bool? needsCost;
+```
+
+By default, the Adjust SDK doesn't send cost data as part of a user's attribution. You can configure the SDK to send this data by enabling cost data sending. To enable cost data sending, assign a `bool` value to the `needsCost` property of your config instance.
+
+-  `needsCost` \(`bool`\): set to `true` to enable cost data sending or `false` to disable cost data sending.
+
+コストデータには、ユーザーの[アトリビューション情報](/ja/sdk/flutter/features/attribution)でアクセスできます。
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
+//...
+adjustConfig.needsCost = true;
+//...
+Adjust.start(adjustConfig);
+```
+
+### バックグランドでの計測機能を有効化する
+
+```dart
+bool? sendInBackground;
+```
+
+By default, the Adjust SDK pauses the sending of requests when your app is running in the background. You can configure the SDK to send requests in the background by enabling the background recording. To enable background recording, assign a `bool` value to the `sendInBackground` property of your config instance.
+
+-  `sendInBackground` \(`bool`\): Set to `true` to enable background sending or `false` to disable background sending.
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
+//...
+adjustConfig.sendInBackground = true;
+//...
+Adjust.start(adjustConfig);
+```
+
+### イベントのバッファリングを有効化する
+
+```dart
+bool? eventBufferingEnabled;
+```
+
+Adjust SDKは、ユーザーがアプリ内でイベントをトリガーすると、すぐにイベント情報を送信します。イベントバッファリングを有効にすることで、イベント情報をスケジュールに沿って送信することができます。イベントバッファリングは、デバイス上のローカルバッファにイベントを保存し、1分間に1回、全てのリクエストを送信します。
+
+Your config object contains a boolean `eventBufferingEnabled` property that controls this behavior. To enable event buffering, assign a `bool` value to the `eventBufferingEnabled` property of your config instance.
+
+-  `eventBufferingEnabled` \(`bool`\): Set to `true` to enable event buffering or `false` to disable event buffering.
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
+//...
+adjustConfig.eventBufferingEnabled = true;
+//...
+Adjust.start(adjustConfig);
+```
+
+### SDKの起動を遅らせる
+
+```dart
+double? delayStart;
+```
+
+By default, the Adjust SDK starts as soon as your app opens. If you want to send data that isn't available at launch in [session parameters](/ja/sdk/flutter/features/session-parameters), you can delay the start of the SDK. This can be helpful if you are sending information such as unique identifiers.
+
+To configure a startup delay, assign a `double` value to the `delayStart` property of your config instance.
+
+-  `delayStart` \(`double`\): The time \(in seconds\) by which to delay the start of the SDK. You can delay the start of the SDK by up to **10 seconds** .
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
+//...
+adjustConfig.delayStart(5.5);
+//...
+Adjust.start(adjustConfig);
+```
+
+## 動的設定
+
+**動的** 設定オプションは、SDKのライフサイクル中に、ユーザーによるイベントやアクションに応じて変更されることがあります。
+
+### オフラインモードに切り替える
+
+```dart
+static void setOfflineMode(bool isOffline)
+```
+
+<Callout type="important">
+
+このオフラインモード設定は、セッション間では記憶されません。オフラインモードは、新規セッションの開始時に非有効化されます。
+
+</Callout>
+
+Adjust SDKは、イベントとセッションのデータをAdjustのサーバーにリアルタイムで送信します。SDKをオフラインモードにすると、情報の送信を一時停止することができます。オフラインモードでは、SDKは全てのデータをデバイスのローカルファイルに保存します。オフラインモードを無効にすると、SDKはこの情報をAdjustのサーバーに送信します。
+
+以下の引数を使用して`setOfflineMode`メソッドを呼び出すことで、いつでもオフランモードに切り替えられます：
+
+-  `isOffline` \(`bool`\): Set to `true` to enable offline mode or `false` to disable offline mode.
+
+```dart
+Adjust.setOfflineMode(true);
+```
+
+### Pushトークンを設定する
+
+```dart
+static void setPushToken(String token)
+```
+
+Pushトークンは、[Audiences](https://help.adjust.com/ja/article/audiences)やクライアントコールバックに使用されます。また、[アンインストール・再インストール計測](https://help.adjust.com/ja/article/uninstalls-reinstalls)にも必要です。
+
+Configオブジェクトは、`pushToken`を保管できる文字列pushTokenを含みます。このプロパティは、`setPushToken`メソッドと以下の引数を呼び出すことで、いつでも更新することが可能です：
+
+-  `token` \(`String`\): Your push token.
+
+<Callout type="note">
+
+Web ViewからPushトークンにアクセスできる場合は、Javascriptで`setPushToken`メソッドを呼び出します。
+
+</Callout>
+
+```dart
+Adjust.setPushToken('{PushNotificationsToken}');
+```
+
+### SDKを無効化または有効化する
+
+<Callout type="important">
+
+このメソッドを呼び出せるのは、初回セッションの後のみです。この設定は、セッション間で持続します。
+
+</Callout>
+
+```dart
+static void setEnabled(bool isEnabled)
+```
+
+Adjust SDKは、デフォルトでアプリが開いている時に実行されます。Adjust SDKを無効化または再有効化することで、計測を一時停止したり再起動したりすることができます。Adjust SDKを無効にすると、Adjustサーバーにデータが送信されなくなります。
+
+以下の引数を使用して`setEnabled`メソッドを呼び出すことで、SDKをいつでも有効化または無効化できます：
+
+-  `isEnabled` \(`bool`\): Set to `true` to enable the SDK or `false` to disable the SDK.
+
+```dart
+Adjust.setEnabled(false);
+```
+
+#### 有効化ステータスを確認する
+
+```dart
+static Future<bool id="sl-md0000000"> isEnabled() async
+```
+
+You can check if the Adjust SDK is enabled at any time by calling the `isEnabled` method. This method returns a `bool` value indicating if the SDK is **enabled** \(`true`\) or **disabled** \(`false`\).
+
+```dart
+Adjust.isEnabled();
+```

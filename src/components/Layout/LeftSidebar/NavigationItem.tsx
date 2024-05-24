@@ -32,7 +32,7 @@ const LeftSidebarItem: FC<{
             "text-link-active": currentPage === sidebarData.slug,
             "pl-2": level > 2,
             active: currentPage === sidebarData.slug,
-          }
+          },
         )}
       >
         {/* collapse/expand button */}
@@ -59,7 +59,7 @@ const LeftSidebarItem: FC<{
                 "font-medium": isOpen,
                 "font-normal": level > 1 && !isOpen,
                 "ml-[21px]": level > 2 && !isChilds,
-              }
+              },
             )}
           >
             {sidebarData.title}

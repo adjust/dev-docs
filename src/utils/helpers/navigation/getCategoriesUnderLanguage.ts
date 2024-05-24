@@ -6,7 +6,7 @@ import type { CategoryEntry, NavigationData, NavigationEntry } from "./types";
 
 const getParentId = (url: string, currentLang: string) => {
   const parts = url.split("/");
-  if (parts.includes(`index-${currentLang}`) || parts.includes("index")) {
+  if (parts.includes("index")) {
     parts.splice(-2, 2);
     return parts.join("/");
   }
@@ -15,8 +15,8 @@ const getParentId = (url: string, currentLang: string) => {
 };
 
 const getLevel = (url: string, currentLang: string) => {
-  const levelArr = url.replace(`${CONTENT_PATH}`, "").split("/");
-  if (levelArr.includes(`index-${currentLang}`) || levelArr.includes("index")) {
+  const levelArr = url.replace(`${CONTENT_PATH}/${currentLang}`, "").split("/");
+  if (levelArr.includes("index")) {
     return levelArr.length - 1;
   }
   return levelArr.length;
@@ -86,7 +86,7 @@ export const getCategoriesUnderLanguage = (
 
     //if current item has the current language key in the URL we
     // should store this value under current language
-    if (url.includes(`${CONTENT_PATH}`) && usedTitle) {
+    if (url.includes(`${CONTENT_PATH}/${currentLang}`) && usedTitle) {
       categories[currentLang]!.children?.push({
         ...item,
         description,
