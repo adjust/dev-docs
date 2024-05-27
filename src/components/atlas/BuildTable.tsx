@@ -39,11 +39,12 @@ function getTextAlignFromStyle(element: Element): string | null {
 
 const BuildTable: FC<{
   content?: JSX.Element;
-  search: boolean;
-  resizable: boolean;
-  bordered: boolean;
-  flex: boolean;
-  striped: boolean;
+  search?: boolean;
+  resizable?: boolean;
+  bordered?: boolean;
+  flex?: boolean;
+  striped?: boolean;
+  autoWidth?: boolean;
   height?: TableHeights;
   lang: string;
 }> = (props) => {
@@ -92,7 +93,7 @@ const BuildTable: FC<{
         ),
         // Make the columns resizable
         isResizable: props.resizable,
-        isAutoWidth: !props.resizable,
+        isAutoWidth: props.autoWidth,
         align: alignment as Alignment,
         alignHeader: alignment as Alignment,
       });

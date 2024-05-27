@@ -86,23 +86,46 @@ const sortedLinks = childLinks.sort((a, b) => {
   }
 
   .article-content > h2 {
-    @apply text-heading-2 text-black max-w-[40ch] mb-4 font-bold leading-[1] not-first:mt-12;
+    @apply text-heading-2 text-black max-w-[40ch] mb-4 font-bold leading-[1] not-first:mt-1;
+  }
+
+  .article-content > h2 svg {
+    @apply text-heading-2 text-black max-w-[40ch] mb-4 font-bold leading-[1] mt-1 ml-1 inline-block;
   }
 
   .article-content > h3 {
     @apply text-heading-3 text-black mb-4 font-bold leading-[1] not-first:mt-12;
   }
 
+  .article-content > h3 svg {
+    @apply text-heading-3 text-black mb-4 font-bold leading-[1] mt-2 ml-1 inline-block;
+  }
+
   .article-content > h4 {
     @apply text-heading-4 text-black not-first:mt-8 mb-4 font-bold;
+  }
+
+  .article-content > h4 svg {
+    @apply text-heading-4 text-black mt-3 mb-4 font-bold ml-1 inline-block;
   }
 
   .article-content > h5 {
     @apply text-heading-5 text-black not-first:mt-8 mb-4 font-bold;
   }
 
-  .icon-link {
-    @apply inline-block;
+  .article-content > h5 svg {
+    @apply text-heading-5 text-black mt-8 mb-4 font-bold ml-1 inline-block;
+  }
+
+  .article-content .copy-link {
+    @apply md:invisible;
+  }
+
+  .article-content > h2:hover > .copy-link,
+  .article-content > h3:hover > .copy-link,
+  .article-content > h4:hover > .copy-link,
+  .article-content > h5:hover > .copy-link {
+    @apply md:visible;
   }
 
   /* Typography */
@@ -112,7 +135,7 @@ const sortedLinks = childLinks.sort((a, b) => {
   }
 
   .article-content a {
-    @apply text-base text-link-active font-link items-center underline-offset-2;
+    @apply text-inherit text-link-active font-link items-center underline-offset-2;
   }
 
   bold {
@@ -158,7 +181,7 @@ const sortedLinks = childLinks.sort((a, b) => {
   }
 
   .article-content li > :is(p, pre, blockquote):not(:first-child) {
-    @apply mt-4;
+    @apply mt-4 inline-block;
   }
 
   code {
@@ -246,7 +269,7 @@ const sortedLinks = childLinks.sort((a, b) => {
   /* Supporting content */
 
   .article-content img {
-    @apply max-w-full mx-auto;
+    @apply max-w-full mx-auto py-4 drop-shadow-xl;
   }
 
   /* Screenreader Only Text */
@@ -271,3 +294,27 @@ const sortedLinks = childLinks.sort((a, b) => {
     scroll-margin: calc(var(--theme-sidebar-offset, 5rem) + 2rem) 0 2rem;
   }
 </style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const headerLinks = document.querySelectorAll(".copy-link");
+
+    headerLinks.forEach((link) => {
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
+        const url = link.getAttribute("href");
+        const fullUrl = `${window.location.href.split("#")[0]}${url}`;
+
+        navigator.clipboard
+          .writeText(fullUrl)
+          .then(() => {
+            location.href = `${url}`;
+            console.log(`Copied to clipboard: ${fullUrl}`);
+          })
+          .catch((err) => {
+            console.error("Failed to copy:", err);
+          });
+      });
+    });
+  });
+</script>

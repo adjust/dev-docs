@@ -1,6 +1,6 @@
 import algoliasearch from "algoliasearch";
 import { Configure, InstantSearch } from "react-instantsearch";
-import type { FC } from "react";
+import { useEffect, useState, type FC } from "react";
 import { getDevHubFilters, getSearchParams } from "../utils";
 import DevHubHits from "./DevHubHits";
 import Pagination from "../Pagination";
@@ -9,7 +9,24 @@ import type { DevHubIndexProps } from "./types";
 
 const DevHubIndex: FC<DevHubIndexProps> = ({ algoliaKeys, lang }) => {
   const { query, page } = getSearchParams();
+  const [searchState, setSearchState] = useState({ query, page });
   const searchClient = algoliasearch(algoliaKeys.appId, algoliaKeys.apiKey);
+
+  useEffect(() => {
+    const handleSearchChange = () => {
+      const { query, page } = getSearchParams();
+      setSearchState({ query, page });
+    };
+
+    // Listen for changes in the URL
+    window.addEventListener("popstate", handleSearchChange);
+    // Initial load
+    handleSearchChange();
+
+    return () => {
+      window.removeEventListener("popstate", handleSearchChange);
+    };
+  }, []);
 
   return (
     <InstantSearch
@@ -18,11 +35,11 @@ const DevHubIndex: FC<DevHubIndexProps> = ({ algoliaKeys, lang }) => {
       future={{ preserveSharedStateOnUnmount: false }}
     >
       <Configure
-        query={query}
+        query={searchState.query}
         filters={getDevHubFilters(lang)}
         index={algoliaKeys.indexName}
         hitsPerPage={6}
-        page={page}
+        page={searchState.page}
       />
       <DevHubHits lang={lang} />
       <Pagination canRefine currentRefinement={1} lang={lang} />

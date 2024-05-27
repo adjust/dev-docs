@@ -8,11 +8,13 @@ import HelpCenterBanner from "@components/pages/search/HelpCenterBanner.astro";
 import PlatformBadges from "@components/pages/search/PlatformBadges/PlatformBadges";
 import PlatformTabs from "@components/pages/search/PlatformTabs";
 import HelpCenterIndex from "@components/pages/search/HelpCenterHits/HelpCenterIndex";
-import { KNOWN_LANGUAGE_CODES } from "@i18n/locales";
-import { SITE } from "src/consts";
+import { KNOWN_LANGUAGE_CODES, type Locales } from "@i18n/locales";
 import DevHubIndex from "@components/pages/search/DevHubHits/DevHubIndex";
 import SearchInput from "@components/pages/search/SearchInput";
 import BodyNoScript from "@components/Layout/GoogleTagManager/BodyNoScript.astro";
+import { getLanguageFromURL, useTranslations } from "@i18n/utils";
+const currentPage = Astro.url.pathname;
+const currentLang = getLanguageFromURL(currentPage);
 
 export const getStaticPaths = () => {
   return KNOWN_LANGUAGE_CODES.flatMap((langKey) => ({
@@ -34,6 +36,8 @@ const helpCenterAlgoliaKeys = {
   apiKey: import.meta.env.HELP_CENTER_ALGOLIA_API_KEY,
   indexName: import.meta.env.HELP_CENTER_ALGOLIA_INDEX_NAME,
 };
+
+const t = useTranslations(currentLang as keyof Locales);
 ---
 
 <html dir={`/${lang}`} lang={lang} class="initial">
@@ -41,7 +45,7 @@ const helpCenterAlgoliaKeys = {
     <HeadCommon />
     <HeadSEO canonicalUrl={canonicalURL} />
     <title>
-      {`Search | ${SITE.title}`}
+      {`Search | ${t("site.title")}`}
     </title>
   </head>
   <body class="font-body xs:w-full xxl:w-[1600px] mx-auto bg-body-main">
@@ -61,7 +65,7 @@ const helpCenterAlgoliaKeys = {
           class="search_platform-filter mb-16 flex flex-col gap-x-[29px] items-center"
         >
           <span class="text-base font-bold mb-2.5">Show content for</span>
-          <PlatformBadges client:only="react" />
+          <PlatformBadges client:only="react" lang={lang} />
         </div>
       </div>
       <div>
