@@ -30,8 +30,14 @@ for locale; do
                 s/<tile/<Tile/g ;
             " "$file"
 
+            # Insert newline before <Tabs> and <Tab> without leading spaces
+            sed -i "" -e "s/[ \t]*<Tabs>/<Tabs>\n/g" -e "s/[ \t]*<Tab>/<Tab>\n/g" "$file"
+
+            # Insert newline after </Tab> and </Tabs> without leading spaces
+            sed -i "" -e "s/<\/Tab>[ \t]*/<\/Tab>\n/g" -e "s/<\/Tabs>[ \t]*/<\/Tabs>\n/g" "$file"
+
             echo "Updating slugs for ${locale} content"
-            sed -i "" -e "s/\(slug:\)\( \"\| \)\(en\/\)/\1\2${locale}\//g" "$file"
+            sed -i "" -E -e "s/(slug: *)(\"?en\/?)/\1\"${locale}\//g" "$file"
 
             echo "Updating URLs for ${locale} content"
             sed -i "" -e "s/\/en\//\/${locale}\//g" "$file"
