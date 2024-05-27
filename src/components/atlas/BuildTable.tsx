@@ -14,13 +14,37 @@ interface ColumnCell {
 
 type Alignment = "center" | "left" | "right" | undefined;
 
+function getTextAlignFromStyle(element: Element): string | null {
+  // Predefined list of options
+  const options = ["left", "center", "right"];
+
+  // Fetch the style attribute
+  const style = element.getAttribute("style");
+
+  // If the style attribute is null, return null
+  if (!style) {
+    return null;
+  }
+
+  // Look for a match in the style attribute
+  for (const option of options) {
+    if (style.includes(`text-align:${option}`)) {
+      return option;
+    }
+  }
+
+  // If no match is found, return null
+  return null;
+}
+
 const BuildTable: FC<{
   content?: JSX.Element;
-  search: boolean;
-  resizable: boolean;
-  bordered: boolean;
-  flex: boolean;
-  striped: boolean;
+  search?: boolean;
+  resizable?: boolean;
+  bordered?: boolean;
+  flex?: boolean;
+  striped?: boolean;
+  autoWidth?: boolean;
   height?: TableHeights;
   lang: string;
 }> = (props) => {
@@ -56,6 +80,7 @@ const BuildTable: FC<{
   headerItems.forEach((value) => {
     // Take the value of each header element.
     for (let i = 0; i < value.children.length; i++) {
+      let alignment = getTextAlignFromStyle(value.children[i]);
       columns.push({
         // Take the written title as a header
         Header: value.children[i].textContent!,
@@ -68,9 +93,9 @@ const BuildTable: FC<{
         ),
         // Make the columns resizable
         isResizable: props.resizable,
-        isAutoWidth: !props.resizable,
-        align: value.children[i].getAttribute("align") as Alignment,
-        alignHeader: value.children[i].getAttribute("align") as Alignment,
+        isAutoWidth: props.autoWidth,
+        align: alignment as Alignment,
+        alignHeader: alignment as Alignment,
       });
     }
   }),
