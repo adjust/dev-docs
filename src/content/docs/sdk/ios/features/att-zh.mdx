@@ -17,9 +17,7 @@ slug: "zh/sdk/ios/features/att"
 | `ATTrackingManagerAuthorizationStatusDenied`        | `2`  | 用户已拒绝授予可用于设备跟踪的应用相关数据访问权限 |
 | `ATTrackingManagerAuthorizationStatusAuthorized`    | `3`  | 用户已授予可用于设备跟踪的应用相关数据访问权限     |
 
-</Table>
-
-<Callout type="note">
+</Table> <Callout type="note">
 
 SDK 无法获取 ATT 状态时，您可能会收到 `-1` 状态代码。
 
@@ -41,11 +39,8 @@ Adjust SDK 包含 [Apple `requestTrackingAuthorizationWithCompletionHandler` 方
 
 如果您使用自定义弹窗，Adjust SDK 也会记录授权状态。如果在初始化之前展示弹窗，那么 SDK 会随安装事件一同发送状态。如果在初始化之后展示弹窗，那么 SDK 会在用户更新状态后立即向 Adjust 服务器发送状态。
 
-</Callout>
-
-<Tabs>
-
-<Tab title="Swift" sync="swift">
+</Callout><Tabs>
+ <Tab title="Swift" sync="swift">
 
 ```swift
 Adjust.requestTrackingAuthorization() { status in
@@ -69,7 +64,6 @@ Adjust.requestTrackingAuthorization() { status in
 ```
 
 </Tab>
-
 <Tab title="Objective-C" sync="objc">
 
 ```objc
@@ -92,7 +86,6 @@ Adjust.requestTrackingAuthorization() { status in
 ```
 
 </Tab>
-
 </Tabs>
 
 ## 了解当前授权状态
@@ -104,15 +97,13 @@ Adjust.requestTrackingAuthorization() { status in
 您可以随时读取用户当前授权状态。调用 `getAppTrackingAuthorizationStatus` 方法来以 **整数** 形式返回授权状态代码。
 
 <Tabs>
-
-<Tab title="Swift" sync="swift">
+ <Tab title="Swift" sync="swift">
 
 ```swift
 let authorizationStatus = Adjust.appTrackingAuthorizationStatus();
 ```
 
 </Tab>
-
 <Tab title="Objective-C" sync="objc">
 
 ```objc
@@ -120,7 +111,6 @@ int authorizationStatus = [Adjust appTrackingAuthorizationStatus];
 ```
 
 </Tab>
-
 <Tab title="Javascript" sync="js">
 
 ```js
@@ -128,7 +118,48 @@ var authorizationStatus = Adjust.appTrackingAuthorizationStatus();
 ```
 
 </Tab>
+</Tabs>
 
+## 自定义弹窗时机
+
+```objc
+@property (nonatomic, assign) NSUInteger attConsentWaitingInterval;
+```
+
+If your app includes an onboarding process or a tutorial, you may want to delay sending your user's ATT consent status until after the user has completed this process. To do this, you can set the `attConsentWaitingInterval` property to delay the sending of data for **up to 120 seconds** to give the user time to complete the initial onboarding. After the timeout ends or the user sets their consent status, the SDK sends all information it has recorded during the delay to Adjust's servers along with the user's consent status.
+
+<Callout type="note">
+
+如果用户在延时结束前关闭应用或在选择授权状态前关闭应用，那么用户重新打开应用时延时将重新开始计时。
+
+</Callout><Tabs>
+ <Tab title="Swift" sync="swift">
+
+```swift
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+    appToken: yourAppToken,
+    environment: environment)
+//...
+adjustConfig?.attConsentWaitingInterval = 30
+//...
+Adjust.appDidLaunch(adjustConfig)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+*adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
+                                  environment:ADJEnvironmentSandbox];
+//...
+[adjustConfig setAttConsentWaitingInterval:30];
+//...
+[Adjust appDidLaunch:adjustConfig];
+```
+
+</Tab>
 </Tabs>
 
 ## 查看授权状态变化
@@ -140,15 +171,13 @@ var authorizationStatus = Adjust.appTrackingAuthorizationStatus();
 如果使用自定义 ATT 弹窗，那么您需要告知 Adjust SDK 用户的授权状态。调用 `checkForNewAttStatus` 方法，以向 Adjust 服务器发送授权状态。
 
 <Tabs>
-
-<Tab title="Swift" sync="swift">
+ <Tab title="Swift" sync="swift">
 
 ```swift
 Adjust.checkForNewAttStatus();
 ```
 
 </Tab>
-
 <Tab title="Objective-C" sync="objc">
 
 ```objc
@@ -156,14 +185,13 @@ Adjust.checkForNewAttStatus();
 ```
 
 </Tab>
-
 </Tabs>
 
 ## iOS 17 用户许可处理
 
 <MinorVersion added="v4.38.0">
 
-With the release of iOS 17, Apple implemented new rules on what data developers may send to third\-parties. To ensure that developers can demonstrate compliance with Apple’s privacy guidelines, the Adjust SDK makes use of two separate endpoints for **consenting** and **non\-consenting** users.
+在 iOS 17 中，Apple 对于开发者可以向第三方发送哪些数据推出了全新规则。为确保开发者可以证明其操作符合 Apple 隐私规定，Adjust SDK 针对 **授权** 和 **未授权** 用户使用两个相互独立的终端。
 
 </MinorVersion>
 

@@ -17,9 +17,7 @@ slug: "ja/sdk/unity/features/att"
 | `ATTrackingManagerAuthorizationStatusDenied`        | `2`    | ユーザーがデバイストラッキングによるアプリ関連データへのアクセスを拒否 |
 | `ATTrackingManagerAuthorizationStatusAuthorized`    | `3`    | ユーザーがデバイストラッキングによるアプリ関連データへのアクセスを承認 |
 
-</Table>
-
-<Callout type="note">
+</Table> <Callout type="note">
 
 SDKがATT（AppTrackingTransparency）ステータスを取得できない場合、`-1`のステータスコードを受け取る可能性があります。
 
@@ -95,7 +93,7 @@ Adjust.requestTrackingAuthorizationWithCompletionHandler((status) =>
 public static int getAppTrackingAuthorizationStatus();
 ```
 
-ユーザーの現在の認証ステータスはいつでも取得することができます。`getAppTrackingAuthorizationStatus`メソッドを呼び出し、 **整数** で認証ステータスコードを返してください。
+ユーザーの現在の認証ステータスはいつでも取得することができます。`getAppTrackingAuthorizationStatus`メソッドを呼び出し、`int`で認証ステータスコードを返してください。
 
 ```cs
 Adjust.getAppTrackingAuthorizationStatus();
@@ -103,7 +101,7 @@ Adjust.getAppTrackingAuthorizationStatus();
 
 ### 例
 
-この例では、ユーザーの認証ステータスを収集し、`String`に変換する方法を示しています。この情報は`authorizationStatus`という変数に割り当てられ、`"status"`というキーでセッション パートナー パラメータとしてパスされます。
+この例では、ユーザーの認証ステータスを収集し、`string`に変換する方法を示しています。この情報は`authorizationStatus`という変数に割り当てられ、`"status"`というキーでセッション パートナー パラメータとしてパスされます。
 
 ```cs
 string authorizationStatus = Convert.ToString(Adjust.getAppTrackingAuthorizationStatus());
@@ -120,4 +118,26 @@ public static void checkForNewAttStatus();
 
 ```cs
 Adjust.checkForNewAttStatus();
+```
+
+## プロンプトのタイミングをカスタム設定
+
+```cs
+public void setAttConsentWaitingInterval(int numberOfSeconds);
+```
+
+アプリにオンボーディングプロセスまたはチュートリアルが含まれる場合、ユーザーがこのプロセスを完了するまで、ユーザーのATT同意ステータスの送信を遅らせたい場合があります。これを行うには、`attConsentWaitingInterval`プロパティを設定して、データの送信を **最大120秒** 遅延させ、ユーザーに最初のオンボーディングを完了する時間を与えることができます。タイムアウトが終了した後、またはユーザーが同意ステータスを設定した後に、SDKはユーザーの同意ステータスと共に遅延中に記録した全ての情報をAdjustのサーバーに送信します。
+
+<Callout type="note">
+
+タイムアウトが終了する前、または同意ステータスを選択する前にユーザーがアプリを閉じた場合、アプリを再度開いたときにタイムアウトが再開されます。
+
+</Callout>
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+//...
+adjustConfig.attConsentWaitingInterval(30);
+//...
+Adjust.start(adjustConfig);
 ```

@@ -17,9 +17,7 @@ slug: "zh/sdk/unity/features/att"
 | `ATTrackingManagerAuthorizationStatusDenied`        | `2`  | 用户已拒绝授予可用于设备跟踪的应用相关数据访问权限 |
 | `ATTrackingManagerAuthorizationStatusAuthorized`    | `3`  | 用户已授予可用于设备跟踪的应用相关数据访问权限     |
 
-</Table>
-
-<Callout type="note">
+</Table> <Callout type="note">
 
 如果 SDK 无法调取 ATT \(App Tracking Transparency\) 状态，那么您可能会收到 `-1` 状态代码。
 
@@ -95,7 +93,7 @@ Adjust.requestTrackingAuthorizationWithCompletionHandler((status) =>
 public static int getAppTrackingAuthorizationStatus();
 ```
 
-您可以随时读取用户当前授权状态。调用 `getAppTrackingAuthorizationStatus` 方法来以 **整数** 形式返回授权状态代码。
+您可以随时读取用户当前授权状态。调用 `getAppTrackingAuthorizationStatus` 方法来以 `int` 形式返回授权状态代码。
 
 ```cs
 Adjust.getAppTrackingAuthorizationStatus();
@@ -103,7 +101,7 @@ Adjust.getAppTrackingAuthorizationStatus();
 
 ### 示例
 
-该示例展示了如何收集用户授权状态并将其转化为 `String`。我们会为该信息指定一个名为 `authorizationStatus` 的变量，并将其作为会话合作伙伴参数使用 `"status"` key 传送。
+该示例展示了如何收集用户授权状态并将其转化为 `string`。我们会为该信息指定一个名为 `authorizationStatus` 的变量，并将其作为会话合作伙伴参数使用 `"status"` key 传送。
 
 ```cs
 string authorizationStatus = Convert.ToString(Adjust.getAppTrackingAuthorizationStatus());
@@ -120,4 +118,26 @@ public static void checkForNewAttStatus();
 
 ```cs
 Adjust.checkForNewAttStatus();
+```
+
+## 自定义弹窗时机
+
+```cs
+public void setAttConsentWaitingInterval(int numberOfSeconds);
+```
+
+If your app includes an onboarding process or a tutorial, you may want to delay sending your user's ATT consent status until after the user has completed this process. To do this, you can set the `attConsentWaitingInterval` property to delay the sending of data for **up to 120 seconds** to give the user time to complete the initial onboarding. After the timeout ends or the user sets their consent status, the SDK sends all information it has recorded during the delay to Adjust's servers along with the user's consent status.
+
+<Callout type="note">
+
+如果用户在延时结束前关闭应用或在选择授权状态前关闭应用，那么用户重新打开应用时延时将重新开始计时。
+
+</Callout>
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+//...
+adjustConfig.attConsentWaitingInterval(30);
+//...
+Adjust.start(adjustConfig);
 ```

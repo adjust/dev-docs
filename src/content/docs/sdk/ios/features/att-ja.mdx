@@ -17,9 +17,7 @@ slug: "ja/sdk/ios/features/att"
 | `ATTrackingManagerAuthorizationStatusDenied`        | `2`    | ユーザーがデバイストラッキングによるアプリ関連データへのアクセスを拒否 |
 | `ATTrackingManagerAuthorizationStatusAuthorized`    | `3`    | ユーザーがデバイストラッキングによるアプリ関連データへのアクセスを承認 |
 
-</Table>
-
-<Callout type="note">
+</Table> <Callout type="note">
 
 SDKがATTステータスを取得できない場合、`-1`のステータスコードを受け取る可能性があります。
 
@@ -41,11 +39,8 @@ Adjust SDKには、[Appleの`requestTrackingAuthorizationWithCompletionHandler`�
 
 Adjust SDKは、カスタムプロンプトを使用した場合、同意ステータスも記録します。初期化前にプロンプトを表示した場合、SDKはインストールイベントと共にステータスを送信します。プロンプトを初期化後に表示した場合は、SDKはユーザーが更新した後に、即時にAdjustサーバーにステータスを送信します。
 
-</Callout>
-
-<Tabs>
-
-<Tab title="Swift" sync="swift">
+</Callout><Tabs>
+ <Tab title="Swift" sync="swift">
 
 ```swift
 Adjust.requestTrackingAuthorization() { status in
@@ -69,7 +64,6 @@ Adjust.requestTrackingAuthorization() { status in
 ```
 
 </Tab>
-
 <Tab title="Objective-C" sync="objc">
 
 ```objc
@@ -92,7 +86,6 @@ Adjust.requestTrackingAuthorization() { status in
 ```
 
 </Tab>
-
 </Tabs>
 
 ## 現在の承認ステータスを取得
@@ -104,15 +97,13 @@ Adjust.requestTrackingAuthorization() { status in
 ユーザーの現在の認証ステータスはいつでも取得することができます。`getAppTrackingAuthorizationStatus`メソッドを呼び出し、 **整数** で認証ステータスコードを返してください。
 
 <Tabs>
-
-<Tab title="Swift" sync="swift">
+ <Tab title="Swift" sync="swift">
 
 ```swift
 let authorizationStatus = Adjust.appTrackingAuthorizationStatus();
 ```
 
 </Tab>
-
 <Tab title="Objective-C" sync="objc">
 
 ```objc
@@ -120,7 +111,6 @@ int authorizationStatus = [Adjust appTrackingAuthorizationStatus];
 ```
 
 </Tab>
-
 <Tab title="Javascript" sync="js">
 
 ```js
@@ -128,7 +118,48 @@ var authorizationStatus = Adjust.appTrackingAuthorizationStatus();
 ```
 
 </Tab>
+</Tabs>
 
+## プロンプトのタイミングをカスタム設定
+
+```objc
+@property (nonatomic, assign) NSUInteger attConsentWaitingInterval;
+```
+
+アプリにオンボーディングプロセスまたはチュートリアルが含まれる場合、ユーザーがこのプロセスを完了するまで、ユーザーのATT同意ステータスの送信を遅らせたい場合があります。これを行うには、`attConsentWaitingInterval`プロパティを設定して、データの送信を **最大120秒** 遅延させ、ユーザーに最初のオンボーディングを完了する時間を与えることができます。タイムアウトが終了した後、またはユーザーが同意ステータスを設定した後に、SDKはユーザーの同意ステータスと共に遅延中に記録した全ての情報をAdjustのサーバーに送信します。
+
+<Callout type="note">
+
+タイムアウトが終了する前、または同意ステータスを選択する前にユーザーがアプリを閉じた場合、アプリを再度開いたときにタイムアウトが再開されます。
+
+</Callout><Tabs>
+ <Tab title="Swift" sync="swift">
+
+```swift
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+    appToken: yourAppToken,
+    environment: environment)
+//...
+adjustConfig?.attConsentWaitingInterval = 30
+//...
+Adjust.appDidLaunch(adjustConfig)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+*adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
+                                  environment:ADJEnvironmentSandbox];
+//...
+[adjustConfig setAttConsentWaitingInterval:30];
+//...
+[Adjust appDidLaunch:adjustConfig];
+```
+
+</Tab>
 </Tabs>
 
 ## 承認ステータスの変更を確認する
@@ -140,15 +171,13 @@ var authorizationStatus = Adjust.appTrackingAuthorizationStatus();
 カスタムATTプロンプトを使用する場合、ユーザーの認証ステータスに変更があった場合、Adjust SDKに通知する必要があります。`checkForNewAttStatus`メソッドを呼び出し、Adjustサーバーに認証ステータスを送信してください。
 
 <Tabs>
-
-<Tab title="Swift" sync="swift">
+ <Tab title="Swift" sync="swift">
 
 ```swift
 Adjust.checkForNewAttStatus();
 ```
 
 </Tab>
-
 <Tab title="Objective-C" sync="objc">
 
 ```objc
@@ -156,14 +185,13 @@ Adjust.checkForNewAttStatus();
 ```
 
 </Tab>
-
 </Tabs>
 
 ## iOS 17の同意への対応
 
 <MinorVersion added="v4.38.0">
 
-With the release of iOS 17, Apple implemented new rules on what data developers may send to third\-parties. To ensure that developers can demonstrate compliance with Apple’s privacy guidelines, the Adjust SDK makes use of two separate endpoints for **consenting** and **non\-consenting** users.
+iOS 17のリリースに伴い、Appleは開発者がサードパーティに送信するデータに関する新しいルールを導入しました。開発者がAppleのプライバシーガイドラインに準拠していることを証明できるようにするために、Adjust SDKは **同意する** ユーザーと **同意しない** ユーザーに対して2つの個別のエンドポイントを使用します。
 
 </MinorVersion>
 
