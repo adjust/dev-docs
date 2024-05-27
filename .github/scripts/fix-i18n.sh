@@ -1,12 +1,16 @@
 #!/bin/sh
 
-# This script fixes various issues with localized files
+# This script fixes various issues with localized files.
 # It loops through all files that end with a locale code
-# in the set below and performs transformations using sed
+# in the set below and performs transformations using sed.
 
 # This script is written using POSIX-compliant syntax and
 # should work with any shell interpreter. BASH- and ZSH-
 # specific commands must be avoided.
+
+export MDX_TAGS="Abbr Accordion ApiVersion SdkVersion Callout MinorVersion Table Tabs Tab Tile"
+TAG_LIST=$(echo "$MDX_TAGS" | tr ' ' '|')
+export TAG_LIST
 
 set -- ja ko zh
 
@@ -15,34 +19,28 @@ for locale; do
         process_file() {
             file="$1"
             locale="$2"
-            
-            echo "Fixing formatting for ${locale} content"
-            sed -i "" -e "
-                s/<abbr/<Abbr/g ;
-                s/<accordion/<Accordion/g ;
-                s/<apiversion/<ApiVersion/g ;
-                s/<sdkversion/<SdkVersion/g ;
-                s/<callout/<Callout/g ;
-                s/<minorversion/<MinorVersion/g ;
-                s/<table/<Table/g ;
-                s/<tabs/<Tabs/g ;
-                s/<tab/<Tab/g ;
-                s/<tile/<Tile/g ;
-            " "$file"
 
-            # Insert newline before <Tabs> and <Tab> without leading spaces
-            sed -i "" -e "s/[ \t]*<Tabs>/<Tabs>\n/g" -e "s/[ \t]*<Tab>/<Tab>\n/g" "$file"
+            # Loop through properly formatted tags
+            echo "Fixing tags in ${file} for ${locale}"
+            for tag in $MDX_TAGS; do
+                # Generate sed command to replace lowercase tag with properly formatted tag
+                lowercase_tag=$(echo $tag | tr "[:upper:]" "[:lower:]")
+                sed_command="s/<\(${lowercase_tag}\)/<${tag}/g ;"
+                # Execute sed command
+                sed -i -e "${sed_command}" "$file"
+            done
 
-            # Insert newline after </Tab> and </Tabs> without leading spaces
-            sed -i "" -e "s/<\/Tab>[ \t]*/<\/Tab>\n/g" -e "s/<\/Tabs>[ \t]*/<\/Tabs>\n/g" "$file"
+            # Ensure there is a newline between any two tags on the same line. Only fix items
+            # that contain one of the tags in the $TAG_LIST above.
+            sed -i -E -e "s/(<[^<>]*[\/]?($TAG_LIST)[^<>]*>)[[:space:]]*(<[^<>]*[\/]?($TAG_LIST)[^<>]*>)/\1\n\3/g" "$file"
 
-            echo "Updating slugs for ${locale} content"
-            sed -i "" -E -e "s/(slug: *)(\"?en\/?)/\1\"${locale}\//g" "$file"
+            echo "Updating slugs in ${file} for ${locale}"
+            sed -i -E -e "s/(slug: *)(\"?en\/?)/\1\"${locale}\//g" "$file"
 
-            echo "Updating URLs for ${locale} content"
-            sed -i "" -e "s/\/en\//\/${locale}\//g" "$file"
+            echo "Updating URLs in ${file} for ${locale}"
+            sed -i -e "s/\/en\//\/${locale}\//g" "$file"
         }
-        
+
         for file do
             process_file "$file" "$0"
         done
