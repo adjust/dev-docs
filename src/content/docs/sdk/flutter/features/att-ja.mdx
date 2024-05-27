@@ -1,31 +1,29 @@
 ---
 title: "App Tracking Transparencyの設定"
 description: "AppleのApp Tracking Transparencyフレームワークを使用するようにアプリを設定する"
-slug: "ja/sdk/flutter/features/att"
+slug: "en/sdk/flutter/features/att"
 ---
-
 広告識別子（IDFA）を記録したい場合は、ユーザーの許諾を得るためのプロンプトを表示する必要があります。これを行うには、アプリにAppleのApp Tracking Transparency（ATT）frameworkを組み込む必要があります。Adjust SDKはユーザーの許諾状況を保存し、リクエストごとにAdjustサーバーに送信します。
 
-## 承認ステータス
+承認ステータス
+-------
 
-<Table>
+<table> 
 
-| ステータス（Status）                                | コード | 説明                                                                   |
-| --------------------------------------------------- | ------ | ---------------------------------------------------------------------- |
-| `ATTrackingManagerAuthorizationStatusNotDetermined` | `0`    | ユーザーがアクセスプロンプトに応答していない                           |
-| `ATTrackingManagerAuthorizationStatusRestricted`    | `1`    | アプリ関連データへのアクセスがデバイスレベルでブロックされている       |
-| `ATTrackingManagerAuthorizationStatusDenied`        | `2`    | ユーザーがデバイストラッキングによるアプリ関連データへのアクセスを拒否 |
-| `ATTrackingManagerAuthorizationStatusAuthorized`    | `3`    | ユーザーがデバイストラッキングによるアプリ関連データへのアクセスを承認 |
+|                    ステータス（Status）                    | コード |                 説明                  |
+|-----------------------------------------------------|-----|-------------------------------------|
+| `ATTrackingManagerAuthorizationStatusNotDetermined` | `0` | ユーザーがアクセスプロンプトに応答していない              |
+| `ATTrackingManagerAuthorizationStatusRestricted`    | `1` | アプリ関連データへのアクセスがデバイスレベルでブロックされている    |
+| `ATTrackingManagerAuthorizationStatusDenied`        | `2` | ユーザーがデバイストラッキングによるアプリ関連データへのアクセスを拒否 |
+| `ATTrackingManagerAuthorizationStatusAuthorized`    | `3` | ユーザーがデバイストラッキングによるアプリ関連データへのアクセスを承認 |
 
-</Table>
-
-<Callout type="note">
+</Table> <callout type="note"> 
 
 SDKがATTステータスを取得できない場合、`-1`のステータスコードを受け取る可能性があります。
+</Callout> 
 
-</Callout>
-
-## アプリトラッキング承認ラッパー
+アプリトラッキング承認ラッパー
+---------------
 
 ```dart
 static Future<num id="sl-md0000000"> requestTrackingAuthorizationWithCompletionHandler() async
@@ -36,12 +34,10 @@ Adjust SDKには、[Appleの`requestTrackingAuthorizationWithCompletionHandler`�
 コールバックメソッドは、ユーザーが同意ダイアログに応答した時にトリガーされ、ユーザーの同意ステータスコードをAdjustサーバーに送信します。コールバック関数内で各ステータスコードに対するレスポンスを定義することができます。
 
 トラッキング リクエスト ダイアログのテキスト内容を指定する必要があります。これを行うには、`Info.plist`ファイルで`NSUserTrackingUsageDescription`キーにテキストを追加してください。
-
-<Callout type="tip">
+<callout type="tip"> 
 
 Adjust SDKは、カスタムプロンプトを使用した場合、同意ステータスも記録します。初期化前にプロンプトを表示した場合、SDKはインストールイベントと共にステータスを送信します。プロンプトを初期化後に表示した場合は、SDKはユーザーが更新した後に、即時にAdjustサーバーにステータスを送信します。
-
-</Callout>
+</Callout> 
 
 ```dart
 if (Platform.isIOS) {
@@ -105,7 +101,8 @@ Adjust.requestTrackingAuthorizationWithCompletionHandler().then((status) {
 }
 ```
 
-## 現在の承認ステータスを取得
+現在の承認ステータスを取得
+-------------
 
 ```dart
 static Future<int id="sl-md0000000"> getAppTrackingAuthorizationStatus() async
@@ -126,7 +123,8 @@ String authorizationStatus = Convert.ToString(Adjust.getAppTrackingAuthorization
 Adjust.addSessionPartnerParameter("status", authorizationStatus);
 ```
 
-## 承認ステータスの変更を確認する
+承認ステータスの変更を確認する
+---------------
 
 ```dart
 static void checkForNewAttStatus()
@@ -137,3 +135,25 @@ static void checkForNewAttStatus()
 ```dart
 Adjust.checkForNewAttStatus();
 ```
+
+プロンプトのタイミングをカスタム設定
+------------------
+
+```dart
+num? attConsentWaitingInterval;
+```
+
+アプリにオンボーディングプロセスまたはチュートリアルが含まれる場合、ユーザーがこのプロセスを完了するまで、ユーザーのATT同意ステータスの送信を遅らせたい場合があります。これを行うには、`attConsentWaitingInterval`プロパティを設定して、データの送信を **最大120秒** 遅延させ、ユーザーに最初のオンボーディングを完了する時間を与えることができます。タイムアウトが終了した後、またはユーザーが同意ステータスを設定した後に、SDKはユーザーの同意ステータスと共に遅延中に記録した全ての情報をAdjustのサーバーに送信します。
+<callout type="note"> 
+
+タイムアウトが終了する前、または同意ステータスを選択する前にユーザーがアプリを閉じた場合、アプリを再度開いたときにタイムアウトが再開されます。
+</Callout> 
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
+//...
+adjustConfig.attConsentWaitingInterval = 30;
+//...
+Adjust.start(adjustConfig);
+```
+
