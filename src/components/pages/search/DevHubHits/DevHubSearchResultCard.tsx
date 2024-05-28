@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import classNames from "classnames";
-import { Highlight } from "react-instantsearch";
+import { Snippet } from "react-instantsearch";
 
 import type { DevHubSearchResultCardProps, HitBreadcrumb } from "./types";
 
@@ -35,7 +35,7 @@ const DevHubSearchResultCard: FC<DevHubSearchResultCardProps> = ({ hit }) => {
           {hit.title}
         </h5>
         <p className="text-heading-5 h-[40px] text-ellipsis overflow-hidden text-search-primary">
-          <Highlight hit={hit} attribute="content" />
+          <Snippet hit={hit} attribute="content" />
         </p>
       </a>
     </div>
