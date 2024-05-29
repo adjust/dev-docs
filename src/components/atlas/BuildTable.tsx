@@ -12,6 +12,10 @@ interface ColumnCell {
   [key: string]: string;
 }
 
+interface ColumnWidth {
+  [key: number]: number;
+}
+
 type Alignment = "center" | "left" | "right" | undefined;
 
 function getTextAlignFromStyle(element: Element): string | null {
@@ -40,13 +44,13 @@ function getTextAlignFromStyle(element: Element): string | null {
 const BuildTable: FC<{
   content?: JSX.Element;
   search?: boolean;
-  resizable?: boolean;
+  resizable?: number[];
   bordered?: boolean;
-  flex?: boolean;
   striped?: boolean;
-  autoWidth?: boolean;
+  autoWidth?: number[];
   height?: TableHeights;
   lang: string;
+  width?: ColumnWidth[];
 }> = (props) => {
   const t = useTranslations(props.lang as keyof Locales);
   // Set up a blank string for the search term
@@ -76,12 +80,46 @@ const BuildTable: FC<{
 
   const headerItems = el.querySelectorAll("table > thead > tr");
   const bodyItems = el.querySelectorAll("table > tbody > tr");
+
+  // Check if the column should be automatically sized
+
+  const checkAutoWidth = (columnNumber: number): boolean => {
+    let updatedNumber = columnNumber + 1;
+    if (props.autoWidth && props.autoWidth.includes(updatedNumber)) {
+      return true;
+    }
+    return false;
+  };
+
+  // Check if the column should be resizable
+
+  const checkResizable = (columnNumber: number): boolean => {
+    let updatedNumber = columnNumber + 1;
+    if (props.resizable && props.resizable.includes(updatedNumber)) {
+      return true;
+    }
+    return false;
+  };
+
+  // Check if the column has a set size
+
+  const checkWidth = (columnNumber: number): number | undefined => {
+    let updatedNumber = columnNumber + 1;
+    if (props.width) {
+      for (const columnWidth of props.width) {
+        if (updatedNumber in columnWidth) {
+          return columnWidth[updatedNumber];
+        }
+      }
+    }
+    return undefined;
+  };
   // Loop through each selector
   headerItems.forEach((value) => {
     // Take the value of each header element.
     for (let i = 0; i < value.children.length; i++) {
       let alignment = getTextAlignFromStyle(value.children[i]);
-      columns.push({
+      let columnSettings: TableColumnTypes = {
         // Take the written title as a header
         Header: value.children[i].textContent!,
         // Use a snake case version of the header as an accessor
@@ -91,12 +129,24 @@ const BuildTable: FC<{
         Cell: ({ value }) => (
           <Markdown rehypePlugins={[rehypeRaw]}>{value}</Markdown>
         ),
-        // Make the columns resizable
-        isResizable: props.resizable,
-        isAutoWidth: props.autoWidth,
-        align: alignment as Alignment,
-        alignHeader: alignment as Alignment,
-      });
+      };
+      if (alignment) {
+        columnSettings.align = alignment as Alignment;
+        columnSettings.alignHeader = alignment as Alignment;
+      }
+      if (props.resizable) {
+        columnSettings.isResizable = checkResizable(i);
+      }
+      if (props.autoWidth) {
+        columnSettings.isAutoWidth = checkAutoWidth(i);
+      }
+      if (props.width) {
+        let checkedWidth = checkWidth(i);
+        if (checkedWidth) {
+          columnSettings.initialMaxWidth = checkedWidth;
+        }
+      }
+      columns.push(columnSettings);
     }
   }),
     // Take the value of each table body  element.
@@ -135,7 +185,7 @@ const BuildTable: FC<{
         columns={columns}
         searchTerm={searchTerm}
         visualProperties={visualProperties}
-        flex={props.flex}
+        flex={!props.width && !props.autoWidth}
         height={props.height}
         autoRowsHeight
       />
