@@ -31,7 +31,7 @@ const DevHubSearchResultCard: FC<DevHubSearchResultCardProps> = ({ hit }) => {
         </nav>
       </div>
       <a href={hit.url} className="group flex flex-col">
-        <h5 className="text-heading-5 font-semibold text-search-primary mt-3 mb-4 group-hover:text-link-active">
+        <h5 className="text-xl font-semibold text-search-primary mt-3 mb-4 group-hover:text-link-active">
           {hit.title}
         </h5>
         <p className="text-heading-5 h-[40px] text-ellipsis overflow-hidden text-search-primary">
