@@ -13,15 +13,15 @@ export const getTocHeadings = () => {
     const text = heading.textContent;
     let slug = "";
 
-    if (heading.id) {
-      slug = heading.id
-    } else {
-      slug = text
+    if (!heading.id) {
+      heading.id = text
         ?.toLocaleLowerCase()
         .replace(/\W(?<!\s)/gi, "")
         .split(" ")
         .join("-")!;
     }
+
+    slug = heading.id
 
     const isSavedHeading = !!headingsParsed.find(
       (savedHeading) => savedHeading.slug === slug
