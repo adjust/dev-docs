@@ -11,7 +11,7 @@ import playformCompress from "@playform/compress";
 import remarkReplaceVersions from "./src/integrations/remarkReplaceVersions";
 import { fetchVersions } from "./src/integrations/fetchSdkVersions";
 import rehypeExternalLinks from 'rehype-external-links';
-import rehypeSlug from 'rehype-slug';
+import remarkHeaderLinkToId from "./src/integrations/remarkHeaderLinkToId";
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 
 const versions = await fetchVersions()
@@ -52,8 +52,8 @@ export default defineConfig({
   }), expressiveCode(astroExpressiveCodeOptions), mdx(), tailwind(), sitemap(), playformCompress()],
   site: "https://dev.adjust.com/",
   markdown: {
-    remarkPlugins: [remarkDefinitionList, [remarkReplaceVersions, versions]],
-    rehypePlugins: [rehypeSlug, [rehypeAutolinkHeadings, {
+    remarkPlugins: [remarkDefinitionList, [remarkReplaceVersions, versions], remarkHeaderLinkToId],
+    rehypePlugins: [[rehypeAutolinkHeadings, {
       behavior: 'append',
       properties: {
         className: ['copy-link']
