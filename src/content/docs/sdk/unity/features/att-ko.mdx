@@ -17,9 +17,7 @@ IDFA\(ID for Advertisers\)를 기록하려면 사용자의 허가를 받기 위�
 | `ATTrackingManagerAuthorizationStatusDenied`        | `2`  | 사용자가 앱 관련 데이터에 대한 디바이스 트래킹 액세스를 거부함. |
 | `ATTrackingManagerAuthorizationStatusAuthorized`    | `3`  | 사용자가 앱 관련 데이터에 대한 디바이스 트래킹 액세스를 승인함. |
 
-</Table>
-
-<Callout type="note">
+</Table> <Callout type="note">
 
 SDK가 ATT\(App Tracking Transparency\) 상태를 조회할 수 없는 경우, `-1` 상태 코드를 받게 될 수 있습니다.
 
@@ -95,7 +93,7 @@ Adjust.requestTrackingAuthorizationWithCompletionHandler((status) =>
 public static int getAppTrackingAuthorizationStatus();
 ```
 
-사용자의 현재 인증 상태는 언제든지 조회가 가능합니다. `getAppTrackingAuthorizationStatus` 메서드를 호출하여 **정수** 로 인증 상태 코드를 반환합니다.
+사용자의 현재 인증 상태는 언제든지 조회가 가능합니다. `getAppTrackingAuthorizationStatus` 메서드를 호출하여 `int`로 인증 상태 코드를 반환합니다.
 
 ```cs
 Adjust.getAppTrackingAuthorizationStatus();
@@ -103,7 +101,7 @@ Adjust.getAppTrackingAuthorizationStatus();
 
 ### 예시
 
-예시에서는 사용자의 인증 상태를 수집하여 `String`으로 변환하는 방법을 보여줍니다. 해당 정보는 `authorizationStatus`라는 변수로 할당되어 키 `"status"`와 함께 세션 파트너 파라미터로 전달됩니다.
+예시에서는 사용자의 인증 상태를 수집하여 `string`으로 변환하는 방법을 보여줍니다. 해당 정보는 `authorizationStatus`라는 변수로 할당되어 키 `"status"`와 함께 세션 파트너 파라미터로 전달됩니다.
 
 ```cs
 string authorizationStatus = Convert.ToString(Adjust.getAppTrackingAuthorizationStatus());
@@ -120,4 +118,26 @@ public static void checkForNewAttStatus();
 
 ```cs
 Adjust.checkForNewAttStatus();
+```
+
+## 커스텀 프롬프트 타이밍
+
+```cs
+public void setAttConsentWaitingInterval(int numberOfSeconds);
+```
+
+앱이 온보딩 과정이나 튜토리얼을 포함하는 경우, 사용자가 온보딩 과정이나 튜토리얼을 완료할 때까지 사용자의 ATT 동의 상태 전송을 지연시킬 수 있습니다. 이를 위해 `attConsentWaitingInterval` 속성을 설정하여 최대 **120초 동안** 데이터 전송을 지연하여 사용자가 초기 온보딩을 완료할 수 있는 시간을 제공할 수 있습니다. 타임아웃이 끝나거나 사용자가 동의 상태를 설정한 경우, SDK는 지연 기간 동안 기록된 모든 정보를 사용자의 동의 상태와 함께 Adjust 서버로 전송합니다.
+
+<Callout type="note">
+
+사용자가 타임아웃이 끝나기 전 또는 동의 상태를 선택하기 전에 앱을 종료한 경우, 앱을 다시 열면 타임아웃이 다시 시작됩니다.
+
+</Callout>
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+//...
+adjustConfig.attConsentWaitingInterval(30);
+//...
+Adjust.start(adjustConfig);
 ```
