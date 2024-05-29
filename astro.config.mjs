@@ -6,52 +6,55 @@ import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import { remarkDefinitionList, defListHastHandlers } from "remark-definition-list";
 import expressiveCode from "astro-expressive-code";
-import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-sections";
 import playformCompress from "@playform/compress";
 import remarkReplaceVersions from "./src/integrations/remarkReplaceVersions";
 import { fetchVersions } from "./src/integrations/fetchSdkVersions";
 import rehypeExternalLinks from 'rehype-external-links';
+import remarkHeaderLinkToId from "./src/integrations/remarkHeaderLinkToId";
+import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 
 const versions = await fetchVersions()
-
-const astroExpressiveCodeOptions = {
-  defaultProps: {
-    wrap: true
-  },
-  // This is where you can pass your plugin options
-  plugins: [pluginCollapsibleSections()],
-  frames: {
-    extractFileNameFromCode: false
-  },
-  styleOverrides: {
-    textMarkers: {
-      markBackground: "#ddebf9"
-    },
-    frames: {
-      editorTabBarBackground: "#f4f6f9",
-      terminalTitlebarBackground: "#f4f6f9",
-      terminalBackground: "var(--code-background)"
-    }
-  },
-  themes: ["github-light"]
-};
-
 
 // https://astro.build/config
 export default defineConfig({
   integrations: [AutoImport({
     imports: [{
-      "@components/index": ["ApiVersion", "Accordion", "Callout", "FigmaEmbed", "MinorVersion", "SdkVersion", "Tab", "Table", "Tabs", "Tile"]
+      "@components/index": ["ApiVersion", "Accordion", "Callout", "Code", "FigmaEmbed", "MinorVersion", "SdkVersion", "Tab", "Table", "Tabs", "Tile"]
     }],
   }),
   // Enable React for the Algolia search component.
   react({
     experimentalReactChildren: true
-  }), expressiveCode(astroExpressiveCodeOptions), mdx(), tailwind(), sitemap(), playformCompress()],
+  }), expressiveCode(), mdx(), tailwind(), sitemap(), playformCompress()],
   site: "https://dev.adjust.com/",
   markdown: {
-    remarkPlugins: [remarkDefinitionList, [remarkReplaceVersions, versions]],
-    rehypePlugins: [[rehypeExternalLinks, {
+    remarkPlugins: [remarkDefinitionList, [remarkReplaceVersions, versions], remarkHeaderLinkToId],
+    rehypePlugins: [[rehypeAutolinkHeadings, {
+      behavior: 'append',
+      properties: {
+        className: ['copy-link']
+      },
+      content: {
+        type: 'element',
+        tagName: 'svg',
+        properties: {
+          xmlns: 'http://www.w3.org/2000/svg',
+          height: 24,
+          width: 24,
+          viewBox: '0 0 24 24',
+          fill: 'currentColor'
+        },
+        children: [{
+          type: 'element',
+          tagName: 'path',
+          properties: {
+            fillRule: 'evenodd',
+            d: 'M8.464 10.793a.5.5 0 00-.707 0l-1.68 1.68c-1.19 1.19-1.298 3.12-.17 4.248l.943.942c1.155 1.155 3.031.905 4.19-.254l1.667-1.667a.5.5 0 10-.707-.707l-1.666 1.667c-.879.878-2.114.917-2.777.254l-.943-.942c-.681-.682-.687-1.977.17-2.834l1.68-1.68a.5.5 0 000-.707zm2.829-2.829a.5.5 0 010-.707l1.68-1.68c1.19-1.19 3.12-1.298 4.248-.17l.942.942c1.155 1.155.905 3.032-.254 4.191l-1.666 1.667a.5.5 0 01-.707-.707l1.666-1.667c.878-.878.918-2.113.254-2.777l-.942-.942c-.682-.682-1.976-.688-2.833.17L12 7.964a.5.5 0 01-.707 0zm3.535 1.414a.5.5 0 10-.707-.707l-4.95 4.95a.5.5 0 10.708.707l4.95-4.95z',
+            clipRule: 'evenodd'
+          }
+        }]
+      }
+    }], [rehypeExternalLinks, {
       content: {
         type: "element",
         tagName: "svg",

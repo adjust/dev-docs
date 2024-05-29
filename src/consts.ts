@@ -1,6 +1,6 @@
 export const SITE = {
-  title: "Adjust developer documentation",
-  description: "Adjust developer documentation hub.",
+  title: "Adjust Developer Hub",
+  description: "Adjust Developer Hub.",
   defaultLanguage: "en-us",
   defaultLanguageKey: "en",
 } as const;

@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import classNames from "classnames";
-import { Highlight } from "react-instantsearch";
+import { Snippet } from "react-instantsearch";
 
 import type { DevHubSearchResultCardProps, HitBreadcrumb } from "./types";
 
@@ -31,11 +31,11 @@ const DevHubSearchResultCard: FC<DevHubSearchResultCardProps> = ({ hit }) => {
         </nav>
       </div>
       <a href={hit.url} className="group flex flex-col">
-        <h5 className="text-heading-5 font-semibold text-search-primary mt-3 mb-4 group-hover:text-link-active">
+        <h5 className="text-xl font-semibold text-search-primary mt-3 mb-4 group-hover:text-link-active">
           {hit.title}
         </h5>
         <p className="text-heading-5 h-[40px] text-ellipsis overflow-hidden text-search-primary">
-          <Highlight hit={hit} attribute="content" />
+          <Snippet hit={hit} attribute="content" />
         </p>
       </a>
     </div>

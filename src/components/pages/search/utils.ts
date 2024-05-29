@@ -21,19 +21,29 @@ export const setSearchParams = ({
   platformValue,
   searchValue,
   pageValue,
+  lang,
 }: {
   categoryValue?: string;
   platformValue?: string;
   searchValue?: string;
   pageValue?: number;
+  lang: string;
 }) => {
   const { query, category, platform, page } = getSearchParams();
-
-  document.location.search = `query=${searchValue ?? query}&page=${
+  const path = `/${lang}/search?query=${searchValue ?? query}&page=${
     pageValue ?? page
   }&category=${categoryValue ?? category}&platform=${
     platformValue ?? platform
   }`;
+
+  window.history.pushState(
+    {
+      path,
+    },
+    "",
+    path,
+  );
+  window.dispatchEvent(new PopStateEvent("popstate"));
 };
 
 export const getDevHubFilters = (lang: keyof Locales) => {

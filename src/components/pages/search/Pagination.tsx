@@ -20,7 +20,7 @@ const Pagination: FC<PaginationProps> = ({ canRefine, lang }) => {
   const { results } = useHits();
 
   const onPageChange = (page: number) => {
-    return canRefine && setSearchParams({ pageValue: page });
+    return canRefine && setSearchParams({ pageValue: page, lang });
   };
 
   const { page } = getSearchParams();
@@ -51,8 +51,8 @@ const Pagination: FC<PaginationProps> = ({ canRefine, lang }) => {
           </span>
           <span className="text-base-sm font-medium flex items-center h-full">
             {t("pagination.position")
-              .replace("${page}", page)
-              .replace("${totalPages}", totalPages)}
+              .replace("${page}", page.toString())
+              .replace("${totalPages}", totalPages.toString())}
           </span>
           <span
             className={classNames(

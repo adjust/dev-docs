@@ -6,7 +6,7 @@ slug: en/sdk/ios/features/att
 
 If you want to record the device's ID for Advertisers (IDFA), you must display a prompt to get your user's authorization. To do this, you need to include Apple's App Tracking Transparency (ATT) framework in your app. The Adjust SDK stores the user's authorization status and sends it to Adjust's servers with each request.
 
-## Authorization statuses
+## [Authorization statuses](authorization-statuses)
 
 <Table>
 
@@ -25,7 +25,7 @@ You might receive a status code of `-1` if the SDK is unable to retrieve the ATT
 
 </Callout>
 
-## App-tracking authorization wrapper
+## [App-tracking authorization wrapper](app-tracking-authorization-wrapper)
 
 ```objc title="Method signature"
 + (void)requestTrackingAuthorizationWithCompletionHandler:(void (^_Nullable)(NSUInteger status))completion;
@@ -92,7 +92,7 @@ Adjust.requestTrackingAuthorization() { status in
 </Tab>
 </Tabs>
 
-## Get current authorization status
+## [Get current authorization status](get-current-authorization-status)
 
 ```objc title="Method signature"
 + (int)appTrackingAuthorizationStatus;
@@ -125,7 +125,51 @@ var authorizationStatus = Adjust.appTrackingAuthorizationStatus();
 </Tab>
 </Tabs>
 
-## Check for authorization status changes
+## [Custom prompt timing](custom-prompt-timing)
+
+```objc title="Property declaration"
+@property (nonatomic, assign) NSUInteger attConsentWaitingInterval;
+```
+
+If your app includes an onboarding process or a tutorial, you may want to delay sending your user's ATT consent status until after the user has completed this process. To do this, you can set the `attConsentWaitingInterval` property to delay the sending of data for **up to 120 seconds** to give the user time to complete the initial onboarding. After the timeout ends or the user sets their consent status, the SDK sends all information it has recorded during the delay to Adjust's servers along with the user's consent status.
+
+<Callout type="note">
+
+If the user closes the app before the timeout ends, or before they select their consent status, the timeout restarts when they reopen the app.
+
+</Callout>
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift {7}
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+    appToken: yourAppToken,
+    environment: environment)
+//...
+adjustConfig?.attConsentWaitingInterval = 30
+//...
+Adjust.appDidLaunch(adjustConfig)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc {4}
+*adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
+                                  environment:ADJEnvironmentSandbox];
+//...
+[adjustConfig setAttConsentWaitingInterval:30];
+//...
+[Adjust appDidLaunch:adjustConfig];
+```
+
+</Tab>
+</Tabs>
+
+## [Check for authorization status changes](check-for-authorization-status-changes)
 
 ```objc title="Method signature"
 + (void)checkForNewAttStatus;
@@ -150,7 +194,7 @@ Adjust.checkForNewAttStatus();
 </Tab>
 </Tabs>
 
-## iOS 17 consent handling
+## [iOS 17 consent handling](ios-17-consent-handling)
 
 <MinorVersion added="v4.38.0">
 

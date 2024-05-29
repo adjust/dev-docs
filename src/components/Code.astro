@@ -1,0 +1,34 @@
+---
+import { Code as ExpressiveCode } from "astro-expressive-code/components";
+import { extractCodeFromHTML } from "@components/utils/extractCode";
+import type { MarkerDefinition } from "astro-expressive-code";
+
+export interface Props {
+  title?: string | undefined;
+  highlight?: MarkerDefinition | MarkerDefinition[];
+  collapse?: string | string[] | undefined;
+  ins?: MarkerDefinition | MarkerDefinition[];
+  del?: MarkerDefinition | MarkerDefinition[];
+}
+
+const { title, highlight, ins, del, collapse } = Astro.props as Props;
+
+let content = "";
+
+if (Astro.slots.has("default")) {
+  // Get the raw content of the slot without transformations
+  content = await Astro.slots.render("default");
+}
+
+const { code, lang } = extractCodeFromHTML(content);
+---
+
+<ExpressiveCode
+  title={title}
+  lang={lang}
+  collapse={collapse}
+  mark={highlight}
+  ins={ins}
+  del={del}
+  code={code}
+/>
