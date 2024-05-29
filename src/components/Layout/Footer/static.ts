@@ -1,4 +1,3 @@
-export const adjustLink = "https://www.adjust.com";
 import { defaultLang } from "@i18n/locales";
 import { ui } from "@i18n/ui";
 
@@ -7,23 +6,29 @@ interface FooterLinks {
   url: string
 }
 
-export const footerLinks: FooterLinks[] = [
-  { id: "footer.about-us", url: `${adjustLink}/company/` },
-  { id: "footer.security", url: `${adjustLink}/security/` },
-  {
-    id: "footer.privacy-policy",
-    url: `${adjustLink}/terms/privacy-policy/`,
-  },
-  {
-    id: "footer.terms",
-    url: `${adjustLink}/terms/general-terms-and-conditions/`,
-  },
-  { id: "footer.ccpa-gdpr", url: `${adjustLink}/terms/ccpa/` },
-  {
-    id: "footer.legal-notice",
-    url: `${adjustLink}/terms/impressum/`,
-  },
-];
+export const footerLinks = (language: string): FooterLinks[] => {
+  let lang = "";
+  if (language !== "en") {
+    lang = language
+  }
+  return [
+    { id: "footer.about-us", url: `https://www.adjust.com/${lang}/company/` },
+    { id: "footer.security", url: `https://www.adjust.com/${lang}/security/` },
+    {
+      id: "footer.privacy-policy",
+      url: `https://www.adjust.com/${lang}/terms/privacy-policy/`,
+    },
+    {
+      id: "footer.terms",
+      url: `https://www.adjust.com/terms/general-terms-and-conditions/`,
+    },
+    { id: "footer.ccpa-gdpr", url: `https://www.adjust.com/terms/ccpa/` },
+    {
+      id: "footer.legal-notice",
+      url: `https://www.adjust.com/${lang}/terms/impressum/`,
+    },
+  ];
+}
 
 export const footerIcons = [
   {

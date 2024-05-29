@@ -17,9 +17,7 @@ slug: "ko/sdk/ios/features/att"
 | `ATTrackingManagerAuthorizationStatusDenied`        | `2`  | 사용자가 앱 관련 데이터에 대한 디바이스 트래킹 액세스를 거부함. |
 | `ATTrackingManagerAuthorizationStatusAuthorized`    | `3`  | 사용자가 앱 관련 데이터에 대한 디바이스 트래킹 액세스를 승인함. |
 
-</Table>
-
-<Callout type="note">
+</Table> <Callout type="note">
 
 SDK가 ATT 상태를 조회할 수 없는 경우, `-1` 상태 코드를 받게 될 수 있습니다.
 
@@ -41,11 +39,8 @@ Adjust SDK에는 [Apple `requestTrackingAuthorizationWithCompletionHandler` 메�
 
 Adjust SDK는 커스텀 프롬프트 사용 시 동의 여부도 기록합니다. 초기화 전에 프롬프트가 표시되면 SDK는 설치 이벤트와 함께 동의 여부를 전송합니다. 프롬프트가 초기화된 후 표시되면 SDK는 사용자가 업데이트한 후 즉시 Adjust 서버에 동의 여부를 전송합니다.
 
-</Callout>
-
-<Tabs>
-
-<Tab title="Swift" sync="swift">
+</Callout><Tabs>
+ <Tab title="Swift" sync="swift">
 
 ```swift
 Adjust.requestTrackingAuthorization() { status in
@@ -69,7 +64,6 @@ Adjust.requestTrackingAuthorization() { status in
 ```
 
 </Tab>
-
 <Tab title="Objective-C" sync="objc">
 
 ```objc
@@ -92,7 +86,6 @@ Adjust.requestTrackingAuthorization() { status in
 ```
 
 </Tab>
-
 </Tabs>
 
 ## 현재 승인 상태 확인
@@ -104,15 +97,13 @@ Adjust.requestTrackingAuthorization() { status in
 사용자의 현재 인증 상태는 언제든지 조회가 가능합니다. `getAppTrackingAuthorizationStatus` 메서드를 호출하여 **정수** 로 인증 상태 코드를 반환합니다.
 
 <Tabs>
-
-<Tab title="Swift" sync="swift">
+ <Tab title="Swift" sync="swift">
 
 ```swift
 let authorizationStatus = Adjust.appTrackingAuthorizationStatus();
 ```
 
 </Tab>
-
 <Tab title="Objective-C" sync="objc">
 
 ```objc
@@ -120,11 +111,98 @@ int authorizationStatus = [Adjust appTrackingAuthorizationStatus];
 ```
 
 </Tab>
-
 <Tab title="Javascript" sync="js">
 
 ```js
 var authorizationStatus = Adjust.appTrackingAuthorizationStatus();
+```
+
+</Tab>
+</Tabs>
+
+## 커스텀 프롬프트 타이밍
+
+```objc
+@property (nonatomic, assign) NSUInteger attConsentWaitingInterval;
+```
+
+앱이 온보딩 과정이나 튜토리얼을 포함하는 경우, 사용자가 온보딩 과정이나 튜토리얼을 완료할 때까지 사용자의 ATT 동의 상태 전송을 지연시킬 수 있습니다. 이를 위해 `attConsentWaitingInterval` 속성을 설정하여 최대 **120초 동안** 데이터 전송을 지연하여 사용자가 초기 온보딩을 완료할 수 있는 시간을 제공할 수 있습니다. 타임아웃이 끝나거나 사용자가 동의 상태를 설정한 경우, SDK는 지연 기간 동안 기록된 모든 정보를 사용자의 동의 상태와 함께 Adjust 서버로 전송합니다.
+
+<Callout type="note">
+
+사용자가 타임아웃이 끝나기 전 또는 동의 상태를 선택하기 전에 앱을 종료한 경우, 앱을 다시 열면 타임아웃이 다시 시작됩니다.
+
+</Callout><Tabs>
+ <Tab title="Swift" sync="swift">
+
+```swift
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+    appToken: yourAppToken,
+    environment: environment)
+//...
+adjustConfig?.attConsentWaitingInterval = 30
+//...
+Adjust.appDidLaunch(adjustConfig)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+*adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
+                                  environment:ADJEnvironmentSandbox];
+//...
+[adjustConfig setAttConsentWaitingInterval:30];
+//...
+[Adjust appDidLaunch:adjustConfig];
+```
+
+</Tab>
+</Tabs>
+
+## 커스텀 프롬프트 타이밍
+
+```objc
+@property (nonatomic, assign) NSUInteger attConsentWaitingInterval;
+```
+
+앱이 온보딩 과정이나 튜토리얼을 포함하는 경우, 사용자가 온보딩 과정이나 튜토리얼을 완료할 때까지 사용자의 ATT 동의 상태 전송을 지연시킬 수 있습니다. 이를 위해 `attConsentWaitingInterval` 속성을 설정하여 최대 **120초 동안** 데이터 전송을 지연하여 사용자가 초기 온보딩을 완료할 수 있는 시간을 제공할 수 있습니다. 타임아웃이 끝나거나 사용자가 동의 상태를 설정한 경우, SDK는 지연 기간 동안 기록된 모든 정보를 사용자의 동의 상태와 함께 Adjust 서버로 전송합니다.
+
+<Callout type="note">
+
+사용자가 타임아웃이 끝나기 전 또는 동의 상태를 선택하기 전에 앱을 종료한 경우, 앱을 다시 열면 타임아웃이 다시 시작됩니다.
+
+</Callout>
+
+<Tabs>
+
+<Tab title="Swift" sync="swift">
+
+```swift
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+    appToken: yourAppToken,
+    environment: environment)
+//...
+adjustConfig?.attConsentWaitingInterval = 30
+//...
+Adjust.appDidLaunch(adjustConfig)
+```
+
+</Tab>
+
+<Tab title="Objective-C" sync="objc">
+
+```objc
+*adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
+                                  environment:ADJEnvironmentSandbox];
+//...
+[adjustConfig setAttConsentWaitingInterval:30];
+//...
+[Adjust appDidLaunch:adjustConfig];
 ```
 
 </Tab>
@@ -140,15 +218,13 @@ var authorizationStatus = Adjust.appTrackingAuthorizationStatus();
 커스텀 ATT 프롬프트를 사용하는 경우, 사용자 인증 상태 변경에 대해 Adjust SDK에 알려야 합니다. `checkForNewAttStatus` 메서드를 호출하여 인증 상태를 Adjust 서버로 전송합니다.
 
 <Tabs>
-
-<Tab title="Swift" sync="swift">
+ <Tab title="Swift" sync="swift">
 
 ```swift
 Adjust.checkForNewAttStatus();
 ```
 
 </Tab>
-
 <Tab title="Objective-C" sync="objc">
 
 ```objc
@@ -156,14 +232,13 @@ Adjust.checkForNewAttStatus();
 ```
 
 </Tab>
-
 </Tabs>
 
 ## iOS 17 동의 처리
 
 <MinorVersion added="v4.38.0">
 
-With the release of iOS 17, Apple implemented new rules on what data developers may send to third\-parties. To ensure that developers can demonstrate compliance with Apple’s privacy guidelines, the Adjust SDK makes use of two separate endpoints for **consenting** and **non\-consenting** users.
+iOS 17 출시와 함께 Apple은 개발자가 서드파티에 보낼 수 있는 데이터에 관한 새로운 규정을 도입했습니다. 개발자가 Apple의 개인정보 보호정책 준수를 입증할 수 있도록 Adjust SDK는 **동의** 사용자와 **비동의** 사용자에 대해 두 엔드포인트를 별도로 사용합니다.
 
 </MinorVersion>
 
