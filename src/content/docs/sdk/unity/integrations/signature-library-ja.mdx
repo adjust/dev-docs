@@ -1,55 +1,55 @@
 ---
-title: "SDK Signature library integration"
-description: "Add the Signature library to your Unity app to secure communications between the Adjust SDK and Adjust's servers."
-slug: "ja/sdk/unity/integrations/signature-library"
+title: "SDKシグネチャーライブラリの実装"
+description: "Adjust SDKとAdjustサーバー間の通信を保護するために、Unityアプリにシグネチャーライブラリを追加してください。"
+slug: "en/sdk/unity/integrations/signature-library"
 ---
+AdjustのSDKシグネチャーライブラリは、Adjust SDKのスタンドアローンプラグインとして設計されています。つまり、コードを変更したり、アプリでAdjust SDKを使用する方法を変更したりする必要はありません。プラグインをインストールすると、Adjust SDKによって作成された全てのリクエストが引き続き正常に機能します。
 
-Adjust's SDK Signature library is designed to be a standalone plugin for the Adjust SDK. This means you don’t need to change any of your code or change how you use the Adjust SDK in your app. Once you install the plugin, all requests made by the Adjust SDK will continue to work as expected.
+[事前準備](before-you-begin)
+------------------------
 
-## [事前準備](before-you-begin)
+シグネチャーライブラリをUnityアプリに実装する前に、以下を確認してください。
 
-To integrate the Signature library into your Unity app, ensure the following:
+* 使用中のAndroid APIバージョンが **21以降** であること。
+* お使いのAdjust SDKバージョンが **4\.37\.2以降** であること。
+* Proguardを使用している場合、シグネチャーライブラリとAdjust SDKの両方で全く同じProguard設定を使用する必要があります。
 
--  The Android API version in use is **21 or greater** .
--  お使いのAdjust SDKバージョンが **4\.37\.2以降** であること。
--  If you use Proguard, you must use the exact same Proguard configuration for both the Signature library and the Adjust SDK.
-
-### [Migrating from Signature v1 or v2 library](migrating-from-signature-v1-or-v2-library)
+### [シグネチャーv1またはv2ライブラリから移行](migrating-from-signature-v1-or-v2-library)
 
 以前にシグネチャーv1またはシグネチャーv2を使用していた場合は、シグネチャーライブラリを連携する前に以前のバージョンを削除する必要があります。これを行うには、以下の手順に従ってください。
 
--  If you previously integrated Signature v1, remove any code that calls to signature functions in your project.
--  If you previously integrated Signature v2, remove the Signature v2 library from your project.
+* 以前シグネチャーv1を実装したことがある場合は、プロジェクト内のシグネチャー機能を呼び出すコードを削除してください。
+* 以前シグネチャーv2を実施したことがある場合は、シグネチャーv2のライブラリをプロジェクトから削除してください。
 
-## [連携の手順](integration-steps)
+[連携の手順](integration-steps)
+--------------------------
 
-Follow these steps to integrate the Signature library in your Unity project.
+Unityプロジェクトにシグネチャーライブラリを実装するには、以下の手順に従ってください。
 
-1. Fetch the [Signature library content from GitHub](https://github.com/adjust/adjust_signature_sdk/releases/latest).
-2. Place the Android archive \(`.aar`\) file in the `Assets/Adjust/Android` directory inside your Unity project.
-3. Place the iOS static framework \(`.a`\) in the `Assets/Adjust/iOS` directory inside your Unity project.
+1. [GitHubからシグネチャーライブラリの内容](https://github.com/adjust/adjust_signature_sdk/releases/latest)を取得します。
+2. Androidアーカイブ（`.aar`）ファイルをUnityプロジェクト内の`Assets/Adjust/Android`ディレクトリに配置します。
+3. iOS static framework（`.a`）をUnityプロジェクト内の`Assets/Adjust/iOS`ディレクトリに配置します。
 
-That’s it\! The Signature library is now integrated into your project. Follow the steps in the next section to configure your digital certificates.
+これで、シグネチャーライブラリがプロジェクトに実装されました。デジタル証明書を設定するには、次のセクションの手順に従ってください。
 
-### [Set up your certificates in the Adjust suite](set-up-your-certificates-in-the-adjust-suite)
+### [Adjustで証明書を設定する](set-up-your-certificates-in-the-adjust-suite)
 
-<Callout type="note">
+<callout type="note"> 
 
-This step is only required if your app targets **Android** .
-
-</Callout>
+このステップは、アプリが **Android** をターゲットにしている場合にのみ必要です。
+</Callout> 
 
 アプリにシグネチャーライブラリを実装すると、Adjust SDKからAdjustに送信される全てのリクエストが署名されます。また、Adjust SDKは、署名証明書のフィンガープリントなどの関連情報をAdjustのサーバーに送信します。
 
-A certificate fingerprint is a cryptographic hash of the public information held within a certificate. It can be used to verify the authenticity of an app.
+証明書フィンガープリントは、証明書内に保持される公開情報の暗号化ハッシュです。これはアプリの信頼性を検証するために使用できます。
 
-The Signature library can’t verify the authenticity of your certificate fingerprints. The fingerprints need to be added to an allowlist in the Adjust Suite in order for requests containing them to be accepted by Adjust as authentic. To do this, you need to retrieve the certificate fingerprints and send them to Adjust.
+シグネチャーライブラリでは、証明書フィンガープリントの信頼性を検証できません。フィンガープリントを含むリクエストをAdjustが信頼性のあるものとして受理するには、フィンガープリントをAdjustの許可リストに追加する必要があります。これを行うには、証明書フィンガープリントを取得し、Adjustに送信する必要があります。
 
-#### [From a keystore](from-a-keystore)
+#### [キーストアから取得](from-a-keystore)
 
-If you use your own keystore, or if Android Studio generated a keystore for you, you can retrieve the certificate fingerprint by following these steps:
+独自のキーストアを使用している場合、またはAndroid Studioが生成したキーストアの場合は、以下の手順に従って証明書フィンガープリントを取得できます。
 
-1. Find the keystore file \(`.jks`\) you used to sign **the release version of your app** . The keystore must be the one you used to sign the release version sent to the Google Play Store. If the keystore is different, your SDK requests will be rejected.
+1. **アプリのリリースバージョン** の署名に使用されるキーストアファイル（`.jks`）を見つけます。キーストアは、Google Play ストアに送信されるリリースバージョンの署名に使用されたものでなければなりません。キーストアが異なる場合、SDKリクエストは拒否されます。
 
 2. 以下のコマンドを実行して、キーをリストアップします。角括弧内の部分をお客様の情報に置き換えてください。
 
@@ -57,9 +57,9 @@ If you use your own keystore, or if Android Studio generated a keystore for you,
    $ keytool -list -v -keystore <path/to/keystore.jks> -alias <your_key_alias id="sl-md0000000">
    ```
 
-   This command prompts you for your keystore password. This is the password you defined when you generated the keystore.
+   このコマンドを実行すると、キーストアのパスワードが要求されます。これは、キーストアの生成時に定義したパスワードです。
 
-   The final output looks like this:
+   最終的な出力結果は以下のようになります。
 
    ```text
    Alias name: Key0
@@ -84,120 +84,118 @@ If you use your own keystore, or if Android Studio generated a keystore for you,
    Version: 3
    ```
 
-3. Save the SHA\-1 fingerprint to [add to your allowlist in the Adjust Suite](#add-your-digital-certificate-fingerprints-to-adjusts-allowlist).
+3. SHA\-1フィンガープリントを保存し、[Adjustの許可リストに追加](#add-your-digital-certificate-fingerprints-to-adjusts-allowlist)します。
 
-#### [From Google Play Internal App Sharing](from-google-play-internal-app-sharing)
+#### [Google Play Internal App Sharingから取得](from-google-play-internal-app-sharing)
 
-If you use [Google Play Internal App Sharing](https://support.google.com/googleplay/android-developer/answer/9303479?hl=en), you need to send both your organization’s SHA\-1 certificate fingerprint and your Internal test certificate fingerprint to Adjust for allowlisting.
+[Google Play Internal App Sharing](https://support.google.com/googleplay/android-developer/answer/9303479?hl=en)を使用している場合、組織のSHA\-1証明書フィンガープリントと内部テスト証明書フィンガープリントの両方をAdjustに送信し、許可リストに登録する必要があります。
 
-To extract the fingerprints:
+フィンガープリントを抽出する方法：
 
-1. Navigate to the Google Play Console and log in.
+1. Google Play Consoleからログインします。
 2. アプリを選択します。
-3. Select **Release Management \-\-> App Releases \-\-> Manage internal app sharing > App certificates** .
-4. Save the **SHA\-1 certificate fingerprint** for both the **Internal test certificate** and your organization’s keystore to [add to your allowlist in the Adjust Suite](#add-your-digital-certificate-fingerprints-to-adjusts-allowlist).
+3. **リリース管理（Release Management）\-\-> アプリのリリース（App Releases）\-\-> 内部アプリ共有の管理（App Signing）> アプリ証明書（App certificates）** を選択します。
+4. **内部テスト証明書** と組織のキーストアの両方の **SHA\-1証明書のフィンガープリント** を保存し、[Adjustの許可リストに追加](#add-your-digital-certificate-fingerprints-to-adjusts-allowlist)します。
 
-![A screenshot of the certficate page in Google Play Console](@images/sig-v3/google-play-internal-sharing.png)
+![Google Play Consoleの証明書ページのスクリーンショット](@images/sig-v3/google-play-internal-sharing.png)
 
-#### [From Google Play App Signing](from-google-play-app-signing)
+#### [Google Play App Signingから取得](from-google-play-app-signing)
 
-If you use [Google Play App Signing](https://support.google.com/googleplay/android-developer/answer/7384423?hl=en), you need to send both your organization’s SHA\-1 certificate fingerprint and your Internal test certificate fingerprint to Adjust for allowlisting.
+[Google Play App Signing](https://support.google.com/googleplay/android-developer/answer/7384423?hl=en)を使用している場合、組織のSHA\-1証明書フィンガープリントと内部テスト用の証明書フィンガープリントの両方をAdjustに送信し、許可リストに登録する必要があります。
 
-To extract the fingerprints:
+フィンガープリントを抽出する方法：
 
-1. Navigate to the Google Play Console and log in.
+1. Google Play Consoleからログインします。
 2. アプリを選択します。
-3. Select **Release Management > App Signing** .
-4. Save the **SHA\-1 certificate fingerprint** for both the **App signing certificate** and **Upload certificate** to send to Adjust.
+3. **リリース管理（Release Management）\-\-> アプリの署名（App Signing）** を選択します。
+4. **アプリ署名証明書** と **アップロード証明書** の両方の **SHA\-1証明書フィンガープリント** を保存します。
 
-![A screenshot of the App signing page in the Google Play Console](@images/sig-v3/google-play-signing.png)
+![Google Play ConsoleのApp Signingページのスクリーンショット](@images/sig-v3/google-play-signing.png)
 
-#### [From Huawei AppGallery App Signing](from-huawei-appgallery-app-signing)
+#### [Huawei AppGallery App Signingから取得](from-huawei-appgallery-app-signing)
 
-If you use Huawei AppGallery App Signing, you need to send both your organization’s SHA\-1 certificate fingerprint and your Internal test certificate fingerprint to Adjust for allowlisting.
+Huawei AppGallery App Signingを使用している場合、組織のSHA\-1証明書フィンガープリントと内部テスト用証明書フィンガープリントの両方をAdjustに送信し、許可リストに登録する必要があります。
+<callout type="note"> 
 
-<Callout type="note">
+Huawei AppGalleryで独自の署名証明書を使用している場合、[キーストアから証明書フィンガープリントを取得する手順](#from-a-keystore)に従ってください。
+</Callout> 
 
-If you use your own signing certificate with Huawei AppGallery, follow the [instructions for retrieving your certificate fingerprint from a keystore](#from-a-keystore).
+フィンガープリントを抽出する方法：
 
-</Callout>
+1. AppGallery ConnectのApp Signingページに移動し、アプリ署名証明書（`certificate.pem`）をダウンロードします。
 
-To extract the fingerprints:
+![AppGallery ConnectのApp Signingページのスクリーンショット](@images/sig-v3/huawei-appgallery-signing.png)
 
-1. Navigate to the App Signing page in AppGallery Connect and download the App signing certificate \(`certificate.pem`\).
-
-![A screenshot of the App Signing page in AppGallery Connect](@images/sig-v3/huawei-appgallery-signing.png)
-
-2. Once you’ve downloaded the certificate, run the following command to output the SHA\-1 fingerprint of the certificate.
+2. 証明書をダウンロードしたら、次のコマンドを実行して証明書のSHA\-1フィンガープリントを出力します。
 
    ```console
    $ openssl x509 -fingerprint -in certificate.pem -noout -SHA1
    ```
 
-   The output looks like this:
+   出力結果は以下のようになります。
 
    ```text
    SHA1 Fingerprint=C4:BD:07:91:BC:09:F8:B6:15:CD:BC:A3:3F:BC:68:8B:C2:EF:4F:F5
    ```
 
-3. Save the fingerprint to [add to your allowlist in the Adjust Suite](#add-your-digital-certificate-fingerprints-to-adjusts-allowlist)..
+3. フィンガープリントを保存して、[Adjustの許可リストに追加](#add-your-digital-certificate-fingerprints-to-adjusts-allowlist)します。
 
-### [Add your digital certificate fingerprints to Adjust’s allowlist](add-your-digital-certificate-fingerprints-to-adjust-s-allowlist)
+### [デジタル証明書フィンガープリントをAdjustの許可リストに追加する](add-your-digital-certificate-fingerprints-to-adjust-s-allowlist)
 
-<Callout type="note">
+<callout type="note"> 
 
-Remember to add all certificate fingerprints you want to use to the Adjust suite. This might include debug versions and versions for different stores.
-
-</Callout>
+使用する全ての証明書フィンガープリントをAdjustに追加するようにしてください。これには、デバッグバージョンや異なるストアのバージョンが含まれる場合があります。
+</Callout> 
 
 証明書のフィンガープリントを取得したら、以下を実行して許可リスト（ホワイトリスト）に追加してください。
 
-1. Select your app in AppView to open the app details screen.
+1. AppViewでアプリを選択し、アプリの詳細画面を開きます。
 2. **不正防止（Protection）** タブを選択します。
-3. Select the **Edit** button on the **Suspicious installs** section.
+3. **疑わしいインストール（Suspicious install）** セクションで、 **編集（Edit）** ボタンを選択します。
 4. **Androidフィンガープリント（Android finterprinting）** セクションで、 **新規フィンガープリント（New fingerprint）** を選択します。
-5. Paste the SHA\-1 fingerprint into the text box that appears.
+5. 表示されるテキストボックスにSHA\-1フィンガープリントを貼り付けます。
 6. **Add** を選択します。
 
 これで、フィンガープリントがアプリで許可リストに登録されました。
 
-## [Test your app](test-your-app)
+[アプリをテストする](test-your-app)
+--------------------------
 
-You can verify you have integrated the Signature library into your app using the [Adjust Testing Console](https://help.adjust.com/ja/article/testing-console).
+[Adjustテストコンソール](https://help.adjust.com/en/article/testing-console)を使用して、アプリにシグネチャーライブラリが実装されていることを確認できます。
+<callout type="important"> 
 
-<Callout type="important">
+Adjust SDKが **サンドボックス** モードで実行されていることを確認してください。
+</Callout> 
 
-You must ensure that the Adjust SDK is running in **Sandbox mode** .
+シグネチャーライブラリの実装をテストするには、以下の手順に従ってください。
 
-</Callout>
+1. インストール情報が送信されるようにするには、テストデバイスからアプリを完全に削除します。
 
-To test your Signature library integration:
+2. デバイスに関する全ての情報を消去するには、テストコンソールを使用してデバイスに関する情報を削除します。 また、 Adjust Insightsアプリ（[iOS](https://apps.apple.com/us/app/adjust-insights/id1125517808)と[Android](https://play.google.com/store/apps/details?id=com.adjust.insights)でご利用可能）で取得したアプリの広告IDをパスすることで、forget\_deviceエンドポイントを使用することも可能です。 次の広告IDはいずれも使用できます：`adid` 、 `android_id` 、 `gps_adid` 、 `idfa` 、 `idfv` 、 `imei` 、 `oaid` 。
 
-1. Fully delete your app from the test device to ensure the install information is sent.
-
-2. デバイスに関する全ての情報を消去するには、テストコンソールを使用してデバイスに関する情報を削除します。 また、 Adjust Insightsアプリ（[iOS](https://apps.apple.com/us/app/adjust-insights/id1125517808)と[Android](https://play.google.com/store/apps/details?id=com.adjust.insights)でご利用可能）で取得したアプリの広告IDをパスすることで、forget_deviceエンドポイントを使用することも可能です。 次の広告IDはいずれも使用できます：`adid` 、 `android_id` 、 `gps_adid` 、 `idfa` 、 `idfv` 、 `imei` 、 `oaid` 。
-
-   The call looks like this:
+   コールは以下のようになります。
 
    ```console
    $ curl -X POST 'https://app.adjust.com/forget_device?app_token={yourAppToken}&id={adid}'
    ```
 
-3. Once you’ve cleared the device from the Testing Console, install the app on your test device and launch it to send install information to Adjust.
+3. テストコンソールからデバイスのデータを削除したら、テストデバイスにアプリをインストールして起動し、インストール情報をAdjustに送信します。
 
-4. Input the test device’s advertising ID into the Testing Console to fetch the install event information. Check the following:
+4. テストデバイスの広告IDをテストコンソールに入力し、インストールイベント情報を取得します。以下の点を確認してください。
 
-   1. The `SignatureVerificationResult` field should show a value of `Valid Signature`
-   2. The `SignatureVersion` field should show a value of `3`
+   1. `SignatureVerificationResult`フィールドに次の値が表示されている： `Valid Signature`
+   2. `SignatureVersion`フィールドに次の値が表示されている： `3`
 
-If these fields are present and contain the correct information, you have successfully integrated the Signature library. If the fields display any other values, review the integration steps again or contact [support@adjust.com](mailto:support@adjust.com) for further assistance.
+これらのフィールドが存在し、正しい情報が含まれている場合、シグネチャーライブラリは正常に実装されています。これらのフィールドに他の値が表示されている場合は、実装手順を再度確認するか、[support@adjust.com](mailto:support@adjust.com)までお問い合わせください。
 
-これで、シグネチャーライブラリがアプリに連携されました。 [2回のアトリビューション期間が経過](https://help.adjust.com/ja/article/attribution-windows)したら、 [SDKシグネチャーの検証](https://help.adjust.com/ja/article/sdk-signature#enforce-signature-validation)を有効化して、署名されたリクエストのみがAdjustで受理されるようにしてください。
+これで、シグネチャーライブラリがアプリに連携されました。 [2回のアトリビューション期間が経過](https://help.adjust.com/en/article/attribution-windows)したら、 [SDKシグネチャーの検証](https://help.adjust.com/en/article/sdk-signature#enforce-signature-validation)を有効化して、署名されたリクエストのみがAdjustで受理されるようにしてください。
 
-## [トラブルシューティング](troubleshooting)
+[トラブルシューティング](troubleshooting)
+------------------------------
 
-### [Unknown CPU Architecture in AdjustSigSdk.a](unknown-cpu-architecture-in-adjustsigsdk-a)
+### [AdjustSigSdk.aでの不明なCPUアーキテクチャー](unknown-cpu-architecture-in-adjustsigsdk-a)
 
-In Unity Editor 2018 and later, you may receive an error message containing **Unknown CPU Architecture** . This error message is shown when the Unity Editor tries to apply the iOS static framework \(`.a`\) to non\-iOS platforms. To fix the issue, select the `AdjustSigSdk.a` file and deselect all platforms except **iOS** in the **Import Settings** menu.
+Unity Editor 2018以降では、 **Unknown CPU Architecture** というエラーメッセージが表示される場合があります。このエラーメッセージは、UnityエディターがiOS static framework（`.a`）をiOS以外のプラットフォームに適用しようとする場合に表示されます。この問題を解決するには、 `AdjustSigSdk.a`ファイルを選択し、 **Import Settings** メニューで **iOS** を除く全てのプラットフォームの選択を解除してください。
 
-![A screenshot of the AdjustSdk Import Settings in Unity Editor](@images/sig-v3/unity-import-settings.png)
+![UnityエディターのAdjustSdk Import Settingsのスクリーンショット](@images/sig-v3/unity-import-settings.png)
+
