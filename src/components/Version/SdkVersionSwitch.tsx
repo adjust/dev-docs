@@ -4,6 +4,10 @@ import { useStore } from "@nanostores/react";
 import type { Locales } from "@i18n/locales";
 import { useTranslations } from "@i18n/utils";
 import type { Option } from "@adjust/components/build/ComboBox/ComboBox";
+import {
+  getQueryParameter,
+  updateQueryParameter,
+} from "@components/utils/queryParamHelpers";
 import { $versions, changeVersionValue } from "@store/sdkVersionsStore";
 
 // Declare the supported values.
@@ -19,21 +23,6 @@ const VersionSwitch: FC<{ lang: string }> = ({ lang }) => {
   if (versions.items.length < 1) {
     return null; // Do not display the version switch if there are one or fewer options
   }
-
-  // Get query parameters from the URL
-
-  const getQueryParameter = (name: string) => {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get(name);
-  };
-
-  // Set query params in the URL
-
-  const updateQueryParameter = (name: string, value: string) => {
-    const url = new URL(window.location.href);
-    url.searchParams.set(name, value);
-    window.history.replaceState(null, "", url.toString());
-  };
 
   useEffect(() => {
     // Check to see if there are any version blocks on the page.

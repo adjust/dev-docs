@@ -3,8 +3,12 @@ import { ComboBox } from "@adjust/components";
 import { useStore } from "@nanostores/react";
 import type { Locales } from "@i18n/locales";
 import { useTranslations } from "@i18n/utils";
-
+import type { Option } from "@adjust/components/build/ComboBox/ComboBox";
 import { $versions, changeVersionValue } from "@store/apiVersionsStore";
+import {
+  getQueryParameter,
+  updateQueryParameter,
+} from "@components/utils/queryParamHelpers";
 
 const VersionSwitch: FC<{ lang: string }> = ({ lang }) => {
   const t = useTranslations(lang as keyof Locales);
@@ -22,8 +26,27 @@ const VersionSwitch: FC<{ lang: string }> = ({ lang }) => {
     const higherVersion = versions.items.reduce((prev, current) =>
       prev && prev.value > current.value ? prev : current,
     );
-    changeVersionValue(higherVersion);
+    const queryVersion = getQueryParameter("version");
+    if (
+      queryVersion &&
+      versions.items.some((version) => version.label === queryVersion)
+    ) {
+      const versionOption: Option = {
+        label: queryVersion,
+        value: queryVersion,
+      };
+      changeVersionValue(versionOption);
+    } else {
+      changeVersionValue(higherVersion);
+    }
   }, []);
+
+  const handleVersionChange = (newVersion: Option) => {
+    // Set the new value in the store
+    changeVersionValue(newVersion);
+    // Update the query params in the URL
+    updateQueryParameter("version", newVersion.value);
+  };
 
   let label = t("apiversionswitch.label");
 
@@ -33,7 +56,7 @@ const VersionSwitch: FC<{ lang: string }> = ({ lang }) => {
       <ComboBox
         value={versions.currentVersion}
         options={versions.items}
-        onChange={changeVersionValue}
+        onChange={handleVersionChange}
       />
     </div>
   );
