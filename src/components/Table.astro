@@ -2,20 +2,30 @@
 import BuildTable from "@components/atlas/BuildTable";
 const { lang } = Astro.params;
 
-interface columnWidths {
+interface ColumnWidths {
   [key: number]: number;
 }
 
 export interface Props {
   search?: boolean;
-  resizable?: number[];
+  resizable?: string;
   noborder?: boolean;
   striped?: boolean;
   height?: TableHeights;
-  autoWidth?: number[];
-  width?: columnWidths[];
+  autoWidth?: string;
+  width?: string;
 }
 
+const parseWidth = (columnWidths: string) => {
+  return columnWidths.split(",").map((pair) => {
+    const [key, value] = pair.split(":").map((item) => item.trim());
+    return { [key]: parseInt(value, 10) } as ColumnWidths;
+  });
+};
+
+const parseList = (columns: string) => {
+  return columns.split(",").map((value) => parseInt(value.trim(), 10));
+};
 const {
   search = false,
   resizable,
@@ -30,18 +40,21 @@ const {
 // If it is, this needs to be passed as a number. If not, it should be passed as-is.
 
 let heightNumber = isNaN(Number(height));
+let parsedWidth = width ? parseWidth(width) : undefined;
+let parsedAutoWidth = autoWidth ? parseList(autoWidth) : undefined;
+let parsedResizable = resizable ? parseList(resizable) : undefined;
 ---
 
 <BuildTable
   client:only="react"
-  resizable={resizable}
+  resizable={parsedResizable}
   bordered={!noborder}
   search={search}
   striped={striped}
   height={!heightNumber ? Number(height) : height}
   lang={lang ? lang : "en"}
-  autoWidth={autoWidth}
-  width={width}
+  autoWidth={parsedAutoWidth}
+  width={parsedWidth}
 >
   <slot slot="content" />
 </BuildTable>
