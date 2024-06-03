@@ -5,10 +5,10 @@ import type { MarkerDefinition } from "astro-expressive-code";
 
 export interface Props {
   title?: string | undefined;
-  highlight?: MarkerDefinition | MarkerDefinition[];
+  highlight?: string;
   collapse?: string | string[] | undefined;
-  ins?: MarkerDefinition | MarkerDefinition[];
-  del?: MarkerDefinition | MarkerDefinition[];
+  ins?: string;
+  del?: string;
 }
 
 const { title, highlight, ins, del, collapse } = Astro.props as Props;
@@ -20,16 +20,49 @@ if (Astro.slots.has("default")) {
   content = await Astro.slots.render("default");
 }
 
+const parseHighlight = (
+  highlight: string,
+): MarkerDefinition | MarkerDefinition[] => {
+  return highlight.split(",").map((item) => {
+    item = item.trim();
+    if (item.startsWith("{") && item.endsWith("}")) {
+      const [key, value] = item
+        .slice(1, -1)
+        .split(":")
+        .map((part) => part.trim());
+      return { [key]: value.replace(/"/g, "") } as MarkerDefinition; // Remove quotes from the value
+    }
+    if (item.startsWith("/") && item.endsWith("/")) {
+      return new RegExp(item.slice(1, -1), "g") as MarkerDefinition; // Return as RegExp
+    }
+    return item.replace(/'/g, ""); // Remove single quotes from the item
+  }) as MarkerDefinition[];
+};
+
+const parseCollapse = (collapse: string | string[] | undefined): string[] => {
+  if (typeof collapse === "string") {
+    return collapse.split(",").map((item) => item.trim());
+  }
+  if (Array.isArray(collapse)) {
+    return collapse;
+  }
+  return [];
+};
+
 const { code, lang } = extractCodeFromHTML(content);
+const parsedHighlight = highlight ? parseHighlight(highlight) : undefined;
+const parsedIns = ins ? parseHighlight(ins) : undefined;
+const parsedDel = del ? parseHighlight(del) : undefined;
+const parsedCollapse = collapse ? parseCollapse(collapse) : undefined;
 ---
 
 <ExpressiveCode
   title={title}
   lang={lang}
-  collapse={collapse}
-  mark={highlight}
-  ins={ins}
-  del={del}
+  collapse={parsedCollapse}
+  mark={parsedHighlight}
+  ins={parsedIns}
+  del={parsedDel}
   code={code}
   useDiffSyntax={true}
 />
