@@ -8,7 +8,7 @@
 # should work with any shell interpreter. BASH- and ZSH-
 # specific commands must be avoided.
 
-export MDX_TAGS="Abbr Accordion ApiVersion SdkVersion Callout MinorVersion Table Tabs Tab Tile"
+export MDX_TAGS="Abbr Accordion ApiVersion SdkVersion Callout Code MinorVersion Table Tabs Tab Tile"
 TAG_LIST=$(echo "$MDX_TAGS" | tr ' ' '|')
 export TAG_LIST
 
