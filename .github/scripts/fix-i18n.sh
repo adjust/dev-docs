@@ -30,6 +30,9 @@ for locale; do
                 sed -i -e "${sed_command}" "$file"
             done
 
+            # Fix broken unescaped angle brackets in Japanese content
+            sed -i -E "s/（<）/（\\<）/g" "$file"
+
             # Ensure there is a newline between any two tags on the same line. Only fix items
             # that contain one of the tags in the $TAG_LIST above.
             sed -i -E -e "s/(<[^<>]*[\/]?($TAG_LIST)[^<>]*>)[[:space:]]*(<[^<>]*[\/]?($TAG_LIST)[^<>]*>)/\1\n\3/g" "$file"
