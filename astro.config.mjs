@@ -19,7 +19,7 @@ const versions = await fetchVersions()
 export default defineConfig({
   integrations: [AutoImport({
     imports: [{
-      "@components/index": ["ApiVersion", "Accordion", "Callout", "Code", "FigmaEmbed", "MinorVersion", "SdkVersion", "Tab", "Table", "Tabs", "Tile"]
+      "@components/index": ["ApiVersion", "Accordion", "Callout", "CodeBlock", "FigmaEmbed", "MinorVersion", "SdkVersion", "Tab", "Table", "Tabs", "Tile"]
     }],
   }),
   // Enable React for the Algolia search component.

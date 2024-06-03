@@ -8,7 +8,7 @@
 # should work with any shell interpreter. BASH- and ZSH-
 # specific commands must be avoided.
 
-export MDX_TAGS="Abbr Accordion ApiVersion SdkVersion Callout Code MinorVersion Table Tabs Tab Tile"
+export MDX_TAGS="Abbr Accordion ApiVersion SdkVersion Callout CodeBlock MinorVersion Table Tabs Tab Tile"
 TAG_LIST=$(echo "$MDX_TAGS" | tr ' ' '|')
 export TAG_LIST
 
@@ -31,7 +31,7 @@ for locale; do
             done
 
             # Fix broken unescaped angle brackets in Japanese content
-            sed -i -E "s/（<）/（\\<）/g" "$file"
+            sed -i -E "s/（<）/（\\\\<）/g" "$file"
 
             # Ensure there is a newline between any two tags on the same line. Only fix items
             # that contain one of the tags in the $TAG_LIST above.
