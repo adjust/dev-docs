@@ -1,12 +1,10 @@
 import type { FC } from "react";
-
 import type { IconProps } from "../types";
 
 const ChevronLeft: FC<IconProps> = (props) => {
   return (
     <svg
-      width={24}
-      height={24}
+      viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       {...props}
@@ -22,9 +20,11 @@ const ChevronLeft: FC<IconProps> = (props) => {
         y={23.5}
         width={23}
         height={23}
-        rx={2.5}
+        rx={6}
+        ry={6}
         transform="rotate(-180 23.5 23.5)"
         stroke="#000"
+        fill="none"
       />
     </svg>
   );
