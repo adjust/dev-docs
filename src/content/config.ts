@@ -19,6 +19,7 @@ const docs = defineCollection({
       .optional(),
     ogLocale: z.string().optional(),
     type: z.enum(["category"]).optional(),
+    multiVersion: z.boolean().default(false),
   }),
 });
 
