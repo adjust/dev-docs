@@ -25,7 +25,10 @@ declare interface VersionProps {
 }
 
 declare interface VersionMap {
-  [key: string]: string
+  [key: string]: string | {
+    v4: string,
+    v5: string,
+  }
 }
 
 declare type BadgeColor = "neutral" | "negative" | "positive" | "warning" | "primary";
