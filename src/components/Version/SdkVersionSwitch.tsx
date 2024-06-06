@@ -18,18 +18,8 @@ const supportedVersions = ["v4", "v5"];
 const VersionSwitch: FC<{ lang: string }> = ({ lang }) => {
   const t = useTranslations(lang as keyof Locales);
   const versions = useStore($versions);
-  const [versionsOnPage, setVersionsOnPage] = useState(false);
-
-  if (versions.items.length < 1) {
-    return null; // Do not display the version switch if there are one or fewer options
-  }
 
   useEffect(() => {
-    // Check to see if there are any version blocks on the page.
-    setVersionsOnPage(
-      document.querySelector('[role="SdkVersionSelector"]') != null,
-    );
-
     // Check the URL for a query parameter called "version"
     // If it exists and is in the array of supported versions, set the value of the store to the query param
     // Otherwise, set the URL query param to the current value of the store
@@ -58,8 +48,7 @@ const VersionSwitch: FC<{ lang: string }> = ({ lang }) => {
   return (
     <div
       className={
-        "flex flex-col w-full min-h-90px justify-start gap-y-8 bg-slate-100 p-6 rounded-lg mb-14 md:flex-row md:items-center md:gap-x-8 " +
-        (!versionsOnPage ? "hidden" : "")
+        "flex flex-col w-full min-h-90px justify-start gap-y-8 bg-slate-100 p-6 rounded-lg mb-14 md:flex-row md:items-center md:gap-x-8"
       }
     >
       <label>{label}</label>
