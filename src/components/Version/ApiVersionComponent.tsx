@@ -1,6 +1,5 @@
 import { useEffect, type FC } from "react";
 import { useStore } from "@nanostores/react";
-import classNames from "classnames";
 
 import { $versions, updateVersionsItems } from "@store/apiVersionsStore";
 
@@ -20,8 +19,7 @@ const VersionComponent: FC<VersionProps> = ({ content, version }) => {
   return (
     <div
       className={
-        classNames("py-4 ") +
-        (version == versionsStore.currentVersion.value ? "block" : "hidden")
+        version == versionsStore.currentVersion.value ? "block" : "hidden"
       }
       role="ApiVersionSelector"
     >

@@ -4,7 +4,6 @@ import tailwind from "@astrojs/tailwind";
 import AutoImport from "astro-auto-import";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
-import { remarkDefinitionList, defListHastHandlers } from "remark-definition-list";
 import expressiveCode from "astro-expressive-code";
 import playformCompress from "@playform/compress";
 import remarkReplaceVersions from "./src/integrations/remarkReplaceVersions";
@@ -28,7 +27,7 @@ export default defineConfig({
   }), expressiveCode(), mdx(), tailwind(), sitemap(), playformCompress()],
   site: "https://dev.adjust.com/",
   markdown: {
-    remarkPlugins: [remarkDefinitionList, [remarkReplaceVersions, versions], remarkHeaderLinkToId],
+    remarkPlugins: [[remarkReplaceVersions, versions], remarkHeaderLinkToId],
     rehypePlugins: [[rehypeAutolinkHeadings, {
       behavior: 'append',
       properties: {
@@ -72,10 +71,5 @@ export default defineConfig({
         }]
       }
     }]],
-    remarkRehype: {
-      handlers: {
-        ...defListHastHandlers
-      }
-    }
   },
 });

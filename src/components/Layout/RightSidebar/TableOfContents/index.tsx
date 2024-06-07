@@ -47,10 +47,41 @@ const TableOfContents: FC<{
     setClickedId(id);
   };
 
-  useEffect(() => {
-    const headingsParsed = getTocHeadings();
+  // Update the headings in the ToC when the page updates
+  const updateHeadings = () => {
+    // Only select headers that are included in the article and are not callouts
+    const headers = document.querySelectorAll(
+      ".article-content h1, .article-content h2:not([class^='Banner__']), .article-content h3, .article-content h4",
+    );
 
+    // Filter out any headers that are nested under a hidden div (non-selected version)
+    const filteredHeaders = Array.from(headers).filter((header) => {
+      const parentDiv = header.closest("div");
+      return parentDiv && !parentDiv.matches(".hidden");
+    });
+
+    // Pass the headers to the getTocHeadings function to filter out headers
+    const headingsParsed = getTocHeadings(filteredHeaders);
     setHeadingsLocal(headingsParsed);
+  };
+
+  useEffect(() => {
+    // Update the headers on first load
+    updateHeadings();
+  }, []);
+
+  useEffect(() => {
+    // Ensure that URL changes are handled immediately
+    const handleUrlChange = () => {
+      setTimeout(updateHeadings, 0);
+    };
+
+    // Listen for the urlChange event registered in queryParamHelpers so that we can react to changes
+    window.addEventListener("urlChange", handleUrlChange);
+
+    return () => {
+      window.removeEventListener("urlChange", handleUrlChange);
+    };
   }, []);
 
   useEffect(() => {
@@ -80,10 +111,12 @@ const TableOfContents: FC<{
   // need to add right padding for the article when TOC is opened
   useEffect(() => {
     const article = document.getElementById("article-content");
-    article!.className =
-      isOpened && !isMobile && headingsLocal.length
-        ? "article-content pr-[275px]"
-        : "article-content";
+    if (article) {
+      article.className =
+        isOpened && !isMobile && headingsLocal.length
+          ? "article-content pr-[275px]"
+          : "article-content";
+    }
   }, [isOpened, isMobile, headingsLocal]);
 
   if (!headingsLocal.length) {
@@ -101,7 +134,7 @@ const TableOfContents: FC<{
           <div className="absolute top-0 bottom-0 flex items-start">
             <button
               onClick={() => setIsOpened(false)}
-              className="rounded-md overflow-hidden -ml-8 mt-8  bg-white relative w-6 h-6 [&_svg]:hover:bg-[#0b58fe] [&_svg]:hover:text-white"
+              className="rounded-md overflow-hidden -ml-8 mt-8 bg-white relative w-6 h-6 [&_svg]:hover:bg-[#0b58fe] [&_svg]:hover:text-white"
               aria-label={t("toc.toggle-label")}
             >
               <ChevronRight />
