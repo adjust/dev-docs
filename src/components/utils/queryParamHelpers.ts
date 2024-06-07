@@ -9,4 +9,7 @@ export const updateQueryParameter = (name: string, value: string) => {
    const url = new URL(window.location.href);
    url.searchParams.set(name, value);
    window.history.replaceState(null, "", url.toString());
+
+   const urlChangeEvent = new Event("urlChange");
+   window.dispatchEvent(urlChangeEvent);
 };

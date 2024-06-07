@@ -20,8 +20,7 @@ const VersionComponent: FC<VersionProps> = ({ content, version }) => {
   return (
     <div
       className={
-        classNames("py-4 ") +
-        (version == versionsStore.currentVersion.value ? "block" : "hidden")
+        version == versionsStore.currentVersion.value ? "block" : "hidden"
       }
       role="ApiVersionSelector"
     >

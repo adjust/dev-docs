@@ -1,15 +1,10 @@
 import type { MarkdownHeading } from "astro";
 
-export const getTocHeadings = () => {
-  // this selector is more accurate cause we don`t need nested headers
-  const headings = document.querySelectorAll(
-    ".article-content > :is(h1, h2, h3, h4)"
-  );
-
+export const getTocHeadings = (filteredHeaders: Element[]) => {
   const headingsParsed: MarkdownHeading[] = [];
   const duplicates: { [key: string]: number } = {};
   // parsing data for the TOC
-  for (const heading of headings) {
+  for (const heading of filteredHeaders) {
     const text = heading.textContent;
     let slug = "";
 

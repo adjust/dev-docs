@@ -19,10 +19,9 @@ const VersionComponent: FC<VersionProps> = ({ content, version }) => {
 
   return (
     <div
-      className={
-        classNames("py-4 ") +
-        (version == versionsStore.currentVersion.value ? "block" : "hidden")
-      }
+      className={classNames(
+        version == versionsStore.currentVersion.value ? "block" : "hidden",
+      )}
       role="SdkVersionSelector"
     >
       {content}
