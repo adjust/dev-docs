@@ -47,31 +47,36 @@ const TableOfContents: FC<{
     setClickedId(id);
   };
 
-  // this selector is more accurate cause we don`t need nested headers
-
+  // Update the headings in the ToC when the page updates
   const updateHeadings = () => {
+    // Only select headers that are included in the article and are not callouts
     const headers = document.querySelectorAll(
       ".article-content h1, .article-content h2:not([class^='Banner__']), .article-content h3, .article-content h4",
     );
-    console.log(headers);
+
+    // Filter out any headers that are nested under a hidden div (non-selected version)
     const filteredHeaders = Array.from(headers).filter((header) => {
       const parentDiv = header.closest("div");
       return parentDiv && !parentDiv.matches(".hidden");
     });
-    console.log(filteredHeaders);
+
+    // Pass the headers to the getTocHeadings function to filter out headers
     const headingsParsed = getTocHeadings(filteredHeaders);
     setHeadingsLocal(headingsParsed);
   };
 
   useEffect(() => {
+    // Update the headers on first load
     updateHeadings();
   }, []);
 
   useEffect(() => {
+    // Ensure that URL changes are handled immediately
     const handleUrlChange = () => {
       setTimeout(updateHeadings, 0);
     };
 
+    // Listen for the urlChange event registered in queryParamHelers so that we can react to changes
     window.addEventListener("urlChange", handleUrlChange);
 
     return () => {

@@ -1,6 +1,5 @@
 import { useEffect, type FC } from "react";
 import { useStore } from "@nanostores/react";
-import classNames from "classnames";
 
 import { $versions, updateVersionsItems } from "@store/apiVersionsStore";
 
