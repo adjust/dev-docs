@@ -2,6 +2,7 @@
 title: Set up deep linking
 description: Configure the SDK to use deep links.
 slug: en/sdk/android/features/deep-links
+multiVersion: true
 ---
 
 You can create deep links to take users to specific pages in your app. The Adjust SDK uses different logic depending on if the user already has your app installed on their device:
@@ -127,6 +128,110 @@ protected void onNewIntent(Intent intent) {
 
 ## [Deferred deep linking](deferred-deep-linking)
 
+<SdkVersion version="v5">
+
+The Adjust SDK opens deferred deep links by default. No additional setup is required. If you want to disable this behavior, you need to set up a deferred deep link callback using the `AdjustConfig.setOnDeferredDeeplinkResponseListener` method.
+
+### [Set up a deferred deep link callback](set-up-a-deferred-deep-link-callback)
+
+<CodeBlock title="Method signature">
+
+```java
+public void setOnDeferredDeeplinkResponseListener(OnDeferredDeeplinkResponseListener onDeferredDeeplinkResponseListener)
+```
+
+</CodeBlock>
+
+You can configure the Adjust SDK to call a delegate function when it receives a deferred deep link. This delegate function receives the deep link as a `String` argument.
+
+If you want to open the deep link, return `true` in your delegate function. If you don't want to open it, return `false`.
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+<CodeBlock highlight="{range: 3-7}">
+
+```kotlin {3-7}
+val config = AdjustConfig(this, appToken, environment)
+//...
+config.setOnDeferredDeeplinkResponseListener { deeplink ->
+   Log.d("example", "Deferred deep link callback called!")
+   Log.d("example", "Deep link URL: $deeplink")
+   true
+}
+//...
+Adjust.initSdk(config)
+```
+
+</CodeBlock>
+
+</Tab>
+<Tab title="Java" sync="java">
+
+<CodeBlock highlight="{range: 3-12}">
+
+```java {3-12}
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+//...
+// Evaluate the deeplink to be launched.
+config.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListener() {
+   @Override
+   public boolean launchReceivedDeeplink(Uri deeplink) {
+      Log.d("example", "Deferred deep link callback called!");
+      Log.d("example", "Deep link URL: " + deeplink);
+
+      return true;
+   }
+});
+//...
+Adjust.initSdk(config);
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
+
+### [Example](example-1)
+
+This example shows how to prevent the SDK from launching an activity by returning a `false` value in your callback function.
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+<CodeBlock highlight="false">
+
+```kotlin
+config.setOnDeferredDeeplinkResponseListener { deeplink ->
+   false
+}
+```
+
+</CodeBlock>
+
+</Tab>
+<Tab title="Java" sync="java">
+
+<CodeBlock highlight="false">
+
+```java
+config.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListener() {
+   @Override
+   public boolean launchReceivedDeeplink(Uri deeplink) {
+      return false;
+   }
+});
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
+
+</SdkVersion>
+
+<SdkVersion version="v4">
+
 The Adjust SDK opens deferred deep links by default. No additional setup is required. If you want to disable this behavior, you need to set up a deferred deep link callback using the `setOnDeeplinkResponseListener` method.
 
 ### [Set up a deferred deep link callback](set-up-a-deferred-deep-link-callback)
@@ -221,7 +326,59 @@ config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
 </Tab>
 </Tabs>
 
+</SdkVersion>
+
 ## [Reattribution via deep links](reattribution-via-deep-links)
+
+<CodeBlock title="Method signature">
+
+```java
+public static void processDeeplink(Uri url, Context context)
+```
+
+</CodeBlock>
+
+<SdkVersion version="v5">
+
+Adjust enables you to run re-engagement campaigns with usage of deep links. For more information, check out how to set up [Deep links in Campaign Lab](https://help.adjust.com/en/article/deep-links).
+
+To reattribute your user, you need to call the `Adjust.processDeeplink` method in the opening Activity's `onCreate` and `onNewIntent` methods. The Adjust SDK then looks for new attribution data within the deep link. If the SDK finds new information, it forwards the information to Adjust's servers for reattribution.
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+override fun onCreate(savedInstanceState: Bundle?) {
+   super.onCreate(savedInstanceState)
+   setContentView(R.layout.activity_main)
+
+   val intent = intent
+   val data = intent.data
+   Adjust.processDeeplink(data, applicationContext)
+}
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+
+    Intent intent = getIntent();
+    Uri data = intent.getData();
+    Adjust.processDeeplink(data, getApplicationContext());
+}
+```
+
+</Tab>
+</Tabs>
+
+</SdkVersion>
+
+<SdkVersion version="v4">
 
 ```java title="Method signature"
 public static void appWillOpenUrl(Uri url, Context context)
@@ -269,6 +426,8 @@ Adjust.appWillOpenUrl(deeplinkUrl);
 
 </Tab>
 </Tabs>
+
+</SdkVersion>
 
 ## [Link resolution](link-resolution)
 
