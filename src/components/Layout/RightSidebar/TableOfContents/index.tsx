@@ -76,7 +76,7 @@ const TableOfContents: FC<{
       setTimeout(updateHeadings, 0);
     };
 
-    // Listen for the urlChange event registered in queryParamHelers so that we can react to changes
+    // Listen for the urlChange event registered in queryParamHelpers so that we can react to changes
     window.addEventListener("urlChange", handleUrlChange);
 
     return () => {
