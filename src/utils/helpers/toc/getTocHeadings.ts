@@ -1,7 +1,5 @@
-import type { MarkdownHeading } from "astro";
-
 export const getTocHeadings = (filteredHeaders: Element[]) => {
-  const headingsParsed: MarkdownHeading[] = [];
+  const headingsParsed: MarkdownHeadingWithId[] = [];
   const duplicates: { [key: string]: number } = {};
   // parsing data for the TOC
   for (const heading of filteredHeaders) {
@@ -36,7 +34,7 @@ export const getTocHeadings = (filteredHeaders: Element[]) => {
       depth: +heading.tagName.replace("H", ""),
       slug,
       text: text,
-    } as MarkdownHeading);
+    } as MarkdownHeadingWithId);
   }
 
   return headingsParsed;

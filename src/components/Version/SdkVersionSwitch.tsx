@@ -51,8 +51,9 @@ const VersionSwitch: FC<{ lang: string }> = ({ lang }) => {
         "flex flex-col w-full min-h-90px justify-start gap-y-8 bg-slate-100 p-6 rounded-lg mb-14 md:flex-row md:items-center md:gap-x-8"
       }
     >
-      <label>{label}</label>
+      <label htmlFor={"combobox"}>{label}</label>
       <ComboBox
+        id="combobox"
         value={versions.currentVersion}
         options={versions.items}
         onChange={handleVersionChange}

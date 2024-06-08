@@ -1,4 +1,3 @@
-import type { MarkdownHeading } from "astro";
 import { unescape } from "html-escaper";
 import { type FC, useState, useEffect, useRef } from "react";
 import classNames from "classnames";
@@ -20,7 +19,7 @@ const checkIsMobile = () => {
 };
 
 const TableOfContents: FC<{
-  headings: MarkdownHeading[];
+  headings: MarkdownHeadingWithId[];
   title: string;
   lang: string;
 }> = ({ headings = [], title, lang }) => {
@@ -147,7 +146,7 @@ const TableOfContents: FC<{
                 .filter(({ depth }) => depth > 1)
                 .map((heading) => (
                   <li
-                    key={heading.slug}
+                    key={heading.id}
                     className={classNames(
                       `header-link before:content-none depth-${heading.depth}`,
                       {

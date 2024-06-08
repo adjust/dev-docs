@@ -1,4 +1,3 @@
-import type { MarkdownHeading } from "astro";
 import type { FC } from "react";
 import { unescape } from "html-escaper";
 import { type Locales } from "@i18n/locales";
@@ -7,7 +6,7 @@ import { useTranslations } from "@i18n/utils";
 interface TableOfContentsMobileProps {
   onThisPageID: string;
   toc: React.RefObject<HTMLUListElement>;
-  headingsLocal: MarkdownHeading[];
+  headingsLocal: MarkdownHeadingWithId[];
   lang: string;
 }
 
@@ -28,7 +27,7 @@ const TableOfContentsMobile: FC<TableOfContentsMobileProps> = ({
           .filter(({ depth }) => depth > 1 && depth < 4)
           .map((heading) => (
             <li
-              key={heading.slug}
+              key={heading.id}
               className={`header-link before:content-none depth-${heading.depth}`}
             >
               <a href={`#${heading.slug}`}>{unescape(heading.text)}</a>
