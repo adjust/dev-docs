@@ -1,41 +1,27 @@
-export const getTocHeadings = (filteredHeaders: Element[]) => {
-  const headingsParsed: MarkdownHeadingWithId[] = [];
-  const duplicates: { [key: string]: number } = {};
-  // parsing data for the TOC
-  for (const heading of filteredHeaders) {
-    const text = heading.textContent;
-    let slug = "";
+import type { MarkdownHeading } from "astro";
 
-    if (!heading.id) {
-      heading.id = text
-        ?.toLocaleLowerCase()
-        .replace(/\W(?<!\s)/gi, "")
-        .split(" ")
-        .join("-")!;
+export const getTocHeadings = (filteredHeaders: Element[], versionNumber?: string): MarkdownHeading[] => {
+  return filteredHeaders.map((heading) => {
+    const text = heading.textContent ?? "";
+    let slug = heading.id;
+
+    if (!slug) {
+      slug = text
+        .toLocaleLowerCase()
+        .replace(/[^\w\s-]/g, "")
+        .replace(/\s+/g, "-");
+      heading.id = slug;
     }
 
-    slug = heading.id
-
-    const isSavedHeading = !!headingsParsed.find(
-      (savedHeading) => savedHeading.slug === slug
-    );
-
-    if (isSavedHeading) {
-      if (!duplicates[slug]) {
-        duplicates[slug] = 1;
-      } else {
-        duplicates[slug] = duplicates[slug] + 1;
-      }
-
-      slug = `${slug}-${duplicates[slug]}`;
+    if (versionNumber && !slug.startsWith(versionNumber)) {
+      slug = `${versionNumber}-${slug}`;
+      heading.id = slug;
     }
 
-    headingsParsed.push({
-      depth: +heading.tagName.replace("H", ""),
+    return {
+      depth: Number(heading.tagName.replace("H", "")),
       slug,
-      text: text,
-    } as MarkdownHeadingWithId);
-  }
-
-  return headingsParsed;
+      text,
+    };
+  });
 };
