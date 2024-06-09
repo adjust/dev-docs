@@ -1,8 +1,8 @@
-import type { MarkdownHeading } from "astro";
 import type { FC } from "react";
 import { unescape } from "html-escaper";
 import { type Locales } from "@i18n/locales";
 import { useTranslations } from "@i18n/utils";
+import type { MarkdownHeading } from "astro";
 
 interface TableOfContentsMobileProps {
   onThisPageID: string;

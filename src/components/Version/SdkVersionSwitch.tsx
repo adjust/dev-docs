@@ -1,4 +1,4 @@
-import { type FC, useEffect, useState } from "react";
+import { type FC, useEffect, useCallback } from "react";
 import { ComboBox } from "@adjust/components";
 import { useStore } from "@nanostores/react";
 import type { Locales } from "@i18n/locales";
@@ -9,6 +9,7 @@ import {
   updateQueryParameter,
 } from "@components/utils/queryParamHelpers";
 import { $versions, changeVersionValue } from "@store/sdkVersionsStore";
+import { setVersionSelected } from "@store/versionSelectedStore";
 
 // Declare the supported values.
 // If another value is provided (e.g. "version=v3"), ignore it.
@@ -19,40 +20,54 @@ const VersionSwitch: FC<{ lang: string }> = ({ lang }) => {
   const t = useTranslations(lang as keyof Locales);
   const versions = useStore($versions);
 
+  const updateSdkVersionVisibility = useCallback(() => {
+    const sdkVersionSelectors = document.querySelectorAll(
+      "[role='SdkVersionSelector']",
+    );
+
+    sdkVersionSelectors.forEach((selector) => {
+      const version = selector.getAttribute("data-message"); // The version number is stored in the data-message attribute
+      const currentVersion = versions.currentVersion.value;
+
+      if (version !== currentVersion) {
+        selector.classList.add("hidden");
+      } else {
+        selector.classList.remove("hidden");
+      }
+    });
+  }, [versions.currentVersion.value]);
+
+  useEffect(() => {
+    updateSdkVersionVisibility();
+    setVersionSelected(true);
+  }, [updateSdkVersionVisibility]);
+
   useEffect(() => {
     // Check the URL for a query parameter called "version"
     // If it exists and is in the array of supported versions, set the value of the store to the query param
     // Otherwise, set the URL query param to the current value of the store
-
     const queryVersion = getQueryParameter("version");
     if (queryVersion && supportedVersions.includes(queryVersion)) {
-      const versionOption: Option = {
-        label: queryVersion,
-        value: queryVersion,
-      };
-      changeVersionValue(versionOption);
+      changeVersionValue({ label: queryVersion, value: queryVersion });
     } else {
       updateQueryParameter("version", versions.currentVersion.value);
     }
-  }, []);
+  }, [versions.currentVersion.value]);
 
-  const handleVersionChange = (newVersion: Option) => {
+  const handleVersionChange = useCallback((newVersion: Option) => {
     // Set the new value in the store
     changeVersionValue(newVersion);
     // Update the query params in the URL
     updateQueryParameter("version", newVersion.value);
-  };
+  }, []);
 
   const label = t("sdkversionswitch.label");
 
   return (
-    <div
-      className={
-        "flex flex-col w-full min-h-90px justify-start gap-y-8 bg-slate-100 p-6 rounded-lg mb-14 md:flex-row md:items-center md:gap-x-8"
-      }
-    >
-      <label>{label}</label>
+    <div className="flex flex-col w-full min-h-90px justify-start gap-y-8 bg-slate-100 p-6 rounded-lg mb-14 md:flex-row md:items-center md:gap-x-8">
+      <label htmlFor="combobox">{label}</label>
       <ComboBox
+        id="combobox"
         value={versions.currentVersion}
         options={versions.items}
         onChange={handleVersionChange}

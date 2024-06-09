@@ -2,6 +2,8 @@
 // All banners must be one of these types. See the Banner documentation.
 // https://atlas.adeven.com/docs/components/Banner
 
+import type { MarkdownHeading } from "astro";
+
 declare type BannerKind =
   | "neutral"
   | "positive"
@@ -34,3 +36,7 @@ declare interface VersionMap {
 declare type BadgeColor = "neutral" | "negative" | "positive" | "warning" | "primary";
 
 declare type TableHeights = number | "full-height" | undefined;
+
+declare interface MarkdownHeadingWithId extends MarkdownHeading {
+  id?: String
+}

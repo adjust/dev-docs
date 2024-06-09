@@ -1,6 +1,12 @@
-import type { MarkdownHeading } from "astro";
 import { unescape } from "html-escaper";
-import { type FC, useState, useEffect, useRef } from "react";
+import {
+  type FC,
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+} from "react";
 import classNames from "classnames";
 import { debounce } from "lodash-es";
 
@@ -11,19 +17,20 @@ import { useScrollSpy } from "@hooks/useScrollSpy";
 import ChevronRight from "@components/Icons/react/ChevronRight";
 import { type Locales } from "@i18n/locales";
 import { useTranslations } from "@i18n/utils";
+import type { MarkdownHeading } from "astro";
+import { $versionSelected } from "@store/versionSelectedStore";
+import { useStore } from "@nanostores/react";
 
 const HEADER_HEIGHT = 80;
 
-const checkIsMobile = () => {
-  const { innerWidth: width } = window;
-  return width <= 1024;
-};
+const checkIsMobile = () => window.innerWidth <= 1024;
 
 const TableOfContents: FC<{
-  headings: MarkdownHeading[];
   title: string;
   lang: string;
-}> = ({ headings = [], title, lang }) => {
+  multiVersion?: boolean;
+}> = ({ title, lang, multiVersion }) => {
+  const headings: MarkdownHeading[] = [];
   const t = useTranslations(lang as keyof Locales);
   const [headingsLocal, setHeadingsLocal] = useState(headings);
   const [isMobile, setIsMobile] = useState(checkIsMobile());
@@ -31,10 +38,18 @@ const TableOfContents: FC<{
   const onThisPageID = "on-this-page-heading";
   const hashId = window.location?.hash?.replace("#", "") ?? "";
   const [clickedId, setClickedId] = useState(hashId);
-
   const [isOpened, setIsOpened] = useState(true);
+  const versionSelected = useStore($versionSelected);
 
   const { activeId } = useScrollSpy();
+
+  const headers = useMemo(
+    () =>
+      document.querySelectorAll(
+        ".article-content h1, .article-content h2:not([class^='Banner__']), .article-content h3, .article-content h4",
+      ),
+    [],
+  );
 
   const handleClick = (id: string) => {
     // need to scroll to the element without header height
@@ -48,32 +63,43 @@ const TableOfContents: FC<{
   };
 
   // Update the headings in the ToC when the page updates
-  const updateHeadings = () => {
-    // Only select headers that are included in the article and are not callouts
-    const headers = document.querySelectorAll(
-      ".article-content h1, .article-content h2:not([class^='Banner__']), .article-content h3, .article-content h4",
-    );
+  const updateVersionedHeadings = () => {
+    let versionNumber = "";
 
     // Filter out any headers that are nested under a hidden div (non-selected version)
+
     const filteredHeaders = Array.from(headers).filter((header) => {
-      const parentDiv = header.closest("div");
+      const parentDiv =
+        header.closest("sdk-version-block") ||
+        header.closest("api-version-block");
+      if (parentDiv && !parentDiv.matches(".hidden")) {
+        versionNumber = parentDiv.classList[0];
+      }
       return parentDiv && !parentDiv.matches(".hidden");
     });
 
-    // Pass the headers to the getTocHeadings function to filter out headers
-    const headingsParsed = getTocHeadings(filteredHeaders);
+    const headingsParsed = getTocHeadings(
+      filteredHeaders.length ? filteredHeaders : Array.from(headers),
+      versionNumber,
+    );
+    setHeadingsLocal(headingsParsed);
+  };
+
+  const updateHeadings = () => {
+    const headingsParsed = getTocHeadings(Array.from(headers));
     setHeadingsLocal(headingsParsed);
   };
 
   useEffect(() => {
-    // Update the headers on first load
-    updateHeadings();
-  }, []);
+    if (!multiVersion) {
+      updateHeadings();
+    }
+  }, [multiVersion, headers]);
 
   useEffect(() => {
     // Ensure that URL changes are handled immediately
     const handleUrlChange = () => {
-      setTimeout(updateHeadings, 0);
+      setTimeout(updateVersionedHeadings, 0);
     };
 
     // Listen for the urlChange event registered in queryParamHelpers so that we can react to changes
@@ -82,7 +108,13 @@ const TableOfContents: FC<{
     return () => {
       window.removeEventListener("urlChange", handleUrlChange);
     };
-  }, []);
+  }, [multiVersion]);
+
+  useEffect(() => {
+    if (multiVersion && versionSelected) {
+      updateVersionedHeadings();
+    }
+  }, [multiVersion, versionSelected, headers]);
 
   useEffect(() => {
     if (hashId) {
@@ -93,22 +125,25 @@ const TableOfContents: FC<{
         });
       }, 100);
     }
-  }, []);
+  }, [hashId, multiVersion]);
 
-  const handleResize = () => {
-    setIsMobile(checkIsMobile());
-  };
-
-  const resizeHandler = debounce(handleResize, 500);
+  const handleResize = useCallback(
+    debounce(() => {
+      setIsMobile(checkIsMobile());
+    }, 500),
+    [],
+  );
 
   // required for the mobile design
   useEffect(() => {
-    window.addEventListener("resize", resizeHandler);
+    window.addEventListener("resize", handleResize);
 
-    return () => window.removeEventListener("resize", resizeHandler);
-  }, []);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [handleResize]);
 
-  // need to add right padding for the article when TOC is opened
+  //  We need to add right padding for the article when TOC is opened
   useEffect(() => {
     const article = document.getElementById("article-content");
     if (article) {
@@ -142,7 +177,9 @@ const TableOfContents: FC<{
           </div>
           <div className="pl-4 pr-4 h-full overflow-y-auto flex flex-col">
             <ul className="w-full mt-8" ref={toc}>
-              <li className="text-lg font-medium mb-4 leading-6">{title}</li>
+              <li key={title} className="text-lg font-medium mb-4 leading-6">
+                {title}
+              </li>
               {headingsLocal
                 .filter(({ depth }) => depth > 1)
                 .map((heading) => (
