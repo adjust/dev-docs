@@ -5,7 +5,6 @@ import AutoImport from "astro-auto-import";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import expressiveCode from "astro-expressive-code";
-import playformCompress from "@playform/compress";
 import remarkReplaceVersions from "./src/integrations/remarkReplaceVersions";
 import { fetchVersions } from "./src/integrations/fetchSdkVersions";
 import rehypeExternalLinks from 'rehype-external-links';
@@ -24,7 +23,7 @@ export default defineConfig({
   // Enable React for the Algolia search component.
   react({
     experimentalReactChildren: true
-  }), expressiveCode(), mdx(), tailwind(), sitemap(), playformCompress()],
+  }), expressiveCode(), mdx(), tailwind(), sitemap()],
   site: "https://dev.adjust.com/",
   markdown: {
     remarkPlugins: [[remarkReplaceVersions, versions], remarkHeaderLinkToId],
