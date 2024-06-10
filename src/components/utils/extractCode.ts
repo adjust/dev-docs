@@ -10,19 +10,12 @@ export const extractCodeFromHTML = (htmlString: string): CodeExtractionResult =>
    const { document } = window;
 
    const codeBlocks = document.querySelectorAll('.ec-line .code');
+   const preElement = document.querySelector("pre[data-language]");
 
-   let extractedCode = '';
-   let lang = "";
+   let lang = preElement ? preElement.getAttribute("data-language") || "" : "";
+   const extractedCode = Array.from(codeBlocks)
+      .map(block => block.textContent || '')
+      .join('\n');
 
-   codeBlocks.forEach(block => {
-      const line = block.textContent || '';
-      extractedCode += line + '\n';
-      const preElement = block.closest("pre[data-language]");
-      if (preElement) {
-         let preLang = preElement.getAttribute("data-language");
-         lang = preLang ? preLang : "";
-      }
-   });
-
-   return { code: extractedCode.trim(), lang }  // Remove any trailing newline
+   return { code: extractedCode.trim(), lang };  // Remove any trailing newline
 };

@@ -1,4 +1,4 @@
-import { type FC, useState } from "react";
+import { type FC, useState, useCallback } from "react";
 import classNames from "classnames";
 import { Icon } from "@adjust/components";
 
@@ -11,9 +11,9 @@ const LeftSidebarItem: FC<{
 }> = ({ currentPage, sidebarData, level = 1 }) => {
   const [isOpen, setIsOpen] = useState(sidebarData.collapsed);
 
-  const handleCollapse = () => {
-    setIsOpen(!isOpen);
-  };
+  const handleCollapse = useCallback(() => {
+    setIsOpen((prevIsOpen) => !prevIsOpen);
+  }, []);
 
   const isChilds = sidebarData?.children?.length && !sidebarData.topCategory;
 
@@ -27,12 +27,12 @@ const LeftSidebarItem: FC<{
       <li
         key={sidebarData.title}
         className={classNames(
-          "relative hover:text-link-active  min-h-[31px] text-sm",
+          "relative hover:text-link-active min-h-[31px] text-sm",
           {
             "text-link-active": currentPage === sidebarData.slug,
             "pl-2": level > 2,
             active: currentPage === sidebarData.slug,
-          }
+          },
         )}
       >
         {/* collapse/expand button */}
@@ -42,11 +42,10 @@ const LeftSidebarItem: FC<{
         >
           {isChilds ? (
             <>
-              {isOpen ? (
-                <Icon name="ChevronDown" size="small" />
-              ) : (
-                <Icon name="ChevronRight" size="small" />
-              )}
+              <Icon
+                name={isOpen ? "ChevronDown" : "ChevronRight"}
+                size="small"
+              />
             </>
           ) : null}
           <a
@@ -59,23 +58,22 @@ const LeftSidebarItem: FC<{
                 "font-medium": isOpen,
                 "font-normal": level > 1 && !isOpen,
                 "ml-[21px]": level > 2 && !isChilds,
-              }
+              },
             )}
           >
             {sidebarData.title}
           </a>
         </div>
       </li>
-      {isOpen
-        ? sidebarData?.children?.map((child) => (
-            <LeftSidebarItem
-              key={child.path}
-              currentPage={currentPage}
-              sidebarData={child}
-              level={child.level}
-            />
-          ))
-        : null}
+      {isOpen &&
+        sidebarData?.children?.map((child) => (
+          <LeftSidebarItem
+            key={child.path}
+            currentPage={currentPage}
+            sidebarData={child}
+            level={child.level}
+          />
+        ))}
     </ul>
   );
 };
