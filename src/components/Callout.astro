@@ -3,27 +3,14 @@ import { Banner } from "@adjust/components";
 import { type Locales } from "@i18n/locales";
 import { useTranslations } from "@i18n/utils";
 
-const { lang } = Astro.params;
-const t = useTranslations(lang as keyof Locales);
-
-// We have two props that must be present in all banners:
-// The type indicates the purpose and style of the banner
-// The title is the header that is applied to the banner
-// These are both optional as we provide default values below
-
-export interface Props {
+interface Props {
   title?: string;
   type?: CalloutType;
 }
 
-// Declare properties used to build the banner.
-// The type is declared as "neutral" in case no type is provided.
-// If the author provides a type, it overrides this default.
-
+const { lang } = Astro.params;
 const { title, type = "info" } = Astro.props as Props;
-
-// This map iterates through the different banner types the author might specify and maps them to a `BannerKind`
-// If the type is not present in this list, it will default to `neutral` below.
+const t = useTranslations(lang as keyof Locales);
 
 const typeMap = new Map<CalloutType, BannerKind>([
   ["info", "neutral"],
@@ -34,22 +21,14 @@ const typeMap = new Map<CalloutType, BannerKind>([
   ["warning", "negative"],
 ]);
 
-// Iterate through the map and assign the type provided by the author to a BannerKind
-
-const bannerType: BannerKind = typeMap.get(type) as BannerKind;
-
-// Create a placeholder title that is title cased.
-// This takes the value of the type and capitalizes the first letter.
-// If no type has been specified, default to "Info".
-
-const typeTitle = t(`callout.${type}`);
+const defaultTypeTitle = t(`callout.${type}`);
+const bannerType = typeMap.get(type) || "neutral";
 ---
 
-<!-- Pass the assigned information to the BuildBanner React component -->
 <div class="my-7">
   <Banner
     client:only="react"
-    title={title ? title : typeTitle}
+    title={title || defaultTypeTitle}
     kind={bannerType}
   >
     <slot slot="description" />
