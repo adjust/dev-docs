@@ -1,0 +1,86 @@
+---
+import type { CategoryEntry } from "@utils/helpers/navigation/types";
+import classNames from "classnames";
+import ChevronToggle from "./ChevronToggle.astro";
+
+interface Props {
+  currentPage: string;
+  sidebarData: CategoryEntry;
+  level: number;
+}
+
+const { currentPage, sidebarData, level } = Astro.props;
+const isChild = sidebarData?.children?.length > 0 && !sidebarData.topCategory;
+const initialOpen = sidebarData.collapsed;
+const slug = sidebarData.slug;
+---
+
+<ul
+  id={`sidebar-item-${slug}`}
+  class={classNames("list-none flex flex-col items-start gap-y-[8px]", {
+    "pl-0": level === 2,
+    "ml-3": level > 2,
+  })}
+>
+  <li
+    class={classNames("relative hover:text-link-active min-h-[31px] text-sm", {
+      "text-link-active": currentPage === slug,
+      "pl-2": level > 2,
+      active: currentPage === slug,
+    })}
+  >
+    <div class="flex flex-row items-center cursor-pointer gap-x-[5px]">
+      {isChild && <ChevronToggle slug={slug} initialOpen={initialOpen} />}
+      <a
+        id={level > 1 ? `link-${slug}` : ""}
+        href={`/${slug}`}
+        class={classNames(
+          "inline-block w-full text-sm hover:no-underline text-inherit",
+          {
+            "text-link-active": currentPage?.slice(1) === slug,
+            "font-bold": level === 1,
+            "font-medium": initialOpen,
+            "font-normal": level > 1 && !initialOpen,
+            "ml-[21px]": level > 2 && !isChild,
+          },
+        )}
+      >
+        {sidebarData.title}
+      </a>
+    </div>
+  </li>
+  {
+    sidebarData?.children && (
+      <li>
+        <ul
+          id={`children-${slug}`}
+          class={classNames({ hidden: !initialOpen })}
+        >
+          {sidebarData.children.map((child) => (
+            <Astro.self
+              currentPage={currentPage}
+              sidebarData={child}
+              level={child.level}
+            />
+          ))}
+        </ul>
+      </li>
+    )
+  }
+</ul>
+
+<script>
+  import { toggleCollapse } from "./utils/toggleCollapse";
+  document.addEventListener("DOMContentLoaded", () => {
+    const items = document.querySelectorAll(".toggle-collapse");
+    items.forEach((item) => {
+      item.addEventListener("click", () => {
+        const slug = item!
+          .parentElement!.parentElement!.querySelector("a")!
+          .getAttribute("href")!
+          .slice(1);
+        toggleCollapse(slug);
+      });
+    });
+  });
+</script>

@@ -1,0 +1,85 @@
+---
+import { useTranslations } from "@i18n/utils";
+import IconLanguage from "@components/Icons/astro/IconLanguage.astro";
+import type { Locales } from "@i18n/locales";
+
+const { lang, locales, hideIcon = false, isFooter, currentUrl } = Astro.props;
+const t = useTranslations(lang as keyof Locales);
+const currentLang = locales[lang as keyof Locales].toString();
+
+const getLanguageUrl = (newLang: string) => {
+  return currentUrl.replace(lang, newLang);
+};
+---
+
+<div
+  class={`flex min-h-[28px] items-center min-w-[90px] text-start relative z-[35] ${isFooter ? "w-full" : "w-fit"} ${isFooter ? "pr-8" : ""} ${isFooter ? "text-center" : ""} ${!isFooter ? "m-[22px]" : ""}`}
+  id="language-switch-container"
+>
+  <label for="current-lang" class="hidden">
+    {t("languagepicker.label").replace("${language}", currentLang)}
+  </label>
+  <div
+    id="current-lang"
+    class="pl-[10px] text-base cursor-pointer flex items-center w-full mr-[7px]"
+    tabindex={0}
+  >
+    <div class="mr-[7px]">
+      {!hideIcon && <IconLanguage width={22} height={22} />}
+    </div>
+    <div
+      class="w-full text-sm"
+      :class="{'text-secondary': !isFooter, 'text-black': isFooter}"
+    >
+      {currentLang || "English"}
+    </div>
+  </div>
+  <div
+    id="language-menu"
+    class={`bg-white absolute -right-[15px] -top-[170px] leading-5 w-[7.25rem] border border-solid border-[#f3f4f6] rounded-sm shadow-[0_0_15px_0_#1e3c9622] p-4 text-base z-50 after:-z-10 after:absolute after:-bottom-[6px] after:w-5 after:h-5 after:content-[''] after:bg-white after:border-t-0 after:-mt-[10px] after:shadow-[3px_3px_-5px_-1px_#1e3c9611] after:rotate-45 hidden ${!isFooter ? "left-5" : ""}`}
+  >
+    <ul>
+      {
+        Object.keys(locales).map((locale) => (
+          <li class="text-sm pt-[5px] pb-[5px] text-left">
+            <a
+              href={getLanguageUrl(locale)}
+              class="hover:no-underline hover:text-left hover:cursor-pointer hover:text-[#1a62ff]"
+            >
+              {locales[locale]}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</div>
+
+<script>
+  const languageSwitchContainer = document.getElementById(
+    "language-switch-container",
+  );
+  const menu = document.getElementById("language-menu");
+
+  const toggleMenu = () => {
+    if (menu) {
+      menu.classList.toggle("hidden");
+    }
+  };
+
+  const closeMenu = (event: any) => {
+    if (
+      menu &&
+      languageSwitchContainer &&
+      !languageSwitchContainer.contains(event.target)
+    ) {
+      menu.classList.add("hidden");
+    }
+  };
+
+  if (languageSwitchContainer) {
+    languageSwitchContainer.addEventListener("click", toggleMenu);
+  }
+
+  document.addEventListener("click", closeMenu);
+</script>

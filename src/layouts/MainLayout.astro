@@ -6,17 +6,14 @@ import HeadCommon from "../components/HeadCommon.astro";
 import HeadSEO from "../components/HeadSEO.astro";
 import PageContent from "../components/Layout/PageContent/PageContent.astro";
 import PageBreadcrumbs from "@components/Layout/PageBreadcrumbs/PageBreadcrumbs.astro";
-import Navigation from "../components/Layout/LeftSidebar/Navigation.astro";
 import { getNavigationEntries } from "src/utils/helpers/navigation/getNavigationEntries";
-import SidebarHeader from "@components/Layout/LeftSidebar/SidebarHeader/SidebarHeader.astro";
-import SidebarSearch from "@components/Layout/LeftSidebar/SidebarSearch/SidebarSearch.astro";
-import LanguageSwitch from "@components/Layout/LanguageSwitch";
-import { LOCALE_NAMES, type Locales } from "@i18n/locales";
+import { type Locales } from "@i18n/locales";
 import { getLanguageFromURL, useTranslations } from "@i18n/utils";
 import MobileHeader from "@components/Layout/Header/MobileHeader.astro";
 import Footer from "@components/Layout/Footer/FooterContent.astro";
 import BodyNoScript from "@components/Layout/GoogleTagManager/BodyNoScript.astro";
 import Icons from "@components/Layout/Icons.astro";
+import Sidebar from "@components/Layout/LeftSidebar/Sidebar.astro";
 
 type Props = CollectionEntry<"docs">["data"] & {
   headings: MarkdownHeading[];
@@ -54,24 +51,11 @@ const t = useTranslations(currentLang as keyof Locales);
       class="flex xs:w-full xs:flex-col lg:flex-row mx-auto xxl:w-[1600px] p-0"
     >
       <MobileHeader />
-      <aside
-        class="h-screen xs:hidden xs:absolute xs:z-30 xs:w-full lg:max-w-[294px] lg:flex lg:sticky top-0 flex flex-col border-r-[1.5px] bg-secondary border-[#E0EAFF] sidebar-open:flex"
-        title="Site Navigation"
-      >
-        {/* Header with audience switch */}
-        <SidebarHeader homeUrl={homeUrl} lang={currentLang} />
-        {/* Search input */}
-        <SidebarSearch />
-        <Navigation navigationEntries={navigationEntries?.languageTree} />
-        <div class="h-[63px] p-[22px] border-t-[1px] border-[#CDD0E0]">
-          <LanguageSwitch
-            client:load
-            lang={currentLang}
-            locales={LOCALE_NAMES}
-            currentUrl={Astro.url.pathname}
-          />
-        </div>
-      </aside>
+      <Sidebar
+        homeUrl={homeUrl}
+        lang={currentLang}
+        navigationEntries={navigationEntries?.languageTree}
+      />
       <div class="flex flex-col lg:w-[calc(100%-294px)]">
         <div
           id="content-main"
@@ -83,6 +67,7 @@ const t = useTranslations(currentLang as keyof Locales);
             headings={headings}
             childLinks={navigationEntries.childLinks}
             multiVersion={data.multiVersion}
+            type={data.type}
           >
             <slot />
           </PageContent>
