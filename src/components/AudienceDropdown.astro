@@ -1,0 +1,98 @@
+---
+import { HELP_CENTER_LINK } from "src/consts";
+import { useTranslations } from "@i18n/utils";
+import { type Locales } from "@i18n/locales";
+
+interface Props {
+  lang: string;
+}
+
+const { lang } = Astro.props;
+
+const t = useTranslations(lang as keyof Locales);
+
+const audiences = [
+  {
+    titleId: t("header.audience-picker-marketer"),
+    slug: "marketer",
+    link: `${HELP_CENTER_LINK}en/marketer`,
+  },
+  {
+    titleId: t("header.audience-picker-partner"),
+    slug: "partner",
+    link: `${HELP_CENTER_LINK}en/partner`,
+  },
+];
+---
+
+<div
+  aria-label="audience picker wrapper"
+  id="audience-picker-wrapper"
+  class="relative pl-2 py-[14px]"
+>
+  <span
+    aria-label={"audience picker current audience is for Developers"}
+    class="cursor-pointer mb-3 text-sm font-medium border-b-2 border-[#A96AF9]"
+  >
+    {t("header.audience-picker-developer")}
+  </span>
+  <div
+    aria-label="audience picker menu"
+    class="absolute flex-col top-[45px] gap-y-[2px] cursor-pointer w-max hidden"
+    id="audience-picker-menu"
+  >
+    {
+      audiences.map((audience) => (
+        <a
+          aria-label={`audience picker item ${audience.slug}`}
+          href={audience.link}
+          style={`background-color: ${
+            audience.slug === "developer"
+              ? "#CE9DF4"
+              : audience.slug === "partner"
+                ? "#00C2A4"
+                : audience.slug === "marketer"
+                  ? "#85ACFF"
+                  : "#C3CEE5"
+          }; color: #000000;`}
+          class={`
+          cursor-pointer min-w-[85px] w-full pr-4 pl-4 text-sm h-6 flex items-center
+          hover:!no-underline active:!no-underline focus:!no-underline
+          ${
+            audience.slug === "marketer"
+              ? "hover:!bg-[#769ff6] active:!bg-[#e0eaff]"
+              : audience.slug === "partner"
+                ? "hover:!bg-[#01b89c] active:!bg-[#d9ffef]"
+                : ""
+          }
+        `}
+        >
+          {audience.titleId}
+        </a>
+      ))
+    }
+  </div>
+</div>
+
+<script>
+  const wrapper = document.getElementById("audience-picker-wrapper");
+  const menu = document.getElementById("audience-picker-menu");
+
+  const toggleMenu = () => {
+    if (menu) {
+      menu.classList.toggle("hidden");
+    }
+  };
+
+  const closeMenu = (event: any) => {
+    if (menu && wrapper && !wrapper.contains(event.target)) {
+      menu.classList.add("hidden");
+    }
+  };
+
+  if (wrapper) {
+    wrapper.addEventListener("click", toggleMenu);
+  }
+
+  document.addEventListener("click", closeMenu);
+</script>
