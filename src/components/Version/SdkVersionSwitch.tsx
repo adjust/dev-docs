@@ -71,6 +71,7 @@ const VersionSwitch: FC<{ lang: string }> = ({ lang }) => {
         value={versions.currentVersion}
         options={versions.items}
         onChange={handleVersionChange}
+        isSearchable={false}
       />
     </div>
   );
