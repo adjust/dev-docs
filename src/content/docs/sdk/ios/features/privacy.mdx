@@ -30,7 +30,7 @@ You can send the user's erasure request to Adjust by calling the `gdprForgetMe` 
 <Tab title="Swift" sync="swift">
 
 ```swift
-Adjust.gdprForgetMe();
+Adjust.gdprForgetMe()
 ```
 
 </Tab>
@@ -38,13 +38,6 @@ Adjust.gdprForgetMe();
 
 ```objc
 [Adjust gdprForgetMe];
-```
-
-</Tab>
-<Tab title="Javascript" sync="js">
-
-```js
-Adjust.gdprForgetMe();
 ```
 
 </Tab>
@@ -60,7 +53,6 @@ You can use the Adjust SDK to record when a user changes their third-party shari
 
 ```objc
 - (nullable id)initWithIsEnabled:(nullable NSNumber *)isEnabled;
-- ```
 ```
 
 </CodeBlock>
@@ -88,14 +80,6 @@ ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc] in
 ```
 
 </Tab>
-<Tab title="Javascript" sync="js">
-
-```js
-var adjustThirdPartySharing = new AdjustThirdPartySharing(1);
-Adjust.trackThirdPartySharing(adjustThirdPartySharing);
-```
-
-</Tab>
 </Tabs>
 
 <Callout type="note">
@@ -120,14 +104,6 @@ Adjust.trackThirdPartySharing(adjustThirdPartySharing)
 ```objc
 ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc] initWithIsEnabled:@0];
 [Adjust trackThirdPartySharing:adjustThirdPartySharing];
-```
-
-</Tab>
-<Tab title="Javascript" sync="js">
-
-```js
-var adjustThirdPartySharing = new AdjustThirdPartySharing(0);
-Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
 </Tab>
@@ -185,15 +161,6 @@ ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc] in
 ```
 
 </Tab>
-<Tab title="Javascript" sync="js">
-
-```js
-var adjustThirdPartySharing = new AdjustThirdPartySharing(null);
-adjustThirdPartySharing.addGranularOption("PartnerA", "foo", "bar");
-Adjust.trackThirdPartySharing(adjustThirdPartySharing);
-```
-
-</Tab>
 </Tabs>
 
 #### [Manage Facebook Limited Data Use](manage-facebook-limited-data-use)
@@ -245,16 +212,6 @@ ADJThirdPartySharing *tps = [[ADJThirdPartySharing alloc] initWithIsEnabled:@1];
 ```
 
 </Tab>
-<Tab title="Javascript" sync="js">
-
-```js
-var tps = new AdjustThirdPartySharing(null);
-tps.addGranularOption("facebook", "data_processing_options_country", "1");
-tps.addGranularOption("facebook", "data_processing_options_state", "1000");
-Adjust.trackThirdPartySharing(tps);
-```
-
-</Tab>
 </Tabs>
 
 <Callout type="note">
@@ -298,7 +255,7 @@ Adjust.trackThirdPartySharing(adjustThirdPartySharing)
 <Tab title="Objective-C" sync="objc">
 
 ```objc
-ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc] 
+ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc]
                                                      initWithIsEnabled:nil];
 [adjustThirdPartySharing addGranularOption:@"google_dma" key:@"eea" value:@"1"];
 [adjustThirdPartySharing addGranularOption:@"google_dma" key:@"ad_personalization" value:@"1"];
@@ -336,19 +293,10 @@ Adjust.trackThirdPartySharing(adjustThirdPartySharing)
 <Tab title="Objective-C" sync="objc">
 
 ```objc
-ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc] 
+ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc]
                                                      initWithIsEnabled:nil];
 [adjustThirdPartySharing addPartnerSharingSetting:@"PartnerA" key:@"foo" value:@NO];
 [Adjust trackThirdPartySharing:adjustThirdPartySharing];
-```
-
-</Tab>
-<Tab title="Javascript" sync="js">
-
-```js
-var adjustThirdPartySharing = new AdjustThirdPartySharing(null);
-adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "foo", false);
-Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
 </Tab>
@@ -381,21 +329,16 @@ Adjust.disableThirdPartySharing()
 ```
 
 </Tab>
-<Tab title="Javascript" sync="js">
-
-```js
-Adjust.disableThirdPartySharing();
-```
-
-</Tab>
 </Tabs>
 
-## [Data residency](data-residency)
+## [Set URL strategy](set-url-strategy)
 
 <CodeBlock title="Method signature">
 
 ```objc
-@property (nonatomic, copy, readwrite, nullable) NSString *urlStrategy;
+- (void)setUrlStrategy:(nullable NSArray *)urlStrategyDomains
+        withSubdomains:(BOOL)useSubdomains
+      andDataResidency:(BOOL)isDataResidency;
 ```
 
 </CodeBlock>
@@ -407,19 +350,25 @@ The URL strategy feature allows you to set either:
 
 This is useful if you're operating in a country with strict privacy requirements. When you set your URL strategy, Adjust stores data in the selected data residency region or sends traffic to the chosen domain.
 
-To set your country of data residency, assign one of the following URL strategies to the `urlStrategy` property of your config instance.
+To set your country of data residency, call the `AdjustConfig.setUrlStrategy` method following parameters:
 
-<Table>
+-  `urlStrategyDomains` (`NSArray`): The country or countries of data residence, or the endpoints to which you want to send SDK traffic.
+-  `withSubdomains` (`BOOL`): Whether the source should prefix a subdomain.
+-  `andDataResidency` (`BOOL`): Whether the domain should be used for data residency.
 
-| Value                  | Description                                                                                                             |
-| ---------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `ADJDataResidencyEU`   | Sets the area of data residency to the EU                                                                               |
-| `ADJDataResidencyTR`   | Sets the area of data residency to Turkey                                                                               |
-| `ADJDataResidencyUS`   | Sets the area of data residency to the USA                                                                              |
-| `ADJUrlStrategyChina`  | Points the URL strategy to the `app.adjust.world` domain                                                                |
-| `ADJUrlStrategyCn`     | Points the URL strategy to the `app.adjust.cn` domain                                                                   |
-| `ADJUrlStrategyCnOnly` | Points the URL strategy to the `app.adjust.cn` domain but **doesn't** fall back to another domain if the request fails. |
-| `ADJUrlStrategyIndia`  | Points the URL strategy to the `app.adjust.net.in` domain                                                               |
+See the table below for a list of mappings.
+
+<Table autoWidth="1,2">
+
+| URL strategy              | Main and fallback domain          | Use sub domains | Is Data Residency |
+| ------------------------- | --------------------------------- | --------------- | ----------------- |
+| EU data residency         | `"eu.adjust.com"`                 | `true`          | `true`            |
+| Turkish data residency    | `"tr.adjust.com"`                 | `true`          | `true`            |
+| US data residency         | `"us.adjust.com"`                 | `true`          | `true`            |
+| China global URL strategy | `"adjust.world"`, `"adjust.com"`  | `true`          | `false`           |
+| China URL strategy        | `"adjust.cn"`, `"adjust.com"`     | `true`          | `false`           |
+| China only URL strategy   | `"adjust.cn"`                     | `true`          | `false`           |
+| India URL strategy        | `"adjust.net.in"`, `"adjust.com"` | `true`          | `false`           |
 
 </Table>
 
@@ -427,39 +376,143 @@ To set your country of data residency, assign one of the following URL strategie
 <Tab title="Swift" sync="swift">
 
 ```swift
-let yourAppToken = "{YourAppToken}"
-let environment = ADJEnvironmentSandbox as? String
-let adjustConfig = ADJConfig(
-   appToken: yourAppToken,
-   environment: environment)
-// ...
-adjustConfig?.urlStrategy = ADJDataResidencyEU
+let domain = []
+adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: false)
 ```
 
 </Tab>
 <Tab title="Objective-C" sync="objc">
 
-```objective-c
-NSString *yourAppToken = @"{YourAppToken}";
-NSString *environment = ADJEnvironmentSandbox;
-*adjustConfig = [ADJConfig configWithAppToken:yourAppToken
-                           environment:environment];
-// ...
-[adjustConfig setUrlStrategy:ADJDataResidencyEU];
+```objc
+NSArray *domain = [];
+[adjustConfig setUrlStrategy:domain withSubdomains:YES
+                     andDataResidency:YES];
 ```
 
 </Tab>
-<Tab title="Javascript" sync="js">
+</Tabs>
 
-```javascript
-setupWebViewJavascriptBridge(function (bridge) {
-   // ...
-   var yourAppToken = yourAppToken;
-   var environment = AdjustConfig.EnvironmentSandbox;
-   var adjustConfig = new AdjustConfig(yourAppToken, environment);
-   adjustConfig.setUrlStrategy(ADJDataResidencyEU);
-});
+### [Examples](url-strategy-examples)
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+<CodeBlock title="India URL strategy">
+
+```swift
+let domain = ["adjust.net.in", "adjust.com"]
+adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: false)
 ```
+
+</CodeBlock>
+
+<CodeBlock title="China URL strategy">
+
+```swift
+let domain = ["adjust.world", "adjust.com"]
+adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: false)
+```
+
+</CodeBlock>
+
+<CodeBlock title="China only URL strategy">
+
+```swift
+let domain = ["adjust.cn"]
+adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: false)
+```
+
+</CodeBlock>
+
+<CodeBlock title="EU data residency">
+
+```swift
+let domain = ["eu.adjust.com"]
+adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: true)
+```
+
+</CodeBlock>
+
+<CodeBlock title="Turkey data residency">
+
+```swift
+let domain = ["tr.adjust.com"]
+adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: true)
+```
+
+</CodeBlock>
+
+<CodeBlock title="US data residency">
+
+```swift
+let domain = ["us.adjust.com"]
+adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: true)
+```
+
+</CodeBlock>
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+<CodeBlock title="India URL strategy">
+
+```objc
+NSArray *domain = [[NSArray alloc]
+                       initWithObjects:@"adjust.net.in", @"adjust.com", nil];
+[adjustConfig setUrlStrategy:domain withSubdomains:YES andDataResidency:NO];
+```
+
+</CodeBlock>
+
+<CodeBlock title="China URL strategy">
+
+```objc
+NSArray *domain = [[NSArray alloc]
+                       initWithObjects:@"adjust.world", @"adjust.com", nil];
+[adjustConfig setUrlStrategy:domain withSubdomains:YES andDataResidency:NO];
+```
+
+</CodeBlock>
+
+<CodeBlock title="China only URL strategy">
+
+```objc
+NSArray *domain = [[NSArray alloc]
+                       initWithObjects:@"adjust.cn", nil];
+[adjustConfig setUrlStrategy:domain withSubdomains:YES andDataResidency:NO];
+```
+
+</CodeBlock>
+
+<CodeBlock title="EU data residency">
+
+```objc
+NSArray *domain = [[NSArray alloc]
+                       initWithObjects:@"eu.adjust.com", nil];
+[adjustConfig setUrlStrategy:domain withSubdomains:YES andDataResidency:YES];
+```
+
+</CodeBlock>
+
+<CodeBlock title="Turkey data residency">
+
+```objc
+NSArray *domain = [[NSArray alloc]
+                       initWithObjects:@"tr.adjust.com", nil];
+[adjustConfig setUrlStrategy:domain withSubdomains:YES andDataResidency:YES];
+```
+
+</CodeBlock>
+
+<CodeBlock title="US data residency">
+
+```objc
+NSArray *domain = [[NSArray alloc]
+                       initWithObjects:@"us.adjust.com", nil];
+[adjustConfig setUrlStrategy:domain withSubdomains:YES andDataResidency:YES];
+```
+
+</CodeBlock>
 
 </Tab>
 </Tabs>
@@ -497,13 +550,6 @@ Adjust.trackMeasurementConsent(true)
 ```
 
 </Tab>
-<Tab title="Javascript" sync="js">
-
-```js
-Adjust.trackMeasurementConsent(true);
-```
-
-</Tab>
 </Tabs>
 
 ## [COPPA compliance](coppa-compliance)
@@ -532,7 +578,7 @@ let adjustConfig = ADJConfig(
       environment: environment)
 
 Adjust.initSdk(adjustConfig)
-Adjust.enableCoppaCompliance();
+Adjust.enableCoppaCompliance()
 ```
 
 </Tab>
@@ -579,7 +625,7 @@ let adjustConfig = ADJConfig(
     andEnvironment: environment)
 
 Adjust.initSdk(adjustConfig)
-Adjust.disableCoppaCompliance();
+Adjust.disableCoppaCompliance()
 ```
 
 </Tab>
