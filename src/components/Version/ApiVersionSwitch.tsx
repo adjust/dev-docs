@@ -9,7 +9,6 @@ import {
   getQueryParameter,
   updateQueryParameter,
 } from "@components/utils/queryParamHelpers";
-import { setVersionSelected } from "@store/versionSelectedStore";
 
 const VersionSwitch: FC<{ lang: string }> = ({ lang }) => {
   const t = useTranslations(lang as keyof Locales);
@@ -56,11 +55,12 @@ const VersionSwitch: FC<{ lang: string }> = ({ lang }) => {
         selector.classList.remove("hidden");
       }
     });
+    const event = new Event("versionUpdated");
+    document.dispatchEvent(event);
   }, [versions.currentVersion.value]);
 
   useEffect(() => {
     updateApiVersionVisibility();
-    setVersionSelected(true);
   }, [updateApiVersionVisibility]);
 
   const handleVersionChange = useCallback((newVersion: Option) => {

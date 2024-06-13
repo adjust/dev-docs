@@ -9,7 +9,6 @@ import {
   updateQueryParameter,
 } from "@components/utils/queryParamHelpers";
 import { $versions, changeVersionValue } from "@store/sdkVersionsStore";
-import { setVersionSelected } from "@store/versionSelectedStore";
 
 // Declare the supported values.
 // If another value is provided (e.g. "version=v3"), ignore it.
@@ -35,11 +34,14 @@ const VersionSwitch: FC<{ lang: string }> = ({ lang }) => {
         selector.classList.remove("hidden");
       }
     });
+
+    // Dispatch a custom event to notify that the SDK version visibility has been updated
+    const event = new Event("versionUpdated");
+    document.dispatchEvent(event);
   }, [versions.currentVersion.value]);
 
   useEffect(() => {
     updateSdkVersionVisibility();
-    setVersionSelected(true);
   }, [updateSdkVersionVisibility]);
 
   useEffect(() => {
@@ -64,7 +66,10 @@ const VersionSwitch: FC<{ lang: string }> = ({ lang }) => {
   const label = t("sdkversionswitch.label");
 
   return (
-    <div className="flex flex-col w-full min-h-90px justify-start gap-y-8 bg-slate-100 p-6 rounded-lg mb-14 md:flex-row md:items-center md:gap-x-8">
+    <div
+      id="combobox-holder"
+      className="flex flex-col w-full min-h-90px justify-start gap-y-8 bg-slate-100 p-6 rounded-lg mb-14 md:flex-row md:items-center md:gap-x-8"
+    >
       <label htmlFor="combobox">{label}</label>
       <ComboBox
         id="combobox"
