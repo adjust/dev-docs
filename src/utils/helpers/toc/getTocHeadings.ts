@@ -1,13 +1,7 @@
 import type { MarkdownHeading } from "astro";
 
-const toc = document.getElementById("toc");
-const tocList = document.getElementById("toc-list");
-const tocMobileList = document.getElementById("toc-mobile-list");
-const bigTocList = document.getElementById("big-toc-list");
-const isMultiVersion = toc?.getAttribute("data-message") === "true";
-
-let versionNumber = "";
 const HEADER_HEIGHT = 150;
+let versionNumber = "";
 
 export const getTocHeadings = (headers: Element[], versionNumber?: string): MarkdownHeading[] => {
   return headers.map((header) => {
@@ -15,10 +9,7 @@ export const getTocHeadings = (headers: Element[], versionNumber?: string): Mark
     let slug = header.id;
 
     if (!slug) {
-      slug = text
-        .toLocaleLowerCase()
-        .replace(/[^\w\s-]/g, "")
-        .replace(/\s+/g, "-");
+      slug = text.toLowerCase().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-");
       header.id = slug;
     }
 
@@ -54,23 +45,29 @@ export const getHeaders = (): Element[] | false => {
 };
 
 export const updateHeadings = (): void => {
+  const toc = document.getElementById("toc");
+  const bigToc = document.getElementById("big-toc");
+  const mobileToc = document.getElementById("toc-mobile");
+  const tocList = document.getElementById("toc-list");
+  const tocMobileList = document.getElementById("toc-mobile-list");
+  const bigTocList = document.getElementById("big-toc-list");
+
   let headers = getHeaders();
+  if (!toc || !bigToc || !mobileToc || !tocList || !tocMobileList || !bigTocList) return;
 
   if (headers === false) {
+    [toc, bigToc, mobileToc].forEach(el => el.classList.add("!hidden"));
     return;
   }
 
   const headings = getTocHeadings(headers, versionNumber);
 
   if (headings.length === 0) {
+    [toc, bigToc, mobileToc].forEach(el => el.classList.add("!hidden"));
     return;
   }
 
-  const tocFragment = document.createDocumentFragment();
-  const tocMobileFragment = document.createDocumentFragment();
-  const bigTocFragment = document.createDocumentFragment();
-
-  headings.forEach((heading) => {
+  const createTocItem = (heading: MarkdownHeading) => {
     const listItem = document.createElement("li");
     listItem.className = `toc-item depth-${heading.depth}`;
 
@@ -81,40 +78,45 @@ export const updateHeadings = (): void => {
     link.setAttribute("data-slug", heading.slug);
 
     listItem.appendChild(link);
-    tocFragment.appendChild(listItem);
+    return listItem;
+  };
+
+  const fragments = {
+    toc: document.createDocumentFragment(),
+    tocMobile: document.createDocumentFragment(),
+    bigToc: document.createDocumentFragment()
+  };
+
+  headings.forEach(heading => {
+    const listItem = createTocItem(heading);
+    fragments.toc.appendChild(listItem);
 
     if (heading.depth < 4) {
-      const bigListItem = listItem.cloneNode(true) as HTMLElement;
-      bigTocFragment.appendChild(bigListItem);
-
-      const mobileListItem = listItem.cloneNode(true) as HTMLElement;
-      tocMobileFragment.appendChild(mobileListItem);
+      fragments.bigToc.appendChild(listItem.cloneNode(true));
+      fragments.tocMobile.appendChild(listItem.cloneNode(true));
     }
   });
 
-  tocList!.innerHTML = "";
-  tocList!.appendChild(tocFragment);
+  [tocList, tocMobileList, bigTocList].forEach(list => list.innerHTML = "");
 
-  tocMobileList!.innerHTML = "";
-  tocMobileList!.appendChild(tocMobileFragment);
+  tocList.appendChild(fragments.toc);
+  tocMobileList.appendChild(fragments.tocMobile);
+  bigTocList.appendChild(fragments.bigToc);
 
-  bigTocList!.innerHTML = "";
-  bigTocList!.appendChild(bigTocFragment);
+  [toc, bigToc, mobileToc].forEach(el => el.classList.remove("!hidden"));
 
-  if (isMultiVersion) {
-    const initialHash = window.location.hash.slice(1);
-    if (initialHash) {
-      const matchingHeader = headers.find(header => header.id.endsWith(initialHash));
-      if (matchingHeader) {
-        const targetId = matchingHeader.id;
-        const targetElement = document.getElementById(targetId);
-        if (targetElement) {
-          const targetPosition = targetElement.getBoundingClientRect().top + window.scrollY - HEADER_HEIGHT;
-          window.scrollTo({ top: targetPosition, behavior: "smooth" });
-          setTimeout(() => {
-            history.pushState(null, "", `#${targetId}`);
-          }, 300);
-        }
+  const initialHash = window.location.hash.slice(1);
+  if (initialHash) {
+    const matchingHeader = headers.find(header => header.id.endsWith(initialHash));
+    if (matchingHeader) {
+      const targetId = matchingHeader.id;
+      const targetElement = document.getElementById(targetId);
+      if (targetElement) {
+        const targetPosition = targetElement.getBoundingClientRect().top + window.scrollY - HEADER_HEIGHT;
+        window.scrollTo({ top: targetPosition, behavior: "smooth" });
+        setTimeout(() => {
+          history.pushState(null, "", `#${targetId}`);
+        }, 300);
       }
     }
   }
