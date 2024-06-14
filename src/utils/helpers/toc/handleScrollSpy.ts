@@ -14,7 +14,7 @@ export const handleScrollSpy = () => {
       const offsetTop = headingElement.offsetTop;
       const offsetHeight = headingElement.offsetHeight;
 
-      if (offsetTop <= scrollPos && offsetTop + offsetHeight > scrollPos) {
+      if (offsetTop <= scrollPos && offsetTop + offsetHeight >= scrollPos) {
          const id = headingElement.getAttribute("id");
          if (id) {
             newActiveId = id;
@@ -25,8 +25,12 @@ export const handleScrollSpy = () => {
    if (newActiveId && newActiveId !== activeId) {
       activeId = newActiveId;
       document.querySelectorAll(".toc-link").forEach((link) => {
-         link.classList.toggle("font-medium", link.getAttribute("data-slug") === activeId);
-         link.classList.toggle("font-normal", link.getAttribute("data-slug") !== activeId);
+         const isActive = link.getAttribute("data-slug") === activeId;
+         link.classList.toggle("font-medium", isActive);
+         link.classList.toggle("font-normal", !isActive);
       });
    }
+
+   // Request the next animation frame
+   requestAnimationFrame(handleScrollSpy);
 };
