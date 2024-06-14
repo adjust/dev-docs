@@ -33,6 +33,13 @@ module.exports = {
     },
 
     extend: {
+      spacing: {
+        "external-toc": "calc(100vw - (100vw - 100rem + 1rem)/ 2)",
+        "open-toc": "calc(100vw - 19rem - (100vw - 100rem + 1rem)/2)",
+        "closed-toc": "calc(100vw - 2rem - (100vw - 100rem + 1rem)/2)",
+        "toc-closed-article": "calc(100% - 2rem)",
+        "toc-open-article": "calc(100% - 19rem)"
+      },
       backgroundColor: {
         "body-main": "#f9fafb",
         success: "#d4f8f2",

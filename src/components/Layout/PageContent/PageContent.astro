@@ -2,7 +2,7 @@
 import type { MarkdownHeading } from "astro";
 import classNames from "classnames";
 
-import RightSidebar from "../RightSidebar/RightSidebar.astro";
+import TableOfContents from "@components/TableOfContents.astro";
 import type { NavigationData } from "@utils/helpers/navigation/types";
 import CategoryCard from "@components/Cards/CategoryCard.astro";
 import SdkVersionSwitch from "@components/Version/SdkVersionSwitch";
@@ -21,9 +21,10 @@ type Props = {
   headings: MarkdownHeading[];
   childLinks: NavigationData["childLinks"];
   multiVersion: boolean;
+  type?: string;
 };
 
-const { title, headings, childLinks, multiVersion } = Astro.props;
+const { title, headings, childLinks, multiVersion, type } = Astro.props;
 
 const sortedLinks = childLinks.sort((a, b) => {
   if (!a.position && !b.position) {
@@ -37,17 +38,28 @@ const sortedLinks = childLinks.sort((a, b) => {
 
 <article
   id="article"
-  class="article-main w-full sidebar-open:hidden text-black"
+  class=`${headings && headings.length > 0 ? "lg:w-toc-open-article" : "w-full"} sidebar-open:hidden text-black xs:px-8 lg:pr-4 lg:pl-12 pb-16 xxxl:w-full`
 >
+  {
+    headings && headings.length > 0 && type !== "category" && (
+      <aside title={t("toc.header")}>
+        <TableOfContents
+          title={title}
+          multiVersion={multiVersion}
+          headings={headings}
+          lang={currentLang}
+        />
+      </aside>
+    )
+  }
   <section class="main-section">
     <h1 class="text-heading-1 font-bold leading-[1] mb-4" id="overview">
       {title}
     </h1>
-    <aside title={t("toc.header")}>
-      <RightSidebar title={title} multiVersion={multiVersion} />
-    </aside>
     <div
-      class={classNames({ "article-content": !sortedLinks.length })}
+      class={classNames({
+        "article-content": !sortedLinks.length,
+      })}
       id="article-content"
     >
       {
