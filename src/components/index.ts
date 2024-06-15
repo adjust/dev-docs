@@ -3,6 +3,7 @@ export { default as Accordion } from "./Accordion.astro";
 export { default as Callout } from "./Callout.astro";
 export { default as CodeBlock } from "./CodeBlock.astro";
 export { default as FigmaEmbed } from "./FigmaEmbed/FigmaEmbed.astro";
+export { default as ListColumns } from "./ListColumns.astro";
 export { default as MinorVersion } from "./MinorVersion.astro";
 export { default as SdkVersion } from "./SdkVersion.astro";
 export { default as Tab } from "./Tab.astro";

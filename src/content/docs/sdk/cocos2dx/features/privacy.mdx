@@ -154,17 +154,97 @@ adjustThirdPartySharing.addGranularOption('google_dma', 'ad_user_data', '1');
 Adjust2dx::trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
-### Update partner settings
+### [Update partner sharing settings](update-partner-settings)
 
-```cpp title="Method signature"
+<CodeBlock title="Method signature">
+
+```cpp
 void addPartnerSharingSetting(std::string partnerName, std::string key, bool value);
 ```
 
-You can use the Adjust SDK to update your third party sharing settings on a per-partner basis. To do this, call the `addPartnerSharingSetting` method with your partner name and your options.
+</CodeBlock>
+
+By default, Adjust shares all metrics with any partners you've configured in your app settings. You can use the Adjust SDK to update your third party sharing settings on a per-partner basis. To do this, call the `addPartnerSharingSetting` method with the following arguments:
+
+<Table autoWidth="1,2,3">
+
+| Argument      | Data type | Description                                                                                                                                                                                                |
+| ------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `partnerName` | `String`  | The name of the partner. [Download the full list of available partners](https://assets.ctfassets.net/5s247im0esyq/2QQROOadVqJzrME7yXKObe/7aca25e53d38befb2d469809e62b6fcc/3rd-party-sharing-partners.xlsx) |
+| `key`         | `String`  | The metric to share with the partner                                                                                                                                                                       |
+| `value`       | `Boolean` | The user's decision                                                                                                                                                                                        |
+
+</Table>
+
+You can use the `key` to specify which metrics you want to disable or re-enable. If you want to enable/disable sharing all metrics, you can use the `all` key. The full list of available metrics is available below:
+
+<ListColumns>
+
+-  `ad_revenue`
+-  `all`
+-  `attribution`
+-  `update`
+-  `att_update`
+-  `cost_update`
+-  `event`
+-  `install`
+-  `reattribution`
+
+---
+
+-  `reattribution_reinstall`
+-  `reinstall`
+-  `rejected_install`
+-  `rejected_reattribution`
+-  `sdk_click`
+-  `sdk_info`
+-  `session`
+-  `subscription`
+-  `uninstall`
+
+</ListColumns>
+
+When you set a `false` value against a metric for a partner, Adjust stops sharing the metric with the partner.
+
+<Callout type="tip">
+
+If you only want to share a few metrics with a partner, you can pass the `all` key with a `false` value to disable all sharing and then pass individual metrics with a `true` value to limit what you share.
+
+</Callout>
+
+#### [Examples](examples)
+
+If you want to stop sharing all metrics with a specific partner, pass the `all` key with a `false` value.
 
 ```cpp
 AdjustThirdPartySharing2dx adjustThirdPartySharing = new AdjustThirdPartySharing2dx(true);
-adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "foo", false);
+adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "all", false);
+Adjust2dx::trackThirdPartySharing(adjustThirdPartySharing);
+```
+
+To re-enable sharing, pass the `all` key with a `true` value.
+
+```cpp
+AdjustThirdPartySharing2dx adjustThirdPartySharing = new AdjustThirdPartySharing2dx(true);
+adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "all", true);
+Adjust2dx::trackThirdPartySharing(adjustThirdPartySharing);
+```
+
+You can stop or start sharing specific metrics by calling the `addPartnerSharingSetting` method multiple times with different keys. For example, if you only want to share event information with a partner, you can pass:
+
+-  `all` with a `false` value to disable sharing all information.
+-  `event` with a `true` value to enable event sharing
+
+<Callout type="note">
+
+Specific keys always take priority over `all`. If you pass `all` with other keys, the individual key values override the `all` setting.
+
+</Callout>
+
+```cpp
+AdjustThirdPartySharing2dx adjustThirdPartySharing = new AdjustThirdPartySharing2dx(true);
+adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "all", false);
+adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "event", true);
 Adjust2dx::trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
@@ -195,7 +275,7 @@ This is useful if you're operating in a country with strict privacy requirements
 
 To set your country of data residency, call the `setUrlStrategy` method on your `AdjustConfig2dx` instance with the following parameter:
 
-- `urlStrategy` (**String**): The country of data residence or endpoint to which you want to send SDK traffic.
+-  `urlStrategy` (**String**): The country of data residence or endpoint to which you want to send SDK traffic.
 
 <Table>
 
@@ -283,7 +363,7 @@ If your app targets users under the age of 13, and the install region **isn't** 
 
 To mark your app as a Kids App, call the `setPlayStoreKidsAppEnabled` method with the following argument:
 
-- `playStoreKidsAppEnabled` (**Boolean**): set to `true` to mark the app as a Kids App, or `false` to mark the app as a non-Kids App.
+-  `playStoreKidsAppEnabled` (**Boolean**): set to `true` to mark the app as a Kids App, or `false` to mark the app as a non-Kids App.
 
 ```cpp {2}
 AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment);
