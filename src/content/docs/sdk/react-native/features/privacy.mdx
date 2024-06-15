@@ -71,25 +71,6 @@ You can attach granular information when a user updates their third-party sharin
 -  `key` (`string`): The option key.
 -  `value` (`string`): The option value.
 
-The following partners are available:
-
-<Table>
-
-| Partner name            | String value                |
-| ----------------------- | --------------------------- |
-| AppleAds                | `apple_ads`                 |
-| Facebook                | `facebook`                  |
-| GoogleAds               | `adwords`                   |
-| GoogleMarketingPlatform | `google_marketing_platform` |
-| Snapchat                | `snapchat`                  |
-| Tencent                 | `tencent`                   |
-| TikTokSan               | `tiktok_san`                |
-| X (formerly Twitter)    | `twitter`                   |
-| YahooGemini             | `yahoo_gemini`              |
-| YahooJapanSearch        | `yahoo_japan_search`        |
-
-</Table>
-
 ```jsx {3}
 var adjustThirdPartySharing = new AdjustThirdPartySharing(null);
 //...
@@ -191,18 +172,97 @@ To disable third-party sharing for all users, call the `disableThirdPartySharing
 Adjust.disableThirdPartySharing();
 ```
 
-### [Update partner settings](update-partner-settings)
+### [Update partner sharing settings](update-partner-settings)
 
-```ts title="Method signature"
+<CodeBlock title="Method signature">
+
+```ts
 public addPartnerSharingSetting(partnerName: string, key: string, value: boolean): void
 ```
 
-You can use the Adjust SDK to update your third party sharing settings on a per-partner basis. To do this, call the `addPartnerSharingSetting` method with your partner name and your options.
+</CodeBlock>
 
-```jsx {3}
+By default, Adjust shares all metrics with any partners you've configured in your app settings. You can use the Adjust SDK to update your third party sharing settings on a per-partner basis. To do this, call the `addPartnerSharingSetting` method with the following arguments:
+
+<Table autoWidth="1,2,3">
+
+| Argument      | Data type | Description                                                                                                                                                                                                |
+| ------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `partnerName` | `String`  | The name of the partner. [Download the full list of available partners](https://assets.ctfassets.net/5s247im0esyq/2QQROOadVqJzrME7yXKObe/7aca25e53d38befb2d469809e62b6fcc/3rd-party-sharing-partners.xlsx) |
+| `key`         | `String`  | The metric to share with the partner                                                                                                                                                                       |
+| `value`       | `Boolean` | The user's decision                                                                                                                                                                                        |
+
+</Table>
+
+You can use the `key` to specify which metrics you want to disable or re-enable. If you want to enable/disable sharing all metrics, you can use the `all` key. The full list of available metrics is available below:
+
+<ListColumns>
+
+-  `ad_revenue`
+-  `all`
+-  `attribution`
+-  `update`
+-  `att_update`
+-  `cost_update`
+-  `event`
+-  `install`
+-  `reattribution`
+
+---
+
+-  `reattribution_reinstall`
+-  `reinstall`
+-  `rejected_install`
+-  `rejected_reattribution`
+-  `sdk_click`
+-  `sdk_info`
+-  `session`
+-  `subscription`
+-  `uninstall`
+
+</ListColumns>
+
+When you set a `false` value against a metric for a partner, Adjust stops sharing the metric with the partner.
+
+<Callout type="tip">
+
+If you only want to share a few metrics with a partner, you can pass the `all` key with a `false` value to disable all sharing and then pass individual metrics with a `true` value to limit what you share.
+
+</Callout>
+
+#### [Examples](examples)
+
+If you want to stop sharing all metrics with a specific partner, pass the `all` key with a `false` value.
+
+```jsx
 var adjustThirdPartySharing = new AdjustThirdPartySharing(null);
-//...
-adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "foo", false);
+adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "all", false);
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+```
+
+To re-enable sharing, pass the `all` key with a `true` value.
+
+```jsx
+var adjustThirdPartySharing = new AdjustThirdPartySharing(null);
+adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "all", true);
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+```
+
+You can stop or start sharing specific metrics by calling the `addPartnerSharingSetting` method multiple times with different keys. For example, if you only want to share event information with a partner, you can pass:
+
+-  `all` with a `false` value to disable sharing all information.
+-  `event` with a `true` value to enable event sharing
+
+<Callout type="note">
+
+Specific keys always take priority over `all`. If you pass `all` with other keys, the individual key values override the `all` setting.
+
+</Callout>
+
+```jsx
+var adjustThirdPartySharing = new AdjustThirdPartySharing(null);
+adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "all", false);
+adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "event", true);
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
