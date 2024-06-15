@@ -69,7 +69,7 @@ export const updateHeadings = (): void => {
 
   const createTocItem = (heading: MarkdownHeading) => {
     const listItem = document.createElement("li");
-    listItem.className = `toc-item depth-${heading.depth}`;
+    listItem.className = `toc-item depth-${heading.depth} ml-${heading.depth > 2 ? 6 : 0}`;
 
     const link = document.createElement("a");
     link.href = `#${heading.slug}`;
@@ -91,7 +91,7 @@ export const updateHeadings = (): void => {
     const listItem = createTocItem(heading);
     fragments.toc.appendChild(listItem);
 
-    if (heading.depth < 4) {
+    if (heading.depth < 5) {
       fragments.bigToc.appendChild(listItem.cloneNode(true));
       fragments.tocMobile.appendChild(listItem.cloneNode(true));
     }
