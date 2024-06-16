@@ -29,35 +29,41 @@ if (Astro.slots.has("default")) {
 }
 
 const parseHighlight = (
-  highlight: string
+  highlight: string,
 ): MarkerDefinition | MarkerDefinition[] => {
   return highlight.split(",").map((item) => {
-    item = item.trim();
-    if (item.startsWith("{") && item.endsWith("}")) {
-      const [key, value] = item
-        .slice(1, -1)
-        .split(":")
-        .map((part) => part.trim());
-      return { [key]: value.replace(/"/g, "") } as MarkerDefinition; // Remove quotes from the value
+    const trimmedItem = item.trim();
+
+    if (trimmedItem.startsWith("{") && trimmedItem.endsWith("}")) {
+      const innerContent = trimmedItem.slice(1, -1).trim();
+
+      // Check if the inner content contains a colon
+      if (innerContent.includes(":")) {
+        const [key, value] = innerContent.split(":").map((part) => part.trim());
+        return { [key]: value.replace(/"/g, "") } as MarkerDefinition;
+      }
+
+      // If no colon, treat it as a regular string token
+      return trimmedItem;
     }
-    if (item.startsWith("/") && item.endsWith("/")) {
-      return new RegExp(item.slice(1, -1), "g") as MarkerDefinition; // Return as RegExp
+
+    if (trimmedItem.startsWith("/") && trimmedItem.endsWith("/")) {
+      return new RegExp(trimmedItem.slice(1, -1), "g") as MarkerDefinition;
     }
-    return item.replace(/'/g, ""); // Remove single quotes from the item
+
+    return trimmedItem.replace(/'/g, "");
   }) as MarkerDefinition[];
 };
 
-const parseCollapse = (collapse: string | string[] | undefined): string[] => {
+const parseCollapse = (collapse?: string | string[]): string[] => {
   if (typeof collapse === "string") {
     return collapse.split(",").map((item) => item.trim());
   }
-  if (Array.isArray(collapse)) {
-    return collapse;
-  }
-  return [];
+
+  return Array.isArray(collapse) ? collapse : [];
 };
 
-const { code, lang } = extractCodeFromHTML(content);
+const { code, lang } = await extractCodeFromHTML(content);
 const parsedHighlight = highlight ? parseHighlight(highlight) : undefined;
 const parsedIns = ins ? parseHighlight(ins) : undefined;
 const parsedDel = del ? parseHighlight(del) : undefined;
