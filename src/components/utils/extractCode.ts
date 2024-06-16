@@ -26,8 +26,5 @@ export const extractCodeFromHTML = async (htmlString: string): Promise<CodeExtra
       return acc + text;
    }, "");
 
-   // Normalize newlines
-   const sanitizedCode = extractedCode.replace(/\n\n+/g, "\n\n");
-
    return { code: extractedCode, lang };
 };
