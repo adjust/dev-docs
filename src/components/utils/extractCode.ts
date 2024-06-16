@@ -1,21 +1,33 @@
-import { JSDOM } from 'jsdom';
+import { unified } from "unified";
+import rehypeParse from "rehype-parse";
+import { selectAll, select } from "hast-util-select";
+import { toString } from "hast-util-to-string";
 
 interface CodeExtractionResult {
    code: string;
    lang?: string;
 }
 
-export const extractCodeFromHTML = (htmlString: string): CodeExtractionResult => {
-   const { window } = new JSDOM(htmlString);
-   const { document } = window;
+export const extractCodeFromHTML = async (htmlString: string): Promise<CodeExtractionResult> => {
+   const processor = unified().use(rehypeParse, { fragment: true });
+   const ast = processor.parse(htmlString);
 
-   const codeBlocks = document.querySelectorAll('.ec-line .code');
-   const preElement = document.querySelector("pre[data-language]");
+   const preElement = select("pre[data-language]", ast);
+   const lang = preElement ? preElement.properties["dataLanguage"] as string : "";
 
-   let lang = preElement ? preElement.getAttribute("data-language") || "" : "";
-   const extractedCode = Array.from(codeBlocks)
-      .map(block => block.textContent || '')
-      .join('\n');
+   const codeBlocks = selectAll(".ec-line .code", ast);
 
-   return { code: extractedCode.trim(), lang };  // Remove any trailing newline
+   // Handle extraction with explicit newline handling
+   const extractedCode = codeBlocks.reduce((acc, block, index) => {
+      const text = toString(block);
+      if (index > 0 && text.trim() !== "") {
+         return acc + "\n" + text;
+      }
+      return acc + text;
+   }, "");
+
+   // Normalize newlines
+   const sanitizedCode = extractedCode.replace(/\n\n+/g, "\n\n");
+
+   return { code: extractedCode, lang };
 };
