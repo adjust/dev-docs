@@ -26,7 +26,9 @@ To add the SDK to your project:
 2. Copy the C++ files from the `dist` directory and add them to your Cocos2d-x project
 3. (**Android only**): add the paths of the C++ files to the `LOCAL_SRC_FILES` section of your `Android.mk` file.
 
-   ```text title="Android.mk"
+   <CodeBlock title="Android.mk">
+
+   ```text
    $(LOCAL_PATH)/../../../Classes/Adjust/AdjustConfig2dx.cpp \
    $(LOCAL_PATH)/../../../Classes/Adjust/AdjustAttribution2dx.cpp \
    $(LOCAL_PATH)/../../../Classes/Adjust/AdjustProxy2dx.cpp \
@@ -43,6 +45,8 @@ To add the SDK to your project:
    $(LOCAL_PATH)/../../../Classes/Adjust/AdjustAppStorePurchase2dx.cpp \
    $(LOCAL_PATH)/../../../Classes/Adjust/AdjustPlayStorePurchase2dx.cpp \
    ```
+
+   </CodeBlock>
 
 ## 3. Update your project settings
 
@@ -66,16 +70,24 @@ To give the Adjust SDK access to device information, you need to declare which p
 
 Add the following permissions to get access to online features:
 
-```xml title="AndroidManifest.xml"
+<CodeBlock title="AndroidManifest.xml">
+
+```xml
 <uses-permission android:name="android.permission.INTERNET"/>
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 ```
 
+</CodeBlock>
+
 If your app doesn't target the Google Play Store, add the following permission to access the device's network state:
 
-```xml title="AndroidManifest.xml"
+<CodeBlock title="AndroidManifest.xml">
+
+```xml
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 ```
+
+</CodeBlock>
 
 <MinorVersion changed="4.32.0">
 
@@ -83,15 +95,21 @@ The Adjust SDK includes the `com.google.android.gms.AD_ID` permission by default
 
 </MinorVersion>
 
-```xml title="AndroidManifest.xml" "tools:node="remove""
+<CodeBlock title="AndroidManifest.xml" highlight={"tools:node=\"remove\""}>
+
+```xml
 <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
 ```
+
+</CodeBlock>
 
 #### Set up Proguard
 
 If you're using Proguard to optimize your app, you must add rules to prevent Proguard from removing classes.
 
-```java title="Proguard.pro"
+<CodeBlock title="Proguard.pro">
+
+```java
 -keep class com.adjust.sdk.** { *; }
 -keep class com.google.android.gms.common.ConnectionResult {
    int SUCCESS;
@@ -104,13 +122,20 @@ If you're using Proguard to optimize your app, you must add rules to prevent Pro
    boolean isLimitAdTrackingEnabled();
 }
 -keep public class com.android.installreferrer.** { *; }
+
 ```
+
+</CodeBlock>
 
 If you're not publishing your app in the Google Play Store, add the following rule:
 
-```java title="Proguard.pro"
+<CodeBlock title="Proguard.pro">
+
+```java
 -keep public class com.adjust.sdk.** { *; }
 ```
+
+</CodeBlock>
 
 #### Set up install referrer
 
@@ -126,17 +151,26 @@ The Google Play Referrer API is available to apps that target the Google Play St
 
 To support the Google Play Referrer API, add the following to your `build.gradle` file:
 
-```groovy title="build.gradle"
+<CodeBlock title="build.gradle">
+
+```groovy
 dependencies {
    implementation 'com.android.installreferrer:installreferrer:2.2'
 }
+
 ```
+
+</CodeBlock>
 
 If you're using Proguard, remember to add a rule to prevent the dependency from being removed.
 
-```java title="Proguard.pro"
+<CodeBlock title="Proguard.pro">
+
+```java
 -keep public class com.android.installreferrer.** { *; }
 ```
+
+</CodeBlock>
 
 ##### Huawei Referrer API
 
@@ -157,7 +191,9 @@ The Adjust SDK supports the [Meta Install Referrer](https://developers.facebook.
 1. Find your Meta app ID in your [App Dashboard](https://developers.facebook.com/apps). See Meta's [App Dashboard documentation](https://developers.facebook.com/docs/development/create-an-app/app-dashboard) for more information.
 2. [Add the Meta apps to your `AndroidManifest.xml` file](https://developers.facebook.com/docs/app-ads/meta-install-referrer#step-1--add-the-meta-apps).
 
-   ```xml title="AndroidManifest.xml"
+   <CodeBlock title="AndroidManifest.xml">
+
+   ```xml
    <queries>
       <package android:name="com.facebook.katana" />
    </queries>
@@ -166,9 +202,12 @@ The Adjust SDK supports the [Meta Install Referrer](https://developers.facebook.
       <package android:name="com.instagram.android" />
    </queries>
    ```
-3. Pass your App ID as a __string__ argument to the `AdjustConfig2dx.setFbAppId` method.
 
-   ```cpp {2}
+   </CodeBlock>
+
+3. Pass your App ID as a **string** argument to the `AdjustConfig2dx.setFbAppId` method.
+
+   ```cpp
    AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment, false);
    adjustConfig.setFbAppId("your-fb-app-id");
    Adjust2dx::start(adjustConfig);
@@ -240,21 +279,25 @@ To ensure the Adjust SDK can send session information on Android devices, you mu
 2. Add a call to the `onResume` method in the `applicationWillEnterForeground` method.
 3. Add a call to the `onPause` method in the `applicationDidEnterBackground` method.
 
-```cpp {5, 11}
-#include "Adjust/Adjust2dx.h"
+   <CodeBlock highlight="{range: 5}, {range: 11}">
 
-void AppDelegate::applicationDidEnterBackground() {
-   #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
-      Adjust2dx::onPause();
-   #endif
-}
+   ```cpp
+   #include "Adjust/Adjust2dx.h"
 
-void AppDelegate::applicationWillEnterForeground() {
-   #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
-      Adjust2dx::onResume();
-   #endif
-}
-```
+   void AppDelegate::applicationDidEnterBackground() {
+      #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+         Adjust2dx::onPause();
+      #endif
+   }
+
+   void AppDelegate::applicationWillEnterForeground() {
+      #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+         Adjust2dx::onResume();
+      #endif
+   }
+   ```
+
+   </CodeBlock>
 
 ## 6. Build your app
 
