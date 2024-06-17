@@ -19,6 +19,15 @@ const VersionSwitch: FC<{ lang: string }> = ({ lang }) => {
   const t = useTranslations(lang as keyof Locales);
   const versions = useStore($versions);
 
+  useEffect(() => {
+    const queryVersion = getQueryParameter("version");
+    if (queryVersion && supportedVersions.includes(queryVersion)) {
+      changeVersionValue({ label: queryVersion, value: queryVersion });
+    } else {
+      updateQueryParameter("version", versions.currentVersion.value);
+    }
+  }, []);
+
   const updateSdkVersionVisibility = useCallback(() => {
     const sdkVersionSelectors = document.querySelectorAll(
       "[role='SdkVersionSelector']",
@@ -45,22 +54,14 @@ const VersionSwitch: FC<{ lang: string }> = ({ lang }) => {
   }, [updateSdkVersionVisibility]);
 
   useEffect(() => {
-    // Check the URL for a query parameter called "version"
-    // If it exists and is in the array of supported versions, set the value of the store to the query param
-    // Otherwise, set the URL query param to the current value of the store
     const queryVersion = getQueryParameter("version");
-    if (queryVersion && supportedVersions.includes(queryVersion)) {
-      changeVersionValue({ label: queryVersion, value: queryVersion });
-    } else {
+    if (versions.currentVersion.value !== queryVersion) {
       updateQueryParameter("version", versions.currentVersion.value);
     }
   }, [versions.currentVersion.value]);
 
   const handleVersionChange = useCallback((newVersion: Option) => {
-    // Set the new value in the store
     changeVersionValue(newVersion);
-    // Update the query params in the URL
-    updateQueryParameter("version", newVersion.value);
   }, []);
 
   const label = t("sdkversionswitch.label");
