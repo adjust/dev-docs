@@ -6,15 +6,15 @@ export function toggleCollapse(slug: string) {
 
    if (chevronRightDiv && chevronDownDiv && childrenDiv) {
       const isHidden = childrenDiv.classList.toggle("hidden");
+
+      // Toggle chevron visibility
       chevronRightDiv.classList.toggle("hidden", !isHidden);
       chevronDownDiv.classList.toggle("hidden", isHidden);
 
-      if (isHidden && linkElement) {
-         linkElement.classList.remove("font-medium");
-         linkElement.classList.add("font-normal");
-      } else if (linkElement) {
-         linkElement.classList.remove("font-normal");
-         linkElement.classList.add("font-medium");
+      if (linkElement) {
+         // Toggle link element's font weight
+         linkElement.classList.toggle("font-medium", !isHidden);
+         linkElement.classList.toggle("font-normal", isHidden);
       }
    }
 }
