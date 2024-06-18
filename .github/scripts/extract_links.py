@@ -30,8 +30,10 @@ def main():
       for text, url in all_links:
          temp_file.write(f'[{text}]({url})\n')
 
-      # Print the name of the temporary file for GitHub Actions
-      print(f"::set-output name=file::{temp_file.name}")
+      # Output the name of the temporary file to $GITHUB_OUTPUT
+      output_file = os.getenv('GITHUB_OUTPUT')
+      with open(output_file, 'a') as f:
+         f.write(f"file={temp_file.name}\n")
 
 if __name__ == "__main__":
     main()
