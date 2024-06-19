@@ -7,12 +7,12 @@ slug: en/sdk/cordova/features/deep-links
 
 You can create deep links to take users to specific pages in your app. The Adjust SDK uses different logic depending on if the user already has your app installed on their device:
 
--  Direct deep linking: occurs if the user already has your app installed. The link takes the user to the page specified in the link
+-  Direct deep linking: occurs if the user already has your app installed. The link takes the user to the page specified in the link.
 -  Deferred deep linking: occurs if the user doesn't have your app installed. The link takes the user to a storefront to install your app first. After the user installs the app, it opens to the page specified in the link.
 
 The SDK can read deep link data after a user opens your app from a link.
 
-## Set up deep linking
+## [Set up deep linking](set-up-deep-linking)
 
 If a user has your app installed, it opens when they interact with a link containing deep link information. The Adjust SDK contains tools to parse deep link information for use throughout your app.
 
@@ -21,7 +21,7 @@ You need to set up deep linking on an app level. Follow the instructions linked 
 -  [iOS](/en/sdk/ios/features/deep-links)
 -  [Android](/en/sdk/android/features/deep-links)
 
-## Reattribution using deep links
+## [Reattribution using deep links](reattribution-using-deep-links)
 
 <Callout type="seealso">
 
@@ -31,207 +31,92 @@ Adjust enables you to run re-engagement campaigns with usage of deep links. For 
 
 To reattribute your user, you need to call the `appWillOpenUrl` method when the app receives deep link content. The Adjust SDK then looks for new attribution data within the deep link. If the SDK finds new information, it forwards the information to Adjust's servers for reattribution.
 
-<Tabs>
-<Tab title="iOS" sync="ios" icon="PlatformIos">
+To enable deep linking for iOS, call the `appWillOpenUrl` method with a `true` value inside your `Adjust` instance.
 
-```objc title="Method signature"
-+ (void)appWillOpenUrl:(nonnull NSURL *)url;
-```
-
-To enable deep linking for iOS, call the `appWillOpenUrl` method with a `true` value inside your app delegate.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
-
-```swift
-import Adjust
-
-class AppDelegate {
-
-   func application(application:UIApplication!, didFinishLaunchingWithOptions launchOptions:NSDictionary!) -> Bool {
-      GeneratedPluginRegistrant.registerWithRegistry(self)
-      // Override point for customization after application launch.
-      return super.application(application, didFinishLaunchingWithOptions:launchOptions)
-   }
-
-   func application(application:UIApplication!, openURL url:NSURL!, sourceApplication:String!, annotation:AnyObject!) -> Bool {
-      Adjust.appWillOpenUrl(url)
-      return true
-   }
-
-   func application(application:UIApplication!, continueUserActivity userActivity:NSUserActivity!, restorationHandler:([AnyObject]!)->Void) -> Bool {
-         if (userActivity.activityType() == NSUserActivityTypeBrowsingWeb) {
-            Adjust.appWillOpenUrl(userActivity.webpageURL())
-         }
-         return true
-   }
+```js
+function handleOpenURL(url) {
+   setTimeout(function () {
+      // Check content of the url object and get information about the URL.
+      Adjust.appWillOpenUrl(url);
+   }, 300);
 }
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+You can call the `Adjust.appWillOpenUrl` function inside your `didLaunchAppFromLink` method to open universal links.
 
-```objective-c
-#import "Adjust.h"
+```js
+var app = {
+   initialize: function () {
+      this.bindEvents();
+   },
 
-@implementation AppDelegate
+   bindEvents: function () {
+      document.addEventListener("deviceready", this.onDeviceReady, false);
+   },
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-   [GeneratedPluginRegistrant registerWithRegistry:self];
-   // Override point for customization after application launch.
-   return [super application:application didFinishLaunchingWithOptions:launchOptions];
-}
+   onDeviceReady: function () {
+      if (device.platform == "iOS") {
+         universalLinks.subscribe(
+            "adjustDeepLinking",
+            app.didLaunchAppFromLink,
+         );
+      }
+   },
 
-- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
-   [Adjust appWillOpenUrl:url];
-   return YES;
-}
-
-- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> *restorableObjects))restorationHandler {
-   if ([[userActivity activityType] isEqualToString:NSUserActivityTypeBrowsingWeb]) {
-      [Adjust appWillOpenUrl:[userActivity webpageURL]];
-   }
-   return YES;
-}
-
-@end
-```
-
-</Tab>
-</Tabs>
-</Tab>
-<Tab title="Android" sync="android" icon="PlatformAndroid">
-
-```java title="Method signature"
-public static void appWillOpenUrl(Uri url, Context context)
-```
-
-To enable deep linking for Android, call the `appWillOpenUrl` method with a `true` value inside your main activity.
-
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
-
-```kotlin
-import com.adjust.sdk.flutter.AdjustSdk
-import io.flutter.embedding.android.FlutterActivity
-// Used for post flutter 1.12 Android projects
-//import io.flutter.app.FlutterActivity
-
-class MainActivity : FlutterActivity() {
-   // Either call make the call in onCreate.
-   override fun onCreate(savedInstanceState: Bundle?) {
-      super.onCreate(savedInstanceState)
-      // GeneratedPluginRegistrant.registerWith(this)
-      // Used only for pre flutter 1.12 Android projects
-      Intent intent = getIntent()
-      Uri data = intent.getData()
-      AdjustSdk.appWillOpenUrl(data, this)
-   }
-
-   // Or make the call in onNewIntent.
-   override fun onNewIntent(intent: Intent?) {
-      super.onNewIntent(intent)
-      Uri data = intent.getData()
-      AdjustSdk.appWillOpenUrl(data, this)
-   }
-}
-```
-
-</Tab>
-<Tab title="Java" sync="java">
-
-```java
-import com.adjust.sdk.flutter.AdjustSdk;
-import io.flutter.embedding.android.FlutterActivity; // Used for post flutter 1.12 Android projects
-//import io.flutter.app.FlutterActivity; // Used for pre flutter 1.12 Android projects
-
-public class MainActivity extends FlutterActivity {
-   // Either call make the call in onCreate.
-   @Override
-   protected void onCreate(Bundle savedInstanceState) {
-      super.onCreate(savedInstanceState);
-      // GeneratedPluginRegistrant.registerWith(this); Used only for pre flutter 1.12 Android projects
-
-      Intent intent = getIntent();
-      Uri data = intent.getData();
-      AdjustSdk.appWillOpenUrl(data, this);
-   }
-
-   // Or make the cakll in onNewIntent.
-   @Override
-   protected void onNewIntent(Intent intent) {
-      super.onNewIntent(intent);
-      Uri data = intent.getData();
-      AdjustSdk.appWillOpenUrl(data, this);
-   }
-}
-```
-
-</Tab>
-</Tabs>
-
-</Tab>
-</Tabs>
-
-## Deferred deep linking
-
-```dart title="Property declaration"
-bool? launchDeferredDeeplink;
-```
-
-The SDK opens deferred deep links by default. No additional setup is required. You can disable this by setting the `launchDeferredDeeplink` property on your config instance to **false**.
-
-```dart {3}
-AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
-//...
-adjustConfig.launchDeferredDeeplink = false;
-//...
-Adjust.start(adjustConfig);
-```
-
-### Set up a deferred deep link callback
-
-```dart title="Property declaration"
-typedef void DeferredDeeplinkCallback(String? uri);
-DeferredDeeplinkCallback? deferredDeeplinkCallback;
-```
-
-You can configure the Adjust SDK to call a function when it receives a deferred deep link by adding a function to the `deferredDeeplinkCallback` property on your config instance. This function receives the deep link as a **string** argument.
-
-```dart {2-4}
-AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
-adjustConfig.deferredDeeplinkCallback = (String uri) {
-   print('[Adjust]: Received deferred deeplink: ' + uri);
+   didLaunchAppFromLink: function (eventData) {
+      // Check content of the url object and get information about the URL.
+      Adjust.appWillOpenUrl(eventData.url);
+   },
 };
-Adjust.start(adjustConfig);
 ```
 
-### Example
+## [Deferred deep linking](deferred-deep-linking)
+
+### [Set up a deferred deep link callback](set-up-a-deferred-deep-link-callback)
+
+<CodeBlock title="Property declaration">
+
+```js
+setDeferredDeeplinkCallbackListener(deferredDeeplinkCallback: (uri: string) => void)
+```
+
+</CodeBlock>
+
+You can configure the Adjust SDK to call a function when it receives a deferred deep link by adding a function to the `setDeferredDeeplinkCallbackListener` property on your `AdjustConfig` instance. This function receives the deep link as a `string` argument.
+
+```js
+var adjustConfig = new AdjustConfig(appToken, environment);
+
+adjustConfig.setDeferredDeeplinkCallbackListener(function (deeplink) {
+   // Your callback function
+});
+
+Adjust.create(adjustConfig);
+```
+
+### [Example](example)
 
 This example shows how to log a deep link address when the user opens a deferred deep link.
 
-```dart
-import 'package:adjust_sdk/adjust.dart';
-import 'package:adjust_sdk/adjust_config.dart';
+```js
+var adjustConfig = new AdjustConfig(appToken, environment);
 
-initPlatformState() async {
-   AdjustConfig config =
-      new AdjustConfig('2fm9gkqubvpc', AdjustEnvironment.sandbox);
-   config.logLevel = AdjustLogLevel.verbose;
+adjustConfig.setDeferredDeeplinkCallbackListener(function (deeplink) {
+   console.log("Received deferred deeplink: " + deeplink);
+});
 
-   config.deferredDeeplinkCallback = (String? uri) {
-      print('[Adjust]: Received deferred deeplink: ' + uri!);
-   };
-
-   Adjust.start(config);
-}
+Adjust.create(adjustConfig);
 ```
 
-### Enable LinkMe
+### [Enable LinkMe](enable-linkme)
 
-```dart title="Property declaration"
-bool? linkMeEnabled
+<CodeBlock title="Method signature">
+
+```js
+setLinkMeEnabled(linkMeEnabled: boolean)
 ```
+
+</CodeBlock>
 
 The Adjust SDK lets you copy deep link information from the device pasteboard. When combined with Adjust’s LinkMe solution, this feature enables deferred deep linking on devices running iOS 15 and above.
 
@@ -245,10 +130,8 @@ When a user clicks on a LinkMe URL they have the option to copy the link informa
 
 To enable pasteboard checking in your app, set the `linkMeEnabled` property to `true` on your config object:
 
-```dart {3}
-AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
-//...
-adjustConfig.linkMeEnabled = true;
-//...
-Adjust.start(adjustConfig);
+```js
+var adjustConfig = new AdjustConfig(appToken, environment);
+adjustConfig.setLinkMeEnabled(true);
+Adjust.create(adjustConfig);
 ```

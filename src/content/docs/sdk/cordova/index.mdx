@@ -1,5 +1,5 @@
 ---
-title: Get started
+title: Cordova SDK integration guide
 description: Use the Cordova SDK to access Adjust's features in your Cordova apps
 category-title: Cordova SDK
 slug: en/sdk/cordova
@@ -8,11 +8,11 @@ sidebar-position: 6
 
 The Adjust Cordova SDK enables you to measure attribution, events, and much more in your Cordova app. Follow the steps in this guide to set up your app to work with the Adjust SDK. You can also check out the example apps [on GitHub](https://github.com/adjust/cordova_sdk/tree/master/example-cordova).
 
-## 1. Add the SDK to your project
+## [1. Add the SDK to your project](1-add-the-sdk-to-your-project)
 
 The Adjust Cordova SDK is available as a plugin on npm. To add it to your project,
 
-### Cordova plugin
+### [Cordova plugin](cordova-plugin)
 
 To add the Adjust Cordova SDK to your Cordova plugin, run the following command:
 
@@ -23,7 +23,7 @@ Installing "com.adjust.sdk" for android
 Installing "com.adjust.sdk" for ios
 ```
 
-### Ionic
+### [Ionic](ionic)
 
 If you use Ionic to build your app, add the SDK from the [`awesome-cordova-plugins` repository](https://github.com/danielsogl/awesome-cordova-plugins) by running the following command:
 
@@ -32,15 +32,19 @@ If you use Ionic to build your app, add the SDK from the [`awesome-cordova-plugi
 > ionic cordova plugin add com.adjust.sdk
 ```
 
-## 2. Set up Android devices
+## [2. Set up Android devices](2-set-up-android-devices)
 
-### Add Google Play Services
+### [Add Google Play Services](add-google-play-services)
 
 Apps that target the Google Play Store must use the [Google Advertising ID](https://support.google.com/googleplay/android-developer/answer/6048248?hl=en) (`gps_adid`) to identify devices. To do this, add the following to your `plugin.xml` file.
 
-```xml title="plugin.xml"
+<CodeBlock title="plugin.xml">
+
+```xml
 <framework src="com.google.android.gms:play-services-ads-identifier:18.0.1" />
 ```
+
+</CodeBlock>
 
 <Callout type="note">
 
@@ -48,11 +52,13 @@ The Adjust SDK isn't tied to any version of the `play-services-ads-identifier` d
 
 </Callout>
 
-### Add permissions
+### [Add permissions](add-permissions)
 
 The Adjust SDK requires the following permissions. Add them to your `plugin.xml` file if they're not already present:
 
-```xml title="plugin.xml"
+<CodeBlock title="plugin.xml">
+
+```xml
 <config-file target="AndroidManifest.xml" parent="/manifest/application">
     <receiver
         android:name="com.adjust.sdk.AdjustReferrerReceiver"
@@ -64,13 +70,19 @@ The Adjust SDK requires the following permissions. Add them to your `plugin.xml`
 </config-file>
 ```
 
+</CodeBlock>
+
 The Adjust SDK includes the `com.google.android.gms.AD_ID` permission by default in version 4.32.0 and above. You can remove it by adding a `remove` directive if need to make your app COPPA-compliant or if you don't target the Google Play Store.
 
-```xml title="plugin.xml"
+<CodeBlock title="plugin.xml">
+
+```xml
 <config-file target="AndroidManifest.xml" parent="/manifest">
   <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" />
 </config>
 ```
+
+</CodeBlock>
 
 <Callout type="seealso">
 
@@ -78,11 +90,13 @@ See Google's [`AdvertisingIdClient.Info documentation`](https://developers.googl
 
 </Callout>
 
-### Set up Proguard
+### [Set up Proguard](set-up-proguard)
 
 If you are using Proguard, add the following rules to your Proguard file:
 
-```java title="proguard.pro"
+<CodeBlock title="proguard.pro">
+
+```java
 -keep public class com.adjust.sdk.** { *; }
 -keep class com.google.android.gms.common.ConnectionResult {
    int SUCCESS;
@@ -97,13 +111,19 @@ If you are using Proguard, add the following rules to your Proguard file:
 -keep public class com.android.installreferrer.** { *; }
 ```
 
+</CodeBlock>
+
 If you aren't publishing your app in the Google Play Store, add the following rule to your Proguard file.
 
-```java title="proguard.pro"
+<CodeBlock title="proguard.pro">
+
+```java
 -keep public class com.adjust.sdk.** { *; }
 ```
 
-### Set up install referrer
+</CodeBlock>
+
+### [Set up install referrer](set-up-install-referrer)
 
 The install referrer is a unique identifier which you can use to attribute an app install to a source. The Adjust SDK requires this information to perform attribution. There are three methods you can use to gather this information:
 
@@ -116,7 +136,7 @@ The install referrer is a unique identifier which you can use to attribute an ap
 
 </Callout>
 
-#### Google Play Referrer API
+#### [Google Play Referrer API](google-play-referrer-api)
 
 <MinorVersion added="v4.12.0">
 
@@ -126,7 +146,9 @@ To support the Google Play Referrer API:
 
 1. Configure the Google Maven repository in your `build.gradle` file:
 
-   ```groovy title="build.gradle"
+   <CodeBlock title="build.gradle">
+
+   ```groovy
    allprojects {
       repositories {
          jcenter()
@@ -137,19 +159,29 @@ To support the Google Play Referrer API:
    }
    ```
 
+   </CodeBlock>
+
 2. Add the following in your `plugin.xml` file:
 
-   ```xml title="plugin.xml"
+   <CodeBlock title="plugin.xml">
+
+   ```xml
    <framework src="com.android.installreferrer:installreferrer:2.2" />
    ```
 
+   </CodeBlock>
+
 3. If you're using Proguard, make sure you have added the following setting in your Proguard file:
 
-   ```java title="proguard.pro"
+   <CodeBlock title="proguard.pro">
+
+   ```java
    -keep public class com.android.installreferrer.** { *; }
    ```
 
-#### Huawei Referrer API
+   </CodeBlock>
+
+#### [Huawei Referrer API](huawei-referrer-api)
 
 <MinorVersion added="v4.21.1">
 
@@ -157,7 +189,7 @@ As of v4.21.1, the Adjust SDK supports install tracking on Huawei devices using 
 
 </MinorVersion>
 
-#### Meta referrer integration
+#### [Meta referrer integration](meta-referrer-integration)
 
 <Callout type="note">
 
@@ -174,7 +206,9 @@ The Adjust SDK supports the [Meta Install Referrer](https://developers.facebook.
 1. Find your Meta app ID in your [App Dashboard](https://developers.facebook.com/apps). See Meta's [App Dashboard documentation](https://developers.facebook.com/docs/development/create-an-app/app-dashboard) for more information.
 2. Assign your App ID to the `fbAppId` property on your `AdjustConfig` instance.
 
-   ```js title="index.js" {5}
+   <CodeBlock title="index.js" highlight="{range: 5}">
+
+   ```js
    var adjustConfig = new AdjustConfig(
       "{YourAppToken}",
       AdjustConfig.EnvironmentSandbox,
@@ -183,7 +217,9 @@ The Adjust SDK supports the [Meta Install Referrer](https://developers.facebook.
    Adjust.create(adjustConfig);
    ```
 
-## 3. Add iOS frameworks
+   </CodeBlock>
+
+## [3. Add iOS frameworks](3-add-ios-frameworks)
 
 The Adjust SDK is able to get extra information when you include certain iOS frameworks in your app. These frameworks enable certain SDK features, but they're not mandatory for the SDK to work normally.
 
@@ -200,14 +236,18 @@ The Adjust SDK is able to get extra information when you include certain iOS fra
 
 Add the desired frameworks to your `plugin.xml` file to enable them.
 
-```xml title="plugin.xml"
+<CodeBlock title="plugin.xml">
+
+```xml
 <framework src="AdSupport.framework" weak="true" />
 <framework src="StoreKit.framework" weak="true" />
 <framework src="AdServices.framework" weak="true" />
 <framework src="AppTrackingTransparency.framework" weak="true" />
 ```
 
-## 4. Initialize the Adjust SDK
+</CodeBlock>
+
+## [4. Initialize the Adjust SDK](4-initialize-the-adjust-sdk)
 
 Make sure you initialize the Adjust SDK as soon as possible in your Cordova app. To do this, instantiate an `AdjustConfig` object with the following information:
 
@@ -220,7 +260,9 @@ When running tests you should ensure that your environment is set to `AdjustConf
 
 </Callout>
 
-```js title="index.js" {1-4}
+<CodeBlock title="index.js" highlight="{range: 1-4}">
+
+```js
 var adjustConfig = new AdjustConfig(
    "{YourAppToken}",
    AdjustConfig.EnvironmentSandbox,
@@ -228,19 +270,21 @@ var adjustConfig = new AdjustConfig(
 Adjust.create(adjustConfig);
 ```
 
-## 5. Build your app
+</CodeBlock>
+
+## [5. Build your app](5-build-your-app)
 
 Well done! You should now be able to build and run your Cordova app. Enable logging to check for any issues. Check your logs to see the `Install tracked` message.
 
 You are ready to start attributing your users with the Adjust SDK.
 
-## 6. Add the Adjust SDK signature
+## [6. Add the Adjust SDK signature](6-add-the-adjust-sdk-signature)
 
 You can use the Adjust SDK signature to sign all communications sent by the Adjust SDK. This enables Adjust’s servers to detect and reject any install activity that's not legitimate.
 
 To get started with the Adjust SDK signature, contact your Technical Account Manager or support@adjust.com.
 
-## 7. Test your integration
+## [7. Test your integration](7-test-your-integration)
 
 The Adjust SDK provides tools for testing and troubleshooting issues with your integration. To test your setup:
 
@@ -254,7 +298,7 @@ If you encounter any issues, email support@adjust.com with all details and logs.
 
 </Callout>
 
-### Test Google Play Services integration
+### [Test Google Play Services integration](test-google-play-services-integration)
 
 To test that the Adjust SDK can receive a device's Google Advertising ID, set the log level to **verbose** and the environment to **Sandbox**. Start your app and measure a session or an event. The SDK logs the `gps_adid` (Google Play Services Advertiser ID) parameter if it has read the advertising ID.
 
