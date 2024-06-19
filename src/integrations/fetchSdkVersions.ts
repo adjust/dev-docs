@@ -11,6 +11,7 @@ let versionReplacements: VersionMap = {
       "v4": "vx.x.x",
       "v5": "vx.x.x"
    },
+   "cordova": "vx.x.x",
    "flutter": "vx.x.x",
    "react_native": "vx.x.x",
    "unity": "vx.x.x",
