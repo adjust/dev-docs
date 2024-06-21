@@ -1,11 +1,407 @@
 ---
-title: "開始方法"
+title: "Android SDK連携ガイド"
 description: "Android SDKを使用してAndroidアプリでAdjustの機能にアクセスする"
 category-title: "Android SDK"
 slug: "ja/sdk/android"
 sidebar-position: 1
 multiVersion: true
 ---
+
+<SdkVersion version="v5">
+<Callout type="important" title="オープンベータ版">
+
+SDK v5はオープンベータ版です。全ての機能は変更される可能性があります。
+
+</Callout>
+
+Adjust Android SDKを実装することで、アトリビューション、イベント、さらにその他のさまざまなデータをAndroidアプリで記録できます。Adjust SDKをアプリに実装するには、以下の手順に従ってください。
+
+## [事前準備](before-you-begin)
+
+SDK v5にアップデートする前に行う必要のあることは以下の通りです：
+
+1. SDK v5は[SDKシグネチャーの検証](https://help.adjust.com/ja/article/sdk-signature)をネイティブにサポートします。現在SDKシグネチャーライブラリを使用している場合は、まずこれをアンインストールする必要があります。
+2. アプリがバージョン[**21**](https://developer.android.com/tools/releases/platforms#5.0)以前のAPIバージョンを対象にしている場合、SDK v5を使用する前にアプリをアップデートする必要があります。
+
+## [1\. 環境を設定する](set-up-your-environment)
+
+To use the Adjust SDK, you need to add it to your project as a dependency. The Adjust SDK is available on [Maven](https://maven.apache.org).
+
+To add the Adjust SDK to your project:
+
+1. Add the following beta repository to your `build.gradle` file:
+
+   <CodeBlock title="build.gradle">
+
+   ```groovy
+   repositories {
+      maven {
+         url "https://oss.sonatype.org/content/repositories/snapshots/"
+      }
+   }
+   ```
+
+   </CodeBlock>
+
+2. Add the Adjust SDK and Android install referrer implementations to your `build.gradle` file. Optionally add the Adjust web view bridge if you use web views in your app.
+
+   <CodeBlock title="build.gradle">
+
+   ```groovy
+   dependencies {
+      implementation 'com.adjust.sdk:adjust-android:$ANDROID_V5_VERSION'
+      implementation 'com.android.installreferrer:installreferrer:2.2'
+      // Add the following if you are using the Adjust SDK inside web views on your app
+      implementation 'com.adjust.sdk:adjust-android-webbridge:$ANDROID_V5_VERSION'
+   }
+   ```
+
+   </CodeBlock>
+
+## [2\. Google Play 開発者サービスを追加する](2-add-google-play-services)
+
+Google Playストアを対象とするアプリは、`gps_adid`（Google広告ID）を使用してデバイスを識別する必要があります。`gps_adid`にアクセスするには、`play-services-ads-identifier`AARをプロジェクトに追加する必要があります。
+
+Mavenを使用している場合は、`build.gradle`ファイルに以下を追加します：
+
+<CodeBlock title="build.gradle">
+
+```groovy
+dependencies {
+   implementation 'com.google.android.gms:play-services-ads-identifier:18.0.1'
+}
+```
+
+</CodeBlock>
+
+## [3\. パーミッションを追加する](3-add-permissions)
+
+Adjust SDKがデバイス情報にアクセスできるようにするには、アプリが必要とするパーミッションを宣言する必要があります。これを行うには、`AndroidManifest.xml`ファイルにパーミッションを追加します。
+
+オンライン機能にアクセスするには、以下のパーミッションを追加してください：
+
+<CodeBlock title="AndroidManifest.xml">
+
+```xml
+<uses-permission android:name="android.permission.INTERNET"/>
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+```
+
+</CodeBlock>
+
+アプリがGoogle Play ストアを対象としていない場合、デバイスのネットワーク状態にアクセスするために以下のパーミッションを追加してください：
+
+<CodeBlock title="AndroidManifest.xml">
+
+```xml
+<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+```
+
+</CodeBlock>
+
+Adjust SDKには、デフォルトで`com.google.android.gms.AD_ID`が含まれています。アプリがCOPPA（児童オンラインプライバシー保護法）に準拠する必要がある場合、またはアプリがGoogle Play ストアを対象としていない場合は、`remove`ディレクティブを使用してこのパーミッションを削除する必要があります。
+
+<CodeBlock title="AndroidManifest.xml" highlight={"tools:node=\"remove\""}>
+
+```xml
+<uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
+```
+
+</CodeBlock>
+
+## [4\. Proguardを設定する](4-set-up-proguard)
+
+Proguardを使ってアプリを最適化する場合は、Proguardがクラスを削除しないようにルールを追加する必要があります。
+
+<CodeBlock title="Proguard.pro">
+
+```java
+-keep class com.adjust.sdk.** { *; }
+-keep class com.google.android.gms.common.ConnectionResult {
+   int SUCCESS;
+}
+-keep class com.google.android.gms.ads.identifier.AdvertisingIdClient {
+   com.google.android.gms.ads.identifier.AdvertisingIdClient$Info getAdvertisingIdInfo(android.content.Context);
+}
+-keep class com.google.android.gms.ads.identifier.AdvertisingIdClient$Info {
+   java.lang.String getId();
+   boolean isLimitAdTrackingEnabled();
+}
+-keep public class com.android.installreferrer.** { *; }
+```
+
+</CodeBlock>
+
+Google Play ストアでアプリを公開していない場合は、以下のルールを追加します：
+
+<CodeBlock title="Proguard.pro">
+
+```java
+-keep public class com.adjust.sdk.** { *; }
+```
+
+</CodeBlock>
+
+## [5\. インストールリファラーを設定する](5-set-up-install-referrer)
+
+インストールリファラーは、インストールをソースにアトリビュートするために使用される一意の識別子です。Adjust SDKは、アトリビューションを実行するためにこの情報を必要とします。インストールのリファラー情報を取得するには、以下のいずれかの方法を使用します：
+
+### [Google Play Referrer API](google-play-referrer-api)
+
+Google Play Referrer APIは、Google Play ストアを対象とするアプリで使用できます。
+
+Google Play Referrer APIをサポートするには、`build.gradle`ファイルに以下を追加します：
+
+<CodeBlock title="build.gradle">
+
+```groovy
+dependencies {
+   implementation 'com.android.installreferrer:installreferrer:2.2'
+}
+```
+
+</CodeBlock>
+
+Proguardを使用している場合は、依存関係が削除されないように、忘れずにルールを追加してください。
+
+<CodeBlock title="Proguard.pro">
+
+```java
+-keep public class com.android.installreferrer.** { *; }
+```
+
+</CodeBlock>
+
+### [Huawei Referrer API](huawei-referrer-api)
+
+The Huawei Referrer API is available to apps that target Huawei devices. The Adjust SDK can record installs on Huawei devices using the Adjust Huawei Referrer plugin.
+
+To install this plugin, add the following dependency to your `build.gradle` file:
+
+<CodeBlock title="build.gradle">
+
+```groovy
+dependencies {
+   implementation: "com.adjust.sdk:adjust-android-huawei-referrer:$ANDROID_V5_VERSION"
+}
+```
+
+</CodeBlock>
+
+### [Xiaomiリファラープラグイン](xiaomi-referrer-plugin)
+
+Xiaomiリファラープラグインを使用すると、Xiaomiデバイスを対象とするアプリのインストールリファラー値を記録できます。インストール情報については、プラグインドキュメントを参照してください。
+
+### [Samsungリファラープラグイン](samsung-referrer-plugin)
+
+Samsungリファラープラグインを使用すると、Samsung Galaxyストアを対象とするアプリのインストールリファラー値を記録できます。インストール情報については、プラグインドキュメントを参照してください。
+
+### [Metaとのリファラー連携](meta-referrer-integration)
+
+The Adjust SDK supports the [Meta Install Referrer](https://developers.facebook.com/docs/app-ads/meta-install-referrer) using the Adjust Meta Install Referrer plugin. [See the documentation for integration details](/en/sdk/android/plugins/meta-referrer-plugin).
+
+## [6\. Adjust SDKを実装する](6-integrate-the-adjust-sdk)
+
+Adjust SDKを初期化するには以下の情報が必要です：
+
+-  `appToken`：お客様の[Adjustアプリトークン](https://help.adjust.com/ja/article/app-settings#view-your-app-token)
+-  `environment`：アプリの実行環境。アプリをローカルでテストするには、これを`AdjustConfig.ENVIRONMENT_SANDBOX`に設定します。
+
+Adjust SDKを初期化する推奨の方法は、グローバルAndroid[アプリケーションクラス](http://developer.android.com/reference/android/app/Application.html)内です。まだこれをアプリに設定していない場合は、以下の手順に従ってください：
+
+1. `Application`を継承したクラスを作成します。
+
+2. `AndroidManifest.xml` ファイルを開き、 `<application>`エレメントを確認します。
+
+3. `android:name`アトリビュートを`<application>`要素に追加し、アプリケーションクラスの名前に設定します。例えば、`Application`クラスの名前が`GlobalApplication`の場合、以下を設定します：
+
+   <CodeBlock title="AndroidManifest.xml">
+
+   ```xml
+   <application android:name=".GlobalApplication">
+      <!-- ... -->
+   </application>
+   ```
+
+   </CodeBlock>
+
+4. `Application`クラスで`initSdk`メソッドを見つけるか、存在しない場合は追加してください。以下のパラメーターをパスしてAdjust SDKを初期化します。
+
+   -  チーム編成 `appToken`
+   -  アプリを実行したい`environment`
+   -  記録したい`LogLevel`
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustConfig;
+
+class GlobalApplication : Application () {
+   override fun onCreate() {
+      super.onCreate()
+
+      val appToken = "{YourAppToken}"
+      val environment = AdjustConfig.ENVIRONMENT_SANDBOX;
+      val config = AdjustConfig(this, appToken, environment)
+      config.setLogLevel(LogLevel.VERBOSE)
+      Adjust.initSdk(config)
+   }
+}
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustConfig;
+
+public class GlobalApplication extends Application {
+   @Override
+   public void onCreate() {
+      super.onCreate();
+
+      String appToken = "{YourAppToken}";
+      String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
+      AdjustConfig config = new AdjustConfig(this, appToken, environment);
+      config.setLogLevel(LogLevel.VERBOSE)
+      Adjust.initSdk(config);
+   }
+}
+```
+
+</Tab>
+</Tabs>
+
+### [Adjust Web View SDKを実装する](integrate-the-adjust-web-view-sdk)
+
+アプリがWeb viewを使用している場合、Adjust Web View SDKを使って情報を記録する必要があります。`WebView`オブジェクトへのリファレンスを取得する必要があります。これが完了したら、以下の手順に従ってください：
+
+1. `webView.getSettings().setJavaScriptEnabled(true)`を呼び出して、WebビューでJavascriptを有効にします。
+2. `AdjustBridge.registerAndGetInstance(getApplication(), webview)`を呼び出して、デフォルトの`AdjustBridgeInstance`を起動します。これにより、AdjustブリッジがJavascriptインターフェイスとしてWeb viewに登録されます。
+3. `AdjustBridge.setWebView()`を呼び出し、新しい`WebView`を設定します。
+4. `AdjustBridge.unregister()`を呼び出し、`AdjustBridgeInstance`と`WebView`の登録を解除します。
+5. 以下は完全な設定の例です。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+class MainActivity : Activity() {
+   override fun onCreate(savedInstanceState: Bundle?) {
+         super.onCreate(savedInstanceState)
+         setContentView(R.layout.activity_main)
+
+         val webView = findViewById<webview>(R.id.webView)
+         webView.settings.javaScriptEnabled = true
+         webView.webChromeClient = WebChromeClient()
+         webView.webViewClient = WebViewClient()
+
+         AdjustBridge.registerAndGetInstance(application, webView)
+         try {
+            webView.loadUrl("file:///android_asset/AdjustExample-WebView.html")
+         } catch (e: Exception) {
+            e.printStackTrace()
+         }
+   }
+
+   override fun onDestroy() {
+      AdjustBridge.unregister()
+
+      super.onDestroy()
+   }
+}
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+public class MainActivity extends Activity {
+   @Override
+   protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      setContentView(R.layout.activity_main);
+
+      WebView webView = (WebView) findViewById(R.id.webView);
+      webView.getSettings().setJavaScriptEnabled(true);
+      webView.setWebChromeClient(new WebChromeClient());
+      webView.setWebViewClient(new WebViewClient());
+
+      AdjustBridge.registerAndGetInstance(getApplication(), webview);
+      try {
+            webView.loadUrl("file:///android_asset/AdjustExample-WebView.html");
+      } catch (Exception e) {
+            e.printStackTrace();
+      }
+   }
+
+   @Override
+   protected void onDestroy() {
+      AdjustBridge.unregister();
+
+      super.onDestroy();
+   }
+}
+```
+
+</Tab>
+</Tabs>
+
+6. HTMLにAdjust Javascriptファイルをインポートします：
+
+   ```html
+   <script type="text/javascript" src="adjust.js"></script>
+   <script type="text/javascript" src="adjust_event.js"></script>
+   <script type="text/javascript" src="adjust_third_party_sharing.js"></script>
+   <script type="text/javascript" src="adjust_config.js"></script>
+   ```
+
+7. `appToken`と`environment`を`AdjustConfig`クラスにパスすることで、Web viewでAdjust SDKを初期化することができます：
+
+   ```js
+   let yourAppToken = "{YourAppToken}";
+   let environment = AdjustConfig.EnvironmentSandbox;
+   let adjustConfig = new AdjustConfig(yourAppToken, environment);
+   adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
+   Adjust.initSdk(adjustConfig);
+   ```
+
+## [7\. 本番用にアプリをビルドする](7-build-your-app-for-production)
+
+テストが終わったら、本番用にアプリをビルドできます。そのためには、configオブジェクトを更新する必要があります。
+
+1. 必要なものだけを返すようにログレベルを調整します。
+2. `environment`を`AdjustConfig.ENVIRONMENT_PRODUCTION`に設定します。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val appToken = "{YourAppToken}"
+val environment = AdjustConfig.ENVIRONMENT_PRODUCTION;
+val config = AdjustConfig(this, appToken, environment)
+config.setLogLevel(LogLevel.WARN)
+Adjust.initSdk(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+String appToken = "{YourAppToken}";
+String environment = AdjustConfig.ENVIRONMENT_PRODUCTION;
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+config.setLogLevel(LogLevel.WARN)
+Adjust.initSdk(config);
+```
+
+</Tab>
+</Tabs>
+</SdkVersion>
+<SdkVersion version="v4">
 
 Adjust Android SDKを実装することで、アトリビューション、イベント、さらにその他のさまざまなデータをAndroidアプリで記録できます。Adjust SDKをアプリに実装するには、以下の手順に従ってください。
 
@@ -29,7 +425,7 @@ WebView拡張機能用にサポートされている最小のAndroid APIレベ�
 
 [Maven](https://maven.apache.org/)を使用している場合は、`build.gradle`ファイルに以下を追加します：
 
-<SdkVersion version="v4">
+<CodeBlock title="build.gradle">
 
 ```groovy
 dependencies {
@@ -38,21 +434,10 @@ dependencies {
    // Add the following if you're using the Adjust SDK inside web views on your app
    implementation 'com.adjust.sdk:adjust-android-webbridge:v$ANDROID_V4_VERSION'
 }
+
 ```
 
-</SdkVersion>
-<SdkVersion version="v5">
-
-```groovy
-dependencies {
-   implementation 'com.adjust.sdk:adjust-android:v$ANDROID_V5_VERSION'
-   implementation 'com.android.installreferrer:installreferrer:2.2'
-   // Add the following if you're using the Adjust SDK inside web views on your app
-   implementation 'com.adjust.sdk:adjust-android-webbridge:v$ANDROID_V5_VERSION'
-}
-```
-
-</SdkVersion>
+</CodeBlock>
 
 ## [2\. Google Play 開発者サービスを追加する](2-add-google-play-services)
 
@@ -60,21 +445,31 @@ Google Playストアを対象とするアプリは、gps_adid（Google広告ID�
 
 Mavenを使用している場合は、`build.gradle`ファイルに以下を追加します：
 
+<CodeBlock title="build.gradle">
+
 ```groovy
 dependencies {
    implementation 'com.google.android.gms:play-services-ads-identifier:18.0.1'
 }
+
 ```
+
+</CodeBlock>
 
 ### [アプリセットIDを収集する](collect-app-set-identifier)
 
 [アプリセットID](https://developer.android.com/design-for-safety/privacy-sandbox/reference/adservices/appsetid/AppSetId) は、ユーザーがデバイスにインストールしたアプリの情報を計測するための一意の識別子です。同じ開発者のアプリは全て同じアプリセットIDを共有しているため、全てのアプリユーザーから有意義なインサイトを収集できます。デバイスのApp Set IDを記録するには、以下のパーミッションを `build.gradle`ファイルに追加してください。
 
+<CodeBlock title="build.gradle">
+
 ```groovy
 dependencies {
    implementation 'com.google.android.gms:play-services-appset:16.0.2'
 }
+
 ```
+
+</CodeBlock>
 
 このパーミッションが有効な場合、アプリセットIDはデバイス情報ペイロードの一部としてAdjustのサーバーに送信されます。
 
@@ -84,26 +479,40 @@ Adjust SDKがデバイス情報にアクセスできるようにするには、�
 
 オンライン機能にアクセスするには、以下のパーミッションを追加してください：
 
+<CodeBlock title="AndroidManifest.xml">
+
 ```xml
-<uses-permission android:name="android.permission.INTERNET" id="sl-md0000000"/>
-<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" id="sl-md0000000"/>
+<uses-permission android:name="android.permission.INTERNET"/>
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 ```
+
+</CodeBlock>
 
 アプリがGoogle Play ストアを対象としていない場合、デバイスのネットワーク状態にアクセスするために以下のパーミッションを追加してください：
 
+<CodeBlock title="AndroidManifest.xml">
+
 ```xml
-<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" id="sl-md0000000"/>
+<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 ```
+
+</CodeBlock>
 
 Adjust SDKには、デフォルトで`com.google.android.gms.AD_ID`が含まれています。アプリがCOPPA（児童オンラインプライバシー保護法）に準拠する必要がある場合、またはアプリがGoogle Play ストアを対象としていない場合は、`remove`ディレクティブを使用してこのパーミッションを削除する必要があります。
 
+<CodeBlock title="AndroidManifest.xml" highlight={"tools:node=\"remove\""}>
+
 ```xml
-<uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" id="sl-md0000000"/>
+<uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
 ```
+
+</CodeBlock>
 
 ## [4\. Proguardを設定する](4-set-up-proguard)
 
 Proguardを使ってアプリを最適化する場合は、Proguardがクラスを削除しないようにルールを追加する必要があります。
+
+<CodeBlock title="Proguard.pro">
 
 ```java
 -keep class com.adjust.sdk.** { *; }
@@ -118,13 +527,20 @@ Proguardを使ってアプリを最適化する場合は、Proguardがクラス�
    boolean isLimitAdTrackingEnabled();
 }
 -keep public class com.android.installreferrer.** { *; }
+
 ```
 
+</CodeBlock>
+
 Google Play ストアでアプリを公開していない場合は、以下のルールを追加します：
+
+<CodeBlock title="Proguard.pro">
 
 ```java
 -keep public class com.adjust.sdk.** { *; }
 ```
+
+</CodeBlock>
 
 ## [5\. インストールリファラーを設定する](5-set-up-install-referrer)
 
@@ -136,17 +552,26 @@ Google Play Referrer APIは、Google Play ストアを対象とするアプリ�
 
 Google Play Referrer APIをサポートするには、`build.gradle`ファイルに以下を追加します：
 
+<CodeBlock title="build.gradle">
+
 ```groovy
 dependencies {
    implementation 'com.android.installreferrer:installreferrer:2.2'
 }
+
 ```
 
+</CodeBlock>
+
 Proguardを使用している場合は、依存関係が削除されないように、忘れずにルールを追加してください。
+
+<CodeBlock title="Proguard.pro">
 
 ```java
 -keep public class com.android.installreferrer.** { *; }
 ```
+
+</CodeBlock>
 
 ### [Huawei Referrer API](huawei-referrer-api)
 
@@ -164,7 +589,7 @@ Samsungリファラープラグインを使用すると、Samsung Galaxyスト�
 
 <Callout type="note">
 
-[Metaの要件](https://developers.facebook.com/docs/app-ads/meta-install-referrer#step-1--add-the-meta-apps)により、Adjust SDKは`<queries id="sl-md0000000">`エレメントをバンドルしています。これらを`AndroidManifest.xml`に追加する必要はありません。
+[Metaの要件](https://developers.facebook.com/docs/app-ads/meta-install-referrer#step-1--add-the-meta-apps)により、Adjust SDKは`<queries>`エレメントをバンドルしています。これらを`AndroidManifest.xml`に追加する必要はありません。
 
 </Callout>
 <MinorVersion added="v4.36.0">
@@ -181,7 +606,7 @@ Adjust SDKはv4\.36\.0以降で[Metaインストールリファラー](https://d
 
 ```kotlin
 val config = AdjustConfig(this, appToken, environment)
-config.setFbAppId(<fb_app_id_string id="sl-md0000000">)
+config.setFbAppId(<fb_app_id_string>)
 Adjust.onCreate(config)
 ```
 
@@ -190,7 +615,7 @@ Adjust.onCreate(config)
 
 ```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
-config.setFbAppId(<fb_app_id_string id="sl-md0000000">);
+config.setFbAppId(<fb_app_id_string>);
 Adjust.onCreate(config);
 ```
 
@@ -207,14 +632,19 @@ Adjust SDKを初期化するには以下の情報が必要です：
 Adjust SDKを初期化する推奨の方法は、グローバルAndroid[アプリケーションクラス](http://developer.android.com/reference/android/app/Application.html)内です。まだこれをアプリに設定していない場合は、以下の手順に従ってください：
 
 1. `Application`を継承したクラスを作成します。
-2. `AndroidManifest.xml` ファイルを開き、 `<application id="sl-md0000000">`エレメントを確認します。
-3. `android:name`アトリビュートを`<application id="sl-md0000000">`要素に追加し、アプリケーションクラスの名前に設定します。例えば、`Application`クラスの名前が`GlobalApplication`の場合、以下を設定します：
+2. `AndroidManifest.xml` ファイルを開き、 `<application>`エレメントを確認します。
+3. `android:name`アトリビュートを`<application>`要素に追加し、アプリケーションクラスの名前に設定します。例えば、`Application`クラスの名前が`GlobalApplication`の場合、以下を設定します：
+
+<CodeBlock title="AndroidManifest.xml">
 
 ```xml
-<application android:name=".GlobalApplication" id="sl-md0000000">
+<application android:name=".GlobalApplication">
    <!-- ... -->
 </application>
+
 ```
+
+</CodeBlock>
 
 4. `Application`クラスで`onCreate`メソッドを見つけるか、存在しない場合は追加してください。以下のパラメーターをパスしてAdjust SDKを初期化します。
 
@@ -285,7 +715,7 @@ class MainActivity : Activity() {
          super.onCreate(savedInstanceState)
          setContentView(R.layout.activity_main)
 
-         val webView = findViewById<webview id="sl-md0000000">(R.id.webView)
+         val webView = findViewById<webview>(R.id.webView)
          webView.settings.javaScriptEnabled = true
          webView.webChromeClient = WebChromeClient()
          webView.webViewClient = WebViewClient()
@@ -344,18 +774,10 @@ public class MainActivity extends Activity {
 6. HTMLにAdjust Javascriptファイルをインポートします：
 
 ```html
-<script type="text/javascript" src="adjust.js" id="sl-md0000000"></script>
-<script type="text/javascript" src="adjust_event.js" id="sl-md0000000"></script>
-<script
-   type="text/javascript"
-   src="adjust_third_party_sharing.js"
-   id="sl-md0000000"
-></script>
-<script
-   type="text/javascript"
-   src="adjust_config.js"
-   id="sl-md0000000"
-></script>
+<script type="text/javascript" src="adjust.js"></script>
+<script type="text/javascript" src="adjust_event.js"></script>
+<script type="text/javascript" src="adjust_third_party_sharing.js"></script>
+<script type="text/javascript" src="adjust_config.js"></script>
 ```
 
 7. `appToken`と`environment`を`AdjustConfig`クラスにパスすることで、Web viewでAdjust SDKを初期化することができます：
@@ -537,3 +959,4 @@ Adjust.onCreate(config);
 
 </Tab>
 </Tabs>
+</SdkVersion>
