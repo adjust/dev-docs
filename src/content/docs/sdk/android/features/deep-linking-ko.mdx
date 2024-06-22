@@ -2,7 +2,10 @@
 title: "딥링크 설정 "
 description: "딥링크를 사용하도록 SDK를 설정합니다."
 slug: "ko/sdk/android/features/deep-links"
+multiVersion: true
 ---
+
+<SdkVersion version="v5">
 
 사용자를 앱의 특정 페이지로 이동시키기 위해 딥링크를 생성할 수 있습니다. Adjust SDK는 사용자 기기에 앱이 이미 설치되어 있는지 여부에 따라 다른 로직을 적용합니다.
 
@@ -25,6 +28,8 @@ SDK는 사용자가 링크를 통해 앱을 실행한 이후에 딥링크 데이
 
 이 예시에서는 **스킴 이름** `adjustExample`을 사용하여 `MainActivity`라는 활동을 열도록 설정하는 방법을 보여줍니다.
 
+<CodeBlock title="AndroidManifest.xml" highlight=".MainActivity, adjustExample">
+
 ```xml
 <activity    android:name=".MainActivity"    android:configChanges="orientation|keyboardHidden"    android:label="@string/app_name"    android:screenOrientation="portrait" id="sl-md0000000">
 
@@ -42,11 +47,337 @@ SDK는 사용자가 링크를 통해 앱을 실행한 이후에 딥링크 데이
 </activity>
 ```
 
+</CodeBlock>
+
 사용자가 **스킴 이름** 을 포함하는 `deep_link` 파라미터가 포함된 링크를 클릭하면 이 활동이 실행됩니다.
+
+<CodeBlock highlight="deep_link=adjustExample%3A%2F%2F">
 
 ```html
 https://app.adjust.com/abc123?deep_link=adjustExample%3A%2F%2F
 ```
+
+</CodeBlock>
+
+### [딥링크 정보 액세스](access-deep-link-information)
+
+`deep_link` 파라미터의 콘텐츠 전송 위치를 지정할 수 있습니다. 이를 위해 `AndroidManifest.xml` 파일에서 활동에서 `android:launchMode` 속성을 설정합니다.
+
+<Callout type="seealso">
+
+자세한 정보는 [`android:launchMode` 문서](https://developer.android.com/guide/topics/manifest/activity-element.html)를 참조하시기 바랍니다.
+
+</Callout>
+
+Adjust SDK는 `initSdk` 또는 `onNewIntent` 메서드를 사용하여 활동의 인텐트 객체 내에서 딥링크 정보를 전달합니다. 앱이 실행되고 두 메서드 중 하나가 실행된 후에 딥링크 콘텐츠에 액세스할 수 있습니다. 이후에 해당 정보를 앱의 다른 부분에서 액세스할 수 있습니다.
+
+`onCreate` 또는 `onNewIntent` 메서드 내에서 `getData()` 메서드를 호출하여 딥링크 정보를 추출할 수 있습니다.
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+override fun onCreate(savedInstanceState: Bundle?) {
+   super.onCreate(savedInstanceState)
+   setContentView(R.layout.activity_main)
+
+   val intent = intent
+   val data = intent.data
+   // data.toString() -> This is your deep_link parameter value.
+}
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+   super.onCreate(savedInstanceState);
+   setContentView(R.layout.activity_main);
+
+   Intent intent = getIntent();
+   Uri data = intent.getData();
+   // data.toString() -> This is your deep_link parameter value.
+}
+```
+
+</Tab>
+</Tabs>
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+override fun onNewIntent(intent: Intent?) {
+   super.onNewIntent(intent)
+   val data = intent?.data
+   // data.toString() -> This is your deep_link parameter value.
+}
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+@Override
+protected void onNewIntent(Intent intent) {
+   super.onNewIntent(intent);
+
+   Uri data = intent.getData();
+   // data.toString() -> This is your deep_link parameter value.
+}
+```
+
+</Tab>
+</Tabs>
+
+## [디퍼드 딥링크](deferred-deep-linking)
+
+Adjust SDK는 기본 설정에 따라 디퍼드 딥링크를 실행합니다. 추가 설정은 필요하지 않습니다. 이 행동을 비활성화하려면 `AdjustConfig.setOnDeferredDeeplinkResponseListener` 메서드를 사용하여 디퍼드 딥링크 콜백을 설정해야 합니다.
+
+### [디퍼드 딥링크 콜백 설정](set-up-a-deferred-deep-link-callback)
+
+<CodeBlock title="Method signature">
+
+```java
+public void setOnDeferredDeeplinkResponseListener(OnDeferredDeeplinkResponseListener onDeferredDeeplinkResponseListener)
+```
+
+</CodeBlock>
+
+디퍼드 딥링크 수신 시 델리게이트 함수를 호출하도록 Adjust SDK를 구성할 수 있습니다. 이 델리게이트 함수는 딥링크를 `String` 인수로 수신합니다.
+
+딥링크를 열려면 델리게이트 함수에서 `true`를 반환합니다. 열지 않으려면 `false`를 반환합니다.
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+<CodeBlock highlight="{range: 3-7}">
+
+```kotlin
+val config = AdjustConfig(this, appToken, environment)
+//...
+config.setOnDeferredDeeplinkResponseListener { deeplink ->
+   Log.d("example", "Deferred deep link callback called!")
+   Log.d("example", "Deep link URL: $deeplink")
+   true
+}
+//...
+Adjust.initSdk(config)
+```
+
+</CodeBlock>
+</Tab>
+<Tab title="Java" sync="java">
+<CodeBlock highlight="{range: 3-12}">
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+//...
+// Evaluate the deeplink to be launched.
+config.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListener() {
+   @Override
+   public boolean launchReceivedDeeplink(Uri deeplink) {
+      Log.d("example", "Deferred deep link callback called!");
+      Log.d("example", "Deep link URL: " + deeplink);
+
+      return true;
+   }
+});
+//...
+Adjust.initSdk(config);
+```
+
+</CodeBlock>
+</Tab>
+</Tabs>
+
+### [예시](example-1)
+
+다음 예시에서는 콜백 함수에서 `false` 값을 반환하여 SDK가 활동을 시작하는 것을 방지하는 방법을 보여줍니다.
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+<CodeBlock highlight="false">
+
+```kotlin
+config.setOnDeferredDeeplinkResponseListener { deeplink ->
+   false
+}
+```
+
+</CodeBlock>
+</Tab>
+<Tab title="Java" sync="java">
+<CodeBlock highlight="false">
+
+```java
+config.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListener() {
+   @Override
+   public boolean launchReceivedDeeplink(Uri deeplink) {
+      return false;
+   }
+});
+```
+
+</CodeBlock>
+</Tab>
+</Tabs>
+
+## [딥링크를 통한 리어트리뷰션](reattribution-via-deep-links)
+
+<CodeBlock title="Method signature">
+
+```java
+public static void processDeeplink(Uri url, Context context)
+```
+
+</CodeBlock>
+
+Adjust를 사용하면 딥링크를 사용하여 리인게이지먼트 캠페인을 진행할 수 있습니다. 자세한 내용은 [Campaign Lab에서 딥링크를 설정하는 방법](https://help.adjust.com/ko/article/deep-links)을 확인하시기 바랍니다.
+
+To reattribute your user, you need to call the `Adjust.processDeeplink` method in the opening Activity's `onCreate` and `onNewIntent` methods. The Adjust SDK then looks for new attribution data within the deep link. If the SDK finds new information, it forwards the information to Adjust's servers for reattribution.
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+override fun onCreate(savedInstanceState: Bundle?) {
+   super.onCreate(savedInstanceState)
+   setContentView(R.layout.activity_main)
+
+   val intent = intent
+   val data = intent.data
+   Adjust.processDeeplink(data, applicationContext)
+}
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+
+    Intent intent = getIntent();
+    Uri data = intent.getData();
+    Adjust.processDeeplink(data, getApplicationContext());
+}
+```
+
+</Tab>
+</Tabs>
+
+## [링크 해석\(resolution\)](link-resolution)
+
+<CodeBlock title="Method signature">
+
+```java
+public static void resolveLink(final String url,
+                               final String[] resolveUrlSuffixArray,
+                               final AdjustLinkResolutionCallback adjustLinkResolutionCallback)
+```
+
+</CodeBlock>
+
+일부 ESP\(이메일 서비스 제공자\)는 마케팅 캠페인에서 자체 커스텀 도메인을 사용합니다. 커스텀 도메인을 통해 클릭을 측정해야 하는 경우, 해당 링크를 해석하기 위해 SDK를 설정해야 합니다. 이를 위해 `AdjustLinkResolution` 클래스의 `resolveLink` 메서드를 호출합니다. Adjust SDK는 이후 딥링크를 열 때 해당 커스텀 링크를 따라가 해석합니다. 이를 통해 이메일 측정 캠페인과의 상호작용을 기록할 수 있습니다.
+
+`resolveLinkWithUrl` 메서드는 다음 인수를 사용합니다.
+
+-  `url` \(`String`\): 애플리케이션을 연 딥링크
+-  `resolveUrlSuffixArray` \(`String[]`\): 해석해야 하는 구성된 캠페인의 커스텀 도메인
+-  `adjustLinkResolutionCallback` \(`AdjustLinkResolutionCallback`\): 최종 URL을 반환하는 콜백.
+
+메서드는 딥링크를 `resolveUrlSuffixArray`의 도메인에 대해 확인합니다. 일치하는 것이 없는 경우 딥링크 URL을 그대로 전달합니다. 일치하는 것이 있는 경우 링크를 해석하고, 결과 딥링크를 반환하도록 시도합니다. 이후 이를 콜백 파라미터에 보관합니다.
+
+<Callout type="note">
+
+Adjust SDK는 URL을 해석할 때 최대 10개의 리다이렉트를 따릅니다. Adjust SDK는 콜백 URL로서 따른 가장 마지막 URL을 반환합니다. 리다이렉트가 10개를 초과할 경우 SDK는 **10번째** 리다이렉트 URL을 반환합니다.
+
+</Callout>
+
+반환된 딥링크를 사용하여 사용자를 리어트리뷰션할 수 있습니다. 이를 위해 딥링크를 `Adjust.processDeeplink` 메서드로 전달합니다.
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+AdjustLinkResolution.resolveLink(url, arrayOf("example.com"), object : AdjustLinkResolution.AdjustLinkResolutionCallback {
+   override fun resolvedLinkCallback(resolvedLink: Uri) {
+         Adjust.processDeeplink(resolvedLink, applicationContext)
+   }
+})
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustLinkResolution.resolveLink(url, new String[]{"example.com"}, new AdjustLinkResolution.AdjustLinkResolutionCallback() {
+   @Override
+   public void resolvedLinkCallback(Uri resolvedLink) {
+      Adjust.processDeeplink(resolvedLink, getApplicationContext());
+   }
+});
+```
+
+</Tab>
+</Tabs>
+</SdkVersion>
+<SdkVersion version="v4">
+
+사용자를 앱의 특정 페이지로 이동시키기 위해 딥링크를 생성할 수 있습니다. Adjust SDK는 사용자 기기에 앱이 이미 설치되어 있는지 여부에 따라 다른 로직을 적용합니다.
+
+-  다이렉트 딥링킹: 사용자 기기에 앱이 이미 설치되어 있는 경우에 사용됩니다. 사용자는 링크가 의도한 페이지로 이동됩니다.
+-  디퍼드 딥링킹: 사용자가 아직 앱을 설치하지 않은 경우에 사용됩니다. 링크는 먼저 사용자를 앱을 설치할 수 있는 스토어 페이지로 이동시킵니다. 사용자가 앱을 설치한 이후에 링크는 의도한 페이지를 엽니다.
+
+SDK는 사용자가 링크를 통해 앱을 실행한 이후에 딥링크 데이터를 읽을 수 있습니다.
+
+## [스킴 이름 설정](configure-your-scheme-name)
+
+사용자가 앱을 설치한 경우, 사용자가 딥링크 정보가 포함된 링크를 클릭하면 딥링크가 실행됩니다. Adjust SDK는 앱에서 사용하기 위해 딥링크 정보를 파싱할 수 있는 툴을 포함하고 있습니다. 딥링킹을 설정하려면 고유한 **스킴 이름** 을 선택해야 합니다.
+
+사용자가 딥링크를 클릭할 때 특정 활동이 실행되도록 설정할 수 있습니다. 다음을 수행하시기 바랍니다.
+
+1. **스킴 이름** 을 `AndroidManifest.xml` 파일 내 활동에 지정합니다.
+2. 활동 정의에 `intent-filter` 노드를 추가합니다.
+3. `intent-filter` 노드에 **스킴 이름** 을 포함하는 `android:scheme` 데이터 노드를 추가합니다.
+
+### [예시](example)
+
+이 예시에서는 **스킴 이름** `adjustExample`을 사용하여 `MainActivity`라는 활동을 열도록 설정하는 방법을 보여줍니다.
+
+<CodeBlock title="AndroidManifest.xml" highlight=".MainActivity, adjustExample">
+
+```xml
+<activity    android:name=".MainActivity"    android:configChanges="orientation|keyboardHidden"    android:label="@string/app_name"    android:screenOrientation="portrait" id="sl-md0000000">
+
+   <intent-filter id="sl-md0000000">
+      <action android:name="android.intent.action.MAIN" id="sl-md0000000" />
+      <category android:name="android.intent.category.LAUNCHER" id="sl-md0000000" />
+   </intent-filter>
+
+   <intent-filter id="sl-md0000000">
+      <action android:name="android.intent.action.VIEW" id="sl-md0000000" />
+      <category android:name="android.intent.category.DEFAULT" id="sl-md0000000" />
+      <category android:name="android.intent.category.BROWSABLE" id="sl-md0000000" />
+      <data android:scheme="adjustExample" id="sl-md0000000" />
+   </intent-filter>
+</activity>
+```
+
+</CodeBlock>
+
+사용자가 **스킴 이름** 을 포함하는 `deep_link` 파라미터가 포함된 링크를 클릭하면 이 활동이 실행됩니다.
+
+<CodeBlock highlight="deep_link=adjustExample%3A%2F%2F">
+
+```html
+https://app.adjust.com/abc123?deep_link=adjustExample%3A%2F%2F
+```
+
+</CodeBlock>
 
 ### [딥링크 정보 액세스](access-deep-link-information)
 
@@ -126,9 +457,13 @@ Adjust SDK는 기본 설정에 따라 디퍼드 딥링크를 실행합니다. �
 
 ### [디퍼드 딥링크 콜백 설정](set-up-a-deferred-deep-link-callback)
 
+<CodeBlock title="Method signature">
+
 ```java
 public void setOnDeeplinkResponseListener(OnDeeplinkResponseListener onDeeplinkResponseListener)
 ```
+
+</CodeBlock>
 
 디퍼드 딥링크 수신 시 델리게이트 함수를 호출하도록 Adjust SDK를 구성할 수 있습니다. 이 델리게이트 함수는 딥링크를 `String` 인수로 수신합니다.
 
@@ -218,9 +553,20 @@ config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
 
 ## [딥링크를 통한 리어트리뷰션](reattribution-via-deep-links)
 
+<CodeBlock title="Method signature">
+
+```java
+public static void processDeeplink(Uri url, Context context)
+```
+
+</CodeBlock>
+<CodeBlock title="Method signature">
+
 ```java
 public static void appWillOpenUrl(Uri url, Context context)
 ```
+
+</CodeBlock>
 
 Adjust를 사용하면 딥링크를 사용하여 리인게이지먼트 캠페인을 진행할 수 있습니다. 자세한 내용은 [Campaign Lab에서 딥링크를 설정하는 방법](https://help.adjust.com/ko/article/deep-links)을 확인하시기 바랍니다.
 
@@ -267,13 +613,18 @@ Adjust.appWillOpenUrl(deeplinkUrl);
 
 ## [링크 해석\(resolution\)](link-resolution)
 
+<CodeBlock title="Method signature">
+
 ```java
 public static void resolveLink(final String url,
                                final String[] resolveUrlSuffixArray,
                                final AdjustLinkResolutionCallback adjustLinkResolutionCallback)
+
 ```
 
-일부 ESP\(이메일 서비스 제공자\)는 마케팅 캠페인에 대해 자체 커스텀 트래킹 도메인을 사용합니다. 커스텀 도메인을 통해 클릭을 트래킹해야 하는 경우, 해당 링크를 해석하기 위해 SDK를 설정해야 합니다. 이를 위해 `AdjustLinkResolution` 클래스의 `resolveLink` 메서드를 호출합니다. Adjust SDK는 이후 딥링크를 열 때 해당 커스텀 링크를 따라가 해석합니다. 이를 통해 이메일 트래킹 캠페인과의 상호작용을 기록할 수 있습니다.
+</CodeBlock>
+
+일부 ESP\(이메일 서비스 제공자\)는 마케팅 캠페인에서 자체 커스텀 도메인을 사용합니다. 커스텀 도메인을 통해 클릭을 측정해야 하는 경우, 해당 링크를 해석하기 위해 SDK를 설정해야 합니다. 이를 위해 `AdjustLinkResolution` 클래스의 `resolveLink` 메서드를 호출합니다. Adjust SDK는 이후 딥링크를 열 때 해당 커스텀 링크를 따라가 해석합니다. 이를 통해 이메일 측정 캠페인과의 상호작용을 기록할 수 있습니다.
 
 `resolveLinkWithUrl` 메서드는 다음 인수를 사용합니다.
 
@@ -316,3 +667,4 @@ AdjustLinkResolution.resolveLink(url, new String[]{"example.com"}, new AdjustLin
 
 </Tab>
 </Tabs>
+</SdkVersion>

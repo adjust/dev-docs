@@ -1,12 +1,12 @@
 ---
-title: "开始使用"
+title: "React Native SDK 集成指南"
 description: "使用 React Native SDK 在 React Native 应用中使用 Adjust 功能"
 category-title: "React Native SDK"
 slug: "zh/sdk/react-native"
 sidebar-position: 4
 ---
 
-通过 Adjust React Native SDK，您可以在自己的 React Native 应用中跟踪归因、事件及更多数据。请按照本指南中说明的步骤操作，在应用内设置 Adjust SDK。您还可以在 [GitHub](https://github.com/adjust/react_native_sdk/tree/master/example) 上查看示例应用。
+The Adjust React Native SDK enables you to measure attribution, events, and much more in your React Native app. Follow the steps in this guide to set up your app to work with the Adjust SDK. You can also check out the example apps on [GitHub](https://github.com/adjust/react_native_sdk/tree/master/example).
 
 <Callout type="important">
 
@@ -89,11 +89,15 @@ componentWillUnmount() {
 
 Adjust SDK 需要特定权限来访问信息。\(如尚未添加\) 请将其添加至您的 `AndroidManifest.xml` 文件中：
 
+<CodeBlock title="AndroidManifest.xml">
+
 ```xml
 <uses-permission android:name="android.permission.INTERNET" id="sl-md0000000"/>
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" id="sl-md0000000"/>
+
 ```
 
+</CodeBlock>
 <Callout type="note">
 
 如果您定向 Google Play 商店且使用 Google Play 服务，那么 Adjust SDK 则不需要 `ACCESS_WIFI_STATE` 权限。如果您在应用其他地方也不需要，则可以将其移除。
@@ -102,10 +106,13 @@ Adjust SDK 需要特定权限来访问信息。\(如尚未添加\) 请将其添�
 
 从 Adjust SDK 4\.32\.0 及以上版本默认包含 `com.google.android.gms.AD_ID` 权限。如果您的应用需要符合 COPPA 的要求或不针对 Google Play 商店，则可以通过添加 `remove` 指令将其删除。
 
+<CodeBlock title="AndroidManifest.xml">
+
 ```xml
 <uses-permission android:name="com.google.android.gms.permission.AD_ID" id="sl-md0000000"/>
 ```
 
+</CodeBlock>
 <Callout type="seealso">
 
 请查看 [Google 的 `AdvertisingIdClient.Info`](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid) 文档，了解更多与该许可相关的信息。
@@ -116,10 +123,13 @@ Adjust SDK 需要特定权限来访问信息。\(如尚未添加\) 请将其添�
 
 针对 Google Play 商店的应用必须使用 [Google 广告 ID](https://support.google.com/googleplay/android-developer/answer/6048248?hl=en) \(`gps_adid`\) 来识别设备。为此，请将以下 dependency 加入`build.gradle` 文件的 `dependencies` 部分。
 
+<CodeBlock title="build.gradle">
+
 ```groovy
 implementation 'com.google.android.gms:play-services-ads-identifier:18.0.1'
 ```
 
+</CodeBlock>
 <Callout type="note">
 
 Adjust SDK 并不与任何版本的 `play-services-ads-identifier` dependency 绑定。您可以使用任意版本的 Google Play 服务库。
@@ -129,6 +139,8 @@ Adjust SDK 并不与任何版本的 `play-services-ads-identifier` dependency �
 ### [设置 Proguard](set-up-proguard)
 
 如果您使用的是 Proguard，请将以下规则添加至您的 Proguard 文件。
+
+<CodeBlock title="proguard.pro">
 
 ```java
 -keep class com.adjust.sdk.** { *; }
@@ -143,7 +155,10 @@ Adjust SDK 并不与任何版本的 `play-services-ads-identifier` dependency �
    boolean isLimitAdTrackingEnabled();
 }
 -keep public class com.android.installreferrer.** { *; }
+
 ```
+
+</CodeBlock>
 
 ### [设置 Install Referrer](set-up-install-referrer)
 
@@ -151,7 +166,7 @@ Install Referrer 是一种归因机制，可用来将应用安装归因至来源
 
 -  [x] 来自这些应用商店的一系列 API，开发者借此可在应用中调取 referral 内容。
 -  [x] Google Play 和华为 App Gallery 等应用商店在其商店网站应用页面 URL 中接受的 `referrer` 参数。referrer 参数按以下方式填充：
-   -  用户点击 Adjust 跟踪链接时，Adjust 服务器发送一个独一无二的识别码，即 `reftag`。该识别码被指配给此点击，并被添加至 referrer 参数。要进一步了解 reftag，请访问[Reftag](https://help.adjust.com/zh/article/reftag) 页面。
+   -  When a user clicks on an Adjust link, the Adjust server passes a unique identifier called `reftag`. This identifier is assigned to the click and into the referrer parameter. To know more about reftag, visit [Reftag](https://help.adjust.com/zh/article/reftag).
    -  您在开展 [Google Ads](https://support.google.com/google-ads/answer/6357635?hl=en) 推广活动时，Google 会传递一个叫做 `gclid` 的唯一识别码至 referrer 参数。您必须在 Google Ads 账户中开启 **Auto\-tagging** 。
 
 <Callout type="note">
@@ -170,15 +185,22 @@ Install Referrer 是一种归因机制，可用来将应用安装归因至来源
 
 1. 请在您的最高层级`build.gradle`文件的 **依赖区块** 中添加以下行：
 
+<CodeBlock title="build.gradle">
+
 ```groovy
 dependencies {
 //...
 implementation 'com.android.installreferrer:installreferrer:2.2'
 //...
 }
+
 ```
 
+</CodeBlock>
+
 2. `installreferrer`库是 **Google Maven** 库的一部分。您需要将 Google Maven 库添加到应用的最高层级`build.gradle`文件来构建应用：
+
+<CodeBlock title="build.gradle">
 
 ```groovy
 allprojects {
@@ -189,17 +211,24 @@ allprojects {
    }
 }
 
+
 ```
 
+</CodeBlock>
+
 3. 如果您使用的是 Proguard，请务必将下列设置加入您的 Proguard 文件：
+
+<CodeBlock title="proguard.pro">
 
 ```java
 -keep public class com.android.installreferrer.** { *; }
 ```
 
+</CodeBlock>
+
 #### [华为 Referrer API](huawei-referrer-api)
 
-从版本 v4\.22\.0 开始，Adjust SDK 将支持对装有华为 App Gallery 10\.4 或更新版本的设备进行安装跟踪。您无需其他调整和变更，就可以开始使用华为 Referrer API。
+As of v4\.22\.0, the Adjust SDK supports install measurement on Huawei devices using Huawei App Gallery v10\.4 and later. You don't need to make any changes to start using the Huawei Referrer API.
 
 #### [Meta referrer 集成](meta-referrer-integration)
 
@@ -235,12 +264,12 @@ Adjust SDK v4\.37\.0 及更高版本支持[Meta Install Referrer](https://develo
 
 <Table>
 
-| 框架                                  | 描述                                                                                                                   | 注意事项                                                  |
-| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
-| **AdSupport.framework**               | 如果您希望 SDK 能访问 IDFA 值和 \(iOS 14 以前的\) LAT 信息，请添加该框架。                                             | 如果您的应用属于 "儿童" \(Kids\) 类别，请不要安装该框架。 |
-| **AdServices.framework**              | 该框架对于处理 Apple Search Ads 是必要的。                                                                             |                                                           |
-| **StoreKit.framework**                | 如果您希望访问 SKAdNetwork 框架，同时让 Adjust SDK 在 iOS 14 或未来版本的 iOS 中自动处理与该框架的通讯，请添加该框架。 |                                                           |
-| **AppTrackingTransparency.framework** | 如果您希望 SDK 能在 iOS 14 或未来版本的 iOS 中包装用户的跟踪许可对话框，并访问用户的许可响应，请添加该框架。           | 如果您的应用属于 "儿童" \(Kids\) 类别，请不要安装该框架。 |
+| 框架                                  | 描述                                                                                                                                           | 注意事项                                                  |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| **AdSupport.framework**               | 如果您希望 SDK 能访问 IDFA 值和 \(iOS 14 以前的\) LAT 信息，请添加该框架。                                                                     | 如果您的应用属于 "儿童" \(Kids\) 类别，请不要安装该框架。 |
+| **AdServices.framework**              | 该框架对于处理 Apple Search Ads 是必要的。                                                                                                     |                                                           |
+| **StoreKit.framework**                | 如果您希望访问 SKAdNetwork 框架，同时让 Adjust SDK 在 iOS 14 或未来版本的 iOS 中自动处理与该框架的通讯，请添加该框架。                         |                                                           |
+| **AppTrackingTransparency.framework** | This framework is needed in iOS 14 and later for the SDK to be able to wrap he user ATT consent dialog and access the user’s consent response. | 如果您的应用属于 "儿童" \(Kids\) 类别，请不要安装该框架。 |
 
 </Table>
 
