@@ -1,5 +1,5 @@
 ---
-title: "开始使用"
+title: "Flutter SDK 集成指南"
 description: "使用 Flutter SDK 在您的 Flutter 应用中使用 Adjust 功能"
 category-title: "Flutter SDK"
 slug: "zh/sdk/flutter"
@@ -22,10 +22,14 @@ Adjust SDK 支持 iOS 9 或更新版本，以及安卓 API 级别 9 \(Gingerbrea
 
 1. 添加下列行至您的 `pubspec.yaml` 文件:
 
+<CodeBlock title="pubspec.yaml">
+
 ```yaml
 dependencies:
    adjust_sdk: ^$FLUTTER_VERSION
 ```
+
+</CodeBlock>
 
 2. 找到您的项目并运行以下指令。编辑 `pubspec.yaml` 文件后，Visual Studio 会自动运行该命令。
 
@@ -39,10 +43,13 @@ $ flutter packages get
 
 针对 Google Play 商店的应用必须使用 [Google 广告 ID](https://support.google.com/googleplay/android-developer/answer/6048248?hl=en) \(`gps_adid`\) 来识别设备。为此，请将以下 dependency 加入`build.gradle` 文件的 `dependencies` 部分。
 
+<CodeBlock title="build.gradle">
+
 ```groovy
 implementation 'com.google.android.gms:play-services-ads-identifier:18.0.1'
 ```
 
+</CodeBlock>
 <Callout type="note">
 
 Adjust SDK 并不与任何版本的 `play-services-ads-identifier` dependency 绑定。您可以使用任意版本的 Google Play 服务库。
@@ -53,21 +60,27 @@ Adjust SDK 并不与任何版本的 `play-services-ads-identifier` dependency �
 
 Adjust SDK 需要下列权限。\(如尚未添加\) 请将其添加至您的 `AndroidManifest.xml` 文件中：
 
+<CodeBlock title="AndroidManifest.xml">
+
 ```xml
 <uses-permission android:name="android.permission.INTERNET" id="sl-md0000000"/>
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" id="sl-md0000000"/>
+
 ```
 
+</CodeBlock>
 <MinorVersion changed="v4.32.0">
 
 从 Adjust SDK 4\.32\.0 及以上版本默认包含 `com.google.android.gms.AD_ID` 权限。如果您的应用需要符合 COPPA 的要求或不针对 Google Play 商店，则可以通过添加 `remove` 指令将其删除。
 
 </MinorVersion>
+<CodeBlock title="AndroidManifest.xml">
 
 ```xml
 <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" id="sl-md0000000"/>
 ```
 
+</CodeBlock>
 <Callout type="seealso">
 
 请查看 [Google 的 `AdvertisingIdClient.Info documentation` 文档](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid)，了解更多与该许可相关的信息。
@@ -77,6 +90,8 @@ Adjust SDK 需要下列权限。\(如尚未添加\) 请将其添加至您的 `An
 ### [设置 Proguard](set-up-proguard)
 
 如果您使用的是 Proguard，请将这些规则添加至您的[自定义 Proguard 文件](https://docs.unity3d.com/Manual/class-PlayerSettingsAndroid.html#build)。
+
+<CodeBlock title="proguard.pro">
 
 ```java
 -keep public class com.adjust.sdk.** { *; }
@@ -91,13 +106,20 @@ Adjust SDK 需要下列权限。\(如尚未添加\) 请将其添加至您的 `An
    boolean isLimitAdTrackingEnabled();
 }
 -keep public class com.android.installreferrer.** { *; }
+
 ```
 
+</CodeBlock>
+
 如果您的发布目标非 Google Play 商店，请向 Proguard 文件添加下列规则：
+
+<CodeBlock title="proguard.pro">
 
 ```java
 -keep public class com.adjust.sdk.** { *; }
 ```
+
+</CodeBlock>
 
 ### [设置 Install Referrer](set-up-install-referrer)
 
@@ -116,21 +138,29 @@ Install Referrer 是一种唯一标识符，可用来将应用安装归因至来
 
 要支持 Google Play Referrer API，请将下列行添加进您的 `build.gradle` 文件
 
+<CodeBlock title="build.gradle">
+
 ```groovy
 implementation 'com.android.installreferrer:installreferrer:2.2'
 ```
 
+</CodeBlock>
+
 如果您使用的是 Proguard，请务必将下列设置加入您的 Proguard 文件：
+
+<CodeBlock title="proguard.pro">
 
 ```java
 -keep public class com.android.installreferrer.** { *; }
 ```
 
+</CodeBlock>
+
 #### [华为 Referrer API](huawei-referrer-api)
 
 <MinorVersion added="v4.22.0">
 
-从版本 v4\.22\.0 开始，Adjust SDK 将支持对装有华为 App Gallery 10\.4 或更新版本的设备进行安装跟踪。您无需其他调整和变更，就可以开始使用华为 Referrer API。
+As of v4\.22\.0, the Adjust SDK supports install recording on Huawei devices using Huawei App Gallery v10\.4 and later. You don't need to make any changes to start using the Huawei Referrer API.
 
 </MinorVersion>
 
@@ -162,12 +192,12 @@ Adjust SDK v4\.36\.0 及更高版本支持[Meta Install Referrer](https://develo
 
 <Table>
 
-| 框架                                | 描述                                                                                                       | 注意事项                                                                                    |
-| ----------------------------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| `AdSupport.framework`               | 允许读取设备 IDFA。对于操作系统为 iOS 14 及更早版本的设备，添加该框架也会允许读取 LAT 信息。               | 如果您的应用属于 "儿童" 类别，那么请勿添加该框架                                            |
-| `AdServices.framework`              | 处理 Apple Search Ads 归因                                                                                 |                                                                                             |
-| `StoreKit.framework`                | 允许访问 SKAdNetwork 框架                                                                                  | 若要运行 Adjust 处理 iOS 14 或更新操作版本设备上与 SKAdNetwork 的通讯，那么必须添加该框架。 |
-| `AppTrackingTransparency.framework` | 若要允许 Adjust SDK 包装用户跟踪许可对话，并读取 iOS 14 或更新操作版本设备的许可响应，那么必须添加该框架。 | 如果您的应用属于 "儿童" 类别，那么请勿添加该框架                                            |
+| 框架                                | 描述                                                                                                                             | 注意事项                                                                                    |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `AdSupport.framework`               | 允许读取设备 IDFA。对于操作系统为 iOS 14 及更早版本的设备，添加该框架也会允许读取 LAT 信息。                                     | 如果您的应用属于 "儿童" 类别，那么请勿添加该框架                                            |
+| `AdServices.framework`              | 处理 Apple Search Ads 归因                                                                                                       |                                                                                             |
+| `StoreKit.framework`                | 允许访问 SKAdNetwork 框架                                                                                                        | 若要运行 Adjust 处理 iOS 14 或更新操作版本设备上与 SKAdNetwork 的通讯，那么必须添加该框架。 |
+| `AppTrackingTransparency.framework` | Required to allow the Adjust SDK to wrap user ATT consent dialog and access consent responses on devices running iOS 14 or later | 如果您的应用属于 "儿童" 类别，那么请勿添加该框架                                            |
 
 </Table>
 
@@ -186,17 +216,17 @@ AdjustConfig config = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandb
 Adjust.start(config);
 ```
 
-## [5\. 设置会话跟踪](5-set-up-session-tracking)
+## [5\. Set up session recording](5-set-up-session-recording)
 
-您需要设置会话跟踪，SDK 才能向 Adjust 服务器传送会话信息。
+You need to set up session recording so that the SDK can pass session information to the Adjust server.
 
 <Callout type="note">
 
-默认支持 iOS 设备的会话跟踪。
+Session recording for iOS devices is supported by default.
 
 </Callout>
 
-如需设置安卓设备的会话跟踪，请在应用于前台运行时调用 `Adjust.onResume()` 方法，当应用不在前台运行时，请调用 `Adjust.onPause()` 方法。您可以对此进行全局设置或按照每个小组件进行设置。
+To set up session recording for Android devices, call the `Adjust.onResume()` method when the app is running in the foreground and make a call to the `Adjust.onPause()` method when the app isn't running in the foreground. You can do this globally or per widget.
 
 ```dart
 class AdjustExampleApp extends StatelessWidget {
