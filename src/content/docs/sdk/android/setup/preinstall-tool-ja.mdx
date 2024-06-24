@@ -1,17 +1,18 @@
 ---
 title: "Adjustストア・プリインストールツール"
 description: " Adjust SDKのプリインストールツールを設定します。"
-slug: "en/sdk/android/setup/preinstall-tool"
+slug: "ja/sdk/android/setup/preinstall-tool"
 ---
+
 If your app is pre\-installed on a device, you need to use a pre\-install link to attribute users. The Adjust Store & Pre\-Install Tool \(`adjust-dtt`\) enables you to insert this information into your APK. The Adjust SDK reads the information inserted by `adjust-dtt`. This enables you to attribute users of pre\-installed apps to specific Adjust links.
 
-[事前準備](before-you-begin)
-------------------------
+## [事前準備](before-you-begin)
 
-<callout type="note"> 
+<Callout type="note">
 
 このツールは、APKに対応している全ての開発フレームワークで使用可能です。
-</Callout> 
+
+</Callout>
 
 [GitHubから](https://github.com/adjust/android_sdk/blob/master/tools/adjust-dtt) `adjust-dtt` ツールをダウンロードしてください。ツールを使用するには、次のコマンドを実行して、ファイルを実行可能にしてください。
 
@@ -21,29 +22,37 @@ $ chmod +x adjust-dtt
 
 `adjust-dtt`を使用する前に、マシンを設定する必要があります。`adjust-dtt`を使用するには、以下のツールがデバイスにインストールされている必要があります：
 
-* `ruby`：`adjust-dtt`を実行するための言語ツール
-* `apktool`：APKを解凍および再圧縮するためのツール
-* `jarsigner`：APK署名のためのツール
+-  `ruby`：`adjust-dtt`を実行するための言語ツール
+-  `apktool`：APKを解凍および再圧縮するためのツール
+-  `jarsigner`：APK署名のためのツール
 
 それぞれのインストールは、以下の指示に従ってください。
-<callout type="important"> 
+
+<Callout type="important">
 
 これらのツールは全て、`adjust-dtt`を実行するためにシステムの`PATH`に存在している必要があります。
-</Callout> 
+
+</Callout>
 
 ### [ruby](ruby)
 
-<tabs> <tab title="Mac OS" sync="mac"> 
+<Tabs>
+<Tab title="Mac OS" sync="mac">
 
 RubyはmacOSデバイスにプリインストールされています。
-</Tab> <tab title="Linux" sync="linux"> 
+
+</Tab>
+<Tab title="Linux" sync="linux">
 
 [ruby\-lang Webサイト](https://www.ruby-lang.org/en/documentation/installation/)のディストリビューション手順に従ってください。
-</Tab> </Tabs> 
+
+</Tab>
+</Tabs>
 
 ### [apktool](apktool)
 
-<tabs> <tab title="Mac OS" sync="mac"> 
+<Tabs>
+<Tab title="Mac OS" sync="mac">
 
 [Homebrew](https://brew.sh/)を使用して、Apktoolをインストールできます。
 
@@ -52,14 +61,19 @@ $ brew install apktool
 ```
 
 あるいは、[Apktool Webサイト](https://ibotpeaches.github.io/Apktool/install/)の手順に従ってください。
-</Tab> <tab title="Linux" sync="linux"> 
+
+</Tab>
+<Tab title="Linux" sync="linux">
 
 [Apktool Webサイト](https://ibotpeaches.github.io/Apktool/install/)のディストリビューション手順に従ってください。
-</Tab> </Tabs> 
+
+</Tab>
+</Tabs>
 
 ### [jarsigner](jarsigner)
 
-<tabs> <tab title="Mac OS" sync="mac"> 
+<Tabs>
+<Tab title="Mac OS" sync="mac">
 
 `jarsigner` はJDK（Java Development Kit）の一部として含まれています。OpenJDKとOracle JDKの両方の実装で利用可能です。[Homebrew](https://brew.sh)を使用して、OpenJDKをインストールできます。これを行うには、次のコマンドを実行してください：
 
@@ -68,15 +82,18 @@ $ brew install openjdk@16
 ```
 
 Oracle JDKを使用している場合は、[Oracle Webサイト](https://docs.oracle.com/en/java/javase/16/install/installation-jdk-macos.html#GUID-E8A251B6-D9A9-4276-ABC8-CC0DAD62EA33)の手順に従ってください。
-</Tab> <tab title="Linux" sync="linux"> 
+
+</Tab>
+<Tab title="Linux" sync="linux">
 
 `jarsigner` はJava Development Kit（JDK）の一部として含まれています。OpenJDKとOracle JDKの両方の実装で利用可能です。OpenJDKは、多くの主要なディストリビューションのリポジトリで利用可能です。お使いのディストリビューションのインストール手順を検索し、OpenJDKをインストールしてください。`jarsigner`を使用するには、開発パッケージをインストールする必要があります。
 
 Oracle JDKを使用している場合は、[Oracle Webサイト](https://docs.oracle.com/en/java/javase/16/install/installation-jdk-linux-platforms.html#GUID-737A84E4-2EFF-4D38-8E60-3E29D1B884B8)の手順に従ってください。
-</Tab> </Tabs> 
 
-[Add preinstall link information](add-preinstall-link-info)
------------------------------------------------------------
+</Tab>
+</Tabs>
+
+## [Add preinstall link information](add-preinstall-link-info)
 
 ### [ステップ1：keystoreファイルの取得](step-1-get-keystore-file)
 
@@ -93,20 +110,22 @@ Next, you need to create a link in your Adjust dashboard. You will use the link 
 ### [ステップ3：configファイルの作成](step-3-create-a-config-file)
 
 Once you have your keystore file and your link token, you can create a configuration file. `adjust-dtt` uses an `adjust-config.yaml` configuration file to read your settings. This file includes settings for the different app stores you need to set up.
-<table> 
 
-|      パラメーター       |  データタイプ  | グローバルまたはストアごと |                          説明                           |
-|-------------------|----------|---------------|-------------------------------------------------------|
-| `apk_path`        | `String` | 両方            | APKへの絶対パス                                             |
-| `keystore_path`   | `String` | 両方            | keystoreファイルへの絶対パス                                    |
-| `keystore_pass`   | `String` | 両方            | keystore署名パスワード                                       |
-| `keystore_alias`  | `String` | 両方            | keystoreエイリアス                                         |
-| `default_tracker` | `String` | ストアごと         | The Adjust link token to attribute pre\-installs to. |
+<Table>
 
-</Table> 
+| パラメーター      | データタイプ | グローバルまたはストアごと | 説明                                                 |
+| ----------------- | ------------ | -------------------------- | ---------------------------------------------------- |
+| `apk_path`        | `String`     | 両方                       | APKへの絶対パス                                      |
+| `keystore_path`   | `String`     | 両方                       | keystoreファイルへの絶対パス                         |
+| `keystore_pass`   | `String`     | 両方                       | keystore署名パスワード                               |
+| `keystore_alias`  | `String`     | 両方                       | keystoreエイリアス                                   |
+| `default_tracker` | `String`     | ストアごと                 | The Adjust link token to attribute pre\-installs to. |
+
+</Table>
 
 以下は、`store_1`、`store_2`、`store_3`という名前の3つのストアの設定を含む`adjust-config.yaml`ファイルの例です。
-<codeblock title="adjust-config.yaml"> 
+
+<CodeBlock title="adjust-config.yaml">
 
 ```yaml
 apk_path: /Users/username/Desktop/apk/example-release.apk
@@ -122,10 +141,11 @@ stores:
       default_tracker: abc789
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 各ストアに同じ設定を使用したい場合、ファイルのルートフォルダでグローバルパラメーターを定義できます。ストアに設定されたパラメーターは、そのストアのグローバルパラメーターを上書きします。以下はその例です。
-<codeblock title="adjust-config.yaml"> 
+
+<CodeBlock title="adjust-config.yaml">
 
 ```yaml
 apk_path: /Users/username/Desktop/apk/example-release.apk
@@ -144,7 +164,7 @@ stores:
       default_tracker: abc789
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 この例では、 `store_1`のAPKを生成する際に、`adjust-dtt`ツールは`differentkeystore.jks` 、 `differentkeystorepass`および`differentkeystorealias`を使用します。これにより、各ストアごとに変更されたAPKを生成します。
 
@@ -159,7 +179,8 @@ $ adjust-dtt adjust-config.yaml
 `adjust-dtt` は以下を実行します：
 
 1. APKをフォルダに解凍します。フォルダはAPKと同じ場所にあり、APKと同じ名前になります。
-2. `assets` フォルダーと `adjust_config.properties` ファイルを検索します。`adjust_config.properties`ファイルにはデフォルトのキャンペーン情報が含まれています。 
+2. `assets` フォルダーと `adjust_config.properties` ファイルを検索します。`adjust_config.properties`ファイルにはデフォルトのキャンペーン情報が含まれています。
+
    1. `assets`フォルダーと`adjust_config.properties`ファイルが存在しない場合は作成します。`default_tracker`の情報が`adjust_config.properties`ファイルに書き込まれます。
    2. `adjust_config.properties`ファイルが存在する場合、`default_tracker`の情報を書き込みます。ファイルにすでにデフォルトのキャンペーン値が含まれている場合は、その2つを比較します。これらが異なる場合、`adjust-config.yaml`ファイルの値で既存の値が上書きされます。
 
@@ -168,4 +189,3 @@ $ adjust-dtt adjust-config.yaml
 5. 元のAPKと同じ名前に `_[store_name]` のsuffixが付いたAPKを生成します。上記の例では、ツールは3つのAPKファイルを生成されています。これらは `example-release_store_1.apk` 、 `example-release_store_2.apk` 、および `example-release_store_3.apk`と命名されます。ツールでこれらのファイルが生成されたら、名前を変更できます。
 
 このツールに関してご不明な点や問題がございましたら、[support@adjust.com](mailto:support@adjust.com)までお問い合わせください。
-

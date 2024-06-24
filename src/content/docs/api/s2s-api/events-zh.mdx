@@ -1,50 +1,52 @@
 ---
 title: "服务器到服务器 (S2S) 事件"
 description: "服务器到服务器 (S2S) 事件 API 使 Adjust 可以通过 HTTP 请求记录您的事件。"
-slug: "en/api/s2s-api/events"
+slug: "zh/api/s2s-api/events"
 sidebar-position: 2
 sidebar-label: "S2S 事件"
 ---
+
 服务器到服务器 \(S2S\) 事件 API 通过 HTTP 请求向 Adjust 发送事件数据。使用 Adjust SDK 记录安装、会话和再归因，只使用 S2S API 发送 **自定义** 事件。
 
-如果您正在为 Adjust iOS 14\+ 应用设置 S2S 事件，Adjust 会将转化值作为 S2S 响应发送至您的服务器。随后，您的服务器需要在应用内更新转化值。要进一步了解相关信息，请查看[iOS 14\+ S2S 事件支持](https://help.adjust.com/en/article/support-for-s2s-events)。
-<callout type="note"> 
+如果您正在为 Adjust iOS 14\+ 应用设置 S2S 事件，Adjust 会将转化值作为 S2S 响应发送至您的服务器。随后，您的服务器需要在应用内更新转化值。要进一步了解相关信息，请查看[iOS 14\+ S2S 事件支持](https://help.adjust.com/zh/article/support-for-s2s-events)。
+
+<Callout type="note">
 
 在归因时，Adjust 不会区分来自 SDK 和 S2S 的点击。二者在归因瀑布中是一样的。
-</Callout> 
+
+</Callout>
 
 在本文中，您将了解如何设置 S2S 事件记录并对其进行故障排除。
-<codeblock title="终端" highlight="/event"> 
+
+<CodeBlock title="终端" highlight="/event">
 
 ```text
 https://s2s.adjust.com/event
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
-[发送 S2S 事件](send-s2s-events)
-----------------------------
+## [发送 S2S 事件](send-s2s-events)
 
 `/event`终端接受以下 S2S 事件请求：
 
-* 含 URL 参数的 GET。
-* 含 URL 参数的 POST。
-* 带有正文参数的 POST。`Content-Type`必须设置为`application/x-www-form-urlencoded` 。
+-  含 URL 参数的 GET。
+-  含 URL 参数的 POST。
+-  带有正文参数的 POST。`Content-Type`必须设置为`application/x-www-form-urlencoded` 。
 
-[设置 S2S 安全](set-up-s2s-security)
---------------------------------
+## [设置 S2S 安全](set-up-s2s-security)
 
 设置 S2S 安全，可保护 S2S 事件的安全，抵御欺诈请求的侵害。设置认证后，每个传入的请求都必须带有您在 Adjust 控制面板中生成的识别码。缺失识别码或识别码不正确的请求会被 Adjust 服务器拒绝。
 
 要开始设置，请按[S2S 安全文档](/en/api/s2s-api/security)中的步骤操作。
 
-[必要参数](required-parameters)
----------------------------
+## [必要参数](required-parameters)
 
-<callout type="important"> 
+<Callout type="important">
 
 S2S 事件参数区分大小写。
-</Callout> 
+
+</Callout>
 
 `/event`终端要求在每个请求中使用以下参数：
 
@@ -53,50 +55,54 @@ S2S 事件参数区分大小写。
 3. 应用识别码。
 4. 一个硬编码的`s2s=1`参数，用于通知终端此请求来自 S2S。
 
-<table> 
+<Table>
 
-|                 参数                  |         描述          |                                            示例                                             |
-|-------------------------------------|---------------------|-------------------------------------------------------------------------------------------|
+| 参数                                              | 描述                           | 示例                                                                                      |
+| ------------------------------------------------- | ------------------------------ | ----------------------------------------------------------------------------------------- |
 | 广告标识符，例如 iOS 的`idfa`或安卓的`gps_adid`。 | 请查看设备 ID 的完整列表。     | `idfa=D2CADB5F-410F-4963-AC0C-2A78534BDF1E gps_adid=660e1d86-6796-463a-be86-897993136018` |
-| `event_token`                       | 控制面板上的 Adjust 事件识别码 | `event_token=f0ob4r`                                                                      |
-| `app_token`                         | 控制面板上的 Adjust 应用识别码 | `app_token=4w565xzmb54d`                                                                  |
-| `s2s`                               | s2s 参数设置为 1         | `s2s=1`                                                                                   |
+| `event_token`                                     | 控制面板上的 Adjust 事件识别码 | `event_token=f0ob4r`                                                                      |
+| `app_token`                                       | 控制面板上的 Adjust 应用识别码 | `app_token=4w565xzmb54d`                                                                  |
+| `s2s`                                             | s2s 参数设置为 1               | `s2s=1`                                                                                   |
 
-</Table> 
+</Table>
 
 ### [其他事件提交参数的建议](recommended-additional-parameters-for-event-submission)
 
 要进行准确的事件归因，请将下列参数包含在您的事件中。
-<callout type="important"> 
+
+<Callout type="important">
 
 对于 iOS 设备，您应当使用`adid`广告 ID。这样您就能在 IDFA 不可用时匹配设备数据。
-</Callout> <table> 
 
-|                    参数                     |                                                            描述                                                             |                                                                                                     示例                                                                                                     |
-|-------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `adid`                                    | 与设备关联的 Adjust 标识符。有助于识别 iOS 端缺失 IDFA 信息的 LAT 用户。                                                                          | `adid=18546f6171f67e29d1cb983322ad1329`                                                                                                                                                                    |
-| `ip_address`                              | 设备 IP 地址。用于将事件关联至第三方 \(例如 Google\) 并在回传中包含位置相关信息 \(例如`city` 、 `postal_code` \)。 `ip_address`参数仅接受 IPv4 地址。当前不支持 IPv6。 | `ip_address=192.0.0.1`                                                                                                                                                                                     |
-| `created_at_unix` \(推荐\) 或 `created_at` | 事件发生的日期和时间。                                                                                                               | `created_at_unix=1484085154` 或 `created_at=2017-01-02T15:04:05.000+0000`                                                                                                                                   |
-| `user_agent`                              | 设备的`User-Agent`。必须进行 URL 编码。                                                                                              | `user_agent=Mozilla%2F5.0%20%28iPhone%3B%20CPU%20iPhone%20OS%2016_6%20like%20Mac%20OS%20X%29%20AppleWebKit%2F605.1.15%20%28KHTML%2C%20like%20Gecko%29%20Version%2F16.5%20Mobile%2F15E148%20Safari%2F604.1` |
+</Callout>
+<Table>
 
-</Table> 
+| 参数                                       | 描述                                                                                                                                                                   | 示例                                                                                                                                                                                                       |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `adid`                                     | 与设备关联的 Adjust 标识符。有助于识别 iOS 端缺失 IDFA 信息的 LAT 用户。                                                                                               | `adid=18546f6171f67e29d1cb983322ad1329`                                                                                                                                                                    |
+| `ip_address`                               | 设备 IP 地址。用于将事件关联至第三方 \(例如 Google\) 并在回传中包含位置相关信息 \(例如`city` 、 `postal_code` \)。 `ip_address`参数仅接受 IPv4 地址。当前不支持 IPv6。 | `ip_address=192.0.0.1`                                                                                                                                                                                     |
+| `created_at_unix` \(推荐\) 或 `created_at` | 事件发生的日期和时间。                                                                                                                                                 | `created_at_unix=1484085154` 或 `created_at=2017-01-02T15:04:05.000+0000`                                                                                                                                  |
+| `user_agent`                               | 设备的`User-Agent`。必须进行 URL 编码。                                                                                                                                | `user_agent=Mozilla%2F5.0%20%28iPhone%3B%20CPU%20iPhone%20OS%2016_6%20like%20Mac%20OS%20X%29%20AppleWebKit%2F605.1.15%20%28KHTML%2C%20like%20Gecko%29%20Version%2F16.5%20Mobile%2F15E148%20Safari%2F604.1` |
+
+</Table>
 
 #### [事件时间戳](event-timestamp)
 
 事件时间戳可以通过`created_at_unix`参数或`created_at`参数指定。
 
-* `created_at_unix`：事件发送时的 UNIX 时间戳。例如：`1484085154`。
-* `created_at`：采用ISO 8601 格式的 URL 编码时间戳。例如： `2023-01-02T15%3A04%3A05.000%2B0000`
+-  `created_at_unix`：事件发送时的 UNIX 时间戳。例如：`1484085154`。
+-  `created_at`：采用ISO 8601 格式的 URL 编码时间戳。例如： `2023-01-02T15%3A04%3A05.000%2B0000`
 
-<callout type="important"> 
+<Callout type="important">
 
 如果您没有在请求中发送时间戳，Adjust 就会使用收到事件的时间作为事件日期。
-</Callout> 
+
+</Callout>
 
 请务必检查下列内容：
 
-* 必须根据请求中的时间戳按时间顺序针对每个设备和事件识别码提交事件。如果 Adjust 收到的事件时间戳早于之前收到的时间戳和事件，那么 Adjust 就会拒绝该事件。
-* 所有事件必须在 58 天内提交。时间戳早于 58 天前的任何事件都会被拒绝。
+-  必须根据请求中的时间戳按时间顺序针对每个设备和事件识别码提交事件。如果 Adjust 收到的事件时间戳早于之前收到的时间戳和事件，那么 Adjust 就会拒绝该事件。
+-  所有事件必须在 58 天内提交。时间戳早于 58 天前的任何事件都会被拒绝。
 
 ### [共享自定义数据](share-custom-data)
 
@@ -104,13 +110,15 @@ S2S 事件参数区分大小写。
 
 使用以下参数向请求添加参数：
 
-* `callback_params`：包含 **字符串** 键值对的 URL 编码 JSON 对象。
-* `partner_params`：包含 **字符串** 键值对的 URL 编码 JSON 对象。
+-  `callback_params`：包含 **字符串** 键值对的 URL 编码 JSON 对象。
+-  `partner_params`：包含 **字符串** 键值对的 URL 编码 JSON 对象。
 
-<callout type="important"> 
+<Callout type="important">
 
 请不要在自定义数据对象中嵌套对象。
-</Callout> <codeblock title="未编码示例"> 
+
+</Callout>
+<CodeBlock title="未编码示例">
 
 ```json
 {
@@ -119,61 +127,68 @@ S2S 事件参数区分大小写。
 }
 ```
 
-</CodeBlock> <codeblock title="编码示例" highlight="f0o, bar, baz"> 
+</CodeBlock>
+<CodeBlock title="编码示例" highlight="f0o, bar, baz">
 
 ```text
 %7B%22f0o%22%3A%22bar%22%2C%20%22bar%22%3A%22baz%22%7D
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 要在原始数据导出中接收回传参数，请在 S2S 调用的`callback_params`参数中添加数据。
-<codeblock title="回传参数" highlight="callback_params"> 
+
+<CodeBlock title="回传参数" highlight="callback_params">
 
 ```console
 curl --location https://s2s.adjust.com/event?s2s=1&event_token=f0ob4r&app_token=4w565xzmb54d&idfa=8A3CB124-5A79-4334-8802-F75FEC099C58&callback_params=%7B%22f0o%22%3A%22bar%22%2C%20%22bar%22%3A%22baz%22%7D
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 如需向渠道合作伙伴发送事件信息，请在 S2S 调用的`partner_params`参数中添加数据。
-<codeblock title="合作伙伴参数" highlight="partner_params"> 
+
+<CodeBlock title="合作伙伴参数" highlight="partner_params">
 
 ```console
 curl --location https://s2s.adjust.com/event?s2s=1&event_token=f0ob4r&app_token=4w565xzmb54d&idfa=8A3CB124-5A79-4334-8802-F75FEC099C58&partner_params=%7B%22f0o%22%3A%22bar%22%2C%20%22bar%22%3A%22baz%22%7D
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 ### [记录收入事件](record-revenue-events)
 
 将以下收入参数添加到事件提交，以记录服务器到服务器的收入事件：
-<table> 
 
-|     参数      |                                       描述                                       |
-|-------------|--------------------------------------------------------------------------------|
-| revenue     | 完整货币单位的收入事件值 （149\.99 = 149\.99 美元）。针对该参数，Adjust 服务器接受的最小值为 0\.001。         |
-| currency    | 与事件关联的货币代码。                                                                    |
-| environment | 数据传送至环境： `environment=sandbox`或`environment=production` \)。 默认为`production` 。 |
+<Table>
 
-</Table> 
+| 参数        | 描述                                                                                                  |
+| ----------- | ----------------------------------------------------------------------------------------------------- |
+| revenue     | 完整货币单位的收入事件值 （149\.99 = 149\.99 美元）。针对该参数，Adjust 服务器接受的最小值为 0\.001。 |
+| currency    | 与事件关联的货币代码。                                                                                |
+| environment | 数据传送至环境： `environment=sandbox`或`environment=production` \)。 默认为`production` 。           |
+
+</Table>
 
 ### [示例](example)
 
-<tabs> <tab title="GET"> 
+<Tabs>
+<Tab title="GET">
 
 ```console
 curl "https://s2s.adjust.com/event?s2s=1&event_token=f0ob4r&app_token=4w565xzmb54d&idfa=D2CADB5F-410F-4963-AC0C-2A78534BDF1E&created_at=2017-01-02T15%3A04%3A05Z%2B0200&callback_params=%7B%22f0o%22%3A%22bar%22%2C%20%22bar%22%3A%22baz%22%7D&partner_params=%7B%22f0o%22%3A%22bar%22%2C%20%22bar%22%3A%22baz%22%7D&currency=EUR&revenue=123.4&environment=sandbox"
 ```
 
-</Tab> <tab title="含 URL 参数的 POST"> 
+</Tab>
+<Tab title="含 URL 参数的 POST">
 
 ```console
 curl -X POST \
 "https://s2s.adjust.com/event?s2s=1&event_token=f0ob4r&app_token=4w565xzmb54d&idfa=D2CADB5F-410F-4963-AC0C-2A78534BDF1E&created_at=2017-01-02T15%3A04%3A05Z%2B0200&callback_params=%7B%22f0o%22%3A%22bar%22%2C%20%22bar%22%3A%22baz%22%7D&partner_params=%7B%22f0o%22%3A%22bar%22%2C%20%22bar%22%3A%22baz%22%7D&currency=EUR&revenue=123.4&environment=sandbox"
 ```
 
-</Tab> <tab title="含正文的 POST"> 
+</Tab>
+<Tab title="含正文的 POST">
 
 ```console
 curl -X POST \
@@ -182,5 +197,5 @@ curl -X POST \
 "https://s2s.adjust.com/event"
 ```
 
-</Tab> </Tabs>
-
+</Tab>
+</Tabs>
