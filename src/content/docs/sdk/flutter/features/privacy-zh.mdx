@@ -8,9 +8,13 @@ Adjust SDK 包含处理应用用户隐私的功能。
 
 ## [发送删除请求](send-erasure-request)
 
+<CodeBlock title="Method signature">
+
 ```dart
 static void gdprForgetMe()
 ```
+
+</CodeBlock>
 
 在处理个人数据方面，欧盟的《通用数据保护条例》\(GDPR\) 和全球类似的隐私法律 \(CCPA、LGPD 等\) 授予数据主体完全权利，其中包括删除权 \([参见 GDPR 第 17](https://gdpr.eu/article-17-right-to-be-forgotten/)条\)\( [1](https://help.adjust.com/zh/article/gdpr#ref-1) \)。作为数据处理方，Adjust 有义务支持您 \(数据控制方\) 处理来自应用用户的此类请求。
 
@@ -29,9 +33,13 @@ Adjust.gdprForgetMe();
 
 ### [实例化 AdjustThirdPartySharing 对象](instantiate-an-adjustthirdpartysharing-object)
 
+<CodeBlock title="Method signature">
+
 ```dart
 AdjustThirdPartySharing(bool? _isEnabled)
 ```
+
+</CodeBlock>
 
 要启用或禁用 Adjust SDK 第三方数据分享，请实例化一个 `AdjustThirdPartySharing` 对象。该对象中包含的变量控制 Adjust 处理第三方数据分享的方式。
 
@@ -61,9 +69,13 @@ Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 
 ### [发送精细信息](send-granular-information)
 
+<CodeBlock title="Method signature">
+
 ```dart
 void addGranularOption(String partnerName, String key, String value)
 ```
+
+</CodeBlock>
 
 当用户更新第三方数据分享设置时，您可以附加较精细的信息，以此发送用户决定的更多细节。为此，请使用下列参数调用`addGranularOption`方法：
 
@@ -164,27 +176,109 @@ adjustThirdPartySharing.addGranularOption('google_dma', 'ad_user_data', '1');
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
-### [更新合作伙伴设置](update-partner-settings)
+### [更新合作伙伴分享设置](update-partner-settings)
+
+<CodeBlock title="Method signature">
 
 ```dart
 void addPartnerSharingSetting(String partnerName, String key, bool value)
 ```
 
-您可以使用 Adjust SDK，为每个合作伙伴分别更新第三方数据分享设置。为此，请使用合作伙伴名称和您的选项调用 `addPartnerSharingSetting` 方法。
+</CodeBlock>
+
+默认情况下，Adjust 会与您在应用设置中配置的合作伙伴分享所有指标。您可以使用 Adjust SDK，为每个合作伙伴分别更新第三方数据分享设置。为此，请使用下列参数调用 `addPartnerSharingSetting` 方法：
+
+<Table autoWidth="1,2,3">
+
+| 参数          | 数据类型  | 描述                                                                                                                                                                          |
+| ------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `partnerName` | `String`  | 合作伙伴名称。[下载可用合作伙伴的完整列表](https://assets.ctfassets.net/5s247im0esyq/2QQROOadVqJzrME7yXKObe/7aca25e53d38befb2d469809e62b6fcc/3rd-party-sharing-partners.xlsx) |
+| `key`         | `String`  | 与合作伙伴分享的指标                                                                                                                                                          |
+| `value`       | `Boolean` | 用户的选择                                                                                                                                                                    |
+
+</Table>
+
+您可以使用`key`来指定要禁用或重新启用的指标。如果您想启用/禁用所有指标的分享，可以使用`all`键。可用指标的完整列表如下：
+
+<ListColumns>
+
+-  `ad_revenue`
+-  `all`
+-  `attribution`
+-  `update`
+-  `att_update`
+-  `cost_update`
+-  `event`
+-  `install`
+-  `reattribution`
+
+---
+
+-  `reattribution_reinstall`
+-  `reinstall`
+-  `rejected_install`
+-  `rejected_reattribution`
+-  `sdk_click`
+-  `sdk_info`
+-  `session`
+-  `subscription`
+-  `uninstall`
+
+</ListColumns>
+
+当您针对合作伙伴的指标设置`false`值时，Adjust 将停止与该合作伙伴分享该指标。
+
+<Callout type="tip">
+
+如果您只想与合作伙伴分享部分指标，可以传递带有`false`值的`all`键来禁用所有分享，然后传递带有`true`值的单个指标来限制共享内容。
+
+</Callout>
+
+#### [示例](examples)
+
+如果您想停止与特定合作伙伴分享所有指标，请发送带有`false`值的`all`键。
 
 ```dart
-AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(null);
-//...
-adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "foo", false);
-//...
+AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(true);
+adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "all", false);
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+```
+
+要重新启用分享，请发送带有`true`值的`all`键。
+
+```dart
+AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(true);
+adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "all", true);
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+```
+
+您可以使用不同的键多次调用`addPartnerSharingSetting`方法来停止或开始共享特定指标。例如，如果您只想与合作伙伴分享事件信息，则可以传递：
+
+-  `all` 值为`false`以禁用所有信息分享。
+-  `event` 值为`true`以启用事件共享。
+
+<Callout type="note">
+
+特定键始终优先于`all` 。如果您同时发送`all`和其他键，则单个键值会覆盖`all`设置。
+
+</Callout>
+
+```dart
+AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(true);
+adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "all", false);
+adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "event", true);
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
 ## [禁用第三方数据分享](disable-third-party-sharing)
 
+<CodeBlock title="Method signature">
+
 ```dart
 static void disableThirdPartySharing()
 ```
+
+</CodeBlock>
 
 要为所有用户禁用第三方数据分享，请调用 `disableThirdPartySharing` 方法。Adjust 服务器收到此信息后，会停止向第三方分享该用户的数据，而 Adjust SDK 将会继续如常运行。
 
@@ -194,9 +288,13 @@ Adjust.disableThirdPartySharing();
 
 ## [设置 URL 策略](set-url-strategy)
 
+<CodeBlock title="属性声明">
+
 ```dart
 String? urlStrategy;
 ```
+
+</CodeBlock>
 
 通过 URL 策略功能，您可以进行下列设置之一：
 
@@ -230,13 +328,17 @@ Adjust.start(adjustConfig);
 
 ## [针对特定用户的许可监测](consent-measurement-for-specific-users)
 
+<CodeBlock title="Method signature">
+
 ```dart
 static void trackMeasurementConsent(bool measurementConsent)
 ```
 
+</CodeBlock>
+
 如果您正在 Adjust 控制面板中使用[数据隐私设置](https://help.adjust.com/zh/article/manage-data-collection-and-retention)，那么则需要对 Adjust SDK 做出相应设置。这包括设置许可有效期和用户数据留存期。
 
-要开关该功能，请使用下列参数调用 `trackMeasurementConsent` 方法：
+要开启或关闭该功能，请使用下列参数调用 `trackMeasurementConsent` 方法：
 
 -  `measurementConsent` \(`bool`\)：许可监测是 \(`true`\) 否 \(`false`\) 启用。
 
@@ -253,18 +355,25 @@ Adjust.trackMeasurementConsent(true);
 从 Adjust SDK 4\.32\.0 及以上版本默认包含 `com.google.android.gms.permission.AD_ID` 权限。如要确保应用符合 COPPA 的要求或您的应用不针对 Google Play 商店，则可以通过添加一个remove指令来将其移除。
 
 </MinorVersion>
+<CodeBlock title="AndroidManifest.xml">
 
 ```xml
 <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" id="sl-md0000000"/>
 ```
 
+</CodeBlock>
+
 请查看 [Google 的 `AdvertisingIdClient.Info documentation` 文档](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid)，了解更多与该许可相关的信息。
 
 ### [《儿童在线隐私权保护法》\(COPPA\) 合规](coppa-compliance)
 
+<CodeBlock title="属性声明">
+
 ```dart
 bool? coppaCompliantEnabled
 ```
+
+</CodeBlock>
 
 要让您的应用符合 COPPA \(儿童在线隐私保护法\) 规定，请为 config 实例 `coppaCompliantEnabled` 属性指定 `bool` 值。将该属性设为 `true`。
 
@@ -289,9 +398,13 @@ Adjust.start(adjustConfig);
 
 ### [Play 商店儿童应用 \(仅限安卓\)](play-store-kids-apps-android-only)
 
+<CodeBlock title="属性声明">
+
 ```dart
 bool? playStoreKidsAppEnabled
 ```
+
+</CodeBlock>
 
 如果您的应用会定向到不满 13 周岁的儿童，且安装地区 **不** 位于美国，则需要将其标记为儿童应用 \(Kids App\)。这可以防止 SDK 读取设备和广告 ID \(例如`gps_adid`和`android_id`\)。
 

@@ -6,6 +6,8 @@ slug: "ko/sdk/web/features/events"
 
 Adjust SDK가 제공하는 이벤트 인터페이스는 이벤트 정보를 구성하고 이러한 정보를 앱에서 Adjust 서버로 전송하는 데 사용할 수 있습니다.
 
+<CodeBlock title="인터페이스 선언">
+
 ```js
 export type EventParamsT = {|
    eventToken: string,
@@ -16,6 +18,8 @@ export type EventParamsT = {|
    partnerParams?: Array<globalparamst id="sl-md0000000">,
 |};
 ```
+
+</CodeBlock>
 
 ## [이벤트 전송](send-an-event)
 
@@ -72,7 +76,7 @@ function _handleTrackEvent() {
 
 <Callout type="seealso">
 
-자세한 정보는 Adjust의 [여러 통화로 구매 트래킹](https://help.adjust.com/ko/article/currency-conversion) 가이드를 참조하시기 바랍니다.
+자세한 정보는 Adjust의 [여러 통화로 구매 기록](https://help.adjust.com/ko/article/currency-conversion) 가이드를 참조하시기 바랍니다.
 
 </Callout>
 
@@ -87,6 +91,8 @@ Adjust.trackEvent({
 ### [예시](example-1)
 
 본 예시에서는 사용자가 버튼을 조작할 때마다 _`g3mfiw`_ 라는 토큰으로 이벤트를 기록하는 방법을 보여줍니다. 이 함수는 이벤트의 `revenue` 속성을 _`0.25`_ , `currency` 속성을 _`EUR`_ 로 설정합니다.
+
+<CodeBlock highlight="{range: 26-28}">
 
 ```js
 function init(defaultEventConfig = {}) {
@@ -122,6 +128,8 @@ function _handleTrackEvent() {
 }
 ```
 
+</CodeBlock>
+
 ## [매출 이벤트 중복 제거](deduplicate-revenue-events)
 
 중복 이벤트 트래킹을 방지하기 위해 추가적인 ID를 전송할 수도 있습니다. SDK는 최근순으로 10가지의 ID를 저장하고, 중복된 트랜잭션 ID가 있는 매출 이벤트를 건너뜁니다.
@@ -138,6 +146,8 @@ Adjust.trackEvent({
 ### [예시](example-2)
 
 본 예시에서는 사용자가 버튼을 조작할 때마다 _`g3mfiw`_ 라는 토큰으로 이벤트를 기록하는 방법을 보여줍니다. 이 함수로 `deduplicationId`가 _`5e85484b-1ebc-4141-aab7-25b869e54c49`_ 로 설정됩니다.
+
+<CodeBlock highlight="{range: 26-27}">
 
 ```js
 function init(defaultEventConfig = {}) {
@@ -172,6 +182,8 @@ function _handleTrackEvent() {
 }
 ```
 
+</CodeBlock>
+
 중복 제거 제한을 재정의하여 Adjust SDK 스토어의 식별자 수를 변경할 수 있습니다. 이를 위해 `initSdk` 메서드의 `eventDeduplicationListLimit` 인수에 새로운 제한을 지정합니다.
 
 ```js
@@ -184,12 +196,16 @@ Adjust.initSdk({
 
 ## [콜백 파라미터 추가](add-callback-parameters)
 
+<CodeBlock title="인터페이스 선언">
+
 ```js
 export type GlobalParamsT = {|
    key: string,
    value: string,
 |};
 ```
+
+</CodeBlock>
 
 Adjust 대시보드에 [콜백 URL](https://help.adjust.com/ko/article/set-up-callbacks)을 등록하면 SDK가 이벤트를 기록할 때 ADK가 GET 요청을 콜백 URL로 보냅니다.
 
@@ -209,10 +225,13 @@ Adjust.trackEvent({
 
 Adjust SDK는 이벤트를 측정하고 콜백 파라미터가 추가된 URL로 요청을 전송합니다. 예를 들어 URL `https://www.mydomain.com/callback`을 등록한 경우 콜백은 다음과 같습니다.
 
+<CodeBlock highlight="key, value, foo, bar">
+
 ```text
 https://www.mydomain.com/callback?key=value&foo=bar
 ```
 
+</CodeBlock>
 <Callout type="note">
 
 Adjust는 사용자의 커스텀 콜백 파라미터를 보관하지 않습니다. 커스텀 파라미터는 콜백 URL에만 추가됩니다.
@@ -238,9 +257,14 @@ Adjust [콜백 가이드](https://help.adjust.com/ko/article/callbacks)에서 �
 
 콜백 URL의 결과는 다음과 같습니다.
 
+<CodeBlock highlight="g3mfiw, 0.05">
+
 ```text
 http://www.mydomain.com/callback?event_token=g3mfiw&revenue_amount=0.05
 ```
+
+</CodeBlock>
+<CodeBlock highlight="{range: 26-29}">
 
 ```js
 function init(defaultEventConfig = {}) {
@@ -278,7 +302,11 @@ function _handleTrackEvent() {
 }
 ```
 
+</CodeBlock>
+
 ## [파트너 파라미터 추가](add-partner-parameters)
+
+<CodeBlock title="인터페이스 선언">
 
 ```js
 export type GlobalParamsT = {|
@@ -286,6 +314,8 @@ export type GlobalParamsT = {|
    value: string,
 |};
 ```
+
+</CodeBlock>
 
 [파트너 파라미터](https://help.adjust.com/ko/article/data-sharing-ad-network#map-parameters)를 추가하여 네트워크 파트너에게 추가 정보를 전송할 수 있습니다.
 
@@ -299,7 +329,7 @@ Adjust는 설정한 [외부 파트너](https://help.adjust.com/ko/article/integr
 
 `GlobalParam` 객체를 포함한 `partnerParams` 배열을 생성하여 이벤트에 파트너 파라미터를 추가합니다.
 
-```javascript
+```js
 Adjust.trackEvent({
    // ... other params go here, including mandatory ones
    partnerParams: [
@@ -316,7 +346,9 @@ Adjust.trackEvent({
 -  관련 제품의 `product_id`
 -  이벤트를 트리거한 사용자의 `user_id`
 
-```javascript
+<CodeBlock highlight="{range: 26-29}">
+
+```js
 function init(defaultEventConfig = {}) {
    _ui.trackPartnerEventButton.addEventListener(
       "click",
@@ -352,13 +384,19 @@ function _handleTrackEvent() {
 }
 ```
 
+</CodeBlock>
+
 ## [이벤트 기록 및 외부 페이지로 리디렉션](record-event-and-redirect-to-an-external-page)
+
+<CodeBlock title="메서드 서명">
 
 ```js
 function trackEvent(params: EventParamsT): Promise<void id="sl-md0000000"> {
    return _internalTrackEvent(params);
 }
 ```
+
+</CodeBlock>
 
 Adjust SDK를 사용하면 외부 페이지로의 리디렉션을 이벤트로 기록할 수 있습니다. 리디렉션이 발생하기 전에 SDK가 이벤트를 기록할 수 있도록 `trackEvent` 메서드는 [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)를 반환합니다. 이 `Promise`는 SDK가 Adjust 서버로부터 응답을 받은 후 충족됩니다. 내부 오류 응답이 반환되는 경우 `Promise`는 거부됩니다.
 
@@ -372,7 +410,7 @@ Adjust SDK는 이벤트를 내부 열에 저장합니다. 즉, 요청 시간이 
 
 ### [예시](example-5)
 
-```javascript
+```js
 Promise.race([
    Adjust.trackEvent({
       eventToken: "YOUR_EVENT_TOKEN",

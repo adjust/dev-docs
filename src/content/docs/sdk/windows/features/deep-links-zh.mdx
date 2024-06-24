@@ -27,6 +27,8 @@ slug: "zh/sdk/windows/features/deep-links"
 
 下一步，请设置您的 `OnActivated` 事件处理程序，以处理被激活的深度链接事件。为此，请将下列行添加至您的 `App.xaml.cs` 文件：
 
+<CodeBlock title="App.xaml.cs">
+
 ```cs
 // ...
 protected override void OnActivated(IActivatedEventArgs args) {
@@ -43,21 +45,28 @@ protected override void OnActivated(IActivatedEventArgs args) {
 // ...
 ```
 
+</CodeBlock>
 <Callout type="seealso">
 
 请查看处理 URI 激活的相关[Microsoft 官方文档](https://learn.microsoft.com/en-us/windows/uwp/launch-resume/handle-uri-activation)，了解更多信息。
 
 </Callout>
 
-如果用户与链接互动，而该链接 `deep_link` 参数中包含您的 **唯一 Scheme 名称** ，那么您的应用就会打开。参数该值必须在 URL 中进行 URL 编码。Adjust SDK 将以未编码的文本形式传送结果。
+如果用户与链接互动，而该链接 `deep_link` 参数中包含您的 **唯一 Scheme 名称** ，那么您的应用就会打开。该值必须在 URL 中进行 URL 编码。Adjust SDK 将以未编码的文本形式传送结果。
 
 ## [延迟深度链接](deferred-deep-linking)
+
+<CodeBlock title="属性声明">
 
 ```cs
 public Func<Uri, bool> DeeplinkResponse { get; set; }
 ```
 
+</CodeBlock>
+
 您可以配置 Adjust SDK，使其在接收到延迟深度链接时调用一个委托函数。委托函数会以 `string` 参数的形式接收深度链接。SDK 从 Adjust 服务器接收到深度链接内容后，就会通过该委托函数传送，并预计收到 `bool` 返回值。该值代表 SDK 是否应启动 `OnActivated` 事件处理程序。
+
+<CodeBlock highlight="{range: 4-14}">
 
 ```cs
 var adjustConfig = new AdjustConfig(appToken, environment,
@@ -79,23 +88,30 @@ Adjust.ApplicationLaunching(adjustConfig);
 // ...
 ```
 
+</CodeBlock>
+
 ## [通过深度链接进行再归因](reattribution-using-deep-links)
+
+<CodeBlock title="方法签名">
 
 ```cs
 public static void AppWillOpenUrl(Uri uri);
 ```
 
+</CodeBlock>
 <Callout type="seealso">
 
-Adjust 支持使用深度链接进行再交互推广活动。要了解更多信息，请参阅[如何在深度链接中附加归因数据](https://help.adjust.com/zh/article/manage-reattributions#track-reattributions-via-deeplink-clicks)。
+Adjust 支持使用深度链接进行再交互推广活动。要了解更多信息，请参阅[如何在深度链接中附加归因数据](https://help.adjust.com/zh/article/manage-reattributions#track-reattributions-via-deep-link-clicks)。
 
 </Callout>
 
 要对用户进行再归因，您需要在应用中对 Adjust SDK 做一个额外调用。应用接收到深度链接内容时，向 `appWillOpenUrl(Uri, Context)` 方法添加一个调用。此时，Adjust SDK 就会在深度链接中寻找新的归因信息。如果 SDK 找到新信息，就会将其转发至 Adjust 服务器进行再归因。
 
-如果用户点击了 Adjust 深度链接，需要被再归因，那么[归因回传](/zh/sdk/windows/features/attribution)就会被触发。
+如果用户点击了 Adjust 深度链接，需要被再归因，那么[归因回传](/en/sdk/windows/features/attribution)就会被触发。
 
 请务必在应用的 `OnActivated` 方法中调用 `Adjust.AppWillOpenUrl`：
+
+<CodeBlock highlight="{range: 8-10}">
 
 ```cs
 using AdjustSdk;
@@ -113,3 +129,5 @@ public partial class App : Application
    }
 }
 ```
+
+</CodeBlock>

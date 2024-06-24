@@ -27,6 +27,8 @@ SDKは、ユーザーがリンクからアプリを起動した後にディー�
 
 次に、`OnActivated`イベントハンドラーを設定する必要があります。これは有効化されたディープリンクイベントを処理します。これを設定するには、以下を`App.xaml.cs`ファイルに追加してください。
 
+<CodeBlock title="App.xaml.cs">
+
 ```cs
 // ...
 protected override void OnActivated(IActivatedEventArgs args) {
@@ -43,6 +45,7 @@ protected override void OnActivated(IActivatedEventArgs args) {
 // ...
 ```
 
+</CodeBlock>
 <Callout type="seealso">
 
 詳細は、URIのアクティブ化の処理に関する[Microsoftのドキュメント](https://learn.microsoft.com/en-us/windows/uwp/launch-resume/handle-uri-activation)を参照してください。
@@ -53,11 +56,17 @@ protected override void OnActivated(IActivatedEventArgs args) {
 
 ## [ディファードディープリンク](deferred-deep-linking)
 
+<CodeBlock title="プロパティ宣言">
+
 ```cs
 public Func<Uri, bool> DeeplinkResponse { get; set; }
 ```
 
+</CodeBlock>
+
 Adjust SDKがディファードディープリンクを受け取った際に、デリゲート関数を呼び出すように設定することができます。このデリゲート関数は、ディープリンクを`string`引数で受け取ります。SDKがAdjustのサーバーからディープリンクコンテンツを受け取ると、SDKはデリゲート関数を介してそれを配信し、`bool`の戻り値を受け取ります。この値は、SDKが`OnActivated`イベントハンドラーを起動する必要があるかどうかを表します。
+
+<CodeBlock highlight="{range: 4-14}">
 
 ```cs
 var adjustConfig = new AdjustConfig(appToken, environment,
@@ -79,23 +88,30 @@ Adjust.ApplicationLaunching(adjustConfig);
 // ...
 ```
 
+</CodeBlock>
+
 ## [ディープリンクを使用したリアトリビューション](reattribution-using-deep-links)
+
+<CodeBlock title="メソッドシグネチャー">
 
 ```cs
 public static void AppWillOpenUrl(Uri uri);
 ```
 
+</CodeBlock>
 <Callout type="seealso">
 
-Adjustはディープリンクを使ったリエンゲージメントキャンペーンをサポートしています。詳しくは、[アトリビューションデータをディープリンクに追加する方法](https://help.adjust.com/ja/article/manage-reattributions#track-reattributions-via-deeplink-clicks)をご覧ください。
+Adjustはディープリンクを使ったリエンゲージメントキャンペーンをサポートしています。詳しくは、[アトリビューションデータをディープリンクに追加する方法](https://help.adjust.com/ja/article/manage-reattributions#track-reattributions-via-deep-link-clicks)をご覧ください。
 
 </Callout>
 
 ユーザーをリアトリビュートするには、アプリ内でAdjust SDKにもう1つのコールをする必要があります。アプリがディープリンクのコンテンツを受け取るときに、`appWillOpenUrl(Uri, Context)`メソッドにコールを追加してください。その後、Adjust SDKはディープリンク内で新しいアトリビューションデータを探します。SDKが新しい情報を見つけると、リアトリビューションのためにAdjustサーバーにその情報を転送します。
 
-Adjustのディープリンクをクリックしたためにユーザーをリアトリビューションする必要がある場合、[アトリビューションコールバック](/ja/sdk/windows/features/attribution)がトリガーされます。
+Adjustのディープリンクをクリックしたためにユーザーをリアトリビューションする必要がある場合、[アトリビューションコールバック](/en/sdk/windows/features/attribution)がトリガーされます。
 
 アプリの`OnActivated`メソッドに`Adjust.AppWillOpenUrl`を呼び出す必要があります。
+
+<CodeBlock highlight="{range: 8-10}">
 
 ```cs
 using AdjustSdk;
@@ -113,3 +129,5 @@ public partial class App : Application
    }
 }
 ```
+
+</CodeBlock>

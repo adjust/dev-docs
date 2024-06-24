@@ -4,7 +4,7 @@ description: "设置 Adjust SDK 预安装工具。"
 slug: "zh/sdk/android/setup/preinstall-tool"
 ---
 
-如果设备上预安装了您的应用，就需要使用预安装跟踪链接进行用户归因。您可以通过 Adjust 商店和预安装工具 \(`adjust-dtt`\) 将该信息插入 APK。Adjust SDK 会读取 `adjust-dtt` 插入的信息，从而将预安装应用的用户归因至特定的 Adjust 跟踪链接。
+If your app is pre\-installed on a device, you need to use a pre\-install link to attribute users. The Adjust Store & Pre\-Install Tool \(`adjust-dtt`\) enables you to insert this information into your APK. The Adjust SDK reads the information inserted by `adjust-dtt`. This enables you to attribute users of pre\-installed apps to specific Adjust links.
 
 ## [操作前须知](before-you-begin)
 
@@ -93,7 +93,7 @@ $ brew install openjdk@16
 </Tab>
 </Tabs>
 
-## [添加预安装跟踪链接信息](add-preinstall-tracker-information)
+## [Add preinstall link information](add-preinstall-link-info)
 
 ### [步骤 1\. 获取密钥库文件](step-1-get-keystore-file)
 
@@ -103,27 +103,29 @@ $ brew install openjdk@16
 
 您需要拥有默认密钥库文件或自定义密钥库文件访问权限，才能使用`adjust-dtt`，因为使用`apktool`解包 APK 时，所有签名都会被 apktool 移除。重新打包 APK 并不会重新启用签名。您需要使用签名信息运行`jarsigner`，才能为 APK 重新签名，然后向 Android 设备发送。
 
-### [步骤 2\. 创建跟踪码](step-2-create-tracker-token)
+### [Step 2\. Create link](step-2-create-link)
 
-下一步，请在 Adjust 控制面板中创建推广活动链接。该链接识别码将会是您预安装应用的默认推广链接。也就是说，所有预先安装应用的用户都会被归因至该识别码。
+Next, you need to create a link in your Adjust dashboard. You will use the link token as the default campaign for your pre\-installed app. This means that all users who have the app pre\-installed will be attributed to this token.
 
 ### [步骤 3\. 创建 config 文件](step-3-create-a-config-file)
 
-具备密钥库文件和推广识别码后，您就可以创建配置 \(config\) 文件了。`adjust-dtt`使用一个`adjust-config.yaml`配置文件来读取您的设置。该文件中包含需要您设置的不同应用商店选项。
+Once you have your keystore file and your link token, you can create a configuration file. `adjust-dtt` uses an `adjust-config.yaml` configuration file to read your settings. This file includes settings for the different app stores you need to set up.
 
 <Table>
 
-| 参数              | 数据类型 | 全局设置或按商店设置 | 描述                               |
-| ----------------- | -------- | -------------------- | ---------------------------------- |
-| `apk_path`        | `String` | 两者兼需             | APK 的绝对路径。                   |
-| `keystore_path`   | `String` | 两者兼需             | 密钥库文件的绝对路径。             |
-| `keystore_pass`   | `String` | 两者兼需             | 密钥库签名密码。                   |
-| `keystore_alias`  | `String` | 两者兼需             | 密钥库名称。                       |
-| `default_tracker` | `String` | 按商店设置           | 用来归因预安装的 Adjust 推广识别码 |
+| 参数              | 数据类型 | 全局设置或按商店设置 | 描述                                                 |
+| ----------------- | -------- | -------------------- | ---------------------------------------------------- |
+| `apk_path`        | `String` | 两者兼需             | APK 的绝对路径。                                     |
+| `keystore_path`   | `String` | 两者兼需             | 密钥库文件的绝对路径。                               |
+| `keystore_pass`   | `String` | 两者兼需             | 密钥库签名密码。                                     |
+| `keystore_alias`  | `String` | 两者兼需             | 密钥库名称。                                         |
+| `default_tracker` | `String` | 按商店设置           | The Adjust link token to attribute pre\-installs to. |
 
 </Table>
 
 下方示例 `adjust-config.yaml` 文件中包含名为 `store_1`、`store_2` 和 `store_3` 的三个商店。
+
+<CodeBlock title="adjust-config.yaml">
 
 ```yaml
 apk_path: /Users/username/Desktop/apk/example-release.apk
@@ -139,7 +141,11 @@ stores:
       default_tracker: abc789
 ```
 
+</CodeBlock>
+
 如果您想为所有商店应用同样的设置，请在根文件中定义全局参数。单个商店设置的参数将覆盖该商店的全局参数。例如：
+
+<CodeBlock title="adjust-config.yaml">
 
 ```yaml
 apk_path: /Users/username/Desktop/apk/example-release.apk
@@ -157,6 +163,8 @@ stores:
    store_3:
       default_tracker: abc789
 ```
+
+</CodeBlock>
 
 在此示例中，`adjust-dtt` 工具在生成 `store_1` 的 APK 时，将使用`differentkeystore.jks`、`differentkeystorepass`和`differentkeystorealias`。该工具会针对每个商店生成经过调整的 APK。
 

@@ -10,12 +10,12 @@ slug: "ko/sdk/flutter/features/att"
 
 <Table>
 
-| 상태                                                | 코드 | 설명                                                            |
-| --------------------------------------------------- | ---- | --------------------------------------------------------------- |
-| `ATTrackingManagerAuthorizationStatusNotDetermined` | `0`  | 사용자가 아직 액세스 프롬프트에 응답하지 않음                   |
-| `ATTrackingManagerAuthorizationStatusRestricted`    | `1`  | 앱 관련 데이터에 대한 액세스가 디바이스 수준에서 차단됨.        |
-| `ATTrackingManagerAuthorizationStatusDenied`        | `2`  | 사용자가 앱 관련 데이터에 대한 디바이스 트래킹 액세스를 거부함. |
-| `ATTrackingManagerAuthorizationStatusAuthorized`    | `3`  | 사용자가 앱 관련 데이터에 대한 디바이스 트래킹 액세스를 승인함. |
+| 상태                                                | 코드 | 설명                                                         |
+| --------------------------------------------------- | ---- | ------------------------------------------------------------ |
+| `ATTrackingManagerAuthorizationStatusNotDetermined` | `0`  | 사용자가 아직 액세스 프롬프트에 응답하지 않음                |
+| `ATTrackingManagerAuthorizationStatusRestricted`    | `1`  | 앱 관련 데이터에 대한 액세스가 디바이스 수준에서 차단됨.     |
+| `ATTrackingManagerAuthorizationStatusDenied`        | `2`  | 사용자가 앱 관련 데이터에 대한 디바이스 측정 액세스를 거부함 |
+| `ATTrackingManagerAuthorizationStatusAuthorized`    | `3`  | 사용자가 앱 관련 데이터에 대한 디바이스 측정 액세스를 승인함 |
 
 </Table>
 <Callout type="note">
@@ -24,17 +24,21 @@ SDK가 ATT 상태를 조회할 수 없는 경우, `-1` 상태 코드를 받게 �
 
 </Callout>
 
-## [앱 트래킹 승인 래퍼](app-tracking-authorization-wrapper)
+## [ATT 승인 래퍼](att-authorization-wrapper)
+
+<CodeBlock title="메서드 서명">
 
 ```dart
 static Future<num id="sl-md0000000"> requestTrackingAuthorizationWithCompletionHandler() async
 ```
 
+</CodeBlock>
+
 Adjust SDK에는 [Apple `requestTrackingAuthorizationWithCompletionHandler` 메서드](https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager/3547037-requesttrackingauthorizationwith)의 래퍼가 포함되어 있습니다. ATT 프롬프트를 커스텀하지 않으려면 이 래퍼를 사용할 수 있습니다.
 
 콜백 메서드는 사용자가 동의 팝업창에 응답할 때 트리거되고 사용자의 동의 상태 코드를 Adjust 서버로 전송합니다. 콜백 함수 내에서 각 상태 코드에 대한 응답을 정의할 수 있습니다.
 
-트래킹 요청 다이얼로그에 대한 텍스트 콘텐츠를 지정해야 합니다. 이를 위해 텍스트를 `Info.plist` 파일의 `NSUserTrackingUsageDescription` 키에 추가합니다.
+ATT 요청 다이얼로그에 대한 텍스트 콘텐츠를 지정해야 합니다. 이를 위해 텍스트를 `Info.plist` 파일의 `NSUserTrackingUsageDescription` 키에 추가합니다.
 
 <Callout type="tip">
 
@@ -67,6 +71,8 @@ if (Platform.isIOS) {
 
 예시에서는 사용자가 프롬프트와 상호작용할 때 사용자의 인증 상태에 대해 읽을 수 있는\(human\-readable\) 설명을 로그하는 방법을 보여줍니다.
 
+<CodeBlock title="main.dart">
+
 ```dart
 import 'package:adjust_sdk/adjust.dart';
 import 'package:flutter/cupertino.dart';
@@ -91,24 +97,31 @@ Adjust.requestTrackingAuthorizationWithCompletionHandler().then((status) {
          break;
          case 2:
          print(
-            'The user has denied access to app-related data for device tracking.');
+            'The user has denied access to app-related data for device measurement.');
          break;
          case 3:
          print(
-            'The user has approved access to app-related data for device tracking.');
+            'The user has approved access to app-related data for device measurement.');
          break;
       }
    });
 
    Adjust.start(config);
 }
+
 ```
 
+</CodeBlock>
+
 ## [현재 승인 상태 확인](get-current-authorization-status)
+
+<CodeBlock title="메서드 서명">
 
 ```dart
 static Future<int id="sl-md0000000"> getAppTrackingAuthorizationStatus() async
 ```
+
+</CodeBlock>
 
 사용자의 현재 인증 상태는 언제든지 조회가 가능합니다. `getAppTrackingAuthorizationStatus` 메서드를 호출하여 **정수** 로 인증 상태 코드를 반환합니다.
 
@@ -127,9 +140,13 @@ Adjust.addSessionPartnerParameter("status", authorizationStatus);
 
 ## [승인 상태 변경 확인](check-for-authorization-status-changes)
 
+<CodeBlock title="메서드 서명">
+
 ```dart
 static void checkForNewAttStatus()
 ```
+
+</CodeBlock>
 
 커스텀 ATT 프롬프트를 사용하는 경우, 사용자 인증 상태 변경에 대해 Adjust SDK에 알려야 합니다. `checkForNewAttStatus` 메서드를 호출하여 인증 상태를 Adjust 서버로 전송합니다.
 
@@ -139,9 +156,13 @@ Adjust.checkForNewAttStatus();
 
 ## [커스텀 프롬프트 타이밍](custom-prompt-timing)
 
+<CodeBlock title="속성 선언">
+
 ```dart
 num? attConsentWaitingInterval;
 ```
+
+</CodeBlock>
 
 앱이 온보딩 과정이나 튜토리얼을 포함하는 경우, 사용자가 온보딩 과정이나 튜토리얼을 완료할 때까지 사용자의 ATT 동의 상태 전송을 지연시킬 수 있습니다. 이를 위해 `attConsentWaitingInterval` 속성을 설정하여 최대 **120초 동안** 데이터 전송을 지연하여 사용자가 초기 온보딩을 완료할 수 있는 시간을 제공할 수 있습니다. 타임아웃이 끝나거나 사용자가 동의 상태를 설정한 경우, SDK는 지연 기간 동안 기록된 모든 정보를 사용자의 동의 상태와 함께 Adjust 서버로 전송합니다.
 
