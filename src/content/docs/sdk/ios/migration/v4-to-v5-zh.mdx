@@ -1,68 +1,63 @@
 ---
-title: "SDK v5 migration guide"
-description: "Follow this guide to upgrade from SDK v4 to SDK v5"
-slug: "zh/sdk/ios/migration/v4-to-v5"
+title: "SDK v5 迁移指南"
+description: "按照此指南从 SDK v4 升级到 SDK v5"
+slug: "en/sdk/ios/migration/v4-to-v5"
 sidebar-position: 1
 ---
+<callout type="important" title="Beta 公测"> 
 
-<Callout type="important" title="Open beta">
+SDK v5 处于公测阶段。所有功能均可能变更。
+</Callout> 
 
-SDK v5 is in open beta. All features are subject to change.
+[操作前须知](before-you-begin)
+-------------------------
 
-</Callout>
+在更新到 SDK v5 之前，您需要进行以下操作：
 
-## [操作前须知](before-you-begin)
+1. SDK v5 支持[SDK 签名验证](https://help.adjust.com/en/article/sdk-signature)。如果您当前正在使用 SDK 签名库，则需要先将其卸载。
+2. 如果您的应用针对低于以下版本的 API，则需要先更新应用才能使用 SDK v5： 
+   * iOS: **12\.0** 
+   * tvOS: **12\.0** 
 
-Here's what you need to do before updating to SDK v5:
+[安装 beta SDK](install-the-sdk)
+------------------------------
 
-1. SDK v5 supports [SDK signature verification](https://help.adjust.com/zh/article/sdk-signature) natively. If you currently use the SDK signature library, you need to uninstall this first.
-2. If your app targets API versions lower than the following, you need to update your app before you can use SDK v5:
-   -  iOS: **12\.0**
-   -  tvOS: **12\.0**
+<callout type="important"> 
 
-## [Install the beta SDK](install-the-sdk)
+SDK v5 当前仅在 Cocoapods 上可用。
+</Callout> 
 
-<Callout type="important">
+要开始使用 SDK v5，您需要将其添加为 XCode 项目的依赖。为此请进行下列操作：
 
-SDK v5 is currently available only on Cocoapods.
-
-</Callout>
-
-To start using SDK v5, you need to add it as a dependency in your XCode project. To do this:
-
-1. Remove any older versions of the SDK you currently have in your `Podfile`.
+1. 请移除`Podfile`中所有较旧版本的 SDK。
 
 2. 添加下列行至您的 `Podfile`：
 
-   <CodeBlock title="Podfile">
+   <codeblock title="Podfile"> 
 
    ```rb
    pod 'Adjust', :git => 'https://github.com/adjust/ios_sdk.git', :branch => 'v5'
    ```
 
-   </CodeBlock>
+   </CodeBlock> 
+3. 运行`pod install`来安装依赖。
 
-3. Run `pod install` to install the dependencies.
+[变更](changes)
+-------------
 
-## [变更](changes)
+<callout type="warning"> 
 
-<Callout type="warning">
+SDK v5 是一个重大版本更新。也就是说，SDK 发生了重大变化，需要您更新代码。
+</Callout> 
 
-SDK v5 is a major version update. This means there are breaking changes that require you to update your code.
+安装 v5 SDK 后，您需要更新现有的 Adjust 代码以使用新的 API。
 
-</Callout>
+### [初始化方法](init-method)
 
-Once you've installed the v5 SDK, you need to update your existing Adjust code to use the new APIs.
+<minorversion changed="v5"> 
 
-### [Initialization method](init-method)
-
-<MinorVersion changed="v5">
-
-In SDK v4, the SDK is initialized by configuring an `ADJConfig` object and passing it to the `[Adjust appDidLaunch]` method.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+在 SDK v4 中，SDK 的初始化方法是配置`ADJConfig`对象并将其传递至`[Adjust appDidLaunch]`方法。
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 let yourAppToken = "{YourAppToken}"
@@ -74,8 +69,7 @@ let adjustConfig = ADJConfig(
 Adjust.appDidLaunch(adjustConfig)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 #import "Adjust.h"
@@ -88,13 +82,10 @@ NSString *environment = ADJEnvironmentSandbox;
 [Adjust appDidLaunch:adjustConfig];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-In SDK v5, this method has been renamed to `[Adjust initSdk]`.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+在 SDK v5 中，该方法已重命名为`[Adjust initSdk]` 。
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 let yourAppToken = "{YourAppToken}"
@@ -106,8 +97,7 @@ let adjustConfig = ADJConfig(
 Adjust.initSdk(adjustConfig)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 #import "Adjust.h"
@@ -120,384 +110,311 @@ ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:yourAppToken
 [Adjust initSdk:adjustConfig];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 ### [配置](configuration)
 
-This section covers changes to SDK configuration.
+本节介绍 SDK 配置变更。
 
-#### [Disable and enable the SDK](disable-enable-sdk)
+#### [禁用或启用 SDK](disable-enable-sdk)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
-In SDK v4, you can enable and disable the SDK by calling `[Adjust setEnabled]` with a `BOOL` value.
+在 SDK v4 中，您可以通过调用带`BOOL`值的`[Adjust setEnabled]`来启用和禁用 SDK。
+</MinorVersion> 
 
-</MinorVersion>
+* 调用`[Adjust setEnabled:NO]`来禁用 SDK。
+* 调用`[Adjust setEnabled:YES]`来启用 SDK。
 
--  Call `[Adjust setEnabled:NO]` to disable the SDK.
--  Call `[Adjust setEnabled:YES]` to enable the SDK
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 Adjust.setEnabled(false) //disable SDK
 Adjust.setEnabled(true) //enable SDK
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [Adjust setEnabled:NO]; // disable SDK
 [Adjust setEnabled:YES]; // enable SDK
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-In SDK v5, this feature is split into separate commands for clarity.
+在 SDK v5 中，为清晰起见，此功能被分成单独的命令。
 
--  Call `[Adjust disable]` to disable the SDK.
--  Call `[Adjust enable]` to enable the SDK.
+* 调用`[Adjust disable]`来禁用 SDK。
+* 调用`[Adjust enable]`来启用 SDK。
 
-<Tabs>
-<Tab title="Swift" sync="swift">
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 Adjust.disable() //disable SDK
 Adjust.enable() //enable SDK
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [Adjust disable]; // disable SDK
 [Adjust enable]; // enable SDK
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-#### [Send information in background](send-in-background)
+#### [在后台发送信息](send-in-background)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
-In SDK v4, you can call the `[ADJConfig setSendInBackground]` method with a `true` argument to enable the SDK to send information to Adjust while your app is running in the background.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+在 SDK v4 中，您可以使用`true`参数调用`[ADJConfig setSendInBackground]`方法，让 SDK 在应用在后台运行时向 Adjust 发送信息。
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 adjustConfig.setSendInBackground(true)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [adjustConfig setSendInBackground:YES];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-In SDK v5, you need to call the `[ADJConfig enableSendingInBackground]` method with no arguments to enable the SDK to send information to Adjust while your app is running in the background.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+在 SDK v5 中，您需要调用不带参数的`[ADJConfig enableSendingInBackground]`方法，让 SDK 在应用在后台运行时向 Adjust 发送信息。
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 adjustConfig.enableSendingInBackground()
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [adjustConfig enableSendingInBackground];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-#### [Disable AdServices information reading](disable-adservices)
+#### [禁用 AdServices 信息读取](disable-adservices)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
-In SDK v4, you can call the `[ADJConfig setAllowAdServicesInfoReading]` method with a `false` argument to prevent the Adjust SDK from reading AdServices information.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+在 SDK v4 中，您可以使用`false`参数调用`[ADJConfig setAllowAdServicesInfoReading]`方法来阻止 Adjust SDK 读取 AdServices 信息。
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 adjustConfig.setAllowAdServicesInfoReading(false)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [adjustConfig setAllowAdServicesInfoReading:NO];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-In SDK v5, you need to call the `disableAdServices` method with no arguments to prevent the Adjust SDK from reading AdServices information.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+在 SDK v5 中，您需要调用不带参数的`disableAdServices`方法以防止 Adjust SDK 读取 AdServices 信息。
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 adjustConfig.disableAdServices()
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [adjustConfig disableAdServices];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-#### [Disable IDFA reading](disable-idfa)
+#### [禁用 IDFA 读取](disable-idfa)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
-In SDK v4, you can call the `[ADJConfig setAllowIdfaReading]` method with a `false` argument to prevent the Adjust SDK from reading the device's IDFA.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+在 SDK v4 中，您可以使用`false`参数调用`[ADJConfig setAllowIdfaReading]`方法来阻止 Adjust SDK 读取设备的 IDFA。
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 adjustConfig.setAllowIdfaReading(false)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [adjustConfig setAllowIdfaReading:NO];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-In SDK v5, you need to call the `disableIdfaReading` method with no arguments to prevent the Adjust SDK from reading the device's IDFA.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+在 SDK v5 中，您需要调用不带参数的`disableIdfaReading`方法来阻止 Adjust SDK 读取设备的 IDFA。
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 adjustConfig.disableIdfaReading()
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [adjustConfig disableIdfaReading];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-#### [Enable cost data in attribution](enable-cost-data)
+#### [在归因中启用成本数据](enable-cost-data)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
-In SDK v4, you can enable cost data in the device's attribution information by calling the `[ADJConfig setNeedsCost]` method with a `true` argument.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+在 SDK v4 中，您可以通过调用带`true`参数的`[ADJConfig setNeedsCost]`方法在设备归因信息中启用成本数据。
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 adjustConfig.setNeedsCost(true)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [adjustConfig setNeedsCost:YES];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-In SDK v5, you need to call the `[ADJConfig enableCostDataInAttribution]` method with no arguments.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+在 SDK v5 中，您需要在不带参数的情况下调用`[ADJConfig enableCostDataInAttribution]`方法。
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 adjustConfig.enableCostDataInAttribution()
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [adjustConfig enableCostDataInAttribution];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 #### [启用 LinkMe](enable-linkme)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
-In SDK v4, you can enable [Adjust LinkMe](https://help.adjust.com/zh/article/linkme) by calling the `[ADJConfig setLinkMeEnabled]` method with a `true` argument.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+在 SDK v4 中，您可以通过调用带有`true`参数的`[ADJConfig setLinkMeEnabled]`方法来启用[Adjust LinkMe](https://help.adjust.com/en/article/linkme) 。
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 adjustConfig.setLinkMeEnabled(true)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [adjustConfig setLinkMeEnabled:YES];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-In SDK v5, you need to call the `[ADJConfig enableLinkMe]` method with no arguments.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+在 SDK v5 中，您需要在不带参数的情况下调用`[ADJConfig enableLinkMe]`方法。
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 adjustConfig.enableLinkMe()
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [adjustConfig enableLinkMe];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-#### [Only read device IDs once](read-device-id-once)
+#### [只读取设备 ID 一次](read-device-id-once)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
-In SDK v4, you can instruct the SDK to only read device identifiers one time upon startup by calling the `[ADJConfig setReadDeviceInfoOnceEnabled]` method with a `true` argument.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+在 SDK v4 中，您可以通过调用带有`true`参数的`[ADJConfig setReadDeviceInfoOnceEnabled]`方法来指示 SDK 在启动时仅读取一次设备标识符。
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 adjustConfig.setReadDeviceInfoOnceEnabled(true)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [adjustConfig setReadDeviceInfoOnceEnabled:YES];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-In SDK v5, you need to call the `[ADJConfig enableDeviceIdsReadingOnce]` method with no arguments.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+在 SDK v5 中，您需要在不带参数的情况下调用`[ADJConfig enableDeviceIdsReadingOnce]`方法。
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 adjustConfig.enableDeviceIdsReadingOnce()
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [adjustConfig enableDeviceIdsReadingOnce];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 #### [离线模式](offline-mode)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
-In SDK v4, you can enable and disable offline mode the SDK by calling `[Adjust setOfflineMode]` with a `BOOL` argument.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+在 SDK v4 中，您可以通过调用带`BOOL`参数的`[Adjust setOfflineMode]`来启用和禁用 SDK 离线模式。
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 Adjust.setOfflineMode(true) // put the SDK in offline mode
 Adjust.setOfflineMode(false) // put the SDK back in online mode
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [Adjust setOfflineMode:YES]; // put the SDK in offline mode
 [Adjust setOfflineMode:NO]; // put the SDK back in online mode
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-In SDK v5, this feature is split into separate commands for clarity.
+在 SDK v5 中，为清晰起见，此功能被分成单独的命令。
 
--  Call `[Adjust switchToOfflineMode]` to set the SDK to offline mode.
--  Call `[Adjust switchBackToOnlineMode]` to set the SDK back to online mode.
+* 调用`[Adjust switchToOfflineMode]`将 SDK 设为离线模式。
+* 调用`[Adjust switchBackToOnlineMode]`将 SDK 重新设为在线模式。
 
-<Tabs>
-<Tab title="Swift" sync="swift">
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 Adjust.switchToOfflineMode() // put the SDK in offline mode
 Adjust.switchBackToOnlineMode() // put the SDK back in online mode
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [Adjust switchToOfflineMode]; // put the SDK in offline mode
 [Adjust switchBackToOnlineMode]; // put the SDK back in online mode
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 #### [推送标签 \(Push token\)](push-tokens)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
-In SDK v4, you can set your push tokens using the `[Adjust setDeviceToken]` method.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+在SDK v4 中，您可以使用 `[Adjust setDeviceToken]` 方法设置推送标签 \(Push token\)。
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 func application(_ app: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
@@ -505,8 +422,7 @@ func application(_ app: UIApplication, didRegisterForRemoteNotificationsWithDevi
 }
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 - (void)application:(UIApplication *)app didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
@@ -514,13 +430,10 @@ func application(_ app: UIApplication, didRegisterForRemoteNotificationsWithDevi
 }
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-This method has been renamed to `[Adjust setPushToken]` in SDK v5\.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+在 SDK v5 中，该方法已重命名为`[Adjust setPushToken]` 。
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 func application(_ app: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken pushToken: Data) {
@@ -528,8 +441,7 @@ func application(_ app: UIApplication, didRegisterForRemoteNotificationsWithDevi
 }
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 - (void)application:(UIApplication *)app didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)pushToken {
@@ -537,131 +449,105 @@ func application(_ app: UIApplication, didRegisterForRemoteNotificationsWithDevi
 }
 ```
 
-</Tab>
-</Tabs>
-<Callout type="note">
+</Tab> </Tabs> <callout type="note"> 
 
-SDK v4 contains a method named `setPushToken` that takes an `NSString` value. The `setPushToken` method in SDK v5 accepts an `NSData` value
-
-</Callout>
+SDK v4 包含一个名为`setPushToken`的方法，该方法接受`NSString`值。SDK v5 中的`setPushToken`方法接受`NSData`值。
+</Callout> 
 
 #### [事件缓冲](event-buffering)
 
-<MinorVersion removed="v5">
+<minorversion removed="v5"> 
 
-SDK v4 supports event buffering. This feature stores requests event, ad revenue, push tokens, and other information on a local buffer to send at a later date.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+SDK v4 支持事件缓冲。该功能可将请求事件、广告收入、推送标签 \(Push token\) 和其他信息存储在本地缓冲区中以便在之后发送。
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 Adjust.setEventBufferingEnabled(true)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [adjustConfig setEventBufferingEnabled:YES];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-This setting has been removed in SDK v5\.
+SDK v5 中已删除该设置。
 
-#### [Custom user agent string](custom-user-agent)
+#### [自定义用户代理字符串](custom-user-agent)
 
-<MinorVersion removed="v5">
+<minorversion removed="v5"> 
 
-SDK v4 supports setting a custom User Agent by calling `[AdjustConfig setUserAgent]` with a user agent string.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+SDK v4 支持使用用户代理字符串调用 `[AdjustConfig setUserAgent]` 来设置自定义用户代理。
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 adjustConfig.setUserAgent("user_agent_value")
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [adjustConfig setUserAgent:@"user_agent_value"];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-This setting has been removed in SDK v5\.
+SDK v5 中已删除该设置。
 
 #### [设置设备是否已知](set-device-known)
 
-<MinorVersion removed="v5">
+<minorversion removed="v5"> 
 
-In SDK v4, you can call the `[AdjustConfig setIsDeviceKnown];` method to manually inform the SDK whether a device is known.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+在 SDK v4 中，您可以调用`[AdjustConfig setIsDeviceKnown];`方法，手动告知 SDK 设备是否为已知设备。
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 adjustConfig.setIsDeviceKnown(true)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [adjustConfig setIsDeviceKnown:YES];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-This setting has been removed in SDK v5\.
+SDK v5 中已删除该设置。
 
-#### [Delay SDK start](delay-sdk-start)
+#### [延迟 SDK 启动](delay-sdk-start)
 
-<MinorVersion removed="v5">
+<minorversion removed="v5"> 
 
-SDK v4 supports delaying the start of the SDK by calling `[AdjustConfig setDelayStart];` with up to **10 seconds** of delay.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+SDK v4 支持通过调用`[AdjustConfig setDelayStart];`来延迟 SDK 的启动，最多延迟 **10 秒** 。
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 adjustConfig.setDelayStart(10)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [adjustConfig setDelayStart:10];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-This setting has been removed in SDK v5\.
+SDK v5 中已删除该设置。
 
-### [Recording features](recording-features)
+### [记录功能](recording-features)
 
-This section covers changes to features that send information to Adjust.
+本节介绍向 Adjust 发送信息的功能变更。
 
 #### [会话回传参数](callback-params)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
-In SDK v4, you can add session parameters by passing a key\-value pair to the `[Adjust addSessionCallbackParameter]` method and remove individual parameters using the `[Adjust removeSessionCallbackParameter]` method.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+在 SDK v4 中，您可以通过传递键值对至`[Adjust addSessionCallbackParameter]`方法来添加会话参数，也可以使用`[Adjust removeSessionCallbackParameter]`方法移除单个参数。
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 Adjust.addSessionCallbackParameter("foo", value: "bar")
@@ -669,8 +555,7 @@ Adjust.removeSessionCallbackParameter("foo")
 Adjust.resetSessionCallbackParameters
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [Adjust addSessionCallbackParameter:@"foo" value:@"bar"];
@@ -678,13 +563,10 @@ Adjust.resetSessionCallbackParameters
 [Adjust resetSessionCallbackParameters];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-In SDK v5, session parameters are renamed to global parameters. Instead of assigning the key and value as positional arguments, SDK v5 uses the `forKey` instance method to assign values to keys.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+在 SDK v5 中，会话参数被重命名为统一参数。SDK v5 不再以位置参数的形式指定键和值，而是使用`forKey`实例方法将值指定给键。
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 Adjust.addGlobalCallbackParameter("bar", forKey: "foo")
@@ -692,8 +574,7 @@ Adjust.removeGlobalCallbackParameter(forKey: "foo")
 Adjust.removeGlobalCallbackParameters()
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [Adjust addGlobalCallbackParameter:@"bar" forKey:@"foo"];
@@ -701,18 +582,14 @@ Adjust.removeGlobalCallbackParameters()
 [Adjust removeGlobalCallbackParameters];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 #### [会话合作伙伴参数](partner-params)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
-In SDK v4, you can add session partner parameters by passing a key\-value pair to the `[Adjust addSessionPartnerParameter]` method and remove individual parameters using the `[Adjust removeSessionPartnerParameter]` method.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+在 SDK v4 中，您可以通过传递键值对至`[Adjust addSessionPartnerParameter]`方法来添加会话合作伙伴参数，也可以使用`[Adjust removeSessionPartnerParameter]`方法移除单个参数。
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 Adjust.addSessionPartnerParameter("foo", value: "bar")
@@ -720,8 +597,7 @@ Adjust.removeSessionPartnerParameter("foo")
 Adjust.resetSessionPartnerParameters()
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [Adjust addSessionPartnerParameter:@"foo" value:@"bar"];
@@ -729,13 +605,10 @@ Adjust.resetSessionPartnerParameters()
 [Adjust resetSessionPartnerParameters];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-In SDK v5, session partner parameters are renamed to global partner parameters. Instead of assigning the key and value as positional arguments, SDK v5 uses the `forKey` instance method to assign values to keys.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+在 SDK v5 中，会话合作伙伴参数被重命名为统一合作伙伴参数。SDK v5 不再以位置参数的形式指定键和值，而是使用`forKey`实例方法将值指定给键。
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 Adjust.addGlobalPartnerParameter("bar", forKey: "foo")
@@ -743,8 +616,7 @@ Adjust.removeGlobalPartnerParameter(forKey: "foo")
 Adjust.removeGlobalPartnerParameters()
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [Adjust addGlobalPartnerParameter:@"bar" forKey:@"foo"];
@@ -752,18 +624,14 @@ Adjust.removeGlobalPartnerParameters()
 [Adjust removeGlobalPartnerParameters];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 #### [发送订阅信息](send-subscriptions)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
-In SDK v4, you can use the `ADJSubscription` class to create a payload of subscription information to send to Adjust.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+在 SDK v4 中，您可以使用`ADJSubscription`类创建订阅信息负载发送至 Adjust。
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 let subscription = ADJSubscription(
@@ -773,8 +641,7 @@ let subscription = ADJSubscription(
     andReceipt: receipt)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:price
@@ -783,13 +650,10 @@ ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:price
                                                             andReceipt:receipt];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-This class has been renamed to `ADJAppStoreSubscription` in SDK v5 for clarity.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+为清晰起见，此类在 SDK v5 中已重命名为`ADJAppStoreSubscription` 。
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 let subscription = ADJAppStoreSubscription(
@@ -799,8 +663,7 @@ let subscription = ADJAppStoreSubscription(
     andReceipt: receipt)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 ADJAppStoreSubscription *subscription = [[ADJAppStoreSubscription alloc]
@@ -810,18 +673,14 @@ ADJAppStoreSubscription *subscription = [[ADJAppStoreSubscription alloc]
                                              andReceipt:receipt];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 #### [事件数据去重](event-deduplication)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
-In SDK v4, event deduplication is coupled with the event `transaction ID` and is limited to a maximum of 10 unique IDs.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+在 SDK v4 中，事件去重与事件`transaction ID`同时进行且唯一 ID 的数量上限为 10 个。
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 let event = ADJEvent(eventToken: "eventToken")
@@ -829,8 +688,7 @@ event.setTransactionId("deduplication_id")
 Adjust.trackEvent(event)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 ADJEvent *event = [ADJEvent eventWithEventToken:@"event_token"];
@@ -838,13 +696,10 @@ ADJEvent *event = [ADJEvent eventWithEventToken:@"event_token"];
 [Adjust trackEvent:event];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-In SDK v5, the feature is decoupled from `transaction ID`. A new ID field called `deduplicationId` has been added for event deduplication. Users can set a custom limit on the number of `deduplicationId` that can be added to the list for identifying duplicate events. By default, the limit is set to **10** .
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+在 SDK v5 中，该功能与`transaction ID`分离。事件去重添加了名为`deduplicationId`的新 ID 字段。用户可以自定义`deduplicationId`的数量限制，添加到用于识别重复事件的列表中。默认情况下，上限为 **10** 。
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 let yourAppToken = "{YourAppToken}"
@@ -861,8 +716,7 @@ event.setDeduplicationId("deduplication_id")
 Adjust.trackEvent(event)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 NSString *yourAppToken = @"{YourAppToken}";
@@ -878,28 +732,23 @@ ADJEvent *event = [[ADJEvent alloc] initWithEventToken:kEventToken3];
 [Adjust trackEvent:event];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 #### [AdjustAttribution 类](attribution-class)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
-In SDK v4, the `AdjustAttribution` calls has a property called `adid`. In SDK v5, the `adid` property has been removed from the `AdjustAttribution` class. You can retrieve the device's ADID using the [`[Adjust adidWithCompletionHandler]` getter method](#device-id-getters).
-
-</MinorVersion>
+在 SDK v4 中，`AdjustAttribution`调用包含一个名为`adid`的属性。在 SDK v5 中，`adid`属性已从`AdjustAttribution`类中移除。您可以使用[`[Adjust adidWithCompletionHandler]` getter 方法](#device-id-getters)获取设备的 ADID。
+</MinorVersion> 
 
 ### [深度链接](deep-links)
 
 #### [通过深度链接进行再归因](reattribution-using-deep-links)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
-In SDK v4, you can pass your deep link information to the `[Adjust appWillOpenUrl]` method.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+在 SDK v4 中，您可以将深度链接信息传递至`[Adjust appWillOpenUrl]`方法。
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 func application(
@@ -919,8 +768,7 @@ func application(
 }
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 - (BOOL)application:(UIApplication *)app
@@ -938,13 +786,10 @@ func application(
 }
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-In SDK v5, this has been renamed to `[Adjust processDeeplink]` for clarity.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+为清晰起见，在 SDK v5 中，该方法已重命名为`[Adjust processDeeplink]` 。
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 func application(
@@ -964,8 +809,7 @@ func application(
 }
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 - (BOOL)application:(UIApplication *)app
@@ -983,18 +827,14 @@ func application(
 }
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 #### [延迟深度链接回传](deferred-callback)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
-In SDK v4, you can call the `adjustDeepLinkResponse` method to handle deferred deep link callbacks.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+在 SDK v4 中，您可以调用`adjustDeepLinkResponse`方法处理延迟深度链接回传。
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 func adjustDeeplinkResponse(_ deeplink: URL?) -> Bool {
@@ -1007,8 +847,7 @@ func adjustDeeplinkResponse(_ deeplink: URL?) -> Bool {
 }
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 - (BOOL)adjustDeeplinkResponse:(NSURL *)deeplink {
@@ -1021,13 +860,10 @@ func adjustDeeplinkResponse(_ deeplink: URL?) -> Bool {
 }
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-In SDK v5, this method is has been renamed to `adjustDeferredDeeplinkReceived` for clarity. All arguments are the same.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+在 SDK v5 中，为清晰起见，该方法已被重命名为`adjustDeferredDeeplinkReceived` 。所有参数都是相同的。
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 func adjustDeferredDeeplinkReceived(_ deeplink: URL?) -> Bool {
@@ -1040,8 +876,7 @@ func adjustDeferredDeeplinkReceived(_ deeplink: URL?) -> Bool {
 }
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 - (BOOL)adjustDeferredDeeplinkReceived:(NSURL *)deeplink {
@@ -1054,78 +889,61 @@ func adjustDeferredDeeplinkReceived(_ deeplink: URL?) -> Bool {
 }
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 ### [隐私功能](privacy-features)
 
-This section covers changes to privacy features in the Adjust SDK.
+本节介绍 Adjust SDK 隐私功能的变更。
 
 #### [《儿童在线隐私权保护法》\(COPPA\) 合规](coppa-compliance)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
-In SDK v4, [COPPA compliance](/en/sdk/ios/features/privacy#coppa-compliance) is set using the `ADJConfig` class and is read during SDK initialization. This means that the value can't be updated once the SDK is initialized.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+在 SDK v4 中，您可以使用`ADJConfig`类设置[COPPA 合规](/en/sdk/ios/features/privacy#coppa-compliance)并在 SDK 初始化期间读取。也就是说，SDK 初始化后该值就无法再更新。
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 adjustConfig.setCoppaCompliantEnabled(true)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [adjustConfig setCoppaCompliantEnabled:YES];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-In SDK v5, this method is available in the `Adjust` class. This means that the setting can be changed at any time by calling `[Adjust enableCoppaCompliance]` to enable COPPA compliance or `[Adjust disableCoppaCompliance]` to disable COPPA compliance.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+在 SDK v5 中，此方法位于`Adjust`类中。也就是说，您可以随时更改设置，只需调用`[Adjust enableCoppaCompliance]` 启用 COPPA 合规或调用`[Adjust disableCoppaCompliance]` 禁用 COPPA 合规。
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 Adjust.enableCoppaCompliance()
 Adjust.disableCoppaCompliance()
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [Adjust enableCoppaCompliance];
 [Adjust disableCoppaCompliance];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-#### [Send ad revenue from a specific source](send-ad-revenue)
+#### [发送特定来源的广告收入](send-ad-revenue)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
-In SDK v4, ad revenue sources are defined as constants in the `ADJConfig` class. In SDK v5, ad revenue sources need to be passed as a string.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
-<CodeBlock useDiffSyntax>
+在 SDK v4 中，广告收入来源被定义为`ADJConfig`类中的常量。在 SDK v5 中，广告收入来源需要以字符串形式传递。
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> <codeblock useDiffSyntax> 
 
 ```swift
 - let adRevenue = ADJAdRevenue(source: ADJAdRevenueSourceAppLovinMAX); //v4
 + let adRevenue = ADJAdRevenue(source: "applovin_max_sdk") //v5
 ```
 
-</CodeBlock>
-</Tab>
-<Tab title="Objective-C" sync="objc">
-<CodeBlock useDiffSyntax>
+</CodeBlock> </Tab> <tab title="Objective-C" sync="objc"> <codeblock useDiffSyntax> 
 
 ```objc
 - ADJAdRevenue *revenue = [[ADJAdRevenue alloc]
@@ -1134,13 +952,10 @@ In SDK v4, ad revenue sources are defined as constants in the `ADJConfig` class.
 +                               initWithSource:@"applovin_max_sdk"]; // v5
 ```
 
-</CodeBlock>
-</Tab>
-</Tabs>
-<Table>
+</CodeBlock> </Tab> </Tabs> <table> 
 
-| v4                                   | v5                        |
-| ------------------------------------ | ------------------------- |
+|                  v4                  |            v5             |
+|--------------------------------------|---------------------------|
 | `ADJAdRevenueSourceAppLovinMAX`      | `"applovin_max_sdk"`      |
 | `ADJAdRevenueSourceAdMob`            | `"admob_sdk"`             |
 | `ADJAdRevenueSourceIronSource`       | `"ironsource_sdk"`        |
@@ -1153,24 +968,23 @@ In SDK v4, ad revenue sources are defined as constants in the `ADJConfig` class.
 | `ADJAdRevenueSourceTopOn`            | `"topon_sdk"`             |
 | `ADJAdRevenueSourceMopub`            | `"mopub"`                 |
 
-</Table>
+</Table> 
 
-#### [Set data residency and URL strategy](url-strategy)
+#### [设置数据驻留和 URL 策略](url-strategy)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
-In SDK v4, URL strategy and data residency domains are defined as constants in the `ADJConfig` class.
-
-</MinorVersion>
+在 SDK v4 中，URL 策略和数据驻留域名在`ADJConfig`类中被定义为常量。
+</MinorVersion> 
 
 ```objc
 [adjustConfig setUrlStrategy:ADJDataResidencyEU];
 ```
 
-In SDK v5, you need to pass your chosen domain or domains as an array. You can also set the following:
+在 SDK v5 中，您需要将选定的一个或多个域名以数组的形式发送。您还可以进行下列设置：
 
--  `withSubdomains` \(`BOOL`\): Whether the source should prefix a subdomain.
--  `andDataResidency` \(`BOOL`\): Whether the domain should be used for data residency.
+* `withSubdomains` \( `BOOL` \)：来源是否为子域名作为前缀。
+* `andDataResidency` \( `BOOL` \)：域名是否用于数据驻留。
 
 ```objc
 NSArray *domain = [];
@@ -1178,77 +992,66 @@ NSArray *domain = [];
                      andDataResidency:YES];
 ```
 
-Check the table below to see how to configure your URL strategy in SDK v5\.
+请查看下方表格，了解如何在 SDK v5 中配置 URL 策略。
+<table autoWidth="1,2"> 
 
-<Table autoWidth="1,2">
+|           v4           |          v5 \- 主要和后备域名           | v5 \- 使用子域名 | v5 \- 数据驻留 |
+|------------------------|-----------------------------------|--------------|-------------|
+| `ADJDataResidencyEU`   | `"eu.adjust.com"`                 | `true`       | `true`      |
+| `ADJDataResidencyTR`   | `"tr.adjust.com"`                 | `true`       | `true`      |
+| `ADJDataResidencyUS`   | `"us.adjust.com"`                 | `true`       | `true`      |
+| `ADJUrlStrategyChina`  | `"adjust.world"`： `"adjust.com"`  | `true`       | `false`     |
+| `ADJUrlStrategyCn`     | `"adjust.cn"`： `"adjust.com"`     | `true`       | `false`     |
+| `ADJUrlStrategyCnOnly` | `"adjust.cn"`                     | `true`       | `false`     |
+| `ADJUrlStrategyIndia`  | `"adjust.net.in"`： `"adjust.com"` | `true`       | `false`     |
 
-| v4                     | v5 \- main and fallback domain     | v5 \- use sub domains | v5 \- is Data Residency |
-| ---------------------- | ---------------------------------- | --------------------- | ----------------------- |
-| `ADJDataResidencyEU`   | `"eu.adjust.com"`                  | `true`                | `true`                  |
-| `ADJDataResidencyTR`   | `"tr.adjust.com"`                  | `true`                | `true`                  |
-| `ADJDataResidencyUS`   | `"us.adjust.com"`                  | `true`                | `true`                  |
-| `ADJUrlStrategyChina`  | `"adjust.world"`： `"adjust.com"`  | `true`                | `false`                 |
-| `ADJUrlStrategyCn`     | `"adjust.cn"`： `"adjust.com"`     | `true`                | `false`                 |
-| `ADJUrlStrategyCnOnly` | `"adjust.cn"`                      | `true`                | `false`                 |
-| `ADJUrlStrategyIndia`  | `"adjust.net.in"`： `"adjust.com"` | `true`                | `false`                 |
-
-</Table>
+</Table> 
 
 ##### [示例](examples)
 
-<Tabs>
-<Tab title="Swift" sync="swift">
-<CodeBlock title="India URL strategy">
+<tabs> <tab title="Swift" sync="swift"> <codeblock title="印度 URL 策略"> 
 
 ```swift
 let domain = ["adjust.net.in", "adjust.com"]
 adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: false)
 ```
 
-</CodeBlock>
-<CodeBlock title="China URL strategy">
+</CodeBlock> <codeblock title="中国 URL 策略"> 
 
 ```swift
 let domain = ["adjust.world", "adjust.com"]
 adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: false)
 ```
 
-</CodeBlock>
-<CodeBlock title="China only URL strategy">
+</CodeBlock> <codeblock title="仅限中国地区的 URL 策略"> 
 
 ```swift
 let domain = ["adjust.cn"]
 adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: false)
 ```
 
-</CodeBlock>
-<CodeBlock title="EU data residency">
+</CodeBlock> <codeblock title="欧盟数据驻留"> 
 
 ```swift
 let domain = ["eu.adjust.com"]
 adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: true)
 ```
 
-</CodeBlock>
-<CodeBlock title="Turkey data residency">
+</CodeBlock> <codeblock title="土耳其数据驻留"> 
 
 ```swift
 let domain = ["tr.adjust.com"]
 adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: true)
 ```
 
-</CodeBlock>
-<CodeBlock title="US data residency">
+</CodeBlock> <codeblock title="数据驻留"> 
 
 ```swift
 let domain = ["us.adjust.com"]
 adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: true)
 ```
 
-</CodeBlock>
-</Tab>
-<Tab title="Objective-C" sync="objc">
-<CodeBlock title="India URL strategy">
+</CodeBlock> </Tab> <tab title="Objective-C" sync="objc"> <codeblock title="印度 URL 策略"> 
 
 ```objc
 NSArray *domain = [[NSArray alloc]
@@ -1256,8 +1059,7 @@ NSArray *domain = [[NSArray alloc]
 [adjustConfig setUrlStrategy:domain withSubdomains:YES andDataResidency:NO];
 ```
 
-</CodeBlock>
-<CodeBlock title="China URL strategy">
+</CodeBlock> <codeblock title="中国 URL 策略"> 
 
 ```objc
 NSArray *domain = [[NSArray alloc]
@@ -1265,8 +1067,7 @@ NSArray *domain = [[NSArray alloc]
 [adjustConfig setUrlStrategy:domain withSubdomains:YES andDataResidency:NO];
 ```
 
-</CodeBlock>
-<CodeBlock title="China only URL strategy">
+</CodeBlock> <codeblock title="仅限中国地区的 URL 策略"> 
 
 ```objc
 NSArray *domain = [[NSArray alloc]
@@ -1274,8 +1075,7 @@ NSArray *domain = [[NSArray alloc]
 [adjustConfig setUrlStrategy:domain withSubdomains:YES andDataResidency:NO];
 ```
 
-</CodeBlock>
-<CodeBlock title="EU data residency">
+</CodeBlock> <codeblock title="欧盟数据驻留"> 
 
 ```objc
 NSArray *domain = [[NSArray alloc]
@@ -1283,8 +1083,7 @@ NSArray *domain = [[NSArray alloc]
 [adjustConfig setUrlStrategy:domain withSubdomains:YES andDataResidency:YES];
 ```
 
-</CodeBlock>
-<CodeBlock title="Turkey data residency">
+</CodeBlock> <codeblock title="土耳其数据驻留"> 
 
 ```objc
 NSArray *domain = [[NSArray alloc]
@@ -1292,8 +1091,7 @@ NSArray *domain = [[NSArray alloc]
 [adjustConfig setUrlStrategy:domain withSubdomains:YES andDataResidency:YES];
 ```
 
-</CodeBlock>
-<CodeBlock title="US data residency">
+</CodeBlock> <codeblock title="数据驻留"> 
 
 ```objc
 NSArray *domain = [[NSArray alloc]
@@ -1301,68 +1099,54 @@ NSArray *domain = [[NSArray alloc]
 [adjustConfig setUrlStrategy:domain withSubdomains:YES andDataResidency:YES];
 ```
 
-</CodeBlock>
-</Tab>
-</Tabs>
+</CodeBlock> </Tab> </Tabs> 
 
-#### [Disable third party sharing globally](disable-sharing-globally)
+#### [全局禁用第三方分享](disable-sharing-globally)
 
-<MinorVersion removed="v5">
+<minorversion removed="v5"> 
 
-In SDK v4, you can call the `Adjust.disableThirdPartySharing()` method to globally disable sharing information with third parties globally.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+在 SDK v4 中，您可以调用`Adjust.disableThirdPartySharing()`方法来全面禁用第三方信息分享。
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 Adjust.disableThirdPartySharing()
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [Adjust disableThirdPartySharing];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-This feature has been removed from SDK v5\. In SDK v5, use the `[Adjust trackThirdPartySharing]` method to enable or disable third party sharing.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+SDK v5 中已删除该功能。在 SDK v5 中，使用`[Adjust trackThirdPartySharing]`方法来启用或禁用第三方共享。
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 let adjustThirdPartySharing = ADJThirdPartySharing.initWithIsEnabled(false)
 Adjust.trackThirdPartySharing(adjustThirdPartySharing)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc] initWithIsEnabled:@NO];
 [Adjust trackThirdPartySharing:adjustThirdPartySharing];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-### [SKAdNetwork and ATT](skad-att)
+### [SKAdNetwork 和 ATT](skad-att)
 
-This section covers changes to SKAdNetwork and App Tracking Transparency \(ATT\) features in SDK v5\.
+本节介绍 SDK v5 中对 SKAdNetwork 和 App Tracking Transparency \(ATT\) 功能的变更。
 
 #### [关闭 SKAdNetwork 通讯](disable-skan)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
-In SDK v4, you can prevent the SDK from communicating with SKAdNetwork by calling the `[ADJConfig deactivateSKAdNetworkHandling]` method.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+在 SDK v4 中，您可以通过调用`[ADJConfig deactivateSKAdNetworkHandling]`方法来阻止 SDK 与 SKAdNetwork 通讯。
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 let yourAppToken = "{YourAppToken}"
@@ -1374,8 +1158,7 @@ let adjustConfig = ADJConfig(
 adjustConfig.deactivateSKAdNetworkHandling()
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 ADJConfig *adjustConfig = [[ADJConfig alloc]
@@ -1385,13 +1168,10 @@ ADJConfig *adjustConfig = [[ADJConfig alloc]
 [adjustConfig deactivateSKAdNetworkHandling];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-In SDK v5, this method has been renamed to `[ADJConfig disableSkanAttribution]` for clarity.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+在 SDK v5 中，为清晰起见，该方法已被重命名为`[ADJConfig disableSkanAttribution]` 。
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 let yourAppToken = "{YourAppToken}"
@@ -1403,8 +1183,7 @@ let adjustConfig = ADJConfig(
 adjustConfig.disableSkanAttribution()
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 ADJConfig *adjustConfig = [[ADJConfig alloc]
@@ -1414,44 +1193,35 @@ ADJConfig *adjustConfig = [[ADJConfig alloc]
 [adjustConfig disableSkanAttribution];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 #### [查看授权状态变化](check-att-status-change)
 
-<MinorVersion removed="v5">
+<minorversion removed="v5"> 
 
-In SDK v4, you can use the `[Adjust checkForNewAttStatus]` method to prompt the SDK to read a user's ATT status and forward the information to Adjust's servers.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+在 SDK v4 中，您可以使用`[Adjust checkForNewAttStatus]`方法提示 SDK 读取用户的 ATT 状态并将信息转发至 Adjust 服务器。
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 Adjust.checkForNewAttStatus()
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [Adjust checkForNewAttStatus];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-This method has been removed in SDK v5\.
+该方法在 SDK v5 中已被移除。
 
 #### [监听转化值更新](listen-for-cv-updates)
 
-<MinorVersion removed="v5">
+<minorversion removed="v5"> 
 
-In SDK v4, you can use the `adjustConversionValueUpdated` method to listen for SKAdNetwork updates.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+在 SDK v4 中，您可以使用`adjustConversionValueUpdated`方法来监听 SKAdNetwork 更新。
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 func adjustConversionValueUpdated(_ conversionValue: NSNumber) {
@@ -1468,8 +1238,7 @@ func adjustConversionValueUpdated(_ fineValue: NSNumber, coarseValue: String, lo
 
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 - (void)adjustConversionValueUpdated:(NSNumber *)conversionValue {
@@ -1487,18 +1256,16 @@ func adjustConversionValueUpdated(_ fineValue: NSNumber, coarseValue: String, lo
 }
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-In SDK v5, these two methods have been replaced by a single `adjustSkanUpdatedWithConversionData` method which returns an untyped dictionary. The following keys are currently supported:
+在 SDK v5 中，这两种方法已被单个`adjustSkanUpdatedWithConversionData`方法所取代，该方法会返回无类型字典。当前支持下列键：
 
--  `conversion_value`: The updated conversion value.
--  `coarse_value`: The updated [coarse conversion value](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
--  `lock_window`: Whether to send the postback before the conversion window ends
--  `error`: Any error message returned by the update.
+* `conversion_value`: 更新后的转化值。
+* `coarse_value`: 更新后的[粗粒度转化值](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
+* `lock_window`: 是否在转化窗口结束前发送回调。
+* `error`: 更新返回的错误信息。
 
-<Tabs>
-<Tab title="Swift" sync="swift">
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 func adjustSkanUpdated(withConversionData data: [String: String]) {
@@ -1507,8 +1274,7 @@ func adjustSkanUpdated(withConversionData data: [String: String]) {
 }
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 - (void)adjustSkanUpdatedWithConversionData:(NSDictionary<NSString *, NSString *> *)data {
@@ -1517,25 +1283,22 @@ func adjustSkanUpdated(withConversionData data: [String: String]) {
 }
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 #### [更新转化值](update-cvs)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
-In SDK v4, you can use the `updateConversionValue` method to send updated conversion values to Adjust. This method wraps Apple's deprecated [`updateConversionValue` method](https://developer.apple.com/documentation/storekit/skadnetwork/3566697-updateconversionvalue) and has been removed in SDK v5\.
+在 SDK v4 中，您可以使用`updateConversionValue`方法向 Adjust 发送更新后的转化值。此方法包装 Apple 已弃用的[`updateConversionValue`方法](https://developer.apple.com/documentation/storekit/skadnetwork/3566697-updateconversionvalue)，且在 SDK v5 中删除。
+</MinorVersion> 
 
-</MinorVersion>
+如需更新 SDK v5 中的转化值，请使用带下列参数的`[Adjust updateSkanConversionValue]`方法：
 
-To update conversion values in SDK v5, use the `[Adjust updateSkanConversionValue]` method with the following arguments:
+* `conversionValue` \( `NSInteger` \)：更新后的转化值
+* `coarseValue` \( `NSString` \)：更新后的[粗粒度转化值](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
+* `lockWindow` \(`BOOL`\)：是否在转化窗口结束前发送回调
 
--  `conversionValue` \(`NSInteger`\): The updated conversion value
--  `coarseValue` \(`NSString`\): The updated [coarse conversion value](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
--  `lockWindow` \(`BOOL`\): Whether to send the postback before the conversion window ends
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 Adjust.updateSkanConversionValue(
@@ -1548,8 +1311,7 @@ Adjust.updateSkanConversionValue(
 }
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [Adjust updateSkanConversionValue:1
@@ -1560,18 +1322,14 @@ Adjust.updateSkanConversionValue(
 }];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-#### [App Tracking Transparency authorization wrapper](att-wrapper)
+#### [App Tracking Transparency 授权包装器](att-wrapper)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
-In SDK v4, you can handle changes to a user's ATT authorization status using the `[Adjust requestTrackingAuthorizationWithCompletionHandler]` method.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+在 SDK v4 中，您可以使用`[Adjust requestTrackingAuthorizationWithCompletionHandler]`方法处理用户 ATT 授权状态变更。
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 Adjust.requestTrackingAuthorization() { status in
@@ -1594,8 +1352,7 @@ Adjust.requestTrackingAuthorization() { status in
 }
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [Adjust requestTrackingAuthorizationWithCompletionHandler:^(NSUInteger status) {
@@ -1616,13 +1373,10 @@ Adjust.requestTrackingAuthorization() { status in
 }];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-This has been renamed to `[Adjust requestAppTrackingAuthorizationWithCompletionHandler]` in SDK v5 for clarity.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+为清晰起见，该参数在 SDK v5 中被重命名为`[Adjust requestAppTrackingAuthorizationWithCompletionHandler]` 。
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 Adjust.requestAppTrackingAuthorization() { status in
@@ -1645,8 +1399,7 @@ Adjust.requestAppTrackingAuthorization() { status in
 }
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [Adjust requestAppTrackingAuthorizationWithCompletionHandler:^(NSUInteger status) {
@@ -1667,19 +1420,14 @@ Adjust.requestAppTrackingAuthorization() { status in
 }];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 ### [获取设备信息](device-info)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
-In SDK v4, all device information getter methods run synchronously. In SDK v5, these methods have been changed to run asynchronously. You can add a callback function to handle the information when the asynchronous process completes
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
-<CodeBlock title="ADID getter">
+在 SDK v4 中，所有设备信息 getter 方法都会同步运行。在 SDK v5 中，这些方法已改为异步运行。您可以添加回传函数，在异步流程完成时处理信息。
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> <codeblock title="ADID getter"> 
 
 ```swift
 Adjust.adid() { adid in
@@ -1687,8 +1435,7 @@ Adjust.adid() { adid in
 };
 ```
 
-</CodeBlock>
-<CodeBlock title="IDFA getter">
+</CodeBlock> <codeblock title="IDFA getter"> 
 
 ```swift
 Adjust.idfa() { idfa in
@@ -1696,8 +1443,7 @@ Adjust.idfa() { idfa in
 };
 ```
 
-</CodeBlock>
-<CodeBlock title="IDFV getter">
+</CodeBlock> <codeblock title="IDFV getter"> 
 
 ```swift
 Adjust.idfv() { idfv in
@@ -1705,8 +1451,7 @@ Adjust.idfv() { idfv in
 };
 ```
 
-</CodeBlock>
-<CodeBlock title="SDK version getter">
+</CodeBlock> <codeblock title="SDK 版本 getter"> 
 
 ```swift
 Adjust.sdkVersion() { sdkVersion in
@@ -1714,8 +1459,7 @@ Adjust.sdkVersion() { sdkVersion in
 };
 ```
 
-</CodeBlock>
-<CodeBlock title="Enabled status getter">
+</CodeBlock> <codeblock title="启用状态 getter"> 
 
 ```swift
 Adjust.isEnabled() { isEnabled in
@@ -1723,8 +1467,7 @@ Adjust.isEnabled() { isEnabled in
 };
 ```
 
-</CodeBlock>
-<CodeBlock title="Attribution getter">
+</CodeBlock> <codeblock title="归因 getter"> 
 
 ```swift
 Adjust.attribution() { attribution in
@@ -1732,10 +1475,7 @@ Adjust.attribution() { attribution in
 }
 ```
 
-</CodeBlock>
-</Tab>
-<Tab title="Objective-C" sync="objc">
-<CodeBlock title="ADID getter">
+</CodeBlock> </Tab> <tab title="Objective-C" sync="objc"> <codeblock title="ADID getter"> 
 
 ```objc
 [Adjust adidWithCompletionHandler:^(NSString * _Nullable adid) {
@@ -1743,8 +1483,7 @@ Adjust.attribution() { attribution in
 }];
 ```
 
-</CodeBlock>
-<CodeBlock title="IDFA getter">
+</CodeBlock> <codeblock title="IDFA getter"> 
 
 ```objc
 [Adjust idfaWithCompletionHandler:^(NSString * _Nullable idfa) {
@@ -1752,8 +1491,7 @@ Adjust.attribution() { attribution in
 }];
 ```
 
-</CodeBlock>
-<CodeBlock title="IDFV getter">
+</CodeBlock> <codeblock title="IDFV getter"> 
 
 ```objc
 [Adjust idfvWithCompletionHandler:^(NSString * _Nullable idfv) {
@@ -1761,8 +1499,7 @@ Adjust.attribution() { attribution in
 }];
 ```
 
-</CodeBlock>
-<CodeBlock title="SDK version getter">
+</CodeBlock> <codeblock title="SDK 版本 getter"> 
 
 ```objc
 [Adjust sdkVersionWithCompletionHandler:^(NSString * _Nullable sdkVersion) {
@@ -1770,8 +1507,7 @@ Adjust.attribution() { attribution in
 }];
 ```
 
-</CodeBlock>
-<CodeBlock title="Enabled status getter">
+</CodeBlock> <codeblock title="启用状态 getter"> 
 
 ```objc
 [Adjust isEnabledWithCompletionHandler:^(BOOL isEnabled) {
@@ -1779,8 +1515,7 @@ Adjust.attribution() { attribution in
 }];
 ```
 
-</CodeBlock>
-<CodeBlock title="Attribution getter">
+</CodeBlock> <codeblock title="归因 getter"> 
 
 ```objc
 [Adjust attributionWithCompletionHandler:^(ADJAttribution * _Nullable attribution) {
@@ -1788,22 +1523,20 @@ Adjust.attribution() { attribution in
 }
 ```
 
-</CodeBlock>
-</Tab>
-</Tabs>
+</CodeBlock> </Tab> </Tabs> 
 
 ### [插件](plugins)
 
-The Adjust SDK supports plugins to extend its functionality. This section covers changes to plugins in SDK v5\.
+Adjust SDK 支持使用插件来扩展其功能。本节介绍 SDK v5 中的插件变更。
 
-#### [Removed plugins](removed-plugins)
+#### [已移除插件](removed-plugins)
 
-<MinorVersion removed="v5">
+<minorversion removed="v5"> 
 
-The following plugins have been removed in SDK v5:
+SDK v5 中移除了下列插件：
+</MinorVersion> 
 
-</MinorVersion>
+* Criteo
+* Trademob
+* Sociomatic
 
--  Criteo
--  Trademob
--  Sociomatic
