@@ -2,28 +2,27 @@
 title: "Android SDK 연동 가이드"
 description: "Android SDK를 사용하여 Android 앱에서 Adjust의 기능에 액세스"
 category-title: "Android SDK"
-slug: "ko/sdk/android"
+slug: "en/sdk/android"
 sidebar-position: 1
 multiVersion: true
 ---
-
-<SdkVersion version="v5">
-<Callout type="important" title="오픈 베타">
+<sdkversion version="v5"> <callout type="important" title="오픈 베타"> 
 
 SDK v5는 오픈 베타 상태입니다. 모든 기능은 변경될 수 있습니다.
-
-</Callout>
+</Callout> 
 
 Adjust Android SDK를 사용하면 Android 앱에서의 어트리뷰션, 이벤트 등을 기록할 수 있습니다. 본 가이드의 단계를 수행하여 Adjust SDK와 연동되도록 앱을 설정하시기 바랍니다.
 
-## [시작에 앞서](before-you-begin)
+[시작에 앞서](before-you-begin)
+--------------------------
 
 SDK v5로 업데이트하기 전에 다음을 수행하시기 바랍니다.
 
-1. SDK v5는 [SDK Signature\(SDK 서명\) 인증](https://help.adjust.com/ko/article/sdk-signature)을 기본적으로 지원합니다. 현재 SDK 서명 라이브러리를 사용하는 경우 먼저 이것을 삭제해야 합니다.
+1. SDK v5는 [SDK Signature\(SDK 서명\) 인증](https://help.adjust.com/en/article/sdk-signature)을 기본적으로 지원합니다. 현재 SDK 서명 라이브러리를 사용하는 경우 먼저 이것을 삭제해야 합니다.
 2. 앱이 [**21**](https://developer.android.com/tools/releases/platforms#5.0)보다 낮은 버전의 API를 대상으로 하는 경우 SDK v5를 사용하려면 앱을 업데이트해야 합니다.
 
-## [1\. 환경 설정](set-up-your-environment)
+[1\. 환경 설정](set-up-your-environment)
+-------------------------------------
 
 Adjust SDK를 사용하려면 프로젝트에 Adjust SDK를 디펜던시로 추가해야 합니다. Adjust SDK는 [Maven](https://maven.apache.org)에서 사용 가능합니다.
 
@@ -31,7 +30,7 @@ Adjust SDK를 사용하려면 프로젝트에 Adjust SDK를 디펜던시로 추�
 
 1. 다음 베타 리포지토리를 `build.gradle` 파일에 추가합니다.
 
-   <CodeBlock title="build.gradle">
+   <codeblock title="build.gradle"> 
 
    ```groovy
    repositories {
@@ -41,11 +40,10 @@ Adjust SDK를 사용하려면 프로젝트에 Adjust SDK를 디펜던시로 추�
    }
    ```
 
-   </CodeBlock>
-
+   </CodeBlock> 
 2. Adjust SDK와 Android 설치 리퍼러 구현 사항을 `build.gradle` 파일에 추가합니다. 앱에서 웹뷰를 사용하는 경우 Adjust 웹뷰 브릿지를 선택적으로 추가합니다.
 
-   <CodeBlock title="build.gradle">
+   <codeblock title="build.gradle"> 
 
    ```groovy
    dependencies {
@@ -56,15 +54,15 @@ Adjust SDK를 사용하려면 프로젝트에 Adjust SDK를 디펜던시로 추�
    }
    ```
 
-   </CodeBlock>
+   </CodeBlock> 
 
-## [2\. Google 플레이 서비스 추가](2-add-google-play-services)
+[2\. Google 플레이 서비스 추가](2-add-google-play-services)
+----------------------------------------------------
 
 Google 플레이 스토어를 타겟으로 하는 앱은 기기 식별을 위해 `gps_adid`\(Google 광고 ID\)를 사용해야 합니다. `gps_adid`에 액세스하기 위해 프로젝트에 `play-services-ads-identifier` AAR을 추가해야 합니다.
 
 Maven을 사용하는 경우, `build.gradle` 파일에 다음을 추가합니다.
-
-<CodeBlock title="build.gradle">
+<codeblock title="build.gradle"> 
 
 ```groovy
 dependencies {
@@ -72,48 +70,46 @@ dependencies {
 }
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-## [3\. 권한 추가](3-add-permissions)
+[3\. 권한 추가](3-add-permissions)
+-------------------------------
 
 Adjust SDK에 기기 정보에 대한 액세스 권한을 부여하려면 앱에서 요구하는 권한을 선언해야 합니다. 이를 위해 `AndroidManifest.xml` 파일에 권한을 추가합니다.
 
 온라인 기능에 액세스하려면 다음 권한을 추가하시기 바랍니다.
-
-<CodeBlock title="AndroidManifest.xml">
+<codeblock title="AndroidManifest.xml"> 
 
 ```xml
 <uses-permission android:name="android.permission.INTERNET" id="sl-md0000000"/>
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" id="sl-md0000000"/>
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 앱이 Google 플레이 스토어를 타겟으로 하지 않는 경우 기기의 네트워크 상태에 액세스하는 다음 권한을 추가합니다.
-
-<CodeBlock title="AndroidManifest.xml">
+<codeblock title="AndroidManifest.xml"> 
 
 ```xml
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" id="sl-md0000000"/>
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 Adjust SDK에는 `com.google.android.gms.AD_ID` 권한이 기본값으로 포함됩니다. 앱이 COPPA\(Children's Online Privacy Protection Act, 어린이 온라인 개인정보 보호법\) 준수 대상이거나 Google 플레이 스토어를 타겟으로하지 않는 경우 `remove`를 사용하여 이 권한을 삭제해야 합니다.
-
-<CodeBlock title="AndroidManifest.xml">
+<codeblock title="AndroidManifest.xml"> 
 
 ```xml
 <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" id="sl-md0000000"/>
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-## [4\. Proguard 설정](4-set-up-proguard)
+[4\. Proguard 설정](4-set-up-proguard)
+-------------------------------------
 
 앱 최적화를 위해 Proguard를 사용하는 경우 Proguard가 클래스를 삭제하는 것을 방지하는 규칙을 추가해야 합니다.
-
-<CodeBlock title="Proguard.pro">
+<codeblock title="Proguard.pro"> 
 
 ```java
 -keep class com.adjust.sdk.** { *; }
@@ -130,19 +126,19 @@ Adjust SDK에는 `com.google.android.gms.AD_ID` 권한이 기본값으로 포함
 -keep public class com.android.installreferrer.** { *; }
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 Google 플레이 스토어에서 앱을 게시하지 않는 경우 다음의 규칙을 추가합니다.
-
-<CodeBlock title="Proguard.pro">
+<codeblock title="Proguard.pro"> 
 
 ```java
 -keep public class com.adjust.sdk.** { *; }
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-## [5\. 설치 리퍼러 설정](5-set-up-install-referrer)
+[5\. 설치 리퍼러 설정](5-set-up-install-referrer)
+-------------------------------------------
 
 설치 리퍼러는 설치를 소스에 어트리뷰션하는 데 사용할 수 있는 고유한 식별자입니다. Adjust SDK는 어트리뷰션을 위해 이 정보가 필요합니다. 다음 메서드 중 하나를 사용하여 설치 리퍼러 정보를 조회하시기 바랍니다.
 
@@ -151,8 +147,7 @@ Google 플레이 스토어에서 앱을 게시하지 않는 경우 다음의 규
 Google Play 리퍼러 API는 Google 플레이 스토어를 타겟으로 하는 앱에서 사용할 수 있습니다.
 
 Google Play 리퍼러 API를 지원하려면 `build.gradle` 파일에 다음을 추가합니다.
-
-<CodeBlock title="build.gradle">
+<codeblock title="build.gradle"> 
 
 ```groovy
 dependencies {
@@ -160,25 +155,23 @@ dependencies {
 }
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 Proguard를 사용하는 경우 dependency가 삭제되는 것을 방지하는 규칙을 추가해야 합니다.
-
-<CodeBlock title="Proguard.pro">
+<codeblock title="Proguard.pro"> 
 
 ```java
 -keep public class com.android.installreferrer.** { *; }
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 ### [Huawei 리퍼러 API](huawei-referrer-api)
 
 Huawei 리퍼러 API는 Huawei 기기를 타겟으로 하는 앱에서 사용할 수 있습니다. Adjust SDK는 Adjust Huawei 리퍼러 플러그인을 사용하는 Huawei 기기에서의 설치를 기록할 수 있습니다.
 
 이 플러그인을 설치하려면 다음 디펜던시를 `build.gradle` 파일에 추가합니다.
-
-<CodeBlock title="build.gradle">
+<codeblock title="build.gradle"> 
 
 ```groovy
 dependencies {
@@ -186,7 +179,7 @@ dependencies {
 }
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 ### [Xiaomi 리퍼러 플러그인](xiaomi-referrer-plugin)
 
@@ -200,12 +193,13 @@ Samsung 리퍼러 플러그인을 사용하면 Samsung Galaxy 스토어를 타�
 
 Adjust SDK는 Adjust Meta 설치 리퍼러 플러그인을 사용하는 [Meta 설치 리퍼러](https://developers.facebook.com/docs/app-ads/meta-install-referrer)를 지원합니다. [연동 세부 정보에 관한 문서를 참조하시기 바랍니다](/en/sdk/android/plugins/meta-referrer-plugin).
 
-## [6\. Adjust SDK 연동](6-integrate-the-adjust-sdk)
+[6\. Adjust SDK 연동](6-integrate-the-adjust-sdk)
+------------------------------------------------
 
 Adjust SDK를 초기화하려면 다음 정보가 필요합니다.
 
--  `appToken`: [Adjust 앱 토큰](https://help.adjust.com/ko/article/app-settings#view-your-app-token).
--  `environment`: 앱이 실행 중인 환경입니다. 로컬에서 앱을 테스트하려면 이 값을 `AdjustConfig.ENVIRONMENT_SANDBOX`로 설정하세요.
+* `appToken`: [Adjust 앱 토큰](https://help.adjust.com/en/article/app-settings#view-your-app-token).
+* `environment`: 앱이 실행 중인 환경입니다. 로컬에서 앱을 테스트하려면 이 값을 `AdjustConfig.ENVIRONMENT_SANDBOX`로 설정하세요.
 
 Adjust SDK를 초기화하는 권장 방식은 글로벌 Android [애플리케이션 클래스](http://developer.android.com/reference/android/app/Application.html)에서 수행하는 것입니다. 아직 설정하지 않은 경우 다음 단계에 따라 앱을 설정하시기 바랍니다.
 
@@ -215,7 +209,7 @@ Adjust SDK를 초기화하는 권장 방식은 글로벌 Android [애플리케�
 
 3. `<application id="sl-md0000000">` 요소에 `android:name` 어트리뷰션을 추가하고 애플리케이션 클래스의 이름으로 설정합니다. 예를 들어 `Application` 클래스 이름이 `GlobalApplication`인 경우 다음과 같이 설정합니다.
 
-   <CodeBlock title="AndroidManifest.xml">
+   <codeblock title="AndroidManifest.xml"> 
 
    ```xml
    <application android:name=".GlobalApplication" id="sl-md0000000">
@@ -223,16 +217,14 @@ Adjust SDK를 초기화하는 권장 방식은 글로벌 Android [애플리케�
    </application>
    ```
 
-   </CodeBlock>
-
+   </CodeBlock> 
 4. `Application` 클래스에서 `initSdk` 메서드를 찾거나 존재하지 않는 경우 메서드를 추가합니다. 다음 파라미터를 전달하여 Adjust SDK를 초기화합니다.
 
-   -  고객사 전담팀 `appToken`
-   -  앱을 실행할 `environment`
-   -  기록할 `LogLevel`
+   * 고객사 전담팀 `appToken`
+   * 앱을 실행할 `environment`
+   * 기록할 `LogLevel`
 
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+<tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 import com.adjust.sdk.Adjust;
@@ -251,8 +243,7 @@ class GlobalApplication : Application () {
 }
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 import com.adjust.sdk.Adjust;
@@ -272,8 +263,7 @@ public class GlobalApplication extends Application {
 }
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 ### [Adjust 웹뷰 SDK 연동](integrate-the-adjust-web-view-sdk)
 
@@ -285,8 +275,7 @@ public class GlobalApplication extends Application {
 4. `AdjustBridge.unregister()`를 호출하여 `AdjustBridgeInstance` 및 `WebView`의 등록을 취소합니다.
 5. 전체 설정에 대한 예시는 다음과 같습니다.
 
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+<tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 class MainActivity : Activity() {
@@ -315,8 +304,7 @@ class MainActivity : Activity() {
 }
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 public class MainActivity extends Activity {
@@ -347,28 +335,15 @@ public class MainActivity extends Activity {
 }
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 6. HTML로 Adjust 자바스크립트 파일을 가져옵니다.
 
    ```html
    <script type="text/javascript" src="adjust.js" id="sl-md0000000"></script>
-   <script
-      type="text/javascript"
-      src="adjust_event.js"
-      id="sl-md0000000"
-   ></script>
-   <script
-      type="text/javascript"
-      src="adjust_third_party_sharing.js"
-      id="sl-md0000000"
-   ></script>
-   <script
-      type="text/javascript"
-      src="adjust_config.js"
-      id="sl-md0000000"
-   ></script>
+   <script type="text/javascript" src="adjust_event.js" id="sl-md0000000"></script>
+   <script type="text/javascript" src="adjust_third_party_sharing.js" id="sl-md0000000"></script>
+   <script type="text/javascript" src="adjust_config.js" id="sl-md0000000"></script>
    ```
 
 7. 이제 `appToken` 및 `environment`를 `AdjustConfig` 클래스로 전달하여 웹뷰에서 Adjust SDK를 초기화할 수 있습니다.
@@ -381,15 +356,15 @@ public class MainActivity extends Activity {
    Adjust.initSdk(adjustConfig);
    ```
 
-## [7\. 프로덕션을 위한 앱 빌드](7-build-your-app-for-production)
+[7\. 프로덕션을 위한 앱 빌드](7-build-your-app-for-production)
+-----------------------------------------------------
 
 테스트를 완료한 후에 프로덕션을 위한 앱을 빌드할 수 있습니다. 이를 위해 config 객체를 업데이트해야 합니다.
 
 1. 필요한 항목만 반환하도록 로그 수준을 조정합니다.
 2. `environment`를 `AdjustConfig.ENVIRONMENT_PRODUCTION`로 설정합니다.
 
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+<tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 val appToken = "{YourAppToken}"
@@ -399,8 +374,7 @@ config.setLogLevel(LogLevel.WARN)
 Adjust.initSdk(config)
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 String appToken = "{YourAppToken}";
@@ -410,34 +384,27 @@ config.setLogLevel(LogLevel.WARN)
 Adjust.initSdk(config);
 ```
 
-</Tab>
-</Tabs>
-</SdkVersion>
-<SdkVersion version="v4">
+</Tab> </Tabs> </SdkVersion> <sdkversion version="v4"> 
 
 Adjust Android SDK를 사용하면 Android 앱에서의 어트리뷰션, 이벤트 등을 기록할 수 있습니다. 본 가이드의 단계를 수행하여 Adjust SDK와 연동되도록 앱을 설정하시기 바랍니다.
-
-<Callout type="seealso">
+<callout type="seealso"> 
 
 [GitHub](https://github.com/adjust/android_sdk/tree/master/Adjust)에서 Adjust SDK를 연동하는 방법의 예시를 확인하실 수 있습니다.
+</Callout> 
 
-</Callout>
-
-## [1\. Adjust SDK 설치](1-get-the-adjust-sdk)
+[1\. Adjust SDK 설치](1-get-the-adjust-sdk)
+------------------------------------------
 
 Android 앱에서 Adjust SDK를 사용하려면 우선 프로젝트에 Adjust SDK를 추가해야 합니다. [GitHub releases 페이지](https://github.com/adjust/adjust_android_sdk/releases/latest)에서 최신 버전을 다운로드합니다.
-
-<Callout type="important">
+<callout type="important"> 
 
 Adjust SDK 연동에 필요한 Android API의 최소 지원 레벨은 9 \(Gingerbread\)입니다.
 
 웹뷰 확장에 필요한 Android API의 최소 지원 레벨은 17\(Jelly Bean\)입니다.
-
-</Callout>
+</Callout> 
 
 [Maven](https://maven.apache.org/)을 사용하는 경우, `build.gradle` 파일에 다음을 추가합니다.
-
-<CodeBlock title="build.gradle">
+<codeblock title="build.gradle"> 
 
 ```groovy
 dependencies {
@@ -449,15 +416,15 @@ dependencies {
 
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-## [2\. Google 플레이 서비스 추가](2-add-google-play-services)
+[2\. Google 플레이 서비스 추가](2-add-google-play-services)
+----------------------------------------------------
 
-Google 플레이 스토어를 타겟으로 하는 앱은 기기 식별을 위해 gps_adid\(Google 광고 ID\)를 사용해야 합니다. `gps_adid`에 액세스하기 위해 프로젝트에 `play-services-ads-identifier` AAR을 추가합니다.
+Google 플레이 스토어를 타겟으로 하는 앱은 기기 식별을 위해 gps\_adid\(Google 광고 ID\)를 사용해야 합니다. `gps_adid`에 액세스하기 위해 프로젝트에 `play-services-ads-identifier` AAR을 추가합니다.
 
 Maven을 사용하는 경우, `build.gradle` 파일에 다음을 추가합니다.
-
-<CodeBlock title="build.gradle">
+<codeblock title="build.gradle"> 
 
 ```groovy
 dependencies {
@@ -466,13 +433,12 @@ dependencies {
 
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 ### [App Set ID 수집](collect-app-set-identifier)
 
 [앱 세트 ID](https://developer.android.com/design-for-safety/privacy-sandbox/reference/adservices/appsetid/AppSetId) 는 사용자가 기기에 설치한 앱 정보를 측정할 수 있도록 해주는 고유한 ID입니다. 동일한 개발자의 모든 앱은 앱 세트 ID를 공유하기 때문에, 모든 앱 사용자로부터 유의미한 인사이트를 수집할 수 있습니다. 디바이스의 앱 세트 ID를 기록하려면 다음의 권한을 `build.gradle` 파일에 추가해야 합니다.
-
-<CodeBlock title="build.gradle">
+<codeblock title="build.gradle"> 
 
 ```groovy
 dependencies {
@@ -481,50 +447,48 @@ dependencies {
 
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 이 권한이 활성화되면 App Set ID가 기기 정보 페이로드의 일부로 Adjust 서버로 전송됩니다.
 
-## [3\. 권한 추가](3-add-permissions)
+[3\. 권한 추가](3-add-permissions)
+-------------------------------
 
 Adjust SDK에 기기 정보에 대한 액세스 권한을 부여하려면 앱에서 요구하는 권한을 선언해야 합니다. 이를 위해 `AndroidManifest.xml` 파일에 권한을 추가합니다.
 
 온라인 기능에 액세스하려면 다음 권한을 추가하시기 바랍니다.
-
-<CodeBlock title="AndroidManifest.xml">
+<codeblock title="AndroidManifest.xml"> 
 
 ```xml
 <uses-permission android:name="android.permission.INTERNET" id="sl-md0000000"/>
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" id="sl-md0000000"/>
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 앱이 Google 플레이 스토어를 타겟으로 하지 않는 경우 기기의 네트워크 상태에 액세스하는 다음 권한을 추가합니다.
-
-<CodeBlock title="AndroidManifest.xml">
+<codeblock title="AndroidManifest.xml"> 
 
 ```xml
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" id="sl-md0000000"/>
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 Adjust SDK에는 `com.google.android.gms.AD_ID` 권한이 기본값으로 포함됩니다. 앱이 COPPA\(Children's Online Privacy Protection Act, 어린이 온라인 개인정보 보호법\) 준수 대상이거나 Google 플레이 스토어를 타겟으로하지 않는 경우 `remove`를 사용하여 이 권한을 삭제해야 합니다.
-
-<CodeBlock title="AndroidManifest.xml">
+<codeblock title="AndroidManifest.xml"> 
 
 ```xml
 <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" id="sl-md0000000"/>
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-## [4\. Proguard 설정](4-set-up-proguard)
+[4\. Proguard 설정](4-set-up-proguard)
+-------------------------------------
 
 앱 최적화를 위해 Proguard를 사용하는 경우 Proguard가 클래스를 삭제하는 것을 방지하는 규칙을 추가해야 합니다.
-
-<CodeBlock title="Proguard.pro">
+<codeblock title="Proguard.pro"> 
 
 ```java
 -keep class com.adjust.sdk.** { *; }
@@ -542,19 +506,19 @@ Adjust SDK에는 `com.google.android.gms.AD_ID` 권한이 기본값으로 포함
 
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 Google 플레이 스토어에서 앱을 게시하지 않는 경우 다음의 규칙을 추가합니다.
-
-<CodeBlock title="Proguard.pro">
+<codeblock title="Proguard.pro"> 
 
 ```java
 -keep public class com.adjust.sdk.** { *; }
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-## [5\. 설치 리퍼러 설정](5-set-up-install-referrer)
+[5\. 설치 리퍼러 설정](5-set-up-install-referrer)
+-------------------------------------------
 
 설치 리퍼러는 설치를 소스에 어트리뷰션하는 데 사용할 수 있는 고유한 식별자입니다. Adjust SDK는 어트리뷰션을 위해 이 정보가 필요합니다. 다음 메서드 중 하나를 사용하여 설치 리퍼러 정보를 조회하시기 바랍니다.
 
@@ -563,8 +527,7 @@ Google 플레이 스토어에서 앱을 게시하지 않는 경우 다음의 규
 Google Play 리퍼러 API는 Google 플레이 스토어를 타겟으로 하는 앱에서 사용할 수 있습니다.
 
 Google Play 리퍼러 API를 지원하려면 `build.gradle` 파일에 다음을 추가합니다.
-
-<CodeBlock title="build.gradle">
+<codeblock title="build.gradle"> 
 
 ```groovy
 dependencies {
@@ -573,17 +536,16 @@ dependencies {
 
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 Proguard를 사용하는 경우 dependency가 삭제되는 것을 방지하는 규칙을 추가해야 합니다.
-
-<CodeBlock title="Proguard.pro">
+<codeblock title="Proguard.pro"> 
 
 ```java
 -keep public class com.android.installreferrer.** { *; }
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 ### [Huawei 리퍼러 API](huawei-referrer-api)
 
@@ -599,22 +561,18 @@ Samsung 리퍼러 플러그인을 사용하면 Samsung Galaxy 스토어를 타�
 
 ### [Meta 리퍼러 연동](meta-referrer-integration)
 
-<Callout type="note">
+<callout type="note"> 
 
 Adjust SDK는 [Meta가 요구하는](https://developers.facebook.com/docs/app-ads/meta-install-referrer#step-1--add-the-meta-apps) `<queries id="sl-md0000000">` 요소를 번들로 제공합니다. 이를 `AndroidManifest.xml` 에 추가할 필요는 없습니다.
-
-</Callout>
-<MinorVersion added="v4.36.0">
+</Callout> <minorversion added="v4.36.0"> 
 
 Adjust SDK는 v4\.36\.0 이상 버전에서 [Meta 설치 리퍼러](https://developers.facebook.com/docs/app-ads/meta-install-referrer) 를 지원합니다. 이 기능을 활성화하려면 다음을 수행하시기 바랍니다.
-
-</MinorVersion>
+</MinorVersion> 
 
 1. [앱 대시보드](https://developers.facebook.com/apps) 에서 Meta 앱 ID를 찾습니다. 자세한 정보는 Meta의 [앱 대시보드 문서](https://developers.facebook.com/docs/development/create-an-app/app-dashboard) 를 참고하시기 바랍니다.
 2. 앱 ID를 `String` 인수로 `AdjustConfig.setFbAppId` 메서드에 전달합니다.
 
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+<tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 val config = AdjustConfig(this, appToken, environment)
@@ -622,8 +580,7 @@ config.setFbAppId(<fb_app_id_string id="sl-md0000000">)
 Adjust.onCreate(config)
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
@@ -631,15 +588,15 @@ config.setFbAppId(<fb_app_id_string id="sl-md0000000">);
 Adjust.onCreate(config);
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-## [6\. Adjust SDK 연동](6-integrate-the-adjust-sdk)
+[6\. Adjust SDK 연동](6-integrate-the-adjust-sdk)
+------------------------------------------------
 
 Adjust SDK를 초기화하려면 다음 정보가 필요합니다.
 
--  `appToken`: [Adjust 앱 토큰](https://help.adjust.com/ko/article/app-settings#view-your-app-token).
--  `environment`: 앱이 실행 중인 환경입니다. 로컬에서 앱을 테스트하려면 이 값을 `AdjustConfig.ENVIRONMENT_SANDBOX`로 설정하세요.
+* `appToken`: [Adjust 앱 토큰](https://help.adjust.com/en/article/app-settings#view-your-app-token).
+* `environment`: 앱이 실행 중인 환경입니다. 로컬에서 앱을 테스트하려면 이 값을 `AdjustConfig.ENVIRONMENT_SANDBOX`로 설정하세요.
 
 Adjust SDK를 초기화하는 권장 방식은 글로벌 Android [애플리케이션 클래스](http://developer.android.com/reference/android/app/Application.html)에서 수행하는 것입니다. 아직 설정하지 않은 경우 다음 단계에 따라 앱을 설정하시기 바랍니다.
 
@@ -647,7 +604,7 @@ Adjust SDK를 초기화하는 권장 방식은 글로벌 Android [애플리케�
 2. `AndroidManifest.xml` 파일을 열고 `<application id="sl-md0000000">` 요소를 찾습니다.
 3. `<application id="sl-md0000000">` 요소에 `android:name` 어트리뷰션을 추가하고 애플리케이션 클래스의 이름으로 설정합니다. 예를 들어 `Application` 클래스 이름이 `GlobalApplication`인 경우 다음과 같이 설정합니다.
 
-<CodeBlock title="AndroidManifest.xml">
+<codeblock title="AndroidManifest.xml"> 
 
 ```xml
 <application android:name=".GlobalApplication" id="sl-md0000000">
@@ -656,16 +613,15 @@ Adjust SDK를 초기화하는 권장 방식은 글로벌 Android [애플리케�
 
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 4. `Application` 클래스에서 `onCreate` 메서드를 찾거나 존재하지 않는 경우 메서드를 추가합니다. 다음 파라미터를 전달하여 Adjust SDK를 초기화합니다.
 
-   -  고객사 전담팀 `appToken`
-   -  앱을 실행할 `environment`
-   -  기록할 `LogLevel`
+   * 고객사 전담팀 `appToken`
+   * 앱을 실행할 `environment`
+   * 기록할 `LogLevel`
 
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+<tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 import com.adjust.sdk.Adjust;
@@ -684,8 +640,7 @@ class GlobalApplication : Application () {
 }
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 import com.adjust.sdk.Adjust;
@@ -705,8 +660,7 @@ public class GlobalApplication extends Application {
 }
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 ### [Adjust 웹뷰 SDK 연동](integrate-the-adjust-web-view-sdk)
 
@@ -718,8 +672,7 @@ public class GlobalApplication extends Application {
 4. `AdjustBridge.unregister()`를 호출하여 `AdjustBridgeInstance` 및 `WebView`의 등록을 취소합니다.
 5. 전체 설정에 대한 예시는 다음과 같습니다.
 
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+<tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 class MainActivity : Activity() {
@@ -748,8 +701,7 @@ class MainActivity : Activity() {
 }
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 public class MainActivity extends Activity {
@@ -780,24 +732,15 @@ public class MainActivity extends Activity {
 }
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 6. HTML로 Adjust 자바스크립트 파일을 가져옵니다.
 
 ```html
 <script type="text/javascript" src="adjust.js" id="sl-md0000000"></script>
 <script type="text/javascript" src="adjust_event.js" id="sl-md0000000"></script>
-<script
-   type="text/javascript"
-   src="adjust_third_party_sharing.js"
-   id="sl-md0000000"
-></script>
-<script
-   type="text/javascript"
-   src="adjust_config.js"
-   id="sl-md0000000"
-></script>
+<script type="text/javascript" src="adjust_third_party_sharing.js" id="sl-md0000000"></script>
+<script type="text/javascript" src="adjust_config.js" id="sl-md0000000"></script>
 ```
 
 7. 이제 `appToken` 및 `environment`를 `AdjustConfig` 클래스로 전달하여 웹뷰에서 Adjust SDK를 초기화할 수 있습니다.
@@ -810,7 +753,8 @@ adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
 Adjust.onCreate(adjustConfig);
 ```
 
-## [7\. 세션 기록 구성](7-configure-session-recording)
+[7\. 세션 기록 구성](7-configure-session-recording)
+----------------------------------------------
 
 세션 정보를 기록하려면 앱 [행동 라이프사이클](https://developer.android.com/guide/components/activities/activity-lifecycle)의 여러 단계에서 메서드를 호출해야 합니다. 이러한 단계는 앱이 타겟으로 하는 API 레벨에 따라 달라집니다.
 
@@ -825,8 +769,7 @@ API 레벨 14 이상에 대한 세션 기록을 설정하려면 다음을 수행
 5. Adjust SDK 구성 단계에 `onCreate()` 메서드를 추가합니다.
 6. 생성된 `ActivityLifecycleCallbacks` 클래스의 인스턴스를 사용하여 `registerActivityLifecycleCallbacks`를 호출합니다.
 
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+<tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 import com.adjust.sdk.Adjust;
@@ -857,8 +800,7 @@ class GlobalApplication : Application () {
 }
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 import com.adjust.sdk.Adjust;
@@ -892,16 +834,14 @@ public class GlobalApplication extends Application {
 }
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 ### [API level 9~13](api-level-9-to-13)
 
-<Callout type="tip">
+<callout type="tip"> 
 
 `build.gradle` 파일의 `minSdkVersion`이 9~13이라면 14 이상으로 업데이트하시기 바랍니다. 주요 버전별 시장 점유율에 관한 정보는 [Android 대시보드](http://developer.android.com/about/dashboards/index.html)에서 확인할 수 있습니다.
-
-</Callout>
+</Callout> 
 
 API 레벨 13 이하를 타겟으로 하는 앱에서 세션 기록을 설정하려면 다음 단계를 수행합니다.
 
@@ -909,8 +849,7 @@ API 레벨 13 이하를 타겟으로 하는 앱에서 세션 기록을 설정하
 2. 활동의 `onPause` 메서드에서 `Adjust.onPause()`에 콜을 추가합니다.
 3. 앱에서 각 액티비티에 대해 위 단계를 반복합니다. 코딩 스타일에 따라, 모든 액티비티에 대해 공통 슈퍼클래스에서 본 단계를 추가할 수도 있습니다.
 
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+<tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 import com.adjust.sdk.Adjust;
@@ -927,8 +866,7 @@ class YourActivity : Activity () {
 }
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 import com.adjust.sdk.Adjust;
@@ -945,18 +883,17 @@ public class YourActivity extends Activity {
 }
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-## [8\. 프로덕션을 위한 앱 빌드](8-build-your-app-for-production)
+[8\. 프로덕션을 위한 앱 빌드](8-build-your-app-for-production)
+-----------------------------------------------------
 
 테스트를 완료한 후에 프로덕션을 위한 앱을 빌드할 수 있습니다. 이를 위해 config 객체를 업데이트해야 합니다.
 
 1. 필요한 항목만 반환하도록 로그 수준을 조정합니다.
 2. `environment`를 `AdjustConfig.ENVIRONMENT_PRODUCTION`로 설정합니다.
 
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+<tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 val appToken = "{YourAppToken}"
@@ -966,8 +903,7 @@ config.setLogLevel(LogLevel.WARN)
 Adjust.onCreate(config)
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 String appToken = "{YourAppToken}";
@@ -977,6 +913,5 @@ config.setLogLevel(LogLevel.WARN)
 Adjust.onCreate(config);
 ```
 
-</Tab>
-</Tabs>
-</SdkVersion>
+</Tab> </Tabs> </SdkVersion>
+
