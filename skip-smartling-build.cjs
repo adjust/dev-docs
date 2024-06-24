@@ -10,10 +10,6 @@ function getCommitAuthor() {
   return execSync('git show -s --format="%an <%ae>"', { encoding: 'utf8' }).trim();
 }
 
-function getBranchName() {
-  return execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim();
-}
-
 function checkForChanges() {
   try {
     execSync('git diff HEAD^ HEAD --quiet');
@@ -30,10 +26,7 @@ function main() {
   const author = getCommitAuthor();
   console.log(`Commit author: ${author}`);
 
-  const branchName = getBranchName();
-  console.log(`Branch name: ${branchName}`);
-
-  if (branchName === "main") {
+  if (vercelGitCommitRef === "main") {
     console.log("Branch is main. Building site.");
     process.exit(1);
   }
