@@ -1,413 +1,474 @@
 ---
 title: "コールバックパラメーターの設定"
 description: "セッションごとにコールバックURLに情報を送信します。"
-slug: "en/sdk/ios/features/session-parameters"
+slug: "ja/sdk/ios/features/session-parameters"
 multiVersion: true
 ---
-<sdkversion version="v5"> 
 
-Adjustダッシュボードで[コールバックURLを登録](https://help.adjust.com/en/article/recommended-placeholders-callbacks)した場合、SDKがセッションを計測するとAdjustはコールバックURLにGETリクエストを送信します。
+<SdkVersion version="v5">
 
-[グローバルコールバックパラメーター](global-callback-parameters)
------------------------------------------------
+Adjustダッシュボードで[コールバックURLを登録](https://help.adjust.com/ja/article/recommended-placeholders-callbacks)した場合、SDKがセッションを計測するとAdjustはコールバックURLにGETリクエストを送信します。
 
-<callout type="note"> 
+## [グローバルコールバックパラメーター](global-callback-parameters)
+
+<Callout type="note">
 
 Adjust SDKは、グローバルコールバックパラメーターをイベントコールバックパラメーターとマージします。イベントコールバックパラメーターは、グローバルコールバックパラメーターより優先されます。つまり、パラメーターキーをイベントとセッションの両方に追加した場合、SDKはイベントパラメーターを送信します。
-</Callout> 
+
+</Callout>
 
 コールバックパラメーターをサーバーに設定できます。イベントにパラメーターを設定すると、SDKはそれらをコールバックURLに追加します。この情報を使用して、自社のBIシステムでユーザーのアプリ内行動を分析することが可能です。
 
 ### [addGlobalCallbackParameters](add-global-callback-parameters)
 
-<codeblock title="メソッドシグネチャー"> 
+<CodeBlock title="メソッドシグネチャー">
 
 ```objc
 + (void)addGlobalCallbackParameter:(nonnull NSString *)param forKey:(nonnull NSString *)key;
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 グローバルコールバックパラメーターを追加するには、以下の引数で`[Adjust addGlobalCallbackParameter]`メソッドを呼び出します。
 
-* `param` （`NSString`）：パラメーターの値
-* `forKey` \( `NSString` \)：パラメーターキー
+-  `param` （`NSString`）：パラメーターの値
+-  `forKey` \( `NSString` \)：パラメーターキー
 
 このメソッドを複回呼び出すことで、複数のパラメーターを追加することができます。
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 Adjust.addGlobalCallbackParameter("bar", forKey: "bar")
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 [Adjust addGlobalCallbackParameter:@"bar" forKey:@"bar"];
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
 ### [キーでグローバルコールバックパラメーターを削除する](remove-global-callback-parameter-by-key)
 
-<codeblock title="メソッドシグネチャー"> 
+<CodeBlock title="メソッドシグネチャー">
 
 ```objc
 + (void)removeGlobalCallbackParameterForKey:(nonnull NSString *)key;
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 不要になった場合は、特定のセッションコールバックパラメーターを削除できます。これを行うには、グローバルパラメーター`key`を`[Adjust removeGlobalCallbackParameterForKey]`メソッドにパスします。
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 Adjust.removeGlobalCallbackParameterForKey("foo")
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 [Adjust removeGlobalCallbackParameterForKey:@"foo"];
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
 ### [全てのグローバルコールバックパラメーターを削除する](remove-all-global-callback-parameters)
 
-<codeblock title="メソッドシグネチャー"> 
+<CodeBlock title="メソッドシグネチャー">
 
 ```objc
 + (void)removeGlobalCallbackParameters;
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 不要になった場合は、全てのグローバルパートナーパラメーターを削除できます。これを行うには、`[Adjust removeGlobalCallbackParameters]`メソッドを呼び出します。
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 Adjust.removeGlobalCallbackParameters()
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 [Adjust removeGlobalCallbackParameters];
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
-[グローバルパートナーパラメーター](global-partner-parameters)
----------------------------------------------
+## [グローバルパートナーパラメーター](global-partner-parameters)
 
-[パートナーパラメーター](https://help.adjust.com/en/article/data-sharing-ad-network#map-parameters)を追加することで、グローバルネットワークパートナーに追加情報を送信することができます。
+[パートナーパラメーター](https://help.adjust.com/ja/article/data-sharing-ad-network#map-parameters)を追加することで、グローバルネットワークパートナーに追加情報を送信することができます。
 
-Adjustは、設定した[外部パートナー](https://help.adjust.com/en/article/integrated-partners)にパートナーパラメーターを送信します。この情報は、より詳細な分析やリターゲティング施策にご利用いただけます。パートナー用にパラメーターの設定が完了し、機能が有効化されると、Adjustのサーバーはデータ転送を開始します。
-<callout type="note"> 
+Adjustは、設定した[外部パートナー](https://help.adjust.com/ja/article/integrated-partners)にパートナーパラメーターを送信します。この情報は、より詳細な分析やリターゲティング施策にご利用いただけます。パートナー用にパラメーターの設定が完了し、機能が有効化されると、Adjustのサーバーはデータ転送を開始します。
+
+<Callout type="note">
 
 パートナーパラメーターはデフォルトではローデータに表示されません。ご希望の場合は、プレースホルダー`{partner_parameters}`を追加することで、それらを単一の文字列として受信することができます。
-</Callout> 
+
+</Callout>
 
 ### [addGlobalPartnerParameters](add-global-partner-parameters)
 
-<codeblock title="メソッドシグネチャー"> 
+<CodeBlock title="メソッドシグネチャー">
 
 ```objc
 + (void)addGlobalPartnerParameter:(nonnull NSString *)param forKey:(nonnull NSString *)key;
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 以下の引数で`[Adjust addGlobalPartnerParameter]`メソッドを呼び出すと、グローバルパートナーパラメーターを送信できます。
 
-* `param` （`NSString`）：パラメーターの値
-* `forKey` \( `NSString` \)：パラメーターキー
+-  `param` （`NSString`）：パラメーターの値
+-  `forKey` \( `NSString` \)：パラメーターキー
 
 このメソッドを複回呼び出すことで、複数のパラメーターを追加することができます。
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 Adjust.addGlobalPartnerParameter("bar", forKey: "foo")
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 [Adjust addGlobalPartnerParameter:@"bar" forKey:@"foo"];
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
 ### [キーでグローバルコールバックパラメーターを削除する](remove-global-partner-parameter-by-key)
 
-<codeblock title="メソッドシグネチャー"> 
+<CodeBlock title="メソッドシグネチャー">
 
 ```objc
 + (void)removeGlobalPartnerParameterForKey:(nonnull NSString *)key;
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 不要になった場合は、特定のグローバルパートナーパラメーターを削除できます。これを行うには、パラメーターキーを`[Adjust removeGlobalPartnerParameterForKey]`メソッドにパスします。
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 Adjust.removeGlobalPartnerParameterForKey("foo")
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 [Adjust removeGlobalPartnerParameterForKey:@"foo"];
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
 ### [グローバルパートナーパラメーターを削除する](remove-all-global-partner-parameters)
 
-<codeblock title="メソッドシグネチャー"> 
+<CodeBlock title="メソッドシグネチャー">
 
 ```objc
 + (void)removeGlobalPartnerParameters;
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 不要になった場合は、全てのグローバルパートナーパラメーターを削除できます。これを行うには、`[Adjust removeGlobalPartnerParameters]`メソッドを呼び出します。
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 Adjust.removeGlobalPartnerParameters()
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 [Adjust removeGlobalPartnerParameters];
 ```
 
-</Tab> </Tabs> </SdkVersion> <sdkversion version="v4"> 
+</Tab>
+</Tabs>
+</SdkVersion>
+<SdkVersion version="v4">
 
-Adjustダッシュボードで[コールバックURLを登録](https://help.adjust.com/en/article/recommended-placeholders-callbacks)した場合、SDKがセッションを計測するとAdjustはコールバックURLにGETリクエストを送信します。
+Adjustダッシュボードで[コールバックURLを登録](https://help.adjust.com/ja/article/recommended-placeholders-callbacks)した場合、SDKがセッションを計測するとAdjustはコールバックURLにGETリクエストを送信します。
 
-[セッションコールバックパラメーター](session-callback-parameters)
-------------------------------------------------
+## [セッションコールバックパラメーター](session-callback-parameters)
 
-<callout type="note"> 
+<Callout type="note">
 
 Adjust SDKは、セッションコールバックパラメーターをイベントコールバックパラメーターとマージします。イベントコールバックパラメーターは、セッションコールバックパラメーターより優先されます。つまり、パラメーターキーをイベントとセッションの両方に追加した場合、SDKはイベントパラメーターを送信します。
-</Callout> 
+
+</Callout>
 
 コールバックパラメーターをサーバーに設定できます。イベントにパラメーターを設定すると、SDKはそれらをコールバックURLに追加します。この情報を使用して、自社のBIシステムでユーザーのアプリ内行動を分析することが可能です。
 
 ### [セッションコールバックパラメーターを追加する](add-session-callback-parameters)
 
-<codeblock title="メソッドシグネチャー"> 
+<CodeBlock title="メソッドシグネチャー">
 
 ```objc
 + (void)addSessionCallbackParameter:(nonnull NSString *)key value:(nonnull NSString *)value;
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 イベントにコールバックパラメーターを追加するには、`NSString` key\-value引数を指定して`addSessionCallbackParameter`メソッドを呼び出してください。このメソッドを複回呼び出すことで、複数のパラメーターを追加することができます。
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 Adjust.addSessionCallbackParameter("foo", value: "bar")
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 [Adjust addSessionCallbackParameter:@"foo" value:@"bar"];
 ```
 
-</Tab> <tab title="Javascript" sync="js"> 
+</Tab>
+<Tab title="Javascript" sync="js">
 
 ```js
 Adjust.addSessionCallbackParameter("foo", "bar");
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
 ### [セッションコールバックパラメーターを削除する](remove-session-callback-parameters)
 
-<codeblock title="メソッドシグネチャー"> 
+<CodeBlock title="メソッドシグネチャー">
 
 ```objc
 + (void)removeSessionCallbackParameter:(nonnull NSString *)key;
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 不要になった場合は、特定のセッションコールバックパラメーターを削除できます。これを行うには、パラメーター`key`を`removeSessionCallbackParameter`メソッドにパスします。
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 Adjust.removeSessionCallbackParameter("foo")
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 [Adjust removeSessionCallbackParameter:@"foo"];
 ```
 
-</Tab> <tab title="Javascript" sync="js"> 
+</Tab>
+<Tab title="Javascript" sync="js">
 
 ```js
 Adjust.removeSessionCallbackParameter("foo");
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
 ### [resetSessionCallbackParameters](reset-session-callback-parameters)
 
-<codeblock title="メソッドシグネチャー"> 
+<CodeBlock title="メソッドシグネチャー">
 
 ```objc
 + (void)resetSessionCallbackParameters;
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 不要になった場合は、全てのセッションパラメーターを削除できます。これを行うには、`resetSessionCallbackParameters`メソッドを呼び出します。
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 Adjust.resetSessionCallbackParameters()
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 [Adjust resetSessionCallbackParameters];
 ```
 
-</Tab> <tab title="Javascript" sync="js"> 
+</Tab>
+<Tab title="Javascript" sync="js">
 
 ```js
 Adjust.resetSessionCallbackParameters();
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
-[セッションパートナーパラメーター](session-partner-parameters)
-----------------------------------------------
+## [セッションパートナーパラメーター](session-partner-parameters)
 
-[パートナーパラメーター](https://help.adjust.com/en/article/data-sharing-ad-network#map-parameters)を追加することで、ネットワークパートナーに追加情報を送信することができます。
+[パートナーパラメーター](https://help.adjust.com/ja/article/data-sharing-ad-network#map-parameters)を追加することで、ネットワークパートナーに追加情報を送信することができます。
 
-Adjustは、設定した[外部パートナー](https://help.adjust.com/en/article/integrated-partners)にパートナーパラメーターを送信します。この情報は、より詳細な分析やリターゲティング施策にご利用いただけます。パートナー用にパラメーターの設定が完了し、機能が有効化されると、Adjustのサーバーはデータ転送を開始します。
-<callout type="note"> 
+Adjustは、設定した[外部パートナー](https://help.adjust.com/ja/article/integrated-partners)にパートナーパラメーターを送信します。この情報は、より詳細な分析やリターゲティング施策にご利用いただけます。パートナー用にパラメーターの設定が完了し、機能が有効化されると、Adjustのサーバーはデータ転送を開始します。
+
+<Callout type="note">
 
 パートナーパラメーターはデフォルトではローデータに表示されません。ご希望の場合は、プレースホルダー`{partner_parameters}`を追加することで、それらを単一の文字列として受信することができます。
-</Callout> 
+
+</Callout>
 
 ### [セッションパートナーパラメーターを追加する](add-session-partner-parameters)
 
-<codeblock title="メソッドシグネチャー"> 
+<CodeBlock title="メソッドシグネチャー">
 
 ```objc
 + (void)addSessionPartnerParameter:(nonnull NSString *)key value:(nonnull NSString *)value;
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 セッションと一緒にパートナーパラメーターを送信するには、`NSString` key\-value引数を指定して`addSessionPartnerParameter`メソッドを呼び出してください。このメソッドを複回呼び出すことで、複数のパラメーターを追加することができます。
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 Adjust.addSessionPartnerParameter("foo", value: "bar")
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 [Adjust addSessionPartnerParameter:@"foo" value:@"bar"];
 ```
 
-</Tab> <tab title="Javascript" sync="js"> 
+</Tab>
+<Tab title="Javascript" sync="js">
 
 ```js
 Adjust.addSessionPartnerParameter("foo", "bar");
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
 ### [セッションパートナーパラメーターを削除する](remove-session-partner-parameters)
 
-<codeblock title="メソッドシグネチャー"> 
+<CodeBlock title="メソッドシグネチャー">
 
 ```objc
 + (void)removeSessionPartnerParameter:(nonnull NSString *)key;
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 不要になった場合は、特定のセッションパートナーパラメーターを削除できます。これを行うには、パラメーターキーを`removeSessionPartnerParameter`メソッドにパスします。
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 Adjust.removeSessionPartnerParameter("foo")
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 [Adjust removeSessionPartnerParameter:@"foo"];
 ```
 
-</Tab> <tab title="Javascript" sync="js"> 
+</Tab>
+<Tab title="Javascript" sync="js">
 
 ```js
 Adjust.removeSessionPartnerParameter("foo");
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
 ### [resetSessionPartnerParameters](reset-session-partner-parameters)
 
-<codeblock title="メソッドシグネチャー"> 
+<CodeBlock title="メソッドシグネチャー">
 
 ```objc
 + (void)resetSessionPartnerParameters;
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 不要になった場合は、全てのセッションパートナーパラメーターを削除できます。これを行うには、`resetSessionPartnerParameters`メソッドを呼び出します。
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 Adjust.resetSessionPartnerParameters()
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 [Adjust resetSessionPartnerParameters];
 ```
 
-</Tab> <tab title="Javascript" sync="js"> 
+</Tab>
+<Tab title="Javascript" sync="js">
 
 ```js
 Adjust.resetSessionPartnerParameters();
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
-[ディレイスタート](delay-start)
------------------------
+## [ディレイスタート](delay-start)
 
-<callout type="note"> 
+<Callout type="note">
 
 SDKの動作開始を遅らせることができるのは最長 **10秒間** です。
-</Callout> 
+
+</Callout>
 
 Adjust SDKは、アプリの起動直後に動作を開始します。起動時に取得できないデータをセッションパラメーターで送信したい場合は、SDKの動作開始を遅らせることができます。それを行うには、Configオブジェクトの[`delayStart`プロパティ](/en/sdk/ios/configuration#delay-the-start-of-the-sdk)で、ディレイタイムを秒単位で設定してください。
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 let yourAppToken = "{YourAppToken}"
@@ -420,7 +481,8 @@ adjustConfig?.delayStart = 5.5
 Adjust.appDidLaunch(adjustConfig)
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 *adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
@@ -430,7 +492,8 @@ Adjust.appDidLaunch(adjustConfig)
 [Adjust appDidLaunch:adjustConfig];
 ```
 
-</Tab> <tab title="Javascript" sync="js"> 
+</Tab>
+<Tab title="Javascript" sync="js">
 
 ```js
 setupWebViewJavascriptBridge(function (bridge) {
@@ -441,26 +504,32 @@ setupWebViewJavascriptBridge(function (bridge) {
 });
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
 この時間が経過すると、SDKは情報をAdjustサーバーに送信します。`sendFirstPackages`メソッドを呼び出すことで、タイムアウトになる前に情報を送信できます。
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 Adjust.sendFirstPackages()
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 [Adjust sendFirstPackages];
 ```
 
-</Tab> <tab title="Javascript" sync="js"> 
+</Tab>
+<Tab title="Javascript" sync="js">
 
 ```js
 Adjust.sendFirstPackages();
 ```
 
-</Tab> </Tabs> </SdkVersion>
-
+</Tab>
+</Tabs>
+</SdkVersion>
