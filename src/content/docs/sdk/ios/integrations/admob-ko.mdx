@@ -1,29 +1,72 @@
 ---
 title: "AdMob SDK 연동"
 description: "Admob 연동을 사용하여 Admob 정보를 Adjust 서버로 전달합니다."
-slug: "ko/sdk/ios/integrations/admob"
+slug: "en/sdk/ios/integrations/admob"
+multiVersion: true
 ---
-
-<MinorVersion added="v4.29.2">
+<sdkversion version="v5"> 
 
 Admob SDK의 광고 매출을 측정하고 싶다면, SDK간 연동을 사용하여 Adjust 서버로 광고 매출 정보를 전달할 수 있습니다.
+<callout type="note"> 
 
-</MinorVersion>
-<Callout type="note">
+Admob의 광고 매출 측정에 관한 문의는 담당 계정 매니저나 [support@adjust.com](mailto:support@adjust.com)으로 연락주시기 바랍니다.
+</Callout> 
 
-AdMob과의 광고 매출 트래킹에 관한 문의는 담당 계정 매니저나 [support@adjust.com](mailto:support@adjust.com)으로 연락주시기 바랍니다.
+[시작에 앞서](before-you-begin)
+--------------------------
 
-</Callout>
-
-## [시작에 앞서](before-you-begin)
-
-1. [Adjust SDK를 구성하고 앱에 연동합니다](/ko/sdk/ios).
+1. [Adjust SDK를 구성하고 앱에 연동합니다](/en/sdk/ios).
 2. AdMob 에서 노출 수준 광고\(ILAR\)를 구성합니다. [자세한 내용은 Google 문서를 참조하시기 바랍니다](https://support.google.com/admob/answer/11322405).
 
-## [예시](example)
+[예시](example)
+-------------
 
-<Tabs>
-<Tab title="Objective-C">
+```objc
+- (void)requestRewardedAd {
+   __weak ViewController *weakSelf = self;
+
+  GADRequest *request = [GADRequest request];
+  [GADRewardedAd
+   loadWithAdUnitID:@"ad unit ID"
+   request:request
+   completionHandler:^(GADRewardedAd *ad, NSError *error) {
+     self.rewardedAd = ad;
+     self.rewardedAd.paidEventHandler = ^void(GADAdValue *_Nonnull value) {
+        ViewController *strongSelf = weakSelf;
+          // for more information, please check AdMob official docs at:
+          // https://developers.google.com/admob/ios/impression-level-ad-revenue
+          GADAdNetworkResponseInfo *loadedAdNetworkResponseInfo = strongSelf.rewardedAd.responseInfo.loadedAdNetworkResponseInfo;
+
+          // send ad revenue info to Adjust
+          ADJAdRevenue *adRevenue = [[ADJAdRevenue alloc]
+                              initWithSource:@"admob_sdk"];
+          [adRevenue setRevenue:value.value currency:value.currencyCode];
+          [adRevenue setAdRevenueNetwork:loadedAdNetworkResponseInfo.adSourceName]
+          [Adjust trackAdRevenue:adRevenue];
+      }
+    }
+  ];
+}
+```
+
+</SdkVersion> <sdkversion version="v4"> <minorversion added="v4.29.2"> 
+
+Admob SDK의 광고 매출을 측정하고 싶다면, SDK간 연동을 사용하여 Adjust 서버로 광고 매출 정보를 전달할 수 있습니다.
+</MinorVersion> <callout type="note"> 
+
+Admob의 광고 매출 측정에 관한 문의는 담당 계정 매니저나 [support@adjust.com](mailto:support@adjust.com)으로 연락주시기 바랍니다.
+</Callout> 
+
+[시작에 앞서](before-you-begin)
+--------------------------
+
+1. [Adjust SDK를 구성하고 앱에 연동합니다](/en/sdk/ios).
+2. AdMob 에서 노출 수준 광고\(ILAR\)를 구성합니다. [자세한 내용은 Google 문서를 참조하시기 바랍니다](https://support.google.com/admob/answer/11322405).
+
+[예시](example)
+-------------
+
+<tabs> <tab title="Objective-C"> 
 
 ```objc
 - (void)requestRewardedAd {
@@ -52,5 +95,5 @@ AdMob과의 광고 매출 트래킹에 관한 문의는 담당 계정 매니저�
 }
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> </SdkVersion>
+
