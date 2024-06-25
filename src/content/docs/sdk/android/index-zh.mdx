@@ -1,37 +1,36 @@
 ---
-title: "Android SDK integration guide"
+title: "安卓 SDK 集成指南"
 description: "使用 Flutter SDK 在您的 Android 应用中使用 Adjust 功能"
 category-title: "安卓 SDK"
-slug: "zh/sdk/android"
+slug: "en/sdk/android"
 sidebar-position: 1
 multiVersion: true
 ---
-
-<SdkVersion version="v5">
-<Callout type="important" title="Beta 公测">
+<sdkversion version="v5"> <callout type="important" title="Beta 公测"> 
 
 SDK v5 处于公测阶段。所有功能均可能变更。
-
-</Callout>
+</Callout> 
 
 通过 Adjust 安卓 SDK，您可以在安卓应用中记录归因、事件及更多数据。请按照本指南中说明的步骤操作，在应用内设置 Adjust SDK。
 
-## [操作前须知](before-you-begin)
+[操作前须知](before-you-begin)
+-------------------------
 
 在更新到 SDK v5 之前，您需要进行以下操作：
 
-1. SDK v5 支持[SDK 签名验证](https://help.adjust.com/zh/article/sdk-signature)。如果您当前正在使用 SDK 签名库，则需要先将其卸载。
+1. SDK v5 支持[SDK 签名验证](https://help.adjust.com/en/article/sdk-signature)。如果您当前正在使用 SDK 签名库，则需要先将其卸载。
 2. 如果您的应用针对的是低于[**21**](https://developer.android.com/tools/releases/platforms#5.0)的 API 版本，则需要先更新应用才能使用 SDK v5。
 
-## [1\. Set up your environment](set-up-your-environment)
+[1\. 设置环境](set-up-your-environment)
+------------------------------------
 
-To use the Adjust SDK, you need to add it to your project as a dependency. The Adjust SDK is available on [Maven](https://maven.apache.org).
+要开始使用 Adjust SDK，您首先要将其作为 dependency 添加至项目中。Adjust SDK 可在[Maven](https://maven.apache.org)上使用。
 
-To add the Adjust SDK to your project:
+要将 Adjust SDK 添加至您的项目：
 
-1. Add the following beta repository to your `build.gradle` file:
+1. 将 Beta 库添加至您的`build.gradle`文件：
 
-   <CodeBlock title="build.gradle">
+   <codeblock title="build.gradle"> 
 
    ```groovy
    repositories {
@@ -41,11 +40,10 @@ To add the Adjust SDK to your project:
    }
    ```
 
-   </CodeBlock>
+   </CodeBlock> 
+2. 将 Adjust SDK和安卓 Install Referrer 实现添加至您的 `build.gradle` 文件。如果您在应用中使用网页视图，则可以选择添加 Adjust web view bridge。
 
-2. Add the Adjust SDK and Android install referrer implementations to your `build.gradle` file. Optionally add the Adjust web view bridge if you use web views in your app.
-
-   <CodeBlock title="build.gradle">
+   <codeblock title="build.gradle"> 
 
    ```groovy
    dependencies {
@@ -56,15 +54,15 @@ To add the Adjust SDK to your project:
    }
    ```
 
-   </CodeBlock>
+   </CodeBlock> 
 
-## [2\. 添加 Google Play 服务](2-add-google-play-services)
+[2\. 添加 Google Play 服务](2-add-google-play-services)
+----------------------------------------------------
 
-Apps that target the Google Play Store must use the `gps_adid` \(Google Advertising ID\) to identify devices. You need to add the `play-services-ads-identifier` AAR to your project to access the `gps_adid`.
+定向到 Google Play 商店的应用必须使用`gps_adid`\(Google 广告 ID\) 来识别设备。要访问 `gps_adid`，请向项目中添加 `play-services-ads-identifier` AAR。
 
 如果您使用的是 Maven，请将以下行添加至您的 `build.gradle` 文件：
-
-<CodeBlock title="build.gradle">
+<codeblock title="build.gradle"> 
 
 ```groovy
 dependencies {
@@ -72,48 +70,46 @@ dependencies {
 }
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-## [3\. 添加权限](3-add-permissions)
+[3\. 添加权限](3-add-permissions)
+------------------------------
 
 要授予 Adjust SDK 读取设备信息的权限，您需要声明您应用所需的权限。为此，请在 `AndroidManifest.xml` 文件中添加权限。
 
 请添加下列许可，以访问在线功能：
-
-<CodeBlock title="AndroidManifest.xml">
+<codeblock title="AndroidManifest.xml"> 
 
 ```xml
 <uses-permission android:name="android.permission.INTERNET" id="sl-md0000000"/>
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" id="sl-md0000000"/>
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 如果您的应用并不面向 Google Play 商店，那么请添加下列权限，以读取设备的互联网连接状态：
-
-<CodeBlock title="AndroidManifest.xml">
+<codeblock title="AndroidManifest.xml"> 
 
 ```xml
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" id="sl-md0000000"/>
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 Adjust SDK 默认包含 `com.google.android.gms.AD_ID` 权限。如果您要让应用符合 COPPA \(儿童在线隐私保护法\) 规定，或者应用并不面向 Google Play 商店，请务必使用 `remove` 命令移除权限。
-
-<CodeBlock title="AndroidManifest.xml">
+<codeblock title="AndroidManifest.xml"> 
 
 ```xml
 <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" id="sl-md0000000"/>
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-## [4\. 设置 Proguard](4-set-up-proguard)
+[4\. 设置 Proguard](4-set-up-proguard)
+-------------------------------------
 
 如果您使用 Proguard 优化应用，那么请务必添加规则，避免Proguard 移除类：
-
-<CodeBlock title="proguard.pro">
+<codeblock title="proguard.pro"> 
 
 ```java
 -keep class com.adjust.sdk.** { *; }
@@ -130,19 +126,19 @@ Adjust SDK 默认包含 `com.google.android.gms.AD_ID` 权限。如果您要让�
 -keep public class com.android.installreferrer.** { *; }
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 应用不在 Google Play 商店发布，请添加下列规则：
-
-<CodeBlock title="proguard.pro">
+<codeblock title="proguard.pro"> 
 
 ```java
 -keep public class com.adjust.sdk.** { *; }
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-## [5\. 设置 Install Referrer](5-set-up-install-referrer)
+[5\. 设置 Install Referrer](5-set-up-install-referrer)
+-----------------------------------------------------
 
 Install Referrer 是一种唯一标识符，可用来将安装归因至来源。Adjust SDK 需要该信息进行归因。您可以使用下列方法之一调取 install referrer 信息：
 
@@ -151,8 +147,7 @@ Install Referrer 是一种唯一标识符，可用来将安装归因至来源。
 面向 Google Play 商店的应用可以使用 Google Play Referrer API。
 
 要支持 Google Play Referrer API，请将下列行添加进您的 `build.gradle` 文件：
-
-<CodeBlock title="build.gradle">
+<codeblock title="build.gradle"> 
 
 ```groovy
 dependencies {
@@ -160,25 +155,23 @@ dependencies {
 }
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 如果您使用的是 Proguard，请务必添加规则，避免依赖被移除。
-
-<CodeBlock title="proguard.pro">
+<codeblock title="proguard.pro"> 
 
 ```java
 -keep public class com.android.installreferrer.** { *; }
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 ### [华为 Referrer API](huawei-referrer-api)
 
-The Huawei Referrer API is available to apps that target Huawei devices. The Adjust SDK can record installs on Huawei devices using the Adjust Huawei Referrer plugin.
+面向华为设备的应用可以使用华为 Referrer API。Adjust SDK 可以使用 Adjust Huawei Referrer 插件记录华为设备上的安装。
 
-To install this plugin, add the following dependency to your `build.gradle` file:
-
-<CodeBlock title="build.gradle">
+要安装插件，请将下列依赖添加至您的`build.gradle`文件：
+<codeblock title="build.gradle"> 
 
 ```groovy
 dependencies {
@@ -186,26 +179,27 @@ dependencies {
 }
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 ### [小米 referrer 插件](xiaomi-referrer-plugin)
 
-The Xiaomi referrer plugin enables you to record install referrer values for apps that target Xiaomi devices. See the [plugin documentation](/en/sdk/android/plugins/xiaomi-referrer) for install information.
+借助小米 referrer 插件，您可以记录面向小米设备应用的 Install Referrer 值。请查看[插件相关文档](/en/sdk/android/plugins/xiaomi-referrer)，了解安装信息。
 
 ### [Samsung referrer 插件](samsung-referrer-plugin)
 
-The Samsung referrer plugin enables you to record install referrer values for apps that target the Samsung Galaxy store. See the [plugin documentation](/en/sdk/android/plugins/samsung-referrer-plugin) for install information.
+借助 Samsung referrer 插件，您可以记录面向 Samsung Galaxy Store 的应用的 Install Referrer 值。请查看[插件相关文档](/en/sdk/android/plugins/samsung-referrer-plugin)，了解安装信息。
 
 ### [Meta referrer 集成](meta-referrer-integration)
 
-The Adjust SDK supports the [Meta Install Referrer](https://developers.facebook.com/docs/app-ads/meta-install-referrer) using the Adjust Meta Install Referrer plugin. [See the documentation for integration details](/en/sdk/android/plugins/meta-referrer-plugin).
+通过 Adjust Meta Install Referrer 插件，Adjust SDK 可以支持[Meta](https://developers.facebook.com/docs/app-ads/meta-install-referrer) Install Referrer。[请参阅文档了解集成详情](/en/sdk/android/plugins/meta-referrer-plugin)。
 
-## [6\. 集成 Adjust SDK](6-integrate-the-adjust-sdk)
+[6\. 集成 Adjust SDK](6-integrate-the-adjust-sdk)
+------------------------------------------------
 
 初始化 Adjust SDK 必需信息如下：
 
--  `appToken`：[Adjust 应用识别码](https://help.adjust.com/zh/article/app-settings#view-your-app-token)。
--  `environment`：应用运行的环境。要在本地测试应用，请设置为 `AdjustConfig.ENVIRONMENT_SANDBOX`。
+* `appToken`：[Adjust 应用识别码](https://help.adjust.com/en/article/app-settings#view-your-app-token)。
+* `environment`：应用运行的环境。要在本地测试应用，请设置为 `AdjustConfig.ENVIRONMENT_SANDBOX`。
 
 我们建议您在全局 Android [Application 类](http://developer.android.com/reference/android/app/Application.html)中初始化 Adjust SDK。如果您还没有为自己的应用完成该设置，请按照下列步骤进行设置：
 
@@ -215,7 +209,7 @@ The Adjust SDK supports the [Meta Install Referrer](https://developers.facebook.
 
 3. 添加 `android:name` 属性至 `<application id="sl-md0000000">` 元素，并将其设置为 Application 类的名称。例如，如果您的 `Application` 类名称为 `GlobalApplication`，那么您可以进行如下设置：
 
-   <CodeBlock title="AndroidManifest.xml">
+   <codeblock title="AndroidManifest.xml"> 
 
    ```xml
    <application android:name=".GlobalApplication" id="sl-md0000000">
@@ -223,16 +217,14 @@ The Adjust SDK supports the [Meta Install Referrer](https://developers.facebook.
    </application>
    ```
 
-   </CodeBlock>
-
+   </CodeBlock> 
 4. 在 `Application` 类中找到 `initSdk` 方法；如果方法不存在，请进行添加。传送下列参数，以初始化 Adjust SDK：
 
-   -  您的 `appToken`
-   -  应用运行预期 `environment`
-   -  要记录的 `LogLevel`
+   * 您的 `appToken`
+   * 应用运行预期 `environment`
+   * 要记录的 `LogLevel`
 
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+<tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 import com.adjust.sdk.Adjust;
@@ -251,8 +243,7 @@ class GlobalApplication : Application () {
 }
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 import com.adjust.sdk.Adjust;
@@ -272,8 +263,7 @@ public class GlobalApplication extends Application {
 }
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 ### [集成 Adjust Web View SDK](integrate-the-adjust-web-view-sdk)
 
@@ -285,8 +275,7 @@ public class GlobalApplication extends Application {
 4. 调用 `AdjustBridge.unregister()` 来注销 `AdjustBridgeInstance` 和 `WebView` 。
 5. 完整设置示例如下：
 
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+<tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 class MainActivity : Activity() {
@@ -315,8 +304,7 @@ class MainActivity : Activity() {
 }
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 public class MainActivity extends Activity {
@@ -347,28 +335,15 @@ public class MainActivity extends Activity {
 }
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 6. 在 HTML 中导入 Adjust Javascript 文件：
 
    ```html
    <script type="text/javascript" src="adjust.js" id="sl-md0000000"></script>
-   <script
-      type="text/javascript"
-      src="adjust_event.js"
-      id="sl-md0000000"
-   ></script>
-   <script
-      type="text/javascript"
-      src="adjust_third_party_sharing.js"
-      id="sl-md0000000"
-   ></script>
-   <script
-      type="text/javascript"
-      src="adjust_config.js"
-      id="sl-md0000000"
-   ></script>
+   <script type="text/javascript" src="adjust_event.js" id="sl-md0000000"></script>
+   <script type="text/javascript" src="adjust_third_party_sharing.js" id="sl-md0000000"></script>
+   <script type="text/javascript" src="adjust_config.js" id="sl-md0000000"></script>
    ```
 
 7. 现在，您可以将 `appToken` 和 `environment` 传送至 `AdjustConfig` 类，以在 web 视图中初始化 Adjust SDK：
@@ -381,15 +356,15 @@ public class MainActivity extends Activity {
    Adjust.initSdk(adjustConfig);
    ```
 
-## [7\. 针对生产环境构建应用](7-build-your-app-for-production)
+[7\. 针对生产环境构建应用](7-build-your-app-for-production)
+--------------------------------------------------
 
 完成测试后，您就可以针对生产环境构建应用了。为此，请更新您的 config 对象。
 
 1. 调整日志等级，仅返回您需要的信息。
 2. 将您的 `environment` 设为 `AdjustConfig.ENVIRONMENT_PRODUCTION`。
 
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+<tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 val appToken = "{YourAppToken}"
@@ -399,8 +374,7 @@ config.setLogLevel(LogLevel.WARN)
 Adjust.initSdk(config)
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 String appToken = "{YourAppToken}";
@@ -410,34 +384,27 @@ config.setLogLevel(LogLevel.WARN)
 Adjust.initSdk(config);
 ```
 
-</Tab>
-</Tabs>
-</SdkVersion>
-<SdkVersion version="v4">
+</Tab> </Tabs> </SdkVersion> <sdkversion version="v4"> 
 
 通过 Adjust 安卓 SDK，您可以在安卓应用中记录归因、事件及更多数据。请按照本指南中说明的步骤操作，在应用内设置 Adjust SDK。
-
-<Callout type="seealso">
+<callout type="seealso"> 
 
 请在 [GitHub](https://github.com/adjust/android_sdk/tree/master/Adjust) 中查看 Adjust SDK 集成示例。
+</Callout> 
 
-</Callout>
-
-## [1\. 获取 Adjust SDK](1-get-the-adjust-sdk)
+[1\. 获取 Adjust SDK](1-get-the-adjust-sdk)
+------------------------------------------
 
 要在您的 Android 应用中使用 Adjust SDK，请先将 SDK 加入项目。您可以从[GitHub 发布页面](https://github.com/adjust/adjust_android_sdk/releases/latest)下载最新版本的 SDK。
-
-<Callout type="important">
+<callout type="important"> 
 
 Adjust SDK 集成支持的最低安卓 API 级别为 9 \(Gingerbread\)。
 
 web view 扩展支持的最低安卓 API 级别为 17 \(Jelly Bean\)。
-
-</Callout>
+</Callout> 
 
 如果您使用的是 [Maven](https://maven.apache.org/)，请将以下行添加至您的 `build.gradle` 文件：
-
-<CodeBlock title="build.gradle">
+<codeblock title="build.gradle"> 
 
 ```groovy
 dependencies {
@@ -449,15 +416,15 @@ dependencies {
 
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-## [2\. 添加 Google Play 服务](2-add-google-play-services)
+[2\. 添加 Google Play 服务](2-add-google-play-services)
+----------------------------------------------------
 
-定向到 Google Play 商店的应用必须使用 gps_adid \(Google 广告 ID\) 来识别设备。要访问 `play-services-ads-identifier`，请向项目中添加 `gps_adid` AAR。
+定向到 Google Play 商店的应用必须使用 gps\_adid \(Google 广告 ID\) 来识别设备。要访问 `play-services-ads-identifier`，请向项目中添加 `gps_adid` AAR。
 
 如果您使用的是 Maven，请将以下行添加至您的 `build.gradle` 文件：
-
-<CodeBlock title="build.gradle">
+<codeblock title="build.gradle"> 
 
 ```groovy
 dependencies {
@@ -466,13 +433,12 @@ dependencies {
 
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 ### [收集 App Set Identifier](collect-app-set-identifier)
 
 [App Set Identifier](https://developer.android.com/design-for-safety/privacy-sandbox/reference/adservices/appsetid/AppSetId) 是一个唯一标识符，用户在设备上安装您的应用后，您可以通过此标识符监测这些应用的信息。同一位开发者开发的所有应用共享同一个 App Set ID，也就是说您可以从所有应用中收集有用的洞见。要记录设备的 App Set ID，您需要向`build.gradle` 文件中添加下列权限：
-
-<CodeBlock title="build.gradle">
+<codeblock title="build.gradle"> 
 
 ```groovy
 dependencies {
@@ -481,50 +447,48 @@ dependencies {
 
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 如果启用该权限，那么 App Set ID 就会作为设备信息负载的一部分被发送到 Adjust 服务器。
 
-## [3\. 添加权限](3-add-permissions)
+[3\. 添加权限](3-add-permissions)
+------------------------------
 
 要授予 Adjust SDK 读取设备信息的权限，您需要声明您应用所需的权限。为此，请在 `AndroidManifest.xml` 文件中添加权限。
 
 请添加下列许可，以访问在线功能：
-
-<CodeBlock title="AndroidManifest.xml">
+<codeblock title="AndroidManifest.xml"> 
 
 ```xml
 <uses-permission android:name="android.permission.INTERNET" id="sl-md0000000"/>
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" id="sl-md0000000"/>
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 如果您的应用并不面向 Google Play 商店，那么请添加下列权限，以读取设备的互联网连接状态：
-
-<CodeBlock title="AndroidManifest.xml">
+<codeblock title="AndroidManifest.xml"> 
 
 ```xml
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" id="sl-md0000000"/>
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 Adjust SDK 默认包含 `com.google.android.gms.AD_ID` 权限。如果您要让应用符合 COPPA \(儿童在线隐私保护法\) 规定，或者应用并不面向 Google Play 商店，请务必使用 `remove` 命令移除权限。
-
-<CodeBlock title="AndroidManifest.xml">
+<codeblock title="AndroidManifest.xml"> 
 
 ```xml
 <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" id="sl-md0000000"/>
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-## [4\. 设置 Proguard](4-set-up-proguard)
+[4\. 设置 Proguard](4-set-up-proguard)
+-------------------------------------
 
 如果您使用 Proguard 优化应用，那么请务必添加规则，避免Proguard 移除类：
-
-<CodeBlock title="proguard.pro">
+<codeblock title="proguard.pro"> 
 
 ```java
 -keep class com.adjust.sdk.** { *; }
@@ -542,19 +506,19 @@ Adjust SDK 默认包含 `com.google.android.gms.AD_ID` 权限。如果您要让�
 
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 应用不在 Google Play 商店发布，请添加下列规则：
-
-<CodeBlock title="proguard.pro">
+<codeblock title="proguard.pro"> 
 
 ```java
 -keep public class com.adjust.sdk.** { *; }
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-## [5\. 设置 Install Referrer](5-set-up-install-referrer)
+[5\. 设置 Install Referrer](5-set-up-install-referrer)
+-----------------------------------------------------
 
 Install Referrer 是一种唯一标识符，可用来将安装归因至来源。Adjust SDK 需要该信息进行归因。您可以使用下列方法之一调取 install referrer 信息：
 
@@ -563,8 +527,7 @@ Install Referrer 是一种唯一标识符，可用来将安装归因至来源。
 面向 Google Play 商店的应用可以使用 Google Play Referrer API。
 
 要支持 Google Play Referrer API，请将下列行添加进您的 `build.gradle` 文件：
-
-<CodeBlock title="build.gradle">
+<codeblock title="build.gradle"> 
 
 ```groovy
 dependencies {
@@ -573,17 +536,16 @@ dependencies {
 
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 如果您使用的是 Proguard，请务必添加规则，避免依赖被移除。
-
-<CodeBlock title="proguard.pro">
+<codeblock title="proguard.pro"> 
 
 ```java
 -keep public class com.android.installreferrer.** { *; }
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 ### [华为 Referrer API](huawei-referrer-api)
 
@@ -591,7 +553,7 @@ dependencies {
 
 ### [小米 referrer 插件](xiaomi-referrer-plugin)
 
-借助 Samsung referrer 插件，您可以记录面向小米设备应用的 Install Referrer 值。请查看插件相关文档，了解安装信息。
+借助小米 referrer 插件，您可以记录面向小米设备应用的 Install Referrer 值。请查看插件相关文档，了解安装信息。
 
 ### [Samsung referrer 插件](samsung-referrer-plugin)
 
@@ -599,22 +561,18 @@ dependencies {
 
 ### [Meta referrer 集成](meta-referrer-integration)
 
-<Callout type="note">
+<callout type="note"> 
 
 Adjust SDK 会捆绑[Meta 要求](https://developers.facebook.com/docs/app-ads/meta-install-referrer#step-1--add-the-meta-apps)的`<queries id="sl-md0000000">`元素。您无需将这些元素添加至`AndroidManifest.xml`。
-
-</Callout>
-<MinorVersion added="v4.36.0">
+</Callout> <minorversion added="v4.36.0"> 
 
 Adjust SDK v4\.36\.0 及更高版本支持[Meta Install Referrer](https://developers.facebook.com/docs/app-ads/meta-install-referrer)。要启用该功能：
-
-</MinorVersion>
+</MinorVersion> 
 
 1. 在[应用控制面板](https://developers.facebook.com/apps)中找到您的 Meta app ID。更多信息，请参考 Meta 的[应用控制面板文档](https://developers.facebook.com/docs/development/create-an-app/app-dashboard)。
 2. 将应用 ID 作为 `String` 参数传递至 `AdjustConfig.setFbAppId` 方法。
 
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+<tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 val config = AdjustConfig(this, appToken, environment)
@@ -622,8 +580,7 @@ config.setFbAppId(<fb_app_id_string id="sl-md0000000">)
 Adjust.onCreate(config)
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
@@ -631,15 +588,15 @@ config.setFbAppId(<fb_app_id_string id="sl-md0000000">);
 Adjust.onCreate(config);
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-## [6\. 集成 Adjust SDK](6-integrate-the-adjust-sdk)
+[6\. 集成 Adjust SDK](6-integrate-the-adjust-sdk)
+------------------------------------------------
 
 初始化 Adjust SDK 必需信息如下：
 
--  `appToken`：[Adjust 应用识别码](https://help.adjust.com/zh/article/app-settings#view-your-app-token)。
--  `environment`：应用运行的环境。要在本地测试应用，请设置为 `AdjustConfig.ENVIRONMENT_SANDBOX`。
+* `appToken`：[Adjust 应用识别码](https://help.adjust.com/en/article/app-settings#view-your-app-token)。
+* `environment`：应用运行的环境。要在本地测试应用，请设置为 `AdjustConfig.ENVIRONMENT_SANDBOX`。
 
 我们建议您在全局 Android [Application 类](http://developer.android.com/reference/android/app/Application.html)中初始化 Adjust SDK。如果您还没有为自己的应用完成该设置，请按照下列步骤进行设置：
 
@@ -647,7 +604,7 @@ Adjust.onCreate(config);
 2. 打开 `AndroidManifest.xml` 文件，找到 `<application id="sl-md0000000">` 元素。
 3. 添加 `android:name` 属性至 `<application id="sl-md0000000">` 元素，并将其设置为 Application 类的名称。例如，如果您的 `Application` 类名称为 `GlobalApplication`，那么您可以进行如下设置：
 
-<CodeBlock title="AndroidManifest.xml">
+<codeblock title="AndroidManifest.xml"> 
 
 ```xml
 <application android:name=".GlobalApplication" id="sl-md0000000">
@@ -656,16 +613,15 @@ Adjust.onCreate(config);
 
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 4. 在 `Application` 类中找到 `onCreate` 方法；如果方法不存在，请进行添加。传送下列参数，以初始化 Adjust SDK：
 
-   -  您的 `appToken`
-   -  应用运行预期 `environment`
-   -  要记录的 `LogLevel`
+   * 您的 `appToken`
+   * 应用运行预期 `environment`
+   * 要记录的 `LogLevel`
 
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+<tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 import com.adjust.sdk.Adjust;
@@ -684,8 +640,7 @@ class GlobalApplication : Application () {
 }
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 import com.adjust.sdk.Adjust;
@@ -705,8 +660,7 @@ public class GlobalApplication extends Application {
 }
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 ### [集成 Adjust Web View SDK](integrate-the-adjust-web-view-sdk)
 
@@ -718,8 +672,7 @@ public class GlobalApplication extends Application {
 4. 调用 `AdjustBridge.unregister()` 来注销 `AdjustBridgeInstance` 和 `WebView` 。
 5. 完整设置示例如下：
 
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+<tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 class MainActivity : Activity() {
@@ -748,8 +701,7 @@ class MainActivity : Activity() {
 }
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 public class MainActivity extends Activity {
@@ -780,24 +732,15 @@ public class MainActivity extends Activity {
 }
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 6. 在 HTML 中导入 Adjust Javascript 文件：
 
 ```html
 <script type="text/javascript" src="adjust.js" id="sl-md0000000"></script>
 <script type="text/javascript" src="adjust_event.js" id="sl-md0000000"></script>
-<script
-   type="text/javascript"
-   src="adjust_third_party_sharing.js"
-   id="sl-md0000000"
-></script>
-<script
-   type="text/javascript"
-   src="adjust_config.js"
-   id="sl-md0000000"
-></script>
+<script type="text/javascript" src="adjust_third_party_sharing.js" id="sl-md0000000"></script>
+<script type="text/javascript" src="adjust_config.js" id="sl-md0000000"></script>
 ```
 
 7. 现在，您可以将 `appToken` 和 `environment` 传送至 `AdjustConfig` 类，以在 web 视图中初始化 Adjust SDK：
@@ -810,7 +753,8 @@ adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
 Adjust.onCreate(adjustConfig);
 ```
 
-## [7\. 配置会话记录](7-configure-session-recording)
+[7\. 配置会话记录](7-configure-session-recording)
+--------------------------------------------
 
 要记录会话信息，您需要在应用[活动生命周期](https://developer.android.com/guide/components/activities/activity-lifecycle)的多个不同阶段调用多种方法。根据应用定向的 API level，这些阶段会有不同。
 
@@ -825,8 +769,7 @@ Adjust.onCreate(adjustConfig);
 5. 将 `onCreate()` 方法添加至您的 Adjust SDK 配置步骤。
 6. 使用已创建 `ActivityLifecycleCallbacks` 类的实例调用 `registerActivityLifecycleCallbacks`：
 
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+<tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 import com.adjust.sdk.Adjust;
@@ -857,8 +800,7 @@ class GlobalApplication : Application () {
 }
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 import com.adjust.sdk.Adjust;
@@ -892,16 +834,14 @@ public class GlobalApplication extends Application {
 }
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 ### [API level 9 至 13](api-level-9-to-13)
 
-<Callout type="tip">
+<callout type="tip"> 
 
 如果 `build.gradle` 文件中的 `minSdkVersion` 在 9 \- 13 之间，请考虑将其变更为 14 或更高，请查看 [Android 控制面板](http://developer.android.com/about/dashboards/index.html)，了解目前市场上各主要版本的占比。
-
-</Callout>
+</Callout> 
 
 要为定向 API level 13 或更低级别的应用设置会话记录，请按照下列步骤操作：
 
@@ -909,8 +849,7 @@ public class GlobalApplication extends Application {
 2. 向活动的 `onPause` 方法添加 `Adjust.onPause()` 调用。
 3. 对您的应用中的每个 Activity 重复以上步骤。取决于编码方式，您也可通过添加所有 Activitiy 的通用超类来实现它。
 
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+<tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 import com.adjust.sdk.Adjust;
@@ -927,8 +866,7 @@ class YourActivity : Activity () {
 }
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 import com.adjust.sdk.Adjust;
@@ -945,18 +883,17 @@ public class YourActivity extends Activity {
 }
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-## [7\. 针对生产环境构建应用](8-build-your-app-for-production)
+[7\. 针对生产环境构建应用](8-build-your-app-for-production)
+--------------------------------------------------
 
 完成测试后，您就可以针对生产环境构建应用了。为此，请更新您的 config 对象。
 
 1. 调整日志等级，仅返回您需要的信息。
 2. 将您的 `environment` 设为 `AdjustConfig.ENVIRONMENT_PRODUCTION`。
 
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+<tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 val appToken = "{YourAppToken}"
@@ -966,8 +903,7 @@ config.setLogLevel(LogLevel.WARN)
 Adjust.onCreate(config)
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 String appToken = "{YourAppToken}";
@@ -977,6 +913,5 @@ config.setLogLevel(LogLevel.WARN)
 Adjust.onCreate(config);
 ```
 
-</Tab>
-</Tabs>
-</SdkVersion>
+</Tab> </Tabs> </SdkVersion>
+
