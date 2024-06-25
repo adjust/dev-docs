@@ -1,0 +1,187 @@
+---
+title: "スマートバナーSDKの初期化オプション"
+description: "スマートバナーSDKの動作を制御するための初期化オプションを設定します。"
+slug: "en/sdk/smart-banner/init-options"
+sidebar-label: "初期化オプション"
+sidebar-position: 1
+---
+スマートバナーSDKの動作を制御するには、以下のパラメーターを設定します。
+
+[必要なパラメータ](required-parameters)
+-------------------------------
+
+### [アプリトークンを設定する](set-your-app-token)
+
+スマートバナーSDKを初期化するには、`AdjustSmartBanner.init`メソッドを呼び出します。
+
+```js
+AdjustSmartBanner.init({
+   appToken: "APP_TOKEN",
+});
+```
+
+このメソッドを呼び出すと、SDKはデバイスのプラットフォームを検出します。デバイスがモバイルプラットフォームの場合、SDKは利用可能なスマートバナーを読み込みます。初期化後、利用可能なバナーがすぐに表示されます。
+
+プロジェクトの対象がシングルプラットフォームアプリの場合は、各プラットフォームトークンを`appToken`オブジェクトのキーとしてパスします。
+
+```js
+AdjustSmartBanner.init({
+   appToken: {
+      ios: "IOS_APP_TOKEN",
+      android: "ANDROID_APP_TOKEN",
+   },
+});
+```
+
+[オプションパラメーター](optional-parameters)
+----------------------------------
+
+### [ログレベルを設定する](set-your-log-level)
+
+SDKが実行するログの冗長性を設定します。
+<callout type="tip"> 
+
+テスト中に`verbose`ログを使用して、潜在的な問題に関する詳細情報を取得します。
+</Callout> <table> 
+
+| Log level |             説明              |
+|-----------|-----------------------------|
+| `verbose` | SDKアクションに関する詳細なメッセージを出力します。 |
+| `info`    | 基本情報メッセージ、警告およびエラーを出力します。   |
+| `warning` | 警告とエラーメッセージのみを出力します。        |
+| `error`   | エラーメッセージのみを出力します。           |
+| `none`    | 何も出力しません。                   |
+
+</Table> 
+
+```js
+AdjustSmartBanner.init({
+   logLevel: "verbose",
+});
+```
+
+### [バナーロケールを設定する](set-your-banner-locale)
+
+`language`パラメーターを設定して、バナーを表示する際に使用するロケール（言語）を管理します。
+<callout type="tip"> 
+
+詳細は[バナーのローカライズ](/en/sdk/smart-banner#3-localize-your-banners)をご覧ください。
+</Callout> 
+
+```js
+AdjustSmartBanner.init({
+   language: "fr",
+});
+```
+
+### [ディープリンクを設定する](configure-deep-links)
+
+ディープリンクを設定して、ユーザーがスマートバナーを操作した際にアプリ内で遷移される場所を指定します。
+<callout type="tip"> 
+
+詳細については、[ディープリンクに関する記事](/en/sdk/smart-banner/deep-linking)をご覧ください。
+</Callout> 
+
+スマートバナーを使用したディープリンクを制御するには、以下のパラメーターを使用します。
+
+* `context` （オブジェクト）：ディープリンクパスのプレースホルダー（`{}`）に入力するデータを含むオブジェクト。
+* `androidDeepLinkPath` （文字列）：Androidデバイスでユーザーがリダイレクトされるアプリ内の場所。
+* `iosDeepLinkPath` （文字列）：iOSデバイスでユーザーがリダイレクトされるアプリ内の場所。
+* `context` （オブジェクト）： `androidDeepLinkPath`および`iosDeepLinkPath`パスで内挿される値を含むオブジェクト。
+
+#### [例](examples)
+
+この例では、バナーは`context`オブジェクトから`item_id`を内挿することによって、iOSユーザーを`products/product=cool_jeans_123`のディープリンクパスにリダイレクトします。
+
+```js
+AdjustSmartBanner.init({
+   // other initialisation parameters including mandatory ones
+   iosDeepLinkPath: "products/product={item_id}",
+   context: {
+      item_id: "cool_jeans_123",
+   },
+});
+```
+
+この例では、バナーは`context`オブジェクトから`item_id`を内挿することによって、Androidユーザーを`products/product=cool_jeans_123`のディープリンクパスにリダイレクトします。
+
+```js
+AdjustSmartBanner.init({
+   // other initialisation parameters including mandatory ones
+   androidDeepLinkPath: "products/{item_id}",
+   context: {
+      item_id: "cool_jeans_123",
+   },
+});
+```
+
+この例では、バナーは`context`オブジェクトから`item_id`を内挿することによって、iOSユーザーとAndroidユーザーの両方を`products/product=cool_jeans_123`のディープリンクパスにリダイレクトします。
+
+```js
+AdjustSmartBanner.init({
+   // other initialisation parameters including mandatory ones
+   androidDeepLinkPath: "products/{item_id}",
+   iosDeepLinkPath: "products/product={item_id}",
+   context: {
+      item_id: "cool_jeans_123",
+   },
+});
+```
+
+`context`オブジェクトを使用して、プラットフォームごとに異なるコンテキスト変数を定義できます。この例では：
+
+* Androidユーザーは`promo/new_user`に誘導されます。
+* iOSユーザーは`main/registrationFinished`に誘導されます。
+* `unused_variable`は無視されます。
+
+```js
+AdjustSmartBanner.init({
+   // other initialisation parameters including mandatory ones
+   androidDeepLinkPath: "promo/{android_promo}",
+   iosDeepLinkPath: "main/{ios_promo}",
+   context: {
+      android_promo: "new_user",
+      ios_promo: "registrationFinished",
+      unused_variable: "this will be ignored",
+   },
+});
+```
+
+### [バナーの親要素を設定する](set-the-banner-parent-element)
+
+親要素を指定することで、スマートバナーを配置する場所を設定できます。デフォルトでは、バナーは`document.body`に付与されています。既存の`HTMLElement`を指定することで、これを上書きできます。
+
+この例では、スマートバナーはID `root-for-banner`の要素に付与されています。
+
+```js
+const element = document.querySelector("#root-for-banner");
+
+AdjustSmartBanner.init({
+   bannerParent: element,
+});
+```
+
+### [バナーの作成時に関数を実行する](run-a-function-when-the-banner-is-created)
+
+`onCreated`パラメーターを使用して、スマートバナーが作成されるとすぐに実行される関数を設定します。
+
+この例では、バナーが作成されるとコンソールにログが出力されます。
+
+```js
+AdjustSmartBanner.init({
+   onCreated: () => console.log("Smart banner shown"),
+});
+```
+
+### [バナーが非表示になったときに関数を実行する](run-a-function-when-the-banner-is-dismissed)
+
+`onDismissed`パラメーターを使用して、スマートバナーが閉じられたときに実行される関数を設定します。
+
+この例では、バナーが閉じられたときにログがコンソールに出力されます。
+
+```js
+AdjustSmartBanner.init({
+   onDismissed: () => console.log("Smart banner dismissed"),
+});
+```
+
