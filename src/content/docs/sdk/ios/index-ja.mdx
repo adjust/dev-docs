@@ -1,10 +1,346 @@
 ---
-title: "開始方法"
+title: "iOS SDK連携ガイド"
 description: "iOS SDKを使用して、iOSアプリでAdjustの機能にアクセスする"
 category-title: "iOS SDK"
 slug: "ja/sdk/ios"
 sidebar-position: 2
+multiVersion: true
 ---
+
+<SdkVersion version="v5">
+<Callout type="important" title="オープンベータ版">
+
+SDK v5はオープンベータ版です。全ての機能は変更される可能性があります。
+
+</Callout>
+
+Adjust iOS SDKを実装することで、アトリビューションやイベントなどのさまざまなデータをWebアプリで記録できます。このガイドでは、Adjust SDKをアプリに実装する方法を紹介します。
+
+## [事前準備](before-you-begin)
+
+SDK v5にアップデートする前に行う必要のあることは以下の通りです：
+
+1. SDK v5は[SDKシグネチャーの検証](https://help.adjust.com/ja/article/sdk-signature)をネイティブにサポートします。現在SDKシグネチャーライブラリを使用している場合は、まずこれをアンインストールする必要があります。
+2. アプリがバージョン **12\.0** 以前のiOSまたはtvOSをターゲットにしている場合は、SDK v5を使用する前にアプリをアップデートする必要があります。
+
+## [1\. 環境を設定する](set-up-your-environment)
+
+Cocoapodsを使ってSDKを追加するには、 `Podfile`で使用したいバージョンを指定します。
+
+```text
+// Get source directly from GitHub
+pod 'Adjust', :git => 'https://github.com/adjust/ios_sdk.git', :branch => 'v5'
+```
+
+## [2\. Adjust SDKを実装する](2-integrate-the-adjust-sdk)
+
+Adjust SDKを`Xcode`プロジェクトに追加したら、それをアプリで実装する必要があります。
+
+プロジェクトファイルに関連するimport statement（インポートステートメント）を追加します。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+Adjust SDKをインポートするには、以下をbridging headerファイルに追加します。
+
+```objc
+#import AdjustSdk
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+Adjust SDKをインポートするには、以下を`AppDelegate.h`ファイルに追加します。
+
+```objc
+#import <AdjustSdk/Adjust.h>
+```
+
+</Tab>
+</Tabs>
+
+## [3\. iOS frameworksを追加する](3-add-ios-frameworks)
+
+Adjust SDKは、特定のデバイス情報にアクセスするためにフレームワークに依存しています。この情報を読み取れるようにするには、フレームワークを追加してそれらを **オプション** として表示します。
+
+<Table autoWidth="1" width="2: 300, 3: 300">
+
+| Framework                           | 説明                                                                                                                             | 注意                                                                                                 |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `AdSupport.framework`               | デバイスのIDFAにアクセスできるようにします。また、iOS 14以前のデバイスでLAT情報にアクセスできるようになります。                  | アプリが「子供向け」カテゴリーをターゲットにしている場合、このフレームワークは追加しないでください。 |
+| `AdServices.framework`              | ASAアトリビューションを処理します。                                                                                              |                                                                                                      |
+| `StoreKit.framework`                | SKAdNetworkフレームワークにアクセスできるようにします。                                                                          | iOS14以前のデバイスでAdjust SDKがSKAdNetworkとのコミュニケーションを行うために必要です。             |
+| `AppTrackingTransparency.framework` | Required to allow the Adjust SDK to wrap user ATT consent dialog and access consent responses on devices running iOS 14 or later | アプリが「子供向け」カテゴリーをターゲットにしている場合、このフレームワークは追加しないでください。 |
+| `WebKit.framework`                  | アプリでWeb viewを使用できるようにします。                                                                                       | アプリがWeb viewを使用している場合にのみ必要です。                                                   |
+
+</Table>
+
+## [4\. Adjust SDKを初期化する](4-initialize-the-adjust-sdk)
+
+Adjust SDKを初期化するには、configオブジェクトを作成する必要があります。このオブジェクトには、Adjust SDKの動作をコントロールする設定オプションが含まれています。最小限の設定を行うために、以下の引数をパスします。
+
+-  `appToken`：[アプリのトークン](https://help.adjust.com/ja/article/app-settings#view-your-app-token)
+-  `environment`：SDKを実行したい環境 。`ADJEnvironmentSandbox`に設定します。
+
+ConfigオブジェクトでAdjust SDKを初期化：
+
+1. アプリデリゲートの`didFinishLaunching`または`didFinishLaunchingWithOptions`メソッド内のconfigオブジェクトを宣言します。
+2. Configオブジェクトの`logLevel`プロパティを`ADJLogLevelVerbose`（verbose）に設定します。デバイス情報を取得するには、verboseロギングを有効化する必要があります。
+3. Configオブジェクトを引数として`initSdk`メソッドにパスします。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+import AdjustSdk
+
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        // Override point for customization after application launch.
+        let yourAppToken = "{YourAppToken}"
+        let environment = ADJEnvironmentSandbox
+        let adjustConfig = ADJConfig(appToken: yourAppToken,
+                                     andEnvironment: environment)
+
+        Adjust.initSdk(adjustConfig)
+       //...
+        return true
+ }
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import <AdjustSdk/Adjust.h>
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+   NSString *yourAppToken = @"{YourAppToken}";
+   NSString *environment = ADJEnvironmentSandbox;
+   ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:appToken
+                                                andEnvironment:environment];
+   // Your code here
+   [Adjust initSdk:myAdjustConfig];
+   // Your code here
+   return YES;
+}
+```
+
+</Tab>
+</Tabs>
+
+### [iMessageアプリを設定する](set-up-your-imessage-app)
+
+<Callout type="important">
+
+iMessageの拡張機能は、アプリとは異なるバンドル識別子を持ち、別のメモリースペースで実行されます。同じトークンで両方を設定した場合、SDKはミックスデータを返します。AdjustダッシュボードでiMessageアプリ用に別のアプリを作成し、Adjust SDKを初期化する際にそのトークンを使用する必要があります。
+
+</Callout>
+
+アプリがiMessageをターゲティングしている場合、いくつか追加の設定を行う必要があります。
+
+-  ソースからAdjust SDKを追加した場合、`ADJUST_IM=1`プリプロセッサマクロをiMessageプロジェクトの設定に追加してください。
+-  Adjust SDKをフレームワークとして追加した場合、 **ビルドフェーズ** プロジェクト設定で **新規コピーファイルフェーズ（New Copy Files Phases）** を追加します。`AdjustSdkIm.framework`をフレームワークフォルダーにコピーするように設定してください。
+
+#### [セッションを記録する](record-sessions)
+
+Adjust SDKはiMessageアプリのiOSシステム通知を受け取りません。アプリがフォアグラウンドに入った、またはフォアグラウンドから離れたことをAdjust SDKに通知するには、`trackSubsessionStart`と`trackSubsessionEnd`メソッドを呼び出す必要があります。
+
+`didBecomeActiveWithConversation:`メソッド内で`trackSubsessionStart`へのコールを追加します。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+func didBecomeActive(with conversation: MSConversation) {
+    // Called when the extension is about to move from the inactive to active state.
+    // This will happen when the extension is about to present UI.
+    // Use this method to configure the extension and restore previously stored state.
+
+    Adjust.trackSubsessionStart()
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+-(void)didBecomeActiveWithConversation:(MSConversation *)conversation {
+    // Called when the extension is about to move from the inactive to active state.
+    // This will happen when the extension is about to present UI.
+    // Use this method to configure the extension and restore previously stored state.
+
+    [Adjust trackSubsessionStart];
+}
+```
+
+</Tab>
+</Tabs>
+
+`willResignActiveWithConversation:`メソッド内で`trackSubsessionEnd`へのコールを追加します。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+func willResignActive(with conversation: MSConversation) {
+    // Called when the extension is about to move from the active to inactive state.
+    // This will happen when the user dismisses the extension, changes to a different
+    // conversation or quits Messages.
+
+    // Use this method to release shared resources, save user data, invalidate timers,
+    // and store enough state information to restore your extension to its current state
+    // in case it is terminated later.
+
+    Adjust.trackSubsessionEnd()
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+-(void)willResignActiveWithConversation:(MSConversation *)conversation {
+    // Called when the extension is about to move from the active to inactive state.
+    // This will happen when the user dismisses the extension, changes to a different
+    // conversation or quits Messages.
+
+    // Use this method to release shared resources, save user data, invalidate timers,
+    // and store enough state information to restore your extension to its current state
+    // in case it is terminated later.
+
+    [Adjust trackSubsessionEnd];
+}
+```
+
+</Tab>
+</Tabs>
+
+## [5\. Adjust SDKを設定する](5-configure-the-adjust-sdk)
+
+Configオブジェクトと初期化ロジックを追加したら、Adjust SDKを設定してアプリの様々な部分に関する情報を記録することができます。[設定ガイド](/en/sdk/ios/configuration)と[機能ガイド](/en/sdk/ios/features)を参照し、記録したいデータを正確に設定してください。
+
+## [6\. Adjust SDKをテストする](6-test-the-adjust-sdk)
+
+アプリの情報を記録するようにAdjust SDKを設定したら、次はテストを行います。Adjustは、アプリのテストに役立つ[テストコンソール](https://help.adjust.com/ja/article/testing-console)と[デバイスAPI](https://help.adjust.com/ja/article/device-api)を提供しています。
+
+[テストガイド](https://help.adjust.com/ja/article/test-the-adjust-sdk)に従って、Adjustがアプリから想定どおりの値を受け取ることを確認してください。
+
+## [7\. 本番用にアプリをビルドする](7-build-your-app-for-production)
+
+テストが終わったら、本番用にアプリをビルドできます。そのためには、configオブジェクトを更新する必要があります。
+
+以下の値を更新します。
+
+-  `environment`：これを`ADJEnvironmentProduction`に設定します。
+-  `logLevel`：[ログレベル](/en/sdk/ios/configuration#set-your-logging-level)を選択するか、configプロジェクトに`allowSuppressLogLevel`引数をパスしてログを完全に無効化します。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+import AdjustSdk
+
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        // Override point for customization after application launch.
+        let yourAppToken = "{YourAppToken}"
+        let environment = ADJEnvironmentProduction
+        let adjustConfig = ADJConfig(
+            appToken: yourAppToken,
+            environment: environment,
+            andSuppressLogLevel: true)
+        adjustConfig?.logLevel = ADJLogLevelVerbose
+        //...
+        Adjust.initSdk(adjustConfig)
+       //...
+        return true
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import <AdjustSdk/Adjust.h>
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+   NSString *yourAppToken = @"{YourAppToken}";
+   NSString *environment = ADJEnvironmentSandbox;
+   ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:appToken
+                                                andEnvironment:environment];
+   [adjustConfig setLogLevel:ADJLogLevelVerbose];
+   //...
+   [Adjust initSdk:adjustConfig];
+   //...
+   return YES;
+}
+```
+
+</Tab>
+</Tabs>
+
+`Xcode`のビルドフラグを使用して、debug buildと本番ビルドのどちらを作成するかに応じて、動的に設定を更新することができます。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        // Override point for customization after application launch.
+        let yourAppToken = "{YourAppToken}"
+
+        #if DEBUG
+        let environment = ADJEnvironmentSandbox
+        let adjustConfig = ADJConfig(
+            appToken: yourAppToken,
+            andEnvironment: environment)
+        adjustConfig?.logLevel = ADJLogLevelVerbose
+
+        #else
+        let environment = ADJEnvironmentProduction
+        let adjustConfig = ADJConfig(
+            appToken: yourAppToken,
+            andEnvironment: environment)
+        adjustConfig?.logLevel = ADJLogLevelSuppress
+        #endif
+        //...
+        Adjust.initSdk(adjustConfig)
+        //...
+        return true
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "Adjust.h"
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+   NSString *yourAppToken = @"{YourAppToken}";
+
+   #if DEBUG
+   NSString *environment = ADJEnvironmentSandbox;
+   ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:appToken
+                                                andEnvironment:environment];
+   [adjustConfig setLogLevel:ADJLogLevelVerbose];
+
+   #else
+   NSString *environment = ADJEnvironmentProduction;
+   ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:appToken
+                                                andEnvironment:environment];
+   [adjustConfig setLogLevel:ADJLogLevelSuppress];
+   #endif
+   //...
+   [Adjust initSdk: adjustConfig];
+   //...
+   return YES;
+}
+```
+
+</Tab>
+</Tabs>
+</SdkVersion>
+<SdkVersion version="v4">
 
 Adjust iOS SDKを実装することで、アトリビューションやイベントなどのさまざまなデータをWebアプリで記録できます。このガイドでは、Adjust SDKをアプリに実装する方法を紹介します。
 
@@ -508,7 +844,7 @@ Configオブジェクトと初期化ロジックを追加したら、Adjust SDK�
 以下の値を更新します。
 
 -  `environment`：これを`ADJEnvironmentProduction`に設定します。
--  `logLevel`：[ログレベル](/ja/sdk/ios/configuration#set-your-logging-level)を選択するか、configプロジェクトに`allowSuppressLogLevel`引数をパスしてログを完全に無効化します。
+-  `logLevel`：[ログレベル](/en/sdk/ios/configuration#set-your-logging-level)を選択するか、configプロジェクトに`allowSuppressLogLevel`引数をパスしてログを完全に無効化します。
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -614,3 +950,4 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 
 </Tab>
 </Tabs>
+</SdkVersion>
