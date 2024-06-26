@@ -1,14 +1,10 @@
 import type { Plugin } from "unified";
 import { visit } from "unist-util-visit";
-import type { Heading, Link, Text } from "mdast";
+import type { Heading, Link, PhrasingContent } from "mdast";
 import type { Node } from "unist";
 
-function isLinkWithSingleTextChild(node: Node): node is Link {
-   return (
-      node.type === "link" &&
-      (node as Link).children.length === 1 &&
-      (node as Link).children[0].type === "text"
-   );
+function isLinkWithChildren(node: Node): node is Link {
+   return node.type === "link";
 }
 
 const remarkHeaderLinkToId: Plugin<[]> = function () {
@@ -18,16 +14,15 @@ const remarkHeaderLinkToId: Plugin<[]> = function () {
          const firstChild = headingNode.children[0];
          if (
             headingNode.children.length === 1 &&
-            isLinkWithSingleTextChild(firstChild)
+            isLinkWithChildren(firstChild)
          ) {
             const linkNode = firstChild;
-            const textNode = linkNode.children[0] as Text;
+            const linkChildren = linkNode.children;
 
-            const linkText = textNode.value;
             const linkUrl = linkNode.url;
 
-            if (linkUrl && linkText) {
-               headingNode.children = [{ type: "text", value: linkText }];
+            if (linkUrl && linkChildren.length > 0) {
+               headingNode.children = linkChildren as PhrasingContent[];
                headingNode.data ??= {};
                headingNode.data.hProperties = { id: linkUrl };
             }
