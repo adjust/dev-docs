@@ -2,16 +2,16 @@
 title: "AdMob SDK 연동"
 description: "Admob 연동을 사용하여 Admob 정보를 Adjust 서버로 전달합니다."
 slug: "ko/sdk/android/integrations/admob"
+multiVersion: true
 ---
 
-<MinorVersion added="v4.28.0">
+<SdkVersion version="v5">
 
 Admob SDK의 광고 매출을 측정하고 싶다면, SDK간 연동을 사용하여 Adjust 서버로 광고 매출 정보를 전달할 수 있습니다.
 
-</MinorVersion>
 <Callout type="note">
 
-AdMob과의 광고 매출 트래킹에 관한 문의는 담당 계정 매니저나 [support@adjust.com](mailto:support@adjust.com)으로 연락주시기 바랍니다.
+Admob의 광고 매출 측정에 관한 문의는 담당 계정 매니저나 [support@adjust.com](mailto:support@adjust.com)으로 연락주시기 바랍니다.
 
 </Callout>
 
@@ -19,7 +19,61 @@ AdMob과의 광고 매출 트래킹에 관한 문의는 담당 계정 매니저�
 
 AdMob SDK 연동을 시작하려면 다음의 단계를 수행하시기 바랍니다.
 
-1. [Adjust SDK를 구성하고 앱에 연동합니다](/ko/sdk/android).
+1. [Adjust SDK를 구성하고 앱에 연동합니다](/en/sdk/android).
+2. AdMob 에서 노출 수준 광고\(ILAR\)를 구성합니다. [자세한 내용은 Google 문서를 참조하시기 바랍니다](https://support.google.com/admob/answer/11322405).
+
+## [예시](example)
+
+<Tabs>
+<Tab title="Java">
+
+```java
+AdRequest adRequest = new AdRequest.Builder().build();
+
+RewardedAd.load(this, "ad unit ID",
+adRequest, new RewardedAdLoadCallback(){
+   @Override
+   public void onAdLoaded(@NonNull RewardedAd ad) {
+   rewardedAd = ad;
+   // Set paid event listener
+   rewardedAd.setOnPaidEventListener(new OnPaidEventListener() {
+      @Override
+      public void onPaidEvent(AdValue adValue) {
+         // for more information, please check AdMob official docs at:
+         // https://developers.google.com/admob/android/impression-level-ad-revenue
+         AdapterResponseInfo loadedAdapterResponseInfo = rewardedAd.getResponseInfo().getLoadedAdapterResponseInfo();
+
+         // send ad revenue info to Adjust
+         AdjustAdRevenue adRevenue = new AdjustAdRevenue("admob_sdk");
+         adRevenue.setRevenue(adValue.getValueMicros() / 1000000.0, adValue.getCurrencyCode());
+         adRevenue.setAdRevenueNetwork(loadedAdapterResponseInfo.getAdSourceName());
+         Adjust.trackAdRevenue(adRevenue);
+         }
+      });
+   }
+});
+```
+
+</Tab>
+</Tabs>
+</SdkVersion>
+<SdkVersion version="v4">
+<MinorVersion added="v4.28.0">
+
+Admob SDK의 광고 매출을 측정하고 싶다면, SDK간 연동을 사용하여 Adjust 서버로 광고 매출 정보를 전달할 수 있습니다.
+
+</MinorVersion>
+<Callout type="note">
+
+Admob의 광고 매출 측정에 관한 문의는 담당 계정 매니저나 [support@adjust.com](mailto:support@adjust.com)으로 연락주시기 바랍니다.
+
+</Callout>
+
+## [시작에 앞서](before-you-begin)
+
+AdMob SDK 연동을 시작하려면 다음의 단계를 수행하시기 바랍니다.
+
+1. [Adjust SDK를 구성하고 앱에 연동합니다](/en/sdk/android).
 2. AdMob 에서 노출 수준 광고\(ILAR\)를 구성합니다. [자세한 내용은 Google 문서를 참조하시기 바랍니다](https://support.google.com/admob/answer/11322405).
 
 ## [예시](example)
@@ -56,3 +110,4 @@ adRequest, new RewardedAdLoadCallback(){
 
 </Tab>
 </Tabs>
+</SdkVersion>

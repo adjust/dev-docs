@@ -63,8 +63,8 @@ Adjust SDKには以下のパーミッションが必要です。まだ存在し�
 <CodeBlock title="AndroidManifest.xml">
 
 ```xml
-<uses-permission android:name="android.permission.INTERNET"/>
-<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+<uses-permission android:name="android.permission.INTERNET" id="sl-md0000000"/>
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" id="sl-md0000000"/>
 
 ```
 
@@ -77,7 +77,7 @@ Adjust SDKには、バージョン4\.32\.0以降、デフォルトで`com.google
 <CodeBlock title="AndroidManifest.xml">
 
 ```xml
-<uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
+<uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" id="sl-md0000000"/>
 ```
 
 </CodeBlock>
@@ -160,7 +160,7 @@ Proguardを使用している場合は、Proguardファイルに以下の設定�
 
 <MinorVersion added="v4.22.0">
 
-As of v4\.22\.0, the Adjust SDK supports install recording on Huawei devices using Huawei App Gallery v10\.4 and later. You don't need to make any changes to start using the Huawei Referrer API.
+バージョン4\.22\.0以降より、Adjust SDKはHuawei AppGalleryバージョン10\.4以降のHuaweiデバイスでのインストールの記録をサポートしています。Huawei Referrer APIの使用を開始するために行う設定変更はありません。
 
 </MinorVersion>
 
@@ -168,7 +168,7 @@ As of v4\.22\.0, the Adjust SDK supports install recording on Huawei devices usi
 
 <Callout type="note">
 
-[Metaの要件](https://developers.facebook.com/docs/app-ads/meta-install-referrer#step-1--add-the-meta-apps)により、Adjust SDKは`<queries>`エレメントをバンドルしています。これらを`AndroidManifest.xml`に追加する必要はありません。
+[Metaの要件](https://developers.facebook.com/docs/app-ads/meta-install-referrer#step-1--add-the-meta-apps)により、Adjust SDKは`<queries id="sl-md0000000">`エレメントをバンドルしています。これらを`AndroidManifest.xml`に追加する必要はありません。
 
 </Callout>
 <MinorVersion added="v4.36.0">
@@ -183,7 +183,7 @@ Adjust SDKはv4\.36\.0以降で[Metaインストールリファラー](https://d
 
    ```dart
    AdjustConfig config = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox);
-   config.fbAppId = "<fb_app_id_string>";
+   config.fbAppId = "<fb_app_id_string id="sl-md0000000">";
    ```
 
 ## [3\. iOS frameworksを追加する](3-add-ios-frameworks)
@@ -192,12 +192,12 @@ Adjust SDKはv4\.36\.0以降で[Metaインストールリファラー](https://d
 
 <Table>
 
-| Framework                           | 説明                                                                                                                             | 注意                                                                                                 |
-| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `AdSupport.framework`               | デバイスのIDFAにアクセスできるようにします。また、iOS 14以前のデバイスでLAT情報にアクセスできるようになります。                  | アプリが「子供向け」カテゴリーをターゲットにしている場合、このフレームワークは追加しないでください。 |
-| `AdServices.framework`              | Apple Search Adsのアトリビューションを処理します。                                                                               |                                                                                                      |
-| `StoreKit.framework`                | SKAdNetworkフレームワークにアクセスできるようにします。                                                                          | iOS14以降のデバイスでAdjust SDKがSKAdNetworkとのコミュニケーションを行うために必要です。             |
-| `AppTrackingTransparency.framework` | Required to allow the Adjust SDK to wrap user ATT consent dialog and access consent responses on devices running iOS 14 or later | アプリが「子供向け」カテゴリーをターゲットにしている場合、このフレームワークは追加しないでください。 |
+| Framework                           | 説明                                                                                                                              | 注意                                                                                                 |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `AdSupport.framework`               | デバイスのIDFAにアクセスできるようにします。また、iOS 14以前のデバイスでLAT情報にアクセスできるようになります。                   | アプリが「子供向け」カテゴリーをターゲットにしている場合、このフレームワークは追加しないでください。 |
+| `AdServices.framework`              | Apple Search Adsのアトリビューションを処理します。                                                                                |                                                                                                      |
+| `StoreKit.framework`                | SKAdNetworkフレームワークにアクセスできるようにします。                                                                           | iOS14以降のデバイスでAdjust SDKがSKAdNetworkとのコミュニケーションを行うために必要です。             |
+| `AppTrackingTransparency.framework` | Adjust SDKがユーザーのATT同意ダイアログをラップし、iOS 14以降のデバイスで同意レスポンスにアクセスできるようにするために必要です。 | アプリが「子供向け」カテゴリーをターゲットにしている場合、このフレームワークは追加しないでください。 |
 
 </Table>
 
@@ -216,17 +216,17 @@ AdjustConfig config = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandb
 Adjust.start(config);
 ```
 
-## [5\. Set up session recording](5-set-up-session-recording)
+## [5\. セッション記録を設定する](5-set-up-session-recording)
 
-You need to set up session recording so that the SDK can pass session information to the Adjust server.
+SDKがセッション情報をAdjustサーバーにパスできるようにするには、セッションの記録を設定する必要があります。
 
 <Callout type="note">
 
-Session recording for iOS devices is supported by default.
+iOSデバイスのセッションの記録は、デフォルトでサポートされています。
 
 </Callout>
 
-To set up session recording for Android devices, call the `Adjust.onResume()` method when the app is running in the foreground and make a call to the `Adjust.onPause()` method when the app isn't running in the foreground. You can do this globally or per widget.
+Androidデバイスのセッションの記録を設定するには、アプリがフォアグラウンドで実行しているときは`Adjust.onResume()`メソッドを呼び出し、アプリがフォアグラウンドで実行していないときは`Adjust.onPause()`メソッドを呼び出します。これはグローバルまたはウィジェットごとに実行できます。
 
 ```dart
 class AdjustExampleApp extends StatelessWidget {
@@ -244,7 +244,7 @@ class MainScreen extends StatefulWidget {
    State createState() => new MainScreenState();
 }
 
-class MainScreenState extends State<mainscreen> with WidgetsBindingObserver {
+class MainScreenState extends State<mainscreen id="sl-md0000000"> with WidgetsBindingObserver {
    @override
    initState() {
       super.initState();

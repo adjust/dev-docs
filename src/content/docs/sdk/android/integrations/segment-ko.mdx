@@ -18,7 +18,7 @@ Adjust 및 Segment 대시보드에서 본 연동을 진행하는 방법은 [Segm
 
 <Callout type="warning">
 
-해당 솔루션은 [파트너 파라미터](/ko/sdk/android/features/events#add-partner-parameters)를 지원하지 않습니다. 커스텀 파라미터를 사용하여 네트워크로 이벤트를 전송해야 하는 경우\(예: 동적 리타겟팅 지원\), 이러한 이벤트를 Segment SDK 및 Adjust SDK에서 별도로 설정하되, Segment 대시보드에서 Adjust destination에 연결하지 않도록 주의하시기 바랍니다.
+해당 솔루션은 [파트너 파라미터](/en/sdk/android/features/events#add-partner-parameters)를 지원하지 않습니다. 커스텀 파라미터를 사용하여 네트워크로 이벤트를 전송해야 하는 경우\(예: 동적 리타겟팅 지원\), 이러한 이벤트를 Segment SDK 및 Adjust SDK에서 별도로 설정하되, Segment 대시보드에서 Adjust destination에 연결하지 않도록 주의하시기 바랍니다.
 
 </Callout>
 
@@ -26,24 +26,24 @@ Adjust 및 Segment 대시보드에서 본 연동을 진행하는 방법은 [Segm
 
 ### [1\. Segment SDK 설정](1-segment-sdk-setup)
 
-Segment SDK에서 트래킹 API 콜 이벤트를 정의합니다. 각 이벤트는 1개의 사용자 행동을 기록합니다. Segment SDK는 [클라우드 모드](https://segment.com/docs/connections/destinations/#connection-modes)에서 Adjust SDK에 이에 상응하는 이벤트 트래킹 콜을 생성합니다.
+Segment SDK에서 [트래킹 API](https://segment.com/docs/connections/sources/catalog/libraries/server/http-api/#track) 콜 이벤트를 정의합니다. 각 이벤트는 1개의 사용자 행동을 기록합니다. Segment SDK는 [클라우드 모드](https://segment.com/docs/connections/destinations/#connection-modes)에서 Adjust SDK에 이에 상응하는 `trackEvent` 콜을 생성합니다.
 
 1. [Segment Android SDK](https://segment.com/docs/connections/sources/catalog/libraries/mobile/android)를 연동합니다.
 
    <Callout type="note">
 
-   트래킹 페이로드에서 `.context.device.id` 또는 `.context.device.type`을 전달하면 안 됩니다. Segment SDK는 자동으로 기기에서 해당 속성을 조회하므로 이를 수동으로 전달할 경우 연동 문제가 발생할 수 있습니다.
+   `track` 페이로드에서 `.context.device.id` 또는 `.context.device.type`을 전달하지 마시기 바랍니다. Segment SDK는 자동으로 기기에서 해당 속성을 조회하므로 이를 수동으로 전달할 경우 연동 문제가 발생할 수 있습니다.
 
    </Callout>
 
-2. 앱\([Android](https://segment.com/docs/connections/sources/catalog/libraries/mobile/android/#track)\)에서 트래킹하고자 하는 개별 이벤트에 대한 트래킹 콜을 생성합니다.
+2. 앱\([Android](https://segment.com/docs/connections/sources/catalog/libraries/mobile/android/#track)\)에서 측정할 개별 이벤트에 대한 `track` 콜을 생성합니다.
 
 -  선택 사항: 커스텀 키 값 쌍을 `properties` 객체로 전달할 수 있습니다. Segment SDK는 Adjust SDK 이벤트 기톨 콜에 해당 속성을 콜백 파라미터로 전달합니다. Adjust 파트너 파라미터는 지원되지 않습니다.
 
 ### [2\. Adjust SDK 설정](2-adjust-sdk-setup)
 
 1. 앱에서 Adjust Android SDK를 연동합니다.
-2. Adjust SDK에 다음의 파라미터를 [세션 파트너 파라미터](/ko/sdk/android/features/session-parameters#session-partner-parameters)로 전달합니다. 설치 또는 세션 시작에서 이러한 파라미터를 이용하려면 [시작 지연](/ko/sdk/android/features/session-parameters#delay-start)이 필요합니다.
+2. Adjust SDK에 다음의 파라미터를 [세션 파트너 파라미터](/en/sdk/android/features/session-parameters#session-partner-parameters)로 전달합니다. 설치 또는 세션 시작에서 이러한 파라미터를 이용하려면 [시작 지연](/en/sdk/android/features/session-parameters#delay-start)이 필요합니다.
 
 -  `anonymous_id` \- Adjust가 Segment로 콜백을 전송하는 데 필요합니다. [Segment SDK에서 anonymous_id 값을 조회](https://segment.com/docs/connections/sources/catalog/libraries/mobile/android/#anonymousid)할 수 있습니다.
 -  선택 사항: `user_id` \- 직접 정의하는 값으로, 시스템에서 조회할 수 있습니다.
@@ -56,20 +56,20 @@ Adjust SDK를 직접 앱에 연동하지 마시기 바랍니다. Adjust SDK를 �
 
 </Callout>
 
-Segment SDK가 Adjust SDK를 초기화하면 Adjust는 자동으로 설치 및/또는 세션을 기록합니다. 앱은 Segment SDK에서 `track` 콜을 호출하고, 이는 [디바이스 모드](https://segment.com/docs/connections/destinations/#connection-modes)의 Adjust SDK에서 이에 상응하는 이벤트 트래킹 콜을 호출합니다. Segment는 때때로 **디바이스 모드** 를 사용할 때도 **클라우드 모드** 로 이벤트를 전송합니다. 이는 이미 알려진 문제입니다. 이에 따라 Adjust는 종종 동일한 이벤트 토큰에 대해 Adjust SDK와 S2S 연동으로부터 이벤트를 수신하게 됩니다.
+Segment SDK가 Adjust SDK를 초기화하면 Adjust는 자동으로 설치 및/또는 세션을 기록합니다. 앱은 Segment SDK에서 `track` 콜을 호출하고, 이는 [디바이스 모드](https://segment.com/docs/connections/destinations/#connection-modes)의 Adjust SDK에서 상응하는 `trackEvent` 콜을 호출합니다. Segment가 **디바이스 모드** 를 사용할 때도 **클라우드 모드** 로 이벤트를 전송하는 경우도 있습니다. 이는 이미 알려진 문제입니다. 이에 따라 Adjust는 종종 동일한 이벤트 토큰에 대해 Adjust SDK와 S2S 연동으로부터 이벤트를 수신하게 됩니다.
 
 1. [Segment Android SDK](https://segment.com/docs/connections/sources/catalog/libraries/mobile/android/)를 연동합니다.
 2. Segment SDK에서 Adjust 연동을 추가합니다\([Android](https://segment.com/docs/connections/destinations/catalog/adjust/#android)\).
 3. 다음을 앱에 추가합니다.
 
-   -  [Google Play Services 추가](/ko/sdk/android#2-add-google-play-services)
-   -  [권한 추가](/ko/sdk/android#3-add-permissions)
-   -  [Proguard 설정](/ko/sdk/android#4-set-up-proguard)
-   -  [설치 리퍼러 설정](/ko/sdk/android#5-set-up-install-referrer)
+   -  [Google Play Services 추가](/en/sdk/android#2-add-google-play-services)
+   -  [권한 추가](/en/sdk/android#3-add-permissions)
+   -  [Proguard 설정](/en/sdk/android#4-set-up-proguard)
+   -  [설치 리퍼러 설정](/en/sdk/android#5-set-up-install-referrer)
 
-4. 앱\([Android](https://segment.com/docs/connections/sources/catalog/libraries/mobile/android/#track)\)에서 트래킹하고자 하는 개별 이벤트에 대한 [트래킹](https://segment.com/docs/connections/spec/track/) 콜을 생성합니다.
+4. 앱\([Android](https://segment.com/docs/connections/sources/catalog/libraries/mobile/android/#track)\)에서 측정할 개별 이벤트에 대한 [`track` 콜](https://segment.com/docs/connections/spec/track/)을 생성합니다.
 
--  선택 사항: 커스텀 키 값 쌍을 `properties` 객체로 전달할 수 있습니다. Segment SDK는 Adjust SDK 이벤트 트래킹 콜에 해당 속성을 콜백 파라미터로 전달합니다. Adjust 파트너 파라미터는 지원되지 않습니다.
+-  선택 사항: 커스텀 키 값 쌍을 `properties` 객체로 전달할 수 있습니다. Segment SDK는 Adjust SDK `trackEvent` 콜에 해당 속성을 콜백 파라미터로 전달합니다. Adjust 파트너 파라미터는 지원되지 않습니다.
 
 <Callout type="note">
 
