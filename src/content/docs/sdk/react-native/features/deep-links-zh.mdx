@@ -1,0 +1,131 @@
+---
+title: "深度链接"
+description: "按照本节中的说明操作，设置深度链接。"
+category-title: "深度链接"
+slug: "en/sdk/react-native/features/deep-links"
+---
+您可以创建深度链接来将用户转到应用中的特定页面。针对用户是否已在设备上安装您的应用，Adjust SDK 会使用不同的逻辑：
+
+* 直接深度链接：用于用户已经安装应用的情况。用户会被转向链接中指定的页面。
+* 如果用户尚未安装应用，那么就会发生延迟深度链接。链接首先会将用户转向应用商店页面来安装应用。用户安装后，就会被带到链接中指定的页面。
+
+用户通过链接打开应用后，SDK 就可以读取深度链接数据了。
+
+[设置深度链接](set-up-deep-linking)
+-----------------------------
+
+如果用户已经安装了您的应用，那么在与包含深度链接信息的链接互动时，应用就会打开。Adjust SDK 中包含的工具能够解析深度链接信息，在应用中使用。
+
+在 v4\.30 或更新版本中，SDK 会向安卓和 iOS 项目注入必要的设置。要配置深度链接，请在 Unity Editor inspector 窗口中添加 URL 方案
+
+要在 React Native 应用中设置深度链接：
+
+1. 您需要在应用层级上设置深度链接。请按照下方链接中的说明，在您的目标平台上设置深度链接：
+
+   * [iOS](/en/sdk/ios/features/deep-links)
+   * [安卓](/en/sdk/android/features/deep-links)
+
+2. 参考[React Native 文档](https://help.adjust.com/en/article/deep-links-react-native-sdk#:~:text=React%20Native%20documentation)，按照其中说明学习如何支持两个平台。
+
+3. 在 JavaScript 代码中使用获得的深度链接 URL。
+
+[延迟深度链接](deferred-deep-linking)
+-------------------------------
+
+### [禁用延迟深度链接](disable-deferred-deep-linking)
+
+<codeblock title="方法签名"> 
+
+```ts
+public setShouldLaunchDeeplink(shouldLaunchDeeplink: boolean): void
+```
+
+</CodeBlock> 
+
+SDK 默认自动打开延迟深度链接。您可以将一个 `boolean` 参数传送至 `setShouldLaunchDeeplink` 方法以进行该设置。
+
+```js
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox,
+);
+//...
+adjustConfig.setShouldLaunchDeeplink(true);
+//...
+Adjust.create(adjustConfig);
+```
+
+### [设置延迟深度链接委托](set-up-a-deferred-deep-link-delegate)
+
+<codeblock title="方法签名"> 
+
+```ts
+public setDeferredDeeplinkCallbackListener(callback: (uri: AdjustUri) => void): void
+```
+
+</CodeBlock> 
+
+您可以配置 Adjust SDK，使其在接收到延迟深度链接时调用一个委托函数。委托函数会以 `string` 参数的形式接收深度链接。
+
+```js
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox,
+);
+//...
+adjustConfig.setDeferredDeeplinkCallbackListener(function (deeplink) {
+   console.log("Deferred deep link URL content: " + deeplink);
+});
+//...
+Adjust.create(adjustConfig);
+```
+
+### [示例](example)
+
+该示例展示了如何在用户打开延迟深度链接时记录深度链接地址。
+
+```js
+var LogDeepLink = function (deeplinkURL) {
+   console.log("Deeplink URL: " + deeplinkURL);
+};
+//...
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox,
+);
+adjustConfig.setDeferredDeeplinkCallbackListener(LogDeepLink);
+//...
+Adjust.create(adjustConfig);
+```
+
+### [启用 LinkMe](enable-linkme)
+
+<codeblock title="方法签名"> 
+
+```js
+public setLinkMeEnabled(linkMeEnabled: boolean): void
+```
+
+</CodeBlock> 
+
+通过 Adjust SDK，您可以从设备剪贴板复制深度链接信息。配合Adjust LinkMe 解决方案使用时，该功能可在 iOS 15 及更高版本操作系统中设置延迟深度链接。
+<callout type="important"> 
+
+用户第一次打开应用时，Adjust SDK 会检查剪贴板。设备会显示对话框，询问用户是否允许应用读取剪贴板。
+</Callout> 
+
+当用户点击 LinkMe URL 时，可以选择将链接信息复制到剪贴板。您可以使用 Adjust SDK 读取系统剪贴板，获取深度链接信息。如果含有深度链接信息，SDK 就会将用户转到应用中的正确页面。
+
+要在您的应用中开启剪贴板查看，在 config 对象上调用 `setLinkMeEnabled` 方法并发送 `true` 参数：
+
+```js
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox,
+);
+//...
+adjustConfig.setLinkMeEnabled(true);
+//...
+Adjust.create(adjustConfig);
+```
+
