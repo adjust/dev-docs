@@ -1,28 +1,25 @@
 ---
 title: "Segment SDK 연동"
 description: "Segment 연동을 사용하여 Segment 정보를 Adjust 서버로 전달합니다."
-slug: "ko/sdk/ios/integrations/segment"
+slug: "en/sdk/ios/integrations/segment"
 ---
-
 Adjust SDK와 Segment SDK는 다음 중 하나의 방식으로 연동이 가능합니다.
 
--  **독립적인 SDK 솔루션** \- Adjust SDK가 Segment SDK로부터 독립적으로 작동합니다. 본 솔루션을 사용하면 딥링크와 같은 추가적인 Adjust SDK 기능을 도입하는 것이 더욱 간편해집니다.
+* **독립적인 SDK 솔루션** \- Adjust SDK가 Segment SDK로부터 독립적으로 작동합니다. 본 솔루션을 사용하면 딥링크와 같은 추가적인 Adjust SDK 기능을 도입하는 것이 더욱 간편해집니다.
 
-Adjust 및 Segment 대시보드에서 본 연동을 진행하는 방법은 [Segment independent 연동 설정](https://help.adjust.com/ko/article/set-up-segment-independent-integration) 페이지를 참고하시기 바랍니다.
+  Adjust 및 Segment 대시보드에서 본 연동을 진행하는 방법은 [Segment independent 연동 설정](https://help.adjust.com/en/article/set-up-segment-independent-integration) 페이지를 참고하시기 바랍니다. 
+* **래핑된 SDK 솔루션** \- Segment SDK가 Adjust SDK를 래핑할 수 있어, 최소의 노력으로 앱에서 두 SDK를 연결할 수 있습니다. 이를 통해 Segment SDK에서 Adjust SDK 배포를 관리하고, Adjust와 Segment가 각자의 시스템에서 이벤트를 기록킹할 수 있습니다. 이 솔루션은 SDK 이벤트를 사용하므로 SKAdNetwork 최적화에 더욱 강력합니다.
 
--  **래핑된 SDK 솔루션** \- Segment SDK가 Adjust SDK를 래핑할 수 있어, 최소의 노력으로 앱에서 두 SDK를 연결할 수 있습니다. 이를 통해 Segment SDK에서 Adjust SDK 배포를 관리하고, Adjust와 Segment가 각자의 시스템에서 이벤트를 기록킹할 수 있습니다. 이 솔루션은 SDK 이벤트를 사용하므로 SKAdNetwork 최적화에 더욱 강력합니다.
-
-Adjust 및 Segment 대시보드에서 본 연동을 진행하는 방법은 [Segment SDK\-SDK 연동 설정](https://help.adjust.com/ko/article/set-up-segment-sdk-sdk-integration) 페이지를 참고하시기 바랍니다.
+  Adjust 및 Segment 대시보드에서 본 연동을 진행하는 방법은 [Segment SDK\-SDK 연동 설정](https://help.adjust.com/en/article/set-up-segment-sdk-sdk-integration) 페이지를 참고하시기 바랍니다.
 
 어떤 솔루션을 선택하든간에 Segment 대시보드에서의 이벤트 정의가 필요합니다.
+<callout type="warning"> 
 
-<Callout type="warning">
+해당 솔루션은 [파트너 파라미터](https://help.adjust.com/en/article/record-events-ios-sdk#add-partner-parameters)를 지원하지 않습니다. 커스텀 파라미터를 사용하여 네트워크로 이벤트를 전송해야 하는 경우\(예: 동적 리타겟팅 지원\), 이러한 이벤트를 Segment SDK 및 Adjust SDK에서 별도로 설정하되, Segment 대시보드에서 Adjust destination에 연결하지 않도록 주의하시기 바랍니다.
+</Callout> 
 
-해당 솔루션은 [파트너 파라미터](https://help.adjust.com/ko/article/record-events-ios-sdk#add-partner-parameters)를 지원하지 않습니다. 커스텀 파라미터를 사용하여 네트워크로 이벤트를 전송해야 하는 경우\(예: 동적 리타겟팅 지원\), 이러한 이벤트를 Segment SDK 및 Adjust SDK에서 별도로 설정하되, Segment 대시보드에서 Adjust destination에 연결하지 않도록 주의하시기 바랍니다.
-
-</Callout>
-
-## [Independent SDK 솔루션 설정](independent-sdk-solution-setup)
+[Independent SDK 솔루션 설정](independent-sdk-solution-setup)
+--------------------------------------------------------
 
 ### [1\. Segment SDK 설정](1-segment-sdk-setup)
 
@@ -30,43 +27,39 @@ Segment SDK에서 트래킹 API 콜 이벤트를 정의합니다. 각 이벤트�
 
 1. [Segment iOS SDK](https://segment.com/docs/connections/sources/catalog/libraries/mobile/ios/)를 연동합니다.
 
-   <Callout type="note">
+   <callout type="note"> 
 
-   트래킹 페이로드에서 `.context.device.id` 또는 `.context.device.type`을 전달하면 안 됩니다. Segment SDK는 자동으로 기기에서 해당 속성을 조회하므로 이를 수동으로 전달할 경우 연동 문제가 발생할 수 있습니다.
+   `track` 페이로드에서 `.context.device.id` 또는 `.context.device.type`을 전달하지 마시기 바랍니다. Segment SDK는 자동으로 기기에서 해당 속성을 조회하므로 이를 수동으로 전달할 경우 연동 문제가 발생할 수 있습니다.
+   </Callout> 
+2. 앱에서 측정할 개별 이벤트에 대한 [`track` 콜](https://segment.com/docs/connections/sources/catalog/libraries/mobile/ios/#track)을 생성합니다.
 
-   </Callout>
-
-2. 앱 \([iOS](https://segment.com/docs/connections/sources/catalog/libraries/mobile/ios/#track)\)에서 트래킹하고자 하는 개별 이벤트에 대한 트래킹 콜을 생성합니다.
-
--  선택 사항: 커스텀 키 값 쌍을 `properties` 객체로 전달할 수 있습니다. Segment SDK는 Adjust SDK 이벤트 기록 콜에 해당 속성을 콜백 파라미터로 전달합니다. Adjust 파트너 파라미터는 지원되지 않습니다.
+   * 선택 사항: 커스텀 키 값 쌍을 `properties` 객체로 전달할 수 있습니다. Segment SDK는 Adjust SDK 이벤트 기록 콜에 해당 속성을 콜백 파라미터로 전달합니다. Adjust 파트너 파라미터는 지원되지 않습니다.
 
 ### [2\. Adjust SDK 설정](2-adjust-sdk-setup)
 
 1. 앱에서 Adjust Android SDK를 연동합니다.
-2. Adjust SDK에 다음의 파라미터를 [세션 파트너 파라미터](https://help.adjust.com/ko/article/session-parameters-ios-sdk#session-partner-parameters)로 전달합니다. 설치 또는 세션 시작에서 이러한 파라미터를 이용하려면 [시작 지연](https://help.adjust.com/ko/article/session-parameters-ios-sdk#delay-start)이 필요합니다.
+2. Adjust SDK에 다음의 파라미터를 [세션 파트너 파라미터](/en/sdk/ios/features/session-parameters)로 전달합니다. 설치 또는 세션 시작에서 이러한 파라미터를 이용하려면 [SDK 시작 지연](/en/sdk/ios/configuration#delay-the-start-of-the-sdk)이 필요합니다. 
+   * `anonymous_id` \- Adjust가 Segment로 콜백을 전송하는 데 필요합니다. [Segment SDK에서 `anonymous_id` 값을 조회](https://segment.com/docs/connections/sources/catalog/libraries/mobile/ios/#anonymousid)할 수 있습니다.
+   * 선택 사항: `user_id` \- 직접 정의하는 값으로, 시스템에서 조회할 수 있습니다.
 
--  `anonymous_id` \- Adjust가 Segment로 콜백을 전송하는 데 필요합니다. [Segment SDK에서 anonymous_id 값을 조회](https://segment.com/docs/connections/sources/catalog/libraries/mobile/ios/#anonymousid)할 수 있습니다.
--  선택 사항: `user_id` \- 직접 정의하는 값으로, 시스템에서 조회할 수 있습니다.
+[래핑된 SDK 솔루션](wrapped-sdk-solution)
+-----------------------------------
 
-## [래핑된 SDK 솔루션](wrapped-sdk-solution)
-
-<Callout type="important">
+<callout type="important"> 
 
 Adjust SDK를 직접 앱에 연동하지 마시기 바랍니다. Adjust SDK를 직접 연동한 경우, 앱에서 제거하시기 바랍니다.
-
-</Callout>
+</Callout> 
 
 Segment SDK가 Adjust SDK를 초기화하면 Adjust는 자동으로 설치 및/또는 세션을 기록합니다. 앱은 Segment SDK에서 `track` 콜을 호출하고, 이는 [디바이스 모드](https://segment.com/docs/connections/destinations/#connection-modes)의 Adjust SDK에서 이에 상응하는 이벤트 트래킹 콜을 호출합니다. Segment는 때때로 **디바이스 모드** 를 사용할 때도 **클라우드 모드** 로 이벤트를 전송합니다. 이는 이미 알려진 문제입니다. 이에 따라 Adjust는 종종 동일한 이벤트 토큰에 대해 Adjust SDK와 S2S 연동으로부터 이벤트를 수신하게 됩니다.
 
 1. [Segment iOS SDK](https://segment.com/docs/connections/sources/catalog/libraries/mobile/ios/)를 연동합니다.
-2. Segment SDK에서 Adjust 연동을 추가합니다\([iOS](https://segment.com/docs/connections/destinations/catalog/adjust/#ios)\).
-3. 다음의 [추가 iOS 프레임워크](https://help.adjust.com/ko/article/get-started-ios-sdk#add-ios-frameworks)를 앱에 추가합니다.
-4. 앱\([iOS](https://segment.com/docs/connections/sources/catalog/libraries/mobile/ios/#track)\)에서 트래킹하고자 하는 개별 이벤트에 대한 [트래킹](https://segment.com/docs/connections/spec/track/) 콜을 생성합니다.
+2. Segment SDK에서 [Adjust 연동](https://segment.com/docs/connections/destinations/catalog/adjust/#ios)을 추가합니다.
+3. 다음의 [추가 iOS 프레임워크](https://help.adjust.com/en/article/get-started-ios-sdk#add-ios-frameworks)를 앱에 추가합니다.
+4. 앱에서 측정할 개별 이벤트에 대한 [`track` 콜](https://segment.com/docs/connections/spec/track/)을 생성합니다. 
+   * 선택 사항: 커스텀 키 값 쌍을 `properties` 객체로 전달할 수 있습니다. Segment SDK는 Adjust SDK 이벤트 트래킹 콜에 해당 속성을 콜백 파라미터로 전달합니다. Adjust 파트너 파라미터는 지원되지 않습니다.
 
--  선택 사항: 커스텀 키 값 쌍을 `properties` 객체로 전달할 수 있습니다. Segment SDK는 Adjust SDK 이벤트 트래킹 콜에 해당 속성을 콜백 파라미터로 전달합니다. Adjust 파트너 파라미터는 지원되지 않습니다.
-
-<Callout type="note">
+<callout type="note"> 
 
 딥링크와 같이 Segment SDK에서 지원되지 않는 추가적인 Adjust SDK 기능을 도입하고자 하는 경우, [Segment 문서](https://segment.com/docs/connections/sources/catalog/libraries/mobile/ios/ios-faqs/#how-do-i-know-when-a-destination-is-initialized)를 참조하시기 바랍니다.
-
 </Callout>
+
