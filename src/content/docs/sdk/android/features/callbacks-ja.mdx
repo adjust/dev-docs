@@ -2,7 +2,10 @@
 title: "コールバック情報を送信する"
 description: "Adjustにコールバック情報を送信するには、これらのメソッドを使用してください。"
 slug: "ja/sdk/android/features/callbacks"
+multiVersion: true
 ---
+
+<SdkVersion version="v5">
 
 SDKがAdjustに情報を送信する時に関数をトリガーするコールバックを設定します。コールバックは **セッション** と **イベント** に対して設定できます。
 
@@ -32,9 +35,411 @@ SDKがセッション情報を送信した時に関数をトリガーする、�
 
 ### [Successコールバック](success-callbacks)
 
+<CodeBlock title="メソッドシグネチャー">
+
 ```java
 public void setOnSessionTrackingSucceededListener(OnSessionTrackingSucceededListener onSessionTrackingSucceededListener)
 ```
+
+</CodeBlock>
+
+SDKがセッションを記録した時に関数をトリガーする、successコールバックを設定します。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val config = AdjustConfig(this, appToken, environment)
+//...
+config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
+   override fun onFinishedSessionTrackingSucceeded(sessionSuccessResponseData: AdjustSessionSuccess) {
+      //...
+   }
+})
+//...
+Adjust.initSdk(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+//...
+config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
+   @Override
+   public void onFinishedSessionTrackingSucceeded(AdjustSessionSuccess sessionSuccessResponseData) {
+      //...
+   }
+});
+//...
+Adjust.initSdk(config)
+```
+
+</Tab>
+</Tabs>
+
+#### [例](example)
+
+この例では、コールバック関数`sessionSuccess`を作成し、 **success** コールバックとして登録する方法を示しています。その関数は、SDKがセッションを記録した際にタイムスタンプをログに記録します。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val config = AdjustConfig(this, appToken, environment)
+
+config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
+   override fun sessionSuccess(sessionSuccessResponseData: AdjustSessionSuccess) {
+      Log.v("Session recorded at " + sessionSuccessResponseData.Timestamp)
+   }
+})
+
+Adjust.initSdk(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+
+config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
+   @Override
+   public void sessionSuccess(AdjustSessionSuccess sessionSuccessResponseData) {
+      Log.v("Session recorded at " + sessionSuccessResponseData.Timestamp)
+   }
+});
+
+Adjust.initSdk(config)
+```
+
+</Tab>
+</Tabs>
+
+### [Failureコールバック](failure-callbacks)
+
+<CodeBlock title="メソッドシグネチャー">
+
+```java
+public void setOnSessionTrackingFailedListener(OnSessionTrackingFailedListener onSessionTrackingFailedListener)
+```
+
+</CodeBlock>
+
+SDKがセッションの記録に失敗した時に関数をトリガーする、failureコールバックを設定します。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val config = AdjustConfig(this, appToken, environment)
+//...
+config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
+   override fun onFinishedSessionTrackingFailed(sessionFailureResponseData: AdjustSessionFailure) {
+      //...
+   }
+})
+//...
+Adjust.initSdk(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+//...
+config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
+   @Override
+   public void onFinishedSessionTrackingFailed(AdjustSessionFailure sessionFailureResponseData) {
+      //...
+   }
+});
+//...
+Adjust.initSdk(config)
+```
+
+</Tab>
+</Tabs>
+
+#### [例](example-1)
+
+この例では、コールバック関数`sessionFailure`を作成し、 **failure** コールバックとして登録する方法を示します。その関数は、セッションの失敗メッセージをログに記録します。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val config = AdjustConfig(this, appToken, environment)
+
+config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
+   override fun sessionFailure(sessionFailureResponseData: AdjustSessionFailure) {
+      Log.v("Session recording failed. Response: " + sessionFailureResponseData.Message)
+   }
+})
+
+Adjust.initSdk(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+
+config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
+   @Override
+   public void sessionFailure(AdjustSessionFailure sessionFailureResponseData) {
+      Log.v("Session recording failed. Response: " + sessionFailureResponseData.Message)
+   }
+});
+
+Adjust.initSdk(config)
+```
+
+</Tab>
+</Tabs>
+
+## [イベントコールバック](event-callbacks)
+
+SDKがイベント情報を送信した時に関数をトリガーする、イベントコールバックを設定します。 **Success** コールバックと **failure** コールバックが作成できます。 **Success** コールバックは、SDKが情報をAdjustのサーバーに送信する時にトリガーします。 **Failure** コールバックは、SDKが情報を送信している間に問題が発生した際にトリガーします。
+
+イベントコールバックは、レスポンス データ オブジェクトにアクセスできます。そのプロパティをコールバック関数内で使用することが可能です。
+
+<Table>
+
+| プロパティ     | データタイプ                  | 説明                                                   |
+| -------------- | ----------------------------- | ------------------------------------------------------ |
+| `Message`      | `String`                      | サーバーからのメッセージまたはSDKのエラーログ          |
+| `Timestamp`    | `String`                      | Adjustのサーバーからのタイムスタンプ                   |
+| `Adid`         | `String`                      | Adjustから提供されるユニークデバイスID                 |
+| `EventToken`   | `String`                      | イベントトークン                                       |
+| `CallbackId`   | `String`                      | イベントオブジェクトに設定されたカスタムコールバックID |
+| `JsonResponse` | `Dictionary <String, Object>` | サーバーからのレスポンスを含むJSONオブジェクト         |
+| `WillRetry`    | `Boolean`                     | 失敗したパッケージの再送を試みるかどうかを示します。   |
+
+</Table>
+
+### [Successコールバック](success-callbacks-1)
+
+<CodeBlock title="メソッドシグネチャー">
+
+```java
+public void setOnEventTrackingSucceededListener(OnEventTrackingSucceededListener onEventTrackingSucceededListener)
+```
+
+</CodeBlock>
+
+SDKがイベントを記録した時に関数をトリガーする、successコールバックを設定します。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val config = AdjustConfig(this, appToken, environment)
+//...
+config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
+   override fun onFinishedEventTrackingSucceeded(eventSuccessResponseData: AdjustEventSuccess) {
+      //...
+   }
+})
+//...
+Adjust.initSdk(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+//...
+config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
+   @Override
+   public void onFinishedEventTrackingSucceeded(AdjustEventSuccess eventSuccessResponseData) {
+      //...
+   }
+});
+//...
+Adjust.initSdk(config)
+```
+
+</Tab>
+</Tabs>
+
+#### [例](example-2)
+
+この例では、コールバック関数`eventSuccess`を作成し、 **success** コールバックとして登録する方法を示しています。その関数は、SDKがイベントを記録した際にタイムスタンプをログに記録します。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val config = AdjustConfig(this, appToken, environment)
+
+config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
+   override fun eventSuccess(eventSuccessResponseData: AdjustEventSuccess) {
+      Log.v("Event recorded at " + eventSuccessResponseData.Timestamp)
+   }
+})
+
+Adjust.initSdk(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+
+config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
+   @Override
+   public void eventSuccess(AdjustEventSuccess eventSuccessResponseData) {
+      Log.v("Event recorded at " + eventSuccessResponseData.Timestamp)
+   }
+});
+
+Adjust.initSdk(config)
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+function eventSuccess(eventSuccessResponseData) {
+   console.log("Event recorded at " + eventSuccessResponseData.Timestamp);
+}
+
+let adjustConfig = new AdjustConfig(appToken, environment);
+adjustConfig.setEventSuccessCallback(eventSuccess);
+
+Adjust.initSdk(adjustConfig);
+```
+
+</Tab>
+</Tabs>
+
+### [Failureコールバック](failure-callbacks-1)
+
+<CodeBlock title="メソッドシグネチャー">
+
+```java
+public void setOnEventTrackingFailedListener(OnEventTrackingFailedListener onEventTrackingFailedListener)
+```
+
+</CodeBlock>
+
+SDKがセッションの記録に失敗した時に関数をトリガーする、failureコールバックを設定します。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val config = AdjustConfig(this, appToken, environment)
+//...
+config.setOnEventTrackingFailedListener (OnEventTrackingFailedListener() {
+   override fun onFinishedEventTrackingFailed(eventFailureResponseData: AdjustEventFailure) {
+      //...
+   }
+})
+//...
+Adjust.initSdk(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+//...
+config.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
+   @Override
+   public void onFinishedEventTrackingFailed(AdjustEventFailure eventFailureResponseData) {
+      //...
+   }
+});
+//...
+Adjust.initSdk(config)
+```
+
+</Tab>
+</Tabs>
+
+#### [例](example-3)
+
+この例では、コールバック関数`eventFailure`を作成し、 **failure** コールバックとして登録する方法を示します。その関数は、イベントの失敗メッセージをログに記録します。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val config = AdjustConfig(this, appToken, environment)
+
+config.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
+   override fun eventFailure(eventFailureResponseData: AdjustEventFailure) {
+      Log.v("Event recording failed. Response: " + eventFailureResponseData.Message)
+   }
+})
+
+Adjust.initSdk(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+
+config.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
+   @Override
+   public void eventFailure(AdjustEventFailure eventFailureResponseData) {
+      Log.v("Event recording failed. Response: " + eventFailureResponseData.Message)
+   }
+});
+
+Adjust.initSdk(config)
+```
+
+</Tab>
+</Tabs>
+</SdkVersion>
+<SdkVersion version="v4">
+
+SDKがAdjustに情報を送信する時に関数をトリガーするコールバックを設定します。コールバックは **セッション** と **イベント** に対して設定できます。
+
+<Callout type="important">
+
+SDKを初期化する **前** にコールバックパラメーターを登録することが必要です。
+
+</Callout>
+
+## [セッションコールバック](session-callbacks)
+
+SDKがセッション情報を送信した時に関数をトリガーする、セッションコールバックを設定します。 **Success** コールバックと **failure** コールバックが作成できます。 **Success** コールバックは、SDKが情報をAdjustのサーバーに送信する時にトリガーします。 **Failure** コールバックは、SDKが情報を送信している間に問題が発生した際にトリガーします。
+
+セッションコールバックは、レスポンス データ オブジェクトにアクセスできます。そのプロパティをコールバック関数内で使用することが可能です。
+
+<Table>
+
+| プロパティ     | データタイプ                  | 説明                                                 |
+| -------------- | ----------------------------- | ---------------------------------------------------- |
+| `Message`      | `String`                      | サーバーからのメッセージまたはSDKのエラーログ        |
+| `Timestamp`    | `String`                      | Adjustのサーバーからのタイムスタンプ                 |
+| `Adid`         | `String`                      | Adjustから提供されるユニークデバイスID               |
+| `JsonResponse` | `Dictionary <String, Object>` | サーバーからのレスポンスを含むJSONオブジェクト       |
+| `WillRetry`    | `Boolean`                     | 失敗したパッケージの再送を試みるかどうかを示します。 |
+
+</Table>
+
+### [Successコールバック](success-callbacks)
+
+<CodeBlock title="メソッドシグネチャー">
+
+```java
+public void setOnSessionTrackingSucceededListener(OnSessionTrackingSucceededListener onSessionTrackingSucceededListener)
+```
+
+</CodeBlock>
 
 SDKがセッションを記録した時に関数をトリガーする、successコールバックを設定します。
 
@@ -138,9 +543,13 @@ Adjust.onCreate(adjustConfig);
 
 ### [Failureコールバック](failure-callbacks)
 
+<CodeBlock title="メソッドシグネチャー">
+
 ```java
 public void setOnSessionTrackingFailedListener(OnSessionTrackingFailedListener onSessionTrackingFailedListener)
 ```
+
+</CodeBlock>
 
 SDKがセッションの記録に失敗した時に関数をトリガーする、failureコールバックを設定します。
 
@@ -267,9 +676,13 @@ SDKがイベント情報を送信した時に関数をトリガーする、イ�
 
 ### [Successコールバック](success-callbacks-1)
 
+<CodeBlock title="メソッドシグネチャー">
+
 ```java
 public void setOnEventTrackingSucceededListener(OnEventTrackingSucceededListener onEventTrackingSucceededListener)
 ```
+
+</CodeBlock>
 
 SDKがイベントを記録した時に関数をトリガーする、successコールバックを設定します。
 
@@ -373,9 +786,13 @@ Adjust.onCreate(adjustConfig);
 
 ### [Failureコールバック](failure-callbacks-1)
 
+<CodeBlock title="メソッドシグネチャー">
+
 ```java
 public void setOnEventTrackingFailedListener(OnEventTrackingFailedListener onEventTrackingFailedListener)
 ```
+
+</CodeBlock>
 
 SDKがセッションの記録に失敗した時に関数をトリガーする、failureコールバックを設定します。
 
@@ -478,3 +895,4 @@ Adjust.onCreate(adjustConfig);
 
 </Tab>
 </Tabs>
+</SdkVersion>

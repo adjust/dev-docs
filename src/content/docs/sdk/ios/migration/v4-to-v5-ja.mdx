@@ -1,38 +1,38 @@
 ---
-title: "SDK v5 migration guide"
-description: "Follow this guide to upgrade from SDK v4 to SDK v5"
+title: "SDK v5移行ガイド"
+description: "SDK v4からSDK v5にアップグレードするには、このガイドに従ってください。"
 slug: "ja/sdk/ios/migration/v4-to-v5"
 sidebar-position: 1
 ---
 
-<Callout type="important" title="Open beta">
+<Callout type="important" title="オープンベータ版">
 
-SDK v5 is in open beta. All features are subject to change.
+SDK v5はオープンベータ版です。全ての機能は変更される可能性があります。
 
 </Callout>
 
-## [Before you begin](before-you-begin)
+## [事前準備](before-you-begin)
 
-Here's what you need to do before updating to SDK v5:
+SDK v5にアップデートする前に、以下を行ってください。
 
-1. SDK v5 supports [SDK signature verification](https://help.adjust.com/ja/article/sdk-signature) natively. If you currently use the SDK signature library, you need to uninstall this first.
-2. If your app targets API versions lower than the following, you need to update your app before you can use SDK v5:
-   -  iOS: **12\.0**
-   -  tvOS: **12\.0**
+1. SDK v5は[SDKシグネチャーの検証](https://help.adjust.com/ja/article/sdk-signature)をネイティブにサポートします。現在SDKシグネチャーライブラリを使用している場合は、まずこれをアンインストールしてください。
+2. アプリが以下のバージョン以前のAPIバージョンを対象にしている場合、SDK v5を使用する前にアプリをアップデートする必要があります：
+   -  iOS： **12\.0**
+   -  tvOS： **12\.0**
 
-## [Install the beta SDK](install-the-sdk)
+## [ベータ版のSDKをインストールする](install-the-sdk)
 
 <Callout type="important">
 
-SDK v5 is currently available only on Cocoapods.
+SDK v5は、現在Cocoapodsでのみ利用可能です。
 
 </Callout>
 
-To start using SDK v5, you need to add it as a dependency in your XCode project. To do this:
+SDK v5の使用を開始するには、XCodeプロジェクトにdependencyとしてSDK v5を追加する必要があります。これを行うには、以下の手順に従ってください。
 
-1. Remove any older versions of the SDK you currently have in your `Podfile`.
+1. 現在`Podfile`にある古いバージョンの SDK を全て削除します。
 
-2. Add the following line to your `Podfile`:
+2. 以下を`Podfile`ファイルに追加します：
 
    <CodeBlock title="Podfile">
 
@@ -42,23 +42,23 @@ To start using SDK v5, you need to add it as a dependency in your XCode project.
 
    </CodeBlock>
 
-3. Run `pod install` to install the dependencies.
+3. `pod install`を実行してdependencyをインストールします。
 
-## [Changes](changes)
+## [変更内容](changes)
 
 <Callout type="warning">
 
-SDK v5 is a major version update. This means there are breaking changes that require you to update your code.
+SDK v5はメジャーバージョンアップです。つまり、コードを更新しなければならないような大きな変更があるということです。
 
 </Callout>
 
-Once you've installed the v5 SDK, you need to update your existing Adjust code to use the new APIs.
+v5 SDKをインストールしたら、新しいAPIを使用するために既存のAdjustコードを更新する必要があります。
 
-### [Initialization method](init-method)
+### [初期化メソッド](init-method)
 
 <MinorVersion changed="v5">
 
-In SDK v4, the SDK is initialized by configuring an `ADJConfig` object and passing it to the `[Adjust appDidLaunch]` method.
+SDK v4では、SDKは`ADJConfig`オブジェクトを設定し、`[Adjust appDidLaunch]`メソッドにパスすることで初期化されます。
 
 </MinorVersion>
 <Tabs>
@@ -91,7 +91,7 @@ NSString *environment = ADJEnvironmentSandbox;
 </Tab>
 </Tabs>
 
-In SDK v5, this method has been renamed to `[Adjust initSdk]`.
+SDK v5では、このメソッドは`[Adjust initSdk]`に改名されました。
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -123,20 +123,20 @@ ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:yourAppToken
 </Tab>
 </Tabs>
 
-### [Configuration](configuration)
+### [設定](configuration)
 
-This section covers changes to SDK configuration.
+このセクションでは、SDK設定の変更について説明します。
 
-#### [Disable and enable the SDK](disable-enable-sdk)
+#### [SDKを無効化・有効化する](disable-enable-sdk)
 
 <MinorVersion changed="v5">
 
-In SDK v4, you can enable and disable the SDK by calling `[Adjust setEnabled]` with a `BOOL` value.
+SDK v4では、`BOOL`値で`[Adjust setEnabled]`を呼び出すことで、SDKを有効化・無効化することができます。
 
 </MinorVersion>
 
--  Call `[Adjust setEnabled:NO]` to disable the SDK.
--  Call `[Adjust setEnabled:YES]` to enable the SDK
+-  SDKを無効化するには、`[Adjust setEnabled:NO]`を呼び出します。
+-  SDKを有効化するには、`[Adjust setEnabled:YES]`を呼び出します。
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -157,10 +157,10 @@ Adjust.setEnabled(true) //enable SDK
 </Tab>
 </Tabs>
 
-In SDK v5, this feature is split into separate commands for clarity.
+より明確にするため、SDK v5では、この機能は別々のコマンドに分割されています。
 
--  Call `[Adjust disable]` to disable the SDK.
--  Call `[Adjust enable]` to enable the SDK.
+-  SDKを無効化するには、`[Adjust disable]`を呼び出します。
+-  SDKを有効化するには、`[Adjust enable]`を呼び出します。
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -181,11 +181,11 @@ Adjust.enable() //enable SDK
 </Tab>
 </Tabs>
 
-#### [Send information in background](send-in-background)
+#### [バックグラウンドで情報を送信する](send-in-background)
 
 <MinorVersion changed="v5">
 
-In SDK v4, you can call the `[ADJConfig setSendInBackground]` method with a `true` argument to enable the SDK to send information to Adjust while your app is running in the background.
+SDK v4では、`[ADJConfig setSendInBackground]`メソッドに`true`引数を付けて呼び出すことで、アプリがバックグラウンドで動作している間にSDKがAdjustに情報を送信することができます。
 
 </MinorVersion>
 <Tabs>
@@ -205,7 +205,7 @@ adjustConfig.setSendInBackground(true)
 </Tab>
 </Tabs>
 
-In SDK v5, you need to call the `[ADJConfig enableSendingInBackground]` method with no arguments to enable the SDK to send information to Adjust while your app is running in the background.
+SDK v5では、アプリがバックグラウンドで動作している間にSDKがAdjustに情報を送信できるようにするには、引数なしで`[ADJConfig enableSendingInBackground]`メソッドを呼び出す必要があります。
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -224,11 +224,11 @@ adjustConfig.enableSendingInBackground()
 </Tab>
 </Tabs>
 
-#### [Disable AdServices information reading](disable-adservices)
+#### [AdServices情報の読み取りを無効化する](disable-adservices)
 
 <MinorVersion changed="v5">
 
-In SDK v4, you can call the `[ADJConfig setAllowAdServicesInfoReading]` method with a `false` argument to prevent the Adjust SDK from reading AdServices information.
+SDK v4では、`[ADJConfig setAllowAdServicesInfoReading]`メソッドに`false`引数を付けて呼び出すことで、Adjust SDKがAdServices情報を読み取らないようにすることができます。
 
 </MinorVersion>
 <Tabs>
@@ -248,7 +248,7 @@ adjustConfig.setAllowAdServicesInfoReading(false)
 </Tab>
 </Tabs>
 
-In SDK v5, you need to call the `disableAdServices` method with no arguments to prevent the Adjust SDK from reading AdServices information.
+SDK v5では、Adjust SDKがAdServices情報を読み取らないようにするには、引数なしで`disableAdServices`メソッドを呼び出す必要があります。
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -267,11 +267,11 @@ adjustConfig.disableAdServices()
 </Tab>
 </Tabs>
 
-#### [Disable IDFA reading](disable-idfa)
+#### [IDFAの読み取りを無効化する](disable-idfa)
 
 <MinorVersion changed="v5">
 
-In SDK v4, you can call the `[ADJConfig setAllowIdfaReading]` method with a `false` argument to prevent the Adjust SDK from reading the device's IDFA.
+SDK v4では、`[ADJConfig setAllowIdfaReading]`メソッドに`false`引数を付けて呼び出すことで、Adjust SDKがデバイスのIDFAを読み取らないようにすることができます。
 
 </MinorVersion>
 <Tabs>
@@ -291,7 +291,7 @@ adjustConfig.setAllowIdfaReading(false)
 </Tab>
 </Tabs>
 
-In SDK v5, you need to call the `disableIdfaReading` method with no arguments to prevent the Adjust SDK from reading the device's IDFA.
+SDK v5では、Adjust SDKがデバイスのIDFAを読み取らないようにするには、引数なしで`disableIdfaReading`メソッドを呼び出す必要があります。
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -310,11 +310,11 @@ adjustConfig.disableIdfaReading()
 </Tab>
 </Tabs>
 
-#### [Enable cost data in attribution](enable-cost-data)
+#### [アトリビューションにコストデータを有効化する](enable-cost-data)
 
 <MinorVersion changed="v5">
 
-In SDK v4, you can enable cost data in the device's attribution information by calling the `[ADJConfig setNeedsCost]` method with a `true` argument.
+SDK v4では、`[ADJConfig setNeedsCost]`メソッドに`true`引数をつけて呼び出すことで、デバイスのアトリビューション情報のコストデータを有効化することができます。
 
 </MinorVersion>
 <Tabs>
@@ -334,7 +334,7 @@ adjustConfig.setNeedsCost(true)
 </Tab>
 </Tabs>
 
-In SDK v5, you need to call the `[ADJConfig enableCostDataInAttribution]` method with no arguments.
+SDK v5では、引数なしで`[ADJConfig enableCostDataInAttribution]`メソッドを呼び出す必要があります。
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -353,11 +353,11 @@ adjustConfig.enableCostDataInAttribution()
 </Tab>
 </Tabs>
 
-#### [Enable LinkMe](enable-linkme)
+#### [LinkMeを有効化する](enable-linkme)
 
 <MinorVersion changed="v5">
 
-In SDK v4, you can enable [Adjust LinkMe](https://help.adjust.com/ja/article/linkme) by calling the `[ADJConfig setLinkMeEnabled]` method with a `true` argument.
+SDK v4では、`[ADJConfig setLinkMeEnabled]`メソッドに`true`引数を付けて呼び出すことで、[Adjust LinkMe](https://help.adjust.com/ja/article/linkme)を有効化できます。
 
 </MinorVersion>
 <Tabs>
@@ -377,7 +377,7 @@ adjustConfig.setLinkMeEnabled(true)
 </Tab>
 </Tabs>
 
-In SDK v5, you need to call the `[ADJConfig enableLinkMe]` method with no arguments.
+SDK v5では、引数なしで`[ADJConfig enableLinkMe]`メソッドを呼び出す必要があります。
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -396,11 +396,11 @@ adjustConfig.enableLinkMe()
 </Tab>
 </Tabs>
 
-#### [Only read device IDs once](read-device-id-once)
+#### [デバイスIDを1回だけ読み取る](read-device-id-once)
 
 <MinorVersion changed="v5">
 
-In SDK v4, you can instruct the SDK to only read device identifiers one time upon startup by calling the `[ADJConfig setReadDeviceInfoOnceEnabled]` method with a `true` argument.
+SDK v4では、`[ADJConfig setReadDeviceInfoOnceEnabled]`メソッドに`true`引数を付けて呼び出すことで、起動時に1回だけデバイス識別子を読み込むようにSDKに指示することができます。
 
 </MinorVersion>
 <Tabs>
@@ -420,7 +420,7 @@ adjustConfig.setReadDeviceInfoOnceEnabled(true)
 </Tab>
 </Tabs>
 
-In SDK v5, you need to call the `[ADJConfig enableDeviceIdsReadingOnce]` method with no arguments.
+SDK v5では、引数なしで`[ADJConfig enableDeviceIdsReadingOnce]`メソッドを呼び出す必要があります。
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -439,11 +439,11 @@ adjustConfig.enableDeviceIdsReadingOnce()
 </Tab>
 </Tabs>
 
-#### [Offline mode](offline-mode)
+#### [オフラインモード](offline-mode)
 
 <MinorVersion changed="v5">
 
-In SDK v4, you can enable and disable offline mode the SDK by calling `[Adjust setOfflineMode]` with a `BOOL` argument.
+SDK v4では、`BOOL`引数で`[Adjust setOfflineMode]`を呼び出すことで、SDKでオフラインモードを有効化・無効化することができます。
 
 </MinorVersion>
 <Tabs>
@@ -465,10 +465,10 @@ Adjust.setOfflineMode(false) // put the SDK back in online mode
 </Tab>
 </Tabs>
 
-In SDK v5, this feature is split into separate commands for clarity.
+より明確にするため、SDK v5では、この機能は別々のコマンドに分割されています。
 
--  Call `[Adjust switchToOfflineMode]` to set the SDK to offline mode.
--  Call `[Adjust switchBackToOnlineMode]` to set the SDK back to online mode.
+-  SDKをオフラインモードに設定するには、`[Adjust switchToOfflineMode]`を呼び出します。
+-  SDKをオンラインモードに戻すには、`[Adjust switchBackToOnlineMode]`を呼び出します。
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -489,11 +489,11 @@ Adjust.switchBackToOnlineMode() // put the SDK back in online mode
 </Tab>
 </Tabs>
 
-#### [Push tokens](push-tokens)
+#### [Pushトークン](push-tokens)
 
 <MinorVersion changed="v5">
 
-In SDK v4, you can set your push tokens using the `[Adjust setDeviceToken]` method.
+SDK v4では、`[Adjust setDeviceToken]`メソッドを使用してPushトークンを設定できます。
 
 </MinorVersion>
 <Tabs>
@@ -517,7 +517,7 @@ func application(_ app: UIApplication, didRegisterForRemoteNotificationsWithDevi
 </Tab>
 </Tabs>
 
-This method has been renamed to `[Adjust setPushToken]` in SDK v5\.
+このメソッドはSDK v5では`[Adjust setPushToken]`に改名されています。
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -541,15 +541,15 @@ func application(_ app: UIApplication, didRegisterForRemoteNotificationsWithDevi
 </Tabs>
 <Callout type="note">
 
-SDK v4 contains a method named `setPushToken` that takes an `NSString` value. The `setPushToken` method in SDK v5 accepts an `NSData` value
+SDK v4には、`NSString`の値を取る`setPushToken`というメソッドがあります。SDK v5の`setPushToken`メソッドは`NSData`値を受け入れます。
 
 </Callout>
 
-#### [Event buffering](event-buffering)
+#### [イベントバッファリング](event-buffering)
 
 <MinorVersion removed="v5">
 
-SDK v4 supports event buffering. This feature stores requests event, ad revenue, push tokens, and other information on a local buffer to send at a later date.
+SDK v4はイベントのバッファリングをサポートしています。この機能は、リクエストイベント、広告収益、Pushトークン、その他の情報をローカルバッファに保存し、後日送信します。
 
 </MinorVersion>
 <Tabs>
@@ -569,13 +569,13 @@ Adjust.setEventBufferingEnabled(true)
 </Tab>
 </Tabs>
 
-This setting has been removed in SDK v5\.
+この設定はSDK v5では廃止されています。
 
-#### [Custom user agent string](custom-user-agent)
+#### [カスタムユーザーエージェント文字列](custom-user-agent)
 
 <MinorVersion removed="v5">
 
-SDK v4 supports setting a custom User Agent by calling `[AdjustConfig setUserAgent]` with a user agent string.
+SDK v4は、ユーザーエージェント文字列で`[AdjustConfig setUserAgent]`を呼び出すことによるカスタムユーザーエージェントの設定をサポートしています。
 
 </MinorVersion>
 <Tabs>
@@ -595,13 +595,13 @@ adjustConfig.setUserAgent("user_agent_value")
 </Tab>
 </Tabs>
 
-This setting has been removed in SDK v5\.
+この設定はSDK v5では廃止されています。
 
-#### [Set whether a device is known](set-device-known)
+#### [既知のデバイスかどうかを設定する](set-device-known)
 
 <MinorVersion removed="v5">
 
-In SDK v4, you can call the `[AdjustConfig setIsDeviceKnown];` method to manually inform the SDK whether a device is known.
+SDK v4では、`[AdjustConfig setIsDeviceKnown];`メソッドを呼び出して、既知のデバイスかどうかをSDKに手動で通知することができます。
 
 </MinorVersion>
 <Tabs>
@@ -621,13 +621,13 @@ adjustConfig.setIsDeviceKnown(true)
 </Tab>
 </Tabs>
 
-This setting has been removed in SDK v5\.
+この設定はSDK v5では廃止されています。
 
-#### [Delay SDK start](delay-sdk-start)
+#### [SDKの起動開始を遅延させる](delay-sdk-start)
 
 <MinorVersion removed="v5">
 
-SDK v4 supports delaying the start of the SDK by calling `[AdjustConfig setDelayStart];` with up to **10 seconds** of delay.
+SDK v4では、`[AdjustConfig setDelayStart];`を最大 **10秒** 遅延させて呼び出すことで、SDKの開始を遅延させることができます。
 
 </MinorVersion>
 <Tabs>
@@ -647,17 +647,17 @@ adjustConfig.setDelayStart(10)
 </Tab>
 </Tabs>
 
-This setting has been removed in SDK v5\.
+この設定はSDK v5では廃止されています。
 
-### [Recording features](recording-features)
+### [記録機能](recording-features)
 
-This section covers changes to features that send information to Adjust.
+このセクションでは、Adjustに情報を送信する機能の変更点について説明します。
 
-#### [Session callback parameters](callback-params)
+#### [セッションコールバックパラメーター](callback-params)
 
 <MinorVersion changed="v5">
 
-In SDK v4, you can add session parameters by passing a key\-value pair to the `[Adjust addSessionCallbackParameter]` method and remove individual parameters using the `[Adjust removeSessionCallbackParameter]` method.
+SDK v4では、`[Adjust addSessionCallbackParameter]`メソッドにキーと値のペアをパスすることでセッションパラメーターを追加し、`[Adjust removeSessionCallbackParameter]`メソッドを使用して個々のパラメーターを削除することができます。
 
 </MinorVersion>
 <Tabs>
@@ -681,7 +681,7 @@ Adjust.resetSessionCallbackParameters
 </Tab>
 </Tabs>
 
-In SDK v5, session parameters are renamed to global parameters. Instead of assigning the key and value as positional arguments, SDK v5 uses the `forKey` instance method to assign values to keys.
+SDK v5では、セッションパラメーターはグローバルパラメーターに改名されています。SDK v5では、キーと値を位置引数として代入する代わりに、`forKey`インスタンスメソッドを使用してキーに値を代入します。
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -704,11 +704,11 @@ Adjust.removeGlobalCallbackParameters()
 </Tab>
 </Tabs>
 
-#### [Session partner parameters](partner-params)
+#### [セッションパートナーパラメーター](partner-params)
 
 <MinorVersion changed="v5">
 
-In SDK v4, you can add session partner parameters by passing a key\-value pair to the `[Adjust addSessionPartnerParameter]` method and remove individual parameters using the `[Adjust removeSessionPartnerParameter]` method.
+SDK v4では、`[Adjust addSessionPartnerParameter]`メソッドにキーと値のペアをパスすることでセッション パートナー パラメーターを追加し、`[Adjust removeSessionPartnerParameter]`メソッドを使用して個々のパラメーターを削除することができます。
 
 </MinorVersion>
 <Tabs>
@@ -732,7 +732,7 @@ Adjust.resetSessionPartnerParameters()
 </Tab>
 </Tabs>
 
-In SDK v5, session partner parameters are renamed to global partner parameters. Instead of assigning the key and value as positional arguments, SDK v5 uses the `forKey` instance method to assign values to keys.
+SDK v5では、セッション パートナー パラメーターはグローバル パートナー パラメーターに改名されました。SDK v5では、キーと値を位置引数として代入する代わりに、`forKey`インスタンスメソッドを使用してキーに値を代入します。
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -755,11 +755,11 @@ Adjust.removeGlobalPartnerParameters()
 </Tab>
 </Tabs>
 
-#### [Send subscription information](send-subscriptions)
+#### [サブスクリプション情報を送信する](send-subscriptions)
 
 <MinorVersion changed="v5">
 
-In SDK v4, you can use the `ADJSubscription` class to create a payload of subscription information to send to Adjust.
+SDK v4では、`ADJSubscription`クラスを使ってAdjustに送信するサブスクリプション情報のペイロードを作成することができます。
 
 </MinorVersion>
 <Tabs>
@@ -786,7 +786,7 @@ ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:price
 </Tab>
 </Tabs>
 
-This class has been renamed to `ADJAppStoreSubscription` in SDK v5 for clarity.
+より明確にするため、SDK v5では、このクラスは`ADJAppStoreSubscription`に改名されました。
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -813,11 +813,11 @@ ADJAppStoreSubscription *subscription = [[ADJAppStoreSubscription alloc]
 </Tab>
 </Tabs>
 
-#### [Event deduplication](event-deduplication)
+#### [イベントの重複排除](event-deduplication)
 
 <MinorVersion changed="v5">
 
-In SDK v4, event deduplication is coupled with the event `transaction ID` and is limited to a maximum of 10 unique IDs.
+SDK v4では、イベント重複排除はイベント`transaction ID`と組み合わされ、最大10個のユニークIDに制限されています。
 
 </MinorVersion>
 <Tabs>
@@ -841,7 +841,7 @@ ADJEvent *event = [ADJEvent eventWithEventToken:@"event_token"];
 </Tab>
 </Tabs>
 
-In SDK v5, the feature is decoupled from `transaction ID`. A new ID field called `deduplicationId` has been added for event deduplication. Users can set a custom limit on the number of `deduplicationId` that can be added to the list for identifying duplicate events. By default, the limit is set to **10** .
+SDK v5では、この機能は`transaction ID`から切り離され、イベント重複排除のために`deduplicationId`という新しいIDフィールドが追加されました。ユーザーは、重複イベントを識別するためにリストに追加可能な`deduplicationId`の数にカスタム制限を設定できます。デフォルトでは、制限は **10** に設定されています。
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -881,21 +881,21 @@ ADJEvent *event = [[ADJEvent alloc] initWithEventToken:kEventToken3];
 </Tab>
 </Tabs>
 
-#### [AdjustAttribution class](attribution-class)
+#### [AdjustAttributionクラス](attribution-class)
 
 <MinorVersion changed="v5">
 
-In SDK v4, the `AdjustAttribution` calls has a property called `adid`. In SDK v5, the `adid` property has been removed from the `AdjustAttribution` class. You can retrieve the device's ADID using the [`[Adjust adidWithCompletionHandler]` getter method](#device-id-getters).
+SDK v4では、`AdjustAttribution`コールは`adid`というプロパティを持ちます。SDK v5 では、`AdjustAttribution` クラスから`adid`プロパティが削除されました。デバイスのADIDを取得するには、[`[Adjust adidWithCompletionHandler]`ゲッターメソッド](#device-id-getters)を使用してください。
 
 </MinorVersion>
 
-### [Deep linking](deep-links)
+### [ディープリンク](deep-links)
 
-#### [Reattribution using deep links](reattribution-using-deep-links)
+#### [ディープリンクを使用したリアトリビューション](reattribution-using-deep-links)
 
 <MinorVersion changed="v5">
 
-In SDK v4, you can pass your deep link information to the `[Adjust appWillOpenUrl]` method.
+SDK v4では、`[Adjust appWillOpenUrl]`メソッドにディープリンク情報をパスすることができます。
 
 </MinorVersion>
 <Tabs>
@@ -922,7 +922,7 @@ func application(
 </Tab>
 <Tab title="Objective-C" sync="objc">
 
-```objective-c
+```objc
 - (BOOL)application:(UIApplication *)app
     openURL:(NSURL *)incomingURL
     options:(NSDictionary *)options {
@@ -941,7 +941,7 @@ func application(
 </Tab>
 </Tabs>
 
-In SDK v5, this has been renamed to `[Adjust processDeeplink]` for clarity.
+SDK v5では、わかりやすくするためにこれは`[Adjust processDeeplink]`に改名されています。
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -967,7 +967,7 @@ func application(
 </Tab>
 <Tab title="Objective-C" sync="objc">
 
-```objective-c
+```objc
 - (BOOL)application:(UIApplication *)app
     openURL:(NSURL *)incomingURL
     options:(NSDictionary *)options {
@@ -986,11 +986,11 @@ func application(
 </Tab>
 </Tabs>
 
-#### [Deferred deep linking callback](deferred-callback)
+#### [ディファードディープリンクのコールバック](deferred-callback)
 
 <MinorVersion changed="v5">
 
-In SDK v4, you can call the `adjustDeepLinkResponse` method to handle deferred deep link callbacks.
+SDK v4では、`adjustDeepLinkResponse`メソッドを呼び出してディファード ディープリンク コールバックを処理できます。
 
 </MinorVersion>
 <Tabs>
@@ -1024,7 +1024,7 @@ func adjustDeeplinkResponse(_ deeplink: URL?) -> Bool {
 </Tab>
 </Tabs>
 
-In SDK v5, this method is has been renamed to `adjustDeferredDeeplinkReceived` for clarity. All arguments are the same.
+より明確にするため、SDK v5では、このメソッドは`adjustDeferredDeeplinkReceived`に改名されています。全ての引数は同じです。
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -1057,15 +1057,15 @@ func adjustDeferredDeeplinkReceived(_ deeplink: URL?) -> Bool {
 </Tab>
 </Tabs>
 
-### [Privacy features](privacy-features)
+### [プライバシー機能](privacy-features)
 
-This section covers changes to privacy features in the Adjust SDK.
+このセクションでは、Adjust SDKのプライバシー機能の変更点について説明します。
 
-#### [COPPA compliance](coppa-compliance)
+#### [児童オンラインプライバシー保護法（COPPA）コンプライアンス](coppa-compliance)
 
 <MinorVersion changed="v5">
 
-In SDK v4, [COPPA compliance](/ja/sdk/ios/features/privacy#coppa-compliance) is set using the `ADJConfig` class and is read during SDK initialization. This means that the value can't be updated once the SDK is initialized.
+SDK v4では、[COPPAコンプライアンス](/en/sdk/ios/features/privacy#coppa-compliance)は`ADJConfig`クラスを使用して設定され、SDKの初期化中に読み込まれます。つまり、SDKを初期化したら値を更新することはできません。
 
 </MinorVersion>
 <Tabs>
@@ -1085,7 +1085,7 @@ adjustConfig.setCoppaCompliantEnabled(true)
 </Tab>
 </Tabs>
 
-In SDK v5, this method is available in the `Adjust` class. This means that the setting can be changed at any time by calling `[Adjust enableCoppaCompliance]` to enable COPPA compliance or `[Adjust disableCoppaCompliance]` to disable COPPA compliance.
+SDK v5では、このメソッドは`Adjust`クラスで利用可能です。つまり、`[Adjust enableCoppaCompliance]`を呼び出してCOPPAコンプライアンスを有効化するか、`[Adjust disableCoppaCompliance]`を呼び出してCOPPAコンプライアンスを無効化することで、いつでも設定を変更することができます。
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -1106,16 +1106,16 @@ Adjust.disableCoppaCompliance()
 </Tab>
 </Tabs>
 
-#### [Send ad revenue from a specific source](send-ad-revenue)
+#### [特定のソースの広告収益を送信する](send-ad-revenue)
 
 <MinorVersion changed="v5">
 
-In SDK v4, ad revenue sources are defined as constants in the `ADJConfig` class. In SDK v5, ad revenue sources need to be passed as a string.
+SDK v4では、広告収益ソースは`ADJConfig`クラスの定数として定義されています。SDK v5では、広告収益ソースは文字列としてパスされる必要があります。
 
 </MinorVersion>
 <Tabs>
 <Tab title="Swift" sync="swift">
-<CodeBlock>
+<CodeBlock useDiffSyntax>
 
 ```swift
 - let adRevenue = ADJAdRevenue(source: ADJAdRevenueSourceAppLovinMAX); //v4
@@ -1125,7 +1125,7 @@ In SDK v4, ad revenue sources are defined as constants in the `ADJConfig` class.
 </CodeBlock>
 </Tab>
 <Tab title="Objective-C" sync="objc">
-<CodeBlock>
+<CodeBlock useDiffSyntax>
 
 ```objc
 - ADJAdRevenue *revenue = [[ADJAdRevenue alloc]
@@ -1155,11 +1155,11 @@ In SDK v4, ad revenue sources are defined as constants in the `ADJConfig` class.
 
 </Table>
 
-#### [Set data residency and URL strategy](url-strategy)
+#### [データレジデンシーとURL戦略を設定する](url-strategy)
 
 <MinorVersion changed="v5">
 
-In SDK v4, URL strategy and data residency domains are defined as constants in the `ADJConfig` class.
+SDK v4では、URL戦略とデータレジデンシードメインは`ADJConfig`クラスの定数として定義されています。
 
 </MinorVersion>
 
@@ -1167,10 +1167,10 @@ In SDK v4, URL strategy and data residency domains are defined as constants in t
 [adjustConfig setUrlStrategy:ADJDataResidencyEU];
 ```
 
-In SDK v5, you need to pass your chosen domain or domains as an array. You can also set the following:
+SDK v5では、選択したドメインを配列としてパスする必要があります。また、以下を設定することもできます：
 
--  `withSubdomains` \(`BOOL`\): Whether the source should prefix a subdomain.
--  `andDataResidency` \(`BOOL`\): Whether the domain should be used for data residency.
+-  `withSubdomains` （`BOOL`）：ソースにサブドメインのプレフィックスを付けるかどうか。
+-  `andDataResidency` （`BOOL`）：ドメインをデータレジデンシーに使用するかどうか。
 
 ```objc
 NSArray *domain = [];
@@ -1178,27 +1178,27 @@ NSArray *domain = [];
                      andDataResidency:YES];
 ```
 
-Check the table below to see how to configure your URL strategy in SDK v5\.
+SDK v5でURL戦略を設定する方法については、以下の表をご確認ください。
 
 <Table autoWidth="1,2">
 
-| v4                     | v5 \- main and fallback domain     | v5 \- use sub domains | v5 \- is Data Residency |
-| ---------------------- | ---------------------------------- | --------------------- | ----------------------- |
-| `ADJDataResidencyEU`   | `"eu.adjust.com"`                  | `true`                | `true`                  |
-| `ADJDataResidencyTR`   | `"tr.adjust.com"`                  | `true`                | `true`                  |
-| `ADJDataResidencyUS`   | `"us.adjust.com"`                  | `true`                | `true`                  |
-| `ADJUrlStrategyChina`  | `"adjust.world"`。 `"adjust.com"`  | `true`                | `false`                 |
-| `ADJUrlStrategyCn`     | `"adjust.cn"`。 `"adjust.com"`     | `true`                | `false`                 |
-| `ADJUrlStrategyCnOnly` | `"adjust.cn"`                      | `true`                | `false`                 |
-| `ADJUrlStrategyIndia`  | `"adjust.net.in"`。 `"adjust.com"` | `true`                | `false`                 |
+| v4                     | v5 \- メインおよびフォールバックドメイン | v5 \- サブドメインの使用 | v5 \- データレジデンシー |
+| ---------------------- | ---------------------------------------- | ------------------------ | ------------------------ |
+| `ADJDataResidencyEU`   | `"eu.adjust.com"`                        | `true`                   | `true`                   |
+| `ADJDataResidencyTR`   | `"tr.adjust.com"`                        | `true`                   | `true`                   |
+| `ADJDataResidencyUS`   | `"us.adjust.com"`                        | `true`                   | `true`                   |
+| `ADJUrlStrategyChina`  | `"adjust.world"`。 `"adjust.com"`        | `true`                   | `false`                  |
+| `ADJUrlStrategyCn`     | `"adjust.cn"`。 `"adjust.com"`           | `true`                   | `false`                  |
+| `ADJUrlStrategyCnOnly` | `"adjust.cn"`                            | `true`                   | `false`                  |
+| `ADJUrlStrategyIndia`  | `"adjust.net.in"`。 `"adjust.com"`       | `true`                   | `false`                  |
 
 </Table>
 
-##### [Examples](examples)
+##### [例](examples)
 
 <Tabs>
 <Tab title="Swift" sync="swift">
-<CodeBlock title="India URL strategy">
+<CodeBlock title="インド URL戦略">
 
 ```swift
 let domain = ["adjust.net.in", "adjust.com"]
@@ -1206,7 +1206,7 @@ adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: fals
 ```
 
 </CodeBlock>
-<CodeBlock title="China URL strategy">
+<CodeBlock title="中国 URL戦略">
 
 ```swift
 let domain = ["adjust.world", "adjust.com"]
@@ -1214,7 +1214,7 @@ adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: fals
 ```
 
 </CodeBlock>
-<CodeBlock title="China only URL strategy">
+<CodeBlock title="中国限定 URL設定">
 
 ```swift
 let domain = ["adjust.cn"]
@@ -1222,7 +1222,7 @@ adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: fals
 ```
 
 </CodeBlock>
-<CodeBlock title="EU data residency">
+<CodeBlock title="EU データレジデンシー">
 
 ```swift
 let domain = ["eu.adjust.com"]
@@ -1230,7 +1230,7 @@ adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: true
 ```
 
 </CodeBlock>
-<CodeBlock title="Turkey data residency">
+<CodeBlock title="トルコ データレジデンシー">
 
 ```swift
 let domain = ["tr.adjust.com"]
@@ -1238,7 +1238,7 @@ adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: true
 ```
 
 </CodeBlock>
-<CodeBlock title="US data residency">
+<CodeBlock title="米国 データレジデンシー">
 
 ```swift
 let domain = ["us.adjust.com"]
@@ -1248,7 +1248,7 @@ adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: true
 </CodeBlock>
 </Tab>
 <Tab title="Objective-C" sync="objc">
-<CodeBlock title="India URL strategy">
+<CodeBlock title="インド URL戦略">
 
 ```objc
 NSArray *domain = [[NSArray alloc]
@@ -1257,7 +1257,7 @@ NSArray *domain = [[NSArray alloc]
 ```
 
 </CodeBlock>
-<CodeBlock title="China URL strategy">
+<CodeBlock title="中国 URL戦略">
 
 ```objc
 NSArray *domain = [[NSArray alloc]
@@ -1266,7 +1266,7 @@ NSArray *domain = [[NSArray alloc]
 ```
 
 </CodeBlock>
-<CodeBlock title="China only URL strategy">
+<CodeBlock title="中国限定 URL設定">
 
 ```objc
 NSArray *domain = [[NSArray alloc]
@@ -1275,7 +1275,7 @@ NSArray *domain = [[NSArray alloc]
 ```
 
 </CodeBlock>
-<CodeBlock title="EU data residency">
+<CodeBlock title="EU データレジデンシー">
 
 ```objc
 NSArray *domain = [[NSArray alloc]
@@ -1284,7 +1284,7 @@ NSArray *domain = [[NSArray alloc]
 ```
 
 </CodeBlock>
-<CodeBlock title="Turkey data residency">
+<CodeBlock title="トルコ データレジデンシー">
 
 ```objc
 NSArray *domain = [[NSArray alloc]
@@ -1293,7 +1293,7 @@ NSArray *domain = [[NSArray alloc]
 ```
 
 </CodeBlock>
-<CodeBlock title="US data residency">
+<CodeBlock title="米国 データレジデンシー">
 
 ```objc
 NSArray *domain = [[NSArray alloc]
@@ -1305,11 +1305,11 @@ NSArray *domain = [[NSArray alloc]
 </Tab>
 </Tabs>
 
-#### [Disable third party sharing globally](disable-sharing-globally)
+#### [サードパーティとの共有をグローバルに無効化する](disable-sharing-globally)
 
 <MinorVersion removed="v5">
 
-In SDK v4, you can call the `Adjust.disableThirdPartySharing()` method to globally disable sharing information with third parties globally.
+SDK v4では、`Adjust.disableThirdPartySharing()`メソッドを呼び出すことで、サードパーティとの情報共有をグローバルに無効化することができます。
 
 </MinorVersion>
 <Tabs>
@@ -1329,7 +1329,7 @@ Adjust.disableThirdPartySharing()
 </Tab>
 </Tabs>
 
-This feature has been removed from SDK v5\. In SDK v5, use the `[Adjust trackThirdPartySharing]` method to enable or disable third party sharing.
+この機能はSDK v5では削除されました。SDK v5では、`[Adjust trackThirdPartySharing]`メソッドを使用してサードパーティとのデータ共有を有効化または無効化できます。
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -1350,15 +1350,15 @@ ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc] in
 </Tab>
 </Tabs>
 
-### [SKAdNetwork and ATT](skad-att)
+### [SKAdNetworkとATT](skad-att)
 
-This section covers changes to SKAdNetwork and App Tracking Transparency \(ATT\) features in SDK v5\.
+このセクションでは、SDK v5におけるSKAdNetworkとApp Tracking Transparency（ATT）機能の変更点について説明します。
 
-#### [Disable SKAdNetwork communication](disable-skan)
+#### [SKAdNetworkの通信を無効化する](disable-skan)
 
 <MinorVersion changed="v5">
 
-In SDK v4, you can prevent the SDK from communicating with SKAdNetwork by calling the `[ADJConfig deactivateSKAdNetworkHandling]` method.
+SDK v4では、`[ADJConfig deactivateSKAdNetworkHandling]`メソッドを呼び出すことで、SDKがSKAdNetworkと通信しないようにすることができます。
 
 </MinorVersion>
 <Tabs>
@@ -1388,7 +1388,7 @@ ADJConfig *adjustConfig = [[ADJConfig alloc]
 </Tab>
 </Tabs>
 
-In SDK v5, this method has been renamed to `[ADJConfig disableSkanAttribution]` for clarity.
+より明確にするため、SDK v5では、このメソッドは`[ADJConfig disableSkanAttribution]`に改名されています。
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -1417,11 +1417,11 @@ ADJConfig *adjustConfig = [[ADJConfig alloc]
 </Tab>
 </Tabs>
 
-#### [Check for authorization status change](check-att-status-change)
+#### [承認ステータスの変更を確認](check-att-status-change)
 
 <MinorVersion removed="v5">
 
-In SDK v4, you can use the `[Adjust checkForNewAttStatus]` method to prompt the SDK to read a user's ATT status and forward the information to Adjust's servers.
+SDK v4では、`[Adjust checkForNewAttStatus]`メソッドを使ってSDKにユーザーのATTステータスを読み込ませ、Adjustのサーバーに情報を転送することができます。
 
 </MinorVersion>
 <Tabs>
@@ -1441,13 +1441,13 @@ Adjust.checkForNewAttStatus()
 </Tab>
 </Tabs>
 
-This method has been removed in SDK v5\.
+このメソッドはSDK v5では廃止されています。
 
-#### [Listen for conversion value updates](listen-for-cv-updates)
+#### [Conversion valueのアップデートを受信する](listen-for-cv-updates)
 
 <MinorVersion removed="v5">
 
-In SDK v4, you can use the `adjustConversionValueUpdated` method to listen for SKAdNetwork updates.
+SDK v4では、`adjustConversionValueUpdated`メソッドを使用してSKAdNetworkのアップデートを受信することができます。
 
 </MinorVersion>
 <Tabs>
@@ -1490,12 +1490,12 @@ func adjustConversionValueUpdated(_ fineValue: NSNumber, coarseValue: String, lo
 </Tab>
 </Tabs>
 
-In SDK v5, these two methods have been replaced by a single `adjustSkanUpdatedWithConversionData` method which returns an untyped dictionary. The following keys are currently supported:
+SDK v5では、これら2つのメソッドは、型付けされていない辞書を返す単一の`adjustSkanUpdatedWithConversionData`メソッドに置き換えられました。現在サポートされているキーは以下の通りです：
 
--  `conversion_value`: The updated conversion value.
--  `coarse_value`: The updated [coarse conversion value](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
--  `lock_window`: Whether to send the postback before the conversion window ends
--  `error`: Any error message returned by the update.
+-  `conversion_value`：更新されたconversion value
+-  `coarse_value`：更新された[粗いconversion value](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
+-  `lock_window`：コンバージョン期間が終了する前にポストバックを送信するかどうか
+-  `error`：更新によって返されたエラーメッセージ
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -1520,19 +1520,19 @@ func adjustSkanUpdated(withConversionData data: [String: String]) {
 </Tab>
 </Tabs>
 
-#### [Update conversion values](update-cvs)
+#### [Conversion valueを更新する](update-cvs)
 
 <MinorVersion changed="v5">
 
-In SDK v4, you can use the `updateConversionValue` method to send updated conversion values to Adjust. This method wraps Apple's deprecated [`updateConversionValue` method](https://developer.apple.com/documentation/storekit/skadnetwork/3566697-updateconversionvalue) and has been removed in SDK v5\.
+SDK v4では、`updateConversionValue`メソッドを使ってAdjustに更新されたconversion valueを送ることができます。このメソッドはAppleが廃止した[`updateConversionValue`メソッド](https://developer.apple.com/documentation/storekit/skadnetwork/3566697-updateconversionvalue)をラップするため、SDK v5では削除されています。
 
 </MinorVersion>
 
-To update conversion values in SDK v5, use the `[Adjust updateSkanConversionValue]` method with the following arguments:
+SDK v5でconversion valueを更新するには、以下の引数で`[Adjust updateSkanConversionValue]`メソッドを使用します：
 
--  `conversionValue` \(`NSInteger`\): The updated conversion value
--  `coarseValue` \(`NSString`\): The updated [coarse conversion value](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
--  `lockWindow` \(`BOOL`\): Whether to send the postback before the conversion window ends
+-  `conversionValue` （`NSInteger`）：更新されたconversion value
+-  `coarseValue` （`NSString`）：更新された[粗いconversion value](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
+-  `lockWindow` （`BOOL`）：コンバージョン期間が終了する前にポストバックを送信するかどうか
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -1563,11 +1563,11 @@ Adjust.updateSkanConversionValue(
 </Tab>
 </Tabs>
 
-#### [App Tracking Transparency authorization wrapper](att-wrapper)
+#### [App Tracking Transparency認証ラッパー](att-wrapper)
 
 <MinorVersion changed="v5">
 
-In SDK v4, you can handle changes to a user's ATT authorization status using the `[Adjust requestTrackingAuthorizationWithCompletionHandler]` method.
+SDK v4では、`[Adjust requestTrackingAuthorizationWithCompletionHandler]`メソッドを使用してユーザーのATT認証ステータスの変更を処理できます。
 
 </MinorVersion>
 <Tabs>
@@ -1619,7 +1619,7 @@ Adjust.requestTrackingAuthorization() { status in
 </Tab>
 </Tabs>
 
-This has been renamed to `[Adjust requestAppTrackingAuthorizationWithCompletionHandler]` in SDK v5 for clarity.
+より明確にするため、SDK v5では、これは`[Adjust requestAppTrackingAuthorizationWithCompletionHandler]`に改名されました。
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -1670,16 +1670,16 @@ Adjust.requestAppTrackingAuthorization() { status in
 </Tab>
 </Tabs>
 
-### [Get device information](device-info)
+### [デバイス情報を取得](device-info)
 
 <MinorVersion changed="v5">
 
-In SDK v4, all device information getter methods run synchronously. In SDK v5, these methods have been changed to run asynchronously. You can add a callback function to handle the information when the asynchronous process completes
+SDK v4では、全てのデバイス情報ゲッターメソッドは同期的に実行されます。SDK v5では、これらのメソッドは非同期に実行されるように変更されまています。非同期処理の完了時に情報を処理するコールバック関数を追加することができます。
 
 </MinorVersion>
 <Tabs>
 <Tab title="Swift" sync="swift">
-<CodeBlock title="ADID getter">
+<CodeBlock title="ADIDゲッター">
 
 ```swift
 Adjust.adid() { adid in
@@ -1688,7 +1688,7 @@ Adjust.adid() { adid in
 ```
 
 </CodeBlock>
-<CodeBlock title="IDFA getter">
+<CodeBlock title="IDFAゲッター">
 
 ```swift
 Adjust.idfa() { idfa in
@@ -1697,7 +1697,7 @@ Adjust.idfa() { idfa in
 ```
 
 </CodeBlock>
-<CodeBlock title="IDFV getter">
+<CodeBlock title="IDFVゲッター">
 
 ```swift
 Adjust.idfv() { idfv in
@@ -1706,7 +1706,7 @@ Adjust.idfv() { idfv in
 ```
 
 </CodeBlock>
-<CodeBlock title="SDK version getter">
+<CodeBlock title="SDKバージョンゲッター">
 
 ```swift
 Adjust.sdkVersion() { sdkVersion in
@@ -1715,7 +1715,7 @@ Adjust.sdkVersion() { sdkVersion in
 ```
 
 </CodeBlock>
-<CodeBlock title="Enabled status getter">
+<CodeBlock title="有効化ステータスゲッター">
 
 ```swift
 Adjust.isEnabled() { isEnabled in
@@ -1724,7 +1724,7 @@ Adjust.isEnabled() { isEnabled in
 ```
 
 </CodeBlock>
-<CodeBlock title="Attribution getter">
+<CodeBlock title="アトリビューションゲッター">
 
 ```swift
 Adjust.attribution() { attribution in
@@ -1735,7 +1735,7 @@ Adjust.attribution() { attribution in
 </CodeBlock>
 </Tab>
 <Tab title="Objective-C" sync="objc">
-<CodeBlock title="ADID getter">
+<CodeBlock title="ADIDゲッター">
 
 ```objc
 [Adjust adidWithCompletionHandler:^(NSString * _Nullable adid) {
@@ -1744,7 +1744,7 @@ Adjust.attribution() { attribution in
 ```
 
 </CodeBlock>
-<CodeBlock title="IDFA getter">
+<CodeBlock title="IDFAゲッター">
 
 ```objc
 [Adjust idfaWithCompletionHandler:^(NSString * _Nullable idfa) {
@@ -1753,7 +1753,7 @@ Adjust.attribution() { attribution in
 ```
 
 </CodeBlock>
-<CodeBlock title="IDFV getter">
+<CodeBlock title="IDFVゲッター">
 
 ```objc
 [Adjust idfvWithCompletionHandler:^(NSString * _Nullable idfv) {
@@ -1762,7 +1762,7 @@ Adjust.attribution() { attribution in
 ```
 
 </CodeBlock>
-<CodeBlock title="SDK version getter">
+<CodeBlock title="SDKバージョンゲッター">
 
 ```objc
 [Adjust sdkVersionWithCompletionHandler:^(NSString * _Nullable sdkVersion) {
@@ -1771,7 +1771,7 @@ Adjust.attribution() { attribution in
 ```
 
 </CodeBlock>
-<CodeBlock title="Enabled status getter">
+<CodeBlock title="有効化ステータスゲッター">
 
 ```objc
 [Adjust isEnabledWithCompletionHandler:^(BOOL isEnabled) {
@@ -1780,7 +1780,7 @@ Adjust.attribution() { attribution in
 ```
 
 </CodeBlock>
-<CodeBlock title="Attribution getter">
+<CodeBlock title="アトリビューションゲッター">
 
 ```objc
 [Adjust attributionWithCompletionHandler:^(ADJAttribution * _Nullable attribution) {
@@ -1792,15 +1792,15 @@ Adjust.attribution() { attribution in
 </Tab>
 </Tabs>
 
-### [Plugins](plugins)
+### [プラグイン](plugins)
 
-The Adjust SDK supports plugins to extend its functionality. This section covers changes to plugins in SDK v5\.
+Adjust SDKは機能を拡張するプラグインをサポートしています。このセクションでは、SDK v5でのプラグインに関する変更点を説明します。
 
-#### [Removed plugins](removed-plugins)
+#### [削除されたプラグイン](removed-plugins)
 
 <MinorVersion removed="v5">
 
-The following plugins have been removed in SDK v5:
+SDK v5では以下のプラグインが削除されました：
 
 </MinorVersion>
 

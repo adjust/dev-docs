@@ -2,7 +2,10 @@
 title: "Batch.com SDKとの連携"
 description: "Batch.comとの連携を使用して、Batch.comの情報をAdjustサーバーにパスします。"
 slug: "ja/sdk/android/integrations/batch"
+multiVersion: true
 ---
+
+<SdkVersion version="v5">
 
 Adjust SDKとBatch.comイベントを連携させるには、以下のいずれかのメソッドを実行します。
 
@@ -10,7 +13,52 @@ Adjust SDKとBatch.comイベントを連携させるには、以下のいずれ�
 
 この機能を利用するには、まずAdjust Android SDKをダウンロードして設定してください。
 
-AdjustとBatch.com SDKを連携するには、Batch.com SDKにアトリビューションを送信する必要があります。Adjustサーバーからレスポンスを受け取った後に情報を送信してください。これを実行するには、[アトリビューションコールバック設定ガイド](/ja/sdk/android/features/callbacks)の手順に従ってください。
+AdjustとBatch.com SDKを連携するには、Batch.com SDKにアトリビューションを送信する必要があります。Adjustサーバーからレスポンスを受け取った後に情報を送信してください。これを実行するには、[アトリビューションコールバック設定ガイド](/en/sdk/android/features/callbacks)の手順に従ってください。
+
+## [例](example)
+
+次のようなコールバックメソッドを設定できます。
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+
+config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
+    @Override
+    public void onAttributionChanged(AdjustAttribution attribution) {
+        // Initiate Batch user editor to set new attributes.
+        BatchUserDataEditor editor = Batch.User.editor();
+
+        if (attribution.network != null) {
+            editor.setAttribute("adjust_network", attribution.network);
+        }
+        if (attribution.campaign != null) {
+            editor.setAttribute("adjust_campaign", attribution.campaign);
+        }
+        if (attribution.adgroup != null) {
+            editor.setAttribute("adjust_adgroup", attribution.adgroup);
+        }
+        if (attribution.creative != null) {
+            editor.setAttribute("adjust_creative", attribution.creative);
+        }
+
+        // Send new attributes to Batch servers.
+        editor.save();
+    }
+});
+
+Adjust.initSdk(config);
+```
+
+</SdkVersion>
+<SdkVersion version="v4">
+
+Adjust SDKとBatch.comイベントを連携させるには、以下のいずれかのメソッドを実行します。
+
+## [事前準備](before-you-begin)
+
+この機能を利用するには、まずAdjust Android SDKをダウンロードして設定してください。
+
+AdjustとBatch.com SDKを連携するには、Batch.com SDKにアトリビューションを送信する必要があります。Adjustサーバーからレスポンスを受け取った後に情報を送信してください。これを実行するには、[アトリビューションコールバック設定ガイド](/en/sdk/android/features/callbacks)の手順に従ってください。
 
 ## [例](example)
 
@@ -51,3 +99,4 @@ Adjust.onCreate(config);
 
 </Tab>
 </Tabs>
+</SdkVersion>

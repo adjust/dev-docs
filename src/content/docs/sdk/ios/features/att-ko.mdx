@@ -2,20 +2,23 @@
 title: "ATT 설정"
 description: "Apple의 ATT(App Tracking Transparency) 프레임워크를 사용하도록 앱 설정"
 slug: "ko/sdk/ios/features/att"
+multiVersion: true
 ---
+
+<SdkVersion version="v5">
 
 기기의 IDFA\(광고주용 ID\)를 기록하려면 사용자의 허가를 받기 위한 메시지를 표시해야 합니다. 이렇게 하려면 앱에 Apple의 ATT\(App Tracking Transparency\) 프레임워크를 포함해야 합니다. Adjust SDK는 사용자의 허가 여부를 저장하고 각 요청과 함께 Adjust 서버로 전송합니다.
 
 ## [승인 상태](authorization-statuses)
 
-<Table>
+<Table autoWidth="1,2" width="3: 350">
 
-| 상태                                                | 코드 | 설명                                                            |
-| --------------------------------------------------- | ---- | --------------------------------------------------------------- |
-| `ATTrackingManagerAuthorizationStatusNotDetermined` | `0`  | 사용자가 아직 액세스 프롬프트에 응답하지 않음                   |
-| `ATTrackingManagerAuthorizationStatusRestricted`    | `1`  | 앱 관련 데이터에 대한 액세스가 디바이스 수준에서 차단됨.        |
-| `ATTrackingManagerAuthorizationStatusDenied`        | `2`  | 사용자가 앱 관련 데이터에 대한 디바이스 트래킹 액세스를 거부함. |
-| `ATTrackingManagerAuthorizationStatusAuthorized`    | `3`  | 사용자가 앱 관련 데이터에 대한 디바이스 트래킹 액세스를 승인함. |
+| 상태                                                | 코드 | 설명                                                         |
+| --------------------------------------------------- | ---- | ------------------------------------------------------------ |
+| `ATTrackingManagerAuthorizationStatusNotDetermined` | `0`  | 사용자가 아직 액세스 프롬프트에 응답하지 않음                |
+| `ATTrackingManagerAuthorizationStatusRestricted`    | `1`  | 앱 관련 데이터에 대한 액세스가 디바이스 수준에서 차단됨.     |
+| `ATTrackingManagerAuthorizationStatusDenied`        | `2`  | 사용자가 앱 관련 데이터에 대한 디바이스 측정 액세스를 거부함 |
+| `ATTrackingManagerAuthorizationStatusAuthorized`    | `3`  | 사용자가 앱 관련 데이터에 대한 디바이스 측정 액세스를 승인함 |
 
 </Table>
 <Callout type="note">
@@ -24,17 +27,215 @@ SDK가 ATT 상태를 조회할 수 없는 경우, `-1` 상태 코드를 받게 �
 
 </Callout>
 
-## [앱 트래킹 승인 래퍼](app-tracking-authorization-wrapper)
+## [ATT 승인 래퍼](att-authorization-wrapper)
+
+<CodeBlock title="메서드 서명">
 
 ```objc
-+ (void)requestTrackingAuthorizationWithCompletionHandler:(void (^_Nullable)(NSUInteger status))completion;
++ (void)requestAppTrackingAuthorizationWithCompletionHandler:(void (^_Nullable)(NSUInteger status))completion;
 ```
+
+</CodeBlock>
 
 Adjust SDK에는 [Apple `requestTrackingAuthorizationWithCompletionHandler` 메서드](https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager/3547037-requesttrackingauthorizationwith)의 래퍼가 포함되어 있습니다. ATT 프롬프트를 커스텀하지 않으려면 이 래퍼를 사용할 수 있습니다.
 
 콜백 메서드는 사용자가 동의 팝업창에 응답할 때 트리거되고 사용자의 동의 상태 코드를 Adjust 서버로 전송합니다. 콜백 함수 내에서 각 상태 코드에 대한 응답을 정의할 수 있습니다.
 
-트래킹 요청 다이얼로그에 대한 텍스트 콘텐츠를 지정해야 합니다. 이를 위해 텍스트를 `Info.plist` 파일의 `NSUserTrackingUsageDescription` 키에 추가합니다.
+ATT에 대한 텍스트 콘텐츠를 지정해야 합니다. 이를 위해 텍스트를 `Info.plist` 파일의 `NSUserTrackingUsageDescription` 키에 추가합니다.
+
+<Callout type="tip">
+
+Adjust SDK는 커스텀 프롬프트 사용 시 동의 여부도 기록합니다. 초기화 전에 프롬프트가 표시되면 SDK는 설치 이벤트와 함께 동의 여부를 전송합니다. 프롬프트가 초기화된 후 표시되면 SDK는 사용자가 업데이트한 후 즉시 Adjust 서버에 동의 여부를 전송합니다.
+
+</Callout>
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+Adjust.requestAppTrackingAuthorization() { status in
+   switch status {
+   case 0:
+      // ATTrackingManagerAuthorizationStatusNotDetermined case
+      break
+   case 1:
+      // ATTrackingManagerAuthorizationStatusRestricted case
+      break
+   case 2:
+      // ATTrackingManagerAuthorizationStatusDenied case
+      break
+   case 3:
+      // ATTrackingManagerAuthorizationStatusAuthorized case
+      break
+   default:
+      break
+   }
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[Adjust requestAppTrackingAuthorizationWithCompletionHandler:^(NSUInteger status) {
+   switch (status) {
+      case 0:
+         // ATTrackingManagerAuthorizationStatusNotDetermined case
+         break;
+      case 1:
+         // ATTrackingManagerAuthorizationStatusRestricted case
+         break;
+      case 2:
+         // ATTrackingManagerAuthorizationStatusDenied case
+         break;
+      case 3:
+         // ATTrackingManagerAuthorizationStatusAuthorized case
+         break;
+   }
+}];
+```
+
+</Tab>
+</Tabs>
+
+## [현재 승인 상태 확인](get-current-authorization-status)
+
+<CodeBlock title="메서드 서명">
+
+```objc
++ (int)appTrackingAuthorizationStatus;
+```
+
+</CodeBlock>
+
+사용자의 현재 인증 상태는 언제든지 조회가 가능합니다. `getAppTrackingAuthorizationStatus` 메서드를 호출하여 **정수** 로 인증 상태 코드를 반환합니다.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let authorizationStatus = Adjust.appTrackingAuthorizationStatus();
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+int authorizationStatus = [Adjust appTrackingAuthorizationStatus];
+```
+
+</Tab>
+</Tabs>
+
+## [커스텀 프롬프트 타이밍](custom-prompt-timing)
+
+<CodeBlock title="속성 선언">
+
+```objc
+@property (nonatomic, assign) NSUInteger attConsentWaitingInterval;
+```
+
+</CodeBlock>
+
+앱이 온보딩 과정이나 튜토리얼을 포함하는 경우, 사용자가 온보딩 과정이나 튜토리얼을 완료할 때까지 사용자의 ATT 동의 상태 전송을 지연시킬 수 있습니다. 이를 위해 `attConsentWaitingInterval` 속성을 설정하여 최대 **120초 동안** 데이터 전송을 지연하여 사용자가 초기 온보딩을 완료할 수 있는 시간을 제공할 수 있습니다. 타임아웃이 끝나거나 사용자가 동의 상태를 설정한 경우, SDK는 지연 기간 동안 기록된 모든 정보를 사용자의 동의 상태와 함께 Adjust 서버로 전송합니다.
+
+<Callout type="note">
+
+사용자가 타임아웃이 끝나기 전 또는 동의 상태를 선택하기 전에 앱을 종료한 경우, 앱을 다시 열면 타임아웃이 다시 시작됩니다.
+
+</Callout>
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox
+let adjustConfig = ADJConfig(
+    appToken: yourAppToken,
+    andEnvironment: environment)
+//...
+adjustConfig?.attConsentWaitingInterval = 30
+//...
+Adjust.initSdk(adjustConfig)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+ ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:@"{YourAppToken}"
+                                                   andEnvironment:environment];
+//...
+[adjustConfig setAttConsentWaitingInterval:30];
+//...
+[Adjust initSdk:adjustConfig];
+```
+
+</Tab>
+</Tabs>
+
+## [iOS 17 동의 처리](ios-17-consent-handling)
+
+iOS 17 출시와 함께 Apple은 개발자가 서드파티에 보낼 수 있는 데이터에 관한 새로운 규정을 도입했습니다. 개발자가 Apple의 개인정보 보호정책 준수를 입증할 수 있도록 Adjust SDK는 **동의** 사용자와 **비동의** 사용자에 대해 두 엔드포인트를 별도로 사용합니다.
+
+기본 설정에 따라 Adjust SDK는 `analytics.adjust.com` 엔드포인트를 사용한 **확률론적 모델링** 을 위해 제한된 데이터 세트를 Adjust 서버로 전송합니다. 이 엔드포인트는 다음의 정보를 수신 **하지 않습니다** .
+
+-  `idfa`: 광고주에 대한 기기 ID \(IDFA\).
+-  `started_at`: 기기 시작 시간.
+
+사용자가 [ATT에 동의한](#app-tracking-authorization-wrapper) 경우에만 Adjust SDK는 **결정론적 어트리뷰션** 을 위해 IDFA와 started_at 속성 모두에 대한 액세스를 획득하고, 전체 페이로드를 `consent.adjust.com`로 전송합니다.
+
+두 엔드포인트는 모든 [URL 전략](/en/sdk/ios/features/privacy#data-residency) 에 사용할 수 있습니다.
+
+<Table>
+
+| URL 전략              | 비동의 엔드포인트         | 동의 엔드포인트         |
+| --------------------- | ------------------------- | ----------------------- |
+| `ADJDataResidencyEU`  | `analytics.eu.adjust.com` | `consent.eu.adjust.com` |
+| `ADJDataResidencyTR`  | `analytics.tr.adjust.com` | `consent.tr.adjust.com` |
+| `ADJDataResidencyUS`  | `analytics.us.adjust.com` | `consent.us.adjust.com` |
+| `ADJUrlStrategyChina` | `analytics.adjust.world`  | `consent.adjust.world`  |
+| `ADJUrlStrategyCn`    | `analytics.adjust.cn`     | `consent.adjust.cn`     |
+| `ADJUrlStrategyIndia` | `analytics.adjust.net.in` | `consent.adjust.net.in` |
+
+</Table>
+</SdkVersion>
+<SdkVersion version="v4">
+
+기기의 IDFA\(광고주용 ID\)를 기록하려면 사용자의 허가를 받기 위한 메시지를 표시해야 합니다. 이렇게 하려면 앱에 Apple의 ATT\(App Tracking Transparency\) 프레임워크를 포함해야 합니다. Adjust SDK는 사용자의 허가 여부를 저장하고 각 요청과 함께 Adjust 서버로 전송합니다.
+
+## [승인 상태](authorization-statuses)
+
+<Table autoWidth="1,2" width="3: 350">
+
+| 상태                                                | 코드 | 설명                                                         |
+| --------------------------------------------------- | ---- | ------------------------------------------------------------ |
+| `ATTrackingManagerAuthorizationStatusNotDetermined` | `0`  | 사용자가 아직 액세스 프롬프트에 응답하지 않음                |
+| `ATTrackingManagerAuthorizationStatusRestricted`    | `1`  | 앱 관련 데이터에 대한 액세스가 디바이스 수준에서 차단됨.     |
+| `ATTrackingManagerAuthorizationStatusDenied`        | `2`  | 사용자가 앱 관련 데이터에 대한 디바이스 측정 액세스를 거부함 |
+| `ATTrackingManagerAuthorizationStatusAuthorized`    | `3`  | 사용자가 앱 관련 데이터에 대한 디바이스 측정 액세스를 승인함 |
+
+</Table>
+<Callout type="note">
+
+SDK가 ATT 상태를 조회할 수 없는 경우, `-1` 상태 코드를 받게 될 수 있습니다.
+
+</Callout>
+
+## [ATT 승인 래퍼](att-authorization-wrapper)
+
+<CodeBlock title="메서드 서명">
+
+```objc
++ (void)requestTrackingAuthorizationWithCompletionHandler:(void (^_Nullable)(NSUInteger status))completion;
+```
+
+</CodeBlock>
+
+Adjust SDK에는 [Apple `requestTrackingAuthorizationWithCompletionHandler` 메서드](https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager/3547037-requesttrackingauthorizationwith)의 래퍼가 포함되어 있습니다. ATT 프롬프트를 커스텀하지 않으려면 이 래퍼를 사용할 수 있습니다.
+
+콜백 메서드는 사용자가 동의 팝업창에 응답할 때 트리거되고 사용자의 동의 상태 코드를 Adjust 서버로 전송합니다. 콜백 함수 내에서 각 상태 코드에 대한 응답을 정의할 수 있습니다.
+
+ATT에 대한 텍스트 콘텐츠를 지정해야 합니다. 이를 위해 텍스트를 `Info.plist` 파일의 `NSUserTrackingUsageDescription` 키에 추가합니다.
 
 <Callout type="tip">
 
@@ -92,9 +293,13 @@ Adjust.requestTrackingAuthorization() { status in
 
 ## [현재 승인 상태 확인](get-current-authorization-status)
 
+<CodeBlock title="메서드 서명">
+
 ```objc
 + (int)appTrackingAuthorizationStatus;
 ```
+
+</CodeBlock>
 
 사용자의 현재 인증 상태는 언제든지 조회가 가능합니다. `getAppTrackingAuthorizationStatus` 메서드를 호출하여 **정수** 로 인증 상태 코드를 반환합니다.
 
@@ -124,9 +329,13 @@ var authorizationStatus = Adjust.appTrackingAuthorizationStatus();
 
 ## [커스텀 프롬프트 타이밍](custom-prompt-timing)
 
+<CodeBlock title="속성 선언">
+
 ```objc
 @property (nonatomic, assign) NSUInteger attConsentWaitingInterval;
 ```
+
+</CodeBlock>
 
 앱이 온보딩 과정이나 튜토리얼을 포함하는 경우, 사용자가 온보딩 과정이나 튜토리얼을 완료할 때까지 사용자의 ATT 동의 상태 전송을 지연시킬 수 있습니다. 이를 위해 `attConsentWaitingInterval` 속성을 설정하여 최대 **120초 동안** 데이터 전송을 지연하여 사용자가 초기 온보딩을 완료할 수 있는 시간을 제공할 수 있습니다. 타임아웃이 끝나거나 사용자가 동의 상태를 설정한 경우, SDK는 지연 기간 동안 기록된 모든 정보를 사용자의 동의 상태와 함께 Adjust 서버로 전송합니다.
 
@@ -167,9 +376,13 @@ Adjust.appDidLaunch(adjustConfig)
 
 ## [승인 상태 변경 확인](check-for-authorization-status-changes)
 
+<CodeBlock title="메서드 서명">
+
 ```objc
 + (void)checkForNewAttStatus;
 ```
+
+</CodeBlock>
 
 커스텀 ATT 프롬프트를 사용하는 경우, 사용자 인증 상태 변경에 대해 Adjust SDK에 알려야 합니다. `checkForNewAttStatus` 메서드를 호출하여 인증 상태를 Adjust 서버로 전송합니다.
 
@@ -205,7 +418,7 @@ iOS 17 출시와 함께 Apple은 개발자가 서드파티에 보낼 수 있는 
 
 사용자가 [ATT에 동의한](#app-tracking-authorization-wrapper) 경우에만 Adjust SDK는 **결정론적 어트리뷰션** 을 위해 IDFA와 started_at 속성 모두에 대한 액세스를 획득하고, 전체 페이로드를 `consent.adjust.com`로 전송합니다.
 
-두 엔드포인트는 모든 [URL 전략](/ko/sdk/ios/features/privacy#data-residency) 에 사용할 수 있습니다.
+두 엔드포인트는 모든 [URL 전략](/en/sdk/ios/features/privacy#data-residency) 에 사용할 수 있습니다.
 
 <Table>
 
@@ -219,3 +432,4 @@ iOS 17 출시와 함께 Apple은 개발자가 서드파티에 보낼 수 있는 
 | `ADJUrlStrategyIndia` | `analytics.adjust.net.in` | `consent.adjust.net.in` |
 
 </Table>
+</SdkVersion>

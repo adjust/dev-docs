@@ -6,16 +6,20 @@ slug: "ja/sdk/web/features/events"
 
 Adjust SDKはイベントインターフェイスを提供しており、アプリのイベント情報を構造化してAdjustのサーバーに送信することができます。
 
+<CodeBlock title="インターフェイス宣言">
+
 ```js
 export type EventParamsT = {|
    eventToken: string,
    revenue?: number,
    currency?: string,
    deduplicationId?: string,
-   callbackParams?: Array<globalparamst id="sl-md0000000">,
-   partnerParams?: Array<globalparamst id="sl-md0000000">,
+   callbackParams?: Array<globalparamst>,
+   partnerParams?: Array<globalparamst>,
 |};
 ```
+
+</CodeBlock>
 
 ## [イベントを送信する](send-an-event)
 
@@ -72,7 +76,7 @@ function _handleTrackEvent() {
 
 <Callout type="seealso">
 
-詳細は、[異なる通貨での購入計測](https://help.adjust.com/ja/article/currency-conversion)に関するガイドをご覧ください。
+Check the guide to [recording purchases in different currencies](https://help.adjust.com/ja/article/currency-conversion) for more information.
 
 </Callout>
 
@@ -87,6 +91,8 @@ Adjust.trackEvent({
 ### [例](example-1)
 
 この例では、ユーザーがボタンを操作する度に _`g3mfiw`_ のトークンでイベントを計測する方法を示します。この関数は、このイベントの`revenue`プロパティを _`0.25`_ に、`currency`プロパティを _`EUR`_ に設定します。
+
+<CodeBlock highlight="{range: 26-28}">
 
 ```js
 function init(defaultEventConfig = {}) {
@@ -122,6 +128,8 @@ function _handleTrackEvent() {
 }
 ```
 
+</CodeBlock>
+
 ## [収益イベントの重複排除](deduplicate-revenue-events)
 
 イベントを重複して計測するのを防ぐため、オプションとして任意のIDをパスすることもできます。SDKが最新10件のIDを保存し、トランザクションIDが重複した収益イベントを排除します。
@@ -138,6 +146,8 @@ Adjust.trackEvent({
 ### [例](example-2)
 
 この例では、ユーザーがボタンを操作する度に _`g3mfiw`_ のトークンでイベントを計測する方法を示します。この関数は、`deduplicationId`を _`5e85484b-1ebc-4141-aab7-25b869e54c49`_ に設定します。
+
+<CodeBlock highlight="{range: 26-27}">
 
 ```js
 function init(defaultEventConfig = {}) {
@@ -172,6 +182,8 @@ function _handleTrackEvent() {
 }
 ```
 
+</CodeBlock>
+
 重複排除制限を上書きして、Adjust SDKが保存する識別子の数を変更することができます。これを行うには、`initSdk`メソッドの`eventDeduplicationListLimit`引数の新しい制限を指定します。
 
 ```js
@@ -184,12 +196,16 @@ Adjust.initSdk({
 
 ## [コールバックパラメーターを追加する](add-callback-parameters)
 
+<CodeBlock title="インターフェイス宣言">
+
 ```js
 export type GlobalParamsT = {|
    key: string,
    value: string,
 |};
 ```
+
+</CodeBlock>
 
 Adjustダッシュボードで[コールバックURLを登録](https://help.adjust.com/ja/article/set-up-callbacks)した場合、SDKがイベントを記録する際にコールバックURLにGETリクエストを送信します。
 
@@ -209,10 +225,13 @@ Adjust.trackEvent({
 
 Adjust SDKはイベントを計測し、コールバックパラメーターが追加されたURLにリクエストを送信します。例えば、URL `https://www.mydomain.com/callback`が登録されている場合、コールバックは以下のようになります：
 
+<CodeBlock highlight="key, value, foo, bar">
+
 ```text
 https://www.mydomain.com/callback?key=value&foo=bar
 ```
 
+</CodeBlock>
 <Callout type="note">
 
 Adjustは、カスタムコールバックパラメーターを保存しません。カスタムパラメーターは、コールバックURLにのみ追加されます。
@@ -238,9 +257,14 @@ Adjustは多くのプレースホルダーをサポートしており、SDKか�
 
 コールバックURLの結果は以下のようになります：
 
+<CodeBlock highlight="g3mfiw, 0.05">
+
 ```text
 http://www.mydomain.com/callback?event_token=g3mfiw&revenue_amount=0.05
 ```
+
+</CodeBlock>
+<CodeBlock highlight="{range: 26-29}">
 
 ```js
 function init(defaultEventConfig = {}) {
@@ -278,7 +302,11 @@ function _handleTrackEvent() {
 }
 ```
 
+</CodeBlock>
+
 ## [パートナーパラメーターの追加](add-partner-parameters)
+
+<CodeBlock title="インターフェイス宣言">
 
 ```js
 export type GlobalParamsT = {|
@@ -286,6 +314,8 @@ export type GlobalParamsT = {|
    value: string,
 |};
 ```
+
+</CodeBlock>
 
 [パートナーパラメーター](https://help.adjust.com/ja/article/data-sharing-ad-network#map-parameters)を追加することで、ネットワークパートナーに追加情報を送信することができます。
 
@@ -299,7 +329,7 @@ Adjustは、設定した[外部パートナー](https://help.adjust.com/ja/artic
 
 パートナーパラメーターをイベントに追加するには、`GlobalParam`オブジェクトを含む `partnerParams`配列を作成します。
 
-```javascript
+```js
 Adjust.trackEvent({
    // ... other params go here, including mandatory ones
    partnerParams: [
@@ -316,7 +346,9 @@ Adjust.trackEvent({
 -  関連する製品の`product_id`
 -  イベントをトリガーしたユーザーの`user_id`
 
-```javascript
+<CodeBlock highlight="{range: 26-29}">
+
+```js
 function init(defaultEventConfig = {}) {
    _ui.trackPartnerEventButton.addEventListener(
       "click",
@@ -352,13 +384,19 @@ function _handleTrackEvent() {
 }
 ```
 
+</CodeBlock>
+
 ## [イベントの記録と外部ページへのリダイレクト](record-event-and-redirect-to-an-external-page)
 
+<CodeBlock title="メソッドシグネチャー">
+
 ```js
-function trackEvent(params: EventParamsT): Promise<void id="sl-md0000000"> {
+function trackEvent(params: EventParamsT): Promise<void> {
    return _internalTrackEvent(params);
 }
 ```
+
+</CodeBlock>
 
 Adjust SDKにより、外部ページへのリダイレクトをイベントとして記録することができます。リダイレクトが発生する前にSDKでイベントを記録するために、`trackEvent`メソッドは[`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)を返します。この`Promise`は、SDKがAdjustのサーバーからレスポンスを受信した後に満たされます。内部エラーレスポンスが返された場合、`Promise`は拒否されます。
 
@@ -372,7 +410,7 @@ Adjust SDKはイベントを内部キューに保存します。つまり、リ�
 
 ### [例](example-5)
 
-```javascript
+```js
 Promise.race([
    Adjust.trackEvent({
       eventToken: "YOUR_EVENT_TOKEN",

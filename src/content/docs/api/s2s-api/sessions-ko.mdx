@@ -6,7 +6,7 @@ sidebar-position: 4
 sidebar-label: "S2S 세션"
 ---
 
-세션은 Adjust에서의 모든 어트리뷰션과 트래킹의 기반입니다. 세션은 사용자가 백그라운드에서 앱의 사용을 재개하거나 앱을 실행할 때 발생합니다. 앱 내의 개별 사용자 세션 트래킹을 위해 S2S 세션 API를 사용하시기 바랍니다.
+세션은 Adjust에서의 모든 어트리뷰션과 측정의 기반입니다. 세션은 사용자가 백그라운드에서 앱의 사용을 재개하거나 앱을 실행할 때 발생합니다. 앱 내의 개별 사용자 세션 기록을 위해 S2S 세션 API를 사용하시기 바랍니다.
 
 <Callout type="important">
 
@@ -18,15 +18,19 @@ Adjust는 다음의 기능을 활성화해야 합니다. 자세한 정보는 담
 
 ### [인증](authentication)
 
-[S2S 보안을 설정](/ko/api/s2s-api/security)하여 S2S 세션의 보안을 보장하고, 스푸핑된 요청으로부터 보호할 수 있습니다. 이를 위해서는 수신되는 모든 요청에 Adjust 대시보드에서 생성된 인증 토큰이 포함되어야 합니다. 토큰이 포함되어 있지 않거나 올바르지 않은 토큰을 포함한 요청은 Adjust 서버에서 거부됩니다.
+[S2S 보안을 설정](/en/api/s2s-api/security)하여 S2S 세션의 보안을 보장하고, 스푸핑된 요청으로부터 보호할 수 있습니다. 이를 위해서는 수신되는 모든 요청에 Adjust 대시보드에서 생성된 인증 토큰이 포함되어야 합니다. 토큰이 포함되어 있지 않거나 올바르지 않은 토큰을 포함한 요청은 Adjust 서버에서 거부됩니다.
 
 ## [세션 기록](record-sessions)
 
 Adjust는 리소스를 저장하기 위해 세션을 그룹화합니다. Adjust 서버가 새로운 세션이 트리거된 것으로 간주하려면, 세션 간 최소 30분의 간격이 있어야 합니다.
 
+<CodeBlock title="엔드포인트" highlight="/session">
+
 ```text
 https://s2s.adjust.com/session
 ```
+
+</CodeBlock>
 
 ### [헤더](headers)
 
@@ -46,42 +50,42 @@ https://s2s.adjust.com/session
 
 <Table search>
 
-| 파라미터              | 설명                                                                                                                                                               | 예시                                              |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------- |
-| `s2s`\*               | 서버간 파라미터: Adjust 서버가 서버 측 활동을 인식하도록 허용. <br/>항상 `1`이어야 함.                                                                             | `1`                                               |
-| `app_token`           | 앱의 고유한 인증 토큰                                                                                                                                              | `pezwd5bre2xb`                                    |
-| `vida`                | Vizio 광고 ID, Vizio에만 해당                                                                                                                                      | `dca2365e-0d78-47c6-aaac-9567846c6c9e`            |
-| `rida`                | Roku 광고 ID, Roku만 해당                                                                                                                                          |                                                   |
-| `tifa`                | Tizen OS 광고 ID, Samsung만 해당                                                                                                                                   |                                                   |
-| `idfa`                | iOS 광고 ID, iOS에만 해당                                                                                                                                          | `29DDE430-CE81-4F00-A50C-689595AAD142`            |
-| `idfv`                | Roku 벤더 ID, iOS에만 해당                                                                                                                                         | `59E27F41-A86B-4560-B585-63161F871C4B`            |
-| `gps_adid`            | Google Play 광고 ID. Goole Play Service 라이브러리가 추가된 경우에만 전송. Android에만 해당.                                                                       | `6cf94580-46c2-490c-b882-2f6ae269b579`            |
-| `oaid`                | 공개 광고\(익명\) ID                                                                                                                                               | `ed799bac-2537-6122-377a-edebce5db5a5`            |
-| `imei`                | 국제 모바일 기기 식별코드\(IMEI\)                                                                                                                                  | `490154203237518`                                 |
-| `android_id`          | Android ID, `gps_adid`가 없는 경우에만 전송. Android에만 해당.                                                                                                     | `e11a8c233efb29f3`                                |
-| `persistent_ios_uuid` | ios_uuid와 동일하나 Keychain에 저장되어 재설치된 앱이 동일한 값을 갖게 됨. iOS에만 해당.                                                                           | `3b35fcfb-6115-4cff-830f-e32a248c487d`            |
-| `app_version`         | 본 파라미터는 iOS에서의 빌드 번호, Android에서의 실제 앱 버전을 나타냅니다.                                                                                        | `1.0`                                             |
-| `app_version_short`   | 릴리스\{" "\}는 iOS에서의 실제 앱 버전 번호를 나타냅니다. iOS만 해당                                                                                               | `1.0`                                             |
-| `session_count`       | 현재 세션을 포함한 트래킹된 세션의 숫자.                                                                                                                           | `1`                                               |
-| `subsession_count`    | 트래킹된 하위 세션의 숫자. 최초로 트래킹된 세션\(설치\)은 본 파라미터를 포함하지 않습니다. <br/>이후의 모든 세션은 이전 세션에 대한 하위 세션의 숫자를 포함합니다. | `1`                                               |
-| `session_length`      | 초 단위 세션 길이. 최초로 트래킹된 세션\(설치\)은 본 파라미터를 포함하지 않습니다. <br/>이후의 모든 세션은 기존 세션의 길이를 포함합니다.                          | `123`                                             |
-| `time_spent`          | 이전 세션에서 활성 상태였던 시간.                                                                                                                                  | `123`                                             |
-| `tracking_enabled`    | 사용자의 광고 트래킹 제한\(LAT\) 활성화 여부 표시                                                                                                                  | `1`                                               |
-| `bundle_id`           | 번들 ID. iOS에만 해당.                                                                                                                                             | `com.adjust.example`                              |
-| `package_name`        | 패키지 이름. Android에만 해당.                                                                                                                                     | `com.adjust.example`                              |
-| `environment`         | `sandbox` \(테스트용\) 또는 `production`\(라이브 트래픽용\)                                                                                                        | `sandbox`                                         |
-| `country`             | 현지 국가 코드                                                                                                                                                     | `de`                                              |
-| `language`            | 현지 언어 코드                                                                                                                                                     | `en`                                              |
-| `os_name`             | `ios` 또는 `android`                                                                                                                                               | `ios`                                             |
-| `os_version`          | 운영체제의 현재 버전.                                                                                                                                              | `11.0`                                            |
-| `cpu_type`            | CPU의 프로세서 패밀리                                                                                                                                              | `arm64-v8a`                                       |
-| `created_at`          | 로컬 기기의 타임스탬프. 시간대를 포함하는 패키지 생성.                                                                                                             | `2024-03-23T09:46:47.288Z-0400`                   |
-| `sent_at`             | 로컬 기기의 타임스탬프. 시간대를 포함하는 패키지 전송.                                                                                                             | `2024-03-23T09:47:47.288Z-0400`                   |
-| `device_type`         | 기기 모델                                                                                                                                                          | `Phone (android), iphone`                         |
-| `device_name`         | URL 인코딩된 모델 ID                                                                                                                                               | `Moto G (5) Plus, iPhone10,5`                     |
-| `hardware_name`       | 디바이스 보드 설정                                                                                                                                                 | `N66AP`                                           |
-| `install_receipt`     | 앱 스토어의 암호화 서명된 설치 영수증, iOS만 해당                                                                                                                  | `Super long string representation of the receipt` |
-| `ip_address`          | 디바이스의 IP 주소.<br/>`ip_address` 파라미터는 IPv4 주소만 허용하며, IPv6은 현재 지원되지 않습니다.                                                               | `ip_address=192.0.0.1`                            |
+| 파라미터              | 설명                                                                                                                                                           | 예시                                              |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| `s2s`\*               | 서버간 파라미터: Adjust 서버가 서버 측 활동을 인식하도록 허용. <br/>항상 `1`이어야 함.                                                                         | `1`                                               |
+| `app_token`           | 앱의 고유한 인증 토큰                                                                                                                                          | `pezwd5bre2xb`                                    |
+| `vida`                | Vizio 광고 ID, Vizio에만 해당                                                                                                                                  | `dca2365e-0d78-47c6-aaac-9567846c6c9e`            |
+| `rida`                | Roku 광고 ID, Roku만 해당                                                                                                                                      |                                                   |
+| `tifa`                | Tizen OS 광고 ID, Samsung만 해당                                                                                                                               |                                                   |
+| `idfa`                | iOS 광고 ID, iOS에만 해당                                                                                                                                      | `29DDE430-CE81-4F00-A50C-689595AAD142`            |
+| `idfv`                | Roku 벤더 ID, iOS에만 해당                                                                                                                                     | `59E27F41-A86B-4560-B585-63161F871C4B`            |
+| `gps_adid`            | Google Play 광고 ID. Goole Play Service 라이브러리가 추가된 경우에만 전송. Android에만 해당.                                                                   | `6cf94580-46c2-490c-b882-2f6ae269b579`            |
+| `oaid`                | 공개 광고\(익명\) ID                                                                                                                                           | `ed799bac-2537-6122-377a-edebce5db5a5`            |
+| `imei`                | 국제 모바일 기기 식별코드\(IMEI\)                                                                                                                              | `490154203237518`                                 |
+| `android_id`          | Android ID, `gps_adid`가 없는 경우에만 전송. Android에만 해당.                                                                                                 | `e11a8c233efb29f3`                                |
+| `persistent_ios_uuid` | ios_uuid와 동일하나 Keychain에 저장되어 재설치된 앱이 동일한 값을 갖게 됨. iOS에만 해당.                                                                       | `3b35fcfb-6115-4cff-830f-e32a248c487d`            |
+| `app_version`         | 본 파라미터는 iOS에서의 빌드 번호, Android에서의 실제 앱 버전을 나타냅니다.                                                                                    | `1.0`                                             |
+| `app_version_short`   | iOS에서의 실제 앱 버전 번호를 나타냅니다. iOS만 해당                                                                                                           | `1.0`                                             |
+| `session_count`       | 현재 세션을 포함한 기록된 세션의 숫자.                                                                                                                         | `1`                                               |
+| `subsession_count`    | 기록된 하위 세션의 숫자. 최초로 기록된 세션\(설치\)은 본 파라미터를 포함하지 않습니다. <br/>이후의 모든 세션은 이전 세션에 대한 하위 세션의 숫자를 포함합니다. | `1`                                               |
+| `session_length`      | 초 단위 세션 길이. 최초로 기록된 세션\(설치\)은 본 파라미터를 포함하지 않습니다. <br/>이후의 모든 세션은 기존 세션의 길이를 포함합니다.                        | `123`                                             |
+| `time_spent`          | 이전 세션에서 활성 상태였던 시간.                                                                                                                              | `123`                                             |
+| `tracking_enabled`    | 사용자의 광고 추적 제한\(LAT\) 활성화 여부 표시                                                                                                                | `1`                                               |
+| `bundle_id`           | 번들 ID. iOS에만 해당.                                                                                                                                         | `com.adjust.example`                              |
+| `package_name`        | 패키지 이름. Android에만 해당.                                                                                                                                 | `com.adjust.example`                              |
+| `environment`         | `sandbox` \(테스트용\) 또는 `production`\(라이브 트래픽용\)                                                                                                    | `sandbox`                                         |
+| `country`             | 현지 국가 코드                                                                                                                                                 | `de`                                              |
+| `language`            | 현지 언어 코드                                                                                                                                                 | `en`                                              |
+| `os_name`             | `ios` 또는 `android`                                                                                                                                           | `ios`                                             |
+| `os_version`          | 운영체제의 현재 버전.                                                                                                                                          | `11.0`                                            |
+| `cpu_type`            | CPU의 프로세서 패밀리                                                                                                                                          | `arm64-v8a`                                       |
+| `created_at`          | 로컬 기기의 타임스탬프. 시간대를 포함하는 패키지 생성.                                                                                                         | `2024-03-23T09:46:47.288Z-0400`                   |
+| `sent_at`             | 로컬 기기의 타임스탬프. 시간대를 포함하는 패키지 전송.                                                                                                         | `2024-03-23T09:47:47.288Z-0400`                   |
+| `device_type`         | 기기 모델                                                                                                                                                      | `Phone (android), iphone`                         |
+| `device_name`         | URL 인코딩된 모델 ID                                                                                                                                           | `Moto G (5) Plus, iPhone10,5`                     |
+| `hardware_name`       | 디바이스 보드 설정                                                                                                                                             | `N66AP`                                           |
+| `install_receipt`     | 앱 스토어의 암호화 서명된 설치 영수증, iOS만 해당                                                                                                              | `Super long string representation of the receipt` |
+| `ip_address`          | 디바이스의 IP 주소.<br/>`ip_address` 파라미터는 IPv4 주소만 허용하며, IPv6은 현재 지원되지 않습니다.                                                           | `ip_address=192.0.0.1`                            |
 
 </Table>
 
@@ -112,13 +116,19 @@ Google Ads를 사용하는 경우 `ad_personalization` 파라미터를 전송하
 
 ## [예시](example)
 
+<CodeBlock title="요청">
+
 ```sh
 curl -X "POST" \
 -H 'Authorization: Bearer ADD_YOUR_AUTH_TOKEN_HERE' \
 -H 'User-Agent: Adjust Streaming Job (akka-http)' \
 -d "app_token=a1234b2x3a4o&app_version=Roku%2FDVP-10.5+%2810.5.0.0010%29&created_at_unix=1543915806015&environment=production&os_name=android&rida=099aa0bc-d123-4567-8999-a1b7c50767b1&s2s=1" \
 "https://s2s.adjust.com/session"
+
 ```
+
+</CodeBlock>
+<CodeBlock title="응답">
 
 ```json
 {
@@ -145,3 +155,5 @@ curl -X "POST" \
    }
 }
 ```
+
+</CodeBlock>

@@ -4,7 +4,7 @@ description: " Adjust SDKのプリインストールツールを設定します�
 slug: "ja/sdk/android/setup/preinstall-tool"
 ---
 
-デバイス出荷時にアプリがプリインストールされている場合は、プリインストールトラッカーを使用することで、そのユーザーを計測することができます。Adjustストア・プリインストールツール（`adjust-dtt`）は、このアトリビューション情報をAPKに挿入することができます。Adjust SDKが`adjust-dtt`を介して挿入される情報を読み取ることで、アプリはプリインストールしているユーザーを特定のAdjustトラッカーにアトリビュートします。
+If your app is pre\-installed on a device, you need to use a pre\-install link to attribute users. The Adjust Store & Pre\-Install Tool \(`adjust-dtt`\) enables you to insert this information into your APK. The Adjust SDK reads the information inserted by `adjust-dtt`. This enables you to attribute users of pre\-installed apps to specific Adjust links.
 
 ## [事前準備](before-you-begin)
 
@@ -44,7 +44,7 @@ RubyはmacOSデバイスにプリインストールされています。
 </Tab>
 <Tab title="Linux" sync="linux">
 
-[ruby\-lang Webサイト](https://www.ruby-lang.org/ja/documentation/installation/)のディストリビューション手順に従ってください。
+[ruby\-lang Webサイト](https://www.ruby-lang.org/en/documentation/installation/)のディストリビューション手順に従ってください。
 
 </Tab>
 </Tabs>
@@ -93,7 +93,7 @@ Oracle JDKを使用している場合は、[Oracle Webサイト](https://docs.or
 </Tab>
 </Tabs>
 
-## [プリインストールトラッカー情報を追加する](add-preinstall-tracker-information)
+## [Add preinstall link information](add-preinstall-link-info)
 
 ### [ステップ1：keystoreファイルの取得](step-1-get-keystore-file)
 
@@ -103,27 +103,29 @@ Android Studioから署名済みAPKをエクスポートする場合、カスタ
 
 `adjust-dtt` を使用するには、デフォルトのキーストアファイルまたはカスタムキーストアファイルのいずれかにアクセスできる必要があります。これは、`apktool`を使用してAPKを解凍すると、全ての署名が削除されるためです。APKを再パッケージ化しても、署名は再度有効になりません。Androidデバイスに配信するためにAPKを再署名するには、署名情報を使用して`jarsigner`を実行する必要があります。
 
-### [ステップ2：トラッカートークンの作成](step-2-create-tracker-token)
+### [Step 2\. Create link](step-2-create-link)
 
-次に、Adjustダッシュボードでキャンペーンリンクを作成します。このリンクトークンを、プリインストールされたアプリのデフォルトキャンペーンとして使用します。つまり、アプリをプリインストールしている全てのユーザーがこのトークンにアトリビュートされることになります。
+Next, you need to create a link in your Adjust dashboard. You will use the link token as the default campaign for your pre\-installed app. This means that all users who have the app pre\-installed will be attributed to this token.
 
 ### [ステップ3：configファイルの作成](step-3-create-a-config-file)
 
-キーストアファイルとキャンペーントークンを取得したら、設定ファイルを作成できます。`adjust-dtt`は`adjust-config.yaml`構成ファイルを使用して設定を読み取ります。このファイルには、設定が必要な各種アプリストアの設定が含まれています。
+Once you have your keystore file and your link token, you can create a configuration file. `adjust-dtt` uses an `adjust-config.yaml` configuration file to read your settings. This file includes settings for the different app stores you need to set up.
 
 <Table>
 
-| パラメーター      | データタイプ | グローバルまたはストアごと | 説明                                                                 |
-| ----------------- | ------------ | -------------------------- | -------------------------------------------------------------------- |
-| `apk_path`        | `String`     | 両方                       | APKへの絶対パス                                                      |
-| `keystore_path`   | `String`     | 両方                       | keystoreファイルへの絶対パス                                         |
-| `keystore_pass`   | `String`     | 両方                       | keystore署名パスワード                                               |
-| `keystore_alias`  | `String`     | 両方                       | keystoreエイリアス                                                   |
-| `default_tracker` | `String`     | ストアごと                 | プリインストールをアトリビュートするためのAdjustキャンペーントークン |
+| パラメーター      | データタイプ | グローバルまたはストアごと | 説明                                                 |
+| ----------------- | ------------ | -------------------------- | ---------------------------------------------------- |
+| `apk_path`        | `String`     | 両方                       | APKへの絶対パス                                      |
+| `keystore_path`   | `String`     | 両方                       | keystoreファイルへの絶対パス                         |
+| `keystore_pass`   | `String`     | 両方                       | keystore署名パスワード                               |
+| `keystore_alias`  | `String`     | 両方                       | keystoreエイリアス                                   |
+| `default_tracker` | `String`     | ストアごと                 | The Adjust link token to attribute pre\-installs to. |
 
 </Table>
 
 以下は、`store_1`、`store_2`、`store_3`という名前の3つのストアの設定を含む`adjust-config.yaml`ファイルの例です。
+
+<CodeBlock title="adjust-config.yaml">
 
 ```yaml
 apk_path: /Users/username/Desktop/apk/example-release.apk
@@ -139,7 +141,11 @@ stores:
       default_tracker: abc789
 ```
 
+</CodeBlock>
+
 各ストアに同じ設定を使用したい場合、ファイルのルートフォルダでグローバルパラメーターを定義できます。ストアに設定されたパラメーターは、そのストアのグローバルパラメーターを上書きします。以下はその例です。
+
+<CodeBlock title="adjust-config.yaml">
 
 ```yaml
 apk_path: /Users/username/Desktop/apk/example-release.apk
@@ -157,6 +163,8 @@ stores:
    store_3:
       default_tracker: abc789
 ```
+
+</CodeBlock>
 
 この例では、 `store_1`のAPKを生成する際に、`adjust-dtt`ツールは`differentkeystore.jks` 、 `differentkeystorepass`および`differentkeystorealias`を使用します。これにより、各ストアごとに変更されたAPKを生成します。
 

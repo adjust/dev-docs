@@ -8,9 +8,13 @@ Adjust SDK에는 앱에서 사용자 프라이버시를 관리할 수 있는 기
 
 ## [삭제 요청 전송](send-erasure-request)
 
+<CodeBlock title="메서드 서명">
+
 ```cs
 public static void gdprForgetMe();
 ```
+
+</CodeBlock>
 
 EU의 개인정보 보호 규정\(GDPR\) 및 유사한 전 세계 개인정보 보호법\(CCPA, LGPD 등\)은 데이터 주체에게 개인 데이터 처리와 관련하여 포괄적인 권리를 부여합니다. 이러한 권리에는 삭제 권리\( [GDPR 17조](https://gdpr.eu/article-17-right-to-be-forgotten/) 참조\)\([1](https://help.adjust.com/ko/article/gdpr#ref-1)\)가 포함됩니다. 데이터 처리자로서 Adjust는 귀하의 \(앱\) 사용자의 이러한 요청을 처리하는 데 있어 귀하\(데이터 컨트롤러\)를 지원할 의무가 있습니다.
 
@@ -29,9 +33,13 @@ Adjust SDK를 사용하여 사용자의 서드파티 공유 설정 변경 내용
 
 ### [AdjustThirdPartySharing 객체 인스턴스화](instantiate-an-adjustthirdpartysharing-object)
 
+<CodeBlock title="메서드 서명">
+
 ```cs
 public AdjustThirdPartySharing(bool? isEnabled);
 ```
+
+</CodeBlock>
 
 Adjust SDK와의 서드파티 공유를 활성화 또는 비활성화하려면 `AdjustThirdPartySharing` 객체를 인스턴스화해야 합니다. 이 객체에 Adjust의 서드파티 공유 처리 방식을 제어하는 변수가 포함됩니다.
 
@@ -61,9 +69,13 @@ Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 
 ### [세분화된 정보 전송](send-granular-information)
 
+<CodeBlock title="메서드 서명">
+
 ```cs
 public void addGranularOption(string partnerName, string key, string value);
 ```
+
+</CodeBlock>
 
 서드파티 공유 설정 변경 시 세부 정보를 추가할 수 있습니다. 사용자의 결정에 대한 보다 자세한 정보 전달에 본 기능을 사용하시기 바랍니다. 다음 파라미터와 함께 `addGranularOption` 메서드를 호출합니다.
 
@@ -164,26 +176,109 @@ adjustThirdPartySharing.addGranularOption("google_dma", "ad_user_data", "1");
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
-### [파트너 설정 업데이트](update-partner-settings)
+### [파트너 공유 설정 업데이트](update-partner-settings)
+
+<CodeBlock title="메서드 서명">
 
 ```cs
-public void addPartnerSharingSetting(string partnerName, string key, bool value);
+void addPartnerSharingSetting(String partnerName, String key, bool value)
 ```
 
-Adjust SDK를 사용하여 파트너별 서드파티 공유 설정을 업데이트할 수 있습니다. 이렇게 하려면 파트너 이름과 옵션을 사용하여 `addPartnerSharingSetting` 메서드를 호출합니다.
+</CodeBlock>
+
+기본 설정에 따라 Adjust는 앱 설정에서 구성한 모든 파트너와 모든 지표를 공유합니다. Adjust SDK를 사용하여 파트너별 서드파티 공유 설정을 업데이트할 수 있습니다. 이 기능을 토글하려면 다음 인수로 `addPartnerSharingSetting` 메서드를 호출합니다.
+
+<Table autoWidth="1,2,3">
+
+| 인수 \(Arguments\) | 데이터 유형 | 설명                                                                                                                                                                                      |
+| ------------------ | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `partnerName`      | `String`    | 파트너의 이름. [이용 가능한 전체 파트너 목록 다운로드](https://assets.ctfassets.net/5s247im0esyq/2QQROOadVqJzrME7yXKObe/7aca25e53d38befb2d469809e62b6fcc/3rd-party-sharing-partners.xlsx) |
+| `key`              | `String`    | 파트너와 공유하는 지표                                                                                                                                                                    |
+| `value`            | `Boolean`   | 사용자의 결정                                                                                                                                                                             |
+
+</Table>
+
+`key`를 사용하여 비활성화 또는 재활성화하고자 하는 지표를 지정할 수 있습니다. 모든 지표 공유를 활성화/비활성화하려면 `all` 키를 사용할 수 있습니다. 이용 가능한 지표의 전체 목록은 다음과 같습니다.
+
+<ListColumns>
+
+-  `ad_revenue`
+-  `all`
+-  `attribution`
+-  `update`
+-  `att_update`
+-  `cost_update`
+-  `event`
+-  `install`
+-  `reattribution`
+
+---
+
+-  `reattribution_reinstall`
+-  `reinstall`
+-  `rejected_install`
+-  `rejected_reattribution`
+-  `sdk_click`
+-  `sdk_info`
+-  `session`
+-  `subscription`
+-  `uninstall`
+
+</ListColumns>
+
+파트너의 지표에 대해 `false` 값을 설정하면 Adjust는 해당 파트너와의 지표 공유를 중단합니다.
+
+<Callout type="tip">
+
+파트너와 일부 지표만 공유하고자 하는 경우 `all` 키를 `false` 값과 함께 전달하여 모든 공유를 비활성화한 다음 개별 지표를 `true` 값과 함께 전달하여 공유를 제한할 수 있습니다.
+
+</Callout>
+
+#### [예시](examples)
+
+특정 파트너와의 모든 지표 공유를 중단하려면 `all` 키를 `false` 값과 함께 전달하시기 바랍니다.
 
 ```cs
 AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(null);
-//...
-adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "foo", false);
+adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "all", false);
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+```
+
+공유를 다시 활성화하려면 `all` 키를 `true` 값과 함께 전달하시기 바랍니다.
+
+```cs
+AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(null);
+adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "all", true);
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+```
+
+`addPartnerSharingSetting` 메서드를 서로 다른 키로 여러 번 호출하여 특정 지표의 공유를 중단하거나 시작할 수 있습니다. 예를 들어 이벤트 정보를 파트너에게만 공유하고자 하는 경우 다음을 전달할 수 있습니다.
+
+-  `all` 모든 정보 공유를 비활성화하려면 `false` 값과 함께 전달합니다.
+-  `event` 이벤트 공유를 활성화하려면 `true` 값과 함께 전달합니다.
+
+<Callout type="note">
+
+특정 키는 항상 `all` 보다 우선시됩니다. `all` 을 다른 키와 함께 전달하면 개별 키 값이 `all` 설정을 재정의합니다.
+
+</Callout>
+
+```cs
+AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(null);
+adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "all", false);
+adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "event", true);
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
 ## [서드파티 공유 비활성화](disable-third-party-sharing)
 
+<CodeBlock title="메서드 서명">
+
 ```cs
 public static void disableThirdPartySharing();
 ```
+
+</CodeBlock>
 
 모든 사용자의 서드파티 공유를 비활성화하려면 `disableThirdPartySharing` 메서드를 호출합니다. Adjust 서버가 이 정보를 수신하면 Adjust는 해당 사용자의 데이터를 서드파티와 공유하는 것을 중단합니다. Adjust SDK의 작동에는 문제가 없습니다.
 
@@ -193,9 +288,13 @@ Adjust.disableThirdPartySharing();
 
 ## [URL 전략 설정](set-url-strategy)
 
+<CodeBlock title="메서드 서명">
+
 ```cs
 public void setUrlStrategy(String urlStrategy);
 ```
+
+</CodeBlock>
 
 URL 전략 기능을 사용하여 다음을 설정할 수 있습니다.
 
@@ -229,9 +328,13 @@ Adjust.start(adjustConfig);
 
 ## [특정 사용자에 대한 동의 측정](consent-measurement-for-specific-users)
 
+<CodeBlock title="메서드 서명">
+
 ```cs
 public static void trackMeasurementConsent(bool measurementConsent);
 ```
+
+</CodeBlock>
 
 Adjust 대시보드에서 [데이터 프라이버시 설정](https://help.adjust.com/ko/article/manage-data-collection-and-retention)을 사용하는 경우 Adjust SDK도 설정해야 합니다. 이는 동의 만료 기간이나 사용자 데이터 보유 기간 등의 설정을 포함합니다.
 

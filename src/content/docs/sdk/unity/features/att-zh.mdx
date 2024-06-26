@@ -4,18 +4,18 @@ description: "配置应用以使用 Apple 的 App Tracking Transparency 框架"
 slug: "zh/sdk/unity/features/att"
 ---
 
-如果您要记录设备的广告主 ID \(即 IDFA\)，需要先展示弹窗获得用户的授权。要达到这个目的，你需要在应用中添加 Apple 的App Tracking Transparency \(ATT\) 框架。Adjust SDK 会存储用户的授权状态并在每次请求中将该信息发送至 Adjust 服务器。
+如果您要记录设备的广告主 ID \(即 IDFA\)，需要先展示弹窗获得用户的授权。要达到这个目的，你需要在应用中添加 Apple 的 App Tracking Transparency \(ATT\) 框架。Adjust SDK 会存储用户的授权状态并在每次请求中将该信息发送至 Adjust 服务器。
 
 ## [授权状态](authorization-statuses)
 
 <Table>
 
-| 状态                                                | 代码 | 描述                                               |
-| --------------------------------------------------- | ---- | -------------------------------------------------- |
-| `ATTrackingManagerAuthorizationStatusNotDetermined` | `0`  | 用户尚未对访问权限请求弹窗做出响应                 |
-| `ATTrackingManagerAuthorizationStatusRestricted`    | `1`  | 用户已在设备层级禁止应用相关数据访问               |
-| `ATTrackingManagerAuthorizationStatusDenied`        | `2`  | 用户已拒绝授予可用于设备跟踪的应用相关数据访问权限 |
-| `ATTrackingManagerAuthorizationStatusAuthorized`    | `3`  | 用户已授予可用于设备跟踪的应用相关数据访问权限     |
+| 状态                                                | 代码 | 描述                                                                     |
+| --------------------------------------------------- | ---- | ------------------------------------------------------------------------ |
+| `ATTrackingManagerAuthorizationStatusNotDetermined` | `0`  | 用户尚未对访问权限请求弹窗做出响应                                       |
+| `ATTrackingManagerAuthorizationStatusRestricted`    | `1`  | 用户已在设备层级禁止应用相关数据访问                                     |
+| `ATTrackingManagerAuthorizationStatusDenied`        | `2`  | The user has denied access to app\-related data for device measurement   |
+| `ATTrackingManagerAuthorizationStatusAuthorized`    | `3`  | The user has approved access to app\-related data for device measurement |
 
 </Table>
 <Callout type="note">
@@ -24,17 +24,21 @@ slug: "zh/sdk/unity/features/att"
 
 </Callout>
 
-## [应用跟踪授权包装器](app-tracking-authorization-wrapper)
+## [ATT authorization wrapper](att-authorization-wrapper)
+
+<CodeBlock title="方法签名">
 
 ```cs
-public static void requestTrackingAuthorizationWithCompletionHandler(Action<int id="sl-md0000000"> statusCallback, string sceneName = "Adjust");
+public static void requestTrackingAuthorizationWithCompletionHandler(Action<int> statusCallback, string sceneName = "Adjust");
 ```
+
+</CodeBlock>
 
 Adjust SDK 包含 [Apple `requestTrackingAuthorizationWithCompletionHandler` 方法](https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager/3547037-requesttrackingauthorizationwith)的包装器。如果您不想对 ATT 弹窗进行自定义，则可以使用这一包装器。
 
 用户对授权窗口做出响应时，回传方法就会被触发。该方法会将用户的授权状态代码发送至 Adjust 服务器。您可以在回传函数中定义每种状态代码的响应。
 
-您必须设定跟踪请求窗口中显示的文本。为此，请将文本加入 `Info.plist` 文件中的 `NSUserTrackingUsageDescription` key。
+You must specify text content for the ATT. To do this, add your text to the `NSUserTrackingUsageDescription` key in your `Info.plist` file.
 
 <Callout type="tip">
 
@@ -65,7 +69,7 @@ Adjust.requestTrackingAuthorizationWithCompletionHandler((status) =>
 
 ### [示例](example)
 
-该示例展示了，当用户与弹窗交互时，我们如何记录一个人类可读的用户授权状态描述。
+该示例展示了当用户与弹窗交互时，我们如何记录一个人类可读的用户授权状态描述。
 
 ```cs
 Adjust.requestTrackingAuthorizationWithCompletionHandler((status) =>
@@ -79,10 +83,10 @@ Adjust.requestTrackingAuthorizationWithCompletionHandler((status) =>
             Debug.Log("Access to app-related data is blocked at the device level.");
             break;
         case 2:
-            Debug.Log("The user has denied access to app-related data for device tracking.");
+            Debug.Log("The user has denied access to app-related data for device measurement.");
             break;
         case 3:
-            Debug.Log("The user has approved access to app-related data for device tracking.");
+            Debug.Log("The user has approved access to app-related data for device measurement.");
             break;
     }
 });
@@ -90,9 +94,13 @@ Adjust.requestTrackingAuthorizationWithCompletionHandler((status) =>
 
 ## [了解当前授权状态](get-current-authorization-status)
 
+<CodeBlock title="方法签名">
+
 ```cs
 public static int getAppTrackingAuthorizationStatus();
 ```
+
+</CodeBlock>
 
 您可以随时读取用户当前授权状态。调用 `getAppTrackingAuthorizationStatus` 方法来以 `int` 形式返回授权状态代码。
 
@@ -111,9 +119,13 @@ Adjust.addSessionPartnerParameter("status", authorizationStatus);
 
 ## [查看授权状态变化](check-for-authorization-status-changes)
 
+<CodeBlock title="方法签名">
+
 ```cs
 public static void checkForNewAttStatus();
 ```
+
+</CodeBlock>
 
 如果使用自定义 ATT 弹窗，那么您需要告知 Adjust SDK 用户的授权状态。调用 `checkForNewAttStatus` 方法，以向 Adjust 服务器发送授权状态。
 
@@ -123,9 +135,13 @@ Adjust.checkForNewAttStatus();
 
 ## [自定义弹窗时机](custom-prompt-timing)
 
+<CodeBlock title="方法签名">
+
 ```cs
 public void setAttConsentWaitingInterval(int numberOfSeconds);
 ```
+
+</CodeBlock>
 
 如果您的应用包含新手引导流程或教程，那么最好在用户完成新手引导流程或教程后再发送用户的 ATT 许可状态。您可以设置 `attConsentWaitingInterval` 属性将数据发送延迟最多 **120 秒** ，让用户有足够的时间完成初始用户引导。延时结束或用户设置许可状态后，SDK 会将在延迟时间内记录的所有信息以及用户许可状态发送给 Adjust 服务器。
 

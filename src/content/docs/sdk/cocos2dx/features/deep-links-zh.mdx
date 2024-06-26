@@ -1,0 +1,92 @@
+---
+title: "深度链接"
+description: "按照本节中的说明操作，设置深度链接。"
+category-title: "深度链接"
+slug: "zh/sdk/cocos2dx/features/deep-links"
+---
+
+您可以创建深度链接来将用户转到应用中的特定页面。针对用户是否已在设备上安装您的应用，Adjust SDK 会使用不同的逻辑：
+
+-  直接深度链接：用于用户已经安装应用的情况。用户会被转向链接中指定的页面。
+-  如果用户尚未安装应用，那么就会发生延迟深度链接。链接首先会将用户转向应用商店页面来安装应用。用户安装后，就会被带到链接中指定的页面。
+
+用户通过链接打开应用后，SDK 就可以读取深度链接数据了。
+
+## 直接深度链接
+
+必须在平台层级设置直接深度链接。无法在 Cocos2d\-x C\+\+ 代码中进行设置。请按照下方链接中的说明，在您的目标平台上设置深度链接：
+
+-  [iOS](/en/sdk/ios/features/deep-links/direct)
+-  [安卓](/en/sdk/android/features/deep-links)
+
+## 延迟深度链接
+
+### 设置延迟深度链接回传
+
+<CodeBlock title="方法签名">
+
+```cpp
+void AdjustConfig2dx::setDeferredDeeplinkCallback(bool(*deferredDeeplinkCallback)(std::string deeplink));
+```
+
+</CodeBlock>
+
+您可以配置 Adjust SDK，使其在接收到延迟深度链接时调用一个回传函数。回传函数会以 **字符串** 参数的形式接收深度链接。
+
+<CodeBlock highlight="{range: 3-5}, {range: 15}">
+
+```cpp
+#include "Adjust/Adjust2dx.h"
+
+static bool deferredDeeplinkCallbackMethod(std::string deeplink) {
+   //...
+}
+
+// ...
+
+bool AppDelegate::applicationDidFinishLaunching() {
+    std::string appToken = "{YourAppToken}";
+    std::string environment = AdjustEnvironmentSandbox2dx;
+
+    AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment);
+    adjustConfig.setLogLevel(AdjustLogLevel2dxVerbose);
+    adjustConfig.setDeferredDeeplinkCallback(deferredDeeplinkCallbackMethod);
+    Adjust2dx::start(adjustConfig);
+}
+```
+
+</CodeBlock>
+
+### 示例
+
+该示例展示了如何在用户打开延迟深度链接时记录深度链接地址。
+
+```cpp
+#include "Adjust/Adjust2dx.h"
+
+//...
+
+static bool deferredDeeplinkCallbackMethod(std::string deeplink) {
+    CCLOG("\nDeferred deep link received!");
+    CCLOG("\nURL: %s", deeplink.c_str());
+    CCLOG("\n");
+
+    Adjust2dx::appWillOpenUrl(deeplink);
+
+    return true;
+}
+
+// ...
+
+bool AppDelegate::applicationDidFinishLaunching() {
+    std::string appToken = "{YourAppToken}";
+    std::string environment = AdjustEnvironmentSandbox2dx;
+
+    AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment);
+    adjustConfig.setLogLevel(AdjustLogLevel2dxVerbose);
+    adjustConfig.setDeferredDeeplinkCallback(deferredDeeplinkCallbackMethod);
+    Adjust2dx::start(adjustConfig);
+
+    // ...
+}
+```

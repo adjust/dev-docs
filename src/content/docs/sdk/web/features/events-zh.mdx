@@ -4,7 +4,9 @@ description: "使用这些方法向 Adjust 发送事件信息。"
 slug: "zh/sdk/web/features/events"
 ---
 
-Adjust SDK 提供一个事件界面对象，用于架构并向 Adjust 服务器发送来自您应用的事件信息。
+Adjust SDK 提供一个事件界面，用于架构并向 Adjust 服务器发送来自您应用的事件信息。
+
+<CodeBlock title="接口声明">
 
 ```js
 export type EventParamsT = {|
@@ -12,10 +14,12 @@ export type EventParamsT = {|
    revenue?: number,
    currency?: string,
    deduplicationId?: string,
-   callbackParams?: Array<globalparamst id="sl-md0000000">,
-   partnerParams?: Array<globalparamst id="sl-md0000000">,
+   callbackParams?: Array<globalparamst>,
+   partnerParams?: Array<globalparamst>,
 |};
 ```
+
+</CodeBlock>
 
 ## [发送事件](send-an-event)
 
@@ -72,7 +76,7 @@ function _handleTrackEvent() {
 
 <Callout type="seealso">
 
-欢迎查看我们的跟踪不同币种的购买一文，了解更多信息。
+Check the guide to [recording purchases in different currencies](https://help.adjust.com/zh/article/currency-conversion) for more information.
 
 </Callout>
 
@@ -87,6 +91,8 @@ Adjust.trackEvent({
 ### [示例](example-1)
 
 在此示例中，每次用户与某个按钮互动时，我们就监测到一个带有 _`g3mfiw`_ 标签的事件。该函数会将该事件的 `revenue` 属性设为 _`0.25`_ ，并将 `currency` 属性设为 _`EUR`_ 。
+
+<CodeBlock highlight="{range: 26-28}">
 
 ```js
 function init(defaultEventConfig = {}) {
@@ -122,6 +128,8 @@ function _handleTrackEvent() {
 }
 ```
 
+</CodeBlock>
+
 ## [收入事件去重](deduplicate-revenue-events)
 
 您也可以发送一个可选的标识符，以避免监测重复事件。SDK 会存储最近 10 个标识符，带有重复交易 ID 的收入事件会被跳过。
@@ -138,6 +146,8 @@ Adjust.trackEvent({
 ### [示例](example-2)
 
 在此示例中，每次用户与某个按钮互动时，我们就监测到一个带有 _`g3mfiw`_ 标签的事件。该函数将 `deduplicationId` 设为 _`5e85484b-1ebc-4141-aab7-25b869e54c49`_ 。
+
+<CodeBlock highlight="{range: 26-27}">
 
 ```js
 function init(defaultEventConfig = {}) {
@@ -172,6 +182,8 @@ function _handleTrackEvent() {
 }
 ```
 
+</CodeBlock>
+
 您可以改写去重限制，以改变 Adjust SDK 储存的标识符数量。为此，请在 `initSdk` 方法的 `eventDeduplicationListLimit` 参数上指定新的限制。
 
 ```js
@@ -184,6 +196,8 @@ Adjust.initSdk({
 
 ## [添加回传参数](add-callback-parameters)
 
+<CodeBlock title="接口声明">
+
 ```js
 export type GlobalParamsT = {|
    key: string,
@@ -191,9 +205,11 @@ export type GlobalParamsT = {|
 |};
 ```
 
-您在 Adjust 控制面板中[注册回传 URL](https://help.adjust.com/zh/article/set-up-callbacks)，SDK 监测到事件后会向您的回传 URL 发送一个 GET 请求。
+</CodeBlock>
 
-您设置发送到服务器的回传参数。配置好事件的参数后，SDK 会将参数附加至[您的回传 URL](https://help.adjust.com/zh/article/raw-data-exports)。您可以利用该信息，通过自己的 BI 系统分析用户应用内行为。
+您在 Adjust 控制面板中[注册回传 URL](https://help.adjust.com/zh/article/set-up-callbacks)，SDK 监测到事件后会，向您的回传 URL 发送一个 GET 请求。
+
+您可以设置发送到服务器的回传参数。配置好事件的参数后，SDK 会将参数附加至[您的回传 URL](https://help.adjust.com/zh/article/raw-data-exports)。您可以利用该信息，通过自己的 BI 系统分析用户应用内行为。
 
 创建包含 `GlobalParam` 对象的 `callbackParams` 数组，以将回传参数添加到您的事件。
 
@@ -209,10 +225,13 @@ Adjust.trackEvent({
 
 Adjust SDK 监测事件，并向附加回传参数的 URL 发送请求。例如，如果您注册了 URL`https://www.mydomain.com/callback`，则回传为：
 
+<CodeBlock highlight="key, value, foo, bar">
+
 ```text
 https://www.mydomain.com/callback?key=value&foo=bar
 ```
 
+</CodeBlock>
 <Callout type="note">
 
 Adjust 不会存储您的自定义回传参数。自定义回传参数只会附加在您的回传 URL 中。
@@ -238,9 +257,14 @@ Adjust 支持许多占位符，这些占位符可用来将信息从 SDK 发送�
 
 产生的回传 URL 如下：
 
+<CodeBlock highlight="g3mfiw, 0.05">
+
 ```text
 http://www.mydomain.com/callback?event_token=g3mfiw&revenue_amount=0.05
 ```
+
+</CodeBlock>
+<CodeBlock highlight="{range: 26-29}">
 
 ```js
 function init(defaultEventConfig = {}) {
@@ -278,7 +302,11 @@ function _handleTrackEvent() {
 }
 ```
 
+</CodeBlock>
+
 ## [添加合作伙伴参数](add-partner-parameters)
+
+<CodeBlock title="接口声明">
 
 ```js
 export type GlobalParamsT = {|
@@ -286,6 +314,8 @@ export type GlobalParamsT = {|
    value: string,
 |};
 ```
+
+</CodeBlock>
 
 您可以添加[合作伙伴参数](https://help.adjust.com/zh/article/data-sharing-ad-network#map-parameters)，向渠道合作伙伴发送额外的信息。
 
@@ -299,7 +329,7 @@ Adjust 可向您设置的[外部合作伙伴](https://help.adjust.com/zh/article
 
 创建包含 `GlobalParam` 对象的 `partnerParams` 数组，以将合作伙伴参数添加到您的事件。
 
-```javascript
+```js
 Adjust.trackEvent({
    // ... other params go here, including mandatory ones
    partnerParams: [
@@ -311,12 +341,14 @@ Adjust.trackEvent({
 
 ### [示例](example-4)
 
-在此示例中，每次用户与某个按钮互动时，我们就监测到一个带有 _`g3mfiw`_ 标签的事件。添加了以下合作伙伴参数：
+在此示例中，每次用户与某个按钮互动时，我们就监测到一个带有 _`g3mfiw`_ 标签的事件。以下合作伙伴参数被添加：
 
 -  相关产品的 `product_id`
 -  触发事件的用户 `user_id`
 
-```javascript
+<CodeBlock highlight="{range: 26-29}">
+
+```js
 function init(defaultEventConfig = {}) {
    _ui.trackPartnerEventButton.addEventListener(
       "click",
@@ -352,13 +384,19 @@ function _handleTrackEvent() {
 }
 ```
 
+</CodeBlock>
+
 ## [记录事件并重定向到外部页面](record-event-and-redirect-to-an-external-page)
 
+<CodeBlock title="方法签名">
+
 ```js
-function trackEvent(params: EventParamsT): Promise<void id="sl-md0000000"> {
+function trackEvent(params: EventParamsT): Promise<void> {
    return _internalTrackEvent(params);
 }
 ```
+
+</CodeBlock>
 
 您可以通过 Adjust SDK 将重定向到外部页面记录为事件。要确保 SDK 在重定向发生之前记录事件， `trackEvent` 方法应返回 [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)。SDK 从 Adjust 服务器得到响应后，该 `Promise` 被满足。如果返回的是内部错误，则 `Promise` 被拒绝。
 
@@ -372,7 +410,7 @@ Adjust SDK 会将事件存储在内部队列中。也就是说，即使您的请
 
 ### [示例](example-5)
 
-```javascript
+```js
 Promise.race([
    Adjust.trackEvent({
       eventToken: "YOUR_EVENT_TOKEN",
