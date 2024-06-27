@@ -1,0 +1,41 @@
+---
+title: "TradePlus SDK 연동"
+description: "TradPlus 연동을 사용하여 TradPlus 정보를 Adjust 서버로 전달할 수 있습니다. "
+slug: "ko/sdk/android/integrations/tradplus"
+---
+
+<MinorVersion added="v4.38.1">
+
+TradPlus SDK의 광고 매출을 측정하고 싶다면 SDK간 연동을 사용하여 Adjust 서버로 광고 매출 정보를 전달할 수 있습니다.
+
+</MinorVersion>
+<Callout type="note">
+
+Admost의 광고 매출 측정에 관한 문의는 담당 TAM\(테크니컬 어카운트 매니저\)이나 [support@adjust.com](mailto:support@adjust.com)으로 연락 주시기 바랍니다.
+
+</Callout>
+
+## [시작에 앞서](before-you-begin)
+
+앱에 Adjust SDK를 연동하려면 [연동 가이드](/en/sdk/android)를 참조하시기 바랍니다.
+
+## [예시](example)
+
+Adjust와의 광고 매출 정보를 기록하려면 `TradPlusSdk.setGlobalImpressionListener` 함수 내에서 `AdjustAdRevenue` 인스턴스를 생성하시기 바랍니다. 자세한 내용은 [광고 매출 정보 전송 가이드](/en/sdk/android/features/ad-revenue) 를 참조하시기 바랍니다.
+
+```java
+TradPlusSdk.setGlobalImpressionListener(new GlobalImpressionManager.GlobalImpressionListener() {
+
+    @Override
+    public void onImpressionSuccess(TPAdInfo tpAdInfo) {
+        AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue("TradPlus");
+        double ecpm = Double.valueOf(tpAdInfo.ecpm) / 1000;
+        adjustAdRevenue.setRevenue(ecpm, "USD");
+        adjustAdRevenue.setAdRevenueNetwork(tpAdInfo.adSourceName);
+        adjustAdRevenue.setAdRevenueUnit(tpAdInfo.tpAdUnitId);
+        adjustAdRevenue.setAdRevenuePlacement(tpAdInfo.format);
+
+        Adjust.trackAdRevenue(adjustAdRevenue);
+    }
+});
+```
