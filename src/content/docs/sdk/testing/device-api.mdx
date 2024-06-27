@@ -1,0 +1,62 @@
+---
+title: "Verify installs with the Device API"
+description: "Test that the Adjust SDK is sending install information to Adjust with the Device API"
+slug: en/sdk/testing/device-api
+sidebar-label: "Device API"
+sidebar-position: 4
+---
+
+The [Device API](/en/api/device-api/) allows you to verify install information without logging in to the Adjust dashboard. You can use the [inspect device endpoint](en/api/device-api/inspect/) to inspect the following information:
+
+-  Device attribution
+-  Device reattribution
+-  Event data
+-  Push token integration
+-  Subscription data
+
+To use the Device API:
+
+1. Follow the integration guide for your platform to integrate the Adjust SDK.
+2. Set the environment to **sandbox**. This ensures that your app only sends information to the testing console.
+3. Set your log level to **verbose** to capture all logging information from your app.
+4. Set up a test device or an emulated device and find the device's advertising ID. You can install the [Adjust Insights app](https://apps.apple.com/us/app/adjust-insights/id1125517808) to find this information.
+5. If you've previously used the device for testing:
+
+   1. Delete your app from the test device.
+   2. Clear the device's advertising ID from the testing console. Follow the instructions for the [Testing console in AppView](https://help.adjust.com/en/article/testing-console#forget-device).
+   3. Alternatively, call the [forget device endpoint](/en/api/device-api/forget/) to remove existing information about the device.
+
+   ```bash
+   curl --location --request POST "https://api.adjust.com/device_service/api/v1/forget_device" \
+   --header "Authorization: Token token={your_token}" \
+   --data "adid={your_device_id}&app_token={your_app_token}"
+   ```
+
+6. Download and open the test version of your app that contains the Adjust SDK.
+7. Call the [inspect device endpoint](/en/api/device-api/inspect/) to return install information about the device.
+
+   ```bash
+   curl --location --request GET "https://api.adjust.com/device_service/api/v1/inspect_device?advertising_id={your_advertising_id}&app_token={your_app_token}" \
+   --header "Authorization: Bearer {your_bearer_token}"
+   ```
+
+## [Example response](example-response)
+
+```json
+{
+   "Adid": "acf8534f2f052395e617a38730682ccc",
+   "AdvertisingId": "1234-5678-9012-3456",
+   "Tracker": "abc123",
+   "TrackerName": "Organic",
+   "ClickTime": "0001-01-01T00:00:00Z",
+   "InstallTime": "2015-08-19T03:42:03Z",
+   "LastSessionTime": "2017-07-29T17:29:17Z",
+   "LastEventTimes": {
+      "a1a1a1": "2017-07-29T17:29:55Z",
+      "b2b2b2": "2017-07-29T17:29:21Z",
+      "c3c3c3": "2017-07-29T17:29:38Z",
+      "4d4d4d": "2017-07-29T17:29:58Z"
+   },
+   "State": "installed"
+}
+```
