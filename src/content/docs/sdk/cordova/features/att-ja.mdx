@@ -1,0 +1,148 @@
+---
+title: "App Tracking Transparencyの設定"
+description: "AppleのApp Tracking Transparencyフレームワークを使用するようにアプリを設定する"
+slug: "ja/sdk/cordova/features/att"
+---
+
+広告識別子（IDFA）を記録したい場合は、ユーザーの許諾を得るためのプロンプトを表示する必要があります。これを行うには、アプリにAppleのApp Tracking Transparency（ATT）frameworkを組み込む必要があります。Adjust SDKはユーザーの許諾状況を保存し、リクエストごとにAdjustサーバーに送信します。
+
+## [承認ステータス](authorization-statuses)
+
+<Table autoWidth="1,2,3">
+
+| ステータス（Status）                                | コード | 説明                                                                   |
+| --------------------------------------------------- | ------ | ---------------------------------------------------------------------- |
+| `ATTrackingManagerAuthorizationStatusNotDetermined` | `0`    | ユーザーがアクセスプロンプトに応答していない                           |
+| `ATTrackingManagerAuthorizationStatusRestricted`    | `1`    | アプリ関連データへのアクセスがデバイスレベルでブロックされている       |
+| `ATTrackingManagerAuthorizationStatusDenied`        | `2`    | ユーザーがデバイストラッキングによるアプリ関連データへのアクセスを拒否 |
+| `ATTrackingManagerAuthorizationStatusAuthorized`    | `3`    | ユーザーがデバイストラッキングによるアプリ関連データへのアクセスを承認 |
+
+</Table>
+<Callout type="note">
+
+SDKがATTステータスを取得できない場合、`-1`のステータスコードを受け取る可能性があります。
+
+</Callout>
+
+## [アプリトラッキング承認ラッパー](apptracking-authorization-wrapper)
+
+<CodeBlock title="メソッドシグネチャー">
+
+```js
+requestTrackingAuthorizationWithCompletionHandler(): Promise<number id="sl-md0000000">
+```
+
+</CodeBlock>
+
+Adjust SDKには、[Appleの`requestTrackingAuthorizationWithCompletionHandler`メソッドのラッパーが含まれています](https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager/3547037-requesttrackingauthorizationwith)。ATTプロンプトをカスタマイズしない場合は、このラッパーを使用することができます。
+
+コールバックメソッドは、ユーザーが同意ダイアログに応答した時にトリガーされ、ユーザーの同意ステータスコードをAdjustサーバーに送信します。コールバック関数内で各ステータスコードに対するレスポンスを定義することができます。
+
+トラッキング リクエスト ダイアログのテキスト内容を指定する必要があります。これを行うには、`Info.plist`ファイルで`NSUserTrackingUsageDescription`キーにテキストを追加してください。
+
+<Callout type="tip">
+
+Adjust SDKは、カスタムプロンプトを使用した場合、同意ステータスも記録します。初期化前にプロンプトを表示した場合、SDKはインストールイベントと共にステータスを送信します。プロンプトを初期化後に表示した場合は、SDKはユーザーが更新した後に、即時にAdjustサーバーにステータスを送信します。
+
+</Callout>
+
+```js
+Adjust.requestTrackingAuthorizationWithCompletionHandler(function (status) {
+   switch (status) {
+      case 0:
+         // ATTrackingManagerAuthorizationStatusNotDetermined case
+         break;
+      case 1:
+         // ATTrackingManagerAuthorizationStatusRestricted case
+         break;
+      case 2:
+         // ATTrackingManagerAuthorizationStatusDenied case
+         break;
+      case 3:
+         // ATTrackingManagerAuthorizationStatusAuthorized case
+         break;
+   }
+});
+```
+
+### [例](example)
+
+この例では、ユーザーがプロンプトと対話したときに、ユーザーの認証状態について人間が読み取れる説明をログに記録する方法を示しています。
+
+<CodeBlock title="index.js">
+
+```js
+var adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox,
+);
+Adjust.requestTrackingAuthorizationWithCompletionHandler(function (status) {
+   switch (status) {
+      case 0:
+         console.log("The user has not responded to the access prompt yet.");
+         break;
+      case 1:
+         console.log(
+            "Access to app-related data is blocked at the device level.",
+         );
+         break;
+      case 2:
+         console.log(
+            "The user has denied access to app-related data for device tracking.",
+         );
+         break;
+      case 3:
+         console.log(
+            "The user has approved access to app-related data for device tracking.",
+         );
+         break;
+   }
+});
+Adjust.create(adjustConfig);
+```
+
+</CodeBlock>
+
+## [現在の承認ステータスを取得](get-current-authorization-status)
+
+<CodeBlock title="メソッドシグネチャー">
+
+```js
+getAppTrackingAuthorizationStatus(): Promise<number id="sl-md0000000">
+```
+
+</CodeBlock>
+
+ユーザーの現在の認証ステータスはいつでも取得することができます。`getAppTrackingAuthorizationStatus`メソッドを呼び出し、 **整数** で認証ステータスコードを返してください。
+
+```js
+Adjust.getAppTrackingAuthorizationStatus();
+```
+
+### [例](example)
+
+この例では、ユーザーの認証ステータスを収集し、`String`に変換する方法を示しています。この情報は`authorizationStatus`という変数に割り当てられ、`"status"`というキーでセッション パートナー パラメーターとしてパスされます。
+
+```js
+var authorizationStatus = async () => {
+   let statusNumber = await Adjust.getAppTrackingAuthorizationStatus();
+   return statusNumber;
+};
+Adjust.addSessionPartnerParameter("status", authorizationStatus);
+```
+
+## [承認ステータスの変更を確認する](check-for-authorization-status-changes)
+
+<CodeBlock title="メソッドシグネチャー">
+
+```js
+checkForNewAttStatus(): void
+```
+
+</CodeBlock>
+
+カスタムATTプロンプトを使用する場合、ユーザーの認証ステータスに変更があった場合、Adjust SDKに通知する必要があります。`checkForNewAttStatus`メソッドを呼び出し、Adjustサーバーに認証ステータスを送信してください。
+
+```js
+Adjust.checkForNewAttStatus();
+```

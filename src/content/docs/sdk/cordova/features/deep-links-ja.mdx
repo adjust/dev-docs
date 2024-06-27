@@ -1,0 +1,137 @@
+---
+title: "ディープリンク"
+description: "ディープリンクを設定するには、このセクションのガイドに従ってください。"
+category-title: "ディープリンク"
+slug: "ja/sdk/cordova/features/deep-links"
+---
+
+ディープリンクを作成して、ユーザーをアプリ内の特定の場所に誘導します。Adjust SDKは、ユーザーがデバイスにアプリをインストール済みかどうかによって、異なるロジックを使用します。
+
+-  ダイレクトディープリンク：ユーザーがすでにアプリをインストールしている場合に使用されます。このリンクは、ユーザーをリンクで指定されたページに誘導します。
+-  ディファードディープリンクは、ユーザーがアプリをデバイスにインストールしていない場合に使用されます。そのリンクは、ユーザーをアプリストアに送り、アプリを先にインストールしてもらいます。ユーザーがアプリをインストールすると、リンクで指定されたページが開きます。
+
+SDKは、ユーザーがリンクからアプリを起動した後にディープリンクの情報を読み取ることができます。
+
+## [ディープリンクの設定](set-up-deep-linking)
+
+ユーザーがアプリをインストールしている場合、ユーザーがディープリンクの情報を含むリンクをクリックするとアプリが起動します。Adjust SDKには、アプリ全体にディープリンクの情報を解析するツールが含まれます。
+
+ディープリンクは、アプリレベルで設定する必要があります。使用するプラットフォームに合わせて、以下のリンク先のディープリンク設定手順に従ってください。
+
+-  [iOS](/en/sdk/ios/features/deep-links)
+-  [Android](/en/sdk/android/features/deep-links)
+
+## [ディープリンクを使用したリアトリビューション](reattribution-using-deep-links)
+
+<Callout type="seealso">
+
+Adjustはディープリンクを使ったリエンゲージメントキャンペーンをサポートしています。詳しくは、[アトリビューションデータをディープリンクに追加する方法](https://help.adjust.com/ja/article/manage-reattributions#track-reattributions-via-deeplink-clicks)をご覧ください。
+
+</Callout>
+
+ユーザーをリアトリビュートするには、アプリがディープリンクコンテンツを受け取る時に`appWillOpenUrl`メソッドを呼び出す必要があります。Adjust SDKは次に、ディープリンク内の新しいアトリビューションデータを検索します。SDKが新しい情報を見つけた場合、その情報をAdjustのサーバーに転送し、リアトリビューションを行います。
+
+iOSのディープリンクを有効化するには、`Adjust`インスタンス内で`true`値を使用して、`appWillOpenUrl`メソッドを呼び出します。
+
+```js
+function handleOpenURL(url) {
+   setTimeout(function () {
+      // Check content of the url object and get information about the URL.
+      Adjust.appWillOpenUrl(url);
+   }, 300);
+}
+```
+
+`didLaunchAppFromLink`メソッド内で`Adjust.appWillOpenUrl`関数を呼び出して、ユニバーサルリンクを開くことができます。
+
+```js
+var app = {
+   initialize: function () {
+      this.bindEvents();
+   },
+
+   bindEvents: function () {
+      document.addEventListener("deviceready", this.onDeviceReady, false);
+   },
+
+   onDeviceReady: function () {
+      if (device.platform == "iOS") {
+         universalLinks.subscribe(
+            "adjustDeepLinking",
+            app.didLaunchAppFromLink,
+         );
+      }
+   },
+
+   didLaunchAppFromLink: function (eventData) {
+      // Check content of the url object and get information about the URL.
+      Adjust.appWillOpenUrl(eventData.url);
+   },
+};
+```
+
+## [ディファードディープリンク](deferred-deep-linking)
+
+### [ディファードディープリンクのコールバックを設定する](set-up-a-deferred-deep-link-callback)
+
+<CodeBlock title="プロパティ宣言">
+
+```js
+setDeferredDeeplinkCallbackListener(deferredDeeplinkCallback: (uri: string) => void)
+```
+
+</CodeBlock>
+
+`AdjustConfig`インスタンスの`setDeferredDeeplinkCallbackListener`プロパティに関数を追加することで、Adjust SDKがディファードディープリンクを受信した際に関数を呼び出すように設定できます。この関数は、ディープリンクを`string`引数で受け取ります。
+
+```js
+var adjustConfig = new AdjustConfig(appToken, environment);
+
+adjustConfig.setDeferredDeeplinkCallbackListener(function (deeplink) {
+   // Your callback function
+});
+
+Adjust.create(adjustConfig);
+```
+
+### [例](example)
+
+この例では、ユーザーがディファードディープリンクを開いたときに、ディープリンクのアドレスをログに記録する方法を示しています。
+
+```js
+var adjustConfig = new AdjustConfig(appToken, environment);
+
+adjustConfig.setDeferredDeeplinkCallbackListener(function (deeplink) {
+   console.log("Received deferred deeplink: " + deeplink);
+});
+
+Adjust.create(adjustConfig);
+```
+
+### [LinkMeを有効化する](enable-linkme)
+
+<CodeBlock title="メソッドシグネチャー">
+
+```js
+setLinkMeEnabled(linkMeEnabled: boolean)
+```
+
+</CodeBlock>
+
+Adjust SDKでは、デバイスのペーストボードからディープリンクの情報をコピーすることが可能です。AdjustのLinkMeソリューションを組み合わせることで、iOS 15以降のデバイスでディファードディープリンクを有効化することができます。
+
+<Callout type="important">
+
+Adjust SDKは、ユーザーがアプリを初回起動した際にペーストボードを確認します。デバイスは、ユーザーのアプリに、ペーストボードの読み取りを許可するかどうかを尋ねるダイアログを表示します。
+
+</Callout>
+
+ユーザーがLinkMeのURLをクリックすると、そのリンク情報をシステムのペーストボードにコピーするオプションがあります。Adjust SDKを使用してシステムのペーストボードを読み、ディープリンクの情報を確認することができます。ディープリンクがある場合、SDKはユーザーをアプリ内の正しいページに転送します。
+
+アプリ内でペーストボードの確認を有効化するには、Configオブジェクトの`linkMeEnabled`プロパティを`true`に設定します。
+
+```js
+var adjustConfig = new AdjustConfig(appToken, environment);
+adjustConfig.setLinkMeEnabled(true);
+Adjust.create(adjustConfig);
+```
