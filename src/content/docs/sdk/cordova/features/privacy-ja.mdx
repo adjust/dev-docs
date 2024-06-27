@@ -1,100 +1,99 @@
 ---
-title: "Set up privacy features"
-description: "Configure features that you can use to handle user privacy in your app."
-slug: "ja/sdk/cordova/features/privacy"
+title: "プライバシー機能の設定"
+description: "アプリ内でユーザーのプライバシーを処理するために使用できる機能を設定します。"
+slug: "en/sdk/cordova/features/privacy"
 ---
+Adjust SDKには、アプリ内でのユーザープライバシーの処理に使用できる機能が含まれています。
 
-The Adjust SDK contains features that you can use to handle user privacy in your app.
+[忘れられる権利のリクエストを送信する](send-right-to-be-forgotten-request)
+--------------------------------------------------------
 
-## [Send right to be forgotten request](send-right-to-be-forgotten-request)
-
-<CodeBlock title="Method signature">
+<codeblock title="メソッドシグネチャー"> 
 
 ```js
 gdprForgetMe(): void
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-Article 17 of the European Union's General Data Protection Regulation \(GDPR\) grants users the right to be forgotten. When Adjust's servers receive a Right to be Forgotten \(RTBF\) request, Adjust erases the user's data. The SDK also stops sending requests from the device for the app in question.
+欧州連合の一般データ保護規制（GDPR）第17条は、ユーザーに忘れられる権利（Right To Be Forgotten）を付与するものです。Adjustのサーバーが忘れられる権利（RTBF）リクエストを受信すると、Adjustはユーザーデータを削除します。また、SDKは当該アプリに対するデバイスからのリクエスト送信を停止します。
 
-You can send the user's RTBF request to Adjust by calling the `gdprForgetMe` method.
+`gdprForgetMe`メソッドを呼び出すことで、ユーザーのRTBFリクエストをAdjustに送信することができます。
 
 ```js
 Adjust.gdprForgetMe();
 ```
 
-## [Third\-party sharing for specific users](thirdparty-sharing-for-specific-users)
+[特定のユーザーの情報をサードパーティと共有する](thirdparty-sharing-for-specific-users)
+----------------------------------------------------------------
 
-You can use the Adjust SDK to record when a user changes their third\-party sharing settings. Third party sharing settings are configured using the `AdjustThirdPartySharing` class.
+Adjust SDKを使用して、ユーザーがサードパーティとの共有設定を変更した時にそれを記録することができます。サードパーティの共有設定は、`AdjustThirdPartySharing`クラスを使用して構成されます。
 
-### [Instantiate an AdjustThirdPartySharing object](instantiate-an-adjustthirdpartysharing-object)
+### [AdjustThirdPartySharingオブジェクトをインスタンス化する](instantiate-an-adjustthirdpartysharing-object)
 
-<CodeBlock title="Method signature">
+<codeblock title="メソッドシグネチャー"> 
 
 ```js
 constructor(isEnabled: boolean)
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-To enable or disable third party sharing with the Adjust SDK, you need to instantiate an `AdjustThirdPartySharing` object. This object contains variables that control how third party sharing is handled by Adjust.
+Adjust SDKでサードパーティ共有を有効化または無効化するには、`AdjustThirdPartySharing`オブジェクトをインスタンス化する必要があります。このオブジェクトには、Adjustでサードパーティ共有をどのように扱うかをコントロールする変数が含まれています。
 
-To instantiate a third party sharing object, create a new `AdjustThirdPartySharing` instance and pass the following parameters:
+サードパーティ共有オブジェクトをインスタンス化するには、新しい`AdjustThirdPartySharing`インスタンスを作成して以下のパラメーターをパスしてください：
 
--  `isEnabled` \(`boolean`\): Whether third party sharing is enabled. Pass `true` to enable third party sharing or `false` to disable third party sharing
+* `isEnabled` （`boolean`）：サードパーティとの共有が有効化されているかどうか。サードパーティとの共有を有効化するには`true`を、無効化するには`false`をパスします。
 
 ```js
 var adjustThirdPartySharing = new AdjustThirdPartySharing(true);
 ```
 
-<Callout type="note">
+<callout type="note"> 
 
-If you set the `isEnabled` property to `false`, Adjust stops sharing the user's data with third parties. The Adjust SDK continues to work as expected.
+`isEnabled`プロパティを`false`に設定すると、Adjustはユーザーのデータをサードパーティと共有しなくなります。Adjust SDKは引き続き通常通り動作します。
+</Callout> 
 
-</Callout>
-
-Once you've instantiated your `AdjustThirdPartySharing` object, you can send the information to Adjust by calling the `Adjust.trackThirdPartySharing` method with your `AdjustThirdPartySharing` instance as an argument.
+`AdjustThirdPartySharing`オブジェクトをインスタンス化したら、`AdjustThirdPartySharing`インスタンスを引数として`Adjust.trackThirdPartySharing`メソッドを呼び出すことで、Adjustに情報を送信することができます。
 
 ```js
 var adjustThirdPartySharing = new AdjustThirdPartySharing(true);
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
-### [Send granular information](send-granular-information)
+### [粒度の高い情報を送信する](send-granular-information)
 
-<CodeBlock title="Method signature">
+<codeblock title="メソッドシグネチャー"> 
 
 ```js
 addGranularOption(partnerName: string, key: string, value: string): void
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-You can attach granular information when a user updates their third\-party sharing preferences. Use this information to communicate more detail about a user's decision. To do this, call the `addGranularOption` method with the following parameters:
+ユーザーがサードパーティとの共有設定を変更する時に、詳細な情報を添付できます。この情報を使用して、ユーザーの選択に関するよりきめ細かい情報を伝えられます。これを行うには、以下のパラメーターを使用して`addGranularOption`メソッドを呼び出します：
 
--  `partnerName` \(`string`\): The name of the partner for whom the granular option applies.
--  `key` \(`string`\): The option key.
--  `value` \(`string`\): The option value.
+* `partnerName` （`string`）：granular optionが適用されるパートナーの名前
+* `key` （`string`）：オプションのキー
+* `value` （`string`）：オプションの値
 
-The following partners are available:
+以下のパラメーターが利用可能です：
+<table> 
 
-<Table>
+|        Partner Name        |            文字列の値            |
+|----------------------------|-----------------------------|
+| Apple Ads                  | `apple_ads`                 |
+| Facebook                   | `facebook`                  |
+| Google 広告 \(Google Ads\) | `adwords`                   |
+| Google マーケティング プラットフォーム    | `google_marketing_platform` |
+| Snapchat                   | `snapchat`                  |
+| Tencent                    | `tencent`                   |
+| TikTok SAN                 | `tiktok_san`                |
+| X（旧Twitter）                | `twitter`                   |
+| Yahoo Gemini               | `yahoo_gemini`              |
+| Yahoo\! JAPANスポンサードサーチ    | `yahoo_japan_search`        |
 
-| Partner name            | String value                |
-| ----------------------- | --------------------------- |
-| AppleAds                | `apple_ads`                 |
-| Facebook                | `facebook`                  |
-| GoogleAds               | `adwords`                   |
-| GoogleMarketingPlatform | `google_marketing_platform` |
-| Snapchat                | `snapchat`                  |
-| Tencent                 | `tencent`                   |
-| TikTokSan               | `tiktok_san`                |
-| X \(formerly Twitter\)  | `twitter`                   |
-| YahooGemini             | `yahoo_gemini`              |
-| YahooJapanSearch        | `yahoo_japan_search`        |
-
-</Table>
+</Table> 
 
 ```js
 var adjustThirdPartySharing = new AdjustThirdPartySharing(true);
@@ -102,32 +101,28 @@ adjustThirdPartySharing.addGranularOption("PartnerA", "key", "value");
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
-#### [Manage Facebook Limited Data Use](manage-facebook-limited-data-use)
+#### [Facebookのデータ使用制限に対応する](manage-facebook-limited-data-use)
 
-<Callout type="important">
+<callout type="important"> 
 
-The Adjust SDK sends information to Facebook as soon as the app is installed. You need to make sure you call this method **before** initializing the SDK.
+アプリがインストールされると、Adjust SDKはすぐに情報をFacebookに送信します。このメソッドは、必ずSDKを初期化する前に呼び出してください。
+</Callout> 
 
-</Callout>
+Facebookは、カリフォルニア州消費者プライバシー法（CCPA）に準拠するために、データ使用制限（LDU）と呼ばれる機能を提供しています。この機能を使うと、カリフォルニア州のユーザーがデータ販売をオプトアウトしたときに、Facebookに通知できます。デフォルトで全てのユーザーをオプトアウトしたい場合も、この機能を使用できます。
 
-Facebook provides a feature called Limited Data Use \(LDU\) to comply with the California Consumer Privacy Act \(CCPA\). This feature enables you to notify Facebook when a California\-based user is opted out of the sale of data. You can also use it if you want to opt all users out by default.
+Facebook LDUのステータスは、`addGranularOption`メソッドに引数を渡すことで更新できます。
+<table> 
 
-You can update the Facebook LDU status by passing the following arguments to the `addGranularOption` method:
+|              パラメーター               |                                                                      説明                                                                       |
+|-----------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
+| `partner_name`                    | `facebook`を使用してLDUを切り替えます。                                                                                                                    |
+| `data_processing_options_country` | ユーザーの居住国<ul><li>`0`：Facebookに位置情報の使用をリクエスト</li><li>`1`：アメリカ合衆国</li></ul>                                                                      |
+| `data_processing_options_state`   | どの州に位置するユーザーであるかをFacebookに通知します。<ul><li>`0`：Facebookに位置情報の使用をリクエスト</li><li>`1000`：カリフォルニア</li><li>`1001`：コロラド</li><li>`1002`：コネチカット</li></ul> |
 
-<Table>
+</Table> <callout type="note"> 
 
-| Parameter                         | Description                                                                                                                                                                                         |
-| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `partner_name`                    | Use `facebook` to toggle LDU.                                                                                                                                                                       |
-| `data_processing_options_country` | The country in which the user is located.<ul><li>`0`: Request that Facebook use geolocation.</li><li>`1`: United States of America.</li></ul>                                                       |
-| `data_processing_options_state`   | Notifies Facebook in which state the user is located.<ul><li>`0`: Request that Facebook use geolocation.</li><li>`1000`: California.</li><li>`1001`: Colorado</li><li>`1002`: Connecticut</li></ul> |
-
-</Table>
-<Callout type="note">
-
-If you call this method with a `0` value for **either** `data_processing_options_country` or `data_processing_options_state`, the Adjust SDK passes **both** fields back as `0`.
-
-</Callout>
+`data_processing_options_country`フィールド **または** `data_processing_options_state`フィールドに値`0`を指定してこのメソッドを呼び出すと、Adjust SDKは **両方** のフィールドを`0`としてパスします。
+</Callout> 
 
 ```js
 var adjustThirdPartySharing = new AdjustThirdPartySharing(true);
@@ -144,27 +139,23 @@ adjustThirdPartySharing.addGranularOption(
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
-#### [Provide consent data to Google \(Digital Markets Act compliance\)](provide-consent-data-to-google-digital-markets-act-compliance)
+#### [Googleに同意データを提供（デジタル市情法へのコンプライアンス）](provide-consent-data-to-google-digital-markets-act-compliance)
 
-<Callout type="important">
+<callout type="important"> 
 
-Passing these options is required if you use Google Ads or Google Marketing Platform and have users located in the European Economic Area \(EEA\).
+Google 広告またはGoogle マーケティング プラットフォームを使用し、ユーザーの所在地が欧州経済領域（EEA）である場合は、これらの情報をパスする必要があります。
+</Callout> <minorversion added="v4.26.0"> 
 
-</Callout>
-<MinorVersion added="v4.26.0">
+EUのデジタル市場法（DMA）に準拠するため、Google 広告およびGoogle マーケティング プラットフォームは、AdjustからAPIへのアトリビューションリクエストを受信することに明示的な同意を必要とします。 この同意を通知するには、パートナー`google_dma`のAdjustサードパーティ共有オブジェクトに、以下の詳細オプションを追加してください。
+</MinorVersion> <table> 
 
-To comply with the EU's Digital Markets Act \(DMA\), Google Ads and the Google Marketing Platform require explicit consent to receive Adjust’s attribution requests to their APIs. To communicate this consent, you need to add the following granular options to your third party sharing instance for the partner `google_dma`.
+|        鍵（Key）        |                    値                     |                                                                           説明                                                                            |
+|----------------------|------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `eea`                | `1` \(positive\) \| `0` \(negative\) | アプリをインストールしているユーザーが欧州経済地域内にいるかどうかを通知します。<br />これにはEU加盟国、スイス、ノルウェー、アイスランド、スロベニアが含まれます。                                                                   |
+| `ad_personalization` | `1` \(positive\) \| `0` \(negative\) | Google 広告および/またはGoogle マーケティング プラットフォーム経由でパーソナライズされた広告を配信することにユーザーが同意したかどうかをAdjustに通知します。このパラメーターは、Google マーケティング プラットフォーム向けに予約されている`npa`パラメーターにも通知します。 |
+| `ad_user_data`       | `1` \(positive\) \| `0` \(negative\) | ユーザーが広告主IDをアトリビューション目的で利用することに同意したかどうかをAdjustに通知します。                                                                                                    |
 
-</MinorVersion>
-<Table>
-
-| Key                  | Value                                | Description                                                                                                                                                                                                             |
-| -------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `eea`                | `1` \(positive\) \| `0` \(negative\) | Informs Adjust whether users installing the app are within the European Economic Area.<br />This includes EU member states, Switzerland, Norway, Iceland and Slovenia.                                                  |
-| `ad_personalization` | `1` \(positive\) \| `0` \(negative\) | Informs Adjust whether users consented with being served personalized ads via Google Ads and/or Google Marketing Platform.<br />This parameter also informs the `npa` parameter reserved for Google Marketing Platform. |
-| `ad_user_data`       | `1` \(positive\) \| `0` \(negative\) | Informs Adjust whether users consented with their advertiser ID being leveraged for attribution purposes.                                                                                                               |
-
-</Table>
+</Table> 
 
 ```js
 var adjustThirdPartySharing = new AdjustThirdPartySharing(true);
@@ -178,17 +169,17 @@ adjustThirdPartySharing.addGranularOption("google_dma", "ad_user_data", "1");
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
-### [Update partner settings](update-partner-settings)
+### [パートナー設定を更新する](update-partner-settings)
 
-<CodeBlock title="Method signature">
+<codeblock title="メソッドシグネチャー"> 
 
 ```js
 addPartnerSharingSetting(partnerName: string, key: string, value: boolean): void
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-You can use the Adjust SDK to update your third party sharing settings on a per\-partner basis. To do this, call the `addPartnerSharingSetting` method with your partner name and your options.
+Adjust SDKを使用して、パートナーごとにサードパーティーとの共有設定を更新することができます。これを行うには、パートナー名とオプションを使用して`addPartnerSharingSetting`メソッドを呼び出します。
 
 ```js
 var adjustThirdPartySharing = new AdjustThirdPartySharing(true);
@@ -196,53 +187,54 @@ adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "foo", false);
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
-## [Disable third\-party sharing](disable-thirdparty-sharing)
+[サードパーティとの共有を無効にする](disable-thirdparty-sharing)
+-----------------------------------------------
 
-<CodeBlock title="Method signature">
+<codeblock title="メソッドシグネチャー"> 
 
 ```js
 disableThirdPartySharing(): void
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-To disable third\-party sharing for all users, call the `disableThirdPartySharing` method. When Adjust's servers receive this information, Adjust stops sharing the user's data with third\-parties. The Adjust SDK continues to work as expected.
+全てのユーザーに対してサードパーティとのデータ共有を無効化するには、`disableThirdPartySharing`メソッドを呼び出します。Adjustサーバーがこの情報を受信すると、サードパーティとのデータ共有を停止します。Adjust SDKは引き続き通常通り動作します。
 
 ```js
 Adjust.disableThirdPartySharing();
 ```
 
-## [Set URL strategy](set-url-strategy)
+[URL戦略を設定する](set-url-strategy)
+------------------------------
 
-<CodeBlock title="Method signature">
+<codeblock title="メソッドシグネチャー"> 
 
 ```js
 setUrlStrategy(urlStrategy: AdjustUrlStrategy)
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-The URL strategy feature allows you to set either:
+URL戦略機能では、以下のいずれかを設定することができます：
 
--  The country in which Adjust stores your data \(data residency\).
--  The endpoint to which the Adjust SDK sends traffic \(URL strategy\).
+* Adjustがお客様のデータを保管する国（データレジデンシー）。
+* Adjust SDKがトラフィックを送信するエンドポイント（URL戦略）。
 
-This is useful if you're operating in a country with strict privacy requirements. When you set your URL strategy, Adjust stores data in the selected data residency region or sends traffic to the chosen domain.
+これは、プライバシー要件が厳しい国で事業を展開している場合に便利です。URL戦略を設定すると、Adjustは選択したデータレジデンシー地域にデータを保管したり、選択したドメインにトラフィックを送信したりします。
 
-To set your country of data residency, assign one of the following URL strategies to the `urlStrategy` property of your config instance.
+データレジデンシーの国を設定するには、configインスタンスの`urlStrategy`プロパティに次のURL戦略のうちの1つを割り当てます。
+<table> 
 
-<Table>
+|                値                |                     説明                      |
+|---------------------------------|---------------------------------------------|
+| `AdjustConfig.DataResidencyEU`  | データレジデンシーのエリアをEUに設定します。                     |
+| `AdjustConfig.DataResidencyTR`  | データレジデンシーのエリアをTurkeyに設定します。                 |
+| `AdjustConfig.DataResidencyUS`  | データレジデンシーのエリアをUSAに設定します。                    |
+| `AdjustConfig.UrlStrategyChina` | URL strageryを`app.adjust.world`ドメインに設定します。  |
+| `AdjustConfig.UrlStrategyCn`    | URL strageryを`app.adjust.cn`ドメインに設定します。     |
+| `AdjustConfig.UrlStrategyIndia` | URL strageryを`app.adjust.net.in`ドメインに設定します。 |
 
-| Value                           | Description                                               |
-| ------------------------------- | --------------------------------------------------------- |
-| `AdjustConfig.DataResidencyEU`  | Sets the area of data residency to the EU                 |
-| `AdjustConfig.DataResidencyTR`  | Sets the area of data residency to Turkey                 |
-| `AdjustConfig.DataResidencyUS`  | Sets the area of data residency to the USA                |
-| `AdjustConfig.UrlStrategyChina` | Points the URL strategy to the `app.adjust.world` domain  |
-| `AdjustConfig.UrlStrategyCn`    | Points the URL strategy to the `app.adjust.cn` domain     |
-| `AdjustConfig.UrlStrategyIndia` | Points the URL strategy to the `app.adjust.net.in` domain |
-
-</Table>
+</Table> 
 
 ```js
 var adjustConfig = new AdjustConfig(
@@ -253,59 +245,59 @@ adjustConfig.setUrlStrategy(AdjustConfig.DataResidencyEU);
 Adjust.create(adjustConfig);
 ```
 
-## [Consent measurement for specific users](consent-measurement-for-specific-users)
+[特定のユーザーの同意を計測する](consent-measurement-for-specific-users)
+---------------------------------------------------------
 
-<CodeBlock title="Method signature">
+<codeblock title="メソッドシグネチャー"> 
 
 ```js
 trackMeasurementConsent(measurementConsent: boolean): void
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-If you're using [Data Privacy settings](https://help.adjust.com/ja/article/manage-data-collection-and-retention) in your Adjust dashboard, you need to set up the Adjust SDK to work with them. This includes settings such as consent expiry period and user data retention period.
+Adjustダッシュボードで[データプライバシー設定](https://help.adjust.com/en/article/manage-data-collection-and-retention)を使用している場合、Adjust SDKを動作させるための設定を行う必要があります。これには、同意有効期間やユーザーデータ保持期間などの設定が含まれます。
 
-To toggle this feature, call the `trackMeasurementConsent` method with the following argument:
+この機能を切り替えるには、次の引数を使用して`trackMeasurementConsent`メソッドを呼び出します：
 
--  `measurementConsent` \(`boolean`\): Whether consent measurement is enabled \(`true`\) or not \(`false`\).
+* `measurementConsent` （`boolean`）：同意計測が有効化されている（`true`）か無効化されている（`false`）か。
 
-When enabled, the SDK communicates the data privacy settings to Adjust's servers. Adjust's servers then applies your data privacy rules to the user. The Adjust SDK continues to work as expected.
+有効化されている場合、SDKはデータプライバシー設定をAdjustサーバーに通信します。Adjustサーバーは、お客様のデータプライバシーのルールをユーザーに適用させます。Adjust SDKは引き続き通常通り動作します。
 
 ```js
 Adjust.trackMeasurementConsent(true);
 ```
 
-## [Privacy for children](privacy-for-children)
+[子供のためのプライバシー設定](privacy-for-children)
+--------------------------------------
 
-<MinorVersion changed="v4.32.0">
+<minorversion changed="v4.32.0"> 
 
-The Adjust SDK includes the `com.google.android.gms.permission.AD_ID` permission by default in version 4\.32\.0 and above. You can remove it by adding a remove directive if need to make your app COPPA\-compliant or if you don't target the Google Play Store.
-
-</MinorVersion>
-<CodeBlock title="AndroidManifest.xml">
+Adjust SDKには、バージョン4\.32\.0以降、デフォルトで`com.google.android.gms.permission.AD_ID`パーミッションが含まれています。アプリをCOPPAに準拠させる必要がある場合や、Google Playストアをターゲットにしていない場合は、ディレクティブを追加することでこれを削除することができます。
+</MinorVersion> <codeblock title="AndroidManifest.xml"> 
 
 ```xml
-<uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
+<uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" id="sl-md0000000"/>
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-See Google's [`AdvertisingIdClient.Info documentation`](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid) for more information about this permission.
+このパーミッションに関する詳細は、Googleの[`AdvertisingIdClient.Info documentation`](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid)をご参照ください。
 
-### [COPPA compliance](coppa-compliance)
+### [児童オンラインプライバシー保護法（COPPA）コンプライアンス](coppa-compliance)
 
-<CodeBlock title="Method signature">
+<codeblock title="メソッドシグネチャー"> 
 
 ```js
 setCoppaCompliantEnabled(coppaCompliantEnabled: boolean)
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-If you need your app to be compliant with the Children's Online Privacy Protection Act \(COPPA\), assign a `boolean` value to the `coppaCompliantEnabled` property on your config instance. Setting this property to `true`:
+アプリが児童オンラインプライバシー保護法（COPPA）に準拠する必要がある場合は、configインスタンスの`coppaCompliantEnabled`プロパティに`boolean`値を割り当てます。このプロパティを`true`に設定します：
 
-1. Disables third\-party sharing **before** the user launches their first `session`.
-2. Prevents the SDK from reading device and advertising IDs \(for example: `gps_adid` and `android_id`\).
+1. ユーザーが最初の`session`を行う **前に** サードパーティとのデータ情報共有を無効にする。
+2. SDKがデバイスIDと広告ID（例：`gps_adid`、`android_id`）を読み取るのを防ぐ。
 
 ```js
 var adjustConfig = new AdjustConfig(
@@ -316,27 +308,25 @@ adjustConfig.setCoppaCompliantEnabled(true);
 Adjust.create(adjustConfig);
 ```
 
-You can disable COPPA compliance by calling this method with a `false` argument.
+`false`引数を使用してこのメソッドを呼び出すと、COPPAへの準拠を無効化できます。
+<callout type="important"> 
 
-<Callout type="important">
+COPPAメソッドを無効化しても、サードパーティとのデータ共有は再有効化 **されません** 。ユーザーの[サードパーティとのデータ共有を再度有効化する](#enable-third-party-sharing)必要があります。
+</Callout> 
 
-Disabling COPPA compliance **doesn't** re\-enable third\-party sharing. You need to [re\-enable third\-party sharing](#enable-third-party-sharing) for the user.
+### [Playストアの子供向けアプリ（Androidのみ）](play-store-kids-apps-android-only)
 
-</Callout>
-
-### [Play Store Kids Apps \(Android only\)](play-store-kids-apps-android-only)
-
-<CodeBlock title="Method signature">
+<codeblock title="メソッドシグネチャー"> 
 
 ```js
 setPlayStoreKidsAppEnabled(playStoreKidsAppEnabled: boolean)
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-If your app targets users under the age of 13, and the install region **isn't** the USA, you need to mark it as a Kids App. This prevents the SDK from reading device and advertising IDs \(for example: `gps_adid` and `android_id`\).
+アプリが13歳未満のユーザーをターゲットとしており、インストールの地域が米国 **ではない** 場合は、子供向けアプリとして登録してください。これにより、SDKがデバイスIDと広告ID（例：`gps_adid`、`android_id`）を読み取るのを防ぐことができます。
 
-To mark your app as a Kids App, assign a `boolean` value to the `playStoreKidsAppEnabled` property on your config instance. Set to `true` to mark the app as a Kids App, or `false` to mark the app as a non\-Kids App.
+アプリを子供向けアプリとして表示するには、configインスタンスの`playStoreKidsAppEnabled`プロパティに`boolean`値を割り当てます。アプリを子供向けアプリとして表示するには`true`に、非子供向けアプリとして表示するには`false`に設定します。
 
 ```js
 var adjustConfig = new AdjustConfig(
@@ -346,3 +336,4 @@ var adjustConfig = new AdjustConfig(
 adjustConfig.setPlayStoreKidsAppEnabled(true);
 Adjust.create(adjustConfig);
 ```
+
