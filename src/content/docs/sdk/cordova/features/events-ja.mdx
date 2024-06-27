@@ -1,0 +1,733 @@
+---
+title: "イベント情報の送信"
+description: "Adjustにイベント情報を送信するには、これらのメソッドを使用してください。"
+slug: "en/sdk/cordova/features/events"
+---
+Adjust SDKは`AdjustEvent`オブジェクトを提供しており、アプリのイベント情報を構造化してAdjustのサーバーに送信することができます。
+
+[AdjustEventオブジェクトをインスタンス化する](instantiate-an-adjustevent-object)
+----------------------------------------------------------------
+
+<codeblock title="メソッドシグネチャー"> 
+
+```js
+constructor(eventToken: string)
+```
+
+</CodeBlock> 
+
+Adjust SDKでイベント情報を送信するには、`AdjustEvent`オブジェクトをインスタンス化する必要があります。このオブジェクトには、アプリでイベントが発生した時にAdjustに送信される変数が含まれます。
+
+イベントオブジェクトをインスタンス化するには、新しい`AdjustEvent`インスタンスを作成して以下のパラメーターをパスしてください：
+
+* `eventToken` （`string`）：お客様のAdjust[イベントトークン](https://help.adjust.com/en/article/add-events#manage-your-events)。
+
+```js
+var adjustEvent = new AdjustEvent("abc123");
+Adjust.trackEvent(adjustEvent);
+```
+
+[イベントを送信する](send-an-event)
+--------------------------
+
+<codeblock title="メソッドシグネチャー"> 
+
+```js
+trackEvent(event: AdjustEvent): void
+```
+
+</CodeBlock> 
+
+[Adjustイベントトークン](https://help.adjust.com/en/article/add-events#add-event)を関連付けることで、アプリ内のユーザー行動を記録できます。イベントを記録する方法：
+
+* Adjustイベントのインスタンスを新規作成し、イベントトークンを文字列引数としてパスします。
+* イベントのインスタンスを引数として`trackEvent`メソッドを呼び出します。
+
+```js
+var adjustEvent = new AdjustEvent("abc123");
+Adjust.trackEvent(adjustEvent);
+```
+
+### [例](example)
+
+この例では、ユーザーがボタンを操作する度に *`g3mfiw`* のトークンでイベントを計測する方法を示します。
+<tabs> <tab title="JS"> <codeblock title="index.js" highilight="{range: 30}"> 
+
+```js
+var app = {
+   // Application Constructor
+   initialize: function () {
+      this.bindEvents();
+   },
+
+   // Bind Event Listeners
+   bindEvents: function () {
+      document.addEventListener("deviceready", this.onDeviceReady, false);
+   },
+   onDeviceReady: function () {
+      app.receivedEvent("deviceready");
+
+      var adjustConfig = new AdjustConfig(
+         { APP_ID },
+         AdjustConfig.EnvironmentSandbox,
+      );
+      Adjust.create(adjustConfig);
+   },
+   receivedEvent: function (id) {
+      console.log("[AdjustExample]: Received Event: " + id);
+
+      var btnRecordSimpleEvent = document.getElementById(
+         "btnRecordSimpleEvent",
+      );
+
+      btnRecordSimpleEvent.addEventListener(
+         "click",
+         function () {
+            var adjustEvent = new AdjustEvent("g3mfiw");
+            Adjust.trackEvent(adjustEvent);
+         },
+         false,
+      );
+   },
+};
+app.initialize();
+```
+
+</CodeBlock> </Tab> <tab title="HTML"> 
+
+```html
+<!doctype id="sl-md0000000"     >
+<html id="sl-md0000000">
+   <head id="sl-md0000000">
+      <!---->
+   </head>
+   <body id="sl-md0000000">
+      <div class="app" id="sl-md0000000">
+         <button             id="sl-md0000000 btnRecordSimpleEvent"             style="color: black; height: 30px; margin: 5px"          >
+            Record simple event
+         </button>
+      </div>
+      <script src="cordova.js" id="sl-md0000000"></script>
+      <script src="js/index.js" id="sl-md0000000"></script>
+   </body>
+</html>
+```
+
+</Tab> </Tabs> <codeblock title="イベントログ" highlight="{range: 22-23}" collapse="7-21, 24-46"> 
+
+```txt
+Path:      /event
+ClientSdk: cordova$CORDOVA_VERSION
+Parameters:
+  android_uuid     781f17d5-5048-4fae-a4e5-77b58bab62b9
+  api_level        34
+  app_token        2fm9gkqubvpc
+  app_version      1.0
+  attribution_deeplink 1
+  callback_params  {"key":"value","foo":"bar"}
+  connectivity_type 1
+  country          US
+  cpu_type         arm64-v8a
+  created_at       2024-01-25T14:13:16.151Z+0100
+  currency         EUR
+  device_manufacturer Google
+  device_name      sdk_gphone64_arm64
+  device_type      phone
+  display_height   2205
+  display_width    1080
+  environment      sandbox
+  event_buffering_enabled 0
+  event_count      3
+  event_token      g3mfiw
+  gps_adid         5962dfc1-3a53-4692-850b-22c4bf4311a5
+  gps_adid_attempt 2
+  gps_adid_src     service
+  hardware_name    UE1A.230829.036
+  language         en
+  mcc              310
+  mnc              260
+  needs_response_details 1
+  os_build         UE1A.230829.036
+  os_name          android
+  os_version       14
+  package_name     com.adjust.examples
+  partner_params   {"key":"value","foo":"bar"}
+  revenue          0.25
+  screen_density   high
+  screen_format    long
+  screen_size      normal
+  session_count    2
+  session_length   23
+  subsession_count 1
+  time_spent       23
+  tracking_enabled 1
+  ui_mode          1
+```
+
+</CodeBlock> 
+
+[イベント収益の記録](record-event-revenue)
+---------------------------------
+
+<codeblock title="メソッドシグネチャー"> 
+
+```js
+setRevenue(revenue: number, currency: string): void
+```
+
+</CodeBlock> 
+
+イベントインスタンスにrevenueとcurrencyプロパティを設定することで、イベントに関連する収益を記録できます。この機能を使用して、アプリ内で収益が生成されるアクションを記録しましょう。
+
+これらのプロパティを設定するには、`setRevenue`メソッドを呼び出し、以下の引数をパスします。
+
+* `revenue` （`number`）：イベントによって発生した収益額
+* `currency` （`string`）：イベント通貨の[ISO 4217コード](https://www.iban.com/currency-codes)
+
+<callout type="seealso"> 
+
+詳細は、[異なる通貨での購入計測](https://help.adjust.com/en/article/currency-conversion)に関するガイドをご覧ください。
+</Callout> 
+
+```js
+var adjustEvent = new AdjustEvent("abc123");
+adjustEvent.setRevenue(0.01, "EUR");
+Adjust.trackEvent(adjustEvent);
+```
+
+### [例](example)
+
+この例では、ユーザーがボタンを操作する度に *`g3mfiw`* のトークンでイベントを計測する方法を示します。この関数は、このイベントの`revenue`プロパティを *`0.25`* に、`currency`プロパティを *`EUR`* に設定します。
+<tabs> <tab title="JS"> <codeblock title="index.js" highlight="31"> 
+
+```js
+var app = {
+   // Application Constructor
+   initialize: function () {
+      this.bindEvents();
+   },
+
+   // Bind Event Listeners
+   bindEvents: function () {
+      document.addEventListener("deviceready", this.onDeviceReady, false);
+   },
+   onDeviceReady: function () {
+      app.receivedEvent("deviceready");
+
+      var adjustConfig = new AdjustConfig(
+         { APP_ID },
+         AdjustConfig.EnvironmentSandbox,
+      );
+      Adjust.create(adjustConfig);
+   },
+   receivedEvent: function (id) {
+      console.log("[AdjustExample]: Received Event: " + id);
+
+      var btnRecordRevenueEvent = document.getElementById(
+         "btnRecordRevenueEvent",
+      );
+
+      btnRecordRevenueEvent.addEventListener(
+         "click",
+         function () {
+            var adjustEvent = new AdjustEvent("g3mfiw");
+            adjustEvent.setRevenue(0.25, "EUR");
+            Adjust.trackEvent(adjustEvent);
+         },
+         false,
+      );
+   },
+};
+app.initialize();
+```
+
+</CodeBlock> </Tab> <tab title="HTML"> 
+
+```html
+<!doctype id="sl-md0000000"     >
+<html id="sl-md0000000">
+   <head id="sl-md0000000">
+      <!---->
+   </head>
+   <body id="sl-md0000000">
+      <div class="app" id="sl-md0000000">
+         <button             id="sl-md0000000 btnRecordRevenueEvent"             style="color: black; height: 30px; margin: 5px"          >
+            Record revenue event
+         </button>
+      </div>
+      <script src="cordova.js" id="sl-md0000000"></script>
+      <script src="js/index.js" id="sl-md0000000"></script>
+   </body>
+</html>
+```
+
+</Tab> </Tabs> <codeblock title="イベントログ" highlight="{range: 7-8}"> 
+
+```txt
+Path:      /event
+ClientSdk: cordova$CORDOVA_VERSION
+Parameters:
+  environment      sandbox
+  event_count      3
+  event_token      g3mfiw
+  revenue          0.25
+  currency         EUR
+```
+
+</CodeBlock> 
+
+[一意のトランザクションIDを設定する](set-a-unique-transaction-id)
+-------------------------------------------------
+
+<codeblock title="プロパティ宣言"> 
+
+```js
+setTransactionId(transactionId: string)
+```
+
+</CodeBlock> 
+
+イベントを重複して計測するのを防ぐため、オプションとして任意のIDをパスすることもできます。SDKが最新10件のIDを保存し、トランザクションIDが重複した収益イベントを排除します。
+
+識別子を設定するには、イベントインスタンスの`setTransactionId`プロパティにトランザクションIDを割り当てます。
+
+```js
+var adjustEvent = new AdjustEvent("abc123");
+adjustEvent.setTransactionId("{YourTransactionId}");
+Adjust.trackEvent(adjustEvent);
+```
+
+### [例](example)
+
+この例では、ユーザーがボタンを操作する度に *`g3mfiw`* のトークンでイベントを計測する方法を示します。この関数は、 `setTransactionId`メソッドを使用して`transactionId`から *`5e85484b-1ebc-4141-aab7-25b869e54c49`* に設定します。
+<tabs> <tab title="JS"> <codeblock title="index.js" highlight="{range: 31-33}"> 
+
+```js
+var app = {
+   // Application Constructor
+   initialize: function () {
+      this.bindEvents();
+   },
+
+   // Bind Event Listeners
+   bindEvents: function () {
+      document.addEventListener("deviceready", this.onDeviceReady, false);
+   },
+   onDeviceReady: function () {
+      app.receivedEvent("deviceready");
+
+      var adjustConfig = new AdjustConfig(
+         { APP_ID },
+         AdjustConfig.EnvironmentSandbox,
+      );
+      Adjust.create(adjustConfig);
+   },
+   receivedEvent: function (id) {
+      console.log("[AdjustExample]: Received Event: " + id);
+
+      var btnRecordUniqueEvent = document.getElementById(
+         "btnRecordUniqueEvent",
+      );
+
+      btnRecordUniqueEvent.addEventListener(
+         "click",
+         function () {
+            var adjustEvent = new AdjustEvent("g3mfiw");
+            adjustEvent.setTransactionId(
+               "5e85484b-1ebc-4141-aab7-25b869e54c49",
+            );
+            Adjust.trackEvent(adjustEvent);
+         },
+         false,
+      );
+   },
+};
+app.initialize();
+```
+
+</CodeBlock> </Tab> <tab title="HTML"> 
+
+```html
+<!doctype id="sl-md0000000"     >
+<html id="sl-md0000000">
+   <head id="sl-md0000000">
+      <!---->
+   </head>
+   <body id="sl-md0000000">
+      <div class="app" id="sl-md0000000">
+         <button             id="sl-md0000000 btnRecordUniqueEvent"             style="color: black; height: 30px; margin: 5px"          >
+            Record unique event
+         </button>
+      </div>
+      <script src="cordova.js" id="sl-md0000000"></script>
+      <script src="js/index.js" id="sl-md0000000"></script>
+   </body>
+</html>
+```
+
+</Tab> </Tabs> <codeblock title="イベントログ" highlight="{range: 7}"> 
+
+```txt
+Path:      /event
+ClientSdk: cordova$CORDOVA_VERSION
+Parameters:
+  environment      sandbox
+  event_count      3
+  event_token      abc123
+  transaction_id   5e85484b-1ebc-4141-aab7-25b869e54c49
+```
+
+</CodeBlock> 
+
+[コールバックパラメーターを追加する](add-callback-parameters)
+--------------------------------------------
+
+<codeblock title="メソッドシグネチャー"> 
+
+```js
+addCallbackParameter(key: string, value: string): void
+```
+
+</CodeBlock> 
+
+Adjustダッシュボードで[コールバックURLを登録](https://help.adjust.com/en/article/set-up-callbacks)した場合、SDKがイベントを記録する際にコールバックURLにGETリクエストを送信します。
+
+サーバーに送信するコールバックパラメーターを設定できます。イベントにパラメーターを設定すると、SDKはそれらを[コールバックURL](https://help.adjust.com/en/article/raw-data-exports)に追加します。この情報を使用して、自社のBIシステムでユーザーのアプリ内行動を分析することが可能です。
+
+イベントにコールバックパラメーターを追加するには、 **string** key\-value引数を指定して`addCallbackParameter`メソッドを呼び出してください。このメソッドを複回呼び出すことで、複数のパラメーターを追加することができます。
+
+```js
+var adjustEvent = new AdjustEvent("abc123");
+adjustEvent.addCallbackParameter("key", "value");
+adjustEvent.addCallbackParameter("foo", "bar");
+Adjust.trackEvent(adjustEvent);
+```
+
+Adjust SDKはイベントを計測し、コールバックパラメーターが追加されたURLにリクエストを送信します。例えば、URL `https://www.mydomain.com/callback`が登録されている場合、コールバックは以下のようになります：
+<codeblock highlight="key=value, foo=bar"> 
+
+```http
+https://www.mydomain.com/callback?key=value&foo=bar
+```
+
+</CodeBlock> <callout type="note"> 
+
+Adjustは、カスタムコールバックパラメーターを保存しません。カスタムパラメーターは、コールバックURLにのみ追加されます。
+</Callout> 
+
+CSVレポートを使用している場合、CSVの定義欄にパラメーターを追加するようにしてください。
+
+Adjustでは、SDKからURLに情報をパスするための様々なプレースホルダーをサポートしています。例えば、iOSの`{idfa}`プレースホルダーやAndroidの`{gps_adid}`プレースホルダーなどです。`{publisher_parameter}`プレースホルダーは、単一の文字列での全てのコールバックパラメーターを表示します。
+<callout type="seealso"> 
+
+使用可能な値の全リストを含むURLコールバックの詳細については、[コールバックガイド](https://help.adjust.com/en/article/callbacks)をご覧ください。
+</Callout> 
+
+### [例](example)
+
+この例では、ユーザーがボタンを操作する度に`g3mfiw`のトークンでイベントを計測する方法を示します。次のコールバックパラメーターが追加されました：
+
+* \- `event_token`
+* イベントごとに生成される`revenue_amount`
+
+コールバックURLの結果は以下のようになります：
+<codeblock highlight="event_token=g3mfiw, revenue_amount=0.05"> 
+
+```http
+http://www.mydomain.com/callback?event_token=g3mfiw&revenue_amount=0.05
+```
+
+</CodeBlock> <tabs> <tab title="JS"> <codeblock title="index.js" highlight="{range: 31-32}"> 
+
+```js
+var app = {
+   // Application Constructor
+   initialize: function () {
+      this.bindEvents();
+   },
+
+   // Bind Event Listeners
+   bindEvents: function () {
+      document.addEventListener("deviceready", this.onDeviceReady, false);
+   },
+   onDeviceReady: function () {
+      app.receivedEvent("deviceready");
+
+      var adjustConfig = new AdjustConfig(
+         { APP_ID },
+         AdjustConfig.EnvironmentSandbox,
+      );
+      Adjust.create(adjustConfig);
+   },
+   receivedEvent: function (id) {
+      console.log("[AdjustExample]: Received Event: " + id);
+
+      var btnRecordCallbackEvent = document.getElementById(
+         "btnRecordCallbackEvent",
+      );
+
+      btnRecordCallbackEvent.addEventListener(
+         "click",
+         function () {
+            var adjustEvent = new AdjustEvent("g3mfiw");
+            adjustEvent.addCallbackParameter("event_token", "g3mfiw");
+            adjustEvent.addCallbackParameter("revenue_amount", "0.05");
+            Adjust.trackEvent(adjustEvent);
+         },
+         false,
+      );
+   },
+};
+app.initialize();
+```
+
+</CodeBlock> </Tab> <tab title="HTML"> 
+
+```html
+<!doctype id="sl-md0000000"     >
+<html id="sl-md0000000">
+   <head id="sl-md0000000">
+      <!---->
+   </head>
+   <body id="sl-md0000000">
+      <div class="app" id="sl-md0000000">
+         <button             id="sl-md0000000 btnRecordCallbackEvent"             style="color: black; height: 30px; margin: 5px"          >
+            Record callback event
+         </button>
+      </div>
+      <script src="cordova.js" id="sl-md0000000"></script>
+      <script src="js/index.js" id="sl-md0000000"></script>
+   </body>
+</html>
+```
+
+</Tab> </Tabs> <codeblock title="イベントログ" highlight="{range: 4}"> 
+
+```txt
+Path:      /event
+ClientSdk: cordova$CORDOVA_VERSION
+Parameters:
+  callback_params  {"event_token":"g3mfiw","revenue_amount":"0.05"}
+  environment      sandbox
+  event_count      1
+  event_token      g3mfiw
+```
+
+</CodeBlock> 
+
+[パートナーパラメーターの追加](add-partner-parameters)
+----------------------------------------
+
+<codeblock title="メソッドシグネチャー"> 
+
+```js
+addPartnerParameter(key: string, value: string): void
+```
+
+</CodeBlock> 
+
+[パートナーパラメーター](https://help.adjust.com/en/article/data-sharing-ad-network#map-parameters)を追加することで、ネットワークパートナーに追加情報を送信することができます。
+
+Adjustは、設定した[外部パートナー](https://help.adjust.com/en/article/integrated-partners)にパートナーパラメーターを送信します。この情報は、より詳細な分析やリターゲティング施策にご利用いただけます。パートナー用にパラメーターの設定が完了し、機能が有効化されると、Adjustのサーバーはデータ転送を開始します。
+<callout type="note"> 
+
+パートナーパラメーターはデフォルトではローデータに表示されません。ご希望の場合は、プレースホルダー`{partner_parameters}`を追加することで、それらを単一の文字列として受信することができます。
+</Callout> 
+
+イベントにパートナーパラメーターを追加するには、 **string** key\-value引数を指定して`addPartnerParameter`メソッドを呼び出してください。このメソッドを複回呼び出すことで、複数のパラメーターを追加することができます。
+
+```js
+var adjustEvent = new AdjustEvent("abc123");
+adjustEvent.addPartnerParameter("key", "value");
+adjustEvent.addPartnerParameter("foo", "bar");
+Adjust.trackEvent(adjustEvent);
+```
+
+### [例](example)
+
+この例では、ユーザーがボタンを操作する度に`g3mfiw`のトークンでイベントを計測する方法を示します。次のパートナーパラメーターが追加されました：
+
+* 関連する製品の`product_id`
+* イベントをトリガーしたユーザーの`user_id`
+
+<tabs> <tab title="JS"> <codeblock title="index.js" highlight="{range: 31-32}"> 
+
+```js
+var app = {
+   // Application Constructor
+   initialize: function () {
+      this.bindEvents();
+   },
+
+   // Bind Event Listeners
+   bindEvents: function () {
+      document.addEventListener("deviceready", this.onDeviceReady, false);
+   },
+   onDeviceReady: function () {
+      app.receivedEvent("deviceready");
+
+      var adjustConfig = new AdjustConfig(
+         { APP_ID },
+         AdjustConfig.EnvironmentSandbox,
+      );
+      Adjust.create(adjustConfig);
+   },
+   receivedEvent: function (id) {
+      console.log("[AdjustExample]: Received Event: " + id);
+
+      var btnRecordPartnerParamEvent = document.getElementById(
+         "btnRecordPartnerParamEvent",
+      );
+
+      btnRecordPartnerParamEvent.addEventListener(
+         "click",
+         function () {
+            var adjustEvent = new AdjustEvent("g3mfiw");
+            adjustEvent.addPartnerParameter("product_id", "29");
+            adjustEvent.addPartnerParameter("user_id", "835");
+            Adjust.trackEvent(adjustEvent);
+         },
+         false,
+      );
+   },
+};
+app.initialize();
+```
+
+</CodeBlock> </Tab> <tab title="HTML"> 
+
+```html
+<!doctype id="sl-md0000000"     >
+<html id="sl-md0000000">
+   <head id="sl-md0000000">
+      <!---->
+   </head>
+   <body id="sl-md0000000">
+      <div class="app" id="sl-md0000000">
+         <button             id="sl-md0000000 btnRecordPartnerParamEvent"             style="color: black; height: 30px; margin: 5px"          >
+            Record partner param event
+         </button>
+      </div>
+      <script src="cordova.js" id="sl-md0000000"></script>
+      <script src="js/index.js" id="sl-md0000000"></script>
+   </body>
+</html>
+```
+
+</Tab> </Tabs> <codeblock title="イベントログ" highlight="{range: 4}"> 
+
+```txt
+Path:      /event
+ClientSdk: cordova$CORDOVA_VERSION
+Parameters:
+  partner_params  {"product_id":"29","user_id":"835"}
+  environment      sandbox
+  event_count      1
+  event_token      g3mfiw
+```
+
+</CodeBlock> 
+
+[コールバック識別子を追加](add-a-callback-identifier)
+-----------------------------------------
+
+<codeblock title="メソッドシグネチャー"> 
+
+```js
+setCallbackId(callbackId: string)
+```
+
+</CodeBlock> 
+
+計測したいイベントにカスタムの文字列識別子を追加できます。Adjustのサーバーが、この識別子をイベントコールバックでレポートします。これにより、どのイベントが正確に計測されたかを確認することが可能です。
+
+この識別子を設定するには、以下の引数を指定して`setCallbackId`メソッドを呼び出します：
+
+* `callbackId` （`string`）：固有のコールバックID。
+
+```js
+var adjustEvent = new AdjustEvent("abc123");
+adjustEvent.setCallbackId("Your-Custom-Id");
+Adjust.trackEvent(adjustEvent);
+```
+
+### [例](example)
+
+ユーザーがボタンを操作する度に`g3mfiw`のトークンでイベントを計測する例を示します。この例では、`callbackId`が`f2e728d8-271b-49ab-80ea-27830a215147`に設定されています。
+<tabs> <tab title="JS"> <codeblock title="index.js" highlight="{range: 31}"> 
+
+```js
+var app = {
+   // Application Constructor
+   initialize: function () {
+      this.bindEvents();
+   },
+
+   // Bind Event Listeners
+   bindEvents: function () {
+      document.addEventListener("deviceready", this.onDeviceReady, false);
+   },
+   onDeviceReady: function () {
+      app.receivedEvent("deviceready");
+
+      var adjustConfig = new AdjustConfig(
+         { APP_ID },
+         AdjustConfig.EnvironmentSandbox,
+      );
+      Adjust.create(adjustConfig);
+   },
+   receivedEvent: function (id) {
+      console.log("[AdjustExample]: Received Event: " + id);
+
+      var btnRecordCallbackIdEvent = document.getElementById(
+         "btnRecordCallbackIdEvent",
+      );
+
+      btnRecordCallbackIdEvent.addEventListener(
+         "click",
+         function () {
+            var adjustEvent = new AdjustEvent("g3mfiw");
+            adjustEvent.setCallbackId("f2e728d8-271b-49ab-80ea-27830a215147");
+            Adjust.trackEvent(adjustEvent);
+         },
+         false,
+      );
+   },
+};
+app.initialize();
+```
+
+</CodeBlock> </Tab> <tab title="HTML"> 
+
+```html
+<!doctype id="sl-md0000000"     >
+<html id="sl-md0000000">
+   <head id="sl-md0000000">
+      <!---->
+   </head>
+   <body id="sl-md0000000">
+      <div class="app" id="sl-md0000000">
+         <button             id="sl-md0000000 btnRecordCallbackIdEvent"             style="color: black; height: 30px; margin: 5px"          >
+            Record callback ID event
+         </button>
+      </div>
+      <script src="cordova.js" id="sl-md0000000"></script>
+      <script src="js/index.js" id="sl-md0000000"></script>
+   </body>
+</html>
+```
+
+</Tab> </Tabs> <codeblock title="イベントログ" highlight="{range: 7}"> 
+
+```txt
+Path:      /event
+ClientSdk: cordova$CORDOVA_SDK
+Parameters:
+  environment      sandbox
+  event_count      3
+  event_token      g3mfiw
+  callback_id      f2e728d8-271b-49ab-80ea-27830a215147
+```
+
+</CodeBlock>
+
