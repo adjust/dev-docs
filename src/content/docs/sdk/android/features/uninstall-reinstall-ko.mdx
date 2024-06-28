@@ -1,0 +1,335 @@
+---
+title: "삭제 및 재설치 측정"
+description: "Adjust Android SDK를 사용하면 삭제 및 재설치를 측정할 수 있습니다. "
+slug: "ko/sdk/android/features/uninstall-reinstall"
+---
+
+Adjust Android SDK를 사용하면 앱 삭제 및 재설치를 측정할 수 있습니다. Adjust는 푸시 토큰을 사용하여 사용자의 기기에 사일런트 푸시 알림을 전송하고, 앱이 설치되어 있는지 확인합니다.
+
+본 기능을 앱에 추가하려면 아래의 지침을 참고하시기 바랍니다.
+
+<Callout type="note">
+
+Uninstall and reinstall measurement is effective for apps distributed through any app store or direct download, as long as the device has Google Play Services installed. Devices without Google Play Services aren't currently supported, such as Amazon and Huawei devices.
+
+</Callout>
+
+## [시작에 앞서](before-you-begin)
+
+시작하기 전에 알아야 할 사항은 다음과 같습니다.
+
+### [요구 사항](requirements)
+
+-  [Android SDK v4\.12\.0 이상.](https://github.com/adjust/android_sdk)
+-  [Android 프로젝트에 Firebase 추가](https://firebase.google.com/docs/android/setup)
+-  관리자, 편집자 또는 사용자 지정 편집자 [권한](https://help.adjust.com/ko/article/permission-levels)
+
+## [Google FCM을 Adjust에 연결](connect-google-fcm-to-adjust)
+
+Google의 Firebase Cloud Messaging \(FCM\) API를 통해 사일런트 푸시 알림을 구성하면 앱 삭제 및 재설치를 측정할 수 있습니다. Adjust가 Google FCM에 연결하려면 FCM HTTP v1 API 프라이빗 키가 필요합니다.
+
+<Callout type="important">
+
+기존의 서비스 키를 사용하는 대신 새 FCM HTTP v1 프라이빗 키를 생성하시기 바랍니다. Google은 2024년 7월 21일부로 Cloud Messaging API \(레거시\) 지원을 중단합니다. 영향을 받는 서비스, 지원 중단 기간 동안 예상되는 사항 및 연장 신청 방법은 [Google 문서](https://firebase.google.com/support/faq#deprecated-api-shutdown)를 참조하시기 바랍니다.
+
+</Callout>
+
+### [Google Cloud 콘솔](google-cloud-console)
+
+#### [1\. Adjust의 삭제 및 재설치 측정을 위한 커스텀 권한 생성](create-a-custom-role-for-adjust-uninstall-and-reinstall-measurement)
+
+1. [Google Cloud Console](https://console.cloud.google.com/)에 액세스합니다.
+2. Firebase 프로젝트와 연결된 Google Cloud 프로젝트를 선택합니다.
+3. **IAM & Admin** 을 검색합니다.
+4. 사이드 메뉴에서 **Roles** 을 선택합니다.
+5. **\+ Create Role** 을 선택합니다.
+6. 다음의 정보를 입력합니다.
+
+   1. **제목** : Adjust 삭제
+   2. **ID** : adjust_uninstall
+   3. **역할 시작 단계** : General Availability
+
+7. **\+ Add Permissions** 를 선택합니다.
+8. **속성 이름 또는 값** 입력 필드에 `cloudmessaging.messages.create` 를 입력하고 검색 결과에서 이를 선택합니다.
+9. **Cloudmessaging.messages.create** 옵션을 확인하고 **Add** 를 선택합니다.
+10.   **생성** 을 선택합니다.
+
+#### [2\. 서비스 계정 생성](create-a-service-account)
+
+1. 사이드 메뉴에서 **서비스 계정** 을 선택합니다.
+2. **\+ Create Service Account** 을 선택합니다.
+3. **서비스 계정 이름** 필드에 `Adjust Uninstall Service Account`를 입력합니다.
+4. **Create and Continue** 를 선택합니다.
+5. **Select a role** 드롭다운 메뉴를 선택합니다. `Adjust Uninstall` 를 입력하고 검색 결과에서 이를 선택합니다.
+6. **Continue** 을 선택합니다.
+7. **완료** 를 선택합니다.
+
+#### [3\. 개인 키 생성 및 다운로드](generate-and-download-the-private-key)
+
+1. 새로 생성된 서비스 계정을 선택합니다. 형식은 다음과 같습니다: `adjust-uninstall-service-account@test3-55065.iam.gserviceaccount.com`.
+2. **키** 탭을 선택합니다.
+3. **Add Key** > **Create new key** 을 선택합니다.
+4. **JSON** 을 선택한 뒤 **Create** 를 선택합니다. 개인 키는 JSON 파일로 컴퓨터에 다운로드됩니다.
+
+### [Adjust 대시보드에서](adjust-dashboard)
+
+Adjust를 Google FCM에 연결하는 데 필요한 프라이빗 키 세부 사항을 확인했다면 [AppView의 앱 구성](https://help.adjust.com/ko/article/platforms-ios-android-amazon-microsoft)에서 삭제 및 재설치 측정을 다음과 같이 활성화해야 합니다.
+
+1. **플랫폼** 탭을 선택합니다.
+2. **편집** 을 선택합니다. ![플랫폼 설정](@images/android/uninstall-reinstall/1-platform-settings.png)
+3. Under **Advanced settings** , find the **Record uninstall and reinstall data** option. ![Advanced settings](@images/android/uninstall-reinstall/2-advanced-settings.png)
+4. **Connection 추가** 를 선택합니다. Adjust와 Google FCM 간의 새 Connection을 추가하라는 모달 창이 열립니다. ![새 Connection 모달](@images/android/uninstall-reinstall/3-new-connection.png)
+5. 최근 생성된 FCM 프라이빗 키를 포함한 필수 정보를 입력합니다. **파트너** 및 **서비스** 필드는 자동으로 입력됩니다.
+6. **연결** 을 선택합니다.
+7. 앱 설정을 검토하고 **저장** 을 선택합니다.
+
+## [Adjust SDK와 연동하기](integrate-with-the-adjust-sdk)
+
+아래의 설명서를 참조하여 FCM과 Adjust SDK를 연동하시기 바랍니다.
+
+1. `build.gradle` 파일에 **Firebase Messaging** 에 대해 필수 디펜던시가 있는지 확인합니다.
+
+   ```groovy
+   dependencies {
+      // ...
+      implementation 'com.google.firebase:firebase-messaging:23.4.0'
+      // ...
+   }
+   ```
+
+2. Set up a Firebase Cloud Messaging client app on Android following [Google's documentation](https://firebase.google.com/docs/cloud-messaging/android/client), if you haven't already done so.
+
+3. 기기에 대한 푸시 토큰을 Adjust SDK로 전달합니다.
+
+   -  자체 푸시 알림을 앱에 전송하는 경우, `FirebaseMessagingService` 클래스의 `onMessageReceived` 메서드를 모든 유형의 Adjust 알림을 처리하는 로직으로 오버라이드해야 합니다.
+
+#### [예시](example)
+
+The following code snippet shows how you can extend the `FirebaseMessagingService` class to pass the push token to the Adjust SDK, and to update your push notification handling logic. If you aren't sending your own push notifications, you can skip the override of the `onMessageReceived` method.
+
+<Callout type="important">
+
+아래와 같이 `onMessageReceived`를 오버라이드하는 경우 앱이 푸시 알림을 처리하는 방식에 영향을 주지 않도록 주의하시기 바랍니다. 아래의 푸시 알림 핸들링 코드를 수정한 이후에는 반드시 푸시 알림 전송을 테스트하시기 바랍니다.
+
+</Callout>
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+import com.adjust.sdk.Adjust
+import com.adjust.sdk.Util
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.messaging.FirebaseMessagingService
+import com.google.firebase.messaging.RemoteMessage
+
+class MyFirebaseMessagingService : FirebaseMessagingService() {
+
+  override fun onCreate() {
+    super.onCreate()
+    // Fetch FCM token and set in Adjust SDK
+    FirebaseMessaging.getInstance().token
+      .addOnCompleteListener { task ->
+        if (task.isSuccessful && task.result != null) {
+          Adjust.setPushToken(task.result, applicationContext)
+        }
+      }
+  }
+
+  override fun onNewToken(token: String) {
+    super.onNewToken(token)
+
+    // Receive new FCM token and set in Adjust SDK
+    Adjust.setPushToken(token, applicationContext)
+  }
+
+  override fun onMessageReceived(remoteMessage: RemoteMessage) {
+    super.onMessageReceived(remoteMessage)
+
+    // Check if message has data payload
+    if (remoteMessage.data.isNotEmpty()) {
+      val payload: Map<String, String> = remoteMessage.data
+
+      // Check for Adjust uninstall detection data message
+      if (Util.isAdjustUninstallDetectionPayload(payload)) {
+        // No handling required for Adjust data payload
+      } else {
+        // Handle other data payloads here
+      }
+    }
+
+    // Check if message has notification payload
+    remoteMessage.notification?.let {
+      // Handle notification payload here
+    }
+  }
+}
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+import com.adjust.sdk.Adjust;
+import com.adjust.sdk.Util;
+import com.google.firebase.messaging.FirebaseMessagingService;
+import com.google.firebase.messaging.RemoteMessage;
+import java.util.Map;
+
+public class MyFirebaseMessagingService extends FirebaseMessagingService {
+
+  @Override
+  public void onCreate() {
+    super.onCreate();
+    // Fetch FCM token and set in Adjust SDK
+    FirebaseMessaging.getInstance().getToken()
+      .addOnCompleteListener(task -> {
+        if (task.isSuccessful() && task.getResult() != null) {
+          Adjust.setPushToken(task.getResult(),getApplicationContext());
+        }
+      });
+  }
+
+  @Override
+  public void onNewToken(String token) {
+    super.onNewToken(token);
+
+    // Receive new FCM token and set in Adjust SDK
+    Adjust.setPushToken(token, getApplicationContext());
+  }
+
+  @Override
+  public void onMessageReceived(RemoteMessage remoteMessage) {
+    super.onMessageReceived(remoteMessage);
+
+    // Check if message has data payload
+    if (!remoteMessage.getData().isEmpty()) {
+      Map<String, String> payload = remoteMessage.getData();
+
+      // Check for Adjust uninstall detection data message
+      if (Util.isAdjustUninstallDetectionPayload(payload)) {
+        // No handling required for Adjust data payload
+      } else {
+        // Handle other data payloads here
+      }
+    }
+
+    // Check if message has notification payload
+    if (remoteMessage.getNotification() != null) {
+      // Handle notification payload here
+    }
+  }
+}
+```
+
+</Tab>
+</Tabs>
+
+4. Adjust SDK를 초기화하기 전에 앱에서 Firebase 인스턴스를 초기화하시기 바랍니다.
+
+#### [예시](example-1)
+
+다음은 Android 프로젝트의 애플리케이션 클래스 예시입니다. 앱이 시작되자마자 Firebase 인스턴스가 초기화되는 것을 확인할 수 있습니다.
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+import android.app.Application
+import com.adjust.sdk.Adjust
+import com.adjust.sdk.AdjustConfig
+import com.google.firebase.FirebaseApp
+
+class MyApp : Application() {
+
+  override fun onCreate() {
+    super.onCreate()
+
+    // Initialize Firebase App
+    FirebaseApp.initializeApp(this)
+
+    // Configure Adjust SDK
+    // Replace {YourAppToken} with your Adjust app token
+    val appToken = "{YourAppToken}"
+    val environment = AdjustConfig.ENVIRONMENT_PRODUCTION
+    val config = AdjustConfig(this, appToken, environment)
+
+    // Initialize Adjust SDK
+    Adjust.onCreate(config)
+  }
+}
+
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+import android.app.Application;
+import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustConfig;
+import com.google.firebase.FirebaseApp;
+
+public class MyApp extends Application {
+
+  @Override
+  public void onCreate() {
+    super.onCreate();
+
+    // Initialize Firebase App
+    FirebaseApp.initializeApp(this);
+
+    // Configure Adjust SDK
+    // Replace {YourAppToken} with your Adjust app token
+    String appToken = "{YourAppToken}";
+    String environment = AdjustConfig.ENVIRONMENT_PRODUCTION;
+    AdjustConfig config = new AdjustConfig(this, appToken, environment);
+
+    // Initialize Adjust SDK
+    Adjust.onCreate(config);
+  }
+}
+```
+
+</Tab>
+</Tabs>
+
+## [연동 테스트하기](test-the-integration)
+
+Adjust는 Android 앱이 Adjust 프로덕션 환경에서 마지막으로 활동이 이루어진 기기로부터의 Android 앱 삭제를 확인합니다.
+
+삭제 및 재설치 측정을 테스트하려면 디버그 빌드나 릴리즈 빌드를 사용할 수 있습니다. 설치 테스트 시에는 Adjust SDK 환경을 _프로덕션_ 으로 설정해야 함을 반드시 유의하시기 바랍니다.
+
+삭제 측정 테스트
+
+1. Adjust SDK를 초기화하기 전에 Adjust SDK에서 환경을 `AdjustConfig.ENVIRONMENT_PRODUCTION`으로 설정합니다.
+2. 실제 테스트 기기 또는 에뮬레이터에 앱을 설치합니다.
+3. 앱을 실행합니다.
+4. Adjust의 [테스팅 콘솔](https://help.adjust.com/ko/article/testing-console)을 실행합니다.
+5. _기기 ID_ 를 입력하고 **기기 데이터 보기** 를 선택합니다.
+6. **앱 정보** 섹션에는 다음이 표시되어야 합니다.
+
+   -  **설치 상태** 는 **설치됨\(Installed\)** 으로 나타나야 합니다.
+   -  **푸시 토큰** 에 대한 값이 있어야 합니다.
+
+7. 앱을 삭제합니다.
+8. Adjust는 하루에 한 번 앱 삭제 내역을 확인하므로 24시간 후에 다시 테스팅 콘솔을 확인합니다. **앱 정보** 섹션 아래에 **설치** 상태가 ' **삭제됨\(uninstalled\)** '으로 표시됩니다.
+
+상태가 **설치됨** 에서 **삭제됨** 으로 변경되면 삭제 및 재설치 측정 기능이 올바르게 작동하고 있음을 의미합니다. 그러나 재설치 측정도 테스트하고 싶다면 다음의 단계를 수행하시기 바랍니다.
+
+1. 디버그 빌드를 재설치하거나 실제 테스트 기기 또는 에뮬레이터에서 빌드를 릴리스합니다.
+2. 앱을 실행합니다.
+3. Adjust는 하루에 한 번 재설치를 확인하므로 24시간 후에 다시 테스트 콘솔을 확인합니다. **앱 정보** 섹션의 **설치 상태** 에 **재설치** 가 표시됩니다.
+
+### [문제 해결](troubleshooting)
+
+삭제 및 재설치 테스트 시 자주 발생하는 이슈는 다음과 같습니다.
+
+-  테스트 설치 시 Adjust SDK 환경이 `AdjustConfig.ENVIRONMENT_SANDBOX` 로 설정된 경우: 이 설정에서는 앱 삭제 및 재설치 측정이 작동하지 않습니다. Adjust SDK에서 설정을 `AdjustConfig.ENVIRONMENT_PRODUCTION`으로 변경하시기 바랍니다.
+-  The push token is missing. If the push token doesn't appear in the Testing Console, there might be something wrong with your Firebase implementation or with the code that integrates the Firebase SDK and the Adjust SDK. Review these elements of your implementation.
+-  FCM HTTP v1 API 개인 키에 문제가 발생한 경우. 예를 들어 생성한 개인 키가 잘못된 프로젝트에 속하거나 Adjust Suite에 입력한 세부 사항이 올바르지 않은 것일 수 있습니다. 위 사항을 검토하시고, 필요한 경우 기기의 푸시 토큰을 포함하여 담당 테크니컬 어카운트 매니저나 [support@adjust.com](mailto:support@adjust.com) 에 연락하시기 바랍니다. Google API로부터의 응답 확인을 위해 로그를 풀링할 수도 있습니다.
+
+문제 해결 이후에는 다음 단계를 통해 테스트를 다시 진행하시기 바랍니다.
+
+1. 앱을 삭제합니다.
+2. 테스트용 콘솔에서 _기기 ID_ 를 입력한 뒤 **기기 데이터 보기** > **기기 삭제** 를 선택합니다.
+3. [연동 테스트 섹션](#test-the-integration)의 단계를 반복합니다.

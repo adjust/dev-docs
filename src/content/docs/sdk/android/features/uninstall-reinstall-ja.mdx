@@ -1,0 +1,335 @@
+---
+title: "アンインストールと再インストールの計測"
+description: "Adjust Android SDKを使用して、アンインストールと再インストールを計測します。"
+slug: "ja/sdk/android/features/uninstall-reinstall"
+---
+
+Adjust Android SDKを使用して、アンインストールと再インストールを計測します。AdjustはPushトークンを使用することでユーザーのデバイスにサイレントPush通知を送信し、アプリが現在インストールされているかどうかを確認します。
+
+この機能をアプリに追加するには、以下の手順に従ってください。
+
+<Callout type="note">
+
+Uninstall and reinstall measurement is effective for apps distributed through any app store or direct download, as long as the device has Google Play Services installed. Devices without Google Play Services aren't currently supported, such as Amazon and Huawei devices.
+
+</Callout>
+
+## [事前準備](before-you-begin)
+
+はじめに、以下の設定手順をご覧ください。
+
+### [要件](requirements)
+
+-  [Android SDK v4\.12\.0以降](https://github.com/adjust/android_sdk)
+-  [AndroidプロジェクトにFirebaseを追加すること](https://firebase.google.com/docs/android/setup)
+-  管理者、編集者およびカスタム編集者の[ユーザー権限](https://help.adjust.com/ja/article/permission-levels)
+
+## [Google FCMをAdjustに連携する](connect-google-fcm-to-adjust)
+
+GoogleのFirebase Cloud Messaging（FCM）APIを使用してサイレントPush通知を設定することで、アンインストールと再インストールを計測できます。 AdjustがGoogle FCMに接続するには、FCM HTTP v1 APIプライベートキーが必要です。
+
+<Callout type="important">
+
+レガシー版のサービスキーを使用する代わりに、新しいFCM HTTP v1プライベートキーを生成してください。Googleは、2024年7月22日にCloud Messaging API（レガシー版）を終了します。影響を受けるサービス、廃止期間中の留意点、延長を申請する方法については、 [Googleのドキュメント](https://firebase.google.com/support/faq#deprecated-api-shutdown)をご覧ください。
+
+</Callout>
+
+### [Google Cloudコンソール](google-cloud-console)
+
+#### [1\.Adjustのアンインストール・再インストール計測のカスタムアクセス権限を作成する](create-a-custom-role-for-adjust-uninstall-and-reinstall-measurement)
+
+1. [Google Cloud Console](https://console.cloud.google.com/)にアクセスします。
+2. Firebaseプロジェクトに関連付けられているGoogle Cloudプロジェクトを選択します。
+3. **IAM & Admin** を検索します。
+4. サイドメニューで、 **ロール（Role）** を選択します。
+5. **\+ 権限を作成 \(Create Role\)** を選択します。
+6. 以下の詳細を入力します：
+
+   1. **Title** : Adjust Uninstall
+   2. **ID** : adjust_uninstall
+   3. **Role launch stage** : General Availability
+
+7. **\+ Add Permissions** を選択します。
+8. **Enter property name or value** フィールドに`cloudmessaging.messages.create`と入力し、検索結果から選択します。
+9. **cloudmessaging.messages.create** オプションにチェックを入れ、 **Add** を選択します。
+10.   **Create** を選択します。
+
+#### [2\.サービスアカウントを作成する](create-a-service-account)
+
+1. サイドメニューから **Service Accounts** を選択します。
+2. **\+ Create Service Account** を選択します。
+3. **Service account name** フィールドに、 `Adjust Uninstall Service Account`と入力します。
+4. **Create and Continue** を選択します。
+5. **Select a role** ドロップダウンを選択します。 `Adjust Uninstall`を入力し、検索結果から選択します。
+6. **続ける（Continue）** を選択します。
+7. **Done** を選択します。
+
+#### [3\.プライベートキーを生成してダウンロードする](generate-and-download-the-private-key)
+
+1. 新しく作成したサービスアカウントを選択します。書式は以下のようになります：`adjust-uninstall-service-account@test3-55065.iam.gserviceaccount.com`。
+2. **Keys** タブを選択します。
+3. **Add Key** > **Create new key** を選択します。
+4. **JSON** > **作成 \(Create\)** を選択します。 プライベートキーは、JSONファイルとしてコンピューターにダウンロードされます。
+
+### [Adjustダッシュボードにて](adjust-dashboard)
+
+AdjustとGoogle FCMを連携するために必要なプライベートキーの詳細を取得したら、[AppViewのアプリ設定](https://help.adjust.com/ja/article/platforms-ios-android-amazon-microsoft)でアンインストール・再インストール計測を有効にする必要があります。
+
+1. **プラットフォーム \(Platforms\)** を選択します。
+2. **編集（EDIT）** を選択します。
+3. Under **Advanced settings** , find the **Record uninstall and reinstall data** option. ![Advanced settings](@images/android/uninstall-reinstall/2-advanced-settings.png)
+4. **接続先を追加（Add Connection）** を選択します。モーダルが開き、AdjustとGoogle FCMの間に新しいパートナー接続を追加するよう求められます。 ![新規パートナー接続モーダル](@images/android/uninstall-reinstall/3-new-connection.png)
+5. 最近生成したFCMプライベートキーなどの必要な情報を入力します。 **パートナー** と **サービス** のフィールドは自動的に入力されます。
+6. **接続（Connect）** を選択します。
+7. アプリの設定を確認し、 **保存（Save）** を選択します。
+
+## [Adjust SDKを実装する](integrate-with-the-adjust-sdk)
+
+FCMをAdjust SDKに連携するには、以下の手順に従ってください。
+
+1. `build.gradle`ファイルに、 **Firebase Messaging** に必要なdependencyがあることを確認してください。
+
+   ```groovy
+   dependencies {
+      // ...
+      implementation 'com.google.firebase:firebase-messaging:23.4.0'
+      // ...
+   }
+   ```
+
+2. Set up a Firebase Cloud Messaging client app on Android following [Google's documentation](https://firebase.google.com/docs/cloud-messaging/android/client), if you haven't already done so.
+
+3. デバイスのプッシュトークンをAdjust SDKにパスします。
+
+   -  アプリに独自のPush通知を送信する場合は、全てのタイプのPush通知を処理するロジックを使って`FirebaseMessagingService`クラスの`onMessageReceived`メソッドをオーバーライドするようにしてください。それにはアンインストールおよび再インストール計測のためのAdjustのサイレントPush通知も含まれます。
+
+#### [例](example)
+
+The following code snippet shows how you can extend the `FirebaseMessagingService` class to pass the push token to the Adjust SDK, and to update your push notification handling logic. If you aren't sending your own push notifications, you can skip the override of the `onMessageReceived` method.
+
+<Callout type="important">
+
+以下のように`onMessageReceived`をオーバーライドする際は、アプリが独自のPush通知を処理する方法に影響を与えないように注意してください。 以下のPush通知処理コードに変更を加えた後、アプリがフォアグラウンドで動作している間に独自のPush通知を送信するテストを実施してください。
+
+</Callout>
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+import com.adjust.sdk.Adjust
+import com.adjust.sdk.Util
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.messaging.FirebaseMessagingService
+import com.google.firebase.messaging.RemoteMessage
+
+class MyFirebaseMessagingService : FirebaseMessagingService() {
+
+  override fun onCreate() {
+    super.onCreate()
+    // Fetch FCM token and set in Adjust SDK
+    FirebaseMessaging.getInstance().token
+      .addOnCompleteListener { task ->
+        if (task.isSuccessful && task.result != null) {
+          Adjust.setPushToken(task.result, applicationContext)
+        }
+      }
+  }
+
+  override fun onNewToken(token: String) {
+    super.onNewToken(token)
+
+    // Receive new FCM token and set in Adjust SDK
+    Adjust.setPushToken(token, applicationContext)
+  }
+
+  override fun onMessageReceived(remoteMessage: RemoteMessage) {
+    super.onMessageReceived(remoteMessage)
+
+    // Check if message has data payload
+    if (remoteMessage.data.isNotEmpty()) {
+      val payload: Map<String, String> = remoteMessage.data
+
+      // Check for Adjust uninstall detection data message
+      if (Util.isAdjustUninstallDetectionPayload(payload)) {
+        // No handling required for Adjust data payload
+      } else {
+        // Handle other data payloads here
+      }
+    }
+
+    // Check if message has notification payload
+    remoteMessage.notification?.let {
+      // Handle notification payload here
+    }
+  }
+}
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+import com.adjust.sdk.Adjust;
+import com.adjust.sdk.Util;
+import com.google.firebase.messaging.FirebaseMessagingService;
+import com.google.firebase.messaging.RemoteMessage;
+import java.util.Map;
+
+public class MyFirebaseMessagingService extends FirebaseMessagingService {
+
+  @Override
+  public void onCreate() {
+    super.onCreate();
+    // Fetch FCM token and set in Adjust SDK
+    FirebaseMessaging.getInstance().getToken()
+      .addOnCompleteListener(task -> {
+        if (task.isSuccessful() && task.getResult() != null) {
+          Adjust.setPushToken(task.getResult(),getApplicationContext());
+        }
+      });
+  }
+
+  @Override
+  public void onNewToken(String token) {
+    super.onNewToken(token);
+
+    // Receive new FCM token and set in Adjust SDK
+    Adjust.setPushToken(token, getApplicationContext());
+  }
+
+  @Override
+  public void onMessageReceived(RemoteMessage remoteMessage) {
+    super.onMessageReceived(remoteMessage);
+
+    // Check if message has data payload
+    if (!remoteMessage.getData().isEmpty()) {
+      Map<String, String> payload = remoteMessage.getData();
+
+      // Check for Adjust uninstall detection data message
+      if (Util.isAdjustUninstallDetectionPayload(payload)) {
+        // No handling required for Adjust data payload
+      } else {
+        // Handle other data payloads here
+      }
+    }
+
+    // Check if message has notification payload
+    if (remoteMessage.getNotification() != null) {
+      // Handle notification payload here
+    }
+  }
+}
+```
+
+</Tab>
+</Tabs>
+
+4. Adjust SDKを初期化する前に、アプリのFirebaseインスタンスを初期化します。
+
+#### [例](example-1)
+
+Androidプロジェクトのアプリケーションクラスの例を次に示します。アプリを起動すると同時に、Firebaseインスタンスが初期化されていることが確認できます。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+import android.app.Application
+import com.adjust.sdk.Adjust
+import com.adjust.sdk.AdjustConfig
+import com.google.firebase.FirebaseApp
+
+class MyApp : Application() {
+
+  override fun onCreate() {
+    super.onCreate()
+
+    // Initialize Firebase App
+    FirebaseApp.initializeApp(this)
+
+    // Configure Adjust SDK
+    // Replace {YourAppToken} with your Adjust app token
+    val appToken = "{YourAppToken}"
+    val environment = AdjustConfig.ENVIRONMENT_PRODUCTION
+    val config = AdjustConfig(this, appToken, environment)
+
+    // Initialize Adjust SDK
+    Adjust.onCreate(config)
+  }
+}
+
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+import android.app.Application;
+import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustConfig;
+import com.google.firebase.FirebaseApp;
+
+public class MyApp extends Application {
+
+  @Override
+  public void onCreate() {
+    super.onCreate();
+
+    // Initialize Firebase App
+    FirebaseApp.initializeApp(this);
+
+    // Configure Adjust SDK
+    // Replace {YourAppToken} with your Adjust app token
+    String appToken = "{YourAppToken}";
+    String environment = AdjustConfig.ENVIRONMENT_PRODUCTION;
+    AdjustConfig config = new AdjustConfig(this, appToken, environment);
+
+    // Initialize Adjust SDK
+    Adjust.onCreate(config);
+  }
+}
+```
+
+</Tab>
+</Tabs>
+
+## [実装テスト](test-the-integration)
+
+Adjustは、Adjustの本番環境で最後のアクティビティがあったデバイスからのAndroidアプリのアンインストールを確認します。
+
+アンインストールと再インストールの計測をテストするには、デバッグビルドまたはリリースビルドのいずれかを使用してください。主な要件として、テストインストールを実行する際は、Adjust SDK環境を _本番用_ に設定する必要があります。
+
+アンインストール計測をテストする方法：
+
+1. Adjust SDKで、Adjust SDKを初期化する前に環境を`AdjustConfig.ENVIRONMENT_PRODUCTION`に設定します。
+2. 実機テスト用のデバイスまたはエミュレーターにアプリをインストールします。
+3. アプリを開きます。
+4. Adjustの[テストコンソール（Testing Console）](https://help.adjust.com/ja/article/testing-console)を開きます。
+5. _デバイスID_ を入力し、 **デバイスデータを表示（View device data）** を選択します。
+6. **アプリ情報（App information）** セクションで以下を実行します。
+
+   -  **インストールの状態（Install state）** が **インストール済み（Installed）** と表示されていることを確認します。
+   -  **Pushトークン** の値が確認できます。
+
+7. アプリをアンインストールします。
+8. Adjustは1日1回アンインストールを確認するため、24時間後に再度テストコンソールを確認してください。 **アプリ情報 \(App information\)** セクションの **インストールの状態（Install state）** に **アンインストール済み（Uninstalled）** と表示されます。
+
+状態が **インストール済み \(Installed）** から **アンインストール済み（Uninstalled）** に変更されることで、アンインストールと再インストール計測機能が正しく機能するようになります。 再インストール計測もテストする場合は、次の手順に従ってください。
+
+1. 実際のテストデバイスまたはエミュレーターにデバッグビルドまたはリリースビルドを再インストールします。
+2. アプリを開きます。
+3. Adjustは1日に1回再インストールを確認するため、24時間後に再度テストコンソールを確認してください。 **アプリ情報 \(App information\)** セクションの **インストールの状態（Install state）** に **再インストール済み（Reinstalled）** と表示されます。
+
+### [トラブルシューティング](troubleshooting)
+
+アンインストール・再インストール計測をテストする際によくある問題は、以下のとおりです。
+
+-  テストインストールが行われると、Adjust SDK環境は`AdjustConfig.ENVIRONMENT_SANDBOX`に設定されます。アンインストール・再インストール計測はこの設定では機能しません。Adjust SDKでの設定は、必ず`AdjustConfig.ENVIRONMENT_PRODUCTION`に変更してください。
+-  The push token is missing. If the push token doesn't appear in the Testing Console, there might be something wrong with your Firebase implementation or with the code that integrates the Firebase SDK and the Adjust SDK. Review these elements of your implementation.
+-  FCM HTTP v1 APIプライベートキーに問題があります。例えば、生成したプライベートキーが誤ったプロジェクトに属しているか、 Adjust suiteに詳細が誤って入力された可能性があります。担当のテクニカルアカウントマネージャーまたは[support@adjust.com](mailto:support@adjust.com)にご連絡いただき、デバイスのPushトークンをお知らせください。担当者がログを取得して、AppleのAPIからのレスポンスを確認します。
+
+問題が解決したら、次の手順に従って実装を再度テストしてください。
+
+1. アプリをアンインストールします。
+2. テストコンソールで _デバイスID_ を入力し、 **デバイスデータの表示（View device data）** > **デバイス削除（Forget Device）** を選択します。
+3. [連携をテストする](#test-the-integration)のセクションの手順を繰り返します。
