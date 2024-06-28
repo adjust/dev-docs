@@ -1,35 +1,38 @@
 ---
 title: "卸载与重装监测"
 description: "使用 Adjust 安卓 SDK 来检测卸载和重装。"
-slug: "en/sdk/android/features/uninstall-reinstall"
+slug: "zh/sdk/android/features/uninstall-reinstall"
 ---
+
 使用 Adjust 安卓 SDK 监测卸载和重装。Adjust 使用推送标签向用户设备发送静默推送通知并检查您的应用是否处于已安装状态。
 
 按照以下说明来为您的应用添加此功能。
-<callout type="note"> 
+
+<Callout type="note">
 
 Uninstall and reinstall measurement is effective for apps distributed through any app store or direct download, as long as the device has Google Play Services installed. Devices without Google Play Services aren't currently supported, such as Amazon and Huawei devices.
-</Callout> 
 
-[操作前须知](before-you-begin)
--------------------------
+</Callout>
+
+## [操作前须知](before-you-begin)
 
 以下是您在操作前需要了解的内容。
 
 ### [要求](requirements)
 
-* [安卓 SDK v4\.12\.0 及更新版本](https://github.com/adjust/android_sdk)
-* [将 Firebase 添加到您的安卓项目](https://firebase.google.com/docs/android/setup)
-* 管理员、编辑员或自定义编辑员[权限](https://help.adjust.com/en/article/permission-levels)
+-  [安卓 SDK v4\.12\.0 及更新版本](https://github.com/adjust/android_sdk)
+-  [将 Firebase 添加到您的安卓项目](https://firebase.google.com/docs/android/setup)
+-  管理员、编辑员或自定义编辑员[权限](https://help.adjust.com/zh/article/permission-levels)
 
-[将 Google FCM 关联到 Adjust](connect-google-fcm-to-adjust)
--------------------------------------------------------
+## [将 Google FCM 关联到 Adjust](connect-google-fcm-to-adjust)
 
 通过 Google Firebase Cloud Messaging \(FCM\) API 配置静默推送通知后，您就可以监测卸载和重装。Adjust 需要 FCM HTTP v1 API 私钥才能连接至 Google FCM。
-<callout type="important"> 
+
+<Callout type="important">
 
 生成新的 FCM HTTP v1 私钥，而不是使用旧的服务密钥。Google 将于 2024 年 7 月 22 日起逐步停用 Cloud Messaging API \(旧版\)。要了解哪些服务将受到影响，弃用的具体流程以及如何申请延期，请参考[Google 文档](https://firebase.google.com/support/faq#deprecated-api-shutdown)。
-</Callout> 
+
+</Callout>
 
 ### [Google Cloud console](google-cloud-console)
 
@@ -40,15 +43,16 @@ Uninstall and reinstall measurement is effective for apps distributed through an
 3. 搜索 **IAM & 管理员 \(IAM & Admin\)** 。
 4. 从侧栏菜单中选择 **角色 \(Roles\)** 。
 5. 选择 **\+ 新建角色 \(Create Role\)** 。
-6. 输入以下详细信息： 
+6. 输入以下详细信息：
+
    1. **Title** : Adjust Uninstall
-   2. **ID** : adjust\_uninstall
+   2. **ID** : adjust_uninstall
    3. **Role launch stage** : General Availability
 
 7. 选择 **\+ 添加权限 \(Add Permissions\)** 。
 8. 在 **输入属性名称或值 \(Enter property name or value\)** 字段中输入`cloudmessaging.messages.create`并从搜索结果中进行选择。
 9. 勾选 **cloudmessaging.messages.create** 选项，然后选择 **添加 \(Add\)** 。
-10. 选择 **创建** 。
+10.   选择 **创建** 。
 
 #### [2\. 创建一个服务账户](create-a-service-account)
 
@@ -69,7 +73,7 @@ Uninstall and reinstall measurement is effective for apps distributed through an
 
 ### [在 Adjust 控制面板中](adjust-dashboard)
 
-现在您已经获得了将 Adjust 连接到 Google FCM 所需的私人密钥详细信息，接下来需要[在 AppView 的应用配置中](https://help.adjust.com/en/article/platforms-ios-android-amazon-microsoft)启用卸载与重装监测：
+现在您已经获得了将 Adjust 连接到 Google FCM 所需的私人密钥详细信息，接下来需要[在 AppView 的应用配置中](https://help.adjust.com/zh/article/platforms-ios-android-amazon-microsoft)启用卸载与重装监测：
 
 1. 选择 **平台** 标签页。
 2. 选择 **编辑** 。 ![平台设置](@images/android/uninstall-reinstall/1-platform-settings.png)
@@ -79,8 +83,7 @@ Uninstall and reinstall measurement is effective for apps distributed through an
 6. 选择 **关联** 。
 7. 查看应用设置，然后选择 **保存** 。
 
-[集成 Adjust SDK](integrate-with-the-adjust-sdk)
-----------------------------------------------
+## [集成 Adjust SDK](integrate-with-the-adjust-sdk)
 
 按照以下说明集成 FCM 与 Adjust SDK
 
@@ -98,15 +101,19 @@ Uninstall and reinstall measurement is effective for apps distributed through an
 
 3. 将设备的推送标签发送到 Adjust SDK。
 
-   * 如果您向应用发送自己的推送通知，请确保改写`FirebaseMessagingService`类中的`onMessageReceived`方法，使之可处理所有类型推送通知，包括 Adjust 的卸载和重装监测静默推送通知。
+   -  如果您向应用发送自己的推送通知，请确保改写`FirebaseMessagingService`类中的`onMessageReceived`方法，使之可处理所有类型推送通知，包括 Adjust 的卸载和重装监测静默推送通知。
 
 #### [示例](example)
 
 The following code snippet shows how you can extend the `FirebaseMessagingService` class to pass the push token to the Adjust SDK, and to update your push notification handling logic. If you aren't sending your own push notifications, you can skip the override of the `onMessageReceived` method.
-<callout type="important"> 
+
+<Callout type="important">
 
 如下所示，改写`onMessageReceived`时，请注意不要影响应用处理推送通知的方式。对以下推送通知处理代码进行修改后，请务必在应用处于前台时测试发送自己的推送通知。
-</Callout> <tabs> <tab title="Kotlin" sync="kotlin"> 
+
+</Callout>
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
 
 ```kotlin
 import com.adjust.sdk.Adjust
@@ -158,7 +165,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 }
 ```
 
-</Tab> <tab title="Java" sync="java"> 
+</Tab>
+<Tab title="Java" sync="java">
 
 ```java
 import com.adjust.sdk.Adjust;
@@ -213,14 +221,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 }
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
 4. 在初始化 Adjust SDK 前，在您的应用中初始化 Firebase 实例。
 
 #### [示例](example-1)
 
 以下是安卓项目中应用程序类的示例。您可以看到应用一启动就初始化了 Firebase 实例。
-<tabs> <tab title="Kotlin" sync="kotlin"> 
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
 
 ```kotlin
 import android.app.Application
@@ -249,7 +260,8 @@ class MyApp : Application() {
 
 ```
 
-</Tab> <tab title="Java" sync="java"> 
+</Tab>
+<Tab title="Java" sync="java">
 
 ```java
 import android.app.Application;
@@ -278,25 +290,26 @@ public class MyApp extends Application {
 }
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
-[测试集成](test-the-integration)
-----------------------------
+## [测试集成](test-the-integration)
 
 Adjust 会检查生产环境中记录了最后一次活动的设备上的安卓应用卸载情况。
 
-要测试卸载和重装监测，您可以使用调试或发布版本。最主要的是在测试安装时，您必须将 Adjust SDK 环境设置为 *Production \(生产\)* 。
+要测试卸载和重装监测，您可以使用调试或发布版本。最主要的是在测试安装时，您必须将 Adjust SDK 环境设置为 _Production \(生产\)_ 。
 
 要测试卸载监测：
 
 1. 在 Adjust SDK 中将环境设置为`AdjustConfig.ENVIRONMENT_PRODUCTION`，然后再初始化 Adjust SDK。
 2. 在测试设备或模拟器上安装应用。
 3. 打开应用。
-4. 打开 Adjust 的[测试控制台](https://help.adjust.com/en/article/testing-console)。
-5. 输入您的 *设备 ID* ，然后选择 **查看设备数据** 
-6. 在 **应用信息** 部分： 
-   * **Install state \(安装状态\)** 应显示为 **Installed \(已安装\)** 。
-   * **Push token \(推送标签\)** 应当存在值。
+4. 打开 Adjust 的[测试控制台](https://help.adjust.com/zh/article/testing-console)。
+5. 输入您的 _设备 ID_ ，然后选择 **查看设备数据**
+6. 在 **应用信息** 部分：
+
+   -  **Install state \(安装状态\)** 应显示为 **Installed \(已安装\)** 。
+   -  **Push token \(推送标签\)** 应当存在值。
 
 7. 卸载应用。
 8. 24 小时后，请再次查看测试控制台，因为 Adjust 每天检查一次卸载。在 **应用信息** 部分下的 **Install state** \(安装状态\) 应显示 **Uninstalled** \(已卸载\) 。
@@ -311,13 +324,12 @@ Adjust 会检查生产环境中记录了最后一次活动的设备上的安卓�
 
 以下是测试卸载和重装监测时最常见的问题：
 
-* 进行测试安装时，Adjust SDK 的环境会设置为`AdjustConfig.ENVIRONMENT_SANDBOX` 。该设置不支持卸载和重装监测。请确保在 Adjust SDK 中将此设置设为`AdjustConfig.ENVIRONMENT_PRODUCTION` 。
-* The push token is missing. If the push token doesn't appear in the Testing Console, there might be something wrong with your Firebase implementation or with the code that integrates the Firebase SDK and the Adjust SDK. Review these elements of your implementation.
-* FCM HTTP v1 API 私人密钥出现问题。例如，您生成的私人密钥可能属于错误的项目，或您在 Adjust suite 中输入的详细信息有误。请查看这些要点并联系您的技术客户经理或发送邮件至[support@adjust.com](mailto:support@adjust.com)，请同时提供设备的推送标签。他们可以提取日志以检查来自 Google API 的响应。
+-  进行测试安装时，Adjust SDK 的环境会设置为`AdjustConfig.ENVIRONMENT_SANDBOX` 。该设置不支持卸载和重装监测。请确保在 Adjust SDK 中将此设置设为`AdjustConfig.ENVIRONMENT_PRODUCTION` 。
+-  The push token is missing. If the push token doesn't appear in the Testing Console, there might be something wrong with your Firebase implementation or with the code that integrates the Firebase SDK and the Adjust SDK. Review these elements of your implementation.
+-  FCM HTTP v1 API 私人密钥出现问题。例如，您生成的私人密钥可能属于错误的项目，或您在 Adjust suite 中输入的详细信息有误。请查看这些要点并联系您的技术客户经理或发送邮件至[support@adjust.com](mailto:support@adjust.com)，请同时提供设备的推送标签。他们可以提取日志以检查来自 Google API 的响应。
 
 解决问题后，请按照以下步骤再次测试集成情况：
 
 1. 卸载应用。
-2. 在测试控制台中输入您的 *设备 ID* ，然后选择 **查看设备数据** > **遗忘设备** 。
+2. 在测试控制台中输入您的 _设备 ID_ ，然后选择 **查看设备数据** > **遗忘设备** 。
 3. 重复[测试集成部分](#test-the-integration)所述的步骤。
-
