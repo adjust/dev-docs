@@ -27,7 +27,9 @@ const removeHeaderIds = () => {
   headers.filter((header) => {
     const parentDiv = header.closest("sdk-version-block") || header.closest("api-version-block");
     if (parentDiv && parentDiv.matches(".hidden")) {
-      header.removeAttribute("id")
+      header.id = `hiddendiv-${header.id}`
+    } else {
+      header.id = header.id.replace("hiddendiv-", "")
     }
   })
 }
