@@ -1,0 +1,87 @@
+---
+title: Send event information
+description: The Adjust SDK enables you to send event information to Adjust.
+slug: en/sdk/react-native/features/events
+category-title: Events
+---
+
+You can use the Adjust SDK to send event information to Adjust's servers in response to actions taken by your users. Adjust records these events and surfaces them in your [Datascape reports](https://help.adjust.com/en/article/datascape), [server callbacks](https://help.adjust.com/en/article/server-callbacks), and [raw data exports](https://help.adjust.com/en/article/cloud-storage-uploads).
+
+<Callout type="seealso">
+
+For more information on configuring events in Adjust, see the [Add events guide](https://help.adjust.com/en/article/add-events) in the Help Center.
+
+</Callout>
+
+## [How it works](how-it-works)
+
+Events are represented by `AdjustEvent` instances. The `AdjustEvent` class contains properties which you can populate with event information to send to Adjust. The `AdjustEvent` class MUST be instantiated using an Adjust event token. You can find your evnet token in the Adjust suite by following the steps in the [Add events guide](https://help.adjust.com/en/article/add-events#copy-event-token). You can set each property to create a complete representation of your event.
+
+Once you've set all the properties you need to set, use the `Adjust.trackEvent()` method to send the `AdjustEvent` instance to Adjust. When Adjust receives this object, it records the event information for you to report on.
+
+## [Event properties](event-properties)
+
+The `AdjustEvent` class contains properties which represent information about an event.
+
+<Callout type="seealso">
+
+See the [`AdjustEvent` class reference](/en/sdk/react-native/features/events/reference) for additional details about each property and method of the `AdjustEvent` class.
+
+</Callout>
+
+### [Event revenue](event-revenue)
+
+If your event is associated with in-app revenue, you can record the revenue amount and currency code by calling the `setRevenue()` method on your `AdjustEvent` instance.
+
+### [Callback parameters](callback-parameters)
+
+If you [register a callback URL](https://help.adjust.com/en/article/set-up-callbacks) in the Adjust dashboard, Adjust sends a GET request to your callback URL when it receives event information from the Adjust SDK.
+
+You can configure callback parameters to send to your servers with each event. The SDK appends event parameters to your [callback URL](https://help.adjust.com/en/article/raw-data-exports). You can use this information to analyze your users' in-app behavior with your BI system. You can add multiple callback parameters to each event.
+
+When you send your `AdjustEvent` instance to Adjust, Adjust sends a request to your URL with the callback parameters. For example, if you register the URL `https://www.mydomain.com/callback`, your callback looks like this:
+
+```http
+https://www.mydomain.com/callback?key=value
+```
+
+<Callout type="note">
+
+Adjust doesn't store your custom callback parameters. Custom parameters are only appended to your callback URL.
+
+</Callout>
+
+If you use CSV uploads, make sure to add the parameters to your CSV definition.
+
+Adjust supports many placeholders which you can use to pass information from the SDK to your URL. For example, the `{idfa}` placeholder for iOS and the `{gps_adid}` placeholder for Android. The `{publisher_parameter}` placeholder presents all callback parameters in a single string.
+
+<Callout type="seealso">
+
+You can read more about using URL callbacks, including a full list of available values, in the [callbacks guide](https://help.adjust.com/en/article/callbacks).
+
+</Callout>
+
+### [Partner parameters](partner-parameters)
+
+You can send extra information to your network partners by adding [partner parameters](https://help.adjust.com/en/article/data-sharing-ad-network#map-parameters).
+
+Adjust sends partner parameters to [external partners](https://help.adjust.com/en/article/integrated-partners) you have set up. This information is useful for more granular analysis and retargeting purposes. Adjust's servers forward these parameters once you have set them up and enabled them for a partner. You can add multiple partner parameters to each event.
+
+<Callout type="note">
+
+Partner parameters don't appear in raw data by default. You can add the `{partner_parameters}` placeholder to receive them as a single string.
+
+</Callout>
+
+### [Revenue event deduplication ID](revenue-event-deduplication-id)
+
+To ensure that revenue events aren't duplicated, you can set a unique identifier for each `AdjustEvent` instance to deduplicate revenue events. The SDK stores the last 10 identifiers and skips revenue events with duplicate transaction IDs.
+
+### [Callback ID](callback-id)
+
+You can add a custom `string` identifier to each event you want to measure. Adjust's servers can report on this identifier in event callbacks. This enables you to keep track of which events have been successfully measured.
+
+## [Next steps](next-steps)
+
+1. Follow the [Event sending tutorial](/en/sdk/react-native/features/events/tutorial) to learn how to construct an `AdjustEvent` instance and send it to Adjust.
+2. Check the [`AdjustEvent` class reference](/en/sdk/react-native-features/events/reference) for more detailed technical information about the `AdjustEvent` class.
