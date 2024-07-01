@@ -1,20 +1,14 @@
 import type { MarkdownHeading } from "astro";
 
 const HEADER_HEIGHT = 150;
-let versionNumber = "";
 
-export const getTocHeadings = (headers: Element[], versionNumber?: string): MarkdownHeading[] => {
+export const getTocHeadings = (headers: Element[]): MarkdownHeading[] => {
   return headers.map((header) => {
     const text = header.textContent ?? "";
     let slug = header.id;
 
     if (!slug) {
       slug = text.toLowerCase().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-");
-      header.id = slug;
-    }
-
-    if (versionNumber && !slug.startsWith(versionNumber)) {
-      slug = `${versionNumber}-${slug}`;
       header.id = slug;
     }
 
@@ -26,6 +20,18 @@ export const getTocHeadings = (headers: Element[], versionNumber?: string): Mark
   });
 };
 
+const removeHeaderIds = () => {
+  const headers = Array.from(document.querySelectorAll(
+    '.article-content h1, .article-content h2:not([class^="Banner__"]), .article-content h3, .article-content h4'
+  ));
+  headers.filter((header) => {
+    const parentDiv = header.closest("sdk-version-block") || header.closest("api-version-block");
+    if (parentDiv && parentDiv.matches(".hidden")) {
+      header.removeAttribute("id")
+    }
+  })
+}
+
 export const getHeaders = (): Element[] | false => {
   const headers = Array.from(document.querySelectorAll(
     '.article-content h1, .article-content h2:not([class^="Banner__"]), .article-content h3, .article-content h4'
@@ -35,7 +41,6 @@ export const getHeaders = (): Element[] | false => {
   const versionedHeaders = headers.filter((header) => {
     const parentDiv = header.closest("sdk-version-block") || header.closest("api-version-block");
     if (parentDiv && !parentDiv.matches(".hidden")) {
-      versionNumber = parentDiv.getAttribute("data-message")!;
       return true;
     }
     return false;
@@ -59,8 +64,8 @@ export const updateHeadings = (): void => {
     [toc, bigToc, mobileToc].forEach(el => el.classList.add("!hidden"));
     return;
   }
-
-  const headings = getTocHeadings(headers, versionNumber);
+  removeHeaderIds();
+  const headings = getTocHeadings(headers);
 
   if (headings.length === 0) {
     [toc, bigToc, mobileToc].forEach(el => el.classList.add("!hidden"));
