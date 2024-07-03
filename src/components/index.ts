@@ -1,6 +1,7 @@
 export { default as ApiVersion } from "./ApiVersion.astro";
 export { default as Accordion } from "./Accordion.astro";
 export { default as Callout } from "./Callout.astro";
+export { default as Changelog } from "./Changelog.astro";
 export { default as CodeBlock } from "./CodeBlock.astro";
 export { default as FigmaEmbed } from "./FigmaEmbed/FigmaEmbed.astro";
 export { default as ListColumns } from "./ListColumns.astro";

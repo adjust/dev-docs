@@ -1,0 +1,47 @@
+---
+import { Markdown } from "@astropub/md";
+
+export interface Props {
+  url: string;
+}
+
+const { url } = Astro.props as Props;
+
+const token: string | undefined = import.meta.env.GITHUB_TOKEN;
+
+if (!token) {
+  throw new Error(
+    `Missing GitHub API token. Check the .env.sample file for information.`,
+  );
+}
+
+const content = await fetch(url, {
+  method: "GET",
+  headers: { Authorization: `Bearer ${token}` },
+})
+  .catch((err) => {
+    throw new Error(`Error fetching content from ${url}. ${err}`);
+  })
+  .then((res) => res.text());
+
+const insertLinks = (markdown: string): string => {
+  let lastVersion = "";
+  const lines = markdown.split("\n");
+  const modifiedLines = lines.map((line) => {
+    const versionMatch = line.match(/^### Version (\d+\.\d+\.\d+)/);
+    if (versionMatch) {
+      lastVersion = versionMatch[1];
+    }
+    if (line === "---" && lastVersion) {
+      const link = `https://github.com/adjust/android_sdk/releases/tag/v${lastVersion} `;
+      return `[v${lastVersion} release page](${link})<span><svg style="margin-bottom:0.35rem;margin-left:0.15rem;margin-right:0.15rem;display:inline-block" width="16" height="16"><use href="#external-link"></use></svg></span>\n\n---`;
+    }
+    return line;
+  });
+  return modifiedLines.join("\n");
+};
+
+const modifiedContent = insertLinks(content);
+---
+
+<Markdown of={modifiedContent} />

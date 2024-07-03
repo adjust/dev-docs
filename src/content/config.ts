@@ -18,7 +18,7 @@ const docs = defineCollection({
       })
       .optional(),
     ogLocale: z.string().optional(),
-    type: z.enum(["category"]).optional(),
+    type: z.enum(["category", "changelog"]).optional(),
     multiVersion: z.boolean().default(false),
   }),
 });

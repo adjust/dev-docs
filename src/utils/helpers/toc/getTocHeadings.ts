@@ -34,24 +34,28 @@ const removeHeaderIds = () => {
   })
 }
 
-export const getHeaders = (): Element[] | false => {
+export const getHeaders = (changelog: boolean): Element[] | false => {
   const headers = Array.from(document.querySelectorAll(
     '.article-content h1, .article-content h2:not([class^="Banner__"]), .article-content h3, .article-content h4'
   ));
 
-  // Check for versioned headers
-  const versionedHeaders = headers.filter((header) => {
-    const parentDiv = header.closest("sdk-version-block") || header.closest("api-version-block");
-    if (parentDiv && !parentDiv.matches(".hidden")) {
-      return true;
-    }
-    return false;
-  });
+  if (!changelog) {
 
-  return versionedHeaders.length > 0 ? versionedHeaders : false;
+    // Check for versioned headers
+    const versionedHeaders = headers.filter((header) => {
+      const parentDiv = header.closest("sdk-version-block") || header.closest("api-version-block");
+      if (parentDiv && !parentDiv.matches(".hidden")) {
+        return true;
+      }
+      return false;
+    });
+
+    return versionedHeaders.length > 0 ? versionedHeaders : false;
+  }
+  return headers;
 };
 
-export const updateHeadings = (): void => {
+export const updateHeadings = (changelog: boolean): void => {
   const toc = document.getElementById("toc");
   const bigToc = document.getElementById("big-toc");
   const mobileToc = document.getElementById("toc-mobile");
@@ -59,14 +63,15 @@ export const updateHeadings = (): void => {
   const tocMobileList = document.getElementById("toc-mobile-list");
   const bigTocList = document.getElementById("big-toc-list");
 
-  let headers = getHeaders();
+  let headers = getHeaders(changelog);
   if (!toc || !bigToc || !mobileToc || !tocList || !tocMobileList || !bigTocList) return;
 
   if (headers === false) {
     [toc, bigToc, mobileToc].forEach(el => el.classList.add("!hidden"));
     return;
   }
-  removeHeaderIds();
+  if (!changelog) removeHeaderIds();
+
   const headings = getTocHeadings(headers);
 
   if (headings.length === 0) {
