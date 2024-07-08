@@ -11,6 +11,7 @@ import rehypeExternalLinks from 'rehype-external-links';
 import remarkHeaderLinkToId from "./src/integrations/remarkHeaderLinkToId";
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 
+console.log(`${import.meta.env.VITE_GITHUB_TOKEN ? "Token found" : "No token found"}`)
 const versions = await fetchVersions()
 
 // https://astro.build/config
