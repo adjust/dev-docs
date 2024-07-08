@@ -2,7 +2,7 @@
 /// <reference path="../.astro/types.d.ts" />
 
 interface ImportMetaEnv {
-  readonly GITHUB_TOKEN: string | undefined;
+  readonly VITE_GITHUB_TOKEN: string | undefined;
   readonly HELP_CENTER_ALGOLIA_APP_ID: string;
   readonly HELP_CENTER_ALGOLIA_API_KEY: string;
   readonly HELP_CENTER_ALGOLIA_INDEX_NAME: string;
