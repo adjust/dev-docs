@@ -1,0 +1,100 @@
+---
+title: "설치 기록 테스트"
+description: "Adjust SDK가 Adjust로 설치 정보를 전송하는지 테스트"
+slug: "en/sdk/testing/install-recording"
+sidebar-label: "설치 기록"
+sidebar-position: 1
+---
+설치는 앱에서 기록되어야 하는 가장 중요한 지표입니다. Adjust SDK는 사용자가 기기에 앱을 설치하면 설치를 기록하고,  Adjust는 해당 설치에 기여한 캠페인에 설치를 어트리뷰션합니다. Adjust의 테스팅 콘솔을 사용하면 프로덕션 모드를 실행하기 전에 설치 정보를 검증하고, 모든 정보가 올바르게 수신되는지 확인할 수 있습니다.
+
+테스트할 수 있는 설치 유형은 두 가지입니다.
+
+* **오가닉** – 사용자와 캠페인 링크의 상호 작용 없이 발생한 설치
+* **비 오가닉** – 사용자가 캠페인 링크와 상호 작용하여 발생한 설치
+
+<callout type="important"> 
+
+테스트가 완료되면 SDK 환경을 반드시 **Production** 으로 변경하여, 앱이 프로덕션 모드에서 작동하도록 하시기 바랍니다.
+</Callout> 
+
+SDK는 다음의 툴을 통해 테스트할 수 있습니다.
+
+* Adjust 테스팅 콘솔은 [AppView](https://help.adjust.com/en/article/testing-console)에서 사용 가능합니다.
+* [Adjust 디바이스 API](/en/api/device-api/inspect).
+* IDE의 로그 아웃풋.
+
+[오가닉 설치](organic-installs-1)
+----------------------------
+
+앱의 오가닉 설치 테스트 방법
+
+1. 플랫폼별 Adjust SDK 시작 가이드를 참조하여 연동을 완료합니다.
+2. **샌드박스** 모드로 환경을 설정하여, 앱이 테스트용 콘솔로만 정보를 전송하도록 합니다.
+3. 로그 레벨을 **verbose** 로 설정하여 앱으로부터의 모든 로깅 정보를 포착합니다.
+4. 테스트용 기기 또는 에뮬레이션 기기를 설정한 뒤 기기의 광고 ID를 찾습니다. 광고 ID는 [Adjust Insights 앱](https://apps.apple.com/us/app/adjust-insights/id1125517808)을 설치하여 찾을 수 있습니다.
+5. 이전에 테스트 목적으로 해당 기기를 사용한 적이 있다면 다음을 수행하시기 바랍니다. 
+   1. 테스트용 기기에서 앱을 삭제합니다.
+   2. 테스팅 콘솔에서 기기의 광고 ID를 삭제합니다. [AppView의 테스팅 콘솔 페이지](https://help.adjust.com/en/article/testing-console#forget-device)의 지침을 참고하시기 바랍니다.
+   3. 대안으로, [forget device 엔드포인트](/en/api/device-api/forget/)를 호출하여 기기의 기존 정보를 삭제할 수도 있습니다.
+
+6. Adjust SDK가 포함된 앱의 테스트 버전을 다운로드하고, 실행합니다.
+7. 테스팅 콘솔을 실행한 후, 기기의 광고 ID 상태를 확인합니다.
+
+[비 오가닉 설치](non-organic-installs)
+--------------------------------
+
+앱의 비 오가닉 설치 테스트
+
+1. 플랫폼별 Adjust SDK 시작 가이드를 참조하여 연동을 완료합니다.
+
+2. **샌드박스** 모드로 환경을 설정하여, 앱이 테스트용 콘솔로만 정보를 전송하도록 합니다.
+
+3. 로그 레벨을 **verbose** 로 설정하여 앱으로부터의 모든 로깅 정보를 포착합니다.
+
+4. 테스트용 기기 또는 에뮬레이션 기기를 설정한 뒤 기기의 광고 ID를 찾습니다. 광고 ID는 [Adjust Insights 앱](https://apps.apple.com/us/app/adjust-insights/id1125517808)을 설치하여 찾을 수 있습니다.
+
+5. 이전에 테스트 목적으로 해당 기기를 사용한 적이 있다면 다음을 수행하시기 바랍니다.
+
+   1. 테스트용 기기에서 앱을 삭제합니다.
+   2. 테스팅 콘솔에서 기기의 광고 ID를 삭제합니다. [AppView의 테스팅 콘솔 페이지](https://help.adjust.com/en/article/testing-console-suite#forget-device)의 지침을 참고하시기 바랍니다.
+   3. 대안으로, [forget device 엔드포인트](/en/api/device-api/forget/)를 호출합니다.
+
+6. [테스트 링크 생성](https://help.adjust.com/en/article/links).
+
+   1. 확률론적 모델링을 테스트하려면, **앱 수준** 또는 링크 수준에서 클릭에 대한 [확률론적 모델링](https://help.adjust.com/en/article/attribution-settings-app-level)을 활성화하시기 바랍니다.
+   2. [기기 ID 매칭](https://help.adjust.com/en/article/attribution-methods#deterministic-attribution)을 테스트하려면, 기기의 광고 ID를 캠페인 URL에 다음과 같이 추가합니다. 
+
+   ```text
+   https://app.adjust.com/abc1234?idfa=test_device_id
+   ```
+
+   ```text
+   https://app.adjust.com/abc1234?gps_adid=test_device_id
+   ```
+
+7. 웹 환경에서 테스트 트래커를 설정합니다.
+
+8. 테스트 기기에서 테스트 트래커 링크를 선택합니다.
+
+9. Adjust SDK가 포함된 앱의 테스트 버전을 다운로드하고, 실행합니다.
+
+[설치 성공](successful-install)
+---------------------------
+
+### [테스팅 콘솔](testing-console-1)
+
+테스팅 콘솔을 실행한 후, 기기의 광고 ID 상태를 확인합니다. 설치 데이터가 성공적으로 기록된 경우, 기기의 광고 ID에 대한 입력 내용을 확인할 수 있습니다.
+
+![Adjust 테스팅 콘솔](@images/sdk-testing/install/testing-console.png)
+
+### [IDE 로깅](ide-logging)
+
+IDE에서 로깅 콘솔을 실행하고, `Adjust`에 의해 로그된 이벤트를 찾습니다. 설치가 성공적으로 기록된 경우, **Install tracked** 라는 메시지가 로그된 것을 확인할 수 있습니다.
+
+[설치 실패](unsuccessful-install)
+-----------------------------
+
+설치가 실패한 경우, 테스트용 콘솔에는 아무것도 기록되지 않습니다. 기기의 광고 ID를 검색하면, 콘솔 아웃풋에 **Advertising ID not found** 라는 메시지가 나타납니다.
+
+플랫폼별 시작 가이드의 모든 단계를 수행하였는지 확인하시고, 문제가 계속되는 경우 Adjust 담당자나 [Adjust 서포트팀](mailto:support@adjust.com)에 문의하시기 바랍니다.
+
