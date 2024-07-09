@@ -1,6 +1,6 @@
 import { Octokit } from "@octokit/core";
 
-const octokit = new Octokit({ auth: import.meta.env.GITHUB_TOKEN });
+const octokit = new Octokit({ auth: import.meta.env.VITE_GITHUB_TOKEN });
 
 let versionReplacements: VersionMap = {
    "android": {
