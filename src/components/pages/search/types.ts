@@ -8,4 +8,5 @@ export interface TypesenseKeys {
   host: string;
   apiKey: string;
   indexName: string;
+  preset: string;
 }

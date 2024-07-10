@@ -9,6 +9,7 @@ interface ImportMetaEnv {
   readonly DEV_HUB_TYPESENSE_HOST: string;
   readonly DEV_HUB_TYPESENSE_API_KEY: string;
   readonly DEV_HUB_TYPESENSE_INDEX_NAME: string;
+  readonly DEV_HUB_TYPESENSE_SEARCH_PRESET: string;
 }
 
 interface ImportMeta {

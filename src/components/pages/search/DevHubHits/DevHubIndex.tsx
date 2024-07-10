@@ -1,8 +1,11 @@
 import { Configure, InstantSearch } from "react-instantsearch";
 import { useEffect, useState, type FC } from "react";
-import TypesenseInstantSearchAdapter from "typesense-instantsearch-adapter";
 
-import { getDevHubFilters, getSearchParams } from "../utils";
+import {
+  getDevHubFilters,
+  getSearchParams,
+  getTypesenseClient,
+} from "../utils";
 import DevHubHits from "./DevHubHits";
 import Pagination from "../Pagination";
 
@@ -11,23 +14,8 @@ import type { DevHubIndexProps } from "./types";
 const DevHubIndex: FC<DevHubIndexProps> = ({ typesenseKeys, lang }) => {
   const { query, page } = getSearchParams();
   const [searchState, setSearchState] = useState({ query, page });
-  const typesenseAdapter = new TypesenseInstantSearchAdapter({
-    server: {
-      apiKey: typesenseKeys.apiKey, // search-only client key
-      nodes: [
-        {
-          host: typesenseKeys.host, // typesense cloud link
-          port: 443,
-          protocol: "https",
-        },
-      ],
-    },
-    additionalSearchParameters: {
-      preset: "dev_hub_preset",
-    },
-  });
 
-  const typesenseClient = typesenseAdapter.searchClient;
+  const typesenseClient = getTypesenseClient(typesenseKeys);
 
   useEffect(() => {
     const handleSearchChange = () => {
