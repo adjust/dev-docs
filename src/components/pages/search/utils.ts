@@ -57,8 +57,8 @@ export const getDevHubFilters = (lang: keyof Locales) => {
   }
 
   if (!categoryFilter || !platformFilter) {
-    return `lang:${lang} AND ${categoryFilter} ${platformFilter}`;
+    return `lang:${lang} && ${categoryFilter} ${platformFilter}`;
   }
 
-  return `lang:${lang} AND ${categoryFilter} AND ${platformFilter}`;
+  return `lang:${lang} && ${categoryFilter} && ${platformFilter}`;
 };

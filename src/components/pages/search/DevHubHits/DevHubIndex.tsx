@@ -1,16 +1,33 @@
-import algoliasearch from "algoliasearch";
 import { Configure, InstantSearch } from "react-instantsearch";
 import { useEffect, useState, type FC } from "react";
+import TypesenseInstantSearchAdapter from "typesense-instantsearch-adapter";
+
 import { getDevHubFilters, getSearchParams } from "../utils";
 import DevHubHits from "./DevHubHits";
 import Pagination from "../Pagination";
 
 import type { DevHubIndexProps } from "./types";
 
-const DevHubIndex: FC<DevHubIndexProps> = ({ algoliaKeys, lang }) => {
+const DevHubIndex: FC<DevHubIndexProps> = ({ typesenseKeys, lang }) => {
   const { query, page } = getSearchParams();
   const [searchState, setSearchState] = useState({ query, page });
-  const searchClient = algoliasearch(algoliaKeys.appId, algoliaKeys.apiKey);
+  const typesenseAdapter = new TypesenseInstantSearchAdapter({
+    server: {
+      apiKey: typesenseKeys.apiKey, // search-only client key
+      nodes: [
+        {
+          host: typesenseKeys.host, // typesense cloud link
+          port: 443,
+          protocol: "https",
+        },
+      ],
+    },
+    additionalSearchParameters: {
+      preset: "dev_hub_preset",
+    },
+  });
+
+  const typesenseClient = typesenseAdapter.searchClient;
 
   useEffect(() => {
     const handleSearchChange = () => {
@@ -30,14 +47,14 @@ const DevHubIndex: FC<DevHubIndexProps> = ({ algoliaKeys, lang }) => {
 
   return (
     <InstantSearch
-      indexName={algoliaKeys.indexName}
-      searchClient={searchClient}
+      indexName={typesenseKeys.indexName}
+      searchClient={typesenseClient}
       future={{ preserveSharedStateOnUnmount: false }}
     >
       <Configure
         query={searchState.query}
         filters={getDevHubFilters(lang)}
-        index={algoliaKeys.indexName}
+        index={typesenseKeys.indexName}
         hitsPerPage={6}
         page={searchState.page}
       />
