@@ -1,0 +1,137 @@
+---
+title: "获取渠道链接"
+description: "使用此终端，为您指定的应用获得渠道层链接。"
+slug: "zh/api/campaign-api/v2/get-links"
+sidebar-position: 2
+sidebar-label: "获取链接"
+---
+
+使用此终端，为您指定的应用获得渠道层链接。
+
+<CodeBlock title="终端" highlight="v2/apps/{app_token}/trackers">
+
+```http
+GET https://api.adjust.com/public/v2/apps/{app_token}/trackers
+```
+
+</CodeBlock>
+
+## [获取链接](fetch-links)
+
+返回与应用关联的渠道层级链接列表。
+
+<Table>
+
+| 参数          | 数据类型  | 位置 | 描述                                   |
+| ------------- | --------- | ---- | -------------------------------------- |
+| `app_token`\* | `String`  | Path | 应用的 12 位数标识符。                 |
+| `cursor`      | `String`  | 查询 | 包含结果集合的唯一游标位置。           |
+| `limit`       | `Integer` | 查询 | 响应中包含的最大元素数，须为正整数值。 |
+
+</Table>
+
+### [分页](pagination)
+
+来自此终端的结果会通过游标进行分页。每页返回前一页和后一页的位置。您可以将这些信息包含在调用中来返回指定页。您还可以限定每页包含的项目数量。默认上限为 `50`。
+
+每个结果页都包含一个"paging"对象，其中包含游标位置。您可以使用这些游标位置来在不同页间程序化移动。例如，第一页可能包含如下结果：
+
+<CodeBlock title="分页示例">
+
+```json
+"paging": {
+   "next": "https://api.adjust.com/public/v2/apps/yxs12pfewq/trackers?cursor=g2wAAAACYhW1_gxkAANuaWxq&limit=50",
+   "cursor": "g2wAAAACYhW1_gxkAANuaWxq"
+}
+```
+
+</CodeBlock>
+
+要前往第二页，请使用`next`链接来返回来自下一个指定`cursor`位置的结果。
+
+<CodeBlock title="cURL" highlight="cursor=g2wAAAACYhW1_gxkAANuaWxq">
+
+```console
+$ curl "https://api.adjust.com/public/v2/apps/yxs12pfewq/trackers?cursor=g2wAAAACYhW1_gxkAANuaWxq&limit=50"
+```
+
+</CodeBlock>
+
+### [响应参数](response-parameters)
+
+<Table search>
+
+| 字段                | 数据类型  | 描述                                                                                                         | 示例                                        |
+| ------------------- | --------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------- |
+| `name`              | `String`  | 链接的名称                                                                                                   | `Adroll`                                    |
+| `label`             | `String`  | 链接名称中的最后一个层级部分。                                                                               | `Adroll`                                    |
+| `level`             | `Integer` | 链接的层级。<br/><ul><li>渠道 = `1`</li><li>推广活动 = `2`</li><li>广告组 = `3`</li><li>素材 = `4`</li></ul> | `1`                                         |
+| `archived`          | `Boolean` | 链接是否已被归档。                                                                                           | `true`                                      |
+| `has_subtrackers`   | `Boolean` | 链接是否有子链接。                                                                                           | `true`                                      |
+| `partner_id`        | `Integer` | 附加在链接上的合作伙伴 ID。                                                                                  | `3`                                         |
+| `cost_data_enabled` | `Boolean` | 链接是否启用了 cost_data。                                                                                   | `false`                                     |
+| `impression_url`    | `String`  | 展示监测链接的 URL。                                                                                         | `https://view.adjust.com/impression/abc123` |
+| `url`               | `String`  | 监测链接的 URL。                                                                                             | `https://app.adjust.com/abc123`             |
+| `click_url`         | `String`  | 点击监测链接的 URL。                                                                                         | `https://app.adjust.com/abc123`             |
+
+</Table>
+<CodeBlock title="成功响应">
+
+```json
+{
+   "name": "String",
+   "token": "String",
+   "label": "String",
+   "level": 1,
+   "archived": false,
+   "has_subtrackers": false,
+   "partner_id": 3,
+   "cost_data_enabled": false,
+   "url": "String",
+   "click_url": "String",
+   "impression_url": "String"
+}
+```
+
+</CodeBlock>
+
+## [示例](example)
+
+<CodeBlock title="cURL" highlight="gwzpeepw8uf8">
+
+```console
+$ curl \
+--header 'Authorization: Token token={API_TOKEN}' \
+-L -X GET 'https://api.adjust.com/public/v2/apps/gwzpeepw8uf8/trackers?limit=1'
+```
+
+</CodeBlock>
+<CodeBlock title="成功响应">
+
+```json
+{
+   "data": {
+      "paging": {
+         "cursor": "g2wAAAACYhW1_gxkAANuaWxq",
+         "next": "https://api.adjust.com/public/v2/apps/gwzpeepw8uf8/trackers?after=g2wAAAACYhW1_gxkAANuaWxq&limit=1"
+      },
+      "items": [
+         {
+            "archived": false,
+            "has_subtrackers": false,
+            "partner_id": 3,
+            "cost_data_enabled": false,
+            "label": "Adroll",
+            "level": 1,
+            "name": "Adroll",
+            "token": "abc123",
+            "url": "https://app.adjust.com/abc123",
+            "click_url": "https://app.adjust.com/abc123?campaign={campaign_name}&idfa={idfa}&deeplink=http%3A%2F%2Fa.b%2Fc%3Fd%3D1%26e%3D%%MACROS%%",
+            "impression_url": "https://s2s.adjust.com/impression/abc123?campaign={campaign_name}&idfa={idfa}&s2s=1"
+         }
+      ]
+   }
+}
+```
+
+</CodeBlock>

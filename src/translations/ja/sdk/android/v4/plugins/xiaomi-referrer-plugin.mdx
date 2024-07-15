@@ -1,0 +1,126 @@
+---
+title: "Xiaomiリファラー"
+description: "Xiaomiリファラープラグインを使用して、Xiaomiの情報をAdjustにパスします。"
+slug: "ja/sdk/android/v4/plugins/xiaomi-referrer"
+---
+
+Xiaomiリファラープラグインは、Adjust SDKがデバイス上のXiaomiインストールリファラー値を読み取ることを可能にします。その後、SDKはこの情報をインストールペイロードの一部として、Adjustサーバーに送信します。
+
+Xiaomiインストールリファラーは、Xiaomiインストールリファラーライブラリを使用する全てのデバイスで利用が可能です。
+
+Androidの開始ガイドに従ってAdjust SDKをアプリに実装してください。
+
+## [Xiaomiリファラープラグインのインストール](install-the-xiaomi-referrer-plugin)
+
+Xiaomiリファラープラグインをインストールする方法は2つあります。
+
+### [Maven](maven)
+
+Adjust SDK宣言にある`build.gradle`ファイルに以下のdependencyを追加してください。
+
+<CodeBlock title="build.gradle">
+
+```groovy
+implementation 'com.adjust.sdk:adjust-android:$ANDROID_V4_VERSION'
+
+implementation 'com.adjust.sdk:adjust-android-xiaomi-referrer:$ANDROID_V4_VERSION'
+
+```
+
+</CodeBlock>
+
+### [JARファイル](jar-file)
+
+XiaomiリファラープラグインについてはGitHub[リリースページ](https://github.com/adjust/android_sdk/releases)をご覧ください。
+
+## [Xiaomiインストールリファラーライブラリを追加](add-the-xiaomi-install-referrer-library)
+
+アプリがリファラー値を読み取るには、Xiaomiインストールリファラーを追加する必要があります。
+
+### [Maven](maven-1)
+
+Adjust SDKのdeclarationの後の`build.gradle`ファイルに以下のdependencyを追加してください。
+
+<CodeBlock title="build.gradle">
+
+```groovy
+implementation 'com.miui.referrer:homereferrer:1.0.0.6'
+```
+
+</CodeBlock>
+
+詳細は[Xiaomiインストールリファラーライブラリドキュメント](https://global.developer.mi.com/document?doc=service.getAppsReferral)をご覧ください。
+
+## [Proguardの設定](proguard-settings)
+
+Proguardを使用している場合は、ビルド時に重要なクラスが削除されないようにするためにルールを追加してください。
+
+全てのAdjustクラスを保存するため、以下のルールを追加してください。
+
+<CodeBlock title="Proguard.pro">
+
+```java
+-keep public class com.adjust.sdk.** { *; }
+```
+
+</CodeBlock>
+
+Xiaomiインストールリファラーライブラリを保存するため、以下のルールを追加してください。
+
+<CodeBlock title="Proguard.pro">
+
+```java
+-keep class com.miui.referrer.** {*;}
+```
+
+</CodeBlock>
+
+## [プラグインを使用する](use-the-plugin)
+
+Xiaomiリファラープラグインは、デフォルトで有効になっています。`AdjustXiaomiReferrer`クラスメソッドを使用して、Xiaomiインストールリファラー情報の読み取りを有効または無効にすることができます。
+
+インストールリファラーの読み取りを **無効化** するには、SDKを初期化する **前** に`AdjustXiaomiReferrer.doNotReadXiaomiReferrer()`を呼び出します。
+
+<Tabs>
+<Tab title="Java" sync="java">
+
+```java
+AdjustXiaomiReferrer.doNotReadXiaomiReferrer();
+//...
+Adjust.onCreate(config);
+```
+
+</Tab>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+AdjustXiaomiReferrer.doNotReadXiaomiReferrer();
+//...
+Adjust.onCreate(config);
+```
+
+</Tab>
+</Tabs>
+
+この情報の読み取りを **有効化** するには、SDKを初期化する **前に** `AdjustXiaomiReferrer.readXiaomiReferrer(applicationContext)`を呼び出します。
+
+<Tabs>
+<Tab title="Java" sync="java">
+
+```java
+AdjustXiaomiReferrer.readXiaomiReferrer(applicationContext);
+//...
+Adjust.onCreate(config);
+```
+
+</Tab>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+AdjustXiaomiReferrer.readXiaomiReferrer(applicationContext);
+//...
+Adjust.onCreate(config);
+```
+
+</Tab>
+</Tabs>

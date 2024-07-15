@@ -1,0 +1,144 @@
+---
+title: "Facebook 픽셀"
+description: "Facebook 픽셀 플러그인을 사용하여 Facebook 픽셀 정보를 Adjust로 전달합니다."
+slug: "ko/sdk/android/v5/plugins/facebook-pixel"
+---
+
+[Facebook 픽셀](https://www.facebook.com/business/help/952192354843755?id=1205376682832142)은 Facebook의 웹 전용 애널리틱스 툴입니다. Facebook SDK v4\.34부터 앱의 웹뷰에서 픽셀 이벤트를 기록하고 Facebook 픽셀 이벤트를 Facebook 앱 이벤트로 전환할 수 있습니다. 이를 위해 Hybrid Mobile App Events를 사용해야 합니다.
+
+또한, 이제 Facebook SDK와 별도의 연동 없이 Facebook 픽셀을 Adjust SDK와 사용할 수 있습니다.
+
+## [예시 앱](example-app)
+
+-  [Android 예시 앱](https://github.com/adjust/android_sdk/tree/master/Adjust/example-app-fbpixel)
+
+## [Facebook 연동](facebook-integration)
+
+### [Facebook 앱 ID](facebook-app-id)
+
+Facebook 픽셀을 사용하려면 다음의 단계를 수행하시기 바랍니다:
+
+[Facebook의 Android SDK 가이드](https://developers.facebook.com/docs/android/)에 명시된 바와 같이, Facebook 앱 ID를 앱에 다음과 같이 추가해야 합니다.
+
+1. `facebook_app_id` 이름의 새 문자열을 추가합니다. Facebook 앱 ID를 값으로 추가합니다.
+
+2. `strings.xml` 파일을 실행합니다. Path 예시: `/app/src/main/res/values/strings.xml`.
+
+3. `AndroidManifest.xml`을 엽니다.
+
+4. uses\-permission 요소를 매니페스트에 추가합니다.
+
+   <CodeBlock title="AndroidManifest.xml">
+
+   ```xml
+   <uses-permission android:name="android.permission.INTERNET"/>
+   ```
+
+   </CodeBlock>
+
+5. meta\-data 요소를 application 요소에 추가합니다.
+
+   <CodeBlock title="AndroidManifest.xml">
+
+   ```xml
+   <application android:label="@string/app_name" ...>
+   ...
+   <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
+   ...
+   </application>
+   ```
+
+   </CodeBlock>
+
+### [Facebook 픽셀 구성](facebook-pixel-configuration)
+
+Facebook 픽셀 연동에 관한 Facebook의 가이드를 참조하시기 바랍니다. 자바스크립트 코드는 다음과 같아야 합니다:
+
+```html
+<!-- Facebook Pixel Code -->
+<script>
+   !function(f,b,e,v,n,t,s)
+     ...
+   fbq('init', {YOUR_PIXEL_ID});
+   fbq('track', 'PageView');
+</script>
+...
+<!-- End Facebook Pixel Code -->
+```
+
+다음으로 Facebook 픽셀 코드를 업데이트합니다. 이에 관한 설명은 [Update Your Pixel](https://developers.facebook.com/docs/app-events/hybrid-app-events) 아래의 **Hybrid Mobile App Events guide** 에서 찾을 수 있습니다.
+
+```html
+<script>
+   !function(f,b,e,v,n,t,s)
+     ...
+   fbq('init', {YOUR_PIXEL_ID});
+   fbq('set', 'mobileBridge', {YOUR_PIXEL_ID}, {YOUR_FB_APP_ID});
+</script>
+```
+
+<Callout type="important">
+
+`init`을 호출한 뒤 바로 `set`을 호출해야 합니다. Facebook이 제공한 스니펫은 `track` 메서드를 포함합니다. 이 메서드를 사용하여 `init` 메서드를 호출한 뒤 페이지 뷰 이벤트를 기록할 수 있습니다. 뷰 이벤트를 기록하려면 `set`을 `init`과 `track` 사이에 호출해야 합니다.
+
+</Callout>
+
+## [Adjust SDK 연동](adjust-sdk-integration)
+
+### [웹뷰 증강](augment-the-web-view)
+
+Android 웹뷰 앱에 대한 연동 가이드를 참조하시기 바랍니다. 웹뷰 브릿지를 로딩할 때 `augmentHybridWebView` 메서드에 콜을 추가합니다.
+
+```java
+AdjustBridge.registerAndGetInstance(getApplication(), webview);
+```
+
+이 단계에서는 반환된 인스턴스를 `adjustBridgeInstance`와 같이 저장하시기 바랍니다. 이후 이를 사용하여 Facebook 인터페이스를 다음과 같이 등록할 수 있습니다.
+
+```java
+adjustBridgeInstance.registerFacebookSDKJSInterface();
+```
+
+### [이벤트 이름 등록](event-name-registration)
+
+Adjust 웹 브릿지 SDK는 Facebook 픽셀 이벤트를 Adjust 이벤트로 해석합니다.
+
+이 기능을 사용하려면 Facebook 픽셀을 특정 Adjust 이벤트에 매핑해야 합니다. 또한 디폴트 Adjust 이벤트 토큰을 구성할 수도 있습니다. 디폴트 토큰을 사용하려면, Adjust SDK를 시작하고 픽셀 이벤트를 기록하기 전에 토큰을 추가해야 합니다. 이는 Facebook 픽셀 구성으로부터 복사하여 붙여넣기한 `fbq('track', 'PageView');` 이벤트를 포함합니다.
+
+이벤트를 매핑하려면 config 인스턴스에서 `addFbPixelMapping` 메서드를 호출합니다. Facebook 이벤트 이름과 Adjust 이벤트 토큰을 파라미터로 사용합니다. 이는 Adjust SDK 초기화 전에 호출해야 합니다.
+
+```js
+adjustConfig.addFbPixelMapping("fb_mobile_search", adjustEventTokenForSearch);
+adjustConfig.addFbPixelMapping(
+   "fb_mobile_purchase",
+   adjustEventTokenForPurchase,
+);
+```
+
+<Callout type="note">
+
+위의 예시는 `fbq('track', 'Search')`와 `fbq('track', 'Purchase')`를 기록할 때 매칭됩니다. Adjust는 Facebook SDK와 자바스크립트 이벤트 간 전면 매핑에 대한 액세스 권한이 없습니다.
+
+</Callout>
+<Table>
+
+| 픽셀 이벤트 이름     | Facebook 앱 이벤트 이름         |
+| -------------------- | ------------------------------- |
+| View Content         | fb_mobile_content_view          |
+| 검색                 | fb_mobile_search                |
+| 장바구니에 추가      | fb_mobile_add_to_cart           |
+| 위시리스트에 추가    | fb_mobile_add_to_wishlistt      |
+| InitiateCheckout     | fb_mobile_initiated_checkout    |
+| AddPaymentInfo       | fb_mobile_add_payment_info      |
+| 구매                 | fb_mobile_purchase              |
+| CompleteRegistration | fb_mobile_complete_registration |
+
+</Table>
+
+Adjust SDK는 특정 이벤트에 대해 디폴트 이벤트 토큰을 찾을 수 없는 경우 경고를 다음과 같이 로깅합니다.
+
+```text
+There is not a default event token configured or a mapping found for event named: 'fb_mobile_search'. It won't be tracked as an adjust event.
+```
+
+또한 구성된 매핑이 없는 경우 디폴트 Adjust 이벤트를 설정할 수 있습니다. 이를 위해 Adjust SDK를 초기화하기 전에 `adjustConfig.setFbPixelDefaultEventToken(defaultEventToken);`을 호출합니다.

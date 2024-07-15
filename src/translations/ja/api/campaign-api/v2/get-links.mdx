@@ -1,0 +1,137 @@
+---
+title: "ネットワークリンクの取得"
+description: "このエンドポイントを使用して、指定したアプリのネットワークレベルのリンクを取得します。"
+slug: "ja/api/campaign-api/v2/get-links"
+sidebar-position: 2
+sidebar-label: "リンクの取得"
+---
+
+このエンドポイントを使用して、指定したアプリのネットワークレベルのリンクを取得します。
+
+<CodeBlock title="エンドポイント" highlight="v2/apps/{app_token}/trackers">
+
+```http
+GET https://api.adjust.com/public/v2/apps/{app_token}/trackers
+```
+
+</CodeBlock>
+
+## [リンクの取得](fetch-links)
+
+アプリに関連するネットワークレベルのリンクの一覧を返します。
+
+<Table>
+
+| パラメーター  | データタイプ | 入力する値 | 説明                                                     |
+| ------------- | ------------ | ---------- | -------------------------------------------------------- |
+| `app_token`\* | `String`     | パス       | アプリの12桁の識別子。                                   |
+| `cursor`      | `String`     | クエリ     | 結果の収集を含む一意のカーソル位置。                     |
+| `limit`       | `Integer`    | クエリ     | レスポンスに含まれる要素の最大数。正の整数値であること。 |
+
+</Table>
+
+### [ページネーション](pagination)
+
+このエンドポイントからの結果は、カーソルでページネーションされます。各ページには、前ページと次ページの位置が返されます。特定のページを返すには、これらを含めて呼び出してください。また、1 ページに含まれるアイテムの数を制限することも可能です。デフォルトの上限は`50`になります。
+
+各結果のページには、カーソル位置を含むpagingオブジェクトが含まれます。このカーソル位置を使って、プログラム上でページ間を移動することができます。たとえば、最初のページには、次のような結果が含まれます。
+
+<CodeBlock title="ページネーションの例">
+
+```json
+"paging": {
+   "next": "https://api.adjust.com/public/v2/apps/yxs12pfewq/trackers?cursor=g2wAAAACYhW1_gxkAANuaWxq&limit=50",
+   "cursor": "g2wAAAACYhW1_gxkAANuaWxq"
+}
+```
+
+</CodeBlock>
+
+2ページ目に移動するには、`next`リンクをたどって、次に指定された`cursor`の位置から結果を返します。
+
+<CodeBlock title="cURL" highlight="cursor=g2wAAAACYhW1_gxkAANuaWxq">
+
+```console
+$ curl "https://api.adjust.com/public/v2/apps/yxs12pfewq/trackers?cursor=g2wAAAACYhW1_gxkAANuaWxq&limit=50"
+```
+
+</CodeBlock>
+
+### [レスポンスパラメーター](response-parameters)
+
+<Table search>
+
+| フィールド          | データタイプ | 説明                                                                                                                                         | 例                                          |
+| ------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| `name`              | `String`     | リンク名。                                                                                                                                   | `Adroll`                                    |
+| `label`             | `String`     | リンク名の最後のラベルの部分。                                                                                                               | `Adroll`                                    |
+| `level`             | `Integer`    | リンクのレベル。<br/><ul><li>ネットワーク = `1`</li><li>キャンペーン = `2`</li><li>アドグループ = `3`</li><li>クリエイティブ = `4`</li></ul> | `1`                                         |
+| `archived`          | `Boolean`    | リンクがアーカイブされたかどうか。                                                                                                           | `true`                                      |
+| `has_subtrackers`   | `Boolean`    | リンクにサブリンクがあるかどうか。                                                                                                           | `true`                                      |
+| `partner_id`        | `Integer`    | リンクに付与されるパートナーのID。                                                                                                           | `3`                                         |
+| `cost_data_enabled` | `Boolean`    | リンクでcost_dataが有効になっているかどうか。                                                                                                | `false`                                     |
+| `impression_url`    | `String`     | インプレッション計測対象のリンクURL                                                                                                          | `https://view.adjust.com/impression/abc123` |
+| `url`               | `String`     | 計測対象のリンクURL                                                                                                                          | `https://app.adjust.com/abc123`             |
+| `click_url`         | `String`     | クリック計測対象のリンクURL                                                                                                                  | `https://app.adjust.com/abc123`             |
+
+</Table>
+<CodeBlock title="成功レスポンス">
+
+```json
+{
+   "name": "String",
+   "token": "String",
+   "label": "String",
+   "level": 1,
+   "archived": false,
+   "has_subtrackers": false,
+   "partner_id": 3,
+   "cost_data_enabled": false,
+   "url": "String",
+   "click_url": "String",
+   "impression_url": "String"
+}
+```
+
+</CodeBlock>
+
+## [例](example)
+
+<CodeBlock title="cURL" highlight="gwzpeepw8uf8">
+
+```console
+$ curl \
+--header 'Authorization: Token token={API_TOKEN}' \
+-L -X GET 'https://api.adjust.com/public/v2/apps/gwzpeepw8uf8/trackers?limit=1'
+```
+
+</CodeBlock>
+<CodeBlock title="成功レスポンス">
+
+```json
+{
+   "data": {
+      "paging": {
+         "cursor": "g2wAAAACYhW1_gxkAANuaWxq",
+         "next": "https://api.adjust.com/public/v2/apps/gwzpeepw8uf8/trackers?after=g2wAAAACYhW1_gxkAANuaWxq&limit=1"
+      },
+      "items": [
+         {
+            "archived": false,
+            "has_subtrackers": false,
+            "partner_id": 3,
+            "cost_data_enabled": false,
+            "label": "Adroll",
+            "level": 1,
+            "name": "Adroll",
+            "token": "abc123",
+            "url": "https://app.adjust.com/abc123",
+            "click_url": "https://app.adjust.com/abc123?campaign={campaign_name}&idfa={idfa}&deeplink=http%3A%2F%2Fa.b%2Fc%3Fd%3D1%26e%3D%%MACROS%%",
+            "impression_url": "https://s2s.adjust.com/impression/abc123?campaign={campaign_name}&idfa={idfa}&s2s=1"
+         }
+      ]
+   }
+}
+```
+
+</CodeBlock>

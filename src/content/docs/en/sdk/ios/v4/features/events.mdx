@@ -1,0 +1,1037 @@
+---
+title: Send event information
+description: Use these methods send event information to Adjust.
+slug: en/sdk/ios/v4/features/events
+---
+
+The Adjust SDK provides an `ADJEvent` object which can be used to structure and send event information from your app to Adjust's servers.
+
+## [Instantiate an ADJEvent object](instantiate-an-adjevent-object)
+
+<CodeBlock title="Method signature">
+
+```objc
++ (nullable ADJEvent *)eventWithEventToken:(nonnull NSString *)eventToken;
+```
+
+</CodeBlock>
+
+To send event information with the Adjust SDK, you need to instantiate an `ADJEvent` object. This object contains variables that are sent to Adjust when an event occurs in your app.
+
+To instantiate an event object, create a new `ADJEvent` instance and pass the following parameters:
+
+-  `eventToken` (`NSString`): Your Adjust [event token](https://help.adjust.com/en/article/add-events#manage-your-events).
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: "abc123")
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+ADJEvent *event = [ADJEvent eventWithEventToken:@"abc123"];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+var adjustEvent = new AdjustEvent("abc123");
+Adjust.trackEvent(adjustEvent);
+```
+
+</Tab>
+</Tabs>
+
+## [Send an event](send-an-event)
+
+<CodeBlock title="Method signature">
+
+```objc
++ (void)trackEvent:(nullable ADJEvent *)event;
+```
+
+</CodeBlock>
+
+You can associate your [Adjust event tokens](https://help.adjust.com/en/article/add-events#add-event) to actions in your app to record them. To record an event:
+
+-  Create a new Adjust event instance and pass your event token as a string argument.
+-  Call the `trackEvent` method with your event instance as an argument.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: "abc123")
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+ADJEvent *event = [ADJEvent eventWithEventToken:@"abc123"];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+var adjustEvent = new AdjustEvent("abc123");
+Adjust.trackEvent(adjustEvent);
+```
+
+</Tab>
+</Tabs>
+
+### [Example](example)
+
+This example shows how to record an event with the token `g3mfiw` whenever a user interacts with a button.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+import Adjust
+import UIKit
+
+class ViewControllerSwift: UIViewController {
+   @IBOutlet weak var btnRecordEventSimple: UIButton?
+
+   @IBAction func btnRecordEventSimple(_sender: UIButton) {
+      let event = ADJEvent(eventToken: "g3mfiw");
+      Adjust.trackEvent(event);
+   }
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "Adjust.h"
+#import "Constants.h"
+#import "ViewControllerObjC.h"
+
+@interface ViewControllerObjC ()
+
+@property (weak, nonatomic) IBOutlet UIButton *btnRecordDeduplicatedEvent;
+
+@end
+
+@implementation ViewControllerObjC
+
+- (IBAction)clickRecordSimpleEvent:(UIButton *)sender {
+    ADJEvent *event = [ADJEvent eventWithEventToken: @"g3mfiw"];
+
+    [Adjust trackEvent:event];
+}
+
+@end
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```html
+<html>
+   <body>
+      <script>
+         setupWebViewJavascriptBridge(function(bridge) {
+            let adjustConfig = new AdjustConfig('2fm9gkqubvpc', AdjustConfig.EnvironmentSandbox);
+            adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
+
+            Adjust.appDidLaunch(adjustConfig);
+
+            var btnRecordDeduplicatedEvent = document.getElementById('btnRecordDeduplicatedEvent')
+            btnRecordDeduplicatedEvent.onclick = function(e) {
+                  e.preventDefault()
+                  var adjustEvent = new AdjustEvent('g3mfiw')
+                  Adjust.trackEvent(adjustEvent)
+            }
+         }
+      </script>
+      <div id="buttons">
+         <div style="width:300px;height:35px;text-align:center;">
+            <button id="btnRecordDeduplicatedEvent">Record simple event</button>
+         </div>
+      </div>
+   </body>
+</html>
+```
+
+</Tab>
+</Tabs>
+
+<CodeBlock title="Event log" collapse="6-40">
+
+```txt
+Path:      /event
+ClientSdk: ios$IOS_V4_VERSION
+Parameters:
+  app_token        2fm9gkqubvpc
+  app_version      1.0
+  attribution_deeplink 1
+  callback_params  {"key":"value","foo":"bar"}
+  connectivity_type 1
+  country          US
+  cpu_type         arm64-v8a
+  created_at       2024-01-25T14:13:16.151Z+0100
+  currency         EUR
+  device_manufacturer Apple
+  device_type      phone
+  display_height   2205
+  display_width    1080
+  environment      sandbox
+  event_buffering_enabled 0
+  event_count      3
+  event_token      g3mfiw
+  hardware_name    UE1A.230829.036
+  language         en
+  mcc              310
+  mnc              260
+  needs_response_details 1
+  os_build         UE1A.230829.036
+  os_name          ios
+  os_version       14
+  package_name     com.adjust.examples
+  partner_params   {"key":"value","foo":"bar"}
+  revenue          0.25
+  screen_density   high
+  screen_format    long
+  screen_size      normal
+  session_count    2
+  session_length   23
+  subsession_count 1
+  time_spent       23
+  tracking_enabled 1
+  ui_mode          1
+
+```
+
+</CodeBlock>
+
+## [Record event revenue](record-event-revenue)
+
+<CodeBlock title="Method signature">
+
+```objc
+- (void)setRevenue:(double)amount currency:(nonnull NSString *)currency;
+```
+
+</CodeBlock>
+
+You can record revenue associated with an event by setting the revenue and currency properties on your event instance. Use this feature to record revenue-generating actions in your app.
+
+To set these properties, call the `setRevenue` method and pass the following arguments:
+
+-  `revenue` (`double`): The amount of revenue generated by the event
+-  `currency` (`NSString`): The [ISO 4217 code](https://www.iban.com/currency-codes) of the event currency.
+
+<Callout type="seealso">
+
+Check the guide to [recording purchases in different currencies](https://help.adjust.com/en/article/currency-conversion) for more information.
+
+</Callout>
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: "abc123")
+event?.setRevenue(0.01, currency: "EUR")
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+ADJEvent *event = [ADJEvent eventWithEventToken:@"abc123"];
+[event setRevenue:0.01 currency:@"EUR"];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+var adjustEvent = new AdjustEvent(eventToken);
+adjustEvent.setRevenue(0.01, "EUR");
+Adjust.trackEvent(adjustEvent);
+```
+
+</Tab>
+</Tabs>
+
+### [Example](example-1)
+
+This example shows how to record an event with the token `g3mfiw` whenever a user interacts with a button. The function sets the `revenue` property of this event to _`0.25`_ and the `currency` property to _`EUR`_.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+import Adjust
+import UIKit
+
+class ViewControllerSwift: UIViewController {
+   @IBOutlet weak var btnRecordEventRevenue: UIButton?
+
+   @IBAction func btnRecordEventRevenue(_sender: UIButton) {
+      let event = ADJEvent(eventToken: "g3mfiw");
+      event?.setRevenue(0.25, currency: "EUR");
+      Adjust.trackEvent(event);
+   }
+}
+```
+
+</Tab>
+<Tab sync="objc" title="Objective-C">
+
+```objc
+#import "Adjust.h"
+#import "Constants.h"
+#import "ViewControllerObjC.h"
+
+@interface ViewControllerObjC ()
+
+@property (weak, nonatomic) IBOutlet UIButton *btnRecordRevenueEvent;
+
+@end
+
+@implementation ViewControllerObjC
+
+- (IBAction)clickRecordRevenueEvent:(UIButton *)sender {
+   ADJEvent *event = [ADJEvent eventWithEventToken:@"g3mfiw"];
+   [event setRevenue:0.25 currency:@"EUR"];
+   [Adjust trackEvent:event];
+}
+
+@end
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```html
+<html>
+   <body>
+      <script>
+         setupWebViewJavascriptBridge(function(bridge) {
+            let adjustConfig = new AdjustConfig('2fm9gkqubvpc', AdjustConfig.EnvironmentSandbox);
+            adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
+
+            Adjust.appDidLaunch(adjustConfig);
+
+            var btnRecordRevenueEvent = document.getElementById('btnRecordRevenueEvent')
+            btnRecordRevenueEvent.onclick = function(e) {
+                  e.preventDefault()
+                  var adjustEvent = new AdjustEvent('g3mfiw')
+                  adjustEvent.setRevenue(0.25, 'EUR')
+                  Adjust.trackEvent(adjustEvent)
+            }
+         }
+      </script>
+      <div id="buttons">
+         <div style="width:300px;height:35px;text-align:center;">
+            <button id="btnRecordRevenueEvent">Record revenue event</button>
+         </div>
+      </div>
+   </body>
+</html>
+```
+
+</Tab>
+</Tabs>
+
+<CodeBlock title="Event log" highlight="{range: 7}">
+
+```txt
+Path:      /event
+ClientSdk: ios$IOS_V4_VERSION
+Parameters:
+  environment      sandbox
+  event_count      3
+  event_token      abc123
+  currency         EUR
+  revenue          0.25
+```
+
+</CodeBlock>
+
+### [Purchase verification](purchase-verification)
+
+<MinorVersion added="v3.34.0">
+
+If you've enabled [purchase verification](https://help.adjust.com/en/article/purchase-verification), you must send additional information with your purchase events to verify them. When Adjust's servers receive this information in an event object, they forward it to Apple to verify the purchase.
+
+</MinorVersion>
+
+-  `transactionId` (`NSString`): The [`transactionIdentifier` value](https://developer.apple.com/documentation/storekit/skpaymenttransaction/1411288-transactionidentifier) of the successfully completed purchase
+-  `productId` (`NSString`): The product identifier of the item that was successfully purchased
+-  `receipt` (`NSData`): The [signed receipt](https://developer.apple.com/documentation/foundation/bundle/1407276-appstorereceipturl) containing the information about the successfully completed purchase
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let receiptURL = Bundle.main.appStoreReceiptURL;
+let receipt = try Data(contentsOf: receiptURL, options: .alwaysMapped)
+
+let event = ADJEvent(eventToken: "abc123")
+event?.setRevenue(6.0, currency: "EUR");
+event?.setTransactionId("transaction-id");
+event?.setProductId("product-id");
+event?.setReceipt(receipt);
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
+NSData *receipt = [NSData dataWithContentsOfURL:receiptURL];
+ADJEvent *event = [ADJEvent eventWithEventToken::@"your-event-token"];
+[event setRevenue:6.0 currency:@"EUR"];
+[event setTransactionId:@"transaction-id"];
+[event setProductId:@"product-id"];
+[event setReceipt:receipt];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+</Tabs>
+
+## [Deduplicate revenue events](deduplicate-revenue-events)
+
+<CodeBlock title="Method signature">
+
+```objc
+- (void)setTransactionId:(nonnull NSString *)transactionId;
+```
+
+</CodeBlock>
+
+You can pass an optional identifier to avoid recording duplicate events. The SDK stores the last ten identifiers and skips revenue events with duplicate transaction IDs.
+
+To set the identifier, assign your transaction ID to the `setTransactionId` property of your event instance.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: "abc123")
+event?.setTransactionId(transaction.transactionIdentifier)
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+ADJEvent *event = [ADJEvent eventWithEventToken:@"abc123"];
+[event setTransactionId:transaction.transactionIdentifier];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+var adjustEvent = new AdjustEvent(eventToken);
+adjustEvent.setTransactionId(orderId);
+Adjust.trackEvent(adjustEvent);
+```
+
+</Tab>
+</Tabs>
+
+### [Example](example-2)
+
+This example shows how to record an event with the token `g3mfiw` whenever a user interacts with a button. The function sets the `uniqueId` to `5e85484b-1ebc-4141-aab7-25b869e54c49` using the `setTransactionId` method.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+import Adjust
+import UIKit
+
+class ViewControllerSwift: UIViewController {
+   @IBOutlet weak var btnRecordEventSimple: UIButton?
+
+   @IBAction func btnRecordEventSimple(_sender: UIButton) {
+      let event = ADJEvent(eventToken: "g3mfiw");
+      event.setTransactionId("5e85484b-1ebc-4141-aab7-25b869e54c49")
+      Adjust.trackEvent(event);
+   }
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "Adjust.h"
+#import "Constants.h"
+#import "ViewControllerObjC.h"
+
+@interface ViewControllerObjC ()
+
+@property (weak, nonatomic) IBOutlet UIButton *btnRecordDeduplicatedEvent;
+
+@end
+
+@implementation ViewControllerObjC
+
+- (IBAction)clickRecordSimpleEvent:(UIButton *)sender {
+    ADJEvent *event = [ADJEvent eventWithEventToken: @"g3mfiw"];
+    [event setTransactionId: @"5e85484b-1ebc-4141-aab7-25b869e54c49"]
+    [Adjust trackEvent:event];
+}
+
+@end
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```html
+<html>
+   <body>
+      <script>
+         setupWebViewJavascriptBridge(function(bridge) {
+            let adjustConfig = new AdjustConfig('2fm9gkqubvpc', AdjustConfig.EnvironmentSandbox);
+            adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
+
+            Adjust.appDidLaunch(adjustConfig);
+
+            var btnRecordDeduplicatedEvent = document.getElementById('btnRecordDeduplicatedEvent')
+            btnRecordDeduplicatedEvent.onclick = function(e) {
+                  e.preventDefault()
+                  var adjustEvent = new AdjustEvent('g3mfiw')
+                  adjustEvent.setTransactionId("5e85484b-1ebc-4141-aab7-25b869e54c49")
+                  Adjust.trackEvent(adjustEvent)
+            }
+         }
+      </script>
+      <div id="buttons">
+         <div style="width:300px;height:35px;text-align:center;">
+            <button id="btnRecordDeduplicatedEvent">
+               Record dedupicated event
+            </button>
+         </div>
+      </div>
+   </body>
+</html>
+```
+
+</Tab>
+</Tabs>
+
+<CodeBlock title="Event log" highlight="{range: 7}">
+
+```txt
+Path:      /event
+ClientSdk: ios$IOS_V4_VERSION
+Parameters:
+  environment      sandbox
+  event_count      3
+  event_token      abc123
+  transaction_id   5e85484b-1ebc-4141-aab7-25b869e54c49
+```
+
+</CodeBlock>
+
+## [Add callback parameters](add-callback-parameters)
+
+<CodeBlock title="Method signature">
+
+```objc
+- (void)addCallbackParameter:(nonnull NSString *)key value:(nonnull NSString *)value;
+```
+
+</CodeBlock>
+
+If you [register a callback URL](https://help.adjust.com/en/article/set-up-callbacks) in the Adjust dashboard, the SDK sends a GET request to your callback URL when it records an event.
+
+You can configure callback parameters to send to your servers. Once you configure parameters on an event, the SDK appends them to your [callback URL](https://help.adjust.com/en/article/raw-data-exports). You can use this information to analyze your users' in-app behavior with your BI system.
+
+Add callback parameters to your event by calling the `addCallbackParameter` method with `NSString` key-value arguments. You can add multiple parameters by calling this method multiple times.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: "abc123")
+event?.addCallbackParameter("key", value: "value")
+event?.addCallbackParameter("foo", value: "bar")
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+ADJEvent *event = [ADJEvent eventWithEventToken:@"abc123"];
+[event addCallbackParameter:@"key" value:@"value"];
+[event addCallbackParameter:@"foo" value:@"bar"];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+var adjustEvent = new AdjustEvent(eventToken);
+adjustEvent.addCallbackParameter("key", "value");
+adjustEvent.addCallbackParameter("foo", "bar");
+Adjust.trackEvent(adjustEvent);
+```
+
+</Tab>
+</Tabs>
+
+The Adjust SDK measures the event and sends a request to your URL with the callback parameters. For example, if you register the URL `https://www.mydomain.com/callback`, your callback looks like this:
+
+```http
+https://www.mydomain.com/callback?key=value&foo=bar
+```
+
+<Callout type="note">
+
+Adjust doesn't store your custom callback parameters. Custom parameters are only appended to your callback URL.
+
+</Callout>
+
+If you're using CSV uploads, make sure to add the parameters to your CSV definition.
+
+Adjust supports many placeholders which you can use to pass information from the SDK to your URL. For example, the `{idfa}` placeholder for iOS and the `{gps_adid}` placeholder for Android. The `{publisher_parameter}` placeholder presents all callback parameters in a single string.
+
+<Callout type="seealso">
+
+You can read more about using URL callbacks, including a full list of available values, in the [callbacks guide](https://help.adjust.com/en/article/callbacks).
+
+</Callout>
+
+### [Example](example-3)
+
+This example shows how to record an event with the token `g3mfiw` whenever a user interacts with a button. The following callback parameters are added:
+
+-  The `event_token`
+-  The `revenue_amount` generated by the event
+
+The resulting callback URL looks like this:
+
+```http
+http://www.mydomain.com/callback?event_token=g3mfiw&revenue_amount=0.05
+```
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+import Adjust
+import UIKit
+
+class ViewControllerSwift: UIViewController {
+   @IBOutlet weak var btnRecordEventCallbacks: UIButton?
+
+   @IBAction func btnRecordEventCallbacks(_sender: UIButton) {
+      let event = ADJEvent(eventToken: "g3mfiw");
+      event?.addCallbackParameter("event_token", value: "g3mfiw")
+      event?.addCallbackParameter("revenue_amount", value: "0.05")
+      Adjust.trackEvent(event);
+   }
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+<CodeBlock title="ViewControllerObjC.m">
+
+```objc
+#import "Adjust.h"
+#import "Constants.h"
+#import "ViewControllerObjC.h"
+
+@interface ViewControllerObjC ()
+
+@property (weak, nonatomic) IBOutlet UIButton *btnRecordCallbackEvent;
+
+@end
+
+@implementation ViewControllerObjC
+
+- (IBAction)clickRecordCallbackEvent:(UIButton *)sender {
+   ADJEvent *event = [ADJEvent eventWithEventToken:@"g3mfiw"];
+   [event addCallbackParameter:@"event_token" value:@"g3mfiw"];
+   [event addCallbackParameter:@"revenue_amount" value:@"0.05"];
+   [Adjust trackEvent:event];
+}
+
+@end
+```
+
+</CodeBlock>
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```html
+<html>
+   <body>
+      <script>
+         setupWebViewJavascriptBridge(function(bridge) {
+            let adjustConfig = new AdjustConfig('2fm9gkqubvpc', AdjustConfig.EnvironmentSandbox);
+            adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
+
+            Adjust.appDidLaunch(adjustConfig);
+
+            var btnRecordCallbackEvent = document.getElementById('btnRecordCallbackEvent')
+            btnRecordCallbackEvent.onclick = function(e) {
+                  e.preventDefault()
+                  var adjustEvent = new AdjustEvent('g3mfiw');
+                  adjustEvent.addCallbackParameter('event_token', 'g3mfiw');
+                  adjustEvent.addCallbackParameter('revenue_amount', '0.05');
+                  Adjust.trackEvent(adjustEvent);
+            }
+         }
+      </script>
+      <div id="buttons">
+         <div style="width:300px;height:35px;text-align:center;">
+            <button id="btnRecordCallbackEvent">
+               Record event with callback parameters
+            </button>
+         </div>
+      </div>
+   </body>
+</html>
+```
+
+</Tab>
+</Tabs>
+
+<CodeBlock title="Event log">
+
+```txt
+Path:      /event
+ClientSdk: ios$IOS_V4_VERSION
+Parameters:
+  callback_params  {"event_token":"g3mfiw","revenue_amount":"0.05"}
+  environment      sandbox
+  event_count      1
+  event_token      g3mfiw
+
+```
+
+</CodeBlock>
+
+## [Add partner parameters](add-partner-parameters)
+
+<CodeBlock title="Method signature">
+
+```objc
+- (void)addPartnerParameter:(nonnull NSString *)key value:(nonnull NSString *)value;
+```
+
+</CodeBlock>
+
+You can send extra information to your network partners by adding [partner parameters](https://help.adjust.com/en/article/data-sharing-ad-network#map-parameters).
+
+Adjust sends partner parameters to [external partners](https://help.adjust.com/en/article/integrated-partners) you have set up. This information is useful for more granular analysis and retargeting purposes. Adjust's servers forward these parameters once you have set them up and enabled them for a partner.
+
+<Callout type="note">
+
+Partner parameters don't appear in raw data by default. You can add the `{partner_parameters}` placeholder to receive them as a single string.
+
+</Callout>
+
+Add partner parameters to your event by calling the `addPartnerParameter` method with `NSString` key-value arguments. You can add multiple parameters by calling this method multiple times.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: "abc123")
+event?.addPartnerParameter("key", value: "value")
+event?.addPartnerParameter("foo", value: "bar")
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+ADJEvent *event = [ADJEvent eventWithEventToken:@"abc123"];
+[event addPartnerParameter:@"key" value:@"value"];
+[event addPartnerParameter:@"foo" value:@"bar"];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+var adjustEvent = new AdjustEvent(eventToken);
+adjustEvent.addPartnerParameter("key", "value");
+adjustEvent.addPartnerParameter("foo", "bar");
+Adjust.trackEvent(adjustEvent);
+```
+
+</Tab>
+</Tabs>
+
+### [Example](example-4)
+
+This example shows how to record an event with the token `g3mfiw` whenever a user interacts with a button. The following partner parameters are added:
+
+-  The `product_id` of the associated product
+-  The `user_id` of the user who triggered the event
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+import Adjust
+import UIKit
+
+class ViewControllerSwift: UIViewController {
+   @IBOutlet weak var btnRecordEventPartnerParams: UIButton?
+
+   @IBAction func btnRecordEventPartnerParams(_sender: UIButton) {
+      let event = ADJEvent(eventToken: "g3mfiw");
+      event?.addPartnerParameter("product_id", value: "29")
+      event?.addPartnerParameter("user_id", value: "835")
+      Adjust.trackEvent(event);
+   }
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "Adjust.h"
+#import "Constants.h"
+#import "ViewControllerObjC.h"
+
+@interface ViewControllerObjC ()
+
+@property (weak, nonatomic) IBOutlet UIButton *btnRecordPartnerParamsEvent;
+
+@end
+
+@implementation ViewControllerObjC
+
+- (IBAction)clickRecordPartnerParamsEvent:(UIButton *)sender {
+   ADJEvent *event = [ADJEvent eventWithEventToken:@"g3mfiw"];
+   [event addPartnerParameter:@"product_id" value:@"29"];
+   [event addPartnerParameter:@"user_id" value:@"835"];
+   [Adjust trackEvent:event];
+}
+
+@end
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```html
+<html>
+   <body>
+      <script>
+         setupWebViewJavascriptBridge(function(bridge) {
+            let adjustConfig = new AdjustConfig('2fm9gkqubvpc', AdjustConfig.EnvironmentSandbox);
+            adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
+
+            Adjust.appDidLaunch(adjustConfig);
+
+            var btnRecordPartnerParamsEvent = document.getElementById('btnRecordPartnerParamsEvent')
+            btnRecordPartnerParamsEvent.onclick = function(e) {
+                  e.preventDefault()
+                  var adjustEvent = new AdjustEvent('g3mfiw');
+                  adjustEvent.addPartnerParameter('product_id', '29');
+                  adjustEvent.addPartnerParameter('user_id', '835');
+                  Adjust.trackEvent(adjustEvent);
+            }
+         }
+      </script>
+      <div id="buttons">
+         <div style="width:300px;height:35px;text-align:center;">
+            <button id="btnRecordPartnerParamsEvent">
+               Record event with partner parameters
+            </button>
+         </div>
+      </div>
+   </body>
+</html>
+```
+
+</Tab>
+</Tabs>
+
+<CodeBlock title="Event log" highlight="{range: 4}">
+
+```txt
+Path:      /event
+ClientSdk: ios$IOS_V4_VERSION
+Parameters:
+  partner_params  {"product_id":"29","user_id":"835"}
+  environment      sandbox
+  event_count      1
+  event_token      g3mfiw
+```
+
+</CodeBlock>
+
+## [Add a callback identifier](add-a-callback-identifier)
+
+<CodeBlock title="Method signature">
+
+```objc
+- (void)setCallbackId:(nonnull NSString *)callbackId;
+```
+
+</CodeBlock>
+
+You can add a custom string identifier to each event you want to measure. Adjust's servers can report on this identifier in event callbacks. This enables you to keep track of which events have been successfully measured.
+
+Set up this identifier by calling the `setCallbackId` method with your ID as an `NSString` argument.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: "abc123")
+event?.setCallbackId("Your-Custom-ID")
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+ADJEvent *event = [ADJEvent eventWithEventToken:@"abc123"];
+[event setCallbackId:@"Your-Custom-ID"];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+var adjustEvent = new AdjustEvent("abc123");
+adjustEvent.setCallbackId("Your-Custom-ID");
+Adjust.trackEvent(adjustEvent);
+```
+
+</Tab>
+</Tabs>
+
+### [Example](example-5)
+
+This example shows how to record an event with the token `g3mfiw` whenever a user interacts with a button. In this example, the `callbackId` is set to `f2e728d8-271b-49ab-80ea-27830a215147`.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+import Adjust
+import UIKit
+
+class ViewControllerSwift: UIViewController {
+   @IBOutlet weak var btnRecordEventCallbackId: UIButton?
+
+   @IBAction func btnRecordEventCallbackId(_sender: UIButton) {
+      let event = ADJEvent(eventToken: "g3mfiw");
+      event?.setCallbackId("f2e728d8-271b-49ab-80ea-27830a215147")
+      Adjust.trackEvent(event);
+   }
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "Adjust.h"
+#import "Constants.h"
+#import "ViewControllerObjC.h"
+
+@interface ViewControllerObjC ()
+
+@property (weak, nonatomic) IBOutlet UIButton *btnRecordCallbackIdEvent;
+
+@end
+
+@implementation ViewControllerObjC
+
+- (IBAction)clickRecordCallbackIdEvent:(UIButton *)sender {
+   ADJEvent *event = [ADJEvent eventWithEventToken:@"g3mfiw"];
+   [event setCallbackId:@"f2e728d8-271b-49ab-80ea-27830a215147"];
+   [Adjust trackEvent:event];
+}
+
+@end
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```html
+<html>
+   <body>
+      <script>
+         setupWebViewJavascriptBridge(function(bridge) {
+            let adjustConfig = new AdjustConfig('2fm9gkqubvpc', AdjustConfig.EnvironmentSandbox);
+            adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
+
+            Adjust.appDidLaunch(adjustConfig);
+
+            var btnRecordCallbackIdEvent = document.getElementById('btnRecordCallbackIdEvent')
+            btnRecordCallbackIdEvent.onclick = function(e) {
+                  e.preventDefault()
+                  var adjustEvent = new AdjustEvent('g3mfiw');
+                  adjustEvent.setCallbackId('f2e728d8-271b-49ab-80ea-27830a215147');
+                  Adjust.trackEvent(adjustEvent);
+            }
+         }
+      </script>
+      <div id="buttons">
+         <div style="width:300px;height:35px;text-align:center;">
+            <button id="btnRecordCallbackIdEvent">
+               Record event with callback ID
+            </button>
+         </div>
+      </div>
+   </body>
+</html>
+```
+
+</Tab>
+</Tabs>
+
+<CodeBlock title="Event log" highlight="{range: 4}">
+
+```txt
+Path:      /event
+ClientSdk: ios$IOS_V4_VERSION
+Parameters:
+  callback_id      f2e728d8-271b-49ab-80ea-27830a215147
+  environment      sandbox
+  event_count      1
+  event_token      g3mfiw
+```
+
+</CodeBlock>

@@ -1,0 +1,555 @@
+---
+title: "Sociomatic"
+description: "Sociomaticプラグインを使用して、Sociomaticの情報をAdjustにパスします。"
+slug: "ja/sdk/ios/v4/plugins/sociomatic"
+---
+
+Adjust SDKとイベントを連携することができます。
+
+## [環境を設定する](set-up-your-environment)
+
+<Tabs>
+<Tab title="Cocoapods">
+
+以下を`Podfile`ファイルに追加します：
+
+<CodeBlock title="Podfile">
+
+```text
+pod 'Adjust/Sociomatic'
+```
+
+</CodeBlock>
+</Tab>
+<Tab title="Carthage">
+
+以下を`Cartfile`ファイルに追加します：
+
+<CodeBlock title="Cartfile">
+
+```text
+github "adjust/ios_sdk" "sociomatic"
+```
+
+</CodeBlock>
+</Tab>
+</Tabs>
+
+### [ソースからインストールする](install-from-source)
+
+Adjust Sociomanticプラグインをプロジェクトに手動で追加するには、次の手順を実行します。
+
+1. [リリースページ](https://github.com/adjust/ios_sdk/releases)からダウンロードしたアーカイブ内で`plugin/Sociomantic`フォルダを確認します。
+2. `ADJSociomantic.h`および`ADJSociomantic.m`ファイルをプロジェクト内のAdjustフォルダにドラッグします。
+3. **［Choose options for adding these files］（ファイル追加のオプションを選択）** ダイアログが表示されたら、 **［Copy items if needed］（必要に応じて項目をコピー）** チェックボックスにチェックを入れ、 **［Create groups］（グループを作成）** のラジオボタンを選択します。
+
+## [Sociomanticイベント](sociomantic-events)
+
+Sociomanticプラグインをインストールすると、Sociomanticイベントメソッドや、以下の定数にアクセスできるようになります。これらは、辞書のプロパティ名として使用する必要があります。
+
+-  `NSString *const SCMCategory;`
+-  `NSString *const SCMProductName;`
+-  `NSString *const SCMSalePrice;`
+-  `NSString *const SCMProductURL;`
+-  `NSString *const SCMProductImageURL;`
+-  `NSString *const SCMBrand;`
+-  `NSString *const SCMDescription;`
+-  `NSString *const SCMTimestamp;`
+-  `NSString *const SCMValidityTimestamp;`
+-  `NSString *const SCMQuantity;`
+-  `NSString *const SCMScore;`
+-  `NSString *const SCMProductID;`
+-  `NSString *const SCMAmount;`
+-  `NSString *const SCMCurrency;`
+-  `NSString *const SCMActionConfirmed;`
+-  `NSString *const SCMActionConfirmed;`
+-  `NSString *const SCMCustomerAgeGroup;`
+-  `NSString *const SCMCustomerEducation;`
+-  `NSString *const SCMCustomerGender;`
+-  `NSString *const SCMCustomerID;`
+-  `NSString *const SCMCustomerMHash;`
+-  `NSString *const SCMCustomerSegment;`
+-  `NSString *const SCMCustomerTargeting;`
+
+Sociomanticイベントを送信する前に、以下のようにパートナーIDを設定する必要があります。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+ADJSociomantic.injectPartnerId(intoSociomanticEvents: "{sociomanticPartnerId}")
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "ADJSociomantic.h"
+
+[ADJSociomantic injectPartnerIdIntoSociomanticEvents:@"{sociomanticPartnerId}"];
+```
+
+</Tab>
+</Tabs>
+
+パートナーIDを設定すると、さまざまなSociomanticイベントを連携できるようになります。
+
+## [例](examples)
+
+### [カスタマーイベント](customer-event)
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: ANY_TOKEN)
+let customerData = [
+    SCMCustomerID: "123456"
+]
+
+ADJSociomantic.injectCustomerData(into: event, withData: customerData)
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "ADJSociomantic.h"
+
+ADJEvent *event = [ADJEvent eventWithEventToken:ANY_TOKEN];
+NSDictionary *customerData = @{
+    SCMCustomerID: @"123456"
+};
+
+[ADJSociomantic injectCustomerDataIntoEvent:event withData:customerData];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+</Tabs>
+
+### [ホームページの閲覧](view-home-page)
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: HOMEPAGE_TOKEN)
+
+ADJSociomatic.injectHomePage(into: event)
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab sync="objc">
+
+```objc
+#import "ADJSociomantic.h"
+
+ADJEvent *event = [ADJEvent eventWithEventToken:HOMEPAGE_TOKEN];
+
+[ADJSociomantic injectHomePageIntoEvent:event];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+</Tabs>
+
+### [リストの閲覧](view-listing)
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: LISTING_TOKEN)
+let categories = ["category_1", "category_2", "category_3"]
+let date = "1427792434"
+
+ADJSociomantic.injectViewListing(into: event, withCategories: categories)
+// You also can provide a date like this
+ADJSociomantic.injectViewListing(into: event, withCategories: categories, withDate: date)
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "ADJSociomantic.h"
+
+ADJEvent *event = [ADJEvent eventWithEventToken:LISTING_TOKEN];
+NSArray *categories = @[@"category_1", @"category_2", @"category_3"];
+NSString *date = @"1427792434";
+
+[ADJSociomantic injectViewListingIntoEvent:event withCategories:categories];
+// You also can provide a date like this
+[ADJSociomantic injectViewListingIntoEvent:event withCategories:categories withDate:date];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+</Tabs>
+
+### [商品の閲覧](view-product)
+
+<Callout type="note">
+
+どの設定を使用すべきかわからない場合は、Sociomanticのテクニカル アカウント マネージャーまでお問い合わせください。
+
+</Callout>
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: PRODUCT_VIEW_TOKEN)
+let params = [
+    SCMCategory: ["cat1", "cat2"],
+    SCMProductName: "stuff",
+    SCMDescription: "pure awesomeness"
+]
+
+ADJSociomantic.injectViewProduct(into: event, productId: "productId_4", withParameters: params)
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "ADJSociomantic.h"
+
+ADJEvent *event      = [ADJEvent eventWithEventToken:PRODUCT_VIEW_TOKEN];
+NSDictionary *params = @{
+    SCMCategory     : @[@"cat1", @"cat2"],
+    SCMProductName  : @"stuff",
+    SCMDescription  : @"pure awesomeness"
+};
+
+[ADJSociomantic injectViewProductIntoEvent:event productId:@"productId_4" withParameters:params];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+</Tabs>
+
+### [使用可能な商品パラメーター](available-product-parameters)
+
+<Table>
+
+| パラメーター名         | 要件       | 説明                                          | 注意事項                                                                                                                                                                                                  |
+| ---------------------- | ---------- | --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `SCMCategory`          | 必須       | 商品のカテゴリー（カテゴリーパス全体）        | カテゴリーページやリストページのトラッキングコードで提供されるカテゴリー情報は、商品ページのトラッキングコード、またはフィードで提供されるカテゴリー情報と一致していることが必要です。                    |
+| `SCMProductName`       | 必須       | 商品名                                        | 特殊文字はエンコードせず、正しいUTF\-8を使用してください。HTMLマークアップは一切使用しないでください。                                                                                                    |
+| `SCMSalePrice`         | 必須       | 販売価格（10進値）（例：2\.99）               | 小数点の記号にはドットを使用し、3桁ごとの区切り文字は使用しないでください。                                                                                                                               |
+| `SCMAmount`            | 必須       | 通常価格（10進値）（例：3\.99）               | 小数点の記号にはドットを使用し、3桁ごとの区切り文字は使用しないでください。                                                                                                                               |
+| `SCMCurrency`          | 必須       | ISO 4217形式の通貨コード（例：EUR）           | 固定の通貨コード。トラッキングコードのサンプルですでに提供されています。                                                                                                                                  |
+| `SCMProductURL`        | 必須       | 商品のURL（ディープリンク）                   | できれば、クリック トラッキング パラメーター（Google アナリティクス、HURRA、Eulerianなど）を使用せずに機能するディープリンクを指定します。必ずhttp://を付けたディープリンクを使用してください。 `http://` |
+| `SCMProductImageURL`   | 必須       | 商品画像のURL                                 | 適度なサイズの画像をご用意ください。広告表示を最適化するには、画像は200x200ピクセル以上、同じアスペクト比である必要があります。                                                                           |
+| `SCMBrand`             | 必須       | 商品ブランド                                  | 特殊文字はエンコードせず、正しいUTF\-8を使用してください（上記のSCMProductNameと同様）。HTMLマークアップは一切使用しないでください。                                                                      |
+| `SCMDescription`       | オプション | 商品の簡単な説明                              | 特殊文字はエンコードせず、正しいUTF\-8を使用してください（上記のSCMProductNameと同様）。HTMLマークアップは一切使用しないでください。                                                                      |
+| `SCMTimestamp`         | オプション | 商品の在庫期限のタイムスタンプ（GMTで指定）。 | ユーザーが検索した日付を指定してください。NSTimeIntervalをNSNumberにラップしたものである必要があります（サンプルを参照）。                                                                                |
+| `SCMValidityTimestamp` | オプション | 商品の在庫期限のタイムスタンプ（GMTで指定）。 | 商品の在庫期限のUNIXタイムスタンプを指定してください。常に在庫のある商品の場合、0としてください。NSTimeIntervalをNSNumberにラップしたものである必要があります（上記のSCMTimestampと同様）。               |
+| `SCMQuantity`          | オプション | 商品の在庫数                                  | このフィールドを連携する場合は、必ずSociomantic担当者と相談してから行ってください。                                                                                                                       |
+| `SCMScore`             | オプション | 商品の優先度スコア（値の範囲は0～10\.0）      | このフィールドを連携する場合は、必ずSociomantic担当者と相談してから行ってください。                                                                                                                       |
+
+</Table>
+
+### [Cart](cart)
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: CART_TOKEN)
+let product5 = [
+    SCMAmount: NSNumber(value: 100),
+    SCMCurrency: "EUR",
+    SCMQuantity: NSNumber(value: 1),
+    SCMProductID: "productId_5"
+]
+let product6 = "productId_6"
+let product7 = [
+    SCMProductID: "productId_7"
+]
+
+
+let productList = [product5, product6, product7]
+
+ADJSociomantic.injectCart(into: event, cart: productList)
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "ADJSociomantic.h"
+
+ADJEvent *event = [ADJEvent eventWithEventToken:CART_TOKEN];
+NSDictionary *product5 = @{
+    SCMAmount    : @100,
+    SCMCurrency  : @"EUR",
+    SCMQuantity  : @1,
+    SCMProductID : @"productId_5",
+};
+NSString *product6 = @"productId_6";
+NSDictionary *product7 = @{
+    SCMProductID : @"productId_7"
+};
+
+NSArray * productList = @[product5, product6, product7];
+
+[ADJSociomantic injectCartIntoEvent:event cart:productList];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+</Tabs>
+
+### [使用可能なカートパラメーター](available-cart-parameters)
+
+<Table>
+
+| パラメーター名 | 要件       | 説明                                | 注意事項                                                                                                                           |
+| -------------- | ---------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `SCMProductID` | 必須       | 製品ID                              | 色やサイズのバリエーションについては、サブIDを付けずに商品IDを指定してください。                                                   |
+| `SCMAmount`    | オプション | 製品価格（10進値）（例：2\.99）     | 小数点の記号にはドットを使用し、3桁ごとの区切り文字は使用しないでください。数量が1以上の場合でも、製品単価のみを指定してください。 |
+| `SCMCurrency`  | オプション | ISO 4217形式の通貨コード（例：EUR） | 固定の通貨コード。トラッキングコードのサンプルですでに提供されています。                                                           |
+| `SCMQuantity`  | オプション | 選択された商品の数量                | 整数値で指定してください。                                                                                                         |
+
+</Table>
+
+### [未確定のトランザクション](unconfirmed-transaction)
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: TRANSACTION_TOKEN)
+let product5 = "productId_5"
+let product6 = [
+    SCMQuantity: NSNumber(value: 3),
+    SCMProductID: "productId_6"
+]
+let productList = [product5, product6]
+
+ADJSociomantic.injectTransaction(into: event, transactionId: "123456", withProducts: productList)
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "ADJSociomantic.h"
+
+ADJEvent *event = [ADJEvent eventWithEventToken:TRANSACTION_TOKEN];
+NSString *product5 =  @"productId_5";
+NSDictionary *product6 = @{
+    SCMQuantity  : @3,
+    SCMProductID : @"productId_6"
+};
+NSArray * productList = @[product5, product6];
+
+[ADJSociomantic injectTransactionIntoEvent:event transactionId:@"123456" withProducts:productList];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+</Tabs>
+
+またはパラメーターを含む場合
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: TRANSACTION_TOKEN)
+let product5 = "productId_5"
+let product6 = [
+    SCMQuantity: NSNumber(value: 3),
+    SCMProductID: "productId_6"
+]
+let productList = [product5, product6]
+let parameters = [
+    SCMQuantity: NSNumber(value: 4 /* 3 times product6 and 1 product5 */)
+]
+
+ADJSociomantic.injectTransaction(into: event, transactionId: "123456", withProducts: productList, withParameters: parameters)
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "ADJSociomantic.h"
+
+ADJEvent *event = [ADJEvent eventWithEventToken:TRANSACTION_TOKEN];
+NSString *product5 =  @"productId_5";
+NSDictionary *product6 = @{
+    SCMQuantity  : @3,
+    SCMProductID : @"productId_6"
+};
+NSArray *productList = @[product5, product6];
+NSDictionary *parameters = @{
+    SCMQuantity: @4  // 3 times product6 and 1 product5
+};
+
+[ADJSociomantic injectTransactionIntoEvent:event transactionId:@"123456" withProducts:productList withParameters:parameters];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+</Tabs>
+
+### [確定したトランザクション](confirmed-transactions)
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: TRANSACTION_TOKEN)
+let product5 = "productId_5"
+let product6 = [
+    SCMQuantity: NSNumber(value: 3),
+    SCMProductID: "productId_6"
+]
+let productList = [product5, product6]
+
+ADJSociomantic.injectConfirmedTransaction(into: event, transactionId: "123456", withProducts: productList)
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "ADJSociomantic.h"
+
+ADJEvent *event = [ADJEvent eventWithEventToken:TRANSACTION_TOKEN];
+NSString *product5 =  @"productId_5";
+NSDictionary *product6 = @{
+    SCMQuantity  : @3,
+    SCMProductID : @"productId_6"
+};
+NSArray * productList = @[product5, product6];
+
+[ADJSociomantic injectConfirmedTransactionIntoEvent:event transactionId:@"123456" withProducts:productList];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+</Tabs>
+
+またはパラメーターを含む場合
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: TRANSACTION_TOKEN)
+let product5 = "productId_5"
+let product6 = [
+    SCMQuantity: NSNumber(value: 3),
+    SCMProductID: "productId_6"
+]
+let productList = [product5, product6]
+let parameters = [
+    SCMQuantity: NSNumber(value: 4 /* 3 times product6 and 1 product5 */)
+]
+
+ADJSociomantic.injectConfirmedTransaction(into: event, transactionId: "123456", withProducts: productList, withParameters: parameters)
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "ADJSociomantic.h"
+
+ADJEvent *event = [ADJEvent eventWithEventToken:TRANSACTION_TOKEN];
+NSString *product5 =  @"productId_5";
+NSDictionary *product6 = @{
+    SCMQuantity  : @3,
+    SCMProductID : @"productId_6"
+};
+NSArray *productList = @[product5, product6];
+NSDictionary *parameters = @{
+    SCMQuantity: @4  // 3 times product6 and 1 product5
+};
+
+[ADJSociomantic injectConfirmedTransactionIntoEvent:event transactionId:@"123456" withProducts:productList withParameters:parameters];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+</Tabs>
+
+### [使用可能なカートパラメーター](available-cart-parameters-1)
+
+<Table>
+
+| パラメーター名 | 要件       | 説明                                | 注意事項                                                                                                                           |
+| -------------- | ---------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `SCMAmount`    | オプション | 製品価格（10進値）（例：2\.99）     | 小数点の記号にはドットを使用し、3桁ごとの区切り文字は使用しないでください。数量が1以上の場合でも、製品単価のみを指定してください。 |
+| `SCMCurrency`  | オプション | ISO 4217形式の通貨コード（例：EUR） | 固定の通貨コード。トラッキングコードのサンプルですでに提供されています。                                                           |
+| `SCMQuantity`  | オプション | 選択された商品の数量                | 整数値で指定してください。                                                                                                         |
+
+</Table>
+
+### [リードイベント](lead-event)
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: LEAD_TOKEN)
+
+ADJSociomantic.injectLead(into: event, leadID: "123456789")
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "ADJSociomantic.h"
+
+ADJEvent *event = [ADJEvent eventWithEventToken:LEAD_TOKEN];
+
+[ADJSociomantic injectLeadIntoEvent:event leadID:@"123456789"];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+</Tabs>
+
+または確定したリード
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: LEAD_TOKEN)
+
+ADJSociomantic.injectLead(into: event, leadID: "123456789", andConfirmed: true)
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "ADJSociomantic.h"
+
+ADJEvent *event = [ADJEvent eventWithEventToken:LEAD_TOKEN];
+
+[ADJSociomantic injectLeadIntoEvent:event leadID:@"123456789" andConfirmed:YES];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+</Tabs>

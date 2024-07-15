@@ -1,0 +1,155 @@
+---
+title: "네트워크 링크 받기"
+description: "지정한 앱에 대한 네트워크 레벨의 링크를 부여 받으려면 이 엔드포인트를 사용하시기 바랍니다."
+slug: "ko/api/campaign-api/v1/get-links"
+sidebar-position: 2
+sidebar-label: "링크 받기"
+---
+
+지정한 앱에 대한 네트워크 레벨의 링크를 부여 받으려면 이 엔드포인트를 사용하시기 바랍니다.
+
+<CodeBlock title="엔드포인트" highlight="v1/apps/{app_token}/trackers">
+
+```http
+GET https://api.adjust.com/public/v1/apps/{app_token}/trackers
+```
+
+</CodeBlock>
+
+## [링크 불러오기](fetch-links)
+
+앱과 관련된 네트워크 레벨 링크 목록을 반환합니다.
+
+<Table>
+
+| 파라미터      | 데이터 유형 | In    | 설명                                                       |
+| ------------- | ----------- | ----- | ---------------------------------------------------------- |
+| `app_token`\* | `String`    | Path  | 앱의 12자리 ID                                             |
+| `after`       | `String`    | Query | 다음 페이지의 요소를 가져오는 커서.                        |
+| `before`      | `String`    | Query | 이전 페이지의 요소를 가져오는 커서.                        |
+| `limit`       | `Integer`   | Query | 응답에 포함된 요소의 최대 개수. 양의 정수 값이어야 합니다. |
+
+</Table>
+
+### [페이지 구분](pagination)
+
+이 엔드포인트로부터의 결과는 커서를 사용하여 페이징됩니다. 각 페이지는 이전 및 다음 페이지의 위치를 반환합니다. 이를 콜에 포함하여 특정 페이지를 반환할 수 있습니다. 또한 한 페이지에 포함되는 아이템의 수를 제한할 수 있습니다. 기본값 제한은 `50`개 입니다.
+
+각 결과 페이지는 커서 위치가 포함된 "paging" 객체를 포함합니다. 이 커서 위치를 사용하여 페이지를 이동할 수 있습니다. 예를 들어, 첫 페이지에는 다음과 같은 결과가 포함됩니다.
+
+<CodeBlock title="페이징 처리 플로우 예시:">
+
+```json
+"paging": {
+   "page_size": "50",
+   "collection_size": "49",
+   "total": "199",
+   "cursors": {
+      "after": "g2wAAAACYhW1_gxkAANuaWxq",
+      "before": null
+   },
+   "next": "https://api.adjust.com/public/v1/apps/yxs12pfewq/trackers?after=g2wAAAACYhW1_gxkAANuaWxq&limit=50",
+   "previous": null
+}
+```
+
+</CodeBlock>
+
+두 번째 페이지로 이동하려면 `after` 파라미터의 다음 요청에 `after` 값을 추가합니다. 예시:
+
+<CodeBlock title="cURL" highlight="after=g2wAAAACYhW1_gxkAANuaWxq">
+
+```console
+$ curl "https://api.adjust.com/public/v1/apps/yxs12pfewq/trackers?after=g2wAAAACYhW1_gxkAANuaWxq"
+```
+
+</CodeBlock>
+
+### [응답 파라미터](response-parameters)
+
+<Table search>
+
+| 필드                | 데이터 유형 | 설명                                                                                                                    | 예시                                        |
+| ------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| `name`              | `String`    | 링크의 이름                                                                                                             | `Adroll`                                    |
+| `label`             | `String`    | 링크 이름의 마지막 레벨 부분                                                                                            | `Adroll`                                    |
+| `level`             | `Integer`   | 링크의 수준<br/><ul><li>네트워크 = `1`</li><li>캠페인 = `2`</li><li>광고그룹 = `3`</li><li>크리에이티브 = `4`</li></ul> | `1`                                         |
+| `archived`          | `Boolean`   | 링크의 아카이브 여부                                                                                                    | `true`                                      |
+| `has_subtrackers`   | `Boolean`   | 링크에 하위 링크 존재 여부                                                                                              | `true`                                      |
+| `partner_id`        | `Integer`   | 링크에 포함될 파트너 ID                                                                                                 | `3`                                         |
+| `cost_data_enabled` | `Boolean`   | 링크의 cost_data 활성화 여부                                                                                            | `false`                                     |
+| `impression_url`    | `String`    | 노출 측정을 위한 링크 URL                                                                                               | `https://view.adjust.com/impression/abc123` |
+| `url`               | `String`    | 측정을 위한 링크 URL                                                                                                    | `https://app.adjust.com/abc123`             |
+| `click_url`         | `String`    | 클릭 측정을 위한 링크 URL                                                                                               | `https://app.adjust.com/abc123`             |
+
+</Table>
+<CodeBlock title="성공적인 응답">
+
+```json
+{
+   "name": "String",
+   "token": "String",
+   "label": "String",
+   "level": 1,
+   "archived": false,
+   "has_subtrackers": false,
+   "partner_id": 3,
+   "cost_data_enabled": false,
+   "url": "String",
+   "click_url": "String",
+   "impression_url": "String"
+}
+```
+
+</CodeBlock>
+
+## [예시](example)
+
+<CodeBlock title="cURL" highlight="gwzpeepw8uf8">
+
+```console
+$ curl \
+--header 'Authorization: Token token={API_TOKEN}' \
+-L -X GET 'https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers?limit=1'
+```
+
+</CodeBlock>
+<CodeBlock title="성공적인 응답">
+
+```json
+{
+   "data": {
+      "api_version": "1",
+      "request_id": "FcK55-tdJUDOWQIAABsB",
+      "timestamp": "2019-09-09T09:07:06Z",
+      "paging": {
+         "page_size": "1",
+         "collection_size": "1",
+         "total": "199",
+         "next": "https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers?after=g2wAAAACYhW1_gxkAANuaWxq&limit=1",
+         "previous": null,
+         "cursors": {
+            "after": "g2wAAAACYhW1_gxkAANuaWxq",
+            "before": null
+         }
+      },
+      "items": [
+         {
+            "archived": false,
+            "has_subtrackers": false,
+            "partner_id": 3,
+            "cost_data_enabled": false,
+            "label": "Adroll",
+            "level": 1,
+            "name": "Adroll",
+            "token": "abc123",
+            "url": "https://app.adjust.com/abc123",
+            "click_url": "https://app.adjust.com/abc123?campaign={campaign_name}&idfa={idfa}&deeplink=http%3A%2F%2Fa.b%2Fc%3Fd%3D1%26e%3D%%MACROS%%",
+            "impression_url": "https://s2s.adjust.com/impression/abc123?campaign={campaign_name}&idfa={idfa}&s2s=1"
+         }
+      ]
+   }
+}
+```
+
+</CodeBlock>

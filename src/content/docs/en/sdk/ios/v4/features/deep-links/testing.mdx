@@ -1,0 +1,218 @@
+---
+title: Test deep linking
+description: Test your deep links to ensure they work as expected.
+slug: en/sdk/ios/v4/features/deep-links/testing
+sidebar-position: 6
+---
+
+Before your marketing team goes live with your deep links in a campaign, it's important to test them. This ensures that:
+
+-  They're set up correctly.
+-  They deliver the user to the intended content.
+-  Adjust is recording them.
+
+## [Before you begin](before-you-begin)
+
+Here's what you need to do before getting started.
+
+1. Set your app environment to `ADJEnvironmentSandbox` and log level to `ADJLogLevelVerbose`.
+2. Build and run your app in Xcode.
+3. Obtain an example deep link from your marketing team.
+
+   Example: `https://example.go.link/summer-clothes?promo=beach`
+
+## [Create a test link](create-a-test-link)
+
+To test your deep link implementation, you need to create a test link. To do this:
+
+1. Log in to Adjust Suite.
+2. Under **Campaign Lab**, select **Custom links**.
+3. Select **New link**.
+4. In the **App selection** screen, choose the app for which you want to create the link.
+5. In the **Link structure** screen, add a name for your top-level channel link. Optionally, add campaign, adgroup, and creative sub-levels to set up your link structure.
+6. In the **User destinations** screen, provide the following information for the deep link to add to your link:
+   -  iOS app scheme
+   -  iOS app screen
+7. In the **Attribution settings** screen, ensure that you set **probabilistic modeling** to **ON** under **New user:attribution --> Clicks**.
+8. In the **Link review** screen, review your choices, and make any changes as necessary.
+9. Select **Create link** to generate the click URL, QR code, and link token.
+
+Example: `https://example.go.link/summer-clothes?promo=beach&adj_t=abc123`
+
+## [Test direct deep linking](test-direct-deep-linking)
+
+You can test the following universal link configurations:
+
+-  Adjust universal links
+-  Email redirect and URL shortener universal links
+
+### [Check universal link domain configuration](check-universal-link-domain-configuration)
+
+<Callout type="important">
+
+iOS doesn't open universal links as deep links if you enter them directly into your browser. You need to click the universal link as a hyperlink.
+
+</Callout>
+
+To check your universal link domain configuration, follow these steps.
+
+1. On your iOS test device, paste your universal link in Apple Notes.
+2. In Apple Notes, long press on the universal link to open an iOS menu. If you see the **Open in your app** option, iOS was able to make the connection between your app and the domain.
+
+If this option doesn't appear, check the following issues.
+
+### [Adjust universal links](adjust-universal-links)
+
+-  Check your marketing team has enabled Adjust universal links in the Adjust dashboard.
+-  Check the **Associated Domains** configuration in Xcode.
+   -  The `applinks: prefix` must be present.
+   -  The domain in Xcode must match the Adjust **Universal Link domain** or **Branded Link** in the Adjust dashboard. If you are testing different builds (for example: debug vs. release), you can add the Adjust Universal Link domain or Branded Link in all builds.
+-  Check if the following values in your app match with the values in the Adjust dashboard:
+   -  **App ID prefix**
+   -  **Bundle ID**: Verify whether you are using the bundle ID of the debug build or release build.
+
+### [Email redirect and URL shortener universal links](email-redirect-and-url-shortener-universal-links)
+
+-  Check the Associated Domains configuration in Xcode.
+   -  The `applinks: prefix` must be present.
+   -  The domain in Xcode must match the email redirect domain or URL shortener domain configured in the partner’s system.
+-  Check if the following values in your app match with the values in the AASA (Apple-App-Site-Association) file for the email redirect domain or URL shortener domain in the partner’s system:
+   -  **App ID prefix**
+   -  **Bundle ID**: Verify whether you are using the bundle ID of the debug build or release build.
+   -  Email redirect domain / URL shortener domain - Verify whether you have configured the domain as a custom domain in the email partner's system.
+
+### [Test direct deep linking in the app](test-direct-deep-linking-in-the-app)
+
+You should test direct deep linking both when your app is closed and again when its running in the background on the test device.
+
+#### [App closed](app-closed)
+
+1. Copy and paste the universal link into Apple Notes.
+2. Tap the home button twice. If your app is open, swipe up on it to close it.
+3. Open Apple Notes
+4. Click the universal link.
+
+The app should open and display the deep link content. If you don't see the correct page in the app, check the following:
+
+-  Verify that the path or parameters in the deep link are correct. Check if you have used the `?` symbol twice instead of the `&` symbol.
+-  Check if your app handles the deep link via the following methods.
+   -  **App doesn't use scenes**: `application(_:continue:restorationHandler:)` method
+   -  **App uses scenes**: `scene(_:continue:)` method
+-  Check if other content in your code is interfering with the deep link.
+-  If you've set up a redirect to the universal link, ensure that you have configured the redirect correctly.
+-  Check if you have configured the Link Resolution method correctly. Ensure that you have added the email redirect domain or URL shortener domain to `resolveUrlSuffixArray`.
+
+After selecting the deep link, your app calls the appWillOpen method in the Adjust SDK, and you should see entries similar to the following in your Xcode logs:
+
+```text
+2022-09-28 09:19:30.873598+0900 example[1619:241845]  [Adjust]d: Added sdk_click 1
+2022-09-28 09:19:30.873782+0900 example[1619:241845]  [Adjust]v: Path:      /sdk_click
+2022-09-28 09:19:30.873806+0900 example[1619:241845]  [Adjust]v: ClientSdk: ios$IOS_V4_VERSION
+2022-09-28 09:19:30.873824+0900 example[1619:241845]  [Adjust]v: Parameters:
+[...]
+2022-03-15 09:19:30.873956+0900 example[1619:241845]  [Adjust]v: source   deeplink
+```
+
+If you don't see these entries in your Xcode logs, ensure the following:
+
+-  You have set the environment to `sandbox` and logging to `verbose` in the Adjust SDK.
+   -  Verbose logging is indicated by `[Adjust]v` in your Xcode logs.
+-  Your app calls the `appWillOpenUrl` method in the method that receives the deep link.
+
+#### [App running in background](app-running-in-background)
+
+1. Copy and paste the universal link into Apple Notes.
+2. Tap the home button.
+3. Open your app with the app icon.
+4. Tap the home button twice and open Apple Notes.
+5. Click the universal link.
+
+The app should display the deep link content. If you don't see the correct page in the app, check the following:
+
+-  Check if your app handles the deep link via the following methods.
+   -  **App doesn't use scenes**: `application(_:continue:restorationHandler:)` method
+   -  **App uses scenes**: `scene(_:continue:)` method
+
+After selecting the deep link, your app calls the `appWillOpenUrl` method in the Adjust SDK, and you should see entries similar to the following in your Xcode logs:
+
+```text
+2022-09-28 09:19:30.873598+0900 example[1619:241845]  [Adjust]d: Added sdk_click 1
+2022-09-28 09:19:30.873782+0900 example[1619:241845]  [Adjust]v: Path:      /sdk_click
+2022-09-28 09:19:30.873806+0900 example[1619:241845]  [Adjust]v: ClientSdk: ios$IOS_V4_VERSION
+2022-09-28 09:19:30.873824+0900 example[1619:241845]  [Adjust]v: Parameters:
+[...]
+2022-03-15 09:19:30.873956+0900 example[1619:241845]  [Adjust]v: source   deeplink
+```
+
+If you don't see these entries in your Xcode logs, ensure the following:
+
+-  You have set the environment to `ADJEnvironmentSandbox` and logging to `ADJLogLevelVerbose` in the Adjust SDK.
+   -  Verbose logging is indicated by `[Adjust]v` in your Xcode logs.
+-  Your app calls the `appWillOpenUrl` method in the method that receives the deep link.
+
+## [Test direct deep linking with a custom URL scheme](test-direct-deep-linking-with-a-custom-url-scheme)
+
+You can test direct deep linking with a custom URL scheme when your app is closed or running in the background on the test device.
+
+In Apple Notes, select the universal link. The app should open and display the deep link content.
+
+If the app doesn't open, check the following:
+
+-  You have configured the URL scheme correctly in Xcode.
+-  If you are testing a debug build of the app, Verify whether you are using the debug or release custom URL scheme.
+
+If you don't see the correct page in the app, check the following:
+
+-  Verify that the path or parameters in the deep link are correct. Check if you have used the `?` symbol twice instead of the `&` symbol.
+-  Check if your app handles the deep link via the following methods.
+   -  **App doesn't use scenes**: `application(_:continue:restorationHandler:)` method
+   -  **App uses scenes**: `scene(_:continue:)` method
+-  Check if other content in your code is interfering with the deep link.
+
+After selecting the deep link, your app calls the `appWillOpenUrl` method in the Adjust SDK, and you should see entries similar to the following in your Xcode logs:
+
+```text
+2022-09-28 09:19:30.873598+0900 example[1619:241845]  [Adjust]d: Added sdk_click 1
+2022-09-28 09:19:30.873782+0900 example[1619:241845]  [Adjust]v: Path:      /sdk_click
+2022-09-28 09:19:30.873806+0900 example[1619:241845]  [Adjust]v: ClientSdk: ios$IOS_V4_VERSION
+2022-09-28 09:19:30.873824+0900 example[1619:241845]  [Adjust]v: Parameters:
+[...]
+2022-03-15 09:19:30.873956+0900 example[1619:241845]  [Adjust]v: source   deeplink
+```
+
+If you don't see these entries in your Xcode logs, ensure the following:
+
+-  You have set the environment to `ADJEnvironmentSandbox` and logging to `ADJLogLevelVerbose` in the Adjust SDK.
+   -  Verbose logging is indicated by `[Adjust]v` in your Xcode logs.
+-  Your app calls the `appWillOpenUrl` method in the method that receives the deep link.
+
+## [Test deferred deep linking](test-deferred-deep-linking)
+
+To test deferred deep linking on the test device, follow these steps.
+
+1. Install your app.
+2. Retrieve the ADID (Adjust device identifier) from your Xcode logs. Example:
+
+   <CodeBlock highlight="adid, 4446ab34861b99b78ee374c3bd38a350">
+
+   ```text
+   2022-09-28 09:19:35.609913+0900 example[1619:241847] [Adjust]v: Response: {"app_token":"2eb2na2w54c3","adid":"4446ab34861b99b78ee374c3bd38a350","timestamp":"2022-09-28T00:19:35.841Z+0000","message":"Attribution found","attribution":{"tracker_token":"abc123","tracker_name":"Organic","network":"Organic"}}
+   ```
+
+   </CodeBlock>
+
+3. Uninstall your app.
+4. Open the [Testing Console](https://help.adjust.com/en/article/testing-console), enter the Adjust ADID and select **View Device Data**. You should see the `TrackerName` as `Organic`.
+5. Forget your device in the testing console.
+6. Paste your universal link or custom URL scheme deep link in Apple Notes.
+7. Select the deep link. This should redirect you to the App Store.
+8. Install your app from a local build. Don't install your app from the store.
+9. Open your app. This app should open and display the deep link content.
+
+If you don't see the correct page in the app, check the following:
+
+-  Check if other content in your code is interfering with the deep link. For example: If your app has onboarding screens or requires user login, but your app doesn't already handle this before opening the deep link. You might have to implement the `adjustDeeplinkResponse` method to handle onboarding screens or user login before handling the deep link.
+-  Your app code isn't handling the incoming deep link in the `adjustDeeplinkResponse` method.
+-  Adjust didn't attribute your install to the click. In the Testing Console, select **View Device Data**. The `TrackerName` field should display your test link. Before you start your test, ensure the following:
+   -  Probabilistic matching was enabled on your test link.
+   -  In the Testing Console, the `TrackerName` was set to `Organic`.

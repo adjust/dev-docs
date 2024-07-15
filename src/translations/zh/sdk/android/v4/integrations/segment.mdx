@@ -1,0 +1,78 @@
+---
+title: "Segment SDK 集成"
+description: "使用 Segment 集成，向 Adjust 服务器传送 Segment 信息。"
+slug: "zh/sdk/android/v4/integrations/segment"
+---
+
+您可以采用下列方法之一，集成 Adjust SDK 和 Segment SDK：
+
+-  **独立 SDK 解决方案** \- Adjust SDK 独立于 Segment SDK 运行。采用这种解决方案，您就能更轻松地安装深度链接等额外 Adjust SDK 功能。
+
+要了解如何在 Adjust 和 Segment 控制面板中完成该集成设置，请查看：[设置 Segment 独立集成](https://help.adjust.com/zh/article/set-up-segment-independent-integration)。
+
+-  **包装 SDK 解决方案** \- Segment SDK 可以包装 Adjust SDK，轻松地将两个 SDK 在您的应用中连接起来。这样，您可以通过 Segment SDK 管理 Adjust SDK 部署，并允许 Adjust 和 Segment 在各自的系统中记录事件。该解决方案使用的是 SDK 事件，因此针对 SKAdNetwork 优化更加实用。
+
+要了解如何在 Adjust 和 Segment 控制面板中完成该集成设置，请查看：[设置 Segment SDK\-SDK 集成](https://help.adjust.com/zh/article/set-up-segment-sdk-sdk-integration)。
+
+无论使用哪种方法，您都需要在 Segment 控制面板中定义事件。
+
+<Callout type="warning">
+
+上述解决方案不支持[合作伙伴参数](/en/sdk/android/features/events#add-partner-parameters)。如果您需要向渠道发送带有自定义参数的事件，用于动态再营销等目的，请在 Segment SDK 和 Adjust SDK 中设置事件。请勿在 Segment 控制面板中将这些事件关联到 Adjust 端。
+
+</Callout>
+
+## [独立 SDK 解决方案设置](independent-sdk-solution-setup)
+
+### [1\. Segment SDK 设置](1-segment-sdk-setup)
+
+在 Segment SDK 中，指定`跟踪 API ` 调用事件。每个事件会记录单一用户操作。Segment SDK 会在 Cloud Mode 中向 Adjust SDK 进行相应的`trackEvent`调用。
+
+1. 集成 [Segment 安卓 SDK](https://segment.com/docs/connections/sources/catalog/libraries/mobile/android).
+
+   <Callout type="note">
+
+   请不要在`track`负载中传送 `.context.device.id` 或 `.context.device.type`。Segment SDK 会从设备自动调取这些属性。手动传送这些属性可能造成集成方面的问题。
+
+   </Callout>
+
+2. 为每个要监测的应用内事件创建`track`调用 \(安卓\)。
+
+-  可选：您可以将自定义键值对传送至 `properties` 对象。Segment SDK 会将这些属性作为回传参数传送至 Adjust SDK 事件记录调用。不支持 Adjust 合作伙伴参数。
+
+### [2\. Adjust SDK 设置](2-adjust-sdk-setup)
+
+1. 在您的应用中集成 Adjust 安卓 SDK。
+2. 将下列参数以[会话合作伙伴参数](/en/sdk/android/features/session-parameters#session-partner-parameters)形式发送至 Adjust SDK。只有启用 [Delay Start](/en/sdk/android/features/session-parameters#delay-start) \(延迟启动\)，这些参数才会在安装或会话开始时可用。
+
+-  `anonymous_id` \- Adjust 向 Segment 发送回传所必需。您可以[从 Segment SDK 调取 anonymous_id 值](https://segment.com/docs/connections/sources/catalog/libraries/mobile/android/#anonymousid)。
+-  可选：`user_id` 是您指定的值，因此您可以从自己的系统中调取该值。
+
+## [包装 SDK 解决方案](wrapped-sdk-solution)
+
+<Callout type="important">
+
+请不要将 Adjust SDK 直接集成入您的应用。如果您已经直接集成了 Adjust SDK，请将其从应用中移除。
+
+</Callout>
+
+Segment SDK 初始化 Adjust SDK。然后，Adjust SDK 会自动记录安装和/或会话。应用在 Segment SDK 中进行 `track` 调用，Segment SDK 则会在 Device Mode 中向 Adjust SDK 进行相应的`trackEvent`调用。即便在 **Device Mode** 下，Segment 有时也会以 **Cloud Mode** 发送事件。这是一个已知的问题，会导致 Adjust 同时收到 Adjust SDK 和 S2S 集成记录的事件，而且两者常常带有相同的事件识别码。
+
+1. 集成 [Segment 安卓 SDK](https://segment.com/docs/connections/sources/catalog/libraries/mobile/android/).
+2. 在 Segment SDK 中添加 Adjust 集成 \([安卓](https://segment.com/docs/connections/destinations/catalog/adjust/#android)\)。
+3. 将下列项目添加到您的应用：
+
+   -  [添加 Google Play 服务](/en/sdk/android#2-add-google-play-services)
+   -  [添加权限](/en/sdk/android#3-add-permissions)
+   -  [设置 Proguard](/en/sdk/android#4-set-up-proguard)
+   -  [设置 Install Referrer](/en/sdk/android#5-set-up-install-referrer)
+
+4. 为每个要跟踪的应用内事件创建[`track`调用](https://segment.com/docs/connections/spec/track/) \([安卓](https://segment.com/docs/connections/sources/catalog/libraries/mobile/android/#track)\)。
+
+-  可选：您可以将自定义键值对传送至 `properties` 对象。Segment SDK 会将这些属性作为回传参数传送至 Adjust SDK `trackEvent`调用。不支持 Adjust 合作伙伴参数。
+
+<Callout type="note">
+
+如果您想集成不受 Segment SDK 支持的额外 Adjust SDK 功能 \(如深度链接\)，请查看[Segment 文档](https://segment.com/docs/connections/sources/catalog/libraries/mobile/Android/Android-faqs/#how-do-i-know-when-a-destination-is-initialized)。
+
+</Callout>

@@ -1,0 +1,170 @@
+---
+title: "Create new link"
+description: "Use this endpoint to create new links and sublinks for your app."
+slug: en/api/campaign-api/v1/create-link
+sidebar-position: 4
+---
+
+Use this endpoint to create new links and sublinks for your app.
+
+<CodeBlock title="Endpoint" highlight="{app_token}/trackers">
+
+```http
+POST https://api.adjust.com/public/v1/apps/{app_token}/trackers
+```
+
+</CodeBlock>
+
+## [Create a link](create-a-link)
+
+Create a new link or sublink associated to your app.
+
+### [Parameters](parameters)
+
+<Table>
+
+| Parameter      | Data type | In   | Description                                                               |
+| -------------- | --------- | ---- | ------------------------------------------------------------------------- |
+| `app_token`\*  | `String`  | Path | Your app's 12 digit identifier.                                           |
+| `name`\*       | `String`  | Body | The new link's name.                                                      |
+| `parent_token` | `String`  | Body | The name of the parent link. Only required if you are creating a sublink. |
+
+</Table>
+
+### [Response parameters](response-parameters)
+
+<Table search>
+
+| Field               | Data type | Description                                                                                                                    | Example                                     |
+| ------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------- |
+| `name`              | `String`  | The link's name.                                                                                                               | `Adroll`                                    |
+| `label`             | `String`  | The last level part of the name of the link.                                                                                   | `Adroll`                                    |
+| `level`             | `Integer` | The level of the link.<br/><ul><li>Network = `1`</li><li>Campaign = `2`</li><li>Adgroup = `3`</li><li>Creative = `4`</li></ul> | `1`                                         |
+| `archived`          | `Boolean` | Whether the link is archived.                                                                                                  | `true`                                      |
+| `has_subtrackers`   | `Boolean` | Whether the link has sublinks.                                                                                                 | `true`                                      |
+| `partner_id`        | `Integer` | The ID of the partner attached to the link.                                                                                    | `3`                                         |
+| `cost_data_enabled` | `Boolean` | Whether the link has cost_data enabled.                                                                                        | `false`                                     |
+| `impression_url`    | `String`  | URL of the link for impression measurement.                                                                                    | `https://view.adjust.com/impression/abc123` |
+| `url`               | `String`  | URL of the link for measurement.                                                                                               | `https://app.adjust.com/abc123`             |
+| `click_url`         | `String`  | URL of the link for click measurement.                                                                                         | `https://app.adjust.com/abc123`             |
+
+</Table>
+
+<CodeBlock title="Response format">
+
+```json
+{
+   "name": "String",
+   "token": "String",
+   "label": "String",
+   "level": 1,
+   "archived": false,
+   "has_subtrackers": false,
+   "partner_id": 3,
+   "cost_data_enabled": false,
+   "url": "String",
+   "click_url": "String",
+   "impression_url": "String"
+}
+```
+
+</CodeBlock>
+
+#### [Link levels](link-levels)
+
+-  Network = `1`
+-  Campaign = `2`
+-  Adgroup = `3`
+-  Creative = `4`
+
+## [Example](example)
+
+<Tabs>
+<Tab title="Link" sync="link">
+
+<CodeBlock title="cURL">
+
+```console
+$ curl --location --request POST 'https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers' \
+--header 'Authorization: Token token={API_TOKEN}' \
+--header 'Content-Type: application/json' \
+--data-raw '{"name": "Adroll"}'
+```
+
+</CodeBlock>
+
+<CodeBlock title="Success response">
+
+```json
+{
+   "data": {
+      "api_version": "1",
+      "request_id": "FcK55-tdJUDOWQIAABsB",
+      "timestamp": "2019-09-09T09:07:06Z",
+      "items": [
+         {
+            "name": "Adroll",
+            "token": "abc123",
+            "label": "Adroll",
+            "level": 1,
+            "archived": false,
+            "has_subtrackers": false,
+            "partner_id": 3,
+            "cost_data_enabled": false,
+            "url": "https://app.adjust.com/abc123",
+            "click_url": "https://app.adjust.com/abc123?campaign={campaign_name}&idfa={idfa}&deeplink=http%3A%2F%2Fa.b%2Fc%3Fd%3D1%26e%3D%%MACROS%%",
+            "impression_url": "https://s2s.adjust.com/impression/abc123?campaign={campaign_name}&idfa={idfa}&s2s=1"
+         }
+      ]
+   }
+}
+```
+
+</CodeBlock>
+
+</Tab>
+
+<Tab title="Sublink" sync="sublink">
+
+<CodeBlock title="cURL" highlight="parent_tracker">
+
+```console
+$ curl --location --request POST 'https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers' \
+--header 'Authorization: Token token={API_TOKEN}' \
+--header 'Content-Type: application/json' \
+--data-raw '{"parent_tracker": "Adroll", "name": "SpringCampaign"}'
+```
+
+</CodeBlock>
+
+<CodeBlock title="Success response">
+
+```json
+{
+   "data": {
+      "api_version": "1",
+      "request_id": "FcK55-tdJUDOWQIAABsB",
+      "timestamp": "2019-09-09T09:07:06Z",
+      "items": [
+         {
+            "name": "Adroll::SpringCampaign",
+            "token": "xyz456",
+            "label": "SpringCampaign",
+            "level": 2,
+            "archived": false,
+            "has_subtrackers": false,
+            "partner_id": 3,
+            "cost_data_enabled": false,
+            "url": "https://app.adjust.com/xyz456",
+            "click_url": "https://app.adjust.com/xyz456?campaign={campaign_name}&idfa={idfa}&deeplink=http%3A%2F%2Fa.b%2Fc%3Fd%3D1%26e%3D%%MACROS%%",
+            "impression_url": "https://s2s.adjust.com/impression/xyz456?campaign={campaign_name}&idfa={idfa}&s2s=1"
+         }
+      ]
+   }
+}
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>

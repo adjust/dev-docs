@@ -1,0 +1,77 @@
+---
+title: "SDK 签名库集成"
+description: "将签名库添加到您的 iOS 应用，确保 Adjust SDK 和 Adjust 服务器之间通讯的安全。"
+slug: "zh/sdk/ios/v4/integrations/signature-library"
+---
+
+Adjust 的 SDK 签名库是 Adjust SDK 的一款独立插件，也就是说，您无需变更代码或改变在应用中使用 Adjust SDK 的方式，即可使用 SDK 签名库。安装插件后，Adjust SDK 发出的所有请求都将继续如常运行。
+
+## [操作前须知](before-you-begin)
+
+要将 Adjust 签名库集成到您的 iOS 应用，请确保满足下列条件：
+
+-  正在使用的 Adjust SDK 为 **4\.35\.2 或更高版本** 。
+-  支持 iOS 或 tvOS **12 或更高** 版本。
+
+### [如何从 Signature V1 或 V2 库过渡](migrating-from-signature-v1-or-v2-library)
+
+如果您之前使用的是 Signature v1 或 Signature v2，请先移除旧版本，然后再集成签名库库。 为此请进行下列操作：
+
+-  如果您之前已经集成了 Signature V1，请移除项目中所有会调用签名功能的代码。
+-  如果您之前已经集成了 Signature V2，请从您的项目中移除 Signature V2 库。
+
+## [集成步骤](integration-steps)
+
+请按照下列步骤操作，将签名库集成入您的 iOS 项目中。
+
+1. [从 GitHub 下载`AdjustSigSdk-iOS-tvOS-Dynamic.xcframework.zip`文档](https://github.com/adjust/adjust_signature_sdk/releases/latest)。
+2. 解压缩文档，并将`AdjustSigSdk.xcframework`复制到项目的目录中。
+3. 在 Xcode 中，在 **项目导航** 中选择您的项目。
+4. 在左侧选择对象。
+5. 选择 **General** 选项卡，展开 **Frameworks, Libraries and Embedded Content** 群组。
+6. 点击群组底部的 **\+** 号。
+
+![A screenshot of the Frameworks page in Xcode](@images/sig-v3/xcode-frameworks.png)
+
+7. 选择 **Add Other \-> Add Files** ，然后从项目目录中选择 `AdjustSigSdk.xcframework` 文件。
+
+![A screenshot of the framework selector in Xcode](@images/sig-v3/xcode-select-framework.png)
+
+8. 为 `AdjustSigSdk.xcframework` 选择 **Embed & Sign** 选项。
+
+![A screenshot of the Embed & Sign option in Xcode](@images/sig-v3/xcode-embed-sign.png)
+
+一切就绪！签名库现已集成到您的项目中。
+
+## [进行应用测试](test-your-app)
+
+您可以使用 [Adjust 测试控制台](https://help.adjust.com/zh/article/testing-console)验证签名库是否已正确集成进应用。
+
+<Callout type="important">
+
+请务必确保 Adjust SDK 处于 **sandbox 模式** 。
+
+</Callout>
+
+要测试您的签名库集成情况，请按照下列步骤操作。
+
+1. 从测试设备中完全删除应用，确保安装信息能被正确发送。
+
+2. 使用测试控制台遗忘设备，清除与该设备相关的所有信息。您还可以发送从[Adjust InSights 应用](https://apps.apple.com/us/app/adjust-insights/id1125517808)中获得的应用识别码和广告 ID，以此使用 forget_device 终端。您可以使用以下任何广告 ID：`adid`、`idfa`、`idfv`、`imei`、`oaid`。
+
+   调用看上去应该是这样的：
+
+   ```console
+   $ curl -X POST 'https://app.adjust.com/forget_device?app_token={yourAppToken}&id={adid}'
+   ```
+
+3. 从测试控制台抹除设备信息后，请在测试设备上安装并打开应用，以将安装信息发送给 Adjust。
+
+4. 将测试设备的广告 ID 输入测试控制台，调取安装事件信息。请检查以下内容：
+
+   1. `SignatureVerificationResult` 字段应当显示以下值 `Valid Signature`
+   2. `SignatureVersion` 字段应当显示以下值 `3`
+
+如果这些字段没有缺失，且包含正确的信息，就说明签名库已经成功集成。如果字段中出现了不同的值，请再次检查集成步骤，或发送邮件到 [support@adjust.com](mailto:support@adjust.com) 获取支持。
+
+一切就绪！签名库已成功集成到您的应用。[等待两个归因窗口结束](https://help.adjust.com/zh/article/attribution-windows)，即可[执行 SDK 签名验证](https://help.adjust.com/zh/article/sdk-signature#enforce-signature-validation)，确保 Adjust 只接受带有签名的请求。

@@ -1,0 +1,131 @@
+---
+title: "삼성 리퍼러"
+description: "삼성 리퍼러 플러그인을 사용하여 삼성 정보를 Adjust에 전달하시기 바랍니다."
+slug: "ko/sdk/android/v4/plugins/samsung-referrer-plugin"
+---
+
+삼성 리퍼러 플러그인은 Adjust SDK가 기기에서 삼성 갤럭시 스토어 설치 리퍼러 값을 읽을 수 있도록 합니다. SDK는 해당 정보를 설치 페이로드의 일부로서 Adjust 서버에 전송합니다.
+
+삼성 설치 리퍼러는 삼성 설치 리퍼러 라이브러리를 사용하는 모든 기기에서 이용 가능합니다.
+
+## [시작에 앞서](before-you-begin)
+
+앱에 Adjust SDK를 연동하려면 [시작 가이드](/en/sdk/android)를 참조하시기 바랍니다.
+
+## [삼성 리퍼러 플러그인 설치하기](install-the-samsung-referrer-plugin)
+
+삼성 리퍼러 플러그인은 두 가지 방식으로 설치할 수 있습니다.
+
+### [Maven](maven)
+
+Adjust SDK 선언 아래의 `build.gradle` 파일에 다음의 디펜던시를 추가합니다.
+
+```groovy
+implementation 'com.adjust.sdk:adjust-android:$ANDROID_V4_VERSION'
+implementation 'com.adjust.sdk:adjust-android-samsung-referrer:$ANDROID_V4_VERSION'
+```
+
+### [JAR](jar)
+
+삼성 리퍼러 플러그인은 GitHub [릴리스 페이지](https://github.com/adjust/android_sdk/releases/latest) 에서 사용할 수 있습니다.
+
+## [삼성 설치 리퍼러 라이브러리 추가](add-the-samsung-install-referrer-library)
+
+리퍼러 값을 읽으려면 삼성 설치 리퍼러를 앱에 추가해야 합니다. 자세한 정보는 삼성 담당자 또는 [support@samsungdevelopers.com](mailto:support@samsungdevelopers.com)으로 문의하시기 바랍니다.
+
+<Accordion title="Adjust SDK v4.33.4 이상">
+<Callout type="important">
+
+Maven을 통한 삼성 설치 리퍼러 라이브러리 추가는 Adjust SDK v4\.33\.4 이상에서만 가능합니다.
+
+</Callout>
+
+삼성 설치 리퍼러 라이브러리를 설치하려면 Adjust SDK 선언 아래의 `build.gradle` 파일에 다음의 디펜던시를 추가해야 합니다.
+
+<CodeBlock title="build.gradle">
+
+```groovy
+implementation  'store.galaxy.samsung.installreferrer:samsung_galaxystore_install_referrer:3.0.1'
+```
+
+</CodeBlock>
+</Accordion>
+<Accordion title="Adjust SDK v4.33.3 이하">
+
+삼성 리퍼러 라이브러리를 버전 4\.33\.3 이하의 Adjust SDK에 설치하는 방법은 삼성 담당자 또는 [support@samsungdevelopers.com](mailto:support@samsungdevelopers.com)로 문의하시기 바랍니다.
+
+</Accordion>
+
+## [Proguard 설정](proguard-settings)
+
+Proguard를 사용하는 경우 빌드 중에 중요한 클래스가 삭제되지 않도록 규칙을 추가해야 합니다.
+
+모든 Adjust 클래스를 유지하기 위해 다음의 규칙을 추가하시기 바랍니다.
+
+<CodeBlock title="Proguard.pro">
+
+```java
+-keep public class com.adjust.sdk.** { *; }
+```
+
+</CodeBlock>
+
+삼성 설치 리퍼러 라이브러리를 유지하기 위해 다음의 규칙을 추가하시기 바랍니다.
+
+<CodeBlock title="Proguard.pro">
+
+```java
+-keep class com.sec.android.app.samsungapps.installreferrer.** { *; }
+```
+
+</CodeBlock>
+
+## [플러그인 사용하기](use-the-plugin)
+
+삼성 리퍼러 플러그인은 기본 설정에 따라 **활성화** 되어 있습니다. `AdjustSamsungReferrer` 클래스 메서드를 사용하여 삼성 설치 리퍼러 정보 읽기를 켜거나 끌 수 있습니다.
+
+설치 리퍼러 읽기를 **비활성화** 하려면 SDK 초기화 **전에** `AdjustSamsungReferrer.doNotReadSamsungReferrer()` 를 호출합니다.
+
+<Tabs>
+<Tab title="Java" sync="java">
+
+```java
+AdjustSamsungReferrer.doNotReadSamsungReferrer();
+//...
+Adjust.onCreate(config);
+```
+
+</Tab>
+<Tab title="Kotlin" sync="kotlin" >
+
+```kotlin
+AdjustSamsungReferrer.doNotReadSamsungReferrer()
+//...
+Adjust.onCreate(config)
+```
+
+</Tab>
+</Tabs>
+
+설치 리퍼러 읽기를 **재활성화** 하려면 SDK 초기화 **전에** `AdjustSamsungReferrer.readSamsungReferrer(applicationContext)` 를 호출합니다.
+
+<Tabs>
+<Tab title="Java" sync="java">
+
+```java
+AdjustSamsungReferrer.readSamsungReferrer(applicationContext);
+//...
+Adjust.onCreate(config);
+```
+
+</Tab>
+<Tab title="Kotlin" sync="kotlin" >
+
+```kotlin
+AdjustSamsungReferrer.readSamsungReferrer(applicationContext)
+//...
+Adjust.onCreate(config)
+```
+
+</Tab>
+</Tabs>

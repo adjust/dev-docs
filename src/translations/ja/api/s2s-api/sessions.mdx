@@ -1,0 +1,159 @@
+---
+title: "サーバー間（S2S）セッション"
+description: "サーバー間（S2S）セッションAPIを使用すると、AdjustはHTTPリクエストを介してセッションを記録します。"
+slug: "ja/api/s2s-api/sessions"
+sidebar-position: 4
+sidebar-label: "S2Sセッション"
+---
+
+セッションは、Adjustの全てのアトリビューションと計測の基となるものです。ユーザーがバックグラウンドからアプリの利用を再開した時、またはアプリを起動した時にセッションがトリガーされます。サーバー間（S2S）セッションAPIを使用して、アプリ内の各ユーザーセッションを記録してください。
+
+<Callout type="important">
+
+この機能をご利用いただくには、まずはじめにAdjustが機能を有効化する必要があります。担当のテクニカルアカウントマネージャーまたは[support@adjust.com](mailto:support@adjust.com)にお問い合わせください。
+
+</Callout>
+
+## [事前準備](before-you-begin)
+
+### [認証](authentication)
+
+[サーバー間（S2S）セキュリティを設定](/en/api/s2s-api/security)して、S2Sセッションの計測を不正から守ります。そのためには、受信するリクエストごとに、Adjustダッシュボードで生成されたトークンが付与されている必要があります。トークンが付与されていないリクエスト、または不正なトークンが付与されたリクエストは、Adjustのサーバーによって拒否されます。
+
+## [セッションを記録する](record-sessions)
+
+Adjustはセッションをグループ化することでリソースを節約します。つまり、Adjustサーバーが新しいセッションをトリガーされたものとして受け取る前に、1つのセッション後に最低30分間の間隔がなければなりません。
+
+<CodeBlock title="エンドポイント" highlight="/session">
+
+```text
+https://s2s.adjust.com/session
+```
+
+</CodeBlock>
+
+### [ヘッダー](headers)
+
+<Table>
+
+| パラメーター             | 説明                                                 | 例                                  |
+| ------------------------ | ---------------------------------------------------- | ----------------------------------- |
+| `Content-Type`           | ハードコーディングされたPOSTペイロードのフォーマット | `application/x-www-form-urlencoded` |
+| `X-Adjust-Forwarded-For` | デバイスのIPアドレス                                 | `180.220.253.39`                    |
+| `Authorization`          | Adjust認証トークンを`Bearer`トークンとして取得する。 | `Bearer authentication_token`       |
+
+</Table>
+
+### [ペイロード](payload)
+
+パラメーターの一覧は、以下の表をご参照ください。
+
+<Table search>
+
+| パラメーター          | 説明                                                                                                                                                                                | 例                                                |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| `s2s`\*               | サーバー間パラメーター：Adjustサーバーがサーバー側のアクティビティの認識を有効化。 常に`1`である必要があります。                                                                    | `1`                                               |
+| `app_token`           | アプリ固有の認証トークン。                                                                                                                                                          | `pezwd5bre2xb`                                    |
+| `vida`                | Vizio広告ID、Vizioのみ                                                                                                                                                              | `dca2365e-0d78-47c6-aaac-9567846c6c9e`            |
+| `rida`                | Rokuの広告ID、Rokuのみ                                                                                                                                                              |                                                   |
+| `tifa`                | Tizen OS 広告ID、Samsungのみ                                                                                                                                                        |                                                   |
+| `idfa`                | iOS広告ID、iOSのみ                                                                                                                                                                  | `29DDE430-CE81-4F00-A50C-689595AAD142`            |
+| `idfv`                | iOSベンダーID、iOSのみ                                                                                                                                                              | `59E27F41-A86B-4560-B585-63161F871C4B`            |
+| `gps_adid`            | Google Play広告ID、Google Play 開発者サービスライブラリが追加された場合にのみ送信される。Androidのみ                                                                                | `6cf94580-46c2-490c-b882-2f6ae269b579`            |
+| `oaid`                | Open Advertising（匿名）ID                                                                                                                                                          | `ed799bac-2537-6122-377a-edebce5db5a5`            |
+| `imei`                | 国際移動体装置識別番号                                                                                                                                                              | `490154203237518`                                 |
+| `android_id`          | Android ID、 `gps_adid`がない場合にのみ送信される。Androidのみ                                                                                                                      | `e11a8c233efb29f3`                                |
+| `persistent_ios_uuid` | ios_uuidと同様ですが、Keychainに保存されるため、再インストールされたアプリは同じ値を持ちます。iOSのみ                                                                               | `3b35fcfb-6115-4cff-830f-e32a248c487d`            |
+| `app_version`         | このパラメーターはiOSのビルド番号、Androidの実際のアプリバージョンを表します。                                                                                                      | `1.0`                                             |
+| `app_version_short`   | iOSの実際のアプリバージョン番号を表します。iOSのみ                                                                                                                                  | `1.0`                                             |
+| `session_count`       | 現在のセッションを含む記録されたセッションの数。                                                                                                                                    | `1`                                               |
+| `subsession_count`    | 記録されたサブセッションの数。初めて記録されたセッションインストールはこのパラメーターを含みません。<br/>その後の全てのセッションは前回のセッションのサブセッションの数を含みます。 | `1`                                               |
+| `session_length`      | セッションの長さ（秒単位）。初めて記録されたセッションインストールはこのパラメーターを含みません。<br/>その後の全てのセッションは前回のセッションの長さを含みます。                 | `123`                                             |
+| `time_spent`          | 前回のセッション中のアプリ内でのアクティブな経過時間。                                                                                                                              | `123`                                             |
+| `tracking_enabled`    | ユーザーが追跡型広告制限を有効化しているかどうかを示す。                                                                                                                            | `1`                                               |
+| `bundle_id`           | バンドルID、iOSのみ。                                                                                                                                                               | `com.adjust.example`                              |
+| `package_name`        | パッケージ名、Androidのみ。                                                                                                                                                         | `com.adjust.example`                              |
+| `environment`         | `sandbox` テストまたは`production`ライブトラフィック。                                                                                                                              | `sandbox`                                         |
+| `country`             | 現地の国名コード。                                                                                                                                                                  | `de`                                              |
+| `language`            | 現地の言語コード。                                                                                                                                                                  | `en`                                              |
+| `os_name`             | `ios` または `android`                                                                                                                                                              | `ios`                                             |
+| `os_version`          | OSの現在のバージョン。                                                                                                                                                              | `11.0`                                            |
+| `cpu_type`            | CPUのプロセッサーファミリー。                                                                                                                                                       | `arm64-v8a`                                       |
+| `created_at`          | タイムゾーンを含むパッケージが作成された時点のローカルデバイスのタイムスタンプ。                                                                                                    | `2024-03-23T09:46:47.288Z-0400`                   |
+| `sent_at`             | タイムゾーンを含むパッケージが送信された時点のローカルデバイスのタイムスタンプ。                                                                                                    | `2024-03-23T09:47:47.288Z-0400`                   |
+| `device_type`         | デバイスのモデル。                                                                                                                                                                  | `Phone (android), iphone`                         |
+| `device_name`         | URLエンコードされたモデルID。                                                                                                                                                       | `Moto G (5) Plus, iPhone10,5`                     |
+| `hardware_name`       | デバイスボードの構成。                                                                                                                                                              | `N66AP`                                           |
+| `install_receipt`     | App Store、暗号化により署名されたインストールの受領証、iOSのみ。                                                                                                                    | `Super long string representation of the receipt` |
+| `ip_address`          | デバイスのIPアドレス。<br/>`ip_address`パラメーターではIPv4アドレスのみを受け付けます。IPv6は現在サポートされていません。                                                           | `ip_address=192.0.0.1`                            |
+
+</Table>
+
+## [Googleに同意データを提供（デジタル市情法へのコンプライアンス）](provide-consent-data-to-google-digital-markets-act-compliance)
+
+[EUのデジタル市場法（DMA）に準拠するため、](https://help.adjust.com/ja/article/google-compliancy-with-the-dma)Google 広告およびGoogle マーケティング プラットフォームは、AdjustからAPIへのアトリビューションリクエストを受信することに明示的な同意を必要とします。
+
+<Callout type="important">
+
+Google 広告またはGoogle マーケティング プラットフォームを使用し、ユーザーの所在地が欧州経済領域（EEA）である場合は、これらの情報をパスする必要があります。
+
+</Callout>
+
+Adjustは、S2Sセッションとインストールリクエスト向けに、以下のGoogle DMAをサポートしています。Adjustは、パラメーターがリクエストフォームにあることを要件とします。
+
+Google 広告を使用している場合は`ad_personalization`パラメーターを、Google マーケティング プラットフォームを使用している場合は`npa`パラメーターを送信する必要があります。
+
+<Table>
+
+| 鍵（Key）            | 値                                                                                                                        | 説明                                                                                                                                                                                                                                        |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `eea`                | <ul><li>`1`ユーザーはEEA内に在住であり、DMAが適用される</li><li>`0`ユーザーはEEA内にいないためDMAは適用されない</li></ul> | Googleに、ユーザーの所在地がEEAであるかどうか、つまり、DMAを含む欧州の規制がこのユーザーとコンバージョンに適用されるかどうかを通知します。                                                                                                  |
+| `ad_personalization` | <ul><li>`1`: ユーザー同意</li><li>`0`: ユーザーが同意しなかった</li></ul>                                                 | アプリのインストール後、Google 広告でパーソナライズされた広告を配信することにユーザーが同意したかどうかを通知します。                                                                                                                       |
+| `ad_user_data`       | <ul><li>`1`: ユーザー同意</li><li>`0`: ユーザーが同意しなかった</li></ul>                                                 | Googleに、ユーザーが個人データが計測目的で共有されることに同意したかどうかを通知します。<br/>この同意は、Google 広告およびGoogle マーケティング プラットフォームのUIで指定した全てのコアプラットフォームサービスCPSの広告主に適用されます。 |
+| `npa`                | <ul><li>`1`: ユーザー同意</li><li>`0`: ユーザーが同意しなかった</li></ul>                                                 | アプリのインストール後に、Google マーケティング プラットフォームを介してパーソナライズされた広告を配信することにユーザーが同意したかどうかを通知します。                                                                                    |
+
+</Table>
+
+## [例](example)
+
+<CodeBlock title="リクエスト">
+
+```sh
+curl -X "POST" \
+-H 'Authorization: Bearer ADD_YOUR_AUTH_TOKEN_HERE' \
+-H 'User-Agent: Adjust Streaming Job (akka-http)' \
+-d "app_token=a1234b2x3a4o&app_version=Roku%2FDVP-10.5+%2810.5.0.0010%29&created_at_unix=1543915806015&environment=production&os_name=android&rida=099aa0bc-d123-4567-8999-a1b7c50767b1&s2s=1" \
+"https://s2s.adjust.com/session"
+
+```
+
+</CodeBlock>
+<CodeBlock title="レスポンス">
+
+```json
+{
+   "Host": "s2s.adjust.com",
+   "Path": "/session",
+   "Method": "POST",
+   "ReceivedAt": "2022-01-01T17:00:01.030986068Z",
+   "Header": {
+      "Connection": ["close"],
+      "User-Agent": ["Adjust Streaming Job (akka-http)"],
+      "Authorization": ["Bearer ADD_YOUR_AUTH_TOKEN_HERE"],
+      "Content-Length": ["0"],
+      "X-Adjust-Forwarded-For": ["71.142.112.183", "34.221.136.124"],
+      "X-Adjust-Forwarded-Proto": ["https"]
+   },
+   "Form": {
+      "s2s": ["1"],
+      "rida": ["099aa0bc-d123-4567-8999-a1b7c50767b1"],
+      "os_name": ["android"],
+      "app_token": ["a1234b2x3a4o"],
+      "app_version": ["Roku/DVP-10.5 (10.5.0.0010)"],
+      "environment": ["production"],
+      "created_at_unix": ["1543915806015"]
+   }
+}
+```
+
+</CodeBlock>
