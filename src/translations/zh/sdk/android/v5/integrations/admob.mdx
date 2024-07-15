@@ -1,0 +1,56 @@
+---
+title: "AdMob SDK 集成"
+description: "使用 Admob 集成，向 Adjust 服务器传送 Admob 信息。"
+slug: "zh/sdk/android/integrations/admob"
+multiVersion: true
+---
+
+如果您想使用 AdMob SDK 监测广告收入，可以借助 SDK 到 SDK 集成，将数据发送到 Adjust 服务器。
+
+<Callout type="note">
+
+如果您对 AdMob 广告收入监测有任何疑问，请联系您的专属客户经理，或发送邮件至 [support@adjust.com](mailto:support@adjust.com)。
+
+</Callout>
+
+## [操作前须知](before-you-begin)
+
+要开始 AdMob SDK 集成，请按以下步骤操作：
+
+1. [配置 Adjust SDK 并将其集成至您的应用](/en/sdk/android)。
+2. 在 AdMob 中配置展示层级广告收入 \(ILAR\)。[请参考 Google 的说明文档](https://support.google.com/admob/answer/11322405)。
+
+## [示例](example)
+
+<Tabs>
+<Tab title="Java">
+
+```java
+AdRequest adRequest = new AdRequest.Builder().build();
+
+RewardedAd.load(this, "ad unit ID",
+adRequest, new RewardedAdLoadCallback(){
+   @Override
+   public void onAdLoaded(@NonNull RewardedAd ad) {
+   rewardedAd = ad;
+   // Set paid event listener
+   rewardedAd.setOnPaidEventListener(new OnPaidEventListener() {
+      @Override
+      public void onPaidEvent(AdValue adValue) {
+         // for more information, please check AdMob official docs at:
+         // https://developers.google.com/admob/android/impression-level-ad-revenue
+         AdapterResponseInfo loadedAdapterResponseInfo = rewardedAd.getResponseInfo().getLoadedAdapterResponseInfo();
+
+         // send ad revenue info to Adjust
+         AdjustAdRevenue adRevenue = new AdjustAdRevenue("admob_sdk");
+         adRevenue.setRevenue(adValue.getValueMicros() / 1000000.0, adValue.getCurrencyCode());
+         adRevenue.setAdRevenueNetwork(loadedAdapterResponseInfo.getAdSourceName());
+         Adjust.trackAdRevenue(adRevenue);
+         }
+      });
+   }
+});
+```
+
+</Tab>
+</Tabs>

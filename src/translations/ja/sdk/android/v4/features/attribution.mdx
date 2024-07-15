@@ -1,0 +1,189 @@
+---
+title: "アトリビューション情報の取得"
+description: "Adjust SDKを使ってアトリビューションの変更を受信する"
+slug: "ja/sdk/android/features/attribution"
+multiVersion: true
+---
+
+ユーザーがAdjustリンクをクリックすると、そのアトリビューション情報が更新されます。これは、ユーザーが[ディープリンク](https://help.adjust.com/ja/article/deep-links)をクリックした場合に発生します。ユーザーのアトリビューションについての情報は、`AdjustAttribution`クラスに表示されます。
+
+## [AdjustAttributionクラスのプロパティ](adjustattribution-class-properties)
+
+`AdjustAttribution`クラスには、デバイスの現在のアトリビューションステータスに関する詳細が含まれています。ユーザーの入力されていない値は全て`null`値として返されます。
+
+<Callout type="note">
+
+以下の値は、[`AdjustConfig`インスタンスの`needsCost`プロパティ](/en/sdk/android/configuration#enable-cost-data-sending)が`true`になっている場合にのみアクセスできます：
+
+-  `costType`
+-  `costAmount`
+-  `costCurrency`
+
+</Callout>
+<Table>
+
+| 値                  | データタイプ | 説明                                                                                             |
+| ------------------- | ------------ | ------------------------------------------------------------------------------------------------ |
+| `trackerToken`      | `String`     | デバイスが現在アトリビュートされているリンクのトークン                                           |
+| `trackerName`       | `String`     | デバイスが現在アトリビュートされているリンクの名前                                               |
+| `network`           | `String`     | デバイスが現在アトリビュートされているネットワークの名前                                         |
+| `campaign`          | `String`     | デバイスが現在アトリビュートされているキャンペーンの名前                                         |
+| `adgroup`           | `String`     | デバイスが現在アトリビュートされているアドグループの名前                                         |
+| `creative`          | `String`     | デバイスが現在アトリビュートされているクリエイティブの名前                                       |
+| `clickLabel`        | `String`     | インストールがタグされている[クリックラベル](https://help.adjust.com/ja/article/user-rewards)    |
+| `adid`              | `String`     | デバイスに割り当てられた一意のAdjust ID                                                          |
+| `costType`          | `String`     | キャンペーン価格モデル（例：cpi）                                                                |
+| `costAmount`        | `Double`     | インストールのコスト                                                                             |
+| `costCurrency`      | `String`     | コストに関連する[3文字のISO 4217通貨コード](https://www.iban.com/currency-codes)                 |
+| `fbInstallReferrer` | `String`     | [Facebookインストールリファラー](https://developers.facebook.com/docs/app-ads/install-referrer/) |
+
+</Table>
+
+## [アトリビューションが変更されたときに関数をトリガーする](trigger-a-function-when-attribution-changes)
+
+<CodeBlock title="メソッドシグネチャー">
+
+```java
+public void setOnAttributionChangedListener(OnAttributionChangedListener onAttributionChangedListener)
+```
+
+</CodeBlock>
+
+SDKはアトリビューションの変更を受信し、更新を検出したときに関数を呼び出すことができます。コールバック関数を設定するには、関数名を引数として`setOnAttributionChangedListener`メソッドを呼び出します。
+
+<Callout type="important">
+
+アプリ内でAdjust SDKを初期化する **前** に、`setOnAttributionChangedListener`メソッドを呼び出す必要があります。
+
+</Callout>
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val config = AdjustConfig(this, appToken, environment)
+//...
+config.setOnAttributionChangedListener {
+   override fun onAttributionChanged(attribution: AdjustAttribution) {}
+   }
+//...
+Adjust.onCreate(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+//...
+config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
+   @Override
+   public void onAttributionChanged(AdjustAttribution attribution) {}
+});
+//...
+Adjust.onCreate(config);
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+function attributionCallback(attribution) {}
+//...
+let adjustConfig = new AdjustConfig(yourAppToken, environment);
+adjustConfig.setAttributionCallback(attributionCallback);
+Adjust.onCreate(adjustConfig);
+```
+
+</Tab>
+</Tabs>
+
+### [Facebookインストールリファラー](facebook-install-referrer)
+
+Adjust SDKは、Facebookインストールリファラー情報を[`AdjustAttribution`オブジェクト](#adjustattribution-class-properties)の`String`プロパティとして受信します。この情報には、コンテンツをJSONオブジェクトとしてシリアル化することでアクセスすることができます。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val config = AdjustConfig(this, appToken, environment)
+//...
+config.setOnAttributionChangedListener {
+   val fbInstallReferrerJSONObject = extractFBInstallReferrerJSON(it)
+}
+
+fun extractFBInstallReferrerJSON(adjustAttribution: AdjustAttribution): JSONObject? {
+   try {
+      return JSONObject(adjustAttribution.fbInstallReferrer)
+   } catch (e: JSONException) {
+      Log.d("example", e.message!!)
+   }
+   return null
+}
+//...
+Adjust.onCreate(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+//...
+config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
+   @Override
+   public void onAttributionChanged(AdjustAttribution adjustAttribution) {
+   JSONObject fbInstallReferrerJSONObject = extractFBInstallReferrerJSON(adjustAttribution);
+   }
+});
+
+@Nullable
+JSONObject extractFBInstallReferrerJSON(AdjustAttribution adjustAttribution) {
+   try {
+      return new JSONObject(adjustAttribution.fbInstallReferrer);
+   } catch (JSONException e) {
+      Log.d("example", e.getMessage());
+   }
+   return null;
+}
+//...
+Adjust.onCreate(config);
+```
+
+</Tab>
+</Tabs>
+
+## [現在のアトリビューション情報を取得](get-current-attribution-information)
+
+<CodeBlock title="メソッドシグネチャー">
+
+```java
+public static AdjustAttribution getAttribution()
+```
+
+</CodeBlock>
+
+ユーザーがアプリをインストールすると、Adjustはそのインストールをキャンペーンにアトリビュートします。Adjust SDKでは、インストールのキャンペーンアトリビューションの詳細にアクセスすることができます。この情報を返すには、`getAttribution`メソッドを呼び出して、アトリビューション情報を`AdjustAttribution`オブジェクトとして返します。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val attribution = Adjust.getAttribution()
+```
+
+</Tab>
+<Tab title="Java" sync="java" >
+
+```java
+AdjustAttribution attribution = Adjust.getAttribution();
+```
+
+</Tab>
+<Tab title="Javascript" sync="js" >
+
+```js
+let attribution = Adjust.getAttribution();
+```
+
+</Tab>
+</Tabs>

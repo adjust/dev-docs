@@ -1,0 +1,387 @@
+---
+title: Sociomatic
+description: Use the Sociomatic plugin to pass Sociomatic information to Adjust.
+slug: en/sdk/android/plugins/sociomatic
+multiVersion: true
+---
+
+You can integrate the Adjust SDK with Sociomantic events.
+
+## [Set up your environment](set-up-your-environment)
+
+### [Maven](maven)
+
+If you are using Maven, add the following dependency to your `build.gradle` file:
+
+<CodeBlock title="build.gradle">
+
+```groovy
+dependencies {
+   implementation 'com.adjust.sdk:adjust-android:$ANDROID_V4_VERSION'
+   implementation 'com.adjust.sdk:adjust-android-criteo:$ANDROID_V4_VERSION'
+}
+
+```
+
+</CodeBlock>
+
+### [JAR](jar)
+
+You can also add the plugin as a JAR file from the [releases page](https://github.com/adjust/android_sdk/releases).
+
+## [Sociomantic events](sociomantic-events)
+
+Once you have installed the Sociomantic plugin, you will have access to the Sociomantic events methods as well as the following constants. You should use these as the property names of your dictionaries.
+
+-  `final static String SCMCategory;`
+-  `final static String SCMProductName;`
+-  `final static String SCMSalePrice;`
+-  `final static String SCMAmount;`
+-  `final static String SCMCurrency;`
+-  `final static String SCMProductURL;`
+-  `final static String SCMProductImageURL;`
+-  `final static String SCMBrand;`
+-  `final static String SCMDescription;`
+-  `final static String SCMTimestamp;`
+-  `final static String SCMValidityTimestamp;`
+-  `final static String SCMQuantity;`
+-  `final static String SCMScore;`
+-  `final static String SCMProductID;`
+-  `final static String SCMActionConfirmed;`
+-  `final static String SCMCustomerAgeGroup;`
+-  `final static String SCMCustomerEducation;`
+-  `final static String SCMCustomerGender;`
+-  `final static String SCMCustomerID;`
+-  `final static String SCMCustomerMHash;`
+-  `final static String SCMCustomerSegment;`
+-  `final static String SCMCustomerTargeting;`
+-  `final static String SCMTransaction;`
+
+Before sending any Sociomantic events, you should set a partner ID as shown below:
+
+<Tabs>
+<Tab title="Java">
+
+```java
+import com.adjust.sdk.plugin.AdjustSociomantic;
+
+AdjustSociomantic.injectPartnerIdInSociomanticEvents("{sociomanticPartnerId}");
+```
+
+</Tab>
+</Tabs>
+
+Once you have set your partner ID, you can integrate the different Sociomantic events.
+
+## [Examples](examples)
+
+### [Customer event](customer-event)
+
+<Tabs>
+<Tab title="Java">
+
+```java
+import com.adjust.sdk.plugin.AdjustSociomantic;
+
+AdjustEvent event = new AdjustEvent(HOMEPAGE_TOKEN);
+Map<String, String> customerData = new HashMap<>();
+customerData.put(AdjustSociomantic.SCMCustomerAgeGroup, "0");
+
+AdjustSociomantic.injectCustomerDataIntoEvent(event, customerData);
+Adjust.trackEvent(event);
+```
+
+</Tab>
+</Tabs>
+
+### [View home page](view-home-page)
+
+<Tabs>
+<Tab title="Java">
+
+```java
+import com.adjust.sdk.plugin.AdjustSociomantic;
+
+AdjustEvent event = new AdjustEvent(HOMEPAGE_TOKEN);
+Adjust.trackEvent(event);
+```
+
+</Tab>
+</Tabs>
+
+### [View listing](view-listing)
+
+<Tabs>
+<Tab title="Java">
+
+```java
+import com.adjust.sdk.plugin.AdjustSociomantic;
+
+AdjustEvent event = new AdjustEvent(LISTING_TOKEN);
+List<String> categories = Arrays.asList("cat1", "cat2", "cat3");
+String date = "1427792434"
+
+AdjustSociomantic.injectViewListingIntoEvent(event, categories);
+Adjust.trackEvent(event);
+
+// You also can provide a date like this.
+AdjustSociomantic.injectViewListingIntoEvent(event, categories, date);
+Adjust.trackEvent(event);
+```
+
+</Tab>
+</Tabs>
+
+### [View product](view-product)
+
+<Callout type="note">
+
+If you're not sure what setup you should use, please contact your technical account manager at Sociomantic.
+
+</Callout>
+
+<Tabs>
+<Tab title="Java">
+
+```java
+import com.adjust.sdk.plugin.AdjustSociomantic;
+
+AdjustEvent event = new AdjustEvent(PRODUCT_VIEW_TOKEN);
+Map<String, Object> product = new HashMap<>();
+List<String> categories = Arrays.asList("cat1", "cat2", "cat3");
+product.put(AdjustSociomantic.SCMCategory, categories);
+
+AdjustSociomantic.injectProductIntoEvent(event, "123456");
+Adjust.trackEvent(event);
+
+// You can also provide product information.
+AdjustSociomantic.injectProductIntoEvent(event, "123456", product);
+Adjust.trackEvent(event);
+```
+
+</Tab>
+</Tabs>
+
+### [Available product parameters](available-product-parameters)
+
+<Table>
+
+| Parameter name         | Requirement | Description                                                         | Note                                                                                                                                                                                                         |
+| ---------------------- | ----------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `SCMCategory`          | Required    | Product category (entire category path)                             | Category information provided in the tracking code on category or listing pages should match the category information provided in the feed or in the tracking code of product pages.                         |
+| `SCMProductName`       | Required    | Product name                                                        | Special characters shouldn't be encoded but provided in proper UTF-8. Don't use any HTML markup.                                                                                                             |
+| `SCMSalePrice`         | Required    | Sale price as decimal value (For example: 2.99)                     | Please use a dot as a decimal separator and don't use any thousand separators.                                                                                                                               |
+| `SCMAmount`            | Required    | Regular price as decimal value (For example: 3.99)                  | Please use a dot as a decimal separator and don't use any thousand separators.                                                                                                                               |
+| `SCMCurrency`          | Required    | Currency code in ISO 4217 format (For example: EUR)                 | Fixed currency code. Should have been provided to you in the tracking code examples.                                                                                                                         |
+| `SCMProductURL`        | Required    | Product URL (deeplink)                                              | Please provide a working deeplink ideally without any click tracking parameter (Google Analytics, HURRA, Eulerian, etc.), Please always use deeplinks with `http://`                                         |
+| `SCMProductImageURL`   | Required    | Product image URL                                                   | Please provide images in a reasonable size. For an optimal appearance in the ads the images should be at least 200x200px and should have the same aspect ratio.                                              |
+| `SCMBrand`             | Required    | Product brand                                                       | Special characters shouldn't be encoded but provided in proper UTF-8 (Same as SCMProductName above). Don't use any HTML markup.                                                                              |
+| `SCMDescription`       | Optional    | Short product description                                           | Special characters shouldn't be encoded but provided in proper UTF-8 (Same as SCMProductName above). Don't use any HTML markup.                                                                              |
+| `SCMTimestamp`         | Optional    | Timestamp until when the product is available (please use GMT time) | Please provide the date a visitor has searched for. It should be an NSTimeInterval wrapped in NSNumber (see example).                                                                                        |
+| `SCMValidityTimestamp` | Optional    | Timestamp until when the product is available (please use GMT time) | Please provide the unix timestamp until when the product is available. Please use 0 for products that are always available. It should be an NSTimeInterval wrapped in NSNumber (Same as SCMTimestamp above). |
+| `SCMQuantity`          | Optional    | Number of products in stock                                         | Please integrate this field only after discussion with your personal Sociomantic contact                                                                                                                     |
+| `SCMScore`             | Optional    | Priority score of the product (value range is between 0 to 10.0)    | Please integrate this field only after discussion with your personal Sociomantic contact                                                                                                                     |
+
+</Table>
+
+### [Cart](cart)
+
+<Tabs>
+<Tab title="Java">
+
+```java
+import com.adjust.sdk.plugin.AdjustSociomantic;
+
+AdjustEvent event = new AdjustEvent(BASKET_TOKEN);
+Map<String, Object> product1 = new HashMap<>();
+product1.put(AdjustSociomantic.SCMProductID, "1");
+product1.put(AdjustSociomantic.SCMAmount, 42);
+product1.put(AdjustSociomantic.SCMCurrency, "EUR");
+product1.put(AdjustSociomantic.SCMQuantity, 1);
+
+Map<String, Object> product2 = new HashMap<>();
+product2.put(AdjustSociomantic.SCMProductID, "2");
+
+String product3 = "3";
+
+List<Object> products = Arrays.asList(product1, product2, product3);
+AdjustSociomantic.injectCartIntoEvent(event, products);
+Adjust.trackEvent(event);
+```
+
+</Tab>
+</Tabs>
+
+### [Available cart parameters](available-cart-parameters)
+
+<Table>
+
+| Parameter name | Requirement | Description                                         | Note                                                                                                                                                              |
+| -------------- | ----------- | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `SCMProductID` | Required    | Product ID                                          | Please provide the product ID without any subIDs for any color or size variations.                                                                                |
+| `SCMAmount`    | Optional    | Product price as decimal value (For example: 2.99)  | Please use a dot as a decimal separator and don't use any thousand separators. Please only provide price per product, even if quantity has a value larger than 1. |
+| `SCMCurrency`  | Optional    | Currency code in ISO 4217 format (For example: EUR) | Fixed currency code. Should have been provided to you in the tracking code examples.                                                                              |
+| `SCMQuantity`  | Optional    | Quantity of the product selected                    | Please use an integer value.                                                                                                                                      |
+
+</Table>
+
+### [Unconfirmed transaction](unconfirmed-transaction)
+
+<Tabs>
+<Tab title="Java">
+
+```java
+import com.adjust.sdk.plugin.AdjustSociomantic;
+
+AdjustEvent event = new AdjustEvent(SALE_TOKEN);
+Map<String, Object> product1 = new HashMap<>();
+product1.put(AdjustSociomantic.SCMProductID, "1");
+product1.put(AdjustSociomantic.SCMAmount, 42);
+product1.put(AdjustSociomantic.SCMQuantity, 1);
+
+Map<String, Object> product2 = new HashMap<>();
+product2.put(AdjustSociomantic.SCMProductID, "2");
+
+String product3 = "3";
+
+List<Object> products = Arrays.asList(product1, product2, product3);
+AdjustSociomantic.injectTransactionIntoEvent(event, "123456", products);
+Adjust.trackEvent(event);
+```
+
+</Tab>
+</Tabs>
+
+Or with parameters:
+
+<Tabs>
+<Tab title="Java">
+
+```java
+import com.adjust.sdk.plugin.AdjustSociomantic;
+
+AdjustEvent event = new AdjustEvent(SALE_TOKEN);
+Map<String, Object> product1 = new HashMap<>();
+product1.put(AdjustSociomantic.SCMProductID, "1");
+product1.put(AdjustSociomantic.SCMAmount, 42);
+product1.put(AdjustSociomantic.SCMQuantity, 1);
+
+Map<String, Object> product2 = new HashMap<>();
+product2.put(AdjustSociomantic.SCMProductID, "2");
+
+String product3 = "3";
+
+List<Object> products = Arrays.asList(product1, product2, product3);
+Map<String, Object> parameters = new HashMap<>();
+parameters.put(AdjustSociomantic.SCMCurrency, "EUR");
+parameters.put(AdjustSociomantic.SCMAmount, 42);
+
+AdjustSociomantic.injectTransactionIntoEvent(event, "123456", products, parameters);
+
+Adjust.trackEvent(event);
+```
+
+</Tab>
+</Tabs>
+
+### [Confirmed transactions](confirmed-transactions)
+
+<Tabs>
+<Tab title="Java">
+
+```java
+import com.adjust.sdk.plugin.AdjustSociomantic;
+
+AdjustEvent event = new AdjustEvent(SALE_TOKEN);
+Map<String, Object> product1 = new HashMap<>();
+product1.put(AdjustSociomantic.SCMProductID, "1");
+product1.put(AdjustSociomantic.SCMAmount, 42);
+product1.put(AdjustSociomantic.SCMQuantity, 1);
+
+Map<String, Object> product2 = new HashMap<>();
+product2.put(AdjustSociomantic.SCMProductID, "2");
+
+String product3 = "3";
+
+List<Object> products = Arrays.asList(product1, product2, product3);
+AdjustSociomantic.injectConfirmedTransactionIntoEvent(event, "123456", products);
+Adjust.trackEvent(event);
+```
+
+</Tab>
+</Tabs>
+
+Or with parameters:
+
+<Tabs>
+<Tab title="Java">
+
+```java
+import com.adjust.sdk.plugin.AdjustSociomantic;
+
+AdjustEvent event = new AdjustEvent(SALE_TOKEN);
+Map<String, Object> product1 = new HashMap<>();
+product1.put(AdjustSociomantic.SCMProductID, "1");
+product1.put(AdjustSociomantic.SCMAmount, 42);
+product1.put(AdjustSociomantic.SCMQuantity, 1);
+
+Map<String, Object> product2 = new HashMap<>();
+product2.put(AdjustSociomantic.SCMProductID, "2");
+
+String product3 = "3";
+
+List<Object> products = Arrays.asList(product1, product2, product3);
+Map<String, Object> parameters = new HashMap<>();
+parameters.put(AdjustSociomantic.SCMCurrency, "EUR");
+parameters.put(AdjustSociomantic.SCMAmount, 42);
+
+AdjustSociomantic.injectConfirmedTransactionIntoEvent(event, "123456", products, parameters);
+Adjust.trackEvent(event);
+```
+
+</Tab>
+</Tabs>
+
+### [Available cart parameters](available-cart-parameters-1)
+
+<Table>
+
+| Parameter name | Requirement | Description                                         | Note                                                                                                                                                              |
+| -------------- | ----------- | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `SCMAmount`    | Optional    | Product price as decimal value (For example: 2.99)  | Please use a dot as a decimal separator and don't use any thousand separators. Please only provide price per product, even if quantity has a value larger than 1. |
+| `SCMCurrency`  | Optional    | Currency code in ISO 4217 format (For example: EUR) | Fixed currency code. Should have been provided to you in the tracking code examples.                                                                              |
+| `SCMQuantity`  | Optional    | Quantity of the product selected                    | Please use an integer value.                                                                                                                                      |
+
+</Table>
+
+### [Lead event](lead-event)
+
+<Tabs>
+<Tab title="Java">
+
+```java
+import com.adjust.sdk.plugin.AdjustSociomantic;
+
+AdjustEvent event = new AdjustEvent(LEAD_TOKEN);
+AdjustSociomantic.injectLeadIntoEvent(event, "123456");
+Adjust.trackEvent(event);
+```
+
+</Tab>
+</Tabs>
+
+Or confirmed lead:
+
+<Tabs>
+<Tab title="Java">
+
+```java
+import com.adjust.sdk.plugin.AdjustSociomantic;
+
+AdjustEvent event = new AdjustEvent(LEAD_TOKEN);
+AdjustSociomantic.injectLeadIntoEvent(event, "123456", Boolean.TRUE);
+Adjust.trackEvent(event);
+```
+
+</Tab>
+</Tabs>

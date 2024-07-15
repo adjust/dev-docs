@@ -1,0 +1,99 @@
+---
+title: "IMEI"
+description: "IMEIプラグインを使用して、IMEI情報をAdjustにパスします。"
+slug: "ja/sdk/android/plugins/imei-plugin"
+---
+
+<Callout type="important">
+
+このプラグインは、Google Play ストアを対象にターゲティングをしていないアプリのためのものです。
+
+</Callout>
+
+モバイルデバイスには、国際移動体加入者識別番号（IMEI）と移動機識別子（MEID）があります。特定の市場において、AndroidデバイスのIMEIとMEIDをアトリビューション計測に使用することが可能です。この機能を使用するには、はじめにAdjustダッシュボードで必要な設定をしていただくことが必要です。この手順が完了したら、このプラグインを使用できるようになります。
+
+IMEIプラグインは、IMEIとMEIDにデバイスの値を提供します。SDKは、IMEIとMEIDに加えて、他の識別子も引き続き使用します。
+
+このプラグインを使用する前に、開始ガイドに従い、Adjust SDKをアプリに実装してください。
+
+## [IMEIプラグインをアプリに追加する](add-imei-plugin-to-your-app)
+
+### [Maven](maven)
+
+Mavenを使用している場合は、`build.gradle`ファイルに下記のdependencyを追加します。
+
+<CodeBlock title="build.gradle">
+
+```groovy
+dependencies {
+   implementation 'com.adjust.sdk:adjust-android:$ANDROID_V4_VERSION'
+   implementation 'com.adjust.sdk:adjust-android-imei:$ANDROID_V4_VERSION'
+}
+
+```
+
+</CodeBlock>
+
+### [JARとして追加する](add-as-jar)
+
+プラグインは、[リリースページ](https://github.com/adjust/android_sdk/releases)からJARファイルとして追加することもできます。
+
+## [パーミッションを追加する](add-permission)
+
+`AndroidManifest.xml`ファイルに以下のパーミッションが存在することを確認してください。存在しない場合は追加してください。
+
+<CodeBlock title="AndroidManifest.xml">
+
+```xml
+<uses-permission android:name="android.permission.READ_PHONE_STATE" />
+```
+
+</CodeBlock>
+
+Android 6\.0では、[アプリの権限をリクエスト](https://developer.android.com/training/permissions/requesting)しなければならない場合があります。OSがアプリのパーミッションを必要としないように設定されている場合、これは該当しません。
+
+## [Proguardの設定](proguard-settings)
+
+アプリがGoogle Playストアを対象としていない場合は、開始ガイドに記載されている全てのルールを追加する必要はありません。Google Play開発者サービスとインストール リファラー ライブラリに関連するルールは、削除することができます。維持する必要があるのは、Adjust SDKに適用されるルールのみです。
+
+<CodeBlock title="Proguard.pro">
+
+```java
+-keep public class com.adjust.sdk.** { *; }
+```
+
+</CodeBlock>
+
+## [プラグインを使用する](use-the-plugin)
+
+<Callout type="important">
+
+IMEIとMEIDは、永続的な識別子です。お客様が識別子を使用する場合、このデータの収集と処理が合法的であることを確認する責任があります。
+
+</Callout>
+
+プラグインを設定したら、デバイスのIMEIとMEIDを収集できます。これを行うには、`AdjustImei.readImeie`メソッドをAdjust SDKの開始前に呼び出します。
+
+<Tabs>
+<Tab title="Java">
+
+```java
+AdjustImei.readImei();
+// ...
+Adjust.onCreate(config);
+```
+
+</Tab>
+</Tabs>
+
+SDKが IMEIとMEIDを読み取らないようにするには、`AdjustImei.doNotReadImei`メソッドを呼び出します。
+
+<Tabs>
+<Tab title="Java">
+
+```java
+AdjustImei.doNotReadImei();
+```
+
+</Tab>
+</Tabs>

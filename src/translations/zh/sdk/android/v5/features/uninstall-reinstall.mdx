@@ -1,0 +1,335 @@
+---
+title: "卸载与重装监测"
+description: "使用 Adjust 安卓 SDK 来检测卸载和重装。"
+slug: "zh/sdk/android/features/uninstall-reinstall"
+---
+
+使用 Adjust 安卓 SDK 监测卸载和重装。Adjust 使用推送标签向用户设备发送静默推送通知并检查您的应用是否处于已安装状态。
+
+按照以下说明来为您的应用添加此功能。
+
+<Callout type="note">
+
+卸载与重装监测适用于通过任何应用商店或直接下载安装的应用，只要设备上已安装 Google Play 服务即可。该功能当前不支持未安装 Google Play 服务的设备，如 Amazon 和华为设备。
+
+</Callout>
+
+## [操作前须知](before-you-begin)
+
+以下是您在操作前需要了解的内容。
+
+### [要求](requirements)
+
+-  [安卓 SDK v4\.12\.0 及更新版本](https://github.com/adjust/android_sdk)
+-  [将 Firebase 添加到您的安卓项目](https://firebase.google.com/docs/android/setup)
+-  管理员、编辑员或自定义编辑员[权限](https://help.adjust.com/zh/article/permission-levels)
+
+## [将 Google FCM 关联到 Adjust](connect-google-fcm-to-adjust)
+
+通过 Google Firebase Cloud Messaging \(FCM\) API 配置静默推送通知后，您就可以监测卸载和重装。Adjust 需要 FCM HTTP v1 API 私钥才能连接至 Google FCM。
+
+<Callout type="important">
+
+生成新的 FCM HTTP v1 私钥，而不是使用旧的服务密钥。Google 将于 2024 年 7 月 22 日起逐步停用 Cloud Messaging API \(旧版\)。要了解哪些服务将受到影响，弃用的具体流程以及如何申请延期，请参考[Google 文档](https://firebase.google.com/support/faq#deprecated-api-shutdown)。
+
+</Callout>
+
+### [Google Cloud console](google-cloud-console)
+
+#### [1\. 为 Adjust 卸载和重装监测创建自定义角色](create-a-custom-role-for-adjust-uninstall-and-reinstall-measurement)
+
+1. 访问您的[Google Cloud Console](https://console.cloud.google.com/) 。
+2. 选择与 Firebase 项目关联的 Google Cloud 项目。
+3. 搜索 **IAM & 管理员 \(IAM & Admin\)** 。
+4. 从侧栏菜单中选择 **角色 \(Roles\)** 。
+5. 选择 **\+ 新建角色 \(Create Role\)** 。
+6. 输入以下详细信息：
+
+   1. **Title** : Adjust Uninstall
+   2. **ID** : adjust_uninstall
+   3. **Role launch stage** : General Availability
+
+7. 选择 **\+ 添加权限 \(Add Permissions\)** 。
+8. 在 **输入属性名称或值 \(Enter property name or value\)** 字段中输入`cloudmessaging.messages.create`并从搜索结果中进行选择。
+9. 勾选 **cloudmessaging.messages.create** 选项，然后选择 **添加 \(Add\)** 。
+10.   选择 **创建** 。
+
+#### [2\. 创建一个服务账户](create-a-service-account)
+
+1. 在侧栏菜单中选择 **服务账户 \(Service Accounts\)** 。
+2. 选择 **\+ 创建服务账号 \(Create Service Account\)** 。
+3. 在 **服务账户名称 \(Service account name\)** 字段中输入`Adjust Uninstall Service Account` 。
+4. 选择 **Create and Continue \(创建并继续\)** 。
+5. 选择 **选择角色 \(Select a role\)** 下拉菜单。输入`Adjust Uninstall`并从搜索结果中选择。
+6. 选择 **Continue** \(继续\)。
+7. 选择 **完成 \(Done\)** 。
+
+#### [3\. 生成并下载私人密钥](generate-and-download-the-private-key)
+
+1. 选择新创建的服务账户。格式如下：`adjust-uninstall-service-account@test3-55065.iam.gserviceaccount.com`。
+2. 选择 **密钥 \(Keys\)** 标签页。
+3. 选择 **添加密钥 \(Add Key\)** > **创建新密钥 \(Create new key\)** 。
+4. 选择 **JSON** 然后选择 **创建 \(Create\)** 。 私人密钥将以 JSON 文件格式下载到您的电脑中。
+
+### [在 Adjust 控制面板中](adjust-dashboard)
+
+现在您已经获得了将 Adjust 连接到 Google FCM 所需的私人密钥详细信息，接下来需要[在 AppView 的应用配置中](https://help.adjust.com/zh/article/platforms-ios-android-amazon-microsoft)启用卸载与重装监测：
+
+1. 选择 **平台** 标签页。
+2. 选择 **编辑** 。 ![平台设置](@images/android/uninstall-reinstall/1-platform-settings.png)
+3. 在 **高级设置** 下，找到 **记录卸载和重装数据** 选项。 ![高级设置](@images/android/uninstall-reinstall/2-advanced-settings.png)
+4. 选择 **添加关联** 。随后将会弹出一个对话框，提示您添加 Adjust 和 Google FCM 之间的关联。 ![新关联窗口](@images/android/uninstall-reinstall/3-new-connection.png)
+5. 填写必要信息，包括您最近生成的 FCM 私人密钥。 **合作伙伴** 和 **服务** 字段会自动填充。
+6. 选择 **关联** 。
+7. 查看应用设置，然后选择 **保存** 。
+
+## [集成 Adjust SDK](integrate-with-the-adjust-sdk)
+
+按照以下说明集成 FCM 与 Adjust SDK
+
+1. 确保您的`build.gradle`文件中有 **Firebase Messaging** 所需的依赖：
+
+   ```groovy
+   dependencies {
+      // ...
+      implementation 'com.google.firebase:firebase-messaging:23.4.0'
+      // ...
+   }
+   ```
+
+2. 在安卓端设置 Firebase Cloud Messaging 客户端应用，请按照[Google 文档中的说明](https://firebase.google.com/docs/cloud-messaging/android/client)进行操作 \(如您还未进行此操作\)。
+
+3. 将设备的推送标签发送到 Adjust SDK。
+
+   -  如果您向应用发送自己的推送通知，请确保改写`FirebaseMessagingService`类中的`onMessageReceived`方法，使之可处理所有类型推送通知，包括 Adjust 的卸载和重装监测静默推送通知。
+
+#### [示例](example)
+
+以下代码片段展示了如何扩展`FirebaseMessagingService`类以将推送标签传送至 Adjust SDK，并更新推送通知处理逻辑。如果您不自己发送推送通知，则可以跳过`onMessageReceived`方法的改写。
+
+<Callout type="important">
+
+如下所示，改写`onMessageReceived`时，请注意不要影响应用处理推送通知的方式。对以下推送通知处理代码进行修改后，请务必在应用处于前台时测试发送自己的推送通知。
+
+</Callout>
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+import com.adjust.sdk.Adjust
+import com.adjust.sdk.Util
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.messaging.FirebaseMessagingService
+import com.google.firebase.messaging.RemoteMessage
+
+class MyFirebaseMessagingService : FirebaseMessagingService() {
+
+  override fun onCreate() {
+    super.onCreate()
+    // Fetch FCM token and set in Adjust SDK
+    FirebaseMessaging.getInstance().token
+      .addOnCompleteListener { task ->
+        if (task.isSuccessful && task.result != null) {
+          Adjust.setPushToken(task.result, applicationContext)
+        }
+      }
+  }
+
+  override fun onNewToken(token: String) {
+    super.onNewToken(token)
+
+    // Receive new FCM token and set in Adjust SDK
+    Adjust.setPushToken(token, applicationContext)
+  }
+
+  override fun onMessageReceived(remoteMessage: RemoteMessage) {
+    super.onMessageReceived(remoteMessage)
+
+    // Check if message has data payload
+    if (remoteMessage.data.isNotEmpty()) {
+      val payload: Map<String, String> = remoteMessage.data
+
+      // Check for Adjust uninstall detection data message
+      if (Util.isAdjustUninstallDetectionPayload(payload)) {
+        // No handling required for Adjust data payload
+      } else {
+        // Handle other data payloads here
+      }
+    }
+
+    // Check if message has notification payload
+    remoteMessage.notification?.let {
+      // Handle notification payload here
+    }
+  }
+}
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+import com.adjust.sdk.Adjust;
+import com.adjust.sdk.Util;
+import com.google.firebase.messaging.FirebaseMessagingService;
+import com.google.firebase.messaging.RemoteMessage;
+import java.util.Map;
+
+public class MyFirebaseMessagingService extends FirebaseMessagingService {
+
+  @Override
+  public void onCreate() {
+    super.onCreate();
+    // Fetch FCM token and set in Adjust SDK
+    FirebaseMessaging.getInstance().getToken()
+      .addOnCompleteListener(task -> {
+        if (task.isSuccessful() && task.getResult() != null) {
+          Adjust.setPushToken(task.getResult(),getApplicationContext());
+        }
+      });
+  }
+
+  @Override
+  public void onNewToken(String token) {
+    super.onNewToken(token);
+
+    // Receive new FCM token and set in Adjust SDK
+    Adjust.setPushToken(token, getApplicationContext());
+  }
+
+  @Override
+  public void onMessageReceived(RemoteMessage remoteMessage) {
+    super.onMessageReceived(remoteMessage);
+
+    // Check if message has data payload
+    if (!remoteMessage.getData().isEmpty()) {
+      Map<String, String> payload = remoteMessage.getData();
+
+      // Check for Adjust uninstall detection data message
+      if (Util.isAdjustUninstallDetectionPayload(payload)) {
+        // No handling required for Adjust data payload
+      } else {
+        // Handle other data payloads here
+      }
+    }
+
+    // Check if message has notification payload
+    if (remoteMessage.getNotification() != null) {
+      // Handle notification payload here
+    }
+  }
+}
+```
+
+</Tab>
+</Tabs>
+
+4. 在初始化 Adjust SDK 前，在您的应用中初始化 Firebase 实例。
+
+#### [示例](example-1)
+
+以下是安卓项目中应用程序类的示例。您可以看到应用一启动就初始化了 Firebase 实例。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+import android.app.Application
+import com.adjust.sdk.Adjust
+import com.adjust.sdk.AdjustConfig
+import com.google.firebase.FirebaseApp
+
+class MyApp : Application() {
+
+  override fun onCreate() {
+    super.onCreate()
+
+    // Initialize Firebase App
+    FirebaseApp.initializeApp(this)
+
+    // Configure Adjust SDK
+    // Replace {YourAppToken} with your Adjust app token
+    val appToken = "{YourAppToken}"
+    val environment = AdjustConfig.ENVIRONMENT_PRODUCTION
+    val config = AdjustConfig(this, appToken, environment)
+
+    // Initialize Adjust SDK
+    Adjust.onCreate(config)
+  }
+}
+
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+import android.app.Application;
+import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustConfig;
+import com.google.firebase.FirebaseApp;
+
+public class MyApp extends Application {
+
+  @Override
+  public void onCreate() {
+    super.onCreate();
+
+    // Initialize Firebase App
+    FirebaseApp.initializeApp(this);
+
+    // Configure Adjust SDK
+    // Replace {YourAppToken} with your Adjust app token
+    String appToken = "{YourAppToken}";
+    String environment = AdjustConfig.ENVIRONMENT_PRODUCTION;
+    AdjustConfig config = new AdjustConfig(this, appToken, environment);
+
+    // Initialize Adjust SDK
+    Adjust.onCreate(config);
+  }
+}
+```
+
+</Tab>
+</Tabs>
+
+## [测试集成](test-the-integration)
+
+Adjust 会检查生产环境中记录了最后一次活动的设备上的安卓应用卸载情况。
+
+要测试卸载和重装监测，您可以使用调试或发布版本。最主要的是在测试安装时，您必须将 Adjust SDK 环境设置为 _Production \(生产\)_ 。
+
+要测试卸载监测：
+
+1. 在 Adjust SDK 中将环境设置为`AdjustConfig.ENVIRONMENT_PRODUCTION`，然后再初始化 Adjust SDK。
+2. 在测试设备或模拟器上安装应用。
+3. 打开应用。
+4. 打开 Adjust 的[测试控制台](https://help.adjust.com/zh/article/testing-console)。
+5. 输入您的 _设备 ID_ ，然后选择 **查看设备数据**
+6. 在 **应用信息** 部分：
+
+   -  **Install state \(安装状态\)** 应显示为 **Installed \(已安装\)** 。
+   -  **Push token \(推送标签\)** 应当存在值。
+
+7. 卸载应用。
+8. 24 小时后，请再次查看测试控制台，因为 Adjust 每天检查一次卸载。在 **应用信息** 部分下的 **Install state** \(安装状态\) 应显示 **Uninstalled** \(已卸载\) 。
+
+状态从 **已安装** 变为已 **已卸载** 可确保卸载与重装监测功能正常运行。如果您还想测试重装监测，请按照下列步骤操作：
+
+1. 在测试设备或模拟器中重新安装调试或发布版本。
+2. 打开应用。
+3. 24 小时后请再次查看测试控制台，Adjust 会每天检查一次重装。在 **App information \(应用信息\)** 部分下， **Install state \(安装状态\)** 现在应显示为 **Reinstalled \(已重装\)** 。
+
+### [故障排除](troubleshooting)
+
+以下是测试卸载和重装监测时最常见的问题：
+
+-  进行测试安装时，Adjust SDK 的环境会设置为`AdjustConfig.ENVIRONMENT_SANDBOX` 。该设置不支持卸载和重装监测。请确保在 Adjust SDK 中将此设置设为`AdjustConfig.ENVIRONMENT_PRODUCTION` 。
+-  推送标签缺失。如果推送标签未出现在测试控制台中，则可能是您的 Firebase 安装或 Firebase SDK 与 Adjust SDK 集成代码出现了问题。请仔细检查这些元素。
+-  FCM HTTP v1 API 私人密钥出现问题。例如，您生成的私人密钥可能属于错误的项目，或您在 Adjust suite 中输入的详细信息有误。请查看这些要点并联系您的技术客户经理或发送邮件至[support@adjust.com](mailto:support@adjust.com)，请同时提供设备的推送标签。他们可以提取日志以检查来自 Google API 的响应。
+
+解决问题后，请按照以下步骤再次测试集成情况：
+
+1. 卸载应用。
+2. 在测试控制台中输入您的 _设备 ID_ ，然后选择 **查看设备数据** > **遗忘设备** 。
+3. 重复[测试集成部分](#test-the-integration)所述的步骤。
