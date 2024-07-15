@@ -10,6 +10,7 @@ import { fetchVersions } from "./src/integrations/fetchSdkVersions";
 import rehypeExternalLinks from 'rehype-external-links';
 import remarkHeaderLinkToId from "./src/integrations/remarkHeaderLinkToId";
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
+import astroPluginCopyTranslations from "./src/integrations/astroCopyTranslations";
 
 console.log(`${import.meta.env.VITE_GITHUB_TOKEN ? "Token found" : "No token found"}`)
 const versions = await fetchVersions()
@@ -24,7 +25,7 @@ export default defineConfig({
   // Enable React for the Algolia search component.
   react({
     experimentalReactChildren: true
-  }), expressiveCode(), mdx(), tailwind(), sitemap()],
+  }), expressiveCode(), mdx(), tailwind(), sitemap(), astroPluginCopyTranslations()],
   site: "https://dev.adjust.com/",
   markdown: {
     remarkPlugins: [[remarkReplaceVersions, versions], remarkHeaderLinkToId],
