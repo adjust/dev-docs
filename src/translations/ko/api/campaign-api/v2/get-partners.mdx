@@ -1,0 +1,133 @@
+---
+title: "파트너 불러오기 "
+description: "본 엔드포인트를 사용하여 파트너 및 관련 데이터 목록을 불러오시기 바랍니다."
+slug: "ko/api/campaign-api/get-partners"
+sidebar-position: 6
+---
+
+본 엔드포인트를 사용하여 파트너 및 관련 데이터 목록을 불러오시기 바랍니다.
+
+<CodeBlock title="엔드포인트" highlight="/partners">
+
+```http
+GET https://api.adjust.com/public/v1/partners
+```
+
+</CodeBlock>
+
+## [파트너 불러오기](fetch-partners)
+
+파트너 및 관련 데이터 목록을 불러오시기 바랍니다. 데이터는 파트너 객체의 순서대로 반환됩니다.
+
+### [파라미터](parameters)
+
+<Table>
+
+| 파라미터 | 데이터 유형 | In    | 설명                                                       |
+| -------- | ----------- | ----- | ---------------------------------------------------------- |
+| `after`  | `String`    | Query | 다음 페이지의 요소를 가져오는 커서.                        |
+| `before` | `String`    | Query | 이전 페이지의 요소를 가져오는 커서.                        |
+| `limit`  | `Integer`   | Query | 응답에 포함된 요소의 최대 개수. 양의 정수 값이어야 합니다. |
+
+</Table>
+
+### [페이지 구분](pagination)
+
+이 엔드포인트로부터의 결과는 커서를 사용하여 페이징됩니다. 각 페이지는 이전 및 다음 페이지의 위치를 반환합니다. 이를 콜에 포함하여 특정 페이지를 반환할 수 있습니다. 또한 한 페이지에 포함되는 아이템의 수를 제한할 수 있습니다. 기본값 제한은 `50`개 입니다.
+
+각 결과 페이지는 커서 위치가 포함된 "paging" 객체를 포함합니다. 이 커서 위치를 사용하여 페이지를 이동할 수 있습니다. 예를 들어, 첫 페이지에는 다음과 같은 결과가 포함됩니다.
+
+<CodeBlock title="페이징 처리 플로우 예시:">
+
+```json
+"paging": {
+   "page_size": "50",
+   "collection_size": "49",
+   "total": "199",
+   "cursors": {
+      "after": "g2wAAAACYhW1_gxkAANuaWxq",
+      "before": null
+   },
+   "next": "https://api.adjust.com/public/v1/apps/yxs12pfewq/trackers?after=g2wAAAACYhW1_gxkAANuaWxq&limit=50",
+   "previous": null
+}
+```
+
+</CodeBlock>
+
+두 번째 페이지로 이동하려면 `after` 파라미터의 다음 요청에 `after` 값을 추가합니다. 예시:
+
+<CodeBlock title="cURL" highlight="after=g2wAAAACYhW1_gxkAANuaWxq">
+
+```console
+$ curl "https://api.adjust.com/public/v1/apps/yxs12pfewq/trackers?after=g2wAAAACYhW1_gxkAANuaWxq"
+```
+
+</CodeBlock>
+
+### [응답 파라미터](response-parameters)
+
+<Table>
+
+| 필드                | 데이터 유형 | 설명                            | 예시       |
+| ------------------- | ----------- | ------------------------------- | ---------- |
+| `id`                | `Integer`   | 파트너 ID                       | `174`      |
+| `display_name`      | `String`    | 파트너 이름                     | `Adcolony` |
+| `support_cost_data` | `Boolean`   | 파트너의 비용 데이터 지원 여부. | `true`     |
+
+</Table>
+<CodeBlock title="응답 형식">
+
+```json
+{
+   "id": 1,
+   "display_name": "String",
+   "supports_cost_data": true
+}
+```
+
+</CodeBlock>
+
+## [예시](example)
+
+<CodeBlock title="cURL">
+
+```console
+$ curl \
+--header 'Authorization: Token token={API_TOKEN}' \
+-L -X GET 'https://api.adjust.com/public/v1/partners?limit=1'
+
+```
+
+</CodeBlock>
+<CodeBlock title="성공적인 응답">
+
+```json
+{
+   "data": {
+      "api_version": "1",
+      "request_id": "FcK55-tdJUDOWQIAABsB",
+      "timestamp": "2019-09-09T09:07:06Z",
+      "paging": {
+         "page_size": "1",
+         "collection_size": "1",
+         "total": "199",
+         "next": "https://api.adjust.com/public/v1/partners?after=g2wAAAACYhW1_gxkAANuaWxq&limit=1",
+         "previous": null,
+         "cursors": {
+            "after": "g2wAAAACYhW1_gxkAANuaWxq",
+            "before": null
+         }
+      },
+      "items": [
+         {
+            "id": 174,
+            "display_name": "Adcolony",
+            "supports_cost_data": true
+         }
+      ]
+   }
+}
+```
+
+</CodeBlock>

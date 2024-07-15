@@ -1,0 +1,135 @@
+---
+title: "Get partners"
+description: "Use this endpoint to fetch a list of partners and associated data."
+slug: en/api/campaign-api/get-partners
+sidebar-position: 6
+---
+
+Use this endpoint to fetch a list of partners and associated data.
+
+<CodeBlock title="Endpoint" highlight="/partners">
+
+```http
+GET https://api.adjust.com/public/v1/partners
+```
+
+</CodeBlock>
+
+## [Fetch partners](fetch-partners)
+
+Fetch a list of partners and associated data. Data are returned in an array of partner objects.
+
+### [Parameters](parameters)
+
+<Table>
+
+| Parameter | Data type | In    | Description                                                                                |
+| --------- | --------- | ----- | ------------------------------------------------------------------------------------------ |
+| `after`   | `String`  | Query | Cursor to get elements from the next page.                                                 |
+| `before`  | `String`  | Query | Cursor to get elements from the previous page.                                             |
+| `limit`   | `Integer` | Query | The maximum number of elements included in the response. Must be a positive integer value. |
+
+</Table>
+
+### [Pagination](pagination)
+
+Results from this endpoint are paginated using a cursor. Each page returns the location of the previous and next pages. You can include these in your calls to return specific pages. You can also limit the number of items included on a page. The default limit is `50`.
+
+Each results page contains a "paging" object containing the cursor positions. You can use these cursor positions to programatically move between pages. For example, the first page might contain results like this:
+
+<CodeBlock title="Pagination example">
+
+```json
+"paging": {
+   "page_size": "50",
+   "collection_size": "49",
+   "total": "199",
+   "cursors": {
+      "after": "g2wAAAACYhW1_gxkAANuaWxq",
+      "before": null
+   },
+   "next": "https://api.adjust.com/public/v1/apps/yxs12pfewq/trackers?after=g2wAAAACYhW1_gxkAANuaWxq&limit=50",
+   "previous": null
+}
+```
+
+</CodeBlock>
+
+To go to the second page, add the `after` value to the next request in the `after` parameter. For example:
+
+<CodeBlock title="cURL" highlight="after=g2wAAAACYhW1_gxkAANuaWxq">
+
+```console
+$ curl "https://api.adjust.com/public/v1/apps/yxs12pfewq/trackers?after=g2wAAAACYhW1_gxkAANuaWxq"
+```
+
+</CodeBlock>
+
+### [Response parameters](response-parameters)
+
+<Table>
+
+| Field               | Data type | Description                             | Example    |
+| ------------------- | --------- | --------------------------------------- | ---------- |
+| `id`                | `Integer` | The partner's ID.                       | `174`      |
+| `display_name`      | `String`  | The partner's name.                     | `Adcolony` |
+| `support_cost_data` | `Boolean` | Whether the partner supports cost data. | `true`     |
+
+</Table>
+
+<CodeBlock title="Response format">
+
+```json
+{
+   "id": 1,
+   "display_name": "String",
+   "supports_cost_data": true
+}
+```
+
+</CodeBlock>
+
+## [Example](example)
+
+<CodeBlock title="cURL">
+
+```console
+$ curl \
+--header 'Authorization: Token token={API_TOKEN}' \
+-L -X GET 'https://api.adjust.com/public/v1/partners?limit=1'
+
+```
+
+</CodeBlock>
+
+<CodeBlock title="Success response">
+
+```json
+{
+   "data": {
+      "api_version": "1",
+      "request_id": "FcK55-tdJUDOWQIAABsB",
+      "timestamp": "2019-09-09T09:07:06Z",
+      "paging": {
+         "page_size": "1",
+         "collection_size": "1",
+         "total": "199",
+         "next": "https://api.adjust.com/public/v1/partners?after=g2wAAAACYhW1_gxkAANuaWxq&limit=1",
+         "previous": null,
+         "cursors": {
+            "after": "g2wAAAACYhW1_gxkAANuaWxq",
+            "before": null
+         }
+      },
+      "items": [
+         {
+            "id": 174,
+            "display_name": "Adcolony",
+            "supports_cost_data": true
+         }
+      ]
+   }
+}
+```
+
+</CodeBlock>

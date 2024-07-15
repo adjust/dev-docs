@@ -1,0 +1,140 @@
+---
+title: "Get network links"
+description: "Use this endpoint to get the network-level links for your specified app."
+slug: en/api/campaign-api/get-links
+sidebar-position: 2
+sidebar-label: Get links
+multiVersion: true
+---
+
+Use this endpoint to get the network-level links for your specified app.
+
+<CodeBlock title="Endpoint" highlight="v2/apps/{app_token}/trackers">
+
+```http
+GET https://api.adjust.com/public/v2/apps/{app_token}/trackers
+```
+
+</CodeBlock>
+
+## [Fetch links](fetch-links)
+
+Return a list of network-level links associated with your app.
+
+<Table>
+
+| Parameter     | Data type | In    | Description                                                                                |
+| ------------- | --------- | ----- | ------------------------------------------------------------------------------------------ |
+| `app_token`\* | `String`  | Path  | Your app's 12 digit identifier.                                                            |
+| `cursor`      | `String`  | Query | The unique cursor position containing a collection of results.                             |
+| `limit`       | `Integer` | Query | The maximum number of elements included in the response. Must be a positive integer value. |
+
+</Table>
+
+### [Pagination](pagination)
+
+Results from this endpoint are paginated using a cursor. Each page returns the location of the previous and next pages. You can include these in your calls to return specific pages. You can also limit the number of items included on a page. The default limit is `50`.
+
+Each results page contains a "paging" object containing the cursor positions. You can use these cursor positions to programatically move between pages. For example, the first page might contain results like this:
+
+<CodeBlock title="Pagination example">
+
+```json
+"paging": {
+   "next": "https://api.adjust.com/public/v2/apps/yxs12pfewq/trackers?cursor=g2wAAAACYhW1_gxkAANuaWxq&limit=50",
+   "cursor": "g2wAAAACYhW1_gxkAANuaWxq"
+}
+```
+
+</CodeBlock>
+
+To go to the second page, follow the `next` link to return results from the next specified `cursor` position.
+
+<CodeBlock title="cURL" highlight="cursor=g2wAAAACYhW1_gxkAANuaWxq">
+
+```console
+$ curl "https://api.adjust.com/public/v2/apps/yxs12pfewq/trackers?cursor=g2wAAAACYhW1_gxkAANuaWxq&limit=50"
+```
+
+</CodeBlock>
+
+### [Response parameters](response-parameters)
+
+<Table search>
+
+| Field               | Data type | Description                                                                                                                    | Example                                     |
+| ------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------- |
+| `name`              | `String`  | The link's name.                                                                                                               | `Adroll`                                    |
+| `label`             | `String`  | The last level part of the name of the link.                                                                                   | `Adroll`                                    |
+| `level`             | `Integer` | The level of the link.<br/><ul><li>Network = `1`</li><li>Campaign = `2`</li><li>Adgroup = `3`</li><li>Creative = `4`</li></ul> | `1`                                         |
+| `archived`          | `Boolean` | Whether the link is archived.                                                                                                  | `true`                                      |
+| `has_subtrackers`   | `Boolean` | Whether the link has sublinks.                                                                                                 | `true`                                      |
+| `partner_id`        | `Integer` | The ID of the partner attached to the link.                                                                                    | `3`                                         |
+| `cost_data_enabled` | `Boolean` | Whether the link has cost_data enabled.                                                                                        | `false`                                     |
+| `impression_url`    | `String`  | URL of the link for impression measurement.                                                                                    | `https://view.adjust.com/impression/abc123` |
+| `url`               | `String`  | URL of the link for measurement.                                                                                               | `https://app.adjust.com/abc123`             |
+| `click_url`         | `String`  | URL of the link for click measurement.                                                                                         | `https://app.adjust.com/abc123`             |
+
+</Table>
+
+<CodeBlock title="Success response">
+
+```json
+{
+   "name": "String",
+   "token": "String",
+   "label": "String",
+   "level": 1,
+   "archived": false,
+   "has_subtrackers": false,
+   "partner_id": 3,
+   "cost_data_enabled": false,
+   "url": "String",
+   "click_url": "String",
+   "impression_url": "String"
+}
+```
+
+</CodeBlock>
+
+## [Example](example)
+
+<CodeBlock title="cURL" highlight="gwzpeepw8uf8">
+
+```console
+$ curl \
+--header 'Authorization: Token token={API_TOKEN}' \
+-L -X GET 'https://api.adjust.com/public/v2/apps/gwzpeepw8uf8/trackers?limit=1'
+```
+
+</CodeBlock>
+
+<CodeBlock title="Success response">
+
+```json
+{
+   "data": {
+      "paging": {
+         "cursor": "g2wAAAACYhW1_gxkAANuaWxq",
+         "next": "https://api.adjust.com/public/v2/apps/gwzpeepw8uf8/trackers?after=g2wAAAACYhW1_gxkAANuaWxq&limit=1"
+      },
+      "items": [
+         {
+            "archived": false,
+            "has_subtrackers": false,
+            "partner_id": 3,
+            "cost_data_enabled": false,
+            "label": "Adroll",
+            "level": 1,
+            "name": "Adroll",
+            "token": "abc123",
+            "url": "https://app.adjust.com/abc123",
+            "click_url": "https://app.adjust.com/abc123?campaign={campaign_name}&idfa={idfa}&deeplink=http%3A%2F%2Fa.b%2Fc%3Fd%3D1%26e%3D%%MACROS%%",
+            "impression_url": "https://s2s.adjust.com/impression/abc123?campaign={campaign_name}&idfa={idfa}&s2s=1"
+         }
+      ]
+   }
+}
+```
+
+</CodeBlock>

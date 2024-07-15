@@ -1,0 +1,157 @@
+---
+title: "サブリンクの取得"
+description: "このエンドポイントを使用して、指定したアプリのサブリンクを取得します。"
+slug: "ja/api/campaign-api/get-sublinks"
+sidebar-position: 3
+multiVersion: true
+---
+
+このエンドポイントを使用して、指定したアプリのサブリンクを取得します。
+
+<CodeBlock title="エンドポイント" highlight="v1/apps/{app_token}/trackers/{link_token}/children">
+
+```http
+GET https://api.adjust.com/public/v1/apps/{app_token}/trackers/{link_token}/children
+```
+
+</CodeBlock>
+
+## [サブリンクの取得](fetch-sublinks)
+
+アプリに関連するサブリンクの一覧を返します。
+
+<Table>
+
+| パラメーター      | データタイプ | 入力する値 | 説明                                                     |
+| ----------------- | ------------ | ---------- | -------------------------------------------------------- |
+| `app_token`\*     | `String`     | パス       | アプリの12桁の識別子。                                   |
+| `tracker_token`\* | `String`     | パス       | 親リンクトークン。                                       |
+| `after`           | `String`     | クエリ     | 次のページから要素を取得するカーソル。                   |
+| `before`          | `String`     | クエリ     | 前のページから要素を取得するカーソル。                   |
+| `limit`           | `Integer`    | クエリ     | レスポンスに含まれる要素の最大数。正の整数値であること。 |
+
+</Table>
+
+### [ページネーション](pagination)
+
+このエンドポイントからの結果は、カーソルでページネーションされます。各ページには、前ページと次ページの位置が返されます。特定のページを返すには、これらを含めて呼び出してください。また、1 ページに含まれるアイテムの数を制限することも可能です。デフォルトの上限は`50`になります。
+
+各結果のページには、カーソル位置を含むpagingオブジェクトが含まれます。このカーソル位置を使って、プログラム上でページ間を移動することができます。たとえば、最初のページには、次のような結果が含まれます。
+
+<CodeBlock title="ページネーションの例">
+
+```json
+"paging": {
+   "page_size": "50",
+   "collection_size": "49",
+   "total": "199",
+   "cursors": {
+      "after": "g2wAAAACYhW1_gxkAANuaWxq",
+      "before": null
+   },
+   "next": "https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers/abc123/children?after=g2wAAAACYhW1_gxkAANuaWxq&limit=50",
+   "previous": null
+}
+
+```
+
+</CodeBlock>
+
+2ページ目に移動するには、`after`値を`after`パラメーター内の次のリクエストに追加します。例：
+
+<CodeBlock title="cURL" highlight="after=g2wAAAACYhW1_gxkAANuaWxq">
+
+```console
+$ curl "https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers/abc123/children?after=g2wAAAACYhW1_gxkAANuaWxq"
+```
+
+</CodeBlock>
+
+### [レスポンスパラメーター](response-parameters)
+
+<Table search>
+
+| フィールド          | データタイプ | 説明                                                                                                                                         | 例                                          |
+| ------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| `name`              | `String`     | リンク名。                                                                                                                                   | `Adroll`                                    |
+| `label`             | `String`     | リンク名の最後のラベルの部分。                                                                                                               | `Adroll`                                    |
+| `level`             | `Integer`    | リンクのレベル。<br/><ul><li>ネットワーク = `1`</li><li>キャンペーン = `2`</li><li>アドグループ = `3`</li><li>クリエイティブ = `4`</li></ul> | `1`                                         |
+| `archived`          | `Boolean`    | リンクがアーカイブされたかどうか。                                                                                                           | `true`                                      |
+| `has_subtrackers`   | `Boolean`    | リンクにサブリンクがあるかどうか。                                                                                                           | `true`                                      |
+| `partner_id`        | `Integer`    | リンクに付与されるパートナーのID。                                                                                                           | `3`                                         |
+| `cost_data_enabled` | `Boolean`    | リンクでcost_dataが有効になっているかどうか。                                                                                                | `false`                                     |
+| `impression_url`    | `String`     | インプレッション計測対象のリンクURL                                                                                                          | `https://view.adjust.com/impression/abc123` |
+| `url`               | `String`     | 計測対象のリンクURL                                                                                                                          | `https://app.adjust.com/abc123`             |
+| `click_url`         | `String`     | クリック計測対象のリンクURL                                                                                                                  | `https://app.adjust.com/abc123`             |
+
+</Table>
+<CodeBlock title="レスポンスの形式">
+
+```json
+{
+   "name": "String",
+   "token": "String",
+   "label": "String",
+   "level": 2,
+   "archived": false,
+   "has_subtrackers": false,
+   "partner_id": null,
+   "cost_data_enabled": false,
+   "url": "String",
+   "click_url": "String",
+   "impression_url": "String"
+}
+```
+
+</CodeBlock>
+
+## [例](example)
+
+<CodeBlock title="cURL" highlight="gwzpeepw8uf8, abc123">
+
+```console
+$ curl \
+--header 'Authorization: Token token={API_TOKEN}'
+-L -X GET 'https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers/abc123/children?limit=1' \
+```
+
+</CodeBlock>
+<CodeBlock title="成功レスポンス">
+
+```json
+{
+   "data": {
+      "api_version": "1",
+      "request_id": "FcK55-tdJUDOWQIAABsB",
+      "timestamp": "2019-09-09T09:07:06Z",
+      "paging": {
+         "page_size": "1",
+         "collection_size": "1",
+         "total": "199",
+         "next": "https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers/abc123/children?after=g2wAAAACYhW1_gxkAANuaWxq&limit=1",
+         "previous": null,
+         "cursors": {
+            "after": "g2wAAAACYhW1_gxkAANuaWxq",
+            "before": null
+         }
+      },
+      "items": [
+         {
+            "name": "Adroll::SpringCampaign",
+            "token": "xyz456",
+            "label": "SpringCampaign",
+            "level": 2,
+            "archived": false,
+            "has_subtrackers": false,
+            "partner_id": null,
+            "cost_data_enabled": false,
+            "url": "https://app.adjust.com/xyz456",
+            "click_url": "https://app.adjust.com/xyz456?idfa={idfa}&deeplink=http%3A%2F%2Fa.b%2Fc%3Fd%3D1%26e%3D%%MACROS%%",
+            "impression_url": "https://s2s.adjust.com/impression/xyz456?idfa={idfa}&s2s=1"
+         }
+      ]
+   }
+}
+```
+
+</CodeBlock>
