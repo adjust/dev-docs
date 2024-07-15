@@ -21,7 +21,7 @@ export const getCategoryChildrens = ({
   childLinks,
   currentPageType,
 }: GetCategoryChildParams) => {
-  const parts = getPathParts(currentPage, currentLang);
+  const parts = getPathParts(currentPage);
 
   const currentPageFixed = getCurrentPage(currentPage);
   const splittedCurrentPage = currentPageFixed.split("/");

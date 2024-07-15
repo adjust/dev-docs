@@ -15,7 +15,7 @@ export const getNavigationEntries = (
   pages: MDXInstance<Record<string, any>>[],
   currentPage: string,
   currentLang: keyof Locales,
-  currentPageType?: NavigationEntry["type"]
+  currentPageType?: NavigationEntry["type"],
 ): NavigationData => {
   // filtering data by the current language
   const filteredPagesData = pages.filter((pageData) => {
@@ -36,7 +36,7 @@ export const getNavigationEntries = (
     pagesData as NavigationEntry[],
     currentPage,
     currentLang,
-    currentPageType
+    currentPageType,
   );
 
   // language object with a hierarchy for the categories
@@ -44,7 +44,10 @@ export const getNavigationEntries = (
   const languageTree = {
     [currentLang]: {
       ...langItem,
-      children: getNavigationTree(langItem!.children!, `${CONTENT_PATH}`),
+      children: getNavigationTree(
+        langItem!.children!,
+        `${CONTENT_PATH}/${currentLang}`,
+      ),
     },
   };
 
