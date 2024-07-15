@@ -1,0 +1,163 @@
+---
+title: "어트리뷰션 정보 확인"
+description: "Adjust SDK를 사용하여 어트리뷰션 변경 사항 수신"
+slug: "ko/sdk/ios/features/attribution"
+multiVersion: true
+---
+
+사용자가 Adjust 링크와 상호작용하면 어트리뷰션 정보가 업데이트됩니다. 이는 사용자가 [딥링크](https://help.adjust.com/ko/article/deep-links)와 상호작용하는 경우에 발생할 수 있습니다. 사용자의 어트리뷰션 관련 정보는 `AdjustAttribution` 클래스에 나타납니다.
+
+## [ADJAttribution 클래스 속성](adjattribution-class-properties)
+
+`AdjustAttribution` 클래스는 기기의 현재 어트리뷰션 상태에 관한 세부 내용을 포함합니다. 해당 사용자에 대해 입력되지 않은 모든 값은 `null` 값으로 반환됩니다.
+
+<Callout type="note">
+
+다음 값은 `ADJConfig` 인스턴스의 `needsCost` 속성이 `true`인 경우에만 액세스할 수 있습니다.
+
+-  `costType`
+-  `costAmount`
+-  `costCurrency`
+
+</Callout>
+<Table>
+
+| 값             | 데이터 유형 | 설명                                                                         |
+| -------------- | ----------- | ---------------------------------------------------------------------------- |
+| `trackerToken` | `NSString`  | 디바이스가 현재 어트리뷰션된 링크의 토큰                                     |
+| `trackerName`  | `NSString`  | 디바이스가 현재 어트리뷰션된 링크의 이름                                     |
+| `network`      | `NSString`  | 디바이스가 현재 어트리뷰션된 네트워크의 이름                                 |
+| `campaign`     | `NSString`  | 디바이스가 현재 어트리뷰션된 캠페인의 이름                                   |
+| `adgroup`      | `NSString`  | 디바이스가 현재 어트리뷰션된 광고그룹의 이름                                 |
+| `creative`     | `NSString`  | 디바이스가 현재 어트리뷰션된 크리에이티브의 이름                             |
+| `clickLabel`   | `NSString`  | 설치가 태그된 [click label](https://help.adjust.com/ko/article/user-rewards) |
+| `costType`     | `NSString`  | 캠페인 가격 모델\(예: CPI\)                                                  |
+| `costAmount`   | `NSNumber`  | 설치 비용                                                                    |
+| `costCurrency` | `NSString`  | 비용 관련 [3자 ISO 4217 통화 코드](https://www.iban.com/currency-codes)      |
+
+</Table>
+
+## [어트리뷰션 변경 시 함수 트리거](trigger-a-function-when-attribution-changes)
+
+<CodeBlock title="속성 선언">
+
+```objc
+@property (nonatomic, weak, nullable) NSObject<adjustdelegate> *delegate;
+```
+
+</CodeBlock>
+
+SDK는 어트리뷰션 변경 사항을 받고 업데이트가 감지되면 함수를 호출합니다. 델리게이트 함수를 설정하려면 다음을 수행합니다.
+
+1. 웹뷰를 사용하지 않는다면, `AdjustDelegate` 선언을 `AppDelegate` 헤더 파일에 추가합니다.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+class AppDelegate: UIResponder, UIApplicationDelegate, AdjustDelegate {
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+@interface AppDelegate : UIResponder <UIApplicationDelegate, AdjustDelegate>
+```
+
+</Tab>
+</Tabs>
+
+2. 델리게이트 콜백 함수를 앱 델리게이트 도입에 추가합니다.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+class AppDelegate: UIResponder, UIApplicationDelegate, AdjustDelegate {
+   func adjustAttributionChanged(_ attribution: ADJAttribution?) {
+      /// ...
+   }
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+- (void)adjustAttributionChanged:(ADJAttribution *)attribution {
+   /// ...
+}
+```
+
+</Tab>
+</Tabs>
+
+3. 델리게이트를 Adjust config 인스턴스를 통해 설정합니다.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+<CodeBlock highlight="{range: 6}">
+
+```swift
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox
+let adjustConfig = ADJConfig(
+    appToken: yourAppToken,
+    andEnvironment: environment)
+adjustConfig?.delegate = self
+//...
+Adjust.initSdk(adjustConfig)
+```
+
+</CodeBlock>
+</Tab>
+<Tab title="Objective-C" sync="objc">
+<CodeBlock highlight="{range: 3}">
+
+```objc
+ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:@"{YourAppToken}"
+                                                   andEnvironment:ADJEnvironmentSandbox];
+/// ...
+[Adjust initSdk:adjustConfig];
+```
+
+</CodeBlock>
+</Tab>
+</Tabs>
+
+델리게이트 함수 내에서 사용자의 `Attribution` 정보에 액세스 할 수 있습니다. 이용 가능한 속성 목록은 [`ADJAttribution` 클래스 속성](#adjattribution-class-properties)을 참조하시기 바랍니다.
+
+## [현재 어트리뷰션 정보 확인](get-current-attribution-information)
+
+<CodeBlock title="메서드 서명">
+
+```objc
++ (void)attributionWithCompletionHandler:(nonnull ADJAttributionGetterBlock)completion;
+```
+
+</CodeBlock>
+
+사용자가 앱을 설치하면 Adjust는 해당 설치를 캠페인에 어트리뷰션합니다. Adjust SDK를 사용하면 설치 캠페인 어트리뷰션 정보에 액세스할 수 있습니다. 이 정보를 반환하려면 completion handler와 함께 `[Adjust attributionWithCompletionHandler]` 메서드를 호출합니다. SDK는 비동기적으로 어트리뷰션 정보를 가져와 이 정보를 completion handler 코드에 `ADJAttribution` 객체로 전달합니다.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+Adjust.attribution() { attribution in
+      // add your completion handler
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[Adjust attributionWithCompletionHandler:^(ADJAttribution * _Nullable attribution) {
+      // add your completion handler
+}
+```
+
+</Tab>
+</Tabs>

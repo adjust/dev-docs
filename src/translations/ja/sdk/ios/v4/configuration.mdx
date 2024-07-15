@@ -1,0 +1,659 @@
+---
+title: "設定"
+description: "Adjust SDKを設定するには、このセクションのガイドに従ってください。"
+category-title: "設定"
+slug: "ja/sdk/ios/configuration"
+sidebar-position: 1
+multiVersion: true
+---
+
+Adjust SDKの動作を設定するには、このドキュメントに記載されたメソッドを使用してください。
+
+## [Configオブジェクトをインスタンス化する](instantiate-your-config-object)
+
+<CodeBlock title="メソッドシグネチャー">
+
+```objc
++ (nullable ADJConfig *)configWithAppToken:(nonnull NSString *)appToken
+                               environment:(nonnull NSString *)environment
+                     allowSuppressLogLevel:(BOOL)allowSuppressLogLevel;
+
+```
+
+</CodeBlock>
+
+Adjust SDKを設定するには、`ADJConfig`オブジェクトをインスタンス化する必要があります。このオブジェクトには、Adjust SDKにパスする必要のある **読み取り専用** の設定オプションが含まれています。
+
+Configオブジェクトをインスタンス化するには、新しい`ADJConfig`インスタンスを作成して以下のパラメーターをパスしてください：
+
+-  `appToken` （`NSString`）：お客様の[Adjustアプリトークン](https://help.adjust.com/ja/article/app-token-and-reporting-currency#view-your-app-details)。
+-  `environment` （`NSString`）：SDKを実行したい環境。テスト用のサンドボックスモードでSDKを実行するには`ADJEnvironmentSandbox`をパスします。リリース用の本番モードでSDKを実行するには`ADJEnvironmentProduction`をパスします。
+-  `allowSuppressLogLevel` （`BOOL`）：全てのログを無効化するかどうか。ログを無効化するには`true`に、ログを有効化するには`false`に設定します。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+   appToken: yourAppToken,
+   environment: environment)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+NSString *yourAppToken = @"{YourAppToken}";
+NSString *environment = ADJEnvironmentSandbox;
+*adjustConfig = [ADJConfig configWithAppToken:yourAppToken
+                                  environment:environment];
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+setupWebViewJavascriptBridge(function (bridge) {
+   var yourAppToken = yourAppToken;
+   var environment = AdjustConfig.EnvironmentSandbox;
+   var adjustConfig = new AdjustConfig(yourAppToken, environment);
+});
+```
+
+</Tab>
+</Tabs>
+
+## [読み取り専用の設定](read-only-configuration)
+
+**読み取り専用** の設定オプションは、SDKの初期化 **前に** `ADJConfig`インスタンスで設定されます。これらのオプションは、SDKの実行中は変更できません。`Adjust.appDidLaunch()`を実行する前に、使用したいオプションを設定する必要があります。
+
+### [ログレベルを設定する](set-your-logging-level)
+
+<CodeBlock title="プロパティ宣言">
+
+```objc
+@property (nonatomic, assign) ADJLogLevel logLevel;
+```
+
+</CodeBlock>
+
+Adjust SDKは、さまざまな量の情報を返すために、設定可能なログレベルを提供しています。以下のログレベルが利用可能です。
+
+<Table>
+
+| ADJLogLevel           | 説明                                                   |
+| --------------------- | ------------------------------------------------------ |
+| `ADJLogLevelVerbose`  | ログを全て有効化する                                   |
+| `ADJLogLevelDebug`    | デバッグのログを有効化する                             |
+| `ADJLogLevelInfo`     | 情報レベルのログのみを表示する（デフォルトオプション） |
+| `ADJLogLevelWarn`     | 情報ログを無効化する                                   |
+| `ADJLogLevelError`    | 警告レベル以下のログを無効化する                       |
+| `ADJLogLevelAssert`   | エラーレベル以下のログを無効化する                     |
+| `ADJLogLevelSuppress` | ログを全て無効化する                                   |
+
+</Table>
+
+Configインスタンスの`logLevel`プロパティに`ADJLogLevel`値を割り当てることで、ログレベルを設定できます。
+
+-  `logLevel` （`ADJLogLevel`）：使用したいログレベル
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+   appToken: yourAppToken,
+   environment: environment)
+// ...
+adjustConfig?.logLevel = ADJLogLevelVerbose
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+NSString *yourAppToken = @"{YourAppToken}";
+NSString *environment = ADJEnvironmentSandbox;
+*adjustConfig = [ADJConfig configWithAppToken:yourAppToken
+                                 environment:environment];
+// ...
+[adjustConfig setLogLevel:ADJLogLevelVerbose];
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+setupWebViewJavascriptBridge(function (bridge) {
+   // ...
+   var yourAppToken = yourAppToken;
+   var environment = AdjustConfig.EnvironmentSandbox;
+   var adjustConfig = new AdjustConfig(yourAppToken, environment);
+   adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
+});
+```
+
+</Tab>
+</Tabs>
+
+### [外部デバイスIDを設定する](set-external-device-identifier)
+
+<CodeBlock title="プロパティ宣言">
+
+```objc
+@property (nonatomic, copy, nullable) NSString *externalDeviceId;
+```
+
+</CodeBlock>
+
+外部デバイスIDは、デバイスまたはユーザーに割り当てることができるカスタム値です。セッションやプラットフォームを横断してユーザーを認識することができます。また、ユーザーが新規インストールとして2度カウントされないように、ユーザーごとにインストールの重複を排除することも可能です。外部デバイスIDの使用を開始する際は、Adjustの担当者にお問い合わせください。
+
+外部デバイスIDをデバイスのカスタム識別子として使用できます。これは、他のシステム上で継続性を保ちたい場合に役立ちます。Configインスタンスの`externalDeviceId`プロパティに外部デバイスIDを割り当てます。
+
+-  `externalDeviceId` （`NSString`）：外部デバイスID。この値は **大文字と小文字を区別します** 。外部デバイスIDをインポートしている場合は、パス値がインポートした値と一致することを確認してください。
+
+<Callout type="seealso">
+
+詳細は、Adjustヘルプセンターの[外部デバイスIDのページ](https://help.adjust.com/ja/article/external-device-identifiers)をご覧ください。
+
+</Callout>
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+   appToken: yourAppToken,
+   environment: environment)
+// ...
+adjustConfig?.externalDeviceId = "yourExternalDeviceId"
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+NSString *yourAppToken = @"{YourAppToken}";
+NSString *environment = ADJEnvironmentSandbox;
+*adjustConfig = [ADJConfig configWithAppToken:yourAppToken
+                                 environment:environment];
+// ...
+[adjustConfig setExternalDeviceId:@"yourExternalDeviceId"];
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+setupWebViewJavascriptBridge(function (bridge) {
+   var yourAppToken = yourAppToken;
+   var environment = AdjustConfig.EnvironmentSandbox;
+   var adjustConfig = new AdjustConfig(yourAppToken, environment);
+   adjustConfig.setExternalDeviceId("yourExternalDeviceId");
+});
+```
+
+</Tab>
+</Tabs>
+
+外部デバイスIDをビジネスアナリティクスに使用する場合は、IDを[セッションコールバックパラメーター](/en/sdk/ios/features/session-parameters)としてパスすることができます。
+
+既存の外部デバイスIDをAdjustにインポートすることが可能です。これにより、Adjustサーバーが今後のデータを既存のデバイス記録と一致させることができます。この設定をご希望の場合は、Adjustの担当者にお問い合わせください。
+
+### [デフォルトのリンクトークンを設定する](set-default-link-token)
+
+<CodeBlock title="プロパティ宣言">
+
+```objc
+@property (nonatomic, copy, nullable) NSString *defaultTracker;
+```
+
+</CodeBlock>
+
+アプリがデバイスにプリインストールされている場合、デフォルトのリンクトークンを設定できます。ユーザーがプリインストールされたアプリを初めて起動すると、インストールはデフォルトのリンクトークンにアトリビュートされます。デフォルトのリンクトークンを、configインスタンスの`defaultTracker`プロパティに割り当てます。
+
+-  `defaultTracker` （`NSString`）：プリインストールを記録したい[Adjustリンクトークン](https://help.adjust.com/ja/article/links#adjust-link-token)。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+   appToken: yourAppToken,
+   environment: environment)
+adjustConfig?.defaultTracker = "{Token}"
+Adjust.appDidLaunch(adjustConfig)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+*adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
+                                 environment:ADJEnvironmentSandbox];
+[adjustConfig setDefaultTracker:@"{Token}"];
+[Adjust appDidLaunch:adjustConfig];
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+setupWebViewJavascriptBridge(function (bridge) {
+   var yourAppToken = yourAppToken;
+   var environment = AdjustConfig.EnvironmentSandbox;
+   var adjustConfig = new AdjustConfig(yourAppToken, environment);
+   adjustConfig.setDefaultTracker("{Token}");
+});
+```
+
+</Tab>
+</Tabs>
+
+### [コストデータの送信を有効化する](enable-cost-data-sending)
+
+<CodeBlock title="プロパティ宣言">
+
+```objc
+@property (nonatomic, assign) BOOL needsCost;
+```
+
+</CodeBlock>
+
+デフォルトでは、Adjust SDKはユーザーのアトリビューションの一環としてコストデータを送信しません。コストデータの送信を有効化することで、このデータを送信するようにSDKを設定できます。コストデータ送信を有効化するには、configインスタンスの`needsCost`プロパティに **ブーリアン** 値を割り当てます。
+
+-  `needsCost` （`BOOL`）：コストデータの送信を有効化するには`true`、無効化するには`false`に設定します。
+
+コストデータには、ユーザーの[アトリビューション情報](/en/sdk/ios/features/attribution)でアクセスできます。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+   appToken: yourAppToken,
+   environment: environment)
+// ...
+adjustConfig?.needsCost = true
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+NSString *yourAppToken = @"{YourAppToken}";
+NSString *environment = ADJEnvironmentSandbox;
+*adjustConfig = [ADJConfig configWithAppToken:yourAppToken
+                                 environment:environment];
+// ...
+[adjustConfig setNeedsCost:YES];
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+setupWebViewJavascriptBridge(function (bridge) {
+   var yourAppToken = yourAppToken;
+   var environment = AdjustConfig.EnvironmentSandbox;
+   var adjustConfig = new AdjustConfig(yourAppToken, environment);
+   adjustConfig.setNeedsCost(true);
+});
+```
+
+</Tab>
+</Tabs>
+
+### [バックグランドでの計測機能を有効化する](enable-background-recording)
+
+<CodeBlock title="プロパティ宣言">
+
+```objc
+@property (nonatomic, assign) BOOL sendInBackground;
+```
+
+</CodeBlock>
+
+デフォルトでは、アプリがバックグラウンドで動作している間、Adjust SDKはリクエストの送信を一時停止します。バックグランドでの計測機能を有効化することで、SDKがバックグランドでリクエストを送信するよう設定することが可能です。バックグラウンドでの計測機能を有効化するには、configインスタンスの`sendInBackground`プロパティに **Boolean** 値を割り当てます。
+
+-  `sendInBackground` （`BOOL`）：バックグランドでの送信を有効化するには`true`、無効化するには`false`に設定します。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+   appToken: yourAppToken,
+   environment: environment)
+// ...
+adjustConfig?.sendInBackground = true
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+NSString *yourAppToken = @"{YourAppToken}";
+NSString *environment = ADJEnvironmentSandbox;
+*adjustConfig = [ADJConfig configWithAppToken:yourAppToken
+                                 environment:environment];
+// ...
+[adjustConfig setSendInBackground:YES];
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+setupWebViewJavascriptBridge(function (bridge) {
+   // ...
+   var yourAppToken = yourAppToken;
+   var environment = AdjustConfig.EnvironmentSandbox;
+   var adjustConfig = new AdjustConfig(yourAppToken, environment);
+   adjustConfig.setSendInBackground(true);
+});
+```
+
+</Tab>
+</Tabs>
+
+### [イベントのバッファリングを有効化する](enable-event-buffering)
+
+<CodeBlock title="プロパティ宣言">
+
+```objc
+@property (nonatomic, assign) BOOL eventBufferingEnabled;
+```
+
+</CodeBlock>
+
+Adjust SDKは、ユーザーがアプリ内でイベントをトリガーすると、すぐにイベント情報を送信します。イベントバッファリングを有効にすることで、イベント情報をスケジュールに沿って送信することができます。イベントバッファリングは、デバイス上のローカルバッファにイベントを保存し、1分間に1回、全てのリクエストを送信します。
+
+Configオブジェクトにはブーリアン`eventBufferingEnabled`プロパティが含まれており、それが動作を制御します。イベントのバッファリングを有効化するには、configインスタンスの`eventBufferingEnabled`プロパティに **Boolean** 値を割り当てます。
+
+-  `eventBufferingEnabled` （`BOOL`）：イベントのバッファリングを有効化するには`true`、無効化するには`false`に設定します。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+   appToken: yourAppToken,
+   environment: environment)
+adjustConfig?.eventBufferingEnabled = true
+Adjust.appDidLaunch(adjustConfig)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+*adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
+                                 environment:ADJEnvironmentSandbox];
+[adjustConfig setEventBufferingEnabled:YES];
+[Adjust appDidLaunch:adjustConfig];
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+setupWebViewJavascriptBridge(function (bridge) {
+   var yourAppToken = yourAppToken;
+   var environment = AdjustConfig.EnvironmentSandbox;
+   var adjustConfig = new AdjustConfig(yourAppToken, environment);
+   adjustConfig.setEventBufferingEnabled(true);
+});
+```
+
+</Tab>
+</Tabs>
+
+### [SDKの起動を遅らせる](delay-the-start-of-the-sdk)
+
+<CodeBlock title="プロパティ宣言">
+
+```objc
+@property (nonatomic, assign) double delayStart;
+```
+
+</CodeBlock>
+
+デフォルトでは、Adjust SDKはアプリの起動直後に動作を開始します。起動時に取得できないデータを[セッションパラメーター](/en/sdk/ios/features/session-parameters)で送信したい場合は、SDKの動作開始を遅らせることができます。これは、ユニークな識別子などの情報を送信する場合に便利です。
+
+動作開始の遅延を設定するには、configインスタンスの`delayStart`プロパティに`double`値を割り当てます。
+
+-  `delayStart` （`double`）：SDKの動作開始を遅らせる時間（秒）。SDKの動作開始を遅らせることができるのは最長 **10秒間** です。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+   appToken: yourAppToken,
+   environment: environment)
+adjustConfig?.delayStart = 5.5
+// ...
+Adjust.appDidLaunch(adjustConfig)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+*adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
+                                 environment:ADJEnvironmentSandbox];
+[adjustConfig setDelayStart:5.5];
+/// ...
+[Adjust appDidLaunch:adjustConfig];
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+setupWebViewJavascriptBridge(function (bridge) {
+   var yourAppToken = yourAppToken;
+   var environment = AdjustConfig.EnvironmentSandbox;
+   var adjustConfig = new AdjustConfig(yourAppToken, environment);
+   adjustConfig.setDelayStart(5.5);
+});
+```
+
+</Tab>
+</Tabs>
+
+## [動的設定](dynamic-configuration)
+
+**動的** 設定オプションは、SDKのライフサイクル中に、ユーザーによるイベントやアクションに応じて変更されることがあります。
+
+### [オフラインモードに切り替える](toggle-offline-mode)
+
+<CodeBlock title="メソッドシグネチャー">
+
+```objc
++ (void)setOfflineMode:(BOOL)enabled;
+```
+
+</CodeBlock>
+<Callout type="important">
+
+このオフラインモード設定は、セッション間では記憶されません。オフラインモードは、新規セッションの開始時に非有効化されます。
+
+</Callout>
+
+Adjust SDKは、イベントとセッションのデータをAdjustのサーバーにリアルタイムで送信します。SDKをオフラインモードにすると、情報の送信を一時停止することができます。オフラインモードでは、SDKは全てのデータをデバイスのローカルファイルに保存します。オフラインモードを無効にすると、SDKはこの情報をAdjustのサーバーに送信します。
+
+以下の引数を使用して`setOfflineMode`メソッドを呼び出すことで、いつでもオフランモードに切り替えられます：
+
+-  `enabled` （`BOOL`）：オフラインモードを有効化するには`true`に、オフラインモードを無効化するには`false`に設定します。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+Adjust.setOfflineMode(true);
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[Adjust setOfflineMode:YES];
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+Adjust.setOfflineMode(true);
+```
+
+</Tab>
+</Tabs>
+
+### [Pushトークンを設定する](set-push-tokens)
+
+<CodeBlock title="メソッドシグネチャー">
+
+```objc
++ (void)setDeviceToken:(nonnull NSData *)deviceToken;
+```
+
+</CodeBlock>
+
+Pushトークンは、[Audiences](https://help.adjust.com/ja/article/audiences)機能やクライアントコールバックに使用されます。また、[アンインストール・再インストール計測](https://help.adjust.com/ja/article/uninstalls-reinstalls)にも必要です。
+
+Configオブジェクトは、 pushトークンを保管できる`deviceToken`プロパティを含みます。このプロパティは、`setDeviceToken`メソッドと以下の引数を呼び出すことで、いつでも更新することが可能です：
+
+-  `deviceToken` （`NSData`）：Push トークン
+
+<Callout type="note">
+
+Web ViewからPushトークンにアクセスできる場合は、Javascriptで`setPushToken`メソッドを呼び出します。
+
+</Callout>
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+func application(_ app: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+    Adjust.setDeviceToken(deviceToken)
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+- (void)application:(UIApplication *)app didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+    [Adjust setDeviceToken:deviceToken];
+}
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+Adjust.setDeviceToken(deviceToken);
+```
+
+</Tab>
+</Tabs>
+
+### [SDKを無効化または有効化する](disable-or-enable-the-sdk)
+
+<Callout type="important">
+
+このメソッドを呼び出せるのは、初回セッションの後のみです。この設定は、セッション間で持続します。
+
+</Callout>
+<CodeBlock title="メソッドシグネチャー">
+
+```objc
++ (void)setEnabled:(BOOL)enabled;
+```
+
+</CodeBlock>
+
+Adjust SDKは、デフォルトでアプリが開いている時に実行されます。Adjust SDKを無効化または再有効化することで、計測を一時停止したり再起動したりすることができます。Adjust SDKを無効にすると、Adjustサーバーにデータが送信されなくなります。
+
+以下の引数を使用して`setEnabled`メソッドを呼び出すことで、SDKをいつでも有効化または無効化できます：
+
+-  `enabled` （`BOOL`）：SDKを有効化するには`true`に、SDKを無効化するには`false`に設定します。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+Adjust.setEnabled(true)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[Adjust setEnabled:NO];
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+Adjust.setEnabled(false);
+```
+
+</Tab>
+</Tabs>
+
+#### [有効化ステータスを確認する](check-enabled-status)
+
+<CodeBlock title="メソッドシグネチャー">
+
+```objc
++ (BOOL)isEnabled;
+```
+
+</CodeBlock>
+
+Adjust SDKが有効であるかどうかを確認するには、`isEnabled`メソッドを呼び出します。このメソッドは、SDKが **有効** （`true`）か **無効** （`false`）かを示す`BOOL`値を返します。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+Adjust.isEnabled()
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[Adjust isEnabled];
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+Adjust.isEnabled();
+```
+
+</Tab>
+</Tabs>
+</SdkVersion>

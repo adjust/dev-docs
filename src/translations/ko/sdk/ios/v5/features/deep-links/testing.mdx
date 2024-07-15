@@ -1,0 +1,243 @@
+---
+title: "딥링킹 테스트"
+description: "딥링크가 정상적으로 작동하는지 테스트합니다."
+slug: "ko/sdk/ios/features/deep-links/testing"
+sidebar-position: 6
+---
+
+마케팅팀이 캠페인에서 딥링크를 라이브로 사용하기 전에, 우선 딥링크를 테스트해야 합니다. 테스트를 통해 다음을 확인할 수 있습니다.
+
+-  딥링크가 올바르게 설정되었습니다.
+-  딥링크가 의도된 콘텐츠로 사용자를 보내는지 확인
+-  Adjust가 딥링크를 기록하고 있습니다.
+
+## [시작에 앞서](before-you-begin)
+
+시작에 앞서 다음을 수행하시기 바랍니다.
+
+1. 앱 환경을 `ADJEnvironmentSandbox`로 설정하고 로그 레벨을 `ADJLogLevelVerbose`로 설정합니다.
+
+2. Xcode에서 앱을 빌드하고 실행합니다.
+
+3. 마케팅팀에서 예시 딥링크를 받습니다.
+
+   예시: `https://example.go.link/summer-clothes?promo=beach`
+
+## [테스트 링크 생성](create-a-test-link)
+
+딥링크 구현을 테스트하려면 테스트 링크를 생성해야 합니다. 다음을 수행하시기 바랍니다.
+
+1. Adjust suite 에 로그인합니다.
+2. **Campaign Lab** 에서 **커스텀 링크** 를 선택합니다.
+3. **새 링크** 를 선택합니다.
+4. **앱 선택** 화면에서 링크를 생성하고자 하는 앱을 선택합니다.
+5. **링크 구조** 화면에서 최상위 채널 링크의 이름을 추가합니다. 원하는 경우, 캠페인, 광고그룹, 크리에이티브 하위 레벨을 추가하여 링크 구조를 설정할 수 있습니다.
+6. **사용자 이동 위치** 화면에서 링크에 추가할 딥링크에 대한 다음 정보를 입력합니다.
+
+   -  iOS 앱 스킴
+   -  iOS 앱 화면
+
+7. **어트리뷰션 설정** 화면의 **신규 사용자:어트리뷰션 \-\-> 클릭** 에서 **확률론적 어트리뷰션** 을 **ON** 으로 설정하시기 바랍니다.
+8. **링크 검토** 화면에서 선택 사항을 검토하고, 필요한 경우 변경합니다.
+9. **링크 생성** 을 선택하여 클릭 URL, QR 코드 및 링크 토큰을 생성합니다.
+
+예시: `https://example.go.link/summer-clothes?promo=beach&adj_t=abc123`
+
+## [다이렉트 딥링크 테스트](test-direct-deep-linking)
+
+다음의 유니버설 링크 구성을 테스트할 수 있습니다.
+
+-  Adjust 유니버설 링크
+-  이메일 리다이렉트 및 URL 단축 유니버설 링크
+
+### [유니버설 링크 도메인 구성 확인](check-universal-link-domain-configuration)
+
+<Callout type="important">
+
+유니버설 링크를 브라우저에 직접 입력한 경우, iOS는 유니버설 링크를 딥링크로 실행하지 않습니다. 유니버설 링크는 하이퍼링크로서 클릭해야 합니다.
+
+</Callout>
+
+유니버설 링크 도메인 구성을 확인하려면 다음의 단계를 수행하시기 바랍니다.
+
+1. iOS 테스트 기기의 Apple Notes에 유니버설 링크를 붙여넣기 합니다.
+2. Apple Notes에서 유니버설 링크를 길게 눌러 iOS 메뉴를 실행합니다. **앱에서 열기** 옵션이 표시되는 경우, iOS가 앱과 도메인을 연결할 수 있다는 것을 의미합니다.
+
+해당 옵션이 표시되지 않는 경우 다음의 문제가 있는지 확인하시기 바랍니다.
+
+### [Adjust 유니버설 링크](adjust-universal-links)
+
+-  마케팅팀이 Adjust 대시보드에서 Adjust 유니버설 링크를 활성화했는지 확인합니다.
+-  Xcode의 **Associated Domains** 구성을 확인합니다.
+
+   -  `applinks: prefix`가 표시되어야 합니다.
+   -  Xcode의 도메인은 Adjust **유니버설 링크 도메인** 또는 Adjust 대시보드의 **브랜드 링크** 와 반드시 일치해야 합니다. 여러 빌드\(예: 디버그 vs. 릴리스\)를 테스트하는 경우, 모든 빌드에 Adjust 유니버설 링크 도메인 또는 브랜드 링크를 추가할 수 있습니다.
+
+-  앱에서 다음의 값이 Adjust 대시보드에서의 값과 일치하는지 확인합니다.
+   -  **앱 ID 접두사**
+   -  **번들 ID** : 사용 중인 번들 ID가 디버그 빌드인지 릴리즈 빌드인지 확인합니다.
+
+### [이메일 리다이렉트 및 URL 단축 유니버설 링크](email-redirect-and-url-shortener-universal-links)
+
+-  Xcode의 Associated Domains 구성을 확인합니다.
+
+   -  `applinks: prefix`가 표시되어야 합니다.
+   -  Xcode의 도메인은 파트너 시스템에서 구성된 이메일 리다이렉트 도메인 또는 URl 단축 도메인과 일치해야 합니다.
+
+-  앱에서 다음의 값이 파트너 시스템의 이메일 리다이렉트 도메인 또는 URL 단축 도메인에 대한 AASA\(Apple\-App\-Site\-Association\) 파일에서의 값과 일치하는지 확인합니다.
+   -  **앱 ID 접두사**
+   -  **번들 ID** : 사용 중인 번들 ID가 디버그 빌드인지 릴리즈 빌드인지 확인합니다.
+   -  이메일 리다이렉트 도메인 / URL 단축\(shortener\) 도메인 \- 이메일 파트너의 시스템에서 도메인을 커스텀 도메인으로 구성했는지 확인합니다.
+
+### [앱에서 다이렉트 딥링크 테스트](test-direct-deep-linking-in-the-app)
+
+앱이 종료되었을 때와 테스트 기기의 백그라운드에서 실행될 때 모두 다이렉트 딥링크를 테스트해야 합니다.
+
+#### [앱이 종료된 경우](app-closed)
+
+1. 유니버설 링크를 Apple Notes에 복사 및 붙여넣기 합니다.
+2. 홈 버튼을 두 번 탭 합니다. 앱이 실행되면 위로 스와이프하여 앱을 종료합니다.
+3. Apple Notes 열기
+4. 유니버설 링크를 클릭합니다.
+
+앱이 실행되고 딥링크 내용이 표시되어야 합니다. 앱에서 올바른 페이지가 표시되지 않는 경우 다음을 확인하시기 바랍니다.
+
+-  딥링크의 경로 또는 파라미터가 올바른지 확인합니다. `&` 심볼 대신 `?` 심볼을 두 번 사용했는지 확인합니다.
+-  다음의 메서드를 통해 앱이 딥링크를 처리하는지 확인합니다.
+
+   -  **앱이 scenes를 사용하지 않는 경우** : `application(_:continue:restorationHandler:)` 메서드
+   -  **앱이 scenes를 사용하는 경우** : `scene(_:continue:)` 메서드
+
+-  코드의 다른 내용이 딥링크의 작동을 방해하는지 확인합니다.
+-  유니버설 링크에 리다이렉트를 설정한 경우, 리다이렉트를 올바르게 구성했는지 확인합니다.
+-  링크 해석\(Link Resolution\) 메서드를 올바르게 구성했는지 확인합니다. 이메일 리다이렉트 도메인 및 URL 단축 도메인을 `resolveUrlSuffixArray`에 추가했는지 확인합니다.
+
+딥링크가 선택되면 앱은 Adjust SDK에서 appWillOpen 메서드를 호출하며, Xcode 로그에서 다음과 같은 입력 내용을 확인할 수 있어야 합니다.
+
+```text
+2022-09-28 09:19:30.873598+0900 example[1619:241845]  [Adjust]d: Added sdk_click 1
+2022-09-28 09:19:30.873782+0900 example[1619:241845]  [Adjust]v: Path:      /sdk_click
+2022-09-28 09:19:30.873806+0900 example[1619:241845]  [Adjust]v: ClientSdk: ios$IOS_V4_VERSION
+2022-09-28 09:19:30.873824+0900 example[1619:241845]  [Adjust]v: Parameters:
+[...]
+2022-03-15 09:19:30.873956+0900 example[1619:241845]  [Adjust]v: source   deeplink
+```
+
+Xcode 로그에 이러한 입력 내용이 없는 경우, 다음을 확인하시기 바랍니다.
+
+-  Adjust SDK에서 환경을 `sandbox`, 로깅을 `verbose`로 설정했는지 확인합니다.
+
+   -  Verbose 로깅은 Xcode 로그에서 `[Adjust]v`로 표시됩니다.
+
+-  앱이 딥링크를 수신한 메서드에서 `appWillOpenUrl` 메서드를 호출하는지 확인합니다.
+
+#### [앱이 백그라운드에서 실행 중인 경우](app-running-in-background)
+
+1. 유니버설 링크를 Apple Notes에 복사 및 붙여넣기 합니다.
+2. 홈 버튼을 탭 합니다.
+3. 앱 아이콘을 통해 앱을 실행합니다.
+4. 홈 버튼을 두 번 탭하고 Apple Notes를 실행합니다.
+5. 유니버설 링크를 클릭합니다.
+
+이 경우 앱이 딥링크 내용을 표시해야 합니다. 앱에서 올바른 페이지가 표시되지 않는 경우 다음을 확인하시기 바랍니다.
+
+-  다음의 메서드를 통해 앱이 딥링크를 처리하는지 확인합니다.
+   -  **앱이 scenes를 사용하지 않는 경우** : `application(_:continue:restorationHandler:)` 메서드
+   -  **앱이 scenes를 사용하는 경우** : `scene(_:continue:)` 메서드
+
+딥링크가 선택되면 앱은 Adjust SDK에서 `appWillOpenUrl` 메서드를 호출하며, Xcode 로그에서 다음과 같은 입력 내용을 확인할 수 있어야 합니다.
+
+```text
+2022-09-28 09:19:30.873598+0900 example[1619:241845]  [Adjust]d: Added sdk_click 1
+2022-09-28 09:19:30.873782+0900 example[1619:241845]  [Adjust]v: Path:      /sdk_click
+2022-09-28 09:19:30.873806+0900 example[1619:241845]  [Adjust]v: ClientSdk: ios$IOS_V4_VERSION
+2022-09-28 09:19:30.873824+0900 example[1619:241845]  [Adjust]v: Parameters:
+[...]
+2022-03-15 09:19:30.873956+0900 example[1619:241845]  [Adjust]v: source   deeplink
+```
+
+Xcode 로그에 이러한 입력 내용이 없는 경우, 다음을 확인하시기 바랍니다.
+
+-  Adjust SDK에서 환경을 `ADJEnvironmentSandbox`, 로깅을 `ADJLogLevelVerbose`로 설정했는지 확인합니다.
+
+   -  Verbose 로깅은 Xcode 로그에서 `[Adjust]v`로 표시됩니다.
+
+-  앱이 딥링크를 수신한 메서드에서 `appWillOpenUrl` 메서드를 호출하는지 확인합니다.
+
+## [커스텀 URL 스킴을 가진 다이렉트 딥링크 테스트](test-direct-deep-linking-with-a-custom-url-scheme)
+
+테스트 기기에서 앱이 종료되었을 때와 백그라운드에서 실행 중인 경우 모두에 대해 커스텀 URL 스킴 다이렉트 딥링크를 테스트할 수 있습니다.
+
+Apple Notes에서 유니버설 링크를 선택할 때, 앱이 실행되고 딥링크 내용이 표시되어야 합니다.
+
+앱이 실행되지 않는다면, 다음을 확인하시기 바랍니다.
+
+-  Xcode에서 URL 스킴이 올바르게 구성되었는지 확인합니다.
+-  앱의 디버그 빌드를 테스트하는 경우, 디버그 또는 릴리즈 커스텀 URL 스킴을 사용하는지 여부를 확인합니다.
+
+앱에서 올바른 페이지가 표시되지 않는다면 다음을 확인하시기 바랍니다.
+
+-  딥링크의 경로 또는 파라미터가 올바른지 확인합니다. `&` 심볼 대신 `?` 심볼을 두 번 사용했는지 확인합니다.
+-  다음의 메서드를 통해 앱이 딥링크를 처리하는지 확인합니다.
+
+   -  **앱이 scenes를 사용하지 않는 경우** : `application(_:continue:restorationHandler:)` 메서드
+   -  **앱이 scenes를 사용하는 경우** : `scene(_:continue:)` 메서드
+
+-  코드의 다른 내용이 딥링크의 작동을 방해하는지 확인합니다.
+
+딥링크가 선택되면 앱은 Adjust SDK에서 `appWillOpenUrl` 메서드를 호출하며, Xcode 로그에서 다음과 같은 입력 내용을 확인할 수 있어야 합니다.
+
+```text
+2022-09-28 09:19:30.873598+0900 example[1619:241845]  [Adjust]d: Added sdk_click 1
+2022-09-28 09:19:30.873782+0900 example[1619:241845]  [Adjust]v: Path:      /sdk_click
+2022-09-28 09:19:30.873806+0900 example[1619:241845]  [Adjust]v: ClientSdk: ios$IOS_V4_VERSION
+2022-09-28 09:19:30.873824+0900 example[1619:241845]  [Adjust]v: Parameters:
+[...]
+2022-03-15 09:19:30.873956+0900 example[1619:241845]  [Adjust]v: source   deeplink
+```
+
+Xcode 로그에 이러한 입력 내용이 없는 경우, 다음을 확인하시기 바랍니다.
+
+-  Adjust SDK에서 환경을 `ADJEnvironmentSandbox`, 로깅을 `ADJLogLevelVerbose`로 설정했는지 확인합니다.
+
+   -  Verbose 로깅은 Xcode 로그에서 `[Adjust]v`로 표시됩니다.
+
+-  앱이 딥링크를 수신한 메서드에서 `appWillOpenUrl` 메서드를 호출하는지 확인합니다.
+
+## [디퍼드 딥링크 테스트](test-deferred-deep-linking)
+
+테스트 기기에서 디퍼드 딥링크를 테스트하려면 다음의 단계를 수행하시기 바랍니다.
+
+1. 앱을 설치합니다.
+
+2. Xcode 로그에서 ADID\(Adjust device identifier\)를 조회합니다. 예시: 예시:
+
+   <CodeBlock highlight="adid, 4446ab34861b99b78ee374c3bd38a350">
+
+   ```text
+   2022-09-28 09:19:35.609913+0900 example[1619:241847] [Adjust]v: Response: {"app_token":"2eb2na2w54c3","adid":"4446ab34861b99b78ee374c3bd38a350","timestamp":"2022-09-28T00:19:35.841Z+0000","message":"Attribution found","attribution":{"tracker_token":"abc123","tracker_name":"Organic","network":"Organic"}}
+   ```
+
+   </CodeBlock>
+
+3. 앱을 삭제합니다.
+
+4. [테스트용 콘솔](https://help.adjust.com/ko/article/testing-console)을 열고, Adjust ADID를 입력한 뒤 **기기 데이터 보기** 를 선택합니다. `TrackerName`이 `Organic`으로 표시되어야 합니다.
+
+5. 테스팅 콘솔에서 기기를 삭제합니다.
+
+6. Apple Notes에 유니버설 링크 또는 커스텀 URL 스킴 딥링크를 붙여넣기 합니다.
+
+7. 딥링크를 선택합니다. App Store로 리다이렉트가 작동해야 합니다.
+
+8. 로컬 빌드로부터 앱을 설치합니다. \(스토어를 통해 앱을 설치하지 마세요.\)
+
+9. 앱을 실행합니다. 이때, 앱이 실행되고 딥링크 내용이 표시되어야 합니다.
+
+앱에서 올바른 페이지가 표시되지 않는다면 다음을 확인하시기 바랍니다.
+
+-  코드의 다른 내용이 딥링크의 작동을 방해하는지 확인합니다. 예: 앱에 온보딩 화면이 있고 사용자 로그인이 필요하지만, 앱이 딥링크를 실행하기 전에 이를 처리하지 않는 경우, `adjustDeeplinkResponse` 메서드를 구현하여 딥링크 처리 전 온보딩 화면이나 사용자 로그인을 처리하도록 해야 할 수 있습니다.
+-  앱 코드가 `adjustDeeplinkResponse` 메서드에서 수신되는 딥링크를 처리하지 않습니다.
+-  Adjust는 설치를 클릭에 어트리뷰션하지 않습니다. 테스팅 콘솔에서 **기기 데이터 보기** 를 선택합니다. `TrackerName` 필드에 테스트 링크가 표시되어야 합니다. 테스트를 시작하기 전에 다음을 확인하시기 바랍니다.
+   -  확률론적 매칭이 테스트 링크에서 활성화되어 있는지 확인합니다.
+   -  테스트용 콘솔에서 `TrackerName`이 `Organic`으로 설정되어 있는지 확인합니다.

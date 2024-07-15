@@ -1,0 +1,340 @@
+---
+title: "iOS SDK 集成指南"
+description: "使用 iOS SDK 在您的 iOS 应用中使用 Adjust 功能"
+category-title: "iOS SDK"
+slug: "zh/sdk/ios"
+sidebar-position: 2
+multiVersion: true
+---
+
+<Callout type="important" title="Beta 公测">
+
+SDK v5 处于公测阶段。所有功能均可能变更。
+
+</Callout>
+
+通过 Adjust iOS SDK，您可以在 iOS 应用中记录归因、事件以及更多信息。该指南展示了如何将 Adjust SDK 集成至应用。
+
+## [操作前须知](before-you-begin)
+
+在更新到 SDK v5 之前，您需要进行以下操作：
+
+1. SDK v5 支持[SDK 签名验证](https://help.adjust.com/zh/article/sdk-signature)。如果您当前正在使用 SDK 签名库，则需要先将其卸载。
+2. 如果您的应用针对版本 **12\.0** 之前的 iOS 或 tvOS，则需要先更新应用才能使用 SDK v5。
+
+## [1\. 设置环境](set-up-your-environment)
+
+要使用 Cocoapods 添加 SDK，请在 `Podfile` 中指定要使用的版本：
+
+```text
+// Get source directly from GitHub
+pod 'Adjust', :git => 'https://github.com/adjust/ios_sdk.git', :branch => 'v5'
+```
+
+## [2\. 集成 Adjust SDK](2-integrate-the-adjust-sdk)
+
+将 Adjust SDK 添加到 `Xcode` 项目后，您需要将其集成至应用。
+
+在您的项目文件中添加相关导入语句：
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+要导入 Adjust SDK，请将下列行添加至您的桥接标头文件：
+
+```objc
+#import AdjustSdk
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+要导入 Adjust SDK，请将下列行添加至您的 `AppDelegate.h` 文件：
+
+```objc
+#import <AdjustSdk/Adjust.h>
+```
+
+</Tab>
+</Tabs>
+
+## [3\. 添加 iOS 框架](3-add-ios-frameworks)
+
+Adjust SDK 依赖各种框架读取具体设备信息。要启用设备信息读取，请添加对应框架，并将其标记为 **可选** 。
+
+<Table autoWidth="1" width="2: 300, 3: 300">
+
+| 框架                                | 描述                                                                                                        | 注意事项                                                                                    |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `AdSupport.framework`               | 允许读取设备 IDFA。对于操作系统为 iOS 14 及更早版本的设备，添加该框架也会允许读取 LAT 信息。                | 如果您的应用属于 "儿童" 类别，那么请勿添加该框架。                                          |
+| `AdServices.framework`              | 处理 ASA 归因。                                                                                             |                                                                                             |
+| `StoreKit.framework`                | 允许访问 SKAdNetwork 框架。                                                                                 | 若要运行 Adjust 处理 iOS 14 或更早操作版本设备上与 SKAdNetwork 的通讯，那么必须添加该框架。 |
+| `AppTrackingTransparency.framework` | 若要允许 Adjust SDK 包装用户 ATT 许可对话，并读取 iOS 14 或更新操作版本设备的许可响应，那么必须添加该框架。 | 如果您的应用属于 "儿童" 类别，那么请勿添加该框架                                            |
+| `WebKit.framework`                  | 允许在您的应用程序中使用 web 视图。                                                                         | 只有在应用使用 web 视图时才有必要                                                           |
+
+</Table>
+
+## [4\. 初始化 Adjust SDK](4-initialize-the-adjust-sdk)
+
+要初始化 Adjust SDK，您需要创建一个 config 对象。该对象包含控制 Adjust SDK 行为的配置选项。发送以下参数能够保证最少的设置：
+
+-  `appToken`: [应用识别码](https://help.adjust.com/zh/article/app-settings#view-your-app-token)。
+-  `environment`: SDK 运行的环境。将其设置为`ADJEnvironmentSandbox`。
+
+要使用此 config 对象初始化 Adjust SDK：
+
+1. 在您应用委托的 `didFinishLaunching` 或 `didFinishLaunchingWithOptions` 方法中声明 config 对象。
+2. 将 config 对象的 `logLevel` 属性设置为 `ADJLogLevelVerbose` \(详细\)。您必须启用 verbose 日志记录，才能调取设备信息。
+3. 将 config 对象作为参数发送至`initSdk`方法。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+import AdjustSdk
+
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        // Override point for customization after application launch.
+        let yourAppToken = "{YourAppToken}"
+        let environment = ADJEnvironmentSandbox
+        let adjustConfig = ADJConfig(appToken: yourAppToken,
+                                     andEnvironment: environment)
+
+        Adjust.initSdk(adjustConfig)
+       //...
+        return true
+ }
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import <AdjustSdk/Adjust.h>
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+   NSString *yourAppToken = @"{YourAppToken}";
+   NSString *environment = ADJEnvironmentSandbox;
+   ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:appToken
+                                                andEnvironment:environment];
+   // Your code here
+   [Adjust initSdk:myAdjustConfig];
+   // Your code here
+   return YES;
+}
+```
+
+</Tab>
+</Tabs>
+
+### [设置您的 iMessage 应用](set-up-your-imessage-app)
+
+<Callout type="important">
+
+iMessage 拓展拥有不同的 Bundle ID，并在不同的内容空间中运行。如果您在两者的配置中使用了同样的识别码，那么 SDK 就会返回混合数据。请务必在 Adjust 控制面板中为 iMessage 应用创建单独的应用，然后使用单独的识别码初始化 Adjust SDK。
+
+</Callout>
+
+如果您的应用面向 iMessage，那么您还需要进行下列额外的配置：
+
+-  如果您是从源代码添加 Adjust SDK，请确保您已在 iMessage 项目中添加了预处理宏 `ADJUST_IM=1`。
+-  如果您将 SDK 作为框架添加，请务必在 **Build Phases** 项目设置中添加 **New Copy Files Phase** 。将 `AdjustSdkIm.framework` 复制到 Frameworks 文件夹。
+
+#### [记录会话](record-sessions)
+
+Adjust SDK 并未订阅 iMessage 应用中的 iOS 系统通知。要在应用进入或离开前台时通知 Adjust SDK，请调用 `trackSubsessionStart` 和 `trackSubsessionEnd` 方法。
+
+在 `didBecomeActiveWithConversation:` 方法中添加对 `trackSubsessionStart` 的调用：
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+func didBecomeActive(with conversation: MSConversation) {
+    // Called when the extension is about to move from the inactive to active state.
+    // This will happen when the extension is about to present UI.
+    // Use this method to configure the extension and restore previously stored state.
+
+    Adjust.trackSubsessionStart()
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+-(void)didBecomeActiveWithConversation:(MSConversation *)conversation {
+    // Called when the extension is about to move from the inactive to active state.
+    // This will happen when the extension is about to present UI.
+    // Use this method to configure the extension and restore previously stored state.
+
+    [Adjust trackSubsessionStart];
+}
+```
+
+</Tab>
+</Tabs>
+
+在 `willResignActiveWithConversation:` 方法中添加对 `trackSubsessionEnd` 的调用：
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+func willResignActive(with conversation: MSConversation) {
+    // Called when the extension is about to move from the active to inactive state.
+    // This will happen when the user dismisses the extension, changes to a different
+    // conversation or quits Messages.
+
+    // Use this method to release shared resources, save user data, invalidate timers,
+    // and store enough state information to restore your extension to its current state
+    // in case it is terminated later.
+
+    Adjust.trackSubsessionEnd()
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+-(void)willResignActiveWithConversation:(MSConversation *)conversation {
+    // Called when the extension is about to move from the active to inactive state.
+    // This will happen when the user dismisses the extension, changes to a different
+    // conversation or quits Messages.
+
+    // Use this method to release shared resources, save user data, invalidate timers,
+    // and store enough state information to restore your extension to its current state
+    // in case it is terminated later.
+
+    [Adjust trackSubsessionEnd];
+}
+```
+
+</Tab>
+</Tabs>
+
+## [5\. 配置 Adjust SDK](5-configure-the-adjust-sdk)
+
+添加 config 对象和初始化逻辑后，您可以配置 Adjust SDK 来记录应用不同部分的信息。请查看[配置参考](/en/sdk/ios/configuration)和[功能指南](/en/sdk/ios/features)准确设置您想记录的内容。
+
+## [6\. 测试 Adjust SDK](6-test-the-adjust-sdk)
+
+完成配置，能通过 Adjust SDK 记录应用相关信息后，您就可以进行测试了。Adjust 为您提供[测试控制台](https://help.adjust.com/zh/article/testing-console)和[设备 ID](https://help.adjust.com/zh/article/device-api)，方便您测试应用。
+
+请按照[测试指南](https://help.adjust.com/zh/article/test-the-adjust-sdk)中的说明操作，确保您的应用能将预期值发送给 Adjust。
+
+## [7\. 针对生产环境构建应用](7-build-your-app-for-production)
+
+完成测试后，您就可以针对生产环境构建应用了。为此，请更新您的 config 对象。
+
+更新以下值：
+
+-  `environment`：将其设置为 `ADJEnvironmentProduction`。
+-  `logLevel`：选择[日志级别](/en/sdk/ios/configuration#set-your-logging-level)，或在 config 对象中传送 `allowSuppressLogLevel` 参数，以完全禁用日志记录。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+import AdjustSdk
+
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        // Override point for customization after application launch.
+        let yourAppToken = "{YourAppToken}"
+        let environment = ADJEnvironmentProduction
+        let adjustConfig = ADJConfig(
+            appToken: yourAppToken,
+            environment: environment,
+            andSuppressLogLevel: true)
+        adjustConfig?.logLevel = ADJLogLevelVerbose
+        //...
+        Adjust.initSdk(adjustConfig)
+       //...
+        return true
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import <AdjustSdk/Adjust.h>
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+   NSString *yourAppToken = @"{YourAppToken}";
+   NSString *environment = ADJEnvironmentSandbox;
+   ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:appToken
+                                                andEnvironment:environment];
+   [adjustConfig setLogLevel:ADJLogLevelVerbose];
+   //...
+   [Adjust initSdk:adjustConfig];
+   //...
+   return YES;
+}
+```
+
+</Tab>
+</Tabs>
+
+您可以使用 `Xcode` 版本标记 \(flag\)，根据您创建的版本 \(调试或生产版本\) 情况动态更新 config。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        // Override point for customization after application launch.
+        let yourAppToken = "{YourAppToken}"
+
+        #if DEBUG
+        let environment = ADJEnvironmentSandbox
+        let adjustConfig = ADJConfig(
+            appToken: yourAppToken,
+            andEnvironment: environment)
+        adjustConfig?.logLevel = ADJLogLevelVerbose
+
+        #else
+        let environment = ADJEnvironmentProduction
+        let adjustConfig = ADJConfig(
+            appToken: yourAppToken,
+            andEnvironment: environment)
+        adjustConfig?.logLevel = ADJLogLevelSuppress
+        #endif
+        //...
+        Adjust.initSdk(adjustConfig)
+        //...
+        return true
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "Adjust.h"
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+   NSString *yourAppToken = @"{YourAppToken}";
+
+   #if DEBUG
+   NSString *environment = ADJEnvironmentSandbox;
+   ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:appToken
+                                                andEnvironment:environment];
+   [adjustConfig setLogLevel:ADJLogLevelVerbose];
+
+   #else
+   NSString *environment = ADJEnvironmentProduction;
+   ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:appToken
+                                                andEnvironment:environment];
+   [adjustConfig setLogLevel:ADJLogLevelSuppress];
+   #endif
+   //...
+   [Adjust initSdk: adjustConfig];
+   //...
+   return YES;
+}
+```
+
+</Tab>
+</Tabs>

@@ -1,0 +1,44 @@
+---
+title: Mixpanel SDK integration
+description: Use the Mixpanel integration to pass Mixpanel information to Adjust's servers.
+slug: en/sdk/ios/integrations/mixpanel
+---
+
+Before using this integration, read through the [conditions for usage](https://github.com/adjust/sdks/blob/master/doc/attribution-data.md) of some of your data.
+
+You can integrate the Adjust SDK with the Mixpanel SDK by following the instructions in this guide.
+
+## [Before you begin](before-you-begin)
+
+To use this feature, you first need to download and set up the Adjust iOS SDK.
+
+## [Guide](guide)
+
+The Mixpanel API enables you to register "super properties." These properties can be sent with all activities. See [Mixpanel's documentation](https://docs.mixpanel.com/docs/tracking/reference/ios#super-properties) for more information.
+
+To integrate the Adjust SDK with the Mixpanel SDK, you need to register the "super properties."
+
+You should send this information after receiving a response from Adjust's servers. To do this, follow the steps in the attribution callback guide for Android:
+
+-  [Attribution callbacks](https://help.adjust.com/en/article/attribution-callbacks-ios-sdk)
+
+## [Examples](examples)
+
+Modify your callback method to use the Mixpanel API like this:
+
+```objc
+- (void)adjustAttributionChanged:(ADJAttribution *)attribution {
+    Mixpanel *mixpanel = [Mixpanel sharedInstance];
+
+    // The adjust properties will be sent
+    // with all future track calls.
+    if (attribution.network != nil)
+        [mixpanel registerSuperProperties:@{@"[Adjust]Network":  attribution.network}];
+    if (attribution.campaign != nil)
+        [mixpanel registerSuperProperties:@{@"[Adjust]Campaign": attribution.campaign}];
+    if (attribution.adgroup != nil)
+        [mixpanel registerSuperProperties:@{@"[Adjust]Adgroup":  attribution.adgroup}];
+    if (attribution.creative != nil)
+        [mixpanel registerSuperProperties:@{@"[Adjust]Creative": attribution.creative}];
+}
+```

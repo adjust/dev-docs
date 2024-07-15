@@ -1,0 +1,243 @@
+---
+title: "测试深度链接"
+description: "测试深度链接，确保链接能正确运行。"
+slug: "zh/sdk/ios/features/deep-links/testing"
+sidebar-position: 6
+---
+
+在使用深度链接的推广活动正式上线前，请务必测试您的链接，以确保：
+
+-  链接已正确设置。
+-  连接能将用户转到预期内容界面。
+-  Adjust 正常开展记录。
+
+## [操作前须知](before-you-begin)
+
+以下是您在操作前需要了解的内容。
+
+1. 将应用环境设为 `ADJEnvironmentSandbox`，日志级别设为 `ADJLogLevelVerbose`。
+
+2. 在 Xcode 中创建并运行应用。
+
+3. 向营销团队索取示例深度链接。
+
+   示例： `https://example.go.link/summer-clothes?promo=beach`
+
+## [创建测试链接](create-a-test-link)
+
+要测试深度链接集成是否正确，请创建测试链接。为此，请进行下列操作：
+
+1. 登录 Adjust suite。
+2. 在 **Campaign Lab** 中选择 **自定义链接** 。
+3. 选择 **新链接** 。
+4. 在 **应用选择** 页面，选择要为哪款应用新建链接。
+5. 在 **链接结构** 页面，为顶层渠道源链接添加名称。作为可选操作，您还可以添加推广活动、广告组和素材子层来设置链接结构。
+6. 在 **用户目的位置** 页面，请提供下列深度链接信息来添加至您的链接：
+
+   -  iOS 应用 Scheme
+   -  iOS 应用界面
+
+7. 在 **归因设置** 界面中，找到 **新用户:归因 > 点击** ，确保将 **概率模型** 设置为 **开** 。
+8. 再 **检查链接** 页面，检查您的选择并进行必要更改。
+9. 选择 **创建链接** 来生成点击 URL、二维码和链接识别码。
+
+示例： `https://example.go.link/summer-clothes?promo=beach&adj_t=abc123`
+
+## [测试直接深度链接](test-direct-deep-linking)
+
+您可以测试下列通用链接配置：
+
+-  Adjust 通用链接
+-  电邮重定向和短 URL 通用链接
+
+### [检查通用链接域配置](check-universal-link-domain-configuration)
+
+<Callout type="important">
+
+如果在浏览器中直接输入通用链接，那么 iOS 就不会以深度链接的形式打开通用链接。您需要以超链接的形式点击通用链接。
+
+</Callout>
+
+请按照下列步骤操作，检查通用链接域配置。
+
+1. 打开 iOS 测试设备，将通用链接粘贴进 Apple 备忘录。
+2. 在 Apple 备忘录中长按并以 iOS 菜单方式打开通用链接。如果出现 " **在 \(您的应用\) 中打开** " 选项，说明 iOS 已关联您的应用和域。
+
+如果该选项未出现，请参考下列说明查找问题。
+
+### [Adjust 通用链接](adjust-universal-links)
+
+-  与营销团队确认，保证已在 Adjust 控制面板中启用 Adjust 通用链接。
+-  在 Xcode 中检查 **Associated Domain \(关联域\)** 配置。
+
+   -  必须有 `applinks: prefix`。
+   -  Xcode 中的域必须与 Adjust 控制面板中的 Adjust **通用链接域名** 或 **品牌化链接** 相符。如果您正在测试不同的版本 \(例如调试版本 VS 发布版本\)，则可以在所有版本中添加 Adjust 通用链接域或品牌化链接。
+
+-  检查并确保应用中的下列值与 Adjust 控制面板中的对应值相同：
+   -  **应用 ID 前缀**
+   -  **Bundle ID** ：检查并确保您使用的是调试或发布版本的 Bundle ID。
+
+### [电邮重定向和短 URL 通用链接](email-redirect-and-url-shortener-universal-links)
+
+-  在 Xcode 中检查 Associated Domain \(关联域\) 配置。
+
+   -  必须有 `applinks: prefix`。
+   -  合作伙伴系统中配置的电邮重定向域或短 URL 生成域必须匹配 Xcode 中的域。
+
+-  请检查合作伙伴系统中电邮重定向域或短 URL 生成域的 AASA \(Apple\-App\-Site\-Association\) 文件，确保其中的值与您应用中的下列值匹配：
+   -  **应用 ID 前缀**
+   -  **Bundle ID** ：检查并确保您使用的是调试或发布版本的 Bundle ID。
+   -  电邮重定向域 / 短 URL 生成域 \- 检查并确保已在电邮合作伙伴系统中将这些域设为了自定义域。
+
+### [在应用中测试直接深度链接](test-direct-deep-linking-in-the-app)
+
+使用测试设备，在应用关闭和后台运行情况下分别测试直接深度链接。
+
+#### [应用已关闭](app-closed)
+
+1. 将通用链接复制粘贴至 Apple 备忘录。
+2. 点击 home 按钮两次。如果应用处于打开状态，向上滑动将其关闭。
+3. 打开 Apple 备忘录。
+4. 点击通用链接。
+
+此时，应用应当打开并显示深度链接内容。如果未打开应用中的正确页面，请参考下列清单排查问题：
+
+-  检查深度链接中的路径或参数是否出错，例如用两个 `?` 符号替代了`&`。
+-  检查应用是否它通过下列方法处理深度链接：
+
+   -  **应用不使用场景** ：`application(_:continue:restorationHandler:)` 方法
+   -  **应用使用场景** ：`scene(_:continue:)` 方法
+
+-  请仔细检查，确保代码中没有干扰深度链接的其他内容。
+-  如果您设置了通用链接重定向，请仔细检查，确保重定向配置无误。
+-  请检查链接解析方法是否配置正确，确保已向 `resolveUrlSuffixArray` 添加了电邮重定向域名或短 URL 生成域名。
+
+选择深度链接后，您的应用会调用 Adjust SDK 中的 AppWillOpen 方法，此时，您就会在 Xcode 日志中看到与下方类似的记录：
+
+```text
+2022-09-28 09:19:30.873598+0900 example[1619:241845]  [Adjust]d: Added sdk_click 1
+2022-09-28 09:19:30.873782+0900 example[1619:241845]  [Adjust]v: Path:      /sdk_click
+2022-09-28 09:19:30.873806+0900 example[1619:241845]  [Adjust]v: ClientSdk: ios$IOS_V4_VERSION
+2022-09-28 09:19:30.873824+0900 example[1619:241845]  [Adjust]v: Parameters:
+[...]
+2022-03-15 09:19:30.873956+0900 example[1619:241845]  [Adjust]v: source   deeplink
+```
+
+如果 Xcode 日志中没有上述类似记录，请确保：
+
+-  Adjust SDK 中的环境已设为 `sandbox`，日志级别设为 `verbose`。
+
+   -  Xcode 日志中的`[Adjust]v` 即代表详细记录。
+
+-  您的应用在接收深度链接的方法中调用 `appWillOpenUrl` 方法。
+
+#### [应用在后台运行](app-running-in-background)
+
+1. 将通用链接复制粘贴至 Apple 备忘录。
+2. 点击 home 按钮两次。
+3. 通过应用图标打开应用。
+4. 点击 home 按钮两次，打开 Apple 备忘录。
+5. 点击通用链接。
+
+此时，应用应当显示深度链接内容。如果未打开应用中的正确页面，请参考下列清单排查问题：
+
+-  检查应用是否它通过下列方法处理深度链接：
+   -  **应用不使用场景** ：`application(_:continue:restorationHandler:)` 方法
+   -  **应用使用场景** ：`scene(_:continue:)` 方法
+
+选择深度链接后，您的应用会调用 Adjust SDK 中的 `appWillOpenUrl` 方法，此时，您就会在 Xcode 日志中看到与下方类似的记录：
+
+```text
+2022-09-28 09:19:30.873598+0900 example[1619:241845]  [Adjust]d: Added sdk_click 1
+2022-09-28 09:19:30.873782+0900 example[1619:241845]  [Adjust]v: Path:      /sdk_click
+2022-09-28 09:19:30.873806+0900 example[1619:241845]  [Adjust]v: ClientSdk: ios$IOS_V4_VERSION
+2022-09-28 09:19:30.873824+0900 example[1619:241845]  [Adjust]v: Parameters:
+[...]
+2022-03-15 09:19:30.873956+0900 example[1619:241845]  [Adjust]v: source   deeplink
+```
+
+如果 Xcode 日志中没有上述类似记录，请确保：
+
+-  Adjust SDK 中的环境已设为 `ADJEnvironmentSandbox`，日志级别设为 `ADJLogLevelVerbose`。
+
+   -  Xcode 日志中的`[Adjust]v` 即代表详细记录。
+
+-  您的应用在接收深度链接的方法中调用 `appWillOpenUrl` 方法。
+
+## [测试带有自定义 URL 方案的直接深度链接](test-direct-deep-linking-with-a-custom-url-scheme)
+
+使用测试设备，测试在应用关闭/后台运行情况下带有自定义 URL 方案的直接深度链接。
+
+找到 Apple Notes，选择通用链接。此时，应用应当打开并显示深度链接内容。
+
+如果应用未打开，请检查下列项：
+
+-  您已经在 Xcode 中正确配置了 URL 方案。
+-  如果您测试的是应用的调试版本，请检查您是否使用了调试或发布自定义 URL 方案。
+
+如果未打开应用中的正确页面，请参考下列清单排查问题：
+
+-  检查深度链接中的路径或参数是否出错，例如用两个 `?` 符号替代了`&`。
+-  检查应用是否它通过下列方法处理深度链接：
+
+   -  **应用不使用场景** ：`application(_:continue:restorationHandler:)` 方法
+   -  **应用使用场景** ：`scene(_:continue:)` 方法
+
+-  请仔细检查，确保代码中没有干扰深度链接的其他内容。
+
+选择深度链接后，您的应用会调用 Adjust SDK 中的 `appWillOpenUrl` 方法，此时，您就会在 Xcode 日志中看到与下方类似的记录：
+
+```text
+2022-09-28 09:19:30.873598+0900 example[1619:241845]  [Adjust]d: Added sdk_click 1
+2022-09-28 09:19:30.873782+0900 example[1619:241845]  [Adjust]v: Path:      /sdk_click
+2022-09-28 09:19:30.873806+0900 example[1619:241845]  [Adjust]v: ClientSdk: ios$IOS_V4_VERSION
+2022-09-28 09:19:30.873824+0900 example[1619:241845]  [Adjust]v: Parameters:
+[...]
+2022-03-15 09:19:30.873956+0900 example[1619:241845]  [Adjust]v: source   deeplink
+```
+
+如果 Xcode 日志中没有上述类似记录，请确保：
+
+-  Adjust SDK 中的环境已设为 `ADJEnvironmentSandbox`，日志级别设为 `ADJLogLevelVerbose`。
+
+   -  Xcode 日志中的`[Adjust]v` 即代表详细记录。
+
+-  您的应用在接收深度链接的方法中调用 `appWillOpenUrl` 方法。
+
+## [测试延迟深度链接](test-deferred-deep-linking)
+
+要在测试设备上测试延迟深度链接，请按照下列步骤操作：
+
+1. 安装应用。
+
+2. 从您的 Xcode 日志中调取 ADID \(Adjust 设备标识符\)。示例：
+
+   <CodeBlock highlight="adid, 4446ab34861b99b78ee374c3bd38a350">
+
+   ```text
+   2022-09-28 09:19:35.609913+0900 example[1619:241847] [Adjust]v: Response: {"app_token":"2eb2na2w54c3","adid":"4446ab34861b99b78ee374c3bd38a350","timestamp":"2022-09-28T00:19:35.841Z+0000","message":"Attribution found","attribution":{"tracker_token":"abc123","tracker_name":"Organic","network":"Organic"}}
+   ```
+
+   </CodeBlock>
+
+3. 卸载应用。
+
+4. 打开[测试控制台](https://help.adjust.com/zh/article/testing-console)，输入 Adjust ADID，然后选择 **查看设备数据** 。您应当看到 `TrackerName` 显示为`Organic` 。
+
+5. 通过测试控制台清除您的设备。
+
+6. 将您的通用链接或自定义 URL 方案深度链接粘贴进 Apple 备忘录。
+
+7. 选择深度链接。此时，您应当被重定向至 App Store。
+
+8. 从本地版本安装应用。请勿从应用商店安装。
+
+9. 打开应用。此时，应用应当打开并显示深度链接内容。
+
+如果未打开应用中的正确页面，请参考下列清单排查问题：
+
+-  请仔细检查，确保代码中没有干扰深度链接的其他内容。示例：您的应用有新客户引导界面，或需要用户进行登录，但在打开深度链接前并没有完成这些操作的处理。此时，您就需要安装 `adjustDeeplinkResponse` 方法，在处理深度链接前完成新客户引导界面或用户登录。
+-  您的应用代码无法在 `adjustDeeplinkResponse` 方法中处理传入的深度链接。
+-  Adjust 未能将安装归因至点击。打开测试控制台，选择 **查看设备数据** 。`TrackerName` 字段中应当显示您的测试跟踪链接。在开始测试前，请确保已进行下列操作：
+   -  测试链接已启用概率匹配。
+   -  在测试控制台中，`TrackerName` 已设为 `Organic`。

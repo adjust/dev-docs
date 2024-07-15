@@ -1,0 +1,49 @@
+---
+title: "AdMob SDKとの連携"
+description: "Admobとの連携を使用して、Admobの情報をAdjustサーバーにパスします。"
+slug: "ja/sdk/ios/integrations/admob"
+multiVersion: true
+---
+
+AdMob SDKで広告収益を計測したい場合は、SDK間連携の機能を使用することで、Adjustサーバーにこの情報をパスすることができます。
+
+<Callout type="note">
+
+AdMobとの連携による広告収益計測についてご質問がございましたら、担当のテクニカルアカウントマネージャーもしくは[support@adjust.com](mailto:support@adjust.com)までお問い合わせください。
+
+</Callout>
+
+## [事前準備](before-you-begin)
+
+1. [Adjust SDKを設定してアプリに実装します。](/en/sdk/ios)
+2. インプレッションレベルの広告収益（ILAR）をAdMobに設定します。[詳細はGoogleのドキュメントをご覧ください](https://support.google.com/admob/answer/11322405)。
+
+## [例](example)
+
+```objc
+- (void)requestRewardedAd {
+   __weak ViewController *weakSelf = self;
+
+  GADRequest *request = [GADRequest request];
+  [GADRewardedAd
+   loadWithAdUnitID:@"ad unit ID"
+   request:request
+   completionHandler:^(GADRewardedAd *ad, NSError *error) {
+     self.rewardedAd = ad;
+     self.rewardedAd.paidEventHandler = ^void(GADAdValue *_Nonnull value) {
+        ViewController *strongSelf = weakSelf;
+          // for more information, please check AdMob official docs at:
+          // https://developers.google.com/admob/ios/impression-level-ad-revenue
+          GADAdNetworkResponseInfo *loadedAdNetworkResponseInfo = strongSelf.rewardedAd.responseInfo.loadedAdNetworkResponseInfo;
+
+          // send ad revenue info to Adjust
+          ADJAdRevenue *adRevenue = [[ADJAdRevenue alloc]
+                              initWithSource:@"admob_sdk"];
+          [adRevenue setRevenue:value.value currency:value.currencyCode];
+          [adRevenue setAdRevenueNetwork:loadedAdNetworkResponseInfo.adSourceName]
+          [Adjust trackAdRevenue:adRevenue];
+      }
+    }
+  ];
+}
+```
