@@ -44,10 +44,11 @@ const DevHubIndex: FC<DevHubIndexProps> = ({ typesenseKeys, lang }) => {
         filters={getDevHubFilters(lang)}
         index={typesenseKeys.indexName}
         hitsPerPage={6}
-        page={searchState.page}
+        // Typesense logic
+        page={searchState.page - 1}
       />
       <DevHubHits lang={lang} />
-      <Pagination canRefine currentRefinement={1} lang={lang} />
+      <Pagination canRefine lang={lang} />
     </InstantSearch>
   );
 };

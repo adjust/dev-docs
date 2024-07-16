@@ -39,7 +39,7 @@ const HelpCenterIndex: FC<HelpCenterIndexProps> = ({ typesenseKeys, lang }) => {
         filters={`locale:${lang}`}
         index={typesenseKeys.indexName}
         hitsPerPage={6}
-        page={1}
+        page={0}
       />
       <HelpCenterHits lang={lang} />
     </InstantSearch>
