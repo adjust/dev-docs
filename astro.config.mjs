@@ -20,7 +20,7 @@ const versions = await fetchVersions();
 
 // https://astro.build/config
 export default defineConfig({
-  output: "static",
+  output: "hybrid",
   adapter: vercel(),
   integrations: [
     AutoImport({
