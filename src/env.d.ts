@@ -8,7 +8,7 @@ interface ImportMetaEnv {
   readonly HELP_CENTER_ALGOLIA_INDEX_NAME: string;
   readonly DEV_HUB_ALGOLIA_APP_ID: string;
   readonly DEV_HUB_ALGOLIA_API_KEY: string;
-  readonly DEV_HUB_ALGOLIA_API_INDEX_NAME: string;
+  readonly DEV_HUB_ALGOLIA_INDEX_NAME: string;
 }
 
 interface ImportMeta {

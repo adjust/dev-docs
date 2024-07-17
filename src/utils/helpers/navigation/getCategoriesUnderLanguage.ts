@@ -15,7 +15,7 @@ const getParentId = (url: string, currentLang: string) => {
 };
 
 const getLevel = (url: string, currentLang: string) => {
-  const levelArr = url.replace(`${CONTENT_PATH}`, "").split("/");
+  const levelArr = url.replace(`${CONTENT_PATH}/${currentLang}`, "").split("/");
   if (levelArr.includes(`index-${currentLang}`) || levelArr.includes("index")) {
     return levelArr.length - 1;
   }
@@ -35,7 +35,7 @@ export const getCategoriesUnderLanguage = (
   data: NavigationEntry[],
   currentPage: string,
   currentLang: keyof Locales,
-  currentPageType?: NavigationEntry["type"]
+  currentPageType?: NavigationEntry["type"],
 ) => {
   const categories: { [key in keyof Partial<Locales>]: CategoryEntry } = {};
   const breadcrumbs: NavigationData["breadcrumbs"] = [];
@@ -86,7 +86,7 @@ export const getCategoriesUnderLanguage = (
 
     //if current item has the current language key in the URL we
     // should store this value under current language
-    if (url.includes(`${CONTENT_PATH}`) && usedTitle) {
+    if (url.includes(`${CONTENT_PATH}/${currentLang}`) && usedTitle) {
       categories[currentLang]!.children?.push({
         ...item,
         description,
@@ -114,18 +114,18 @@ export const getCategoriesUnderLanguage = (
 
   // need to sort breadcrumbs by level to make sure that the hierarchy is correct
   const sortedBreadcrumbs = breadcrumbs.sort((a, b) =>
-    a.level > b.level ? 1 : -1
+    a.level > b.level ? 1 : -1,
   );
   // need to filter breadcrumbs from clones
   const breadcrumbsUnique = sortedBreadcrumbs.filter(
     (breadcrumb, index, arr) =>
-      arr.findIndex((element) => element.url === breadcrumb.url) === index
+      arr.findIndex((element) => element.url === breadcrumb.url) === index,
   );
 
   const filteredChilds = childLinks.filter(
     (childLink, index, childLinksArr) =>
       childLinksArr.findIndex((element) => element.slug === childLink.slug) ===
-      index
+      index,
   );
 
   return {

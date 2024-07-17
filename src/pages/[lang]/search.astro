@@ -7,21 +7,21 @@ import MainHeader from "@components/Layout/Header/MainHeader.astro";
 import PlatformBadges from "@components/pages/search/PlatformBadges/PlatformBadges";
 import PlatformTabs from "@components/pages/search/PlatformTabs";
 import HelpCenterIndex from "@components/pages/search/HelpCenterHits/HelpCenterIndex";
-import { KNOWN_LANGUAGE_CODES, type Locales } from "@i18n/locales";
+import { type Locales, KNOWN_LANGUAGE_CODES } from "@i18n/locales";
 import DevHubIndex from "@components/pages/search/DevHubHits/DevHubIndex";
 import SearchInput from "@components/pages/search/SearchInput";
 import BodyNoScript from "@components/Layout/GoogleTagManager/BodyNoScript.astro";
-import { getLanguageFromURL, useTranslations } from "@i18n/utils";
-const currentPage = Astro.url.pathname;
-const currentLang = getLanguageFromURL(currentPage);
+import { useTranslations } from "@i18n/utils";
 
-export const getStaticPaths = () => {
+export const getStaticPaths = async () => {
   return KNOWN_LANGUAGE_CODES.flatMap((langKey) => ({
-    params: { lang: langKey },
+    params: {
+      lang: langKey,
+    },
   }));
 };
 
-const { lang } = Astro.params;
+const lang = Astro.currentLocale as keyof Locales;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
 const devHubAlgoliaKeys = {
@@ -36,7 +36,7 @@ const helpCenterAlgoliaKeys = {
   indexName: import.meta.env.HELP_CENTER_ALGOLIA_INDEX_NAME,
 };
 
-const t = useTranslations(currentLang as keyof Locales);
+const t = useTranslations(lang as keyof Locales);
 ---
 
 <html dir={`/${lang}`} lang={lang} class="initial">
@@ -95,7 +95,7 @@ const t = useTranslations(currentLang as keyof Locales);
             <a
               class="h-full w-full px-[16px] py-[6px] text-[14px] flex justify-center"
               aria-label="Close search button"
-              href=`https://help.adjust.com/${currentLang}/search`
+              href=`https://help.adjust.com/${lang}/search`
               rel="noreferrer"
               target="_blank"
             >
