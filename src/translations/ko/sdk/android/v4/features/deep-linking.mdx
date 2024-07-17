@@ -20,6 +20,7 @@ SDK는 사용자가 링크를 통해 앱을 실행한 이후에 딥링크 데이
 1. **스킴 이름** 을 `AndroidManifest.xml` 파일 내 활동에 지정합니다.
 2. 활동 정의에 `intent-filter` 노드를 추가합니다.
 3. `intent-filter` 노드에 **스킴 이름** 을 포함하는 `android:scheme` 데이터 노드를 추가합니다.
+4. [Android 앱 링크](https://help.adjust.com/ko/article/set-up-android-app-links)의 경우, `intent` 필터를 추가하여 앱이 처리할 수 있는 URL을 지정합니다. `intent` 필터에 `android:autoVerify="true"` 어트리뷰션과 함께 `data` 요소를 포함합니다.
 
 ### [예시](example)
 
@@ -28,7 +29,11 @@ SDK는 사용자가 링크를 통해 앱을 실행한 이후에 딥링크 데이
 <CodeBlock title="AndroidManifest.xml" highlight=".MainActivity, adjustExample">
 
 ```xml
-<activity    android:name=".MainActivity"    android:configChanges="orientation|keyboardHidden"    android:label="@string/app_name"    android:screenOrientation="portrait">
+<activity
+   android:name=".MainActivity"
+   android:configChanges="orientation|keyboardHidden"
+   android:label="@string/app_name"
+   android:screenOrientation="portrait">
 
    <intent-filter>
       <action android:name="android.intent.action.MAIN" />
@@ -41,10 +46,26 @@ SDK는 사용자가 링크를 통해 앱을 실행한 이후에 딥링크 데이
       <category android:name="android.intent.category.BROWSABLE" />
       <data android:scheme="adjustExample" />
    </intent-filter>
+
+   <intent-filter android:autoVerify="true">
+    <action android:name="android.intent.action.VIEW" />
+    <category android:name="android.intent.category.DEFAULT" />
+    <category android:name="android.intent.category.BROWSABLE" />
+    <data android:scheme="http" android:host="insights.go.link" />
+    <data android:scheme="https" android:host="insights.go.link" />
+   </intent-filter>
+
 </activity>
 ```
 
 </CodeBlock>
+<Callout type="info">
+
+`insights.go.link` Android 앱 링크로 정의된 브랜드 도메인입니다.
+
+</Callout>
+
+이제 앱이 URI 스킴과 Android 앱 링크를 모두 처리할 수 있습니다. 사용자가 선언된 URI 스킴 또는 Android 앱 링크와 일치하는 링크를 클릭하면 앱이 자동으로 실행됩니다.
 
 사용자가 **스킴 이름** 을 포함하는 `deep_link` 파라미터가 포함된 링크를 클릭하면 이 활동이 실행됩니다.
 

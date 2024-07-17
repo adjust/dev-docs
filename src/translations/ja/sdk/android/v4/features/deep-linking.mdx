@@ -20,6 +20,7 @@ SDKは、ユーザーがリンクからアプリを起動した後にディー�
 1. `AndroidManifest.xml`ファイルでアクティビティに **スキーム名** を割り当てます。
 2. アクティビティ定義欄に`intent-filter`ノードを追加します。
 3. `intent-filter`ノード内に、 **スキーマ名** を含む`android:scheme`データノードを追加します。
+4. [Android アプリリンク](https://help.adjust.com/ja/article/set-up-android-app-links)については、 `intent`フィルターを追加して、アプリが処理できるURLを指定します。`intent`フィルターで、 `data`要素を`android:autoVerify="true"`アトリビュートとともに含めます。
 
 ### [例](example)
 
@@ -28,7 +29,11 @@ SDKは、ユーザーがリンクからアプリを起動した後にディー�
 <CodeBlock title="AndroidManifest.xml" highlight=".MainActivity, adjustExample">
 
 ```xml
-<activity    android:name=".MainActivity"    android:configChanges="orientation|keyboardHidden"    android:label="@string/app_name"    android:screenOrientation="portrait">
+<activity
+   android:name=".MainActivity"
+   android:configChanges="orientation|keyboardHidden"
+   android:label="@string/app_name"
+   android:screenOrientation="portrait">
 
    <intent-filter>
       <action android:name="android.intent.action.MAIN" />
@@ -41,10 +46,26 @@ SDKは、ユーザーがリンクからアプリを起動した後にディー�
       <category android:name="android.intent.category.BROWSABLE" />
       <data android:scheme="adjustExample" />
    </intent-filter>
+
+   <intent-filter android:autoVerify="true">
+    <action android:name="android.intent.action.VIEW" />
+    <category android:name="android.intent.category.DEFAULT" />
+    <category android:name="android.intent.category.BROWSABLE" />
+    <data android:scheme="http" android:host="insights.go.link" />
+    <data android:scheme="https" android:host="insights.go.link" />
+   </intent-filter>
+
 </activity>
 ```
 
 </CodeBlock>
+<Callout type="info">
+
+`insights.go.link` は、Android アプリリンクとして定義されたブランドドメインです。
+
+</Callout>
+
+これで、アプリはURIスキームとAndroidアプリリンクの両方を処理できるようになります。宣言されたURIスキームまたはAndroidアプリリンクのいずれかに一致するリンクをユーザーがクリックすると、アプリが自動的に開きます。
 
 ユーザーが **スキーム名** を含む`deep_link`パラメーターを持つリンクをクリックすると、アクティビティが起動します。
 
