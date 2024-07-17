@@ -5,16 +5,14 @@ slug: en/api/s2s-api/s2s-developer-guide
 sidebar-position: 7
 ---
 
-Adjust offers a server-to-server (S2S) interface as an alternative to integrating the Adjust SDK into your app. If you choose to implement Adjust through S2S, you need to modify your app to replicate the Adjust SDK's functions. This guide provides step-by-step instructions for the following:
+Adjust offers a server-to-server (S2S) interface for mobile, console, and Connected TV (CTV) apps. If you choose to implement Adjust through S2S, you need to modify your app to replicate the Adjust SDK's functions. This guide provides step-by-step instructions for the following:
 
 -  How to make the necessary updates to your app.
 -  How to send S2S requests to Adjust.
 
 <Callout type="important">
 
-For mixed audience apps [as defined by COPPA](https://help.adjust.com/en/article/coppa-compliance#how-can-i-identify-my-app-audience), Adjust recommends using a 100% SDK implementation and avoiding any S2S implementation.
-
-Children's apps as defined by COPPA aren't supported for S2S, and have to use a 100% SDK implementation.
+If your app needs to comply with COPPA, use the Adjust SDK and leverage its built-in COPPA features. Don't send non-compliant data using the S2S interface.
 
 </Callout>
 
@@ -24,7 +22,9 @@ Here's what you need to do before you get started.
 
 ### [Enable S2S session measurement](enable-s2s-session-measurement)
 
-Adjust needs to enable S2S session measurement for your app. Contact your Adjust representative or support@adjust.com to proceed.
+If you're using the S2S interface for a mobile app, Adjust needs to enable S2S session measurement for your app. Contact your Adjust representative or support@adjust.com to proceed.
+
+S2S session measurement is enabled automatically for [CTV measurement](https://help.adjust.com/en/article/ctv-advision) and [PC and Console measurement](https://help.adjust.com/en/article/measurement-for-pc-and-console-games) when you select a platform.
 
 ### [Set up S2S Security](set-up-s2s-security)
 
@@ -64,7 +64,7 @@ You must link frameworks to your project to support certain iOS features. To add
 2. Select your target in the project navigator.
 3. Go to the **General** tab.
 4. Scroll to the **Frameworks, Libraries, and Embedded Content** section.
-5. Click the **+** button.
+5. Select the **\+** button.
 6. Search for and add the frameworks that your app requires from the list below.
 
 <Table>
@@ -87,10 +87,40 @@ The following parameters are required in each S2S request.
 | Parameter   | Description                                                             |
 | ----------- | ----------------------------------------------------------------------- |
 | `s2s`       | Indicates that the request is an S2S request. Must be hardcoded to `1`. |
-| `os_name`   | The name of the mobile operating system. Must be `ios` or `android`.    |
+| `os_name`   | The name of the mobile operating system. See the list of options below. |
 | `app_token` | Your Adjust app token.                                                  |
 
 </Table>
+
+<ListColumns>
+
+-  `android`
+-  `android-tv`
+-  `apple-tv`
+-  `bada`
+-  `blackberry`
+-  `fire-tv`
+-  `ios`
+-  `linux`
+-  `macos`
+-  `nintendo`
+-  `playstation`
+
+---
+
+-  `roku-os`
+-  `server`
+-  `smart-cast`
+-  `steamos`
+-  `symbian`
+-  `tizen`
+-  `unknown`
+-  `webos`
+-  `windows`
+-  `windows-phone`
+-  `xbox`
+
+</ListColumns>
 
 You can store these parameters as a variable in your app to re-use them whenever a request is sent.
 
@@ -104,7 +134,7 @@ var params: [String: String] = [:]
 // Hard-coded
 params["s2s"] = "1"
 
-// "ios" or "android"
+// The name of the operating system running on your device
 params["os_name"] = "ios"
 
 // Replace with your Adjust app token
@@ -126,7 +156,6 @@ params["os_name"] = "ios"
 
 // Replace with your Adjust app token
 params["app_token"] = "4w565xzmb54d"
-
 ```
 
 </Tab>
@@ -137,6 +166,10 @@ params["app_token"] = "4w565xzmb54d"
 Every S2S request must include **at least one** device identifier. Due to privacy measures implemented by mobile operating systems, the advertising ID may not always be available. Therefore, you should include the advertising ID when available and must always include backup identifiers.
 
 Adjust also requires tracking statuses in each request.
+
+#### [PC and Console/CTV device IDs](pc-console-ctv-device-ids)
+
+For PC and Console and CTV measurement, you can pass a unique `external_device_id` parameter with each call to use as a device identifier. This value can be any unique string that identifies the device.
 
 #### [iOS device IDs](ios-device-ids)
 
@@ -353,7 +386,7 @@ You can check for the most recent version of the Play Services Ads Identifier li
 
 <Tabs>
 <Tab title="Kotlin DSL">
-  
+
 <CodeBlock title="build.gradle.kts">
 
 ```kotlin
@@ -748,14 +781,14 @@ Sessions form the foundation of Adjust implementation and are the only required 
 -  It records subsequent sessions as "session" activities.
 -  It records a "reattribution" or "reattribution reinstall" activity if [reattribution criteria](https://help.adjust.com/en/article/reattribution) are satisfied.
 
-   <Callout type="info">
+    <Callout type="info">
 
    For reference, the Adjust SDK sends a session request to Adjust server when either of the following occurs:
 
    -  The user opens the app for the first time after install or reinstall.
    -  The user reopens the app after it has been closed or in the background for at least 30 minutes.
 
-   </Callout>
+    </Callout>
 
    When sending S2S session requests with the `created_at_unix` parameter, the Adjust server requires this value to be at least 20 minutes later than the `created_at_unix` time of the last successfully logged session.
 
