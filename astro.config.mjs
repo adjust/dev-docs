@@ -53,10 +53,9 @@ export default defineConfig({
   site: "https://dev.adjust.com/",
   i18n: {
     defaultLocale: "en",
-    locales: [ "ja", "ko", "zh", "en",],
+    locales: ["ja", "ko", "zh", "en"],
     routing: {
       prefixDefaultLocale: true,
-      redirectToDefaultLocale: true,
     },
   },
   markdown: {
