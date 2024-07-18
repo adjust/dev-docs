@@ -5,6 +5,7 @@ import AutoImport from "astro-auto-import";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import expressiveCode from "astro-expressive-code";
+import vercel from '@astrojs/vercel/serverless';
 import remarkReplaceVersions from "./src/integrations/remarkReplaceVersions";
 import { fetchVersions } from "./src/integrations/fetchSdkVersions";
 import rehypeExternalLinks from "rehype-external-links";
@@ -51,9 +52,16 @@ export default defineConfig({
     astroPluginCopyTranslations(),
   ],
   site: "https://dev.adjust.com/",
+  output: 'server',
+  adapter: vercel(),
   i18n: {
     defaultLocale: "en",
-    locales: ["en", "ja", "ko", "zh"],
+    locales: [ "ja", "ko", "zh", "en",],
+    fallback: {
+      ja: "en",
+      ko: "en",
+      zh: "en",
+    },
     routing: {
       prefixDefaultLocale: true,
       redirectToDefaultLocale: false,
