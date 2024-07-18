@@ -1,0 +1,36 @@
+---
+import { type CollectionEntry, getCollection } from "astro:content";
+import MainLayout from "./../../layouts/MainLayout.astro";
+import { langParamRegex } from "@i18n/utils";
+
+export const getStaticPaths = async () => {
+  const docs = (
+    await getCollection("docs", ({ slug }) => slug.startsWith("ko"))
+  ).map((doc) => ({
+    ...doc,
+    slugUpdated: doc.slug?.replace(langParamRegex, ""),
+  }));
+
+  const paths = docs.map((doc) => ({
+    params: {
+      lang: "ko",
+      slug: doc.slugUpdated,
+    },
+    props: doc,
+  }));
+
+  console.log(paths[0], "paths");
+
+  return paths;
+};
+
+type Props = CollectionEntry<"docs">;
+
+const post = Astro.props;
+
+const { Content, headings } = await post.render();
+---
+
+<MainLayout headings={headings} {...post.data}>
+  <Content />
+</MainLayout>
