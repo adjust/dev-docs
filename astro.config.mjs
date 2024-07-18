@@ -50,7 +50,7 @@ export default defineConfig({
     sitemap(),
     astroPluginCopyTranslations(),
   ],
-  site: "https://dev.adjust.com/",
+  site: "https://dev-docs-git-feat-thc-1023-update-locale-10efbe-product-content.vercel.app/",
   i18n: {
     defaultLocale: "en",
     locales: ["ja", "ko", "zh", "en"],
