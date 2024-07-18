@@ -56,6 +56,7 @@ export default defineConfig({
     locales: ["ja", "ko", "zh", "en"],
     routing: {
       prefixDefaultLocale: true,
+      redirectToDefaultLocale: false,
     },
   },
   markdown: {
