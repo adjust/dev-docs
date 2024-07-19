@@ -53,7 +53,9 @@ export default defineConfig({
   ],
   site: "https://dev-docs-git-feat-thc-1023-update-locale-10efbe-product-content.vercel.app/",
   output: "server",
-  adapter: vercel(),
+  adapter: vercel({
+    edgeMiddleware: true,
+  }),
   i18n: {
     defaultLocale: "en",
     locales: ["ja", "ko", "zh", "en"],
