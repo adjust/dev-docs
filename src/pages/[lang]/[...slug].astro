@@ -2,21 +2,25 @@
 import { type CollectionEntry, getCollection } from "astro:content";
 import MainLayout from "./../../layouts/MainLayout.astro";
 import { langParamRegex } from "@i18n/utils";
+import { KNOWN_LANGUAGE_CODES } from "@i18n/locales";
 
 export const getStaticPaths = async () => {
-  const docs = (
-    await getCollection("docs", ({ slug }) => slug.startsWith("ja"))
-  ).map((doc) => ({
+  const docs = (await getCollection("docs")).map((doc) => ({
     ...doc,
     slugUpdated: doc.slug?.replace(langParamRegex, ""),
   }));
 
-  return docs.map((doc) => ({
-    params: {
-      slug: doc.slugUpdated,
-    },
-    props: doc,
-  }));
+  return KNOWN_LANGUAGE_CODES.flatMap((langKey) => {
+    const docsByLang = docs.filter((doc) => doc.slug.startsWith(`${langKey}/`));
+
+    return docsByLang.map((doc) => ({
+      params: {
+        lang: langKey,
+        slug: doc.slugUpdated,
+      },
+      props: doc,
+    }));
+  });
 };
 
 type Props = CollectionEntry<"docs">;
