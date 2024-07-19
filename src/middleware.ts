@@ -8,7 +8,11 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
   const path = context.url.pathname;
 
-  if (response.status === 404 && !path.includes(`/${defaultLang}`)) {
+  if (
+    response.status === 404 &&
+    langParamRegex.test(path) &&
+    !path.includes(`/${defaultLang}`)
+  ) {
     const updatedPath = path.replace(langParamRegex, `/${defaultLang}/`);
 
     return Response.redirect(new URL(updatedPath, context.url), 302);
