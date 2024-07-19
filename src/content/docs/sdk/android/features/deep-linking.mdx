@@ -256,13 +256,17 @@ config.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListe
 
 ## [Reattribution via deep links](reattribution-via-deep-links)
 
+<MinorVersion changed="v5.0.0-beta2">
+
 <CodeBlock title="Method signature">
 
 ```java
-public static void processDeeplink(Uri url, Context context)
+public static void processDeeplink(AdjustDeeplink adjustDeeplink, Context context)
 ```
 
 </CodeBlock>
+
+</MinorVersion>
 
 Adjust enables you to run re-engagement campaigns with usage of deep links. For more information, check out how to set up [Deep links in Campaign Lab](https://help.adjust.com/en/article/deep-links).
 
@@ -278,7 +282,8 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
    val intent = intent
    val data = intent.data
-   Adjust.processDeeplink(data, applicationContext)
+   val adjustDeeplink = AdjustDeeplink(data)
+   Adjust.processDeeplink(adjustDeeplink, applicationContext)
 }
 ```
 
@@ -293,8 +298,53 @@ protected void onCreate(Bundle savedInstanceState) {
 
     Intent intent = getIntent();
     Uri data = intent.getData();
-    Adjust.processDeeplink(data, getApplicationContext());
+    AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+    Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
 }
+```
+
+</Tab>
+</Tabs>
+
+## [Get the last resolved link](get-the-last-resolved-link)
+
+<MinorVersion added="v5.0.0-beta2">
+
+<CodeBlock title="Method signature">
+
+```java
+public static void getLastDeeplink(final Context context, final OnLastDeeplinkReadListener onLastDeeplinkReadListener)
+```
+
+</CodeBlock>
+
+</MinorVersion>
+
+You can return the last deep link URL resolved by the `Adjust.processDeeplink()` or [`Adjust.processAndResolveDeepLink()` method](/en/sdk/android/features/short-links) by calling the `Adjust.getLastDeeplink()` method. This method returns the last resolved deep link as a deep link object.
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+Adjust.getLastDeeplink(context) { deeplink ->
+   if (deeplink != null) {
+       Log.d("Example", deeplink.toString())
+   }
+}
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+Adjust.getLastDeeplink(context, new OnLastDeeplinkReadListener() {
+   @Override
+   public void onLastDeeplinkRead(Uri deeplink) {
+       if (deeplink != null) {
+           Log.d("Example", deeplink.toString());
+       }
+   }
+});
 ```
 
 </Tab>
