@@ -1,0 +1,98 @@
+---
+title: "测试安装记录"
+description: "测试 Adjust SDK 是否正在向 Adjust 发送安装信息"
+slug: "zh/sdk/testing/install-recording"
+sidebar-label: "安装记录"
+sidebar-position: 1
+---
+
+安装是应用中需要记录的最重要的事件之一。用户将您的应用安装到设备时，Adjust 会记录一次安装。随后，Adjust 会将安装归因到相应的推广活动。推广活动上线前，您可以使用 Adjust 测试控制台验证安装信息并确保正确接收信息。
+
+您可以测试两种安装：
+
+-  **自然安装** : 用户未与推广活动链接交互的情况下发生的安装
+-  **非自然安装** : 用户与推广活动链接交互后发生的安装
+
+<Callout type="important">
+
+完成测试后请确保将 SDK 环境设置为 **Production** 。这请确保应用在生产环境中正常运行。
+
+</Callout>
+
+使用这些工具测试 SDK：
+
+-  位于[AppView](https://help.adjust.com/zh/article/testing-console)中的测试控制台。
+-  [Adjust 设备 API](/en/api/device-api/inspect)。
+-  您的 IDE 日志输出。
+
+## [自然安装](organic-installs-1)
+
+要测试应用内的自然安装：
+
+1. 按照对应平台的集成指南来集成 Adjust SDK。
+2. 将环境设为 **Sandbox** 。这能保证您的应用只向测试控制台发送信息。
+3. 将日志级别设为 **verbose** 来抓取来自应用的全部记录信息。
+4. 设置一台测试设备或模拟设备，找到设备的广告 ID。您可以安装 [Adjust Insights 应用](https://apps.apple.com/us/app/adjust-insights/id1125517808)来找到此信息。
+5. 如果您此前曾使用此设备进行测试：
+
+   1. 从测试设备中删除您的应用。
+   2. 在测试控制台中清除设备的广告 ID。请按照[AppView 中的测试控制台](https://help.adjust.com/zh/article/testing-console#forget-device)中的说明进行操作。
+   3. 另外，还可以调用[遗忘设备终端](/en/api/device-api/forget/)来移除已有设备信息。
+
+6. 下载并打开包含 Adjust SDK 的测试版本应用。
+7. 打开测试控制台，查看设备的广告 ID 状态。
+
+## [非自然安装](non-organic-installs)
+
+要测试应用内的非自然安装：
+
+1. 按照对应平台的入门指南来集成 Adjust SDK。
+
+2. 将环境设为 **Sandbox** 。这能保证您的应用只向测试控制台发送信息。
+
+3. 将日志级别设为 **verbose** 来抓取来自应用的全部记录信息。
+
+4. 设置一台测试设备或模拟设备，找到设备的广告 ID。您可以安装 [Adjust Insights 应用](https://apps.apple.com/us/app/adjust-insights/id1125517808)来找到此信息。
+
+5. 如果您此前曾使用此设备进行测试：
+
+   1. 从测试设备中删除您的应用。
+   2. 在测试控制台中清除设备的广告 ID。请按照[AppView 中的测试控制台](https://help.adjust.com/zh/article/testing-console-suite#forget-device)中的说明进行操作。
+   3. 或者调用[遗忘设备终端](/en/api/device-api/forget/)
+
+6. [创建测试链接](https://help.adjust.com/zh/article/links)。
+
+   1. 如果要测试概率模型，则需要在 **应用层级** 或链接层级启用[概率模型](https://help.adjust.com/zh/article/attribution-settings-app-level)
+   2. 如果要测试[设备 ID 匹配](https://help.adjust.com/zh/article/attribution-methods#deterministic-attribution)，则需要将设备广告 ID 添加至您的推广活动 URL：
+
+   ```text
+   https://app.adjust.com/abc1234?idfa=test_device_id
+   ```
+
+   ```text
+   https://app.adjust.com/abc1234?gps_adid=test_device_id
+   ```
+
+7. 在网页环境中设置测试链接。
+
+8. 在您的测试设备上选择测试链接。
+
+9. 下载并打开包含 Adjust SDK 的测试版本应用。
+
+## [成功安装](successful-install)
+
+### [测试控制台](testing-console-1)
+
+打开测试控制台，查看设备的广告 ID 状态。若安装数据被成功记录，则会显示设备广告 ID 的记录。
+
+![Adjust 测试控制台](@images/sdk-testing/install/testing-console.png)
+
+### [IDE 日志](ide-logging)
+
+在您的 IDE 中打开日志控制台并找到由`Adjust`记录的事件。若安装被成功记录，则会记录到 **Install tracked** 消息。
+
+## [失败安装](unsuccessful-install)
+
+若安装失败，那么测试控制台中不会记录到任何信息。搜索设备的广告 ID 时，控制台输出中会显示 **Advertising ID not found** 消息。
+
+请确保按照相应平台入门指南中的所有步骤进行设置。若遇到问题，请联系您的 Adjust 联系人或[support@adjust.com](mailto:support@adjust.com)。

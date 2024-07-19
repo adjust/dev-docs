@@ -306,3 +306,41 @@ $ curl \
 ```
 
 </CodeBlock>
+
+## [启用签名验证](enable-signature-verification)
+
+如果您正在使用[Adjust v3 Signature 库](https://help.adjust.com/zh/article/sdk-signature)保护应用流量，则可以使用自动化 API 来设置应用的证书指纹。
+
+### [操作说明](instructions-1)
+
+1. 发送一个 POST 请求至`/app`终端，包含以下信息：
+
+   -  `name`: 应用名称
+   -  `bundle_id`: Bundle ID \(安卓\) \| Store ID \(Apple\)
+   -  `store_id`: 应用在目标 App Store 中的 ID
+   -  `platform`: 应用程序的目标平台
+   -  `channel_setup`: 应用合作伙伴模块设置所必需。请参阅[渠道源设置文档](/en/api/app-automation-api/channel-setup/)，了解更多信息。
+
+   ```bash
+   curl \
+   --header "AdjustAuthorization: Token <adjust api token>" \
+   --header "Content-Type: application/json" \
+   --data '{ "name":"Test App Name", "bundle_id":"test.bundle.app", "store_id":"test.bundle.app", "platform":"android", "channel_setup": { "facebook": {"app_id": "123456789"}, "snapchat": {"app_id": "test.bundle.app"} } }' \
+   -X POST https://settings.adjust.com/api/app
+   ```
+
+2. 请联系您的 Adjust 代表启用 Signature v3 支持。
+
+3. 应用启用 Signature v3 支持后，发送另一个 POST 请求至 `/app`终端，包含以下信息：
+
+   -  `android_signature_hash`: **冒号分隔十六进制** 格式的 SHA\-1 签名列表，用逗号隔开。
+   -  包含您的 Adjust 签名识别码值的`SignatureAuthorization`标头。
+
+   ```bash
+   curl \
+   --header "AdjustAuthorization: Token <adjust api token>" \
+   --header "SignatureAuthorization: Token <adjust signature token>" \
+   --header "Content-Type: application/json" \
+   --data '{ "name":"Test App Name", "android_signature_hash": "45:a7:2b:82:00:f1:f6:99:d7:c5:1e:6e:1f:8c:91:b5:5c:f9:98:a2,44:40:16:6e:ed:36:cc:6d:6e:62:53:92:9e:ef:45:63:a1:3c:19:0c,57:44:3a:4c:05:23:50:a4:46:38:83:5d:64:fd:66:82:2f:81:33:19", "bundle_id":"test.bundle.app", "store_id":"test.bundle.app", "platform":"android", "channel_setup": { "facebook": {"app_id": "123456789"}, "snapchat": {"app_id": "test.bundle.app"} } }' \
+   -X POST https://settings.adjust.com/api/app
+   ```

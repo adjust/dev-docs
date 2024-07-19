@@ -306,3 +306,41 @@ $ curl \
 ```
 
 </CodeBlock>
+
+## [シグネチャー認証を有効化](enable-signature-verification)
+
+アプリのトラフィックを保護するために[Adjust v3のシグネチャーライブラリ](https://help.adjust.com/ja/article/sdk-signature)を使用している場合、オートメーションAPIを使用してアプリの証明書フィンガープリントを設定することができます。
+
+### [手順](instructions-1)
+
+1. `/app`エンドポイントを使用して、以下の情報を含むPOSTリクエストを送信します：
+
+   -  `name`：アプリの名前
+   -  `bundle_id`：AndroidのバンドルID \| AppleのストアID
+   -  `store_id`：ターゲットのアプリストアにおけるアプリのID
+   -  `platform`：アプリのターゲットプラットフォーム
+   -  `channel_setup`：アプリのパートナーモジュール設定に必要です。詳細は[チャネル設定に関する記事](/en/api/app-automation-api/channel-setup/)をご覧ください。
+
+   ```bash
+   curl \
+   --header "AdjustAuthorization: Token <adjust api token>" \
+   --header "Content-Type: application/json" \
+   --data '{ "name":"Test App Name", "bundle_id":"test.bundle.app", "store_id":"test.bundle.app", "platform":"android", "channel_setup": { "facebook": {"app_id": "123456789"}, "snapchat": {"app_id": "test.bundle.app"} } }' \
+   -X POST https://settings.adjust.com/api/app
+   ```
+
+2. Adjustの担当者に連絡し、シグネチャーv3のサポートを有効にするよう依頼してください。
+
+3. アプリがSignature v3にサポートにサポートされていることを確認できたら、 `/app`エンドポイントを使用して、以下の情報を含むPOSTリクエストを送信します：
+
+   -  `android_signature_hash`： **コロンで区切られた16進数** 形式のSHA\-1シグネチャーのカンマ区切りリスト。
+   -  Adjustシグネチャートークンの値が付与された`SignatureAuthorization`ヘッダー。
+
+   ```bash
+   curl \
+   --header "AdjustAuthorization: Token <adjust api token>" \
+   --header "SignatureAuthorization: Token <adjust signature token>" \
+   --header "Content-Type: application/json" \
+   --data '{ "name":"Test App Name", "android_signature_hash": "45:a7:2b:82:00:f1:f6:99:d7:c5:1e:6e:1f:8c:91:b5:5c:f9:98:a2,44:40:16:6e:ed:36:cc:6d:6e:62:53:92:9e:ef:45:63:a1:3c:19:0c,57:44:3a:4c:05:23:50:a4:46:38:83:5d:64:fd:66:82:2f:81:33:19", "bundle_id":"test.bundle.app", "store_id":"test.bundle.app", "platform":"android", "channel_setup": { "facebook": {"app_id": "123456789"}, "snapchat": {"app_id": "test.bundle.app"} } }' \
+   -X POST https://settings.adjust.com/api/app
+   ```
