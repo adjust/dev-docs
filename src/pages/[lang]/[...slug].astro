@@ -2,9 +2,9 @@
 import { type CollectionEntry, getCollection } from "astro:content";
 import MainLayout from "./../../layouts/MainLayout.astro";
 import { langParamRegex } from "@i18n/utils";
-import { KNOWN_LANGUAGE_CODES } from "@i18n/locales";
+import { KNOWN_LANGUAGE_CODES, defaultLang } from "@i18n/locales";
+import { getEntry } from "astro:content";
 
-export const prerender = true;
 export const getStaticPaths = async () => {
   const docs = (await getCollection("docs")).map((doc) => ({
     ...doc,
@@ -26,11 +26,23 @@ export const getStaticPaths = async () => {
 
 type Props = CollectionEntry<"docs">;
 
-const post = Astro.props;
+const { lang, slug } = Astro.params;
+const post = await getEntry("docs", `${lang}/${slug}`);
 
-const { Content, headings } = await post.render();
+const path = Astro.url.pathname;
+if (!post && langParamRegex.test(path) && !path.includes(`/${defaultLang}`)) {
+  const updatedPath = path.replace(langParamRegex, `/${defaultLang}/`);
+
+  return Astro.redirect(updatedPath, 302);
+}
+
+if (!post) {
+  return Astro.redirect("/404");
+}
+
+const { Content, headings } = await post!.render();
 ---
 
-<MainLayout headings={headings} {...post.data}>
+<MainLayout headings={headings} {...post!.data}>
   <Content />
 </MainLayout>
