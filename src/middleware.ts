@@ -7,6 +7,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const response = await next();
 
   const path = context.url.pathname;
+  console.log(response, "response");
 
   if (
     response.status === 404 &&
