@@ -1,0 +1,210 @@
+---
+title: "过滤器数据终端"
+description: "Use the filters data endpoint to find metrics for your queries"
+slug: "en/api/rs-api/filters-data"
+sidebar-position: 2
+---
+通过过滤器数据终端，您可以调取有效指标列表，用来在报告服务 API 套件中过滤向其他终端的调用。
+
+您可以在我们的[Datascape 指标术语表](https://help.adjust.com/en/article/datascape-metrics-glossary)中查看完整指标列表。
+
+[操作前须知](before-you-begin)
+-------------------------
+
+要使用该终端，您需要 Adjust API 识别码。请按照[验证指南](/en/api/rs-api/authentication)中的说明操作，获得识别码。
+
+[终端](endpoint-1)
+----------------
+
+```http
+GET https://automate.adjust.com/reports-service/filters_data
+```
+
+### [GET 请求](get-request)
+
+返回过滤器项目列表。请使用返回对象的`id`字段过滤其他 API 调用。
+
+#### [参数](parameters)
+
+<table> 
+
+|               参数               |               数据类型               | 位置 |                                             描述                                              |
+|--------------------------------|----------------------------------|----|---------------------------------------------------------------------------------------------|
+| `required_filters`\*          | `String`                         | 查询 | 用逗号隔开的过滤器列表。请查看下方 "必要过滤器" 表格，获取值的列表。                                                        |
+| `section`                      | `Enum<string id="sl-md0000000">` | 查询 | 用来过滤项目的 section。请查看下方 "section" 表格，获取值的列表。                                                  |
+| `[required_filters]__contains` | `String`                         | 查询 | Enter a search term to look for a full or partial match in the object's id and name fields. |
+
+</Table> 
+
+### [必要过滤器](required-filters)
+
+<table search> 
+
+|           过滤           |                                             描述                                             |
+|------------------------|--------------------------------------------------------------------------------------------|
+| `apps`                 | 返回应用列表。                                                                                    |
+| `apps_network`         | 返回应用和相应应用商店 ID 的列表。                                                                        |
+| `overview_metrics`     | 返回概览指标列表。                                                                                  |
+| `skad_metrics`         | 返回 SKAdNetwork 相关指标列表。                                                                     |
+| `cohort_maturity`      | Returns a list of metrics relating to the maturity of a cohort. Example: mature, immature. |
+| `cohort_metrics`       | 返回同期群相关指标列表。                                                                               |
+| `event_metrics`        | 返回事件相关指标列表。每个事件都重复所有指标。                                                                    |
+| `cost_metrics`         | 返回成本相关指标列表。                                                                                |
+| `etl_metrics`          | 返回 Adjust 和另一系统间 ETL \(抽取、转换、加载\) 过程的相关指标列表。                                             |
+| `dimensions`           | 返回维度列表。                                                                                    |
+| `countries`            | 返回国家/地区列表。                                                                                 |
+| `currencies`           | 返回货币币种列表。                                                                                  |
+| `os_names`             | 返回操作系统名称列表。                                                                                |
+| `networks`             | 返回渠道列表。                                                                                    |
+| `partners`             | 返回合作伙伴列表。                                                                                  |
+| `ad_revenue_sources`   | 返回广告收入来源列表。                                                                                |
+| `iap_revenue_mode`     | 返回广告收入模式列表。                                                                                |
+| `attribution_type`     | Returns a list of attribution types. Examples: all, click, impression.                     |
+| `attribution_source`   | 返回归因来源列表。                                                                                  |
+| `attribution_status`   | 返回归因状态列表。                                                                                  |
+| `ad_spend_mode`        | Returns a list of cost modes. Examples: attribution, network, mixed.                       |
+| `ad_spend_mode`        | Returns a list of ad spend modes. Examples: attribution, network, mixed.                   |
+| `utc_offset`           | The offset \(in hours\) from UTC. Defaults to 0 \(UTC\).                               |
+| `attributes`           | 返回推广变量列表。                                                                                  |
+| `index`                | 返回与所有应用相关的重要指标列表。                                                                          |
+| `period_over_period`   | 返回用于数据对比的时间周期列表。                                                                           |
+| `cohort_metric_names`  | 返回同期群指标的可读名称列表。                                                                            |
+| `full_cohort_periods`  | 返回同期群相关时间周期的列表。                                                                            |
+| `store_type`           | 返回应用商店列表。                                                                                  |
+| `skad_time_adjustment` | 返回有效 SKAdNetwork 活动窗口列表。                                                                   |
+
+</Table> 
+
+### [Section](sections)
+
+<table> 
+
+|       Section       |          描述           |
+|---------------------|-----------------------|
+| `conversion`        | 点击和展示转化相关指标。          |
+| `fraud`             | 防作弊相关指标。              |
+| `cost`              | 成本相关指标。               |
+| `revenue`           | 应用收入相关指标。             |
+| `retention`         | 基于同期群的用户留存相关指标。       |
+| `events`            | 事件相关指标。               |
+| `conversion_events` | SKAdNetwork 转化事件相关指标。 |
+| `installs`          | 应用安装和重装相关指标。          |
+| `conversion_values` | SKAdNetwork 转化值相关指标。  |
+
+</Table> 
+
+### [响应](responses)
+
+终端返回以下响应：
+<table> 
+
+|  响应   |          消息           |       注意事项       |
+|-------|-----------------------|------------------|
+| `200` | `Success`             | 返回报告信息           |
+| `204` | `No content`          | 响应对象为空时          |
+| `400` | `Bad request`         | 请求格式错误或包含不受支持的参数 |
+| `401` | `Unauthorized`        | 您的凭证不正确或缺失       |
+| `403` | `Forbidden`           | 您没有访问此信息的权限      |
+| `429` | `Too many requests`   | 同时发送超过 50 个请求    |
+| `503` | `Service unavailable` | 无法连接服务器          |
+| `504` | `Gateway timeout`     | 查询返回响应时间过长       |
+
+</Table> 
+
+#### [成功响应](success-response)
+
+```json
+{
+   "required_filters_1": [
+      {
+         "id": "string",
+         "name": "string",
+         "short_name": "string",
+         "section": "string",
+         "formatting": "string"
+      }
+   ],
+   "required_filters_2": [
+      {
+         "id": "string",
+         "name": "string",
+         "short_name": "string",
+         "section": "string",
+         "formatting": "string"
+      },
+      {
+         "id": "string",
+         "name": "string",
+         "short_name": "string",
+         "section": "string",
+         "formatting": "string"
+      }
+   ]
+}
+```
+
+### [参数](parameters)
+
+<table> 
+
+|      参数      |   数据类型   |                      描述                       |
+|--------------|----------|-----------------------------------------------|
+| `id`         | `String` | 过滤器项目的 ID，用来过滤 API 调用。                        |
+| `name`       | `String` | 过滤器项目的可读名称。                                   |
+| `short_name` | `String` | 过滤器项目的缩略名称。                                   |
+| `section`    | `String` | 过滤器项目相关的 section。                             |
+| `formatting` | `String` | 过滤器项目的数据格式。示例：`money` 、 `decimal` 、 `string`。 |
+
+</Table> 
+
+[示例](example)
+-------------
+
+<codeblock title="Request - cURL"> 
+
+```sh
+curl --location --request GET 'https://automate.adjust.com/reports-service/filters_data?required_filters=overview_metrics,cost_metrics&section=cost&overview_metrics__contains=ecpi&cost_metrics__contains=Ad spend' \
+--header 'Authorization: Bearer {API_TOKEN}'
+```
+
+</CodeBlock> <codeblock title="响应"> 
+
+```json
+{
+   "overview_metrics": [
+      {
+         "id": "ecpi_all",
+         "name": "eCPI (All Installs)",
+         "short_name": "eCPI (All)",
+         "section": "Cost",
+         "formatting": "money"
+      },
+      {
+         "id": "ecpi",
+         "name": "eCPI (Paid Installs)",
+         "short_name": "eCPI (Paid)",
+         "section": "Cost",
+         "formatting": "money"
+      }
+   ],
+   "cost_metrics": [
+      {
+         "id": "network_cost",
+         "name": "Ad Spend (Network)",
+         "short_name": "",
+         "section": "Cost",
+         "formatting": "decimal"
+      },
+      {
+         "id": "network_cost_diff",
+         "name": "Ad Spend Diff (Network)",
+         "short_name": "",
+         "section": "Cost",
+         "formatting": "decimal"
+      }
+   ]
+}
+```
+
+</CodeBlock>
+
