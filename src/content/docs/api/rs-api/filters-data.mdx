@@ -1,0 +1,210 @@
+---
+title: Filters data endpoint
+description: Use the filters data endpoint to find metrics for your queries
+slug: en/api/rs-api/filters-data
+sidebar-position: 2
+---
+
+The Filters Data endpoint enables you to retrieve a list of valid metrics. You can use these metrics to filter calls to other endpoints in the Report Service API suite.
+
+A full list of metrics is available in the [Datascape metrics glossary](https://help.adjust.com/en/article/datascape-metrics-glossary).
+
+## [Before you begin](before-you-begin)
+
+To use this endpoint, you need an Adjust API token. Follow the instructions in the [authentication guide](/en/api/rs-api/authentication) to get your token.
+
+## [Endpoint](endpoint-1)
+
+```http
+GET https://automate.adjust.com/reports-service/filters_data
+```
+
+### [GET request](get-request)
+
+Return a list of filter items. Use the `id` field of the returned objects to filter other API calls.
+
+#### [Parameters](parameters)
+
+<Table>
+
+| Parameter                      | Data type      | In    | Description                                                                                   |
+| ------------------------------ | -------------- | ----- | --------------------------------------------------------------------------------------------- |
+| `required_filters`\*           | `String`       | Query | A comma separated list of filters. See the Required filters table below for a list of values. |
+| `section`                      | `Enum<String>` | Query | The section you want to filter items by. See the Section table below for a list of values.    |
+| `[required_filters]__contains` | `String`       | Query | Enter a search term to look for a full or partial match in the object's id and name fields.   |
+
+</Table>
+
+### [Required filters](required-filters)
+
+<Table search>
+
+| Filter                 | Description                                                                                             |
+| ---------------------- | ------------------------------------------------------------------------------------------------------- |
+| `apps`                 | Returns a list of your apps.                                                                            |
+| `apps_network`         | Returns a list of your apps and their associated store IDs.                                             |
+| `overview_metrics`     | Returns a list of overview metrics.                                                                     |
+| `skad_metrics`         | Returns a list of metrics relating to SKAdNetwork.                                                      |
+| `cohort_maturity`      | Returns a list of metrics relating to the maturity of a cohort. Example: mature, immature.              |
+| `cohort_metrics`       | Returns a list of metrics relating to your cohorts.                                                     |
+| `event_metrics`        | Returns a list of metrics relating to your events. All metrics are duplicated per event.                |
+| `cost_metrics`         | Returns a list of metrics relating to cost.                                                             |
+| `etl_metrics`          | Returns a list of metrics relating to ETL (extract, transform, load) between Adjust and another system. |
+| `dimensions`           | Returns a list of dimensions.                                                                           |
+| `countries`            | Returns a list of countries.                                                                            |
+| `currencies`           | Returns a list of currencies.                                                                           |
+| `os_names`             | Returns a list of operating system names.                                                               |
+| `networks`             | Returns a list of networks.                                                                             |
+| `partners`             | Returns a list of partners.                                                                             |
+| `ad_revenue_sources`   | Returns a list of ad revenue sources.                                                                   |
+| `iap_revenue_mode`     | Returns a list of ad revenue modes.                                                                     |
+| `attribution_type`     | Returns a list of attribution types. Examples: all, click, impression.                                  |
+| `attribution_source`   | Returns a list of attribution sources.                                                                  |
+| `attribution_status`   | Returns a list of attribution statuses.                                                                 |
+| `ad_spend_mode`        | Returns a list of cost modes. Examples: attribution, network, mixed.                                    |
+| `ad_spend_mode`        | Returns a list of ad spend modes. Examples: attribution, network, mixed.                                |
+| `utc_offset`           | The offset (in hours) from UTC. Defaults to 0 (UTC).                                                    |
+| `attributes`           | Returns a list of attributes.                                                                           |
+| `index`                | Returns a list of key metrics that relate to all apps.                                                  |
+| `period_over_period`   | Returns a list of time periods used for data comparison.                                                |
+| `cohort_metric_names`  | Returns a list of readable names for cohort metrics.                                                    |
+| `full_cohort_periods`  | Returns a list of time periods related to cohorts.                                                      |
+| `store_type`           | Returns a list of app stores.                                                                           |
+| `skad_time_adjustment` | Returns a list of valid SKAdNetwork activity windows.                                                   |
+
+</Table>
+
+### [Sections](sections)
+
+<Table>
+
+| Section             | Description                                           |
+| ------------------- | ----------------------------------------------------- |
+| `conversion`        | Metrics relating to click and impression conversions. |
+| `fraud`             | Metrics relating to fraud prevention.                 |
+| `cost`              | Metrics relating to cost.                             |
+| `revenue`           | Metrics relating to app revenue.                      |
+| `retention`         | Metrics relating to cohort-based user retention.      |
+| `events`            | Metrics relating to events.                           |
+| `conversion_events` | Metrics relating to SKAdNetwork conversion events.    |
+| `installs`          | Metrics relating to app installs and reinstalls.      |
+| `conversion_values` | Metrics relating to SKAdNetwork conversion values.    |
+
+</Table>
+
+### [Responses](responses)
+
+This endpoint returns the following responses:
+
+<Table>
+
+| Response | Message               | Notes                                                                       |
+| -------- | --------------------- | --------------------------------------------------------------------------- |
+| `200`    | `Success`             | Returns report information                                                  |
+| `204`    | `No content`          | Returned if the response object is empty                                    |
+| `400`    | `Bad request`         | Returned if your request is malformed or contains unsupported parameters    |
+| `401`    | `Unauthorized`        | Returned if your credentials are incorrect or absent                        |
+| `403`    | `Forbidden`           | Returned if you try to access information you don't have permission to view |
+| `429`    | `Too many requests`   | Returned if you exceed 50 simultaneous requests                             |
+| `503`    | `Service unavailable` | Returned if the server can't be reached                                     |
+| `504`    | `Gateway timeout`     | Returned if the query takes too long to return a response                   |
+
+</Table>
+
+#### [Success response](success-response)
+
+```json
+{
+   "required_filters_1": [
+      {
+         "id": "string",
+         "name": "string",
+         "short_name": "string",
+         "section": "string",
+         "formatting": "string"
+      }
+   ],
+   "required_filters_2": [
+      {
+         "id": "string",
+         "name": "string",
+         "short_name": "string",
+         "section": "string",
+         "formatting": "string"
+      },
+      {
+         "id": "string",
+         "name": "string",
+         "short_name": "string",
+         "section": "string",
+         "formatting": "string"
+      }
+   ]
+}
+```
+
+### [Parameters](parameters)
+
+<Table>
+
+| Parameter    | Data type | Description                                                                |
+| ------------ | --------- | -------------------------------------------------------------------------- |
+| `id`         | `String`  | The ID of the filter item. Use this to filter your API calls.              |
+| `name`       | `String`  | The readable name of the filter item.                                      |
+| `short_name` | `String`  | The shortened name of the filter item.                                     |
+| `section`    | `String`  | The section the filter item is associated with.                            |
+| `formatting` | `String`  | The data format of the filter item. Example: `money`, `decimal`, `string`. |
+
+</Table>
+
+## [Example](example)
+
+<CodeBlock title="Request - cURL">
+
+```sh
+curl --location --request GET 'https://automate.adjust.com/reports-service/filters_data?required_filters=overview_metrics,cost_metrics&section=cost&overview_metrics__contains=ecpi&cost_metrics__contains=Ad spend' \
+--header 'Authorization: Bearer {API_TOKEN}'
+```
+
+</CodeBlock>
+
+<CodeBlock title="Response">
+
+```json
+{
+   "overview_metrics": [
+      {
+         "id": "ecpi_all",
+         "name": "eCPI (All Installs)",
+         "short_name": "eCPI (All)",
+         "section": "Cost",
+         "formatting": "money"
+      },
+      {
+         "id": "ecpi",
+         "name": "eCPI (Paid Installs)",
+         "short_name": "eCPI (Paid)",
+         "section": "Cost",
+         "formatting": "money"
+      }
+   ],
+   "cost_metrics": [
+      {
+         "id": "network_cost",
+         "name": "Ad Spend (Network)",
+         "short_name": "",
+         "section": "Cost",
+         "formatting": "decimal"
+      },
+      {
+         "id": "network_cost_diff",
+         "name": "Ad Spend Diff (Network)",
+         "short_name": "",
+         "section": "Cost",
+         "formatting": "decimal"
+      }
+   ]
+}
+```
+
+</CodeBlock>
