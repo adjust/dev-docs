@@ -1,18 +1,41 @@
 ---
 import { type CollectionEntry, getCollection } from "astro:content";
+import differenceBy from "lodash-es/differenceBy";
+
 import MainLayout from "./../../layouts/MainLayout.astro";
 import { langParamRegex } from "@i18n/utils";
+import { defaultLang } from "@i18n/locales";
 
 export const prerender = true;
 export const getStaticPaths = async () => {
-  const docs = (
-    await getCollection("docs", ({ slug }) => slug.startsWith("ko/"))
-  ).map((doc) => ({
+  const docs = (await getCollection("docs")).map((doc) => ({
     ...doc,
     slugUpdated: doc.slug?.replace(langParamRegex, ""),
   }));
 
-  return docs.map((doc) => ({
+  const defaultLangFallback = docs.filter((doc) =>
+    doc.slug.startsWith(`${defaultLang}/`),
+  );
+
+  const docsByLang = docs.filter((doc) => doc.slug.startsWith("ko/"));
+
+  const differenceWithOrigin = differenceBy(
+    defaultLangFallback,
+    docsByLang,
+    "slugUpdated",
+  );
+
+  const usedDocs = differenceWithOrigin.length
+    ? [
+        ...docsByLang,
+        ...differenceWithOrigin.map((doc) => ({
+          ...doc,
+          redirect: doc.slug?.replace(langParamRegex, "ko/"),
+        })),
+      ]
+    : docsByLang;
+
+  return usedDocs.map((doc) => ({
     params: {
       slug: doc.slugUpdated,
     },
@@ -20,9 +43,13 @@ export const getStaticPaths = async () => {
   }));
 };
 
-type Props = CollectionEntry<"docs">;
+type Props = CollectionEntry<"docs"> & { redirect: string };
 
 const post = Astro.props;
+
+if (post.redirect) {
+  return Astro.redirect(post.redirect, 302);
+}
 
 const { Content, headings } = await post.render();
 ---
