@@ -32,20 +32,20 @@ S2S session measurement is enabled automatically for [CTV measurement](https://h
 
 <Callout type="important">
 
-The Adjust backend rejects any requests without the correct token. This ensures robust protection for your data.
+Adjust's servers reject any requests without the correct token. This ensures robust protection for your data.
 
 </Callout>
 
 ### [Queue and persist events locally](queue-and-persist-events-locally)
 
-Users may trigger important events, such as app installs or sessions, while their device is offline. To ensure accurate attribution, you must capture and store these events locally until they can be successfully transmitted to the Adjust backend.
+Users may trigger important events, such as app installs or sessions, while their device is offline. To ensure accurate attribution, you must capture and store these events locally until they can be successfully transmitted to Adjust's servers.
 
 To implement a local event queue with persistence:
 
 1. Create a queue to store activities when they occur.
 2. For each activity, include a `created_at_unix` timestamp in seconds (for example: `1484085154`) representing when the event occurred on the device.
 3. Save this queue to local storage (for example: SQLite database or files) to persist across app restarts.
-4. Attempt to send activities to the Adjust backend when the queue is non-empty and the device is online.
+4. Attempt to send activities to Adjust's servers when the queue is non-empty and the device is online.
 5. Remove activities from the queue only after successful transmission.
 
 This approach helps mitigate data loss in the following scenarios:
@@ -698,45 +698,45 @@ dependencies {
 
 4. Implement the code to collect Google Advertising ID and tracking status:
 
-      <Tabs>
+<Tabs>
 <Tab title="Kotlin" sync="kotlin">
 
-   ```kotlin
-   import com.google.android.gms.ads.identifier.AdvertisingIdClient
-   import kotlinx.coroutines.Dispatchers
-   import kotlinx.coroutines.withContext
+```kotlin
+import com.google.android.gms.ads.identifier.AdvertisingIdClient
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-   suspend fun getGoogleAdvertisingIdInfo(
-      context: Context): AdvertisingIdClient.Info? {
-      return withContext(Dispatchers.IO) {
-         try {
-             AdvertisingIdClient.getAdvertisingIdInfo(context)
-         } catch (e: Exception) {
-             // Handle exceptions
-             // (e.g., Google Play Services not available)
-             null
-         }
+suspend fun getGoogleAdvertisingIdInfo(
+   context: Context): AdvertisingIdClient.Info? {
+   return withContext(Dispatchers.IO) {
+      try {
+          AdvertisingIdClient.getAdvertisingIdInfo(context)
+      } catch (e: Exception) {
+          // Handle exceptions
+          // (for example: Google Play Services not available)
+          null
       }
    }
+}
 
-   // Usage example
-   // As getGoogleAdvertisingIdInfo is a suspending function,
-   // it should be called from within a coroutine scope.
-   lifecycleScope.launch {
-      val adInfo = getGoogleAdvertisingIdInfo(context)
-      adInfo?.let { info ->
-         // Include Google Advertising ID if tracking is not limited
-         if (!info.isLimitAdTrackingEnabled) {
-             params["gps_adid"] = info.id
-         }
-         // Set tracking status
-         params["tracking_enabled"] = if (info.isLimitAdTrackingEnabled)
-             "0" else "1"
+// Usage example
+// As getGoogleAdvertisingIdInfo is a suspending function,
+// it should be called from within a coroutine scope.
+lifecycleScope.launch {
+   val adInfo = getGoogleAdvertisingIdInfo(context)
+   adInfo?.let { info ->
+      // Include Google Advertising ID if tracking is not limited
+      if (!info.isLimitAdTrackingEnabled) {
+          params["gps_adid"] = info.id
       }
+      // Set tracking status
+      params["tracking_enabled"] = if (info.isLimitAdTrackingEnabled)
+          "0" else "1"
    }
-   ```
+}
+```
 
-      </Tab>
+</Tab>
 </Tabs>
 
 ##### App Set ID
@@ -782,43 +782,43 @@ dependencies {
 
 2. Implement the code to collect App Set ID:
 
-      <Tabs>
+<Tabs>
 <Tab title="Kotlin" sync="kotlin">
 
-   ```kotlin
-   import com.google.android.gms.appset.AppSet
-   import com.google.android.gms.appset.AppSetIdClient
-   import com.google.android.gms.appset.AppSetIdInfo
-   import com.google.android.gms.tasks.Tasks
-   import kotlinx.coroutines.Dispatchers
-   import kotlinx.coroutines.withContext
+```kotlin
+import com.google.android.gms.appset.AppSet
+import com.google.android.gms.appset.AppSetIdClient
+import com.google.android.gms.appset.AppSetIdInfo
+import com.google.android.gms.tasks.Tasks
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-   suspend fun getAppSetId(context: Context): String? {
-      return withContext(Dispatchers.IO) {
-         try {
-               val client: AppSetIdClient = AppSet.getClient(context)
-               val taskResult = Tasks.await(client.appSetIdInfo)
-               taskResult.id
-         } catch (e: Exception) {
-               // Handle exceptions (e.g., Google Play Services not available)
-               null
-         }
+suspend fun getAppSetId(context: Context): String? {
+   return withContext(Dispatchers.IO) {
+      try {
+            val client: AppSetIdClient = AppSet.getClient(context)
+            val taskResult = Tasks.await(client.appSetIdInfo)
+            taskResult.id
+      } catch (e: Exception) {
+            // Handle exceptions (for example: Google Play Services not available)
+            null
       }
    }
+}
 
-   // Usage example
-   // As getAppSetId is a suspending function,
-   // it should be called from within a coroutine scope.
-   lifecycleScope.launch {
-      val appSetId = getAppSetId(context)
-      appSetId?.let { id ->
-         val params = mutableMapOf<String, String>()
-         params["google_app_set_id"] = id
-      }
+// Usage example
+// As getAppSetId is a suspending function,
+// it should be called from within a coroutine scope.
+lifecycleScope.launch {
+   val appSetId = getAppSetId(context)
+   appSetId?.let { id ->
+      val params = mutableMapOf<String, String>()
+      params["google_app_set_id"] = id
    }
-   ```
+}
+```
 
-      </Tab>
+</Tab>
 </Tabs>
 
 ## Additional parameters
@@ -1011,7 +1011,7 @@ params["callback_params"] = '{"user_id": "2696775149", "user_category": "high va
 
 ### Global partner parameters
 
-When integrating with certain partners, you may need to include "global partner parameters" in all your S2S requests. The Adjust backend passes these parameters in all callbacks it makes to partners. This is commonly used for analytics partners that require their own proprietary user ID in the callbacks they receive.
+When integrating with certain partners, you may need to include "global partner parameters" in all your S2S requests. Adjust's servers passes these parameters in all callbacks it makes to partners. This is commonly used for analytics partners that require their own proprietary user ID in the callbacks they receive.
 
 Global partner parameters are represented as a JSON object containing string key-value pairs.
 
@@ -1042,7 +1042,7 @@ Ensure all parameter values are URL encoded before sending requests.
 
 ### Session
 
-Sessions form the foundation of Adjust implementation and are the only required activity. A session typically represents an app open. The Adjust backend logs successful session requests as follows:
+Sessions form the foundation of Adjust implementation and are the only required activity. A session typically represents an app open. Adjust's servers log successful session requests as follows:
 
 -  It records the first session for a device as an "install" activity.
 -  It records subsequent sessions as "session" activities.
@@ -1050,14 +1050,14 @@ Sessions form the foundation of Adjust implementation and are the only required 
 
     <Callout type="info">
 
-   For reference, the Adjust SDK sends a session request to the Adjust backend when either of the following occurs:
+   For reference, the Adjust SDK sends a session request to Adjust's servers when either of the following occurs:
 
    -  The user opens the app for the first time after install or reinstall.
    -  The user reopens the app after it has been closed or in the background for at least 30 minutes.
 
     </Callout>
 
-   When sending S2S session requests with the `created_at_unix` parameter, the Adjust backend requires this value to be at least 20 minutes later than the `created_at_unix` time of the last successfully logged session.
+   When sending S2S session requests with the `created_at_unix` parameter, Adjust's servers require this value to be at least 20 minutes later than the `created_at_unix` time of the last successfully logged session.
 
 <CodeBlock title="Request - cURL">
 
@@ -1123,7 +1123,7 @@ HTTP Status Code: 200
 
 ### Attribution
 
-After sending a session request, you may need to send an attribution request to the Adjust backend. The session response includes an `ask_in` parameter, indicating how many milliseconds to wait before making the attribution request.
+After sending a session request, you may need to send an attribution request to Adjust's servers. The session response includes an `ask_in` parameter, indicating how many milliseconds to wait before making the attribution request.
 
 Attribution requests serve three main purposes for developers:
 
@@ -1293,7 +1293,7 @@ Below is an example attribution response that contains a deferred deep link.
 
 </CodeBlock>
 
-Please note that sometimes an attribution response may also contain an `ask_in` parameter. This means that the Adjust backend hasn't yet completed the attribution process, and you should send another attribution request after the `ask_in` time elapses.
+Please note that sometimes an attribution response may also contain an `ask_in` parameter. This means that Adjust's servers haven't yet completed the attribution process, and you should send another attribution request after the `ask_in` time elapses.
 
 If the attribution response contains a deferred deep link, here is a suggested approach to handle it:
 
@@ -1302,9 +1302,9 @@ If the attribution response contains a deferred deep link, here is a suggested a
 2. When ready to process the deep link, do the following:
    -  Retrieve and parse the stored link.
    -  Implement domain-agnostic handling to treat all links equivalently:
-      -  Adjust universal links (e.g., `example.go.link`)
-      -  Other universal links (e.g., `example.com`)
-      -  App scheme deep links (e.g., `example://`)
+      -  Adjust universal links (for example: `example.go.link`)
+      -  Other universal links (for example: `example.com`)
+      -  App scheme deep links (for example: `example://`)
    -  Extract relevant information (path, query parameters, fragment) regardless of link type.
    -  Navigate to the deep link screen based on the extracted information.
 
@@ -1318,7 +1318,7 @@ These should all lead to the same destination in your app.
 
 <Callout type="important">
 
-The Adjust backend returns all deferred deep links in app scheme format (e.g., `example://`), regardless of their original format.
+Adjust's servers returns all deferred deep links in app scheme format (for example: `example://`), regardless of their original format.
 
 </Callout>
 
@@ -1618,7 +1618,7 @@ params["callback_params"] = '{"txn_id": "8837853376"}'
 
 #### Partner parameters
 
-When integrating with certain partners, you may need to include custom "partner parameters" in your event requests. The Adjust backend will then include these parameters on the callbacks it makes to partners for relevant events. This is most commonly used to enable dynamic remarketing campaigns, typically for events like view_item, add_to_cart, and purchase.
+When integrating with certain partners, you may need to include custom "partner parameters" in your event requests. Adjust's servers will then include these parameters on the callbacks it makes to partners for relevant events. This is most commonly used to enable dynamic remarketing campaigns, typically for events like `view_item`, `add_to_cart`, and purchase.
 
 Partner parameters are represented as a JSON object containing string key-value pairs.
 
@@ -1690,5 +1690,3 @@ HTTP Status Code: 200
 ```
 
 </CodeBlock>
-import { Code } from "astro-expressive-code/components"
-import { link } from "fs"
