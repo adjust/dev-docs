@@ -113,7 +113,73 @@ config.conversionValueUpdatedCallback = (num? conversionValue) {
 Adjust.start(config);
 
 }
-
 ```
 
 </CodeBlock>
+
+## [SKAdNetwork 4\.0 콜백](skadnetwork-4-0-callbacks)
+
+<MinorVersion added="v4.33.0">
+
+SKAdNetwork 4\.0 포스트백은 광고주들에게 사용자 관련 인사이트를 더 많이 제공하기 위해 추가적인 정보를 포함하고 있습니다. Adjust 서버가 전환값을 업데이트할 때 이 추가 정보가 페이로드에 전송됩니다. `Skad4ConversionValueUpdatedCallback` 콜백 메서드로 이 정보에 액세스하실 수 있습니다.
+
+</MinorVersion>
+<Table>
+
+| 인수 \(Arguments\) | 데이터 유형 | 설명                                                                                                                                                                                                                                                                         |
+| ------------------ | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fineValue`        | `NSNumber`  | Adjust의 서버가 전송하는 전환값                                                                                                                                                                                                                                              |
+| `coarseValue`      | `NSString`  | coarse\-grained 전환값. 앱의 설치 수가 Privacy Threshold를 충족하지 못하는 경우에 사용됩니다.<ul><li>`none`</li><li>`low`</li><li>`medium`</li><li>`high`</li></ul><br/>Apple은 low, medium, high로 설정된 조건 중 어느 것도 충족되지 않는 경우 아무 것도 전송하지 않습니다. |
+| `lockWindow`       | `NSNumber`  | 전환값 윈도우가 종료되기 전에 포스트백을 전송할지 여부. `1`은 전환값 윈도우 종료 전에 포스트백이 전송됨을 의미합니다.<br/>SKAdNetwork 4\.0 포스트백에서는 `0`, 그 이전 SKAdNetwork 버전에서는 `nil`로 기본 설정되어 있습니다.                                                |
+
+</Table>
+
+### [예시](example-3)
+
+본 예시에서 Adjust는 fine\-grained 전환값, coarse\-grained 전환값, SKAdNetwork 포스트백이 전환값 종료 전에 전송되도록 설정되었는지 여부를 로그합니다.
+
+```dart
+import 'package:adjust_sdk/adjust.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+initPlatformState() async {
+   AdjustConfig config =
+      new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox);
+   config.logLevel = AdjustLogLevel.verbose;
+
+config.Skad4ConversionValueUpdatedCallback = (num? conversionValue, String? coarseValue, bool? lockWindow) {
+      print('[Adjust]: Conversion value updated. Callback received');
+      print('[Adjust]: Conversion value: ' + conversionValue!.toString());
+      print('[Adjust]: Coarse conversion value: ' + coarseValue!);
+      print('[Adjust]: Will send before conversion value window ends: ' lockWindow!.toString());
+   };
+
+Adjust.start(config);
+}
+```
+
+## [다이렉트 설치 포스트백\(direct install postback\) 설정하기](set-up-direct-install-postbacks)
+
+<Callout type="note">
+
+다이렉트 설치 포스트백은 SKAdNetwork 정보만 포함합니다. 캠페인 데이터와 같은 정보는 다이렉트 설치 포스트백에 포함되지 않습니다.
+
+</Callout>
+
+Adjust에 SKAdNetwork 콜백의 사본을 전송하도록 앱을 구성하면, 고객님의 애널리틱스에서 SKAdNetwork 정보를 사용하실 수 있습니다.
+
+다이렉트 설치 포스트백 설정을 위해, 귀하의 `Info.plist` 파일에 Adjust 콜백 URL을 추가해야 합니다.
+
+1. Xcode의 프로젝트 네비게이터\(Project navigator\)에서 **Info.plist** 를 선택하세요.
+2. 속성 리스트 에디터의 키 옆에 있는 추가 버튼\(\+\)을 선택한 후, `Return`을 누르세요.
+3. _`NSAdvertisingAttributionReportEndpoint`_ 를 키 이름으로 입력하세요.
+4. 팝업 메뉴의 **Type** 을 **String** 으로 설정하세요.
+5. _`https://adjust-skadnetwork.com`_ 주소를 입력하세요.
+
+<Callout type="seealso">
+
+자세한 정보는 Apple의 [Configuring an Advertised App 설명서](https://developer.apple.com/documentation/storekit/skadnetwork/configuring_an_advertised_app)를 참조하시기 바랍니다.
+
+</Callout>
