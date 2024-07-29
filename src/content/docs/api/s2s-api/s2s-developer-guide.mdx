@@ -2,7 +2,7 @@
 title: "S2S developer guide"
 description: "Implement Adjust 100% S2S"
 slug: en/api/s2s-api/s2s-developer-guide
-sidebar-position: 7
+sidebar-position: 6
 ---
 
 Adjust offers a server-to-server (S2S) interface for mobile, console, and Connected TV (CTV) apps. If you choose to implement Adjust through S2S, you need to modify your app to replicate the Adjust SDK's functions. This guide provides step-by-step instructions for the following:
@@ -32,20 +32,20 @@ S2S session measurement is enabled automatically for [CTV measurement](https://h
 
 <Callout type="important">
 
-Adjust's servers reject any requests sent without the correct token. This ensures robust protection for your data.
+The Adjust backend rejects any requests without the correct token. This ensures robust protection for your data.
 
 </Callout>
 
 ### [Queue and persist events locally](queue-and-persist-events-locally)
 
-Users may trigger important events, such as app installs or sessions, while their device is offline. To ensure accurate attribution, you must capture and store these events locally until they can be successfully transmitted to Adjust's servers.
+Users may trigger important events, such as app installs or sessions, while their device is offline. To ensure accurate attribution, you must capture and store these events locally until they can be successfully transmitted to the Adjust backend.
 
 To implement a local event queue with persistence:
 
 1. Create a queue to store activities when they occur.
 2. For each activity, include a `created_at_unix` timestamp in seconds (for example: `1484085154`) representing when the event occurred on the device.
 3. Save this queue to local storage (for example: SQLite database or files) to persist across app restarts.
-4. Attempt to send activities to Adjust's servers when the queue is non-empty and the device is online.
+4. Attempt to send activities to the Adjust backend when the queue is non-empty and the device is online.
 5. Remove activities from the queue only after successful transmission.
 
 This approach helps mitigate data loss in the following scenarios:
@@ -87,8 +87,8 @@ The following parameters are required in each S2S request.
 | Parameter   | Description                                                             |
 | ----------- | ----------------------------------------------------------------------- |
 | `s2s`       | Indicates that the request is an S2S request. Must be hardcoded to `1`. |
-| `os_name`   | The name of the mobile operating system. See the list of options below. |
 | `app_token` | Your Adjust app token.                                                  |
+| `os_name`   | The name of the mobile operating system. See the list of options below. |
 
 </Table>
 
@@ -122,7 +122,7 @@ The following parameters are required in each S2S request.
 
 </ListColumns>
 
-You can store these parameters as a variable in your app to re-use them whenever a request is sent.
+Create these parameters on your server. They will be used for all S2S requests to Adjust, regardless of the device. Additional device-specific parameters will be added as needed. For simplicity, this guide demonstrates all parameter handling on the client side, though in practice, much of this will occur server-side.
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -134,11 +134,28 @@ var params: [String: String] = [:]
 // Hard-coded
 params["s2s"] = "1"
 
-// The name of the operating system running on your device
+// The name of the operating system running on the device
 params["os_name"] = "ios"
 
 // Replace with your Adjust app token
 params["app_token"] = "4w565xzmb54d"
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+// Create dictionary for params to include on all S2S requests to Adjust
+NSMutableDictionary *params = [NSMutableDictionary dictionary];
+
+// Hard-coded
+params[@"s2s"] = @"1";
+
+// The name of the operating system running on the device
+params[@"os_name"] = @"ios";
+
+// Replace with your Adjust app token
+params[@"app_token"] = @"4w565xzmb54d";
 ```
 
 </Tab>
@@ -151,11 +168,28 @@ val params = mutableMapOf<String, String>()
 // Hard-coded
 params["s2s"] = "1"
 
-// "ios" or "android"
-params["os_name"] = "ios"
+// The name of the operating system running on the device
+params["os_name"] = "android"
 
 // Replace with your Adjust app token
 params["app_token"] = "4w565xzmb54d"
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+// Create map for params to include on all S2S requests to Adjust
+Map<String, String> params = new HashMap<>();
+
+// Hard-coded
+params.put("s2s", "1");
+
+// The name of the operating system running on the device
+params.put("os_name", "android");
+
+// Replace with your Adjust app token
+params.put("app_token", "4w565xzmb54d");
 ```
 
 </Tab>
@@ -191,6 +225,9 @@ ATT has the following requirements:
 -  The earliest places to show the prompt are in `applicationDidBecomeActive` (App Delegate) or `sceneDidBecomeActive` (Scene Delegate). It's not possible to show the ATT prompt in `didFinishLaunchingWithOptions` (App Delegate).
 
 The following code example addresses all of these requirements:
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 import AppTrackingTransparency
@@ -277,9 +314,118 @@ getIDFAInfo { info in
 }
 ```
 
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import <AppTrackingTransparency/AppTrackingTransparency.h>
+#import <AdSupport/AdSupport.h>
+#import <UIKit/UIKit.h>
+
+@interface IDFAInfo : NSObject
+@property (nonatomic, strong) NSUUID *idfa;
+@property (nonatomic, assign) ATTrackingManagerAuthorizationStatus attStatus;
+@property (nonatomic, strong) NSNumber *trackingEnabled;
+@end
+
+@implementation IDFAInfo
+@end
+
+void getIDFAInfo(void (^completion)(IDFAInfo *)) {
+    // Show ATT prompt to get IDFA and updated ATT status
+    if (@available(iOS 14.5, *)) {
+        [ATTrackingManager requestTrackingAuthorizationWithCompletionHandler:
+            ^(ATTrackingManagerAuthorizationStatus status) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    IDFAInfo *info = [[IDFAInfo alloc] init];
+                    info.attStatus = status;
+                    if (status == ATTrackingManagerAuthorizationStatusAuthorized) {
+                        info.idfa = [[ASIdentifierManager sharedManager]
+                            advertisingIdentifier];
+                    }
+                    completion(info);
+                });
+            }];
+    // Don't show ATT prompt. Just get IDFA and tracking status.
+    } else {
+        ASIdentifierManager *manager = [ASIdentifierManager sharedManager];
+        IDFAInfo *info = [[IDFAInfo alloc] init];
+        info.trackingEnabled = @(manager.isAdvertisingTrackingEnabled);
+        if (manager.isAdvertisingTrackingEnabled) {
+            info.idfa = manager.advertisingIdentifier;
+        }
+        completion(info);
+    }
+}
+
+void requestTrackingAuthorization(void (^completion)
+    (ATTrackingManagerAuthorizationStatus)) {
+    ATTrackingManagerAuthorizationStatus trackingStatus =
+        ATTrackingManager.trackingAuthorizationStatus;
+
+    switch (trackingStatus) {
+        // Only show ATT prompt if status isn't determined
+        case ATTrackingManagerAuthorizationStatusNotDetermined:
+            // If app state is active, show ATT prompt
+            if ([UIApplication sharedApplication].applicationState ==
+                UIApplicationStateActive) {
+                [ATTrackingManager requestTrackingAuthorizationWithCompletionHandler:
+                    ^(ATTrackingManagerAuthorizationStatus status) {
+                        completion(status);
+                    }];
+            // Wait until app state is active, then show ATT prompt
+            } else {
+                [[NSNotificationCenter defaultCenter]
+                    addObserverForName:UIApplicationDidBecomeActiveNotification
+                    object:nil
+                    queue:[NSOperationQueue mainQueue]
+                    usingBlock:^(NSNotification *note) {
+                        [[NSNotificationCenter defaultCenter]
+                            removeObserver:self
+                            name:UIApplicationDidBecomeActiveNotification
+                            object:nil];
+                        [ATTrackingManager
+                            requestTrackingAuthorizationWithCompletionHandler:
+                            ^(ATTrackingManagerAuthorizationStatus status) {
+                                completion(status);
+                            }];
+                    }];
+            }
+            break;
+        // For all other statuses, return existing status
+        default:
+            completion(trackingStatus);
+            break;
+    }
+}
+
+// Usage example
+getIDFAInfo(^(IDFAInfo *info) {
+    // Include IDFA if available
+    if (info.idfa) {
+        params[@"idfa"] = [info.idfa UUIDString];
+    }
+
+    // Include either ATT status or tracking status, never both
+    if (info.attStatus != nil) {
+        params[@"att_status"] = [NSString stringWithFormat:@"%ld",
+            (long)info.attStatus];
+    } else if (info.trackingEnabled != nil) {
+        params[@"tracking_enabled"] = [info.trackingEnabled boolValue] ?
+            @"1" : @"0";
+    }
+});
+```
+
+</Tab>
+</Tabs>
+
 ##### IDFV
 
 The ID for Vendors (IDFV) is a backup identifier available on all modern iOS devices.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 let idfv: UUID? = UIDevice.current.identifierForVendor
@@ -289,9 +435,26 @@ if let idfvString = idfv?.uuidString {
 }
 ```
 
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+NSUUID *idfv = [[UIDevice currentDevice] identifierForVendor];
+
+if (idfv) {
+    params[@"idfv"] = [idfv UUIDString];
+}
+```
+
+</Tab>
+</Tabs>
+
 ##### Primary deduplication token
 
 To consistently measure app activities across uninstalls and reinstalls, generate a random version 4 UUID (the "primary deduplication token") and save it in the iOS keychain. The primary deduplication token is a backup identifier that you should generate for all devices.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 import Foundation
@@ -370,6 +533,95 @@ let primaryDedupeToken = getOrCreatePrimaryDedupeToken()
 params["primary_dedupe_token"] = primaryDedupeToken.uuidString.lowercased()
 ```
 
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import <Foundation/Foundation.h>
+#import <Security/Security.h>
+
+// App's bundle ID
+NSString *const bundleId = @"com.example.app";
+
+// Collect the primary dedupe token from the keychain
+NSUUID *getPrimaryDedupeToken(NSString *bundleId) {
+    // Define the query to search for the token in the keychain
+    NSDictionary *query = @{
+        (__bridge id)kSecClass: (__bridge id)kSecClassGenericPassword,
+        (__bridge id)kSecAttrAccount: @"primary_dedupe_token",
+        (__bridge id)kSecAttrService: bundleId,
+        (__bridge id)kSecReturnData: @YES
+    };
+
+    CFTypeRef item = NULL;
+    // Attempt to fetch the token from the keychain
+    OSStatus status = SecItemCopyMatching((__bridge CFDictionaryRef)query,
+        &item);
+
+    // If the fetch was successful, convert the result to a UUID
+    if (status == errSecSuccess && item != NULL) {
+        NSData *existingItem = (__bridge_transfer NSData *)item;
+        NSString *uuidString = [[NSString alloc]
+            initWithData:existingItem encoding:NSUTF8StringEncoding];
+        return [[NSUUID alloc] initWithUUIDString:uuidString];
+    }
+
+    // Return nil if the token doesn't exist or couldn't be collected
+    return nil;
+}
+
+// Save the primary dedupe token to the keychain
+BOOL setPrimaryDedupeToken(NSUUID *token, NSString *bundleId) {
+    NSData *tokenData = [[token UUIDString]
+        dataUsingEncoding:NSUTF8StringEncoding];
+    // Define the attributes for storing the token in the keychain
+    NSDictionary *query = @{
+        (__bridge id)kSecClass: (__bridge id)kSecClassGenericPassword,
+        (__bridge id)kSecAttrAccount: @"primary_dedupe_token",
+        (__bridge id)kSecAttrService: bundleId,
+        (__bridge id)kSecValueData: tokenData,
+        (__bridge id)kSecAttrAccessible:
+            (__bridge id)kSecAttrAccessibleAfterFirstUnlock
+    };
+
+    // Attempt to add the token to the keychain
+    OSStatus status = SecItemAdd((__bridge CFDictionaryRef)query, NULL);
+    // Return YES if the token was successfully added, NO otherwise
+    return status == errSecSuccess;
+}
+
+// Collect the existing primary dedupe token or create a new one if it doesn't exist
+NSUUID *getOrCreatePrimaryDedupeToken(void) {
+    // Try to collect an existing token
+    NSUUID *existingToken = getPrimaryDedupeToken(bundleId);
+    if (existingToken) {
+        return existingToken;
+    } else {
+        // If no token exists, generate a new one
+        NSUUID *newToken = [NSUUID UUID];
+        // Attempt to save the new token
+        if (setPrimaryDedupeToken(newToken, bundleId)) {
+            return newToken;
+        } else {
+            // If saving fails, throw an exception
+            @throw [NSException exceptionWithName:@"TokenSaveError"
+                reason:@"Failed to save primary dedupe token"
+                userInfo:nil];
+        }
+    }
+}
+
+// Usage example
+NSUUID *primaryDedupeToken = getOrCreatePrimaryDedupeToken();
+
+// Convert to lowercase string
+params[@"primary_dedupe_token"] = [[primaryDedupeToken UUIDString]
+    lowercaseString];
+```
+
+</Tab>
+</Tabs>
+
 #### [Google Play device IDs (Android)](google-play-device-ids-android)
 
 ##### Google Advertising ID
@@ -446,21 +698,23 @@ dependencies {
 
 4. Implement the code to collect Google Advertising ID and tracking status:
 
+      <Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
    ```kotlin
    import com.google.android.gms.ads.identifier.AdvertisingIdClient
    import kotlinx.coroutines.Dispatchers
    import kotlinx.coroutines.withContext
 
-   data class GPSAdInfo(val gpsAdid: String?, val isTrackingEnabled: Boolean)
-
-   suspend fun getGoogleAdvertisingIdInfo(context: Context):GPSAdInfo? {
+   suspend fun getGoogleAdvertisingIdInfo(
+      context: Context): AdvertisingIdClient.Info? {
       return withContext(Dispatchers.IO) {
          try {
-            val adInfo = AdvertisingIdClient.getAdvertisingIdInfo(context)
-            val gpsAdid = if (adInfo.isLimitAdTrackingEnabled) null else adInfo.idGPSAdInfo(gpsAdid, !adInfo.isLimitAdTrackingEnabled)
+             AdvertisingIdClient.getAdvertisingIdInfo(context)
          } catch (e: Exception) {
-            // Handle exceptions (for example: Google Play Services not available)
-            null
+             // Handle exceptions
+             // (e.g., Google Play Services not available)
+             null
          }
       }
    }
@@ -469,14 +723,21 @@ dependencies {
    // As getGoogleAdvertisingIdInfo is a suspending function,
    // it should be called from within a coroutine scope.
    lifecycleScope.launch {
-      val adInfo = getGoogleAdvertisingIdInfo(context) adInfo?.let { info ->
-         // Include Google Advertising ID if available
-         info.gpsAdid?.let { params["gps_adid"] = it }
-         // Include tracking status if available
-         info.isTrackingEnabled?.let { params["tracking_enabled"] = if (it) "1" else "0" }
+      val adInfo = getGoogleAdvertisingIdInfo(context)
+      adInfo?.let { info ->
+         // Include Google Advertising ID if tracking is not limited
+         if (!info.isLimitAdTrackingEnabled) {
+             params["gps_adid"] = info.id
+         }
+         // Set tracking status
+         params["tracking_enabled"] = if (info.isLimitAdTrackingEnabled)
+             "0" else "1"
       }
    }
    ```
+
+      </Tab>
+</Tabs>
 
 ##### App Set ID
 
@@ -521,6 +782,9 @@ dependencies {
 
 2. Implement the code to collect App Set ID:
 
+      <Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
    ```kotlin
    import com.google.android.gms.appset.AppSet
    import com.google.android.gms.appset.AppSetIdClient
@@ -536,7 +800,7 @@ dependencies {
                val taskResult = Tasks.await(client.appSetIdInfo)
                taskResult.id
          } catch (e: Exception) {
-               // Handle exceptions (for example: Google Play Services not available)
+               // Handle exceptions (e.g., Google Play Services not available)
                null
          }
       }
@@ -553,6 +817,9 @@ dependencies {
       }
    }
    ```
+
+      </Tab>
+</Tabs>
 
 ## Additional parameters
 
@@ -742,6 +1009,29 @@ params["callback_params"] = '{"user_id": "2696775149", "user_category": "high va
 </Tab>
 </Tabs>
 
+### Global partner parameters
+
+When integrating with certain partners, you may need to include "global partner parameters" in all your S2S requests. The Adjust backend passes these parameters in all callbacks it makes to partners. This is commonly used for analytics partners that require their own proprietary user ID in the callbacks they receive.
+
+Global partner parameters are represented as a JSON object containing string key-value pairs.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+params["partner_params"] = '{"analytics_user_id": "3913132433", "analytics_visitor_id": "nzFC9LKSqM"}'
+```
+
+</Tab>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+params["partner_params"] = '{"analytics_user_id": "3913132433", "analytics_visitor_id": "nzFC9LKSqM"}'
+```
+
+</Tab>
+</Tabs>
+
 ## Requests
 
 <Callout type="important">
@@ -750,32 +1040,9 @@ Ensure all parameter values are URL encoded before sending requests.
 
 </Callout>
 
-### Global partner parameters
-
-When integrating with certain partners, you may need to include "global partner parameters" in all your S2S requests. Adjust's servers pass these parameters in all callbacks it makes to partners. This is commonly used for analytics partners that require their own proprietary user ID in the callbacks they receive.
-
-Global partner parameters are represented as a JSON object containing string key-value pairs.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
-
-```swift
-params["partner_params"] = '{"analytics_user_id": "3913132433", "analytics_session_id": "nzFC9LKSqM"}'
-```
-
-</Tab>
-<Tab title="Kotlin" sync="kotlin">
-
-```kotlin
-params["partner_params"] = '{"analytics_user_id": "3913132433", "analytics_session_id": "nzFC9LKSqM"}'
-```
-
-</Tab>
-</Tabs>
-
 ### Session
 
-Sessions form the foundation of Adjust implementation and are the only required activity. A session typically represents an app open. The Adjust server logs successful session requests as follows:
+Sessions form the foundation of Adjust implementation and are the only required activity. A session typically represents an app open. The Adjust backend logs successful session requests as follows:
 
 -  It records the first session for a device as an "install" activity.
 -  It records subsequent sessions as "session" activities.
@@ -783,14 +1050,14 @@ Sessions form the foundation of Adjust implementation and are the only required 
 
     <Callout type="info">
 
-   For reference, the Adjust SDK sends a session request to Adjust server when either of the following occurs:
+   For reference, the Adjust SDK sends a session request to the Adjust backend when either of the following occurs:
 
    -  The user opens the app for the first time after install or reinstall.
    -  The user reopens the app after it has been closed or in the background for at least 30 minutes.
 
     </Callout>
 
-   When sending S2S session requests with the `created_at_unix` parameter, the Adjust server requires this value to be at least 20 minutes later than the `created_at_unix` time of the last successfully logged session.
+   When sending S2S session requests with the `created_at_unix` parameter, the Adjust backend requires this value to be at least 20 minutes later than the `created_at_unix` time of the last successfully logged session.
 
 <CodeBlock title="Request - cURL">
 
@@ -856,7 +1123,7 @@ HTTP Status Code: 200
 
 ### Attribution
 
-After sending a session request, you may need to send an attribution request to the Adjust server. The session response includes an `ask_in` parameter, indicating how many milliseconds to wait before making the attribution request.
+After sending a session request, you may need to send an attribution request to the Adjust backend. The session response includes an `ask_in` parameter, indicating how many milliseconds to wait before making the attribution request.
 
 Attribution requests serve three main purposes for developers:
 
@@ -925,7 +1192,7 @@ userDefaultsManager.firstSessionRecorded = true
 import android.content.Context
 import android.content.SharedPreferences
 
-/*_ Helps to manage app-wide persistent settings and states */
+/* Helps to manage app-wide persistent settings and states */
 class SharedPreferencesManager private constructor(context: Context) {
 private val sharedPreferences: SharedPreferences =
 context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -1026,7 +1293,7 @@ Below is an example attribution response that contains a deferred deep link.
 
 </CodeBlock>
 
-Please note that sometimes an attribution response may also contain an `ask_in` parameter. This means that the Adjust server hasn't yet completed the attribution process, and you should send another attribution request after the `ask_in` time elapses.
+Please note that sometimes an attribution response may also contain an `ask_in` parameter. This means that the Adjust backend hasn't yet completed the attribution process, and you should send another attribution request after the `ask_in` time elapses.
 
 If the attribution response contains a deferred deep link, here is a suggested approach to handle it:
 
@@ -1035,9 +1302,9 @@ If the attribution response contains a deferred deep link, here is a suggested a
 2. When ready to process the deep link, do the following:
    -  Retrieve and parse the stored link.
    -  Implement domain-agnostic handling to treat all links equivalently:
-      -  Adjust universal links (for example: `example.go.link`)
-      -  Other universal links (for example: `example.com`)
-      -  App scheme deep links (for example: `example://`)
+      -  Adjust universal links (e.g., `example.go.link`)
+      -  Other universal links (e.g., `example.com`)
+      -  App scheme deep links (e.g., `example://`)
    -  Extract relevant information (path, query parameters, fragment) regardless of link type.
    -  Navigate to the deep link screen based on the extracted information.
 
@@ -1048,6 +1315,12 @@ Example equivalence:
 -  `example://summer-clothes?promo=beach`
 
 These should all lead to the same destination in your app.
+
+<Callout type="important">
+
+The Adjust backend returns all deferred deep links in app scheme format (e.g., `example://`), regardless of their original format.
+
+</Callout>
 
 Here's a reference implementation demonstrating these concepts:
 
@@ -1121,30 +1394,37 @@ let userDefaultsManager = UserDefaultsManager.shared
 
 /// Handles the logic for processing and navigating to deep links
 class DeeplinkHandler {
-static func handleDeeplink(\_ incomingLink: URL, navigationController: UINavigationController?) {
-// Extract path, query items, and fragment from the link
-let components = URLComponents(url: incomingLink, resolvingAgainstBaseURL: true)
-let path = components?.path ?? ""
-let queryItems = components?.queryItems
-let fragment = components?.fragment
+    static func handleDeeplink(_ incomingLink: URL,
+        navigationController: UINavigationController?) {
+        // Extract path, query items, and fragment from the link
+        let components = URLComponents(url: incomingLink,
+            resolvingAgainstBaseURL: true)
+        let path = components?.path ?? ""
+        let queryItems = components?.queryItems
+        let fragment = components?.fragment
 
         // Implement navigation or other app-specific
         // logic based on the deep link components.
         DispatchQueue.main.async {
             if path == "/summer-clothes" {
-                let promoCode = queryItems?.first(where: { $0.name == "promo" })?.value
-                let summerClothesVC = SummerClothesViewController(promoCode: promoCode)
-                navigationController?.pushViewController(summerClothesVC, animated: true)
+                let promoCode = queryItems?.first(where: {
+                    $0.name == "promo"
+                })?.value
+                let summerClothesVC = SummerClothesViewController(
+                    promoCode: promoCode)
+                navigationController?.pushViewController(
+                    summerClothesVC, animated: true)
             }
         }
     }
 
 }
 
-// Usage example when receiving the attribution response:
+// Usage example when receiving the attribution response
 
-if let deeplink = attributionResponse["attribution"]["deeplink"] as? String {
-UserDefaultsManager.shared.setDeferredLink(deeplink)
+if let deeplink = attributionResponse["attribution"]["deeplink"]
+    as? String {
+    UserDefaultsManager.shared.setDeferredLink(deeplink)
 }
 
 ```
@@ -1159,7 +1439,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 
-/\*_ Helps to manage app-wide persistent settings and states _/
+/* Helps to manage app-wide persistent settings and states /
 class SharedPreferencesManager private constructor(context: Context) {
 private val sharedPreferences: SharedPreferences =
 context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -1208,7 +1488,7 @@ context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
 }
 
-/*_ Demonstrates how to handle onboarding and deferred deep links */
+/* Demonstrates how to handle onboarding and deferred deep links */
 class MainActivity : AppCompatActivity() {
 private lateinit var sharedPreferencesManager: SharedPreferencesManager
 
@@ -1338,7 +1618,7 @@ params["callback_params"] = '{"txn_id": "8837853376"}'
 
 #### Partner parameters
 
-When integrating with certain partners, you may need to include custom "partner parameters" in your event requests. The Adjust server will then include these parameters on the callbacks it makes to partners for relevant events. This is most commonly used to enable dynamic remarketing campaigns, typically for events like view_item, add_to_cart, and purchase.
+When integrating with certain partners, you may need to include custom "partner parameters" in your event requests. The Adjust backend will then include these parameters on the callbacks it makes to partners for relevant events. This is most commonly used to enable dynamic remarketing campaigns, typically for events like view_item, add_to_cart, and purchase.
 
 Partner parameters are represented as a JSON object containing string key-value pairs.
 
@@ -1410,3 +1690,5 @@ HTTP Status Code: 200
 ```
 
 </CodeBlock>
+import { Code } from "astro-expressive-code/components"
+import { link } from "fs"
