@@ -1,0 +1,87 @@
+---
+title: "数据删除 API"
+description: "使用数据删除 API 向 Adjust 发送删除请求。"
+slug: "zh/api/s2s-api/data-erasure-api"
+sidebar-position: 7
+---
+
+在处理个人数据方面，欧盟的《通用数据保护条例》\(GDPR\) 和全球类似的隐私法律 \(CCPA、LGPD 等\) 授予数据主体完全权利，其中包括删除权 \([参见 GDPR 第 17](https://gdpr.eu/article-17-right-to-be-forgotten/)条\)\( [1](https://help.adjust.com/zh/article/gdpr#ref-1) \)。作为数据处理方，Adjust 有义务支持您 \(数据控制方\) 处理来自应用用户的此类请求。
+
+您可以使用`gdpr_forget_device`终端将用户的删除请求发送至 Adjust。收到通知后：
+
+-  Adjust 将从内部系统和数据库中永久删除用户的所有历史个人数据；
+-  此外，Adjust 将不再通过 Adjust SDK 接收来自该用户/设备的数据。 \( [2](https://help.adjust.com/zh/article/gdpr#ref-2) \)
+
+设置您的服务器，以便在用户发送数据删除请求时向此 API 终端发送请求。要进一步了解个人数据删除请求，请参考[个人数据删除权文档](https://help.adjust.com/zh/article/gdpr)。
+
+<Callout type="important">
+
+此操作具有 **永久性** 。删除请求发送后，Adjust 将无法恢复与此设备关联的数据，也无法在未来接收该设备的请求。
+
+</Callout>
+<CodeBlock title="终端" highlight="/gdpr_forget_device">
+
+```http
+POST https://gdpr.adjust.com/gdpr_forget_device
+```
+
+</CodeBlock>
+
+## [发送删除请求](send-an-erasure-request)
+
+发送包含应用识别码和设备 ID 的 POST 请求，移除与设备关联的所有数据。
+
+<Callout type="note">
+
+删除请求仅适用于您在调用中指定的应用。其他应用的设备数据不会受影响。
+
+</Callout>
+<Table>
+
+| 参数             | 数据类型  | 位置 | 描述                                                                     |
+| ---------------- | --------- | ---- | ------------------------------------------------------------------------ |
+| `app_token`\*    | `String`  | 查询 | 控制面板上的 Adjust 应用识别码                                           |
+| `s2s`\*          | `Boolean` | 查询 | 调用是否通过服务器到服务器方式发送 \(S2S 调用\)。值必须为 `1` \(true\)   |
+| `device_token`\* | `String`  | 查询 | 需要 Adjust 遗忘的设备 ID。请查看[下方表格](#device-ids)，了解可用的值。 |
+
+</Table>
+
+### [设备标识符](device-identifiers)
+
+请务必在请求中包含设备标识符。可用的标识符如下：
+
+<Table>
+
+| 参数        | 描述                        | 示例                                   |
+| ----------- | --------------------------- | -------------------------------------- |
+| `idfa`      | 适用于广告主的 iOS ID       | `8C6CBCOD-5F43-4765-A6E6-84DFF3D24707` |
+| `idfv`      | 适用于供应商的 iOS ID       | `CCB300A0-DE1B-4D48-BC7E-599E453B8DD4` |
+| `gps_adid`  | Google Play 应用商店广告 ID | `38400000-8cf0-11bd-b23e-10b96e40000d` |
+| `fire_adid` | Fire OS 广告 ID             | `63c5519b-7e66-7ee6-aa5d-3b290743811f` |
+| `win_adid`  | Windows 广告 ID             | `107e8ea14329d4a2194ebbb6dc0c0fd7`     |
+| `adid`      | Adjust 设备 ID              | `18546f6171f67e29d1cb983322ad1329`     |
+
+</Table>
+
+## [示例](example)
+
+<CodeBlock title="cURL" highlight="app_token=kwrqhymtnsr2&idfa=9C5CBC1D-4F42-4764-A5E6-84DAF3D24707">
+
+```console
+$ curl -X POST "https://gdpr.adjust.com/gdpr_forget_device?s2s=1&app_token=kwrqhymtnsr2&idfa=9C5CBC1D-4F42-4764-A5E6-84DAF3D24707"
+```
+
+</CodeBlock>
+
+### [响应](responses)
+
+<Table>
+
+| 状态代码 | 含义                           | 描述                                                                                                                                                  |
+| -------- | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `200`    | OK                             | 已收到并处理请求                                                                                                                                      |
+| `400`    | 错误请求 \(Bad request\)       | 格式或识别码无效。请仔细检查，确保在请求中包含了必要的参数。如需帮助，请联系您的账户经理或发送邮件至[support@adjust.com](mailto:support@adjust.com)。 |
+| `429`    | 请求过多 \(Too many requests\) | 该终端的限制为每分钟 10 次请求，一旦超过此限制，则停止响应避免滥用。请晚些再次尝试发送请求。                                                          |
+| `451`    | 由于法规原因不可用             |                                                                                                                                                       |
+
+</Table>
