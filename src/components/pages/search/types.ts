@@ -5,6 +5,12 @@ export interface TypesenseKeys {
   preset: string;
 }
 
+export interface AlgoliaKeys {
+  apiKey: string;
+  indexName: string;
+  appId: string;
+}
+
 export type Hit<Type> = {
   __position: number;
   __queryID?: string;

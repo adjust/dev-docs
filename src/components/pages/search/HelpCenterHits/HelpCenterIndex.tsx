@@ -1,16 +1,17 @@
 import { Configure, InstantSearch } from "react-instantsearch";
 import { useEffect, useState, type FC } from "react";
+import algoliasearch from "algoliasearch";
 
-import { getSearchParams, getTypesenseClient } from "../utils";
+import { getSearchParams } from "../utils";
 import HelpCenterHits from "./HelpCenterHits";
 
 import type { HelpCenterIndexProps } from "./types";
 
-const HelpCenterIndex: FC<HelpCenterIndexProps> = ({ typesenseKeys, lang }) => {
+const HelpCenterIndex: FC<HelpCenterIndexProps> = ({ algoliaKeys, lang }) => {
   const { query } = getSearchParams();
   const [searchState, setSearchState] = useState({ query });
 
-  const typesenseClient = getTypesenseClient(typesenseKeys);
+  const searchClient = algoliasearch(algoliaKeys.appId, algoliaKeys.apiKey);
 
   useEffect(() => {
     const handleSearchChange = () => {
@@ -30,16 +31,16 @@ const HelpCenterIndex: FC<HelpCenterIndexProps> = ({ typesenseKeys, lang }) => {
 
   return (
     <InstantSearch
-      indexName={typesenseKeys.indexName}
-      searchClient={typesenseClient}
+      indexName={algoliaKeys.indexName}
+      searchClient={searchClient}
       future={{ preserveSharedStateOnUnmount: false }}
     >
       <Configure
         query={searchState.query}
         filters={`locale:${lang}`}
-        index={typesenseKeys.indexName}
+        index={algoliaKeys.indexName}
         hitsPerPage={6}
-        page={0}
+        page={1}
       />
       <HelpCenterHits lang={lang} />
     </InstantSearch>
