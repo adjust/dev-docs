@@ -97,6 +97,15 @@ In SDK v4, the initialization method is `Adjust.onCreate(AdjustConfig)`. This ha
 </Tab>
 </Tabs>
 
+### [Signature setup](signature-setup)
+
+SDK v5 includes the [SDK signature library](https://help.adjust.com/en/article/sdk-signature). You can test this by following the testing steps in the [Signature library integration guide](/en/sdk/android/integrations/signature-library).
+
+Signature protection is inactive by default. To enable it, you need to:
+
+1. [Enforce signature validation](https://help.adjust.com/en/article/sdk-signature#enforce-signature-validation).
+2. [Provide your app's SHA-1 fingerprints](https://help.adjust.com/en/article/sdk-signature#manage-your-certificate-fingerprints) prior to testing.
+
 ### [Configuration](configuration)
 
 This section covers changes to SDK configuration.
@@ -494,7 +503,7 @@ This section covers changes to deep linking in SDK v5.
 
 #### [Reattribution using deep links](reattribution-using-deep-links)
 
-<MinorVersion changed="v5">
+<MinorVersion changed="v5.0.0-beta2">
 
 The method used for passing deep link data to the Adjust SDK has been renamed.
 
@@ -503,16 +512,14 @@ The method used for passing deep link data to the Adjust SDK has been renamed.
 -  v4: `Adjust.appWillOpenUrl()`.
 -  v5: `Adjust.processDeeplink()`.
 
-Both methods accept the same arguments.
-
 <Tabs>
 <Tab title="Kotlin" sync="kotlin">
 
 <CodeBlock useDiffSyntax>
 
 ```kotlin
-- Adjust.appWillOpenUrl(data, applicationContext) //v4
-+ Adjust.processDeeplink(data, applicationContext) //v5
+- Adjust.appWillOpenUrl(url, applicationContext) //v4
++ Adjust.processDeeplink(adjustDeepLink, applicationContext) //v5
 ```
 
 </CodeBlock>
@@ -523,8 +530,8 @@ Both methods accept the same arguments.
 <CodeBlock useDiffSyntax>
 
 ```java
-- Adjust.appWillOpenUrl(data, getApplicationContext()); //v4
-+ Adjust.processDeeplink(data, getApplicationContext()); //v5
+- Adjust.appWillOpenUrl(url, getApplicationContext()); //v4
++ Adjust.processDeeplink(adjustDeepLink, getApplicationContext()); //v5
 ```
 
 </CodeBlock>
@@ -669,22 +676,22 @@ adjustConfig.setPlayStoreKidsAppEnabled(true);
 </Tab>
 </Tabs>
 
-In SDK v5, this method is available in the `Adjust` class. This means that the setting can be changed at any time by calling `Adjust.enablePlayStoreKidsApp()` to mark the app as a Play Store Kids app or `disablePlayStoreKidsApp()` to unmark the app as a Play Store Kids app.
+In SDK v5, this method is available in the `Adjust` class. This means that the setting can be changed at any time by calling `Adjust.enablePlayStoreKidsCompliance()` to mark the app as a Play Store Kids app or `Adjust.disablePlayStoreKidsCompliance()` to unmark the app as a Play Store Kids app.
 
 <Tabs>
 <Tab title="Kotlin" sync="kotlin">
 
 ```kotlin
-Adjust.enablePlayStoreKidsApp(applicationContext)
-Adjust.disablePlayStoreKidsApp(applicationContext)
+Adjust.enablePlayStoreKidsCompliance(applicationContext)
+Adjust.disablePlayStoreKidsCompliance(applicationContext)
 ```
 
 </Tab>
 <Tab title="Java" sync="java">
 
 ```java
-Adjust.enablePlayStoreKidsApp(getApplicationContext());
-Adjust.disablePlayStoreKidsApp(getApplicationContext());
+Adjust.enablePlayStoreKidsCompliance(getApplicationContext());
+Adjust.disablePlayStoreKidsCompliance(getApplicationContext());
 ```
 
 </Tab>
@@ -1165,6 +1172,16 @@ In SDK v4, all device ID getter methods run synchronously. In SDK v5, these meth
 <Tabs>
 <Tab title="Kotlin" sync="kotlin">
 
+<CodeBlock title="Google Play ADID getter">
+
+```kotlin
+Adjust.getGoogleAdId(this, object : OnGoogleAdIdReadListener {
+   override fun onGoogleAdIdRead(googleAdId: String) {}
+})
+```
+
+</CodeBlock>
+
 <CodeBlock title="ADID getter">
 
 ```kotlin
@@ -1201,7 +1218,6 @@ AdjustOaid.getOaid(applicationContext, object : OnOaidReadListener() {
 ```kotlin
 Adjust.getAmazonAdId(applicationContext, object : OnAmazonAdIdReadListener {
       override fun onAmazonAdIdRead(amazonAdId: String) {}
-      override fun onFail(message: String) {}
    })
 ```
 
@@ -1229,6 +1245,17 @@ Adjust.isEnabled(applicationContext) { isEnabled ->
 
 </Tab>
 <Tab title="Java" sync="java">
+
+<CodeBlock title="Google Play ADID getter">
+
+```java
+Adjust.getGoogleAdId(this, new OnGoogleAdIdReadListener() {
+    @Override
+    public void onGoogleAdIdRead(String googleAdId) {}
+});
+```
+
+</CodeBlock>
 
 <CodeBlock title="ADID getter">
 
@@ -1277,10 +1304,6 @@ AdjustOaid.getOaid(getApplicationContext(), new OnOaidReadListener() {
 Adjust.getAmazonAdId(getApplicationContext(), new OnAmazonAdIdReadListener() {
     @Override
     public void onAmazonAdIdRead(String amazonAdId) {
-    }
-
-    @Override
-    public void onFail(String message) {
     }
 });
 ```
