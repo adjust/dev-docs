@@ -9,7 +9,7 @@ const DevHubSearchResultCard: FC<DevHubSearchResultCardProps> = ({ hit }) => {
   // need to manually add an ellipsis cause Typesense doesn`t support this in the config
   const updateHitSnippet = (hit: Hit<any>) => {
     if (hit._snippetResult.content.matchedWords?.length) {
-      hit._snippetResult.content.value = `...${hit._snippetResult.content.value}...`;
+      hit._snippetResult.content.value = `... ${hit._snippetResult.content.value} ...`;
     }
     return hit;
   };
