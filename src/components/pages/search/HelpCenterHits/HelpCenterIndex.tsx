@@ -1,6 +1,6 @@
-import algoliasearch from "algoliasearch";
 import { Configure, InstantSearch } from "react-instantsearch";
 import { useEffect, useState, type FC } from "react";
+import algoliasearch from "algoliasearch";
 
 import { getSearchParams } from "../utils";
 import HelpCenterHits from "./HelpCenterHits";
@@ -10,6 +10,7 @@ import type { HelpCenterIndexProps } from "./types";
 const HelpCenterIndex: FC<HelpCenterIndexProps> = ({ algoliaKeys, lang }) => {
   const { query } = getSearchParams();
   const [searchState, setSearchState] = useState({ query });
+
   const searchClient = algoliasearch(algoliaKeys.appId, algoliaKeys.apiKey);
 
   useEffect(() => {

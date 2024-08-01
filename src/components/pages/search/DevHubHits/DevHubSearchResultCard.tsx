@@ -1,10 +1,21 @@
 import type { FC } from "react";
 import classNames from "classnames";
 import { Snippet } from "react-instantsearch";
+import type { Hit } from "@algolia/client-search";
 
 import type { DevHubSearchResultCardProps, HitBreadcrumb } from "./types";
 
 const DevHubSearchResultCard: FC<DevHubSearchResultCardProps> = ({ hit }) => {
+  // need to manually add an ellipsis cause Typesense doesn`t support this in the config
+  const updateHitSnippet = (hit: Hit<any>) => {
+    if (hit._snippetResult.content.matchedWords?.length) {
+      hit._snippetResult.content.value = `... ${hit._snippetResult.content.value} ...`;
+    }
+    return hit;
+  };
+
+  const updatedHit = updateHitSnippet(hit);
+
   return (
     <div className="max-w-[956px]">
       <div aria-label="search-result-breadcrumbs">
@@ -35,7 +46,17 @@ const DevHubSearchResultCard: FC<DevHubSearchResultCardProps> = ({ hit }) => {
           {hit.title}
         </h5>
         <p className="text-heading-5 h-[40px] text-ellipsis overflow-hidden text-search-primary">
-          <Snippet hit={hit} attribute="content" />
+          <Snippet
+            hit={updatedHit}
+            attribute="content"
+            className="overflow-hidden text-ellipsis box"
+            style={{
+              WebkitBoxOrient: "vertical",
+              MozBoxOrient: "vertical",
+              WebkitLineClamp: 2,
+              display: "-webkit-box",
+            }}
+          />
         </p>
       </a>
     </div>
