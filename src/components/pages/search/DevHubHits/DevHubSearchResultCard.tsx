@@ -46,7 +46,17 @@ const DevHubSearchResultCard: FC<DevHubSearchResultCardProps> = ({ hit }) => {
           {hit.title}
         </h5>
         <p className="text-heading-5 h-[40px] text-ellipsis overflow-hidden text-search-primary">
-          <Snippet hit={updatedHit} attribute="content" />
+          <Snippet
+            hit={updatedHit}
+            attribute="content"
+            className="overflow-hidden text-ellipsis box"
+            style={{
+              WebkitBoxOrient: "vertical",
+              MozBoxOrient: "vertical",
+              WebkitLineClamp: 2,
+              display: "-webkit-box",
+            }}
+          />
         </p>
       </a>
     </div>
