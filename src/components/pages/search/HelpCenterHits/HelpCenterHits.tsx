@@ -8,12 +8,12 @@ import SearchNoResults from "../SearchNoResults";
 
 const HelpCenterHits: FC<{ lang: string }> = ({ lang }) => {
   const t = useTranslations(lang as keyof Locales);
-  const { hits } = useHits();
+  const { items } = useHits();
 
   return (
     <div className="w-full bg-[#F4F7FD]">
       <div className="gap-x-[77px] gap-y-[43px] justify-center flex flex-wrap -mx-2">
-        {hits.map((hit) => (
+        {items.map((hit) => (
           <HelpCenterResultCard
             className="xs:w-full md:w-[calc(33%-48px)] px-2 py-2"
             key={hit.objectID}
@@ -21,7 +21,7 @@ const HelpCenterHits: FC<{ lang: string }> = ({ lang }) => {
           />
         ))}
       </div>
-      {!hits.length && (
+      {!items.length && (
         <SearchNoResults
           lang={lang}
           bodyText={t("search.help-center-no-match")}

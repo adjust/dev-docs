@@ -9,7 +9,6 @@ import { getSearchParams, setSearchParams } from "./utils";
 
 interface PaginationProps {
   canRefine: boolean;
-  currentRefinement: number;
   lang: string;
 }
 
@@ -26,7 +25,7 @@ const Pagination: FC<PaginationProps> = ({ canRefine, lang }) => {
   const { page } = getSearchParams();
   const isPaginaton = results!.nbHits > DEFAULT_HITS_PER_PAGE;
 
-  const totalPages = results!.nbPages - 1;
+  const totalPages = results!.nbPages;
 
   const isFirstPage = page === 1;
   const iconLeftColor = isFirstPage ? "#808080" : "#000";

@@ -1,7 +1,5 @@
+import type { AlgoliaKeys, Hit } from "./../types";
 import type { Locales } from "@i18n/locales";
-import type { Hit } from "@algolia/client-search";
-
-import type { AlgoliaKeys } from "../types";
 
 export interface HelpCenterIndexProps {
   algoliaKeys: AlgoliaKeys;

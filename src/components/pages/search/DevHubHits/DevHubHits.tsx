@@ -7,12 +7,12 @@ import type { Locales } from "@i18n/locales";
 
 const DevHubHits: FC<{ lang: string }> = ({ lang }) => {
   const t = useTranslations(lang as keyof Locales);
-  const { hits } = useHits();
+  const { items } = useHits();
 
   return (
     <div className="w-full">
       <div className="gap-x-[77px] gap-y-[43px] justify-start flex flex-col -mx-2">
-        {hits?.map((hit) => (
+        {items?.map((hit) => (
           <DevHubSearchResultCard
             className="xs:w-full md:w-[calc(33%-48px)] px-2 py-2"
             key={hit.objectID}
@@ -20,7 +20,7 @@ const DevHubHits: FC<{ lang: string }> = ({ lang }) => {
           />
         ))}
       </div>
-      {!hits.length && (
+      {!items.length && (
         <SearchNoResults bodyText={t("search.no-match")} lang={lang} />
       )}
     </div>

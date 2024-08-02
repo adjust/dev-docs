@@ -1,4 +1,7 @@
+import TypesenseInstantSearchAdapter from "typesense-instantsearch-adapter";
+
 import type { Locales } from "@i18n/locales";
+import type { TypesenseKeys } from "./types";
 
 export const getSearchParams = () => {
   const searchParams = new URLSearchParams(document.location.search);
@@ -57,8 +60,28 @@ export const getDevHubFilters = (lang: keyof Locales) => {
   }
 
   if (!categoryFilter || !platformFilter) {
-    return `lang:${lang} AND ${categoryFilter} ${platformFilter}`;
+    return `lang:${lang} && ${categoryFilter} ${platformFilter}`;
   }
 
-  return `lang:${lang} AND ${categoryFilter} AND ${platformFilter}`;
+  return `lang:${lang} && ${categoryFilter} && ${platformFilter}`;
+};
+
+export const getTypesenseClient = (typesenseKeys: TypesenseKeys) => {
+  const typesenseAdapter = new TypesenseInstantSearchAdapter({
+    server: {
+      apiKey: typesenseKeys.apiKey, // search-only client key
+      nodes: [
+        {
+          host: typesenseKeys.host, // typesense cloud link
+          port: 443,
+          protocol: "https",
+        },
+      ],
+    },
+    additionalSearchParameters: {
+      preset: typesenseKeys.preset,
+    },
+  });
+
+  return typesenseAdapter.searchClient;
 };
