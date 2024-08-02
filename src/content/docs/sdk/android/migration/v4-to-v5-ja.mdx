@@ -1,106 +1,78 @@
 ---
 title: "SDK v5移行ガイド"
 description: "SDK v4からSDK v5にアップグレードするには、このガイドの手順に従ってください"
-slug: "ja/sdk/android/migration/v4-to-v5"
+slug: "en/sdk/android/migration/v4-to-v5"
 sidebar-position: 1
 ---
-
-<Callout type="important" title="オープンベータ版">
-
-SDK v5はオープンベータ版です。全ての機能は変更される可能性があります。
-
-</Callout>
-
-## [事前準備](before-you-begin)
+[事前準備](before-you-begin)
+------------------------
 
 SDK v5にアップデートする前に、以下を行ってください。
 
-1. SDK v5は[SDKシグネチャーの検証](https://help.adjust.com/ja/article/sdk-signature)をネイティブにサポートします。現在SDKシグネチャーライブラリを使用している場合は、まずこれをアンインストールしてください。
+1. SDK v5は[SDKシグネチャーの検証](https://help.adjust.com/en/article/sdk-signature)をネイティブにサポートします。現在SDKシグネチャーライブラリを使用している場合は、まずこれをアンインストールしてください。
 2. アプリがバージョン[**21**](https://developer.android.com/tools/releases/platforms#5.0)以前のAPIバージョンを対象にしている場合、SDK v5を使用する前にアプリをアップデートする必要があります。
 
-## [ベータ版のSDKをインストールする](install-the-sdk)
+[ベータ版のSDKをインストールする](install-the-sdk)
+------------------------------------
 
 SDK v5の使用を開始するには、プロジェクトにdependencyとしてSDK v5を追加する必要があります。これを行うには、以下の手順に従ってください。
 
-1. ベータリポジトリを`build.gradle`ファイルに追加します。
+1. 現在`build.gradle`ファイルにある古いバージョンの SDK を全て削除します。
 
-   <CodeBlock title="build.gradle">
+2. `build.gradle`ファイルに以下のdependencyを追加します：
 
-   ```groovy
-   repositories {
-      maven {
-         url "https://oss.sonatype.org/content/repositories/snapshots/"
-      }
-   }
-   ```
-
-   </CodeBlock>
-
-2. 現在`build.gradle`ファイルにある古いバージョンの SDK を全て削除します。
-
-3. `build.gradle`ファイルに以下のdependencyを追加します：
-
-   <CodeBlock title="build.gradle">
+   <codeblock title="build.gradle"> 
 
    ```groovy
    dependencies {
-      implementation 'com.adjust.sdk:adjust-android:5.0.0-SNAPSHOT'
+      implementation 'com.adjust.sdk:adjust-android:5.0.0'
       implementation 'com.android.installreferrer:installreferrer:2.2'
       // Add the following if you are using the Adjust SDK inside web views on your app
-      implementation 'com.adjust.sdk:adjust-android-webbridge:5.0.0-SNAPSHOT'
+      implementation 'com.adjust.sdk:adjust-android-webbridge:5.0.0'
    }
    ```
 
-   </CodeBlock>
+   </CodeBlock> 
 
-## [変更内容](changes)
+[変更内容](changes)
+---------------
 
-<Callout type="warning">
+<callout type="warning"> 
 
 SDK v5はメジャーバージョンアップです。つまり、コードを更新しなければならないような大きな変更があるということです。
-
-</Callout>
+</Callout> 
 
 v5 SDKをインストールしたら、新しいAPIを使用するために既存のAdjustコードを更新する必要があります。
 
 ### [初期化メソッド](init-method)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
 SDK v4では、初期化メソッドは`Adjust.onCreate(AdjustConfig)`です。SDK v5では`Adjust.initSdk(AdjustConfig)`に変更されています。
-
-</MinorVersion>
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
-<CodeBlock useDiffSyntax>
+</MinorVersion> <tabs> <tab title="Kotlin" sync="kotlin"> <codeblock useDiffSyntax> 
 
 ```kotlin
 - Adjust.onCreate(adjustConfig) // v4
 + Adjust.initSdk(adjustConfig) // v5
 ```
 
-</CodeBlock>
-</Tab>
-<Tab title="Java" sync="java">
-<CodeBlock useDiffSyntax>
+</CodeBlock> </Tab> <tab title="Java" sync="java"> <codeblock useDiffSyntax> 
 
 ```java
 - Adjust.onCreate(adjustConfig); // v4
 + Adjust.initSdk(adjustConfig); // v5
 ```
 
-</CodeBlock>
-</Tab>
-</Tabs>
+</CodeBlock> </Tab> </Tabs> 
 
-### [Signature setup](signature-setup)
+### [シグネチャー設定](signature-setup)
 
-SDK v5 includes the [SDK signature library](https://help.adjust.com/ja/article/sdk-signature). You can test this by following the testing steps in the [Signature library integration guide](/en/sdk/android/integrations/signature-library).
+SDK v5には、 [SDKシグネチャーライブラリ](https://help.adjust.com/en/article/sdk-signature)が含まれています。これは、[シグネチャーライブラリ連携ガイド](/en/sdk/android/integrations/signature-library)のテスト手順に従ってテストすることができます。
 
-Signature protection is inactive by default. To enable it, you need to:
+シグネチャーの保護機能は、デフォルトで非アクティブになっています。これを有効化するには、以下の手順に従ってください
 
-1. [Enforce signature validation](https://help.adjust.com/ja/article/sdk-signature#enforce-signature-validation).
-2. [Provide your app's SHA\-1 fingerprints](https://help.adjust.com/ja/article/sdk-signature#manage-your-certificate-fingerprints) prior to testing.
+1. [シグネチャーの検証を有効化します](https://help.adjust.com/en/article/sdk-signature#enforce-signature-validation)。
+2. テスト前に[アプリのSHA\-1フィンガープリントを提供してください](https://help.adjust.com/en/article/sdk-signature#manage-your-certificate-fingerprints)。
 
 ### [設定](configuration)
 
@@ -108,209 +80,174 @@ Signature protection is inactive by default. To enable it, you need to:
 
 #### [SDKを無効化・有効化する](disable-enable-sdk)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
 SDK v4では、`boolean`値で`Adjust.setEnabled()`を呼び出すことで、SDKを有効化・無効化することができます。
+</MinorVersion> 
 
-</MinorVersion>
+* SDKを無効化するには、`Adjust.setEnabled(false)`を呼び出します。
+* SDKを有効化するには、`Adjust.setEnabled(true)`を呼び出します。
 
--  SDKを無効化するには、`Adjust.setEnabled(false)`を呼び出します。
--  SDKを有効化するには、`Adjust.setEnabled(true)`を呼び出します。
-
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+<tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 Adjust.setEnabled(false) // disable SDK
 Adjust.setEnabled(true) // enable SDK
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 Adjust.setEnabled(false); // disable SDK
 Adjust.setEnabled(true); // enable SDK
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 SDK v5では、わかりやすくするためにこの機能は別々のコマンドに分割されています。
 
--  SDKを無効化するには、`Adjust.disable()`を呼び出します。
--  SDKを有効化するには、`Adjust.enable()`を呼び出します。
+* SDKを無効化するには、`Adjust.disable()`を呼び出します。
+* SDKを有効化するには、`Adjust.enable()`を呼び出します。
 
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+<tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 Adjust.disable() // disable SDK
 Adjust.enable() // enable SDK
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 Adjust.disable(); // disable SDK
 Adjust.enable(); // enable SDK
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 #### [オフラインモード](offline-mode)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
 SDK v4では、`boolean`値で`Adjust.setOfflineMode()`を呼び出すことで、SDKでオフラインモードを有効化・無効化することができます。
-
-</MinorVersion>
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+</MinorVersion> <tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 Adjust.setOfflineMode(false) // put SDK in offline mode
 Adjust.setOfflineMode(true) // put SDK back in online mode
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 Adjust.setOfflineMode(false); // put SDK in offline mode
 Adjust.setOfflineMode(true); // put SDK back in online mode
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 SDK v5では、わかりやすくするためにこの機能は別々のコマンドに分割されています。
 
--  SDKをオフラインモードに設定するには、`Adjust.switchToOfflineMode()`を呼び出します。
--  SDKをオンラインモードに戻すには、`Adjust.switchBackToOnlineMode()`を呼び出します。
+* SDKをオフラインモードに設定するには、`Adjust.switchToOfflineMode()`を呼び出します。
+* SDKをオンラインモードに戻すには、`Adjust.switchBackToOnlineMode()`を呼び出します。
 
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+<tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 Adjust.switchToOfflineMode() // put SDK in offline mode
 Adjust.switchBackToOnlineMode() // put SDK back in online mode
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 Adjust.switchToOfflineMode(); // put SDK in offline mode
 Adjust.switchBackToOnlineMode(); // put SDK back in online mode
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 #### [イベントバッファリング](event-buffering)
 
-<MinorVersion removed="v5">
+<minorversion removed="v5"> 
 
 SDK v4はイベントバッファリングをサポートしています。この機能は、リクエストイベント、広告収益、Pushトークン、その他の情報をローカルバッファに保存し、後日送信します。
-
-</MinorVersion>
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+</MinorVersion> <tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 adjustConfig.setEventBufferingEnabled(true)
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 adjustConfig.setEventBufferingEnabled(true);
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 この設定はSDK v5では廃止されています。
 
 #### [カスタムユーザーエージェント文字列](custom-user-agent)
 
-<MinorVersion removed="v5">
+<minorversion removed="v5"> 
 
 SDK v4は、ユーザーエージェント文字列で`AdjustConfig.setUserAgent()`を呼び出すことで、カスタムユーザーエージェントの設定をサポートしています。
-
-</MinorVersion>
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+</MinorVersion> <tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 adjustConfig.setUserAgent("user_agent_value")
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 adjustConfig.setUserAgent("user_agent_value");
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 この設定はSDK v5では廃止されています。
 
 #### [デバイスが認識されているかどうかを設定する](set-device-known)
 
-<MinorVersion removed="v5">
+<minorversion removed="v5"> 
 
 SDK v4では、`AdjustConfig.setDeviceKnown()`メソッドを呼び出して、デバイスが既知かどうかをSDKに手動で通知することができます。
-
-</MinorVersion>
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+</MinorVersion> <tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 adjustConfig.setDeviceKnown(true)
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 adjustConfig.setDeviceKnown(true);
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 この設定はSDK v5では廃止されています。
 
 #### [SDKの起動を遅らせる](delay-sdk-start)
 
-<MinorVersion removed="v5">
+<minorversion removed="v5"> 
 
 SDK v4では、`AdjustConfig.setDelayStart()`を最大 **120秒** 遅延させて呼び出すことで、SDKの開始を遅延させることができます。
-
-</MinorVersion>
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+</MinorVersion> <tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 adjustConfig.setDelayStart(delay)
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 adjustConfig.setDelayStart(delay);
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 この設定はSDK v5では廃止されています。
 
@@ -320,24 +257,19 @@ adjustConfig.setDelayStart(delay);
 
 #### [セッション情報を送信する](send-session-info)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
 SDK v4では、`ActivityLifecycleCallbacks`を実装し、アクティビティ再開時と一時停止時にそれぞれ`Adjust.onResume()`と`Adjust.onPause()`を呼び出すことで、アクティビティライフサイクルのコールバックを登録する必要があります。
-
-</MinorVersion>
+</MinorVersion> 
 
 SDK v5では、`ActivityLifecycleCallbacks`機能はSDKによって処理されます。コードから全てのカスタム アクティビティ ライフサイクル コールバックを削除してください。
 
 #### [セッションコールバックパラメーター](callback-params)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
 SDK v5では、セッション コールバック パラメーターはグローバル コールバック パラメーターに名称変更されました。
-
-</MinorVersion>
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
-<CodeBlock useDiffSyntax>
+</MinorVersion> <tabs> <tab title="Kotlin" sync="kotlin"> <codeblock useDiffSyntax> 
 
 ```kotlin
 - Adjust.addSessionCallbackParameter("foo", "bar")
@@ -349,10 +281,7 @@ SDK v5では、セッション コールバック パラメーターはグロー
 + Adjust.removeGlobalCallbackParameters()
 ```
 
-</CodeBlock>
-</Tab>
-<Tab title="Java" sync="java">
-<CodeBlock useDiffSyntax>
+</CodeBlock> </Tab> <tab title="Java" sync="java"> <codeblock useDiffSyntax> 
 
 ```java
 - Adjust.addSessionCallbackParameter("foo", "bar");
@@ -364,20 +293,14 @@ SDK v5では、セッション コールバック パラメーターはグロー
 + Adjust.removeGlobalCallbackParameters();
 ```
 
-</CodeBlock>
-</Tab>
-</Tabs>
+</CodeBlock> </Tab> </Tabs> 
 
 #### [セッションパートナーパラメーター](partner-params)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
 SDK v5では、セッション パートナー パラメーターはグローバル パートナー パラメーターに名称変更されました。
-
-</MinorVersion>
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
-<CodeBlock useDiffSyntax>
+</MinorVersion> <tabs> <tab title="Kotlin" sync="kotlin"> <codeblock useDiffSyntax> 
 
 ```kotlin
 - Adjust.addSessionPartnerParameter("foo", "bar")
@@ -389,10 +312,7 @@ SDK v5では、セッション パートナー パラメーターはグローバ
 + Adjust.removeGlobalPartnerParameters()
 ```
 
-</CodeBlock>
-</Tab>
-<Tab title="Java" sync="java">
-<CodeBlock useDiffSyntax>
+</CodeBlock> </Tab> <tab title="Java" sync="java"> <codeblock useDiffSyntax> 
 
 ```java
 - Adjust.addSessionPartnerParameter("foo", "bar");
@@ -404,19 +324,14 @@ SDK v5では、セッション パートナー パラメーターはグローバ
 + Adjust.removeGlobalPartnerParameters();
 ```
 
-</CodeBlock>
-</Tab>
-</Tabs>
+</CodeBlock> </Tab> </Tabs> 
 
 #### [イベントの重複排除](event-deduplication)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
 SDK v4では、イベント重複排除はイベント`order ID`と組み合わされ、最大10個のユニークIDに制限されています。
-
-</MinorVersion>
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+</MinorVersion> <tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 val event = AdjustEvent("event_token")
@@ -424,8 +339,7 @@ event.setOrderId("deduplication_id")
 Adjust.trackEvent(event)
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 AdjustEvent event = new AdjustEvent("event_token");
@@ -433,13 +347,10 @@ event.setOrderId("deduplication_id");
 Adjust.trackEvent(event);
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 SDK v5では、この機能は`order ID`から切り離され、イベント重複排除のために`deduplicationId`という新しいIDフィールドが追加されました。ユーザーは、重複イベントを識別するためにリストに追加可能な`deduplicationId`の数にカスタム制限を設定できます。デフォルトでは、制限は **10** に設定されています。
-
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+<tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 val adjustConfig = AdjustConfig(this, appToken, environment)
@@ -452,8 +363,7 @@ event.setDeduplicationId("deduplication_id")
 Adjust.trackEvent(event)
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 AdjustConfig adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -466,16 +376,14 @@ event.setDeduplicationId("deduplication_id");
 Adjust.trackEvent(event);
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 #### [AdjustAttributionクラス](attribution-class)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
 SDK v4では、`AdjustAttribution`コールは`adid`というプロパティを持ちます。SDK v5 では、`AdjustAttribution` クラスから`adid`プロパティが削除されました。デバイスのADIDを取得するには、[`getAdid()`ゲッターメソッド](#device-id-getters)を使用してください。
-
-</MinorVersion>
+</MinorVersion> 
 
 ### [ディープリンク](deep-links)
 
@@ -483,47 +391,36 @@ SDK v4では、`AdjustAttribution`コールは`adid`というプロパティを�
 
 #### [ディープリンクを使用したリアトリビューション](reattribution-using-deep-links)
 
-<MinorVersion changed="v5.0.0-beta2">
+<minorversion changed="v5.0.0-beta2"> 
 
 Adjust SDKにディープリンクデータをパスするためのメソッドの名前が変更されました。
+</MinorVersion> 
 
-</MinorVersion>
+* v4：`Adjust.appWillOpenUrl()`
+* v5：`Adjust.processDeeplink()`
 
--  v4：`Adjust.appWillOpenUrl()`
--  v5：`Adjust.processDeeplink()`
-
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
-<CodeBlock useDiffSyntax>
+<tabs> <tab title="Kotlin" sync="kotlin"> <codeblock useDiffSyntax> 
 
 ```kotlin
 - Adjust.appWillOpenUrl(url, applicationContext) //v4
 + Adjust.processDeeplink(adjustDeepLink, applicationContext) //v5
 ```
 
-</CodeBlock>
-</Tab>
-<Tab title="Java" sync="java">
-<CodeBlock useDiffSyntax>
+</CodeBlock> </Tab> <tab title="Java" sync="java"> <codeblock useDiffSyntax> 
 
 ```java
 - Adjust.appWillOpenUrl(url, getApplicationContext()); //v4
 + Adjust.processDeeplink(adjustDeepLink, getApplicationContext()); //v5
 ```
 
-</CodeBlock>
-</Tab>
-</Tabs>
+</CodeBlock> </Tab> </Tabs> 
 
 #### [ディファードディープリンクのコールバック](deferred-callback)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
 SDK v4では、`setOnDeeplinkResponseListener`メソッドを呼び出してディファード ディープリンク コールバックを処理できます。
-
-</MinorVersion>
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+</MinorVersion> <tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 adjustConfig.setOnDeeplinkResponseListener { deeplink ->
@@ -532,8 +429,7 @@ adjustConfig.setOnDeeplinkResponseListener { deeplink ->
 }
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 adjustConfig.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
@@ -545,13 +441,10 @@ adjustConfig.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
         });
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 より明確にするため、SDK v5では、このメソッドは`setOnDeferredDeeplinkResponseListener`に改名されました。全ての引数は同じです。
-
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+<tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 adjustConfig.setOnDeferredDeeplinkResponseListener {uri ->
@@ -560,8 +453,7 @@ adjustConfig.setOnDeferredDeeplinkResponseListener {uri ->
         }
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 adjustConfig.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListener() {
@@ -573,8 +465,7 @@ adjustConfig.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkRespons
         });
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 ### [プライバシー機能](privacy-features)
 
@@ -582,127 +473,95 @@ adjustConfig.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkRespons
 
 #### [児童オンラインプライバシー保護法（COPPA）コンプライアンス](coppa-compliance)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
-SDK v4では、[COPPAコンプライアンス](/en/sdk/android/features/privacy#coppa-compliance)は`AdjustConfig`クラスを使用して設定され、SDKの初期化中に読み込まれます。SDKを初期化したら、値を更新することはできません。
-
-</MinorVersion>
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+In SDK v4, you can mark your app as COPPA compliant by calling the `setCoppaCompliantEnabled` method on your `AdjustConfig` instance with a boolean value.
+</MinorVersion> <tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 adjustConfig.setCoppaCompliantEnabled(true)
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 adjustConfig.setCoppaCompliantEnabled(true);
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-SDK v5では、このメソッドは`Adjust`クラスで利用可能です。つまり、`Adjust.enableCoppaCompliance()`を呼び出してCOPPAコンプライアンスを有効化するか、`disableCoppaCompliance()`を呼び出してCOPPAコンプライアンスを無効化することで、いつでも設定を変更することができます。
+In SDK v5, this method has been renamed to `enableCoppaCompliance` for clarity. This method takes no arguments.
+<tabs> <tab title="Kotlin" sync="kotlin"> 
 
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
-
-```java
-Adjust.enableCoppaCompliance(applicationContext)
-Adjust.disableCoppaCompliance(applicationContext)
+```kotlin
+adjustConfig.enableCoppaCompliance()
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
-Adjust.enableCoppaCompliance(getApplicactionContext());
-Adjust.disableCoppaCompliance(getApplicationContext());
+adjustConfig.enableCoppaCompliance();
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 #### [Playストアの子供向けアプリ](play-store-kids)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
-SDK v4では、`AdjustConfig`クラスを使用してアプリを[Playストアの子供向けアプリ](/en/sdk/android/features/privacy#play-store-kids-apps)として表示できます。このプロパティはSDKの初期化中に読み込まれるため、SDKを初期化したら値を更新することはできません。
-
-</MinorVersion>
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+In SDK v4, you can mark an app as a [Play Store Kids app](/en/sdk/android/features/privacy#play-store-kids-apps) by calling the `setPlayStoreKidsAppEnabled` method on your `AdjustConfig` instance with a boolean argument.
+</MinorVersion> <tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 adjustConfig.setPlayStoreKidsAppEnabled(true)
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 adjustConfig.setPlayStoreKidsAppEnabled(true);
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-SDK v5では、このメソッドは`Adjust`クラスで利用可能です。つまり、`Adjust.enablePlayStoreKidsCompliance()`を呼び出してアプリをPlayストアの子供向けアプリとして表示するか、`Adjust.disablePlayStoreKidsCompliance()`を呼び出してアプリをPlayストアの子供向けアプリとして表示するのを解除することで、いつでも設定を変更できます。
-
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+In SDK v5, this method has been renamed to `enablePlayStoreKidsCompliance` for clarity. This method takes no arguments.
+<tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
-Adjust.enablePlayStoreKidsCompliance(applicationContext)
-Adjust.disablePlayStoreKidsCompliance(applicationContext)
+adjustConfig.enablePlayStoreKidsCompliance()
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
-Adjust.enablePlayStoreKidsCompliance(getApplicationContext());
-Adjust.disablePlayStoreKidsCompliance(getApplicationContext());
+adjustConfig.enablePlayStoreKidsCompliance();
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 #### [特定のソースの広告収益を送信する](send-ad-revenue)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
 SDK v4では、広告収益ソースは`AdjustConfig`クラスの定数として定義されています。SDK v5では、広告収益ソースは文字列としてパスされる必要があります。
-
-</MinorVersion>
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
-<CodeBlock useDiffSyntax>
+</MinorVersion> <tabs> <tab title="Kotlin" sync="kotlin"> <codeblock useDiffSyntax> 
 
 ```kotlin
 - val adjustAdRevenue = AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX) // v4
 + val adjustAdRevenue = AdjustAdRevenue("applovin_max_sdk") // v5
 ```
 
-</CodeBlock>
-</Tab>
-<Tab title="Java" sync="java">
-<CodeBlock useDiffSyntax>
+</CodeBlock> </Tab> <tab title="Java" sync="java"> <codeblock useDiffSyntax> 
 
 ```java
 - AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX); // v4
 + AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue("applovin_max_sdk"); // v5
 ```
 
-</CodeBlock>
-</Tab>
-</Tabs>
-<Table>
+</CodeBlock> </Tab> </Tabs> <table> 
 
-| v4                                          | v5                        |
-| ------------------------------------------- | ------------------------- |
+|                     v4                      |            v5             |
+|---------------------------------------------|---------------------------|
 | `AdjustConfig.AD_REVENUE_APPLOVIN_MAX`      | `"applovin_max_sdk"`      |
 | `AdjustConfig.AD_REVENUE_ADMOB`             | `"admob_sdk"`             |
 | `AdjustConfig.AD_REVENUE_IRONSOURCE`        | `"ironsource_sdk"`        |
@@ -715,213 +574,178 @@ SDK v4では、広告収益ソースは`AdjustConfig`クラスの定数として
 | `AdjustConfig.AD_REVENUE_TOPON`             | `"topon_sdk"`             |
 | `AdjustConfig.AD_REVENUE_MOPUB`             | `"mopub"`                 |
 
-</Table>
+</Table> 
 
 #### [データレジデンシーとURL戦略を設定する](url-strategy)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
 SDK v4では、URL戦略とデータレジデンシードメインは`AdjustConfig`クラスの定数として定義されています。
-
-</MinorVersion>
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+</MinorVersion> <tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 adjustConfig.setUrlStrategy(AdjustConfig.DATA_RESIDENCY_EU)
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 adjustConfig.setUrlStrategy(AdjustConfig.DATA_RESIDENCY_EU);
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 SDK v5では、選択したドメインを配列としてパスする必要があります。また、以下を設定することも可能です：
 
--  `useSubdomains` （`boolean`）：ソースにサブドメインのプレフィックスを付けるかどうか。
--  `isDataResidency` （`boolean`）：ドメインをデータレジデンシーに使用するかどうか。
+* `useSubdomains` （`boolean`）：ソースにサブドメインのプレフィックスを付けるかどうか。
+* `isDataResidency` （`boolean`）：ドメインをデータレジデンシーに使用するかどうか。
 
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+<tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
-val domains: List<string> = mutableListOf("domain") // eg. eu.adjust.com
+val domains: List<string id="sl-md0000000"> = mutableListOf("domain") // eg. eu.adjust.com
 val useSubdomains = true // or false
 val isDataResidency = false // or true for data residency
 adjustConfig.setUrlStrategy(domains, useSubdomains, isDataResidency)
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
-List<string> domains = Arrays.asList("domain"); // eg. eu.adjust.com
+List<string id="sl-md0000000"> domains = Arrays.asList("domain"); // eg. eu.adjust.com
 boolean useSubdomains = true; // or false
 boolean isDataResidency = false; // or true for data residency
 adjustConfig.setUrlStrategy(domains, useSubdomains, isDataResidency);
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 SDK v5でURL戦略を設定する方法については、以下の表をご確認ください。
+<table autoWidth="1,2"> 
 
-<Table autoWidth="1,2">
+|                 v4                  |     v5 \- メインおよびフォールバックドメイン      | v5 \- サブドメインの使用 | v5 \- データレジデンシー |
+|-------------------------------------|-----------------------------------|------------------|------------------|
+| `AdjustConfig.DATA_RESIDENCY_EU`    | `"eu.adjust.com"`                 | `true`           | `true`           |
+| `AdjustConfig.DATA_RESIDENCY_TR`    | `"tr.adjust.com"`                 | `true`           | `true`           |
+| `AdjustConfig.DATA_RESIDENCY_US`    | `"us.adjust.com"`                 | `true`           | `true`           |
+| `AdjustConfig.URL_STRATEGY_CHINA`   | `"adjust.world"`。 `"adjust.com"`  | `true`           | `false`          |
+| `AdjustConfig.URL_STRATEGY_CN`      | `"adjust.cn"`。 `"adjust.com"`     | `true`           | `false`          |
+| `AdjustConfig.URL_STRATEGY_CN_ONLY` | `"adjust.cn"`                     | `true`           | `false`          |
+| `AdjustConfig.URL_STRATEGY_INDIA`   | `"adjust.net.in"`。 `"adjust.com"` | `true`           | `false`          |
 
-| v4                                  | v5 \- メインおよびフォールバックドメイン | v5 \- サブドメインの使用 | v5 \- データレジデンシー |
-| ----------------------------------- | ---------------------------------------- | ------------------------ | ------------------------ |
-| `AdjustConfig.DATA_RESIDENCY_EU`    | `"eu.adjust.com"`                        | `true`                   | `true`                   |
-| `AdjustConfig.DATA_RESIDENCY_TR`    | `"tr.adjust.com"`                        | `true`                   | `true`                   |
-| `AdjustConfig.DATA_RESIDENCY_US`    | `"us.adjust.com"`                        | `true`                   | `true`                   |
-| `AdjustConfig.URL_STRATEGY_CHINA`   | `"adjust.world"`。 `"adjust.com"`        | `true`                   | `false`                  |
-| `AdjustConfig.URL_STRATEGY_CN`      | `"adjust.cn"`。 `"adjust.com"`           | `true`                   | `false`                  |
-| `AdjustConfig.URL_STRATEGY_CN_ONLY` | `"adjust.cn"`                            | `true`                   | `false`                  |
-| `AdjustConfig.URL_STRATEGY_INDIA`   | `"adjust.net.in"`。 `"adjust.com"`       | `true`                   | `false`                  |
-
-</Table>
+</Table> 
 
 ##### [例](examples)
 
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
-<CodeBlock title="インド URL戦略">
+<tabs> <tab title="Kotlin" sync="kotlin"> <codeblock title="インド URL戦略"> 
 
 ```kotlin
 adjustConfig.setUrlStrategy(listOf("adjust.net.in", "adjust.com"), true, false)
 ```
 
-</CodeBlock>
-<CodeBlock title="中国 URL戦略">
+</CodeBlock> <codeblock title="中国 URL戦略"> 
 
 ```kotlin
 adjustConfig.setUrlStrategy(listOf("adjust.world", "adjust.com"), true, false)
 ```
 
-</CodeBlock>
-<CodeBlock title="中国限定 URL戦略">
+</CodeBlock> <codeblock title="中国限定 URL戦略"> 
 
 ```kotlin
 adjustConfig.setUrlStrategy(listOf("adjust.cn"), true, false)
 ```
 
-</CodeBlock>
-<CodeBlock title="EU データレジデンシー">
+</CodeBlock> <codeblock title="EU データレジデンシー"> 
 
 ```kotlin
 adjustConfig.setUrlStrategy(listOf("eu.adjust.com"), true, true)
 ```
 
-</CodeBlock>
-<CodeBlock title="トルコ データレジデンシー">
+</CodeBlock> <codeblock title="トルコ データレジデンシー"> 
 
 ```kotlin
 adjustConfig.setUrlStrategy(listOf("tr.adjust.com"), true, true)
 ```
 
-</CodeBlock>
-<CodeBlock title="米国 データレジデンシー">
+</CodeBlock> <codeblock title="米国 データレジデンシー"> 
 
 ```kotlin
 adjustConfig.setUrlStrategy(listOf("us.adjust.com"), true, true)
 ```
 
-</CodeBlock>
-</Tab>
-<Tab title="Java" sync="java">
-<CodeBlock title="インド URL戦略">
+</CodeBlock> </Tab> <tab title="Java" sync="java"> <codeblock title="インド URL戦略"> 
 
 ```java
 config.setUrlStrategy(Arrays.asList("adjust.net.in", "adjust.com"), true, false);
 ```
 
-</CodeBlock>
-<CodeBlock title="中国 URL戦略">
+</CodeBlock> <codeblock title="中国 URL戦略"> 
 
 ```java
 adjustConfig.setUrlStrategy(Arrays.asList("adjust.world", "adjust.com"), true, false);
 ```
 
-</CodeBlock>
-<CodeBlock title="中国限定 URL戦略">
+</CodeBlock> <codeblock title="中国限定 URL戦略"> 
 
 ```java
 adjustConfig.setUrlStrategy(Arrays.asList("adjust.cn"), true, false);
 ```
 
-</CodeBlock>
-<CodeBlock title="EU データレジデンシー">
+</CodeBlock> <codeblock title="EU データレジデンシー"> 
 
 ```java
 adjustConfig.setUrlStrategy(Arrays.asList("eu.adjust.com"), true, true);
 ```
 
-</CodeBlock>
-<CodeBlock title="トルコ データレジデンシー">
+</CodeBlock> <codeblock title="トルコ データレジデンシー"> 
 
 ```java
 adjustConfig.setUrlStrategy(Arrays.asList("tr.adjust.com"), true, true);
 ```
 
-</CodeBlock>
-<CodeBlock title="米国 データレジデンシー">
+</CodeBlock> <codeblock title="米国 データレジデンシー"> 
 
 ```java
 adjustConfig.setUrlStrategy(Arrays.asList("us.adjust.com"), true, true);
 ```
 
-</CodeBlock>
-</Tab>
-</Tabs>
+</CodeBlock> </Tab> </Tabs> 
 
 #### [サードパーティとの共有をグローバルに無効化する](disable-sharing-globally)
 
-<MinorVersion removed="v5">
+<minorversion removed="v5"> 
 
 SDK v4では、`Adjust.disableThirdPartySharing()`メソッドを呼び出すことで、サードパーティとの情報共有をグローバルに無効化することができます。
-
-</MinorVersion>
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+</MinorVersion> <tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 Adjust.disableThirdPartySharing(applicationContext)
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 Adjust.disableThirdPartySharing(getApplicationContext());
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 この機能はSDK v5では削除されました。SDK v5では、`Adjust.trackThirdPartySharing()`メソッドを使用してサードパーティとのデータ共有を有効化または無効化できます。
-
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+<tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 val adjustThirdPartySharing = AdjustThirdPartySharing(true)
 Adjust.trackThirdPartySharing(adjustThirdPartySharing)
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(true);
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 ### [デバイス情報を取得](device-info)
 
@@ -929,14 +753,10 @@ Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 
 #### [インストールリファラーゲッター](install-referrer-getters)
 
-<MinorVersion added="v5">
+<minorversion added="v5"> 
 
 SDK v5には、インストールリファラー情報を取得するための新しいゲッターメソッドが含まれています。
-
-</MinorVersion>
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
-<CodeBlock title="Google Play ストアリファラー">
+</MinorVersion> <tabs> <tab title="Kotlin" sync="kotlin"> <codeblock title="Google Play ストアリファラー"> 
 
 ```kotlin
 Adjust.getGooglePlayInstallReferrer(
@@ -947,8 +767,7 @@ Adjust.getGooglePlayInstallReferrer(
    })
 ```
 
-</CodeBlock>
-<CodeBlock title="Huawei インストールリファラー">
+</CodeBlock> <codeblock title="Huawei インストールリファラー"> 
 
 ```kotlin
 AdjustHuaweiReferrer.getHuaweiAdsInstallReferrer(
@@ -967,8 +786,7 @@ AdjustHuaweiReferrer.getHuaweiAppGalleryInstallReferrer(
    })
 ```
 
-</CodeBlock>
-<CodeBlock title="Samsung インストールリファラー">
+</CodeBlock> <codeblock title="Samsung インストールリファラー"> 
 
 ```kotlin
 AdjustSamsungReferrer.getSamsungInstallReferrer(
@@ -979,8 +797,7 @@ AdjustSamsungReferrer.getSamsungInstallReferrer(
    })
 ```
 
-</CodeBlock>
-<CodeBlock title="Vivo インストールリファラー">
+</CodeBlock> <codeblock title="Vivo インストールリファラー"> 
 
 ```kotlin
 AdjustVivoReferrer.getVivoInstallReferrer(
@@ -991,8 +808,7 @@ AdjustVivoReferrer.getVivoInstallReferrer(
    })
 ```
 
-</CodeBlock>
-<CodeBlock title="Xiaomi インストールリファラー">
+</CodeBlock> <codeblock title="Xiaomi インストールリファラー"> 
 
 ```kotlin
 AdjustXiaomiReferrer.getXiaomiInstallReferrer(
@@ -1003,10 +819,7 @@ AdjustXiaomiReferrer.getXiaomiInstallReferrer(
    })
 ```
 
-</CodeBlock>
-</Tab>
-<Tab title="Java" sync="java">
-<CodeBlock title="Google Play ストアリファラー">
+</CodeBlock> </Tab> <tab title="Java" sync="java"> <codeblock title="Google Play ストアリファラー"> 
 
 ```java
 Adjust.getGooglePlayInstallReferrer(getApplicationContext(), new OnGooglePlayInstallReferrerReadListener() {
@@ -1020,8 +833,7 @@ Adjust.getGooglePlayInstallReferrer(getApplicationContext(), new OnGooglePlayIns
 });
 ```
 
-</CodeBlock>
-<CodeBlock title="Huawei インストールリファラー">
+</CodeBlock> <codeblock title="Huawei インストールリファラー"> 
 
 ```java
 AdjustHuaweiReferrer.getHuaweiAdsInstallReferrer(getApplicationContext(), new OnHuaweiInstallReferrerReadListener() {
@@ -1047,8 +859,7 @@ AdjustHuaweiReferrer.getHuaweiAppGalleryInstallReferrer(getApplicationContext(),
 });
 ```
 
-</CodeBlock>
-<CodeBlock title="Samsung インストールリファラー">
+</CodeBlock> <codeblock title="Samsung インストールリファラー"> 
 
 ```java
 AdjustSamsungReferrer.getSamsungInstallReferrer(getApplicationContext(), new OnSamsungInstallReferrerReadListener() {
@@ -1063,8 +874,7 @@ AdjustSamsungReferrer.getSamsungInstallReferrer(getApplicationContext(), new OnS
 });
 ```
 
-</CodeBlock>
-<CodeBlock title="Vivo インストールリファラー">
+</CodeBlock> <codeblock title="Vivo インストールリファラー"> 
 
 ```java
 AdjustVivoReferrer.getVivoInstallReferrer(getApplicationContext(), new OnVivoInstallReferrerReadListener() {
@@ -1079,8 +889,7 @@ AdjustVivoReferrer.getVivoInstallReferrer(getApplicationContext(), new OnVivoIns
 });
 ```
 
-</CodeBlock>
-<CodeBlock title="Xiaomi インストールリファラー">
+</CodeBlock> <codeblock title="Xiaomi インストールリファラー"> 
 
 ```java
 AdjustXiaomiReferrer.getXiaomiInstallReferrer(getApplicationContext(), new OnXiaomiInstallReferrerReadListener() {
@@ -1095,20 +904,14 @@ AdjustXiaomiReferrer.getXiaomiInstallReferrer(getApplicationContext(), new OnXia
 });
 ```
 
-</CodeBlock>
-</Tab>
-</Tabs>
+</CodeBlock> </Tab> </Tabs> 
 
 #### [デバイスIDゲッター](device-id-getters)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
 SDK v4では、全てのデバイスIDのゲッターメソッドは同期的に実行されます。SDK v5では、これらのメソッドは非同期に実行されるように変更されています。
-
-</MinorVersion>
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
-<CodeBlock title="Google Play ADID getter">
+</MinorVersion> <tabs> <tab title="Kotlin" sync="kotlin"> <codeblock title="Google Play ADID getter"> 
 
 ```kotlin
 Adjust.getGoogleAdId(this, object : OnGoogleAdIdReadListener {
@@ -1116,8 +919,7 @@ Adjust.getGoogleAdId(this, object : OnGoogleAdIdReadListener {
 })
 ```
 
-</CodeBlock>
-<CodeBlock title="ADIDゲッター">
+</CodeBlock> <codeblock title="ADIDゲッター"> 
 
 ```kotlin
 Adjust.getAdid { adid ->
@@ -1125,8 +927,7 @@ Adjust.getAdid { adid ->
 }
 ```
 
-</CodeBlock>
-<CodeBlock title="アトリビューション情報ゲッター">
+</CodeBlock> <codeblock title="アトリビューション情報ゲッター"> 
 
 ```kotlin
 Adjust.getAttribution {attribution ->
@@ -1134,8 +935,7 @@ Adjust.getAttribution {attribution ->
 }
 ```
 
-</CodeBlock>
-<CodeBlock title="OAIDゲッター">
+</CodeBlock> <codeblock title="OAIDゲッター"> 
 
 ```kotlin
 AdjustOaid.getOaid(applicationContext, object : OnOaidReadListener() {
@@ -1144,8 +944,7 @@ AdjustOaid.getOaid(applicationContext, object : OnOaidReadListener() {
    })
 ```
 
-</CodeBlock>
-<CodeBlock title="Amazon ADIDゲッター">
+</CodeBlock> <codeblock title="Amazon ADIDゲッター"> 
 
 ```kotlin
 Adjust.getAmazonAdId(applicationContext, object : OnAmazonAdIdReadListener {
@@ -1153,8 +952,7 @@ Adjust.getAmazonAdId(applicationContext, object : OnAmazonAdIdReadListener {
    })
 ```
 
-</CodeBlock>
-<CodeBlock title="SDKバージョンゲッター">
+</CodeBlock> <codeblock title="SDKバージョンゲッター"> 
 
 ```kotlin
 Adjust.getSdkVersion {sdkVersion ->
@@ -1162,8 +960,7 @@ Adjust.getSdkVersion {sdkVersion ->
 }
 ```
 
-</CodeBlock>
-<CodeBlock title="有効化ステータスゲッター">
+</CodeBlock> <codeblock title="有効化ステータスゲッター"> 
 
 ```kotlin
 Adjust.isEnabled(applicationContext) { isEnabled ->
@@ -1171,10 +968,7 @@ Adjust.isEnabled(applicationContext) { isEnabled ->
 }
 ```
 
-</CodeBlock>
-</Tab>
-<Tab title="Java" sync="java">
-<CodeBlock title="Google Play ADID getter">
+</CodeBlock> </Tab> <tab title="Java" sync="java"> <codeblock title="Google Play ADID getter"> 
 
 ```java
 Adjust.getGoogleAdId(this, new OnGoogleAdIdReadListener() {
@@ -1183,8 +977,7 @@ Adjust.getGoogleAdId(this, new OnGoogleAdIdReadListener() {
 });
 ```
 
-</CodeBlock>
-<CodeBlock title="ADIDゲッター">
+</CodeBlock> <codeblock title="ADIDゲッター"> 
 
 ```java
 Adjust.getAdid(new OnAdidReadListener() {
@@ -1194,8 +987,7 @@ Adjust.getAdid(new OnAdidReadListener() {
 });
 ```
 
-</CodeBlock>
-<CodeBlock title="アトリビューション情報ゲッター">
+</CodeBlock> <codeblock title="アトリビューション情報ゲッター"> 
 
 ```java
 Adjust.getAttribution(new OnAttributionReadListener() {
@@ -1205,8 +997,7 @@ Adjust.getAttribution(new OnAttributionReadListener() {
 });
 ```
 
-</CodeBlock>
-<CodeBlock title="OAIDゲッター">
+</CodeBlock> <codeblock title="OAIDゲッター"> 
 
 ```java
 AdjustOaid.getOaid(getApplicationContext(), new OnOaidReadListener() {
@@ -1221,8 +1012,7 @@ AdjustOaid.getOaid(getApplicationContext(), new OnOaidReadListener() {
 });
 ```
 
-</CodeBlock>
-<CodeBlock title="Amazon ADIDゲッター">
+</CodeBlock> <codeblock title="Amazon ADIDゲッター"> 
 
 ```java
 Adjust.getAmazonAdId(getApplicationContext(), new OnAmazonAdIdReadListener() {
@@ -1232,8 +1022,7 @@ Adjust.getAmazonAdId(getApplicationContext(), new OnAmazonAdIdReadListener() {
 });
 ```
 
-</CodeBlock>
-<CodeBlock title="SDKバージョンゲッター">
+</CodeBlock> <codeblock title="SDKバージョンゲッター"> 
 
 ```java
 Adjust.getSdkVersion(new OnSdkVersionReadListener() {
@@ -1243,8 +1032,7 @@ Adjust.getSdkVersion(new OnSdkVersionReadListener() {
 });
 ```
 
-</CodeBlock>
-<CodeBlock title="有効化ステータスゲッター">
+</CodeBlock> <codeblock title="有効化ステータスゲッター"> 
 
 ```java
 Adjust.isEnabled(getApplicationContext(), new OnIsEnabledListener() {
@@ -1255,9 +1043,7 @@ Adjust.isEnabled(getApplicationContext(), new OnIsEnabledListener() {
 });
 ```
 
-</CodeBlock>
-</Tab>
-</Tabs>
+</CodeBlock> </Tab> </Tabs> 
 
 ### [プラグイン](plugins)
 
@@ -1265,78 +1051,67 @@ SDK v5は機能を拡張するプラグインをサポートしています。
 
 #### [Huawei インストールリファラープラグイン](huawei-plugin)
 
-<MinorVersion added="v5">
+<minorversion added="v5"> 
 
 SDK v5は、デバイスのインストールリファラープラグイン情報を記録するHuawei インストールリファラープラグインをサポートしています。プラグインを追加するには、`build.gradle`ファイルに以下のdependencyを追加します：
-
-</MinorVersion>
-<CodeBlock title="build.gradle">
+</MinorVersion> <codeblock title="build.gradle"> 
 
 ```groovy
 dependencies {
-   implementation 'com.adjust.sdk:adjust-android-huawei-referrer:5.0.0-SNAPSHOT'
+   implementation 'com.adjust.sdk:adjust-android-huawei-referrer:5.0.0'
 }
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 #### [Meta インストールリファラープラグイン](mir-plugin)
 
-<MinorVersion added="v5">
+<minorversion added="v5"> 
 
 SDK v5は、[Metaのインストールリファラー](https://developers.facebook.com/docs/app-ads/meta-install-referrer)情報を記録するMeta インストールリファラープラグインをサポートしています。この情報を読み取る方法は以下の通りです：
-
-</MinorVersion>
+</MinorVersion> 
 
 1. `build.gradle`ファイルに以下のdependencyを追加します：
 
-   <CodeBlock title="build.gradle">
+   <codeblock title="build.gradle"> 
 
    ```groovy
    dependencies {
-      implementation 'com.adjust.sdk:adjust-android-meta-referrer:5.0.0-SNAPSHOT'
+      implementation 'com.adjust.sdk:adjust-android-meta-referrer:5.0.0'
    }
    ```
 
-   </CodeBlock>
-
+   </CodeBlock> 
 2. [App Dashboard](https://developers.facebook.com/apps)でMetaアプリIDを検索します。詳しくはMetaの[アプリダッシュボードのドキュメント](https://developers.facebook.com/docs/development/create-an-app/app-dashboard)をご覧ください。
 
 3. `AdjustConfig.setFbAppId`メソッドに`String`引数としてアプリIDをパスします。
 
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
-<CodeBlock highlight="{range: 2}">
+<tabs> <tab title="Kotlin" sync="kotlin"> <codeblock highlight="{range: 2}"> 
 
 ```kotlin
 val config = AdjustConfig(this, appToken, environment)
-config.setFbAppId(<fb_app_id_string>)
+config.setFbAppId(<fb_app_id_string id="sl-md0000000">)
 Adjust.initSdk(config)
 ```
 
-</CodeBlock>
-</Tab>
-<Tab title="Java" sync="java">
-<CodeBlock highlight="{range: 2}">
+</CodeBlock> </Tab> <tab title="Java" sync="java"> <codeblock highlight="{range: 2}"> 
 
 ```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
-config.setFbAppId(<fb_app_id_string>);
+config.setFbAppId(<fb_app_id_string id="sl-md0000000">);
 Adjust.initSdk(config);
 ```
 
-</CodeBlock>
-</Tab>
-</Tabs>
+</CodeBlock> </Tab> </Tabs> 
 
 #### [削除されたプラグイン](removed-plugins)
 
-<MinorVersion removed="v5">
+<minorversion removed="v5"> 
 
 SDK v5では以下のプラグインが削除されました：
+</MinorVersion> 
 
-</MinorVersion>
+* Criteo
+* Trademob
+* Sociomatic
 
--  Criteo
--  Trademob
--  Sociomatic
