@@ -9,12 +9,6 @@ multiVersion: true
 
 <SdkVersion version="v5">
 
-<Callout type="important" title="Open beta">
-
-SDK v5 is in open beta. All features are subject to change.
-
-</Callout>
-
 The Adjust iOS SDK enables you to record attribution, events, and more in your iOS app. This guide shows you how to integrate the Adjust SDK with your app.
 
 ## [Before you begin](before-you-begin)
@@ -24,11 +18,9 @@ Here's what you need to do before updating to SDK v5:
 1. SDK v5 supports [SDK signature verification](https://help.adjust.com/en/article/sdk-signature) natively. If you currently use the SDK signature library, you need to uninstall this first.
 2. If your app targets iOS or tvOS earlier than version **12.0**, you need to update your app before you can use SDK v5.
 
-## [1. Set up your environment](set-up-your-environment)
+## [1. Add the SDK to your project](1-add-the-sdk-to-your-project)
 
 To use the Adjust SDK in your iOS app, you need to add it to your Xcode project.
-
-### [Swift Package Manager install](swift-package-manager-install)
 
 To add the SDK using Swift's package manager:
 
@@ -36,14 +28,38 @@ To add the SDK using Swift's package manager:
 2. In the box that appears, enter the SDK's GitHub address: `https://github.com/adjust/ios_sdk`
 3. Select the version of the Adjust SDK you want to use in the **Version** dropdown. Check the [releases page](https://github.com/adjust/ios_sdk/releases) for the latest version.
 
-### [Cocoapods install](cocoapods-install)
+### [Alternative installation methods](alternative-installation-methods)
+
+<Tabs>
+<Tab title="Cocoapods" sync="cocoapods">
 
 To add the SDK using Cocoapods, specify the version you want to use in your `Podfile`:
 
-```ruby
+```rb
+# Get pod from repository
+pod 'Adjust', '~> 5.0.0'
+
 # Get source directly from GitHub
-pod 'Adjust', :git => 'https://github.com/adjust/ios_sdk.git', :branch => 'v5'
+pod 'Adjust', :git => 'https://github.com/adjust/ios_sdk.git', :tag => 'v5.0.0'
 ```
+
+If you're using web views in your app, add the Adjust Web Bridge by adding the following:
+
+```rb
+pod 'Adjust/AdjustWebBridge', :git => 'https://github.com/adjust/ios_sdk.git', :tag => 'v5.0.0'
+```
+
+</Tab>
+<Tab title="Carthage" sync="carthage">
+
+To add the SDK using Carthage, add the following to your `Cartfile`:
+
+```text
+github "adjust/ios_sdk"
+```
+
+</Tab>
+</Tabs>
 
 ## [2. Integrate the Adjust SDK](integrate-the-adjust-sdk)
 
@@ -60,12 +76,6 @@ To import the Adjust SDK, add the following to your bridging header file:
 import AdjustSdk
 ```
 
-If you're using the web bridge, add the following header:
-
-```swift
-import AdjustWebBridge
-```
-
 </Tab>
 <Tab title="Objective-C" sync="objc">
 
@@ -73,12 +83,6 @@ To import the Adjust SDK, add the following to your `AppDelegate.h` file:
 
 ```objc
 #import <AdjustSdk/Adjust.h>
-```
-
-If you're using the web bridge, add the following header:
-
-```objc
-#import <AdjustWebBridge/AdjustBridge.h>
 ```
 
 </Tab>
@@ -120,15 +124,13 @@ In the Project Navigator:
 <Tab title="Swift" sync="swift">
 
 ```swift
-import AdjustWebBridge
+import AdjustSdk
 
 func viewWillAppear(_ animated: Bool) {
     let webView = WKWebView(frame: view.bounds)
 
     // add var adjustBridge: AdjustBridge? on your interface
     adjustBridge.loadWKWebViewBridge(webView)
-    // optionally you can add a web view delegate so that you can also capture its events
-    // adjustBridge.loadWKWebViewBridge(webView, wkWebViewDelegate: self as? WKNavigationDelegate?);
 }
 ```
 
@@ -136,15 +138,13 @@ func viewWillAppear(_ animated: Bool) {
 <Tab title="Objective-C" sync="objc">
 
 ```objc
-#import "<AdjustWebBridge/AdjustBridge.h>"
+#import "<AdjustSdk/AdjustSdk.h>"
 
 - (void)viewWillAppear:(BOOL)animated {
     WKWebView *webView = [[WKWebView alloc] initWithFrame:self.view.bounds];
 
     // add @property (nonatomic, strong) AdjustBridge *adjustBridge; on your interface
     [self.adjustBridge loadWKWebViewBridge:webView];
-    // optionally you can add a web view delegate so that you can also capture its events
-    // [self.adjustBridge loadWKWebViewBridge:webView wkWebViewDelegate:(id<WKNavigationDelegate>)self];
 }
 
 // Your code here
@@ -152,8 +152,6 @@ func viewWillAppear(_ animated: Bool) {
 
 </Tab>
 </Tabs>
-
-You can also use the included `WebViewJavascriptBridge` by setting the `bridgeRegister` property of your `AdjustBridge` instance. See the [library's documentation](https://github.com/marcuswestin/WebViewJavascriptBridge#usage) for usage information.
 
 #### [Integrate `AdjustBridge` into your web view](integrate-adjustbridge-into-your-web-view)
 
@@ -166,7 +164,7 @@ To use the Javascript bridge in your web view, you need to configure the bridge.
 var yourAppToken = yourAppToken;
 var environment = AdjustConfig.EnvironmentSandbox;
 var adjustConfig = new AdjustConfig(yourAppToken, environment);
-Adjust.appDidLaunch(adjustConfig);
+Adjust.initSdk(adjustConfig);
 ```
 
 </Tab>
@@ -220,6 +218,16 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
    // Your code here
    return YES;
 }
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+var yourAppToken = yourAppToken;
+var environment = AdjustConfig.EnvironmentSandbox;
+var adjustConfig = new AdjustConfig(yourAppToken, environment);
+Adjust.initSdk(adjustConfig);
 ```
 
 </Tab>
