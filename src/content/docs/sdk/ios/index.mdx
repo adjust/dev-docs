@@ -26,10 +26,22 @@ Here's what you need to do before updating to SDK v5:
 
 ## [1. Set up your environment](set-up-your-environment)
 
+To use the Adjust SDK in your iOS app, you need to add it to your Xcode project.
+
+### [Swift Package Manager install](swift-package-manager-install)
+
+To add the SDK using Swift's package manager:
+
+1. Select **File --> Swift Packages --> Add Package Dependency**
+2. In the box that appears, enter the SDK's GitHub address: `https://github.com/adjust/ios_sdk`
+3. Select the version of the Adjust SDK you want to use in the **Version** dropdown. Check the [releases page](https://github.com/adjust/ios_sdk/releases) for the latest version.
+
+### [Cocoapods install](cocoapods-install)
+
 To add the SDK using Cocoapods, specify the version you want to use in your `Podfile`:
 
-```text
-// Get source directly from GitHub
+```ruby
+# Get source directly from GitHub
 pod 'Adjust', :git => 'https://github.com/adjust/ios_sdk.git', :branch => 'v5'
 ```
 
@@ -44,8 +56,14 @@ Add the relevant import statements in your project files.
 
 To import the Adjust SDK, add the following to your bridging header file:
 
-```objc
-#import AdjustSdk
+```swift
+import AdjustSdk
+```
+
+If you're using the web bridge, add the following header:
+
+```swift
+import AdjustWebBridge
 ```
 
 </Tab>
@@ -55,6 +73,12 @@ To import the Adjust SDK, add the following to your `AppDelegate.h` file:
 
 ```objc
 #import <AdjustSdk/Adjust.h>
+```
+
+If you're using the web bridge, add the following header:
+
+```objc
+#import <AdjustWebBridge/AdjustBridge.h>
 ```
 
 </Tab>
@@ -80,6 +104,74 @@ The Adjust SDK depends on frameworks to access certain device information. To en
 
 SDK v5 includes the [SDK signature library](https://help.adjust.com/en/article/sdk-signature). Signature protection is inactive by default. To enable it, you need to [enforce signature validation](https://help.adjust.com/en/article/sdk-signature#enforce-signature-validation).
 
+## [5. (Optional) set up the Adjust Web Bridge](set-up-web-bridge)
+
+If your app uses web views, you must set up the Adjust Web Bridge to record activity inside the web view.
+
+### [Integrate `AdjustBridge` into your app](integrate-adjustbridge-into-your-app)
+
+In the Project Navigator:
+
+1. Open the source file of your View Controller.
+2. Add the `import` statement at the top of the file.
+3. Add the following calls to `AdjustBridge` in the `viewDidLoad` or `viewWillAppear` method of your Web View Delegate:
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+import AdjustWebBridge
+
+func viewWillAppear(_ animated: Bool) {
+    let webView = WKWebView(frame: view.bounds)
+
+    // add var adjustBridge: AdjustBridge? on your interface
+    adjustBridge.loadWKWebViewBridge(webView)
+    // optionally you can add a web view delegate so that you can also capture its events
+    // adjustBridge.loadWKWebViewBridge(webView, wkWebViewDelegate: self as? WKNavigationDelegate?);
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "<AdjustWebBridge/AdjustBridge.h>"
+
+- (void)viewWillAppear:(BOOL)animated {
+    WKWebView *webView = [[WKWebView alloc] initWithFrame:self.view.bounds];
+
+    // add @property (nonatomic, strong) AdjustBridge *adjustBridge; on your interface
+    [self.adjustBridge loadWKWebViewBridge:webView];
+    // optionally you can add a web view delegate so that you can also capture its events
+    // [self.adjustBridge loadWKWebViewBridge:webView wkWebViewDelegate:(id<WKNavigationDelegate>)self];
+}
+
+// Your code here
+```
+
+</Tab>
+</Tabs>
+
+You can also use the included `WebViewJavascriptBridge` by setting the `bridgeRegister` property of your `AdjustBridge` instance. See the [library's documentation](https://github.com/marcuswestin/WebViewJavascriptBridge#usage) for usage information.
+
+#### [Integrate `AdjustBridge` into your web view](integrate-adjustbridge-into-your-web-view)
+
+To use the Javascript bridge in your web view, you need to configure the bridge. Add the following Javascript code to initialize the Adjust iOS web bridge:
+
+<Tabs>
+<Tab title="Javascript" sync="js">
+
+```js
+var yourAppToken = yourAppToken;
+var environment = AdjustConfig.EnvironmentSandbox;
+var adjustConfig = new AdjustConfig(yourAppToken, environment);
+Adjust.appDidLaunch(adjustConfig);
+```
+
+</Tab>
+</Tabs>
+
 ## [5. Initialize the Adjust SDK](initialize-the-adjust-sdk)
 
 To initialize the Adjust SDK, you need to create a config object. This object contains configuration options that control how the Adjust SDK behaves. Pass the following arguments for a minimal setup:
@@ -104,7 +196,7 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
         let yourAppToken = "{YourAppToken}"
         let environment = ADJEnvironmentSandbox
         let adjustConfig = ADJConfig(appToken: yourAppToken,
-                                     andEnvironment: environment)
+                                     environment: environment)
 
         Adjust.initSdk(adjustConfig)
        //...
@@ -122,7 +214,7 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
    NSString *yourAppToken = @"{YourAppToken}";
    NSString *environment = ADJEnvironmentSandbox;
    ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:appToken
-                                                andEnvironment:environment];
+                                                environment:environment];
    // Your code here
    [Adjust initSdk:myAdjustConfig];
    // Your code here
@@ -252,7 +344,7 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
         let adjustConfig = ADJConfig(
             appToken: yourAppToken,
             environment: environment,
-            andSuppressLogLevel: true)
+            suppressLogLevel: true)
         adjustConfig?.logLevel = ADJLogLevelVerbose
         //...
         Adjust.initSdk(adjustConfig)
@@ -271,7 +363,8 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
    NSString *yourAppToken = @"{YourAppToken}";
    NSString *environment = ADJEnvironmentSandbox;
    ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:appToken
-                                                andEnvironment:environment];
+                                                environment:environment
+                                                suppressLogLevel:YES];
    [adjustConfig setLogLevel:ADJLogLevelVerbose];
    //...
    [Adjust initSdk:adjustConfig];
@@ -297,14 +390,14 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
         let environment = ADJEnvironmentSandbox
         let adjustConfig = ADJConfig(
             appToken: yourAppToken,
-            andEnvironment: environment)
+            environment: environment)
         adjustConfig?.logLevel = ADJLogLevelVerbose
 
         #else
         let environment = ADJEnvironmentProduction
         let adjustConfig = ADJConfig(
             appToken: yourAppToken,
-            andEnvironment: environment)
+            environment: environment)
         adjustConfig?.logLevel = ADJLogLevelSuppress
         #endif
         //...
@@ -326,13 +419,13 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
    #if DEBUG
    NSString *environment = ADJEnvironmentSandbox;
    ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:appToken
-                                                andEnvironment:environment];
+                                                environment:environment];
    [adjustConfig setLogLevel:ADJLogLevelVerbose];
 
    #else
    NSString *environment = ADJEnvironmentProduction;
    ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:appToken
-                                                andEnvironment:environment];
+                                                environment:environment];
    [adjustConfig setLogLevel:ADJLogLevelSuppress];
    #endif
    //...
