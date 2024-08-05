@@ -5,12 +5,6 @@ slug: "ja/sdk/android/migration/v4-to-v5"
 sidebar-position: 1
 ---
 
-<Callout type="important" title="オープンベータ版">
-
-SDK v5はオープンベータ版です。全ての機能は変更される可能性があります。
-
-</Callout>
-
 ## [事前準備](before-you-begin)
 
 SDK v5にアップデートする前に、以下を行ってください。
@@ -22,32 +16,18 @@ SDK v5にアップデートする前に、以下を行ってください。
 
 SDK v5の使用を開始するには、プロジェクトにdependencyとしてSDK v5を追加する必要があります。これを行うには、以下の手順に従ってください。
 
-1. ベータリポジトリを`build.gradle`ファイルに追加します。
+1. 現在`build.gradle`ファイルにある古いバージョンの SDK を全て削除します。
 
-   <CodeBlock title="build.gradle">
-
-   ```groovy
-   repositories {
-      maven {
-         url "https://oss.sonatype.org/content/repositories/snapshots/"
-      }
-   }
-   ```
-
-   </CodeBlock>
-
-2. 現在`build.gradle`ファイルにある古いバージョンの SDK を全て削除します。
-
-3. `build.gradle`ファイルに以下のdependencyを追加します：
+2. `build.gradle`ファイルに以下のdependencyを追加します：
 
    <CodeBlock title="build.gradle">
 
    ```groovy
    dependencies {
-      implementation 'com.adjust.sdk:adjust-android:5.0.0-SNAPSHOT'
+      implementation 'com.adjust.sdk:adjust-android:5.0.0'
       implementation 'com.android.installreferrer:installreferrer:2.2'
       // Add the following if you are using the Adjust SDK inside web views on your app
-      implementation 'com.adjust.sdk:adjust-android-webbridge:5.0.0-SNAPSHOT'
+      implementation 'com.adjust.sdk:adjust-android-webbridge:5.0.0'
    }
    ```
 
@@ -93,14 +73,14 @@ SDK v4では、初期化メソッドは`Adjust.onCreate(AdjustConfig)`です。S
 </Tab>
 </Tabs>
 
-### [Signature setup](signature-setup)
+### [シグネチャー設定](signature-setup)
 
-SDK v5 includes the [SDK signature library](https://help.adjust.com/ja/article/sdk-signature). You can test this by following the testing steps in the [Signature library integration guide](/en/sdk/android/integrations/signature-library).
+SDK v5には、 [SDKシグネチャーライブラリ](https://help.adjust.com/ja/article/sdk-signature)が含まれています。これは、[シグネチャーライブラリ連携ガイド](/en/sdk/android/integrations/signature-library)のテスト手順に従ってテストすることができます。
 
-Signature protection is inactive by default. To enable it, you need to:
+シグネチャーの保護機能は、デフォルトで非アクティブになっています。これを有効化するには、以下の手順に従ってください
 
-1. [Enforce signature validation](https://help.adjust.com/ja/article/sdk-signature#enforce-signature-validation).
-2. [Provide your app's SHA\-1 fingerprints](https://help.adjust.com/ja/article/sdk-signature#manage-your-certificate-fingerprints) prior to testing.
+1. [シグネチャーの検証を有効化します](https://help.adjust.com/ja/article/sdk-signature#enforce-signature-validation)。
+2. テスト前に[アプリのSHA\-1フィンガープリントを提供してください](https://help.adjust.com/ja/article/sdk-signature#manage-your-certificate-fingerprints)。
 
 ### [設定](configuration)
 
@@ -584,7 +564,7 @@ adjustConfig.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkRespons
 
 <MinorVersion changed="v5">
 
-SDK v4では、[COPPAコンプライアンス](/en/sdk/android/features/privacy#coppa-compliance)は`AdjustConfig`クラスを使用して設定され、SDKの初期化中に読み込まれます。SDKを初期化したら、値を更新することはできません。
+In SDK v4, you can mark your app as COPPA compliant by calling the `setCoppaCompliantEnabled` method on your `AdjustConfig` instance with a boolean value.
 
 </MinorVersion>
 <Tabs>
@@ -604,22 +584,20 @@ adjustConfig.setCoppaCompliantEnabled(true);
 </Tab>
 </Tabs>
 
-SDK v5では、このメソッドは`Adjust`クラスで利用可能です。つまり、`Adjust.enableCoppaCompliance()`を呼び出してCOPPAコンプライアンスを有効化するか、`disableCoppaCompliance()`を呼び出してCOPPAコンプライアンスを無効化することで、いつでも設定を変更することができます。
+In SDK v5, this method has been renamed to `enableCoppaCompliance` for clarity. This method takes no arguments.
 
 <Tabs>
 <Tab title="Kotlin" sync="kotlin">
 
-```java
-Adjust.enableCoppaCompliance(applicationContext)
-Adjust.disableCoppaCompliance(applicationContext)
+```kotlin
+adjustConfig.enableCoppaCompliance()
 ```
 
 </Tab>
 <Tab title="Java" sync="java">
 
 ```java
-Adjust.enableCoppaCompliance(getApplicactionContext());
-Adjust.disableCoppaCompliance(getApplicationContext());
+adjustConfig.enableCoppaCompliance();
 ```
 
 </Tab>
@@ -629,7 +607,7 @@ Adjust.disableCoppaCompliance(getApplicationContext());
 
 <MinorVersion changed="v5">
 
-SDK v4では、`AdjustConfig`クラスを使用してアプリを[Playストアの子供向けアプリ](/en/sdk/android/features/privacy#play-store-kids-apps)として表示できます。このプロパティはSDKの初期化中に読み込まれるため、SDKを初期化したら値を更新することはできません。
+In SDK v4, you can mark an app as a [Play Store Kids app](/en/sdk/android/features/privacy#play-store-kids-apps) by calling the `setPlayStoreKidsAppEnabled` method on your `AdjustConfig` instance with a boolean argument.
 
 </MinorVersion>
 <Tabs>
@@ -649,22 +627,20 @@ adjustConfig.setPlayStoreKidsAppEnabled(true);
 </Tab>
 </Tabs>
 
-SDK v5では、このメソッドは`Adjust`クラスで利用可能です。つまり、`Adjust.enablePlayStoreKidsCompliance()`を呼び出してアプリをPlayストアの子供向けアプリとして表示するか、`Adjust.disablePlayStoreKidsCompliance()`を呼び出してアプリをPlayストアの子供向けアプリとして表示するのを解除することで、いつでも設定を変更できます。
+In SDK v5, this method has been renamed to `enablePlayStoreKidsCompliance` for clarity. This method takes no arguments.
 
 <Tabs>
 <Tab title="Kotlin" sync="kotlin">
 
 ```kotlin
-Adjust.enablePlayStoreKidsCompliance(applicationContext)
-Adjust.disablePlayStoreKidsCompliance(applicationContext)
+adjustConfig.enablePlayStoreKidsCompliance()
 ```
 
 </Tab>
 <Tab title="Java" sync="java">
 
 ```java
-Adjust.enablePlayStoreKidsCompliance(getApplicationContext());
-Adjust.disablePlayStoreKidsCompliance(getApplicationContext());
+adjustConfig.enablePlayStoreKidsCompliance();
 ```
 
 </Tab>
@@ -1274,7 +1250,7 @@ SDK v5は、デバイスのインストールリファラープラグイン情�
 
 ```groovy
 dependencies {
-   implementation 'com.adjust.sdk:adjust-android-huawei-referrer:5.0.0-SNAPSHOT'
+   implementation 'com.adjust.sdk:adjust-android-huawei-referrer:5.0.0'
 }
 ```
 
@@ -1294,7 +1270,7 @@ SDK v5は、[Metaのインストールリファラー](https://developers.facebo
 
    ```groovy
    dependencies {
-      implementation 'com.adjust.sdk:adjust-android-meta-referrer:5.0.0-SNAPSHOT'
+      implementation 'com.adjust.sdk:adjust-android-meta-referrer:5.0.0'
    }
    ```
 

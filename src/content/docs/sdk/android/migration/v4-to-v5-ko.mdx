@@ -5,12 +5,6 @@ slug: "ko/sdk/android/migration/v4-to-v5"
 sidebar-position: 1
 ---
 
-<Callout type="important" title="오픈 베타">
-
-SDK v5는 오픈 베타 상태입니다. 모든 기능은 변경될 수 있습니다.
-
-</Callout>
-
 ## [시작에 앞서](before-you-begin)
 
 SDK v5로 업데이트하기 전에 다음을 수행하시기 바랍니다.
@@ -22,32 +16,18 @@ SDK v5로 업데이트하기 전에 다음을 수행하시기 바랍니다.
 
 SDK v5를 사용하려면 프로젝트에서 디펜던시로 추가해야 합니다. 다음을 수행하시기 바랍니다.
 
-1. 베타 리포지토리를 `build.gradle` 파일에 추가합니다.
+1. 현재 `build.gradle` 파일에 있는 이전 버전의 SDK를 모두 제거합니다.
 
-   <CodeBlock title="build.gradle">
-
-   ```groovy
-   repositories {
-      maven {
-         url "https://oss.sonatype.org/content/repositories/snapshots/"
-      }
-   }
-   ```
-
-   </CodeBlock>
-
-2. 현재 `build.gradle` 파일에 있는 이전 버전의 SDK를 모두 제거합니다.
-
-3. 다음의 디펜던시를 `build.gradle` 파일에 추가합니다.
+2. 다음의 디펜던시를 `build.gradle` 파일에 추가합니다.
 
    <CodeBlock title="build.gradle">
 
    ```groovy
    dependencies {
-      implementation 'com.adjust.sdk:adjust-android:5.0.0-SNAPSHOT'
+      implementation 'com.adjust.sdk:adjust-android:5.0.0'
       implementation 'com.android.installreferrer:installreferrer:2.2'
       // Add the following if you are using the Adjust SDK inside web views on your app
-      implementation 'com.adjust.sdk:adjust-android-webbridge:5.0.0-SNAPSHOT'
+      implementation 'com.adjust.sdk:adjust-android-webbridge:5.0.0'
    }
    ```
 
@@ -584,7 +564,7 @@ adjustConfig.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkRespons
 
 <MinorVersion changed="v5">
 
-SDK v4에서는 [COPPA 준수](/en/sdk/android/features/privacy#coppa-compliance)가 `AdjustConfig` 클래스를 사용하여 설정되며 SDK 초기화 중에 읽히게 됩니다. 따라서 SDK가 초기화된 후에는 해당 값을 업데이트할 수 없습니다.
+In SDK v4, you can mark your app as COPPA compliant by calling the `setCoppaCompliantEnabled` method on your `AdjustConfig` instance with a boolean value.
 
 </MinorVersion>
 <Tabs>
@@ -604,22 +584,20 @@ adjustConfig.setCoppaCompliantEnabled(true);
 </Tab>
 </Tabs>
 
-SDK v5에서는 이 메서드를 `Adjust` 클래스에서 이용할 수 있습니다. 따라서 COPPA 준수 활성화를 위해 `Adjust.enableCoppaCompliance()`를 호출하거나 COPPA 준수 비활성화를 위해 `disableCoppaCompliance()`를 호출하여 언제든지 설정을 변경할 수 있습니다.
+In SDK v5, this method has been renamed to `enableCoppaCompliance` for clarity. This method takes no arguments.
 
 <Tabs>
 <Tab title="Kotlin" sync="kotlin">
 
-```java
-Adjust.enableCoppaCompliance(applicationContext)
-Adjust.disableCoppaCompliance(applicationContext)
+```kotlin
+adjustConfig.enableCoppaCompliance()
 ```
 
 </Tab>
 <Tab title="Java" sync="java">
 
 ```java
-Adjust.enableCoppaCompliance(getApplicactionContext());
-Adjust.disableCoppaCompliance(getApplicationContext());
+adjustConfig.enableCoppaCompliance();
 ```
 
 </Tab>
@@ -629,7 +607,7 @@ Adjust.disableCoppaCompliance(getApplicationContext());
 
 <MinorVersion changed="v5">
 
-SDK v4에서는 `AdjustConfig` 클래스를 사용하여 앱을 [플레이 스토어 어린이용 앱](/en/sdk/android/features/privacy#play-store-kids-apps)으로 표시할 수 있습니다. 이 속성은 SDK 초기화 중에 읽히기 때문에 SDK가 초기화된 후에는 해당 값을 업데이트할 수 없습니다.
+In SDK v4, you can mark an app as a [Play Store Kids app](/en/sdk/android/features/privacy#play-store-kids-apps) by calling the `setPlayStoreKidsAppEnabled` method on your `AdjustConfig` instance with a boolean argument.
 
 </MinorVersion>
 <Tabs>
@@ -649,22 +627,20 @@ adjustConfig.setPlayStoreKidsAppEnabled(true);
 </Tab>
 </Tabs>
 
-SDK v5에서는 이 메서드를 `Adjust` 클래스에서 이용할 수 있습니다. 따라서 앱을 플레이 스토어 어린이용 앱을 표시하기 위해 `Adjust.enablePlayStoreKidsCompliance()`을 호출하거나 플레이 스토어 어린이용 앱의 표시를 해제하기 위해 `Adjust.disablePlayStoreKidsCompliance()`을 호출하여 언제든지 설정을 변경할 수 있습니다.
+In SDK v5, this method has been renamed to `enablePlayStoreKidsCompliance` for clarity. This method takes no arguments.
 
 <Tabs>
 <Tab title="Kotlin" sync="kotlin">
 
 ```kotlin
-Adjust.enablePlayStoreKidsCompliance(applicationContext)
-Adjust.disablePlayStoreKidsCompliance(applicationContext)
+adjustConfig.enablePlayStoreKidsCompliance()
 ```
 
 </Tab>
 <Tab title="Java" sync="java">
 
 ```java
-Adjust.enablePlayStoreKidsCompliance(getApplicationContext());
-Adjust.disablePlayStoreKidsCompliance(getApplicationContext());
+adjustConfig.enablePlayStoreKidsCompliance();
 ```
 
 </Tab>
@@ -1274,7 +1250,7 @@ SDK v5는 기기의 Huawei 설치 리퍼러 정보를 기록하는 Huawei 설치
 
 ```groovy
 dependencies {
-   implementation 'com.adjust.sdk:adjust-android-huawei-referrer:5.0.0-SNAPSHOT'
+   implementation 'com.adjust.sdk:adjust-android-huawei-referrer:5.0.0'
 }
 ```
 
@@ -1294,7 +1270,7 @@ SDK v5는 [Meta 설치 리퍼러](https://developers.facebook.com/docs/app-ads/m
 
    ```groovy
    dependencies {
-      implementation 'com.adjust.sdk:adjust-android-meta-referrer:5.0.0-SNAPSHOT'
+      implementation 'com.adjust.sdk:adjust-android-meta-referrer:5.0.0'
    }
    ```
 
