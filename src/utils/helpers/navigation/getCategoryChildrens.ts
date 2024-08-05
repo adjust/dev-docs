@@ -30,7 +30,8 @@ export const getCategoryChildrens = ({
     let isCollapsed = false;
 
     parts.forEach((part) => {
-      // need to check paths by the new file namings: https://adjustcom.atlassian.net/browse/THC-900
+      //
+      // breadcrumbs logic. Need to check paths by the new file namings: https://adjustcom.atlassian.net/browse/THC-900
       if (
         child.path?.endsWith(part + "/index") ||
         child.path?.endsWith(part) ||
@@ -47,6 +48,7 @@ export const getCategoryChildrens = ({
 
       const splittedChildPage = ("/" + child.slug)?.split("/");
 
+      // category logic if the file has `type: category` then we need to populate children's to display
       if (
         currentPageType === "category" &&
         splittedCurrentPage.length + 1 === splittedChildPage.length &&

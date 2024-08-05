@@ -121,7 +121,7 @@ export const getCategoriesUnderLanguage = (
     (breadcrumb, index, arr) =>
       arr.findIndex((element) => element.url === breadcrumb.url) === index,
   );
-
+  // category logic if the file has `type: category` then we need to populate children's to display
   const filteredChilds = childLinks.filter(
     (childLink, index, childLinksArr) =>
       childLinksArr.findIndex((element) => element.slug === childLink.slug) ===
