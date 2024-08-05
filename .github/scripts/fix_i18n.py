@@ -57,6 +57,9 @@ def process_file(file, locale):
         r"https://help.adjust.com/en/", f"https://help.adjust.com/{locale}/", content
     )
 
+    # Update internal links
+    content = re.sub(r"\(/en/(.*?)\)", rf"(/{locale}/\1)", content)
+
     # Write back the modified content
     with open(file, "w", encoding="utf-8") as f:
         f.write(content)
