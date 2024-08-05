@@ -23,7 +23,6 @@ You can launch a specific activity when a user interacts with a deep link. To do
 1. Assign your **scheme name** to an activity in your `AndroidManifest.xml` file.
 2. Add an `intent-filter` node to the activity definition.
 3. Add an `android:scheme` data node containing your **scheme name** inside the `intent-filter` node.
-4. For [Android App Links](https://help.adjust.com/en/article/set-up-android-app-links), add an `intent` filter to specify which URLs your app can handle. Include the `data` element with the `android:autoVerify="true"` attribute in the `intent` filter.
 
 ### [Example](example)
 
@@ -50,28 +49,12 @@ This example shows how to set up an activity called `MainActivity` to open with 
       <data android:scheme="adjustExample" />
    </intent-filter>
 
-   <intent-filter android:autoVerify="true">
-    <action android:name="android.intent.action.VIEW" />
-    <category android:name="android.intent.category.DEFAULT" />
-    <category android:name="android.intent.category.BROWSABLE" />
-    <data android:scheme="http" android:host="insights.go.link" />
-    <data android:scheme="https" android:host="insights.go.link" />
-   </intent-filter>
-
 </activity>
 ```
 
 </CodeBlock>
 
-<Callout type="info">
-
-`insights.go.link` is the branded domain defined as the Android App Link.
-
-</Callout>
-
-Your app will now be able to handle both URI schemes and Android App Links. When a user clicks on a link that matches either the declared URI scheme or Android App Link, your app opens automatically.
-
-If a user clicks a link with a `deep_link` parameter containing your **scheme name**, this activity fires.
+Your app will now be able to handle URI schemes. When a user clicks a link with a `deep_link` parameter containing your **scheme name**, this activity fires.
 
 <CodeBlock highlight="deep_link=adjustExample%3A%2F%2F">
 
@@ -80,6 +63,32 @@ https://app.adjust.com/abc123?deep_link=adjustExample%3A%2F%2F
 ```
 
 </CodeBlock>
+
+## [Configure Android App Links](configure-android-app-links)
+
+For [Android App Links](https://help.adjust.com/en/article/set-up-android-app-links), add an `intent` filter to your `AndroidManifest.xml` file to specify which URLs your app can handle. Include the `data` element with the `android:autoVerify="true"` attribute in the `intent` filter.
+
+```
+   <intent-filter android:autoVerify="true">
+    <action android:name="android.intent.action.VIEW" />
+    <category android:name="android.intent.category.DEFAULT" />
+    <category android:name="android.intent.category.BROWSABLE" />
+    <data android:scheme="http" android:host="insights.go.link" />
+    <data android:scheme="https" android:host="insights.go.link" />
+   </intent-filter>
+```
+
+<Callout type="info">
+
+`insights.go.link` is the branded domain defined as the Android App Link.
+
+</Callout>
+
+Your app will now be able to handle Android App Links. When a user clicks on a link containing the `insights.go.link` domain, your app opens automatically.
+
+```html
+https://insights.go.link/login?adj_t=abc123
+```
 
 ## [Access deep link information](access-deep-link-information)
 
@@ -259,7 +268,7 @@ config.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListe
 <CodeBlock title="Method signature">
 
 ```java
-public static void processDeeplink(Uri url, Context context)
+public static void processDeeplink(AdjustDeeplink adjustDeeplink, Context context)
 ```
 
 </CodeBlock>
@@ -278,7 +287,8 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
    val intent = intent
    val data = intent.data
-   Adjust.processDeeplink(data, applicationContext)
+   val adjustDeeplink = AdjustDeeplink(data)
+   Adjust.processDeeplink(adjustDeeplink, applicationContext)
 }
 ```
 
@@ -293,8 +303,49 @@ protected void onCreate(Bundle savedInstanceState) {
 
     Intent intent = getIntent();
     Uri data = intent.getData();
-    Adjust.processDeeplink(data, getApplicationContext());
+    AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+    Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
 }
+```
+
+</Tab>
+</Tabs>
+
+## [Get the last resolved link](get-the-last-resolved-link)
+
+<CodeBlock title="Method signature">
+
+```java
+public static void getLastDeeplink(final Context context, final OnLastDeeplinkReadListener onLastDeeplinkReadListener)
+```
+
+</CodeBlock>
+
+You can return the last deep link URL resolved by the `Adjust.processDeeplink()` or [`Adjust.processAndResolveDeepLink()` method](/en/sdk/android/features/short-links) by calling the `Adjust.getLastDeeplink()` method. This method returns the last resolved deep link as a deep link object.
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+Adjust.getLastDeeplink(context) { deeplink ->
+   if (deeplink != null) {
+       Log.d("Example", deeplink.toString())
+   }
+}
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+Adjust.getLastDeeplink(context, new OnLastDeeplinkReadListener() {
+   @Override
+   public void onLastDeeplinkRead(Uri deeplink) {
+       if (deeplink != null) {
+           Log.d("Example", deeplink.toString());
+       }
+   }
+});
 ```
 
 </Tab>
@@ -336,7 +387,8 @@ You can use the returned deep link to reattribute your user. To do this, pass th
 ```kotlin
 AdjustLinkResolution.resolveLink(url, arrayOf("example.com"), object : AdjustLinkResolution.AdjustLinkResolutionCallback {
    override fun resolvedLinkCallback(resolvedLink: Uri) {
-         Adjust.processDeeplink(resolvedLink, applicationContext)
+         val adjustDeeplink = AdjustDeeplink(resolvedLink)
+         Adjust.processDeeplink(adjustDeeplink, applicationContext)
    }
 })
 ```
@@ -348,7 +400,8 @@ AdjustLinkResolution.resolveLink(url, arrayOf("example.com"), object : AdjustLin
 AdjustLinkResolution.resolveLink(url, new String[]{"example.com"}, new AdjustLinkResolution.AdjustLinkResolutionCallback() {
    @Override
    public void resolvedLinkCallback(Uri resolvedLink) {
-      Adjust.processDeeplink(resolvedLink, getApplicationContext());
+      AdjustDeeplink adjustDeeplink = new AdjustDeeplink(resolvedLink);
+      Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
    }
 });
 ```
@@ -376,7 +429,6 @@ You can launch a specific activity when a user interacts with a deep link. To do
 1. Assign your **scheme name** to an activity in your `AndroidManifest.xml` file.
 2. Add an `intent-filter` node to the activity definition.
 3. Add an `android:scheme` data node containing your **scheme name** inside the `intent-filter` node.
-4. For [Android App Links](https://help.adjust.com/en/article/set-up-android-app-links), add an `intent` filter to specify which URLs your app can handle. Include the `data` element with the `android:autoVerify="true"` attribute in the `intent` filter.
 
 ### [Example](example)
 
@@ -416,15 +468,7 @@ This example shows how to set up an activity called `MainActivity` to open with 
 
 </CodeBlock>
 
-<Callout type="info">
-
-`insights.go.link` is the branded domain defined as the Android App Link.
-
-</Callout>
-
-Your app will now be able to handle both URI schemes and Android App Links. When a user clicks on a link that matches either the declared URI scheme or Android App Link, your app opens automatically.
-
-If a user clicks a link with a `deep_link` parameter containing your **scheme name**, this activity fires.
+Your app will now be able to handle URI schemes. When a user clicks a link with a `deep_link` parameter containing your **scheme name**, this activity fires.
 
 <CodeBlock highlight="deep_link=adjustExample%3A%2F%2F">
 
@@ -434,7 +478,33 @@ https://app.adjust.com/abc123?deep_link=adjustExample%3A%2F%2F
 
 </CodeBlock>
 
-### [Access deep link information](access-deep-link-information)
+## [Configure Android App Links](configure-android-app-links)
+
+For [Android App Links](https://help.adjust.com/en/article/set-up-android-app-links), add an `intent` filter to your `AndroidManifest.xml` file to specify which URLs your app can handle. Include the `data` element with the `android:autoVerify="true"` attribute in the `intent` filter.
+
+```
+   <intent-filter android:autoVerify="true">
+    <action android:name="android.intent.action.VIEW" />
+    <category android:name="android.intent.category.DEFAULT" />
+    <category android:name="android.intent.category.BROWSABLE" />
+    <data android:scheme="http" android:host="insights.go.link" />
+    <data android:scheme="https" android:host="insights.go.link" />
+   </intent-filter>
+```
+
+<Callout type="info">
+
+`insights.go.link` is the branded domain defined as the Android App Link.
+
+</Callout>
+
+Your app will now be able to handle Android App Links. When a user clicks on a link containing the `insights.go.link` domain, your app opens automatically.
+
+```html
+https://insights.go.link/login?adj_t=abc123
+```
+
+## [Access deep link information](access-deep-link-information)
 
 You can specify the delivery location of the `deep_link` parameter content. To do this, set the `android:launchMode` property on your activity in your `AndroidManifest.xml` file.
 

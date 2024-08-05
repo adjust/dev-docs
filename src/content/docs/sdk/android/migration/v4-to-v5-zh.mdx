@@ -5,12 +5,6 @@ slug: "zh/sdk/android/migration/v4-to-v5"
 sidebar-position: 1
 ---
 
-<Callout type="important" title="Beta 公测">
-
-SDK v5 处于公测阶段。所有功能均可能发生变更。
-
-</Callout>
-
 ## [操作前须知](before-you-begin)
 
 在更新到 SDK v5 之前，您需要进行以下操作：
@@ -22,32 +16,18 @@ SDK v5 处于公测阶段。所有功能均可能发生变更。
 
 要开始使用 SDK v5，您需要将其添加为项目的依赖。为此请进行下列操作：
 
-1. 将 Beta 库添加至您的`build.gradle`文件。
+1. 请移除`build.gradle`文件中所有较旧版本的 SDK。
 
-   <CodeBlock title="build.gradle">
-
-   ```groovy
-   repositories {
-      maven {
-         url "https://oss.sonatype.org/content/repositories/snapshots/"
-      }
-   }
-   ```
-
-   </CodeBlock>
-
-2. 请移除`build.gradle`文件中所有较旧版本的 SDK。
-
-3. 将以下依赖添加至您的`build.gradle`文件：
+2. 将以下依赖添加至您的`build.gradle`文件：
 
    <CodeBlock title="build.gradle">
 
    ```groovy
    dependencies {
-      implementation 'com.adjust.sdk:adjust-android:5.0.0-SNAPSHOT'
+      implementation 'com.adjust.sdk:adjust-android:5.0.0'
       implementation 'com.android.installreferrer:installreferrer:2.2'
       // Add the following if you are using the Adjust SDK inside web views on your app
-      implementation 'com.adjust.sdk:adjust-android-webbridge:5.0.0-SNAPSHOT'
+      implementation 'com.adjust.sdk:adjust-android-webbridge:5.0.0'
    }
    ```
 
@@ -92,6 +72,15 @@ SDK v5 是一个重大版本更新。也就是说，SDK 发生了重大变化，
 </CodeBlock>
 </Tab>
 </Tabs>
+
+### [Signature setup](signature-setup)
+
+SDK v5 includes the [SDK signature library](https://help.adjust.com/zh/article/sdk-signature). You can test this by following the testing steps in the [Signature library integration guide](/en/sdk/android/integrations/signature-library).
+
+Signature protection is inactive by default. To enable it, you need to:
+
+1. [Enforce signature validation](https://help.adjust.com/zh/article/sdk-signature#enforce-signature-validation).
+2. [Provide your app's SHA\-1 fingerprints](https://help.adjust.com/zh/article/sdk-signature#manage-your-certificate-fingerprints) prior to testing.
 
 ### [配置](configuration)
 
@@ -474,7 +463,7 @@ Adjust.trackEvent(event);
 
 #### [通过深度链接进行再归因](reattribution-using-deep-links)
 
-<MinorVersion changed="v5">
+<MinorVersion changed="v5.0.0-beta2">
 
 向 Adjust SDK 传输深度链接数据的方法已被重命名。
 
@@ -483,15 +472,13 @@ Adjust.trackEvent(event);
 -  v4: `Adjust.appWillOpenUrl()`。
 -  v5: `Adjust.processDeeplink()`。
 
-两种方法都接受相同的参数。
-
 <Tabs>
 <Tab title="Kotlin" sync="kotlin">
 <CodeBlock useDiffSyntax>
 
 ```kotlin
-- Adjust.appWillOpenUrl(data, applicationContext) //v4
-+ Adjust.processDeeplink(data, applicationContext) //v5
+- Adjust.appWillOpenUrl(url, applicationContext) //v4
++ Adjust.processDeeplink(adjustDeepLink, applicationContext) //v5
 ```
 
 </CodeBlock>
@@ -500,8 +487,8 @@ Adjust.trackEvent(event);
 <CodeBlock useDiffSyntax>
 
 ```java
-- Adjust.appWillOpenUrl(data, getApplicationContext()); //v4
-+ Adjust.processDeeplink(data, getApplicationContext()); //v5
+- Adjust.appWillOpenUrl(url, getApplicationContext()); //v4
++ Adjust.processDeeplink(adjustDeepLink, getApplicationContext()); //v5
 ```
 
 </CodeBlock>
@@ -577,7 +564,7 @@ adjustConfig.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkRespons
 
 <MinorVersion changed="v5">
 
-在 SDK v4 中，您可以使用`AdjustConfig`类设置[COPPA 合规](/en/sdk/android/features/privacy#coppa-compliance)并在 SDK 初始化期间读取。也就是说，SDK 初始化后该值就无法再更新。
+In SDK v4, you can mark your app as COPPA compliant by calling the `setCoppaCompliantEnabled` method on your `AdjustConfig` instance with a boolean value.
 
 </MinorVersion>
 <Tabs>
@@ -597,22 +584,20 @@ adjustConfig.setCoppaCompliantEnabled(true);
 </Tab>
 </Tabs>
 
-在 SDK v5 中，此方法位于`Adjust`类中。也就是说，您可以随时更改设置，只需调用`Adjust.enableCoppaCompliance()` 启用 COPPA 合规或调用`disableCoppaCompliance()` 禁用 COPPA 合规。
+In SDK v5, this method has been renamed to `enableCoppaCompliance` for clarity. This method takes no arguments.
 
 <Tabs>
 <Tab title="Kotlin" sync="kotlin">
 
-```java
-Adjust.enableCoppaCompliance(applicationContext)
-Adjust.disableCoppaCompliance(applicationContext)
+```kotlin
+adjustConfig.enableCoppaCompliance()
 ```
 
 </Tab>
 <Tab title="Java" sync="java">
 
 ```java
-Adjust.enableCoppaCompliance(getApplicactionContext());
-Adjust.disableCoppaCompliance(getApplicationContext());
+adjustConfig.enableCoppaCompliance();
 ```
 
 </Tab>
@@ -622,7 +607,7 @@ Adjust.disableCoppaCompliance(getApplicationContext());
 
 <MinorVersion changed="v5">
 
-在 SDK v4 中，您可以使用`AdjustConfig`类将应用标记为[Play 商店儿童应用](/en/sdk/android/features/privacy#play-store-kids-apps)。该属性会在 SDK 初始化期间读取，也就是说 SDK 初始化后该值将无法更新。
+In SDK v4, you can mark an app as a [Play Store Kids app](/en/sdk/android/features/privacy#play-store-kids-apps) by calling the `setPlayStoreKidsAppEnabled` method on your `AdjustConfig` instance with a boolean argument.
 
 </MinorVersion>
 <Tabs>
@@ -642,22 +627,20 @@ adjustConfig.setPlayStoreKidsAppEnabled(true);
 </Tab>
 </Tabs>
 
-在 SDK v5 中，此方法位于`Adjust`类中。也就是说您可以随时更改设置，只需调用`Adjust.enablePlayStoreKidsApp()` 来将应用标记为 Play 商店儿童应用或调用`disablePlayStoreKidsApp()` 来取消应用的 Play 商店儿童应用标记。
+In SDK v5, this method has been renamed to `enablePlayStoreKidsCompliance` for clarity. This method takes no arguments.
 
 <Tabs>
 <Tab title="Kotlin" sync="kotlin">
 
 ```kotlin
-Adjust.enablePlayStoreKidsApp(applicationContext)
-Adjust.disablePlayStoreKidsApp(applicationContext)
+adjustConfig.enablePlayStoreKidsCompliance()
 ```
 
 </Tab>
 <Tab title="Java" sync="java">
 
 ```java
-Adjust.enablePlayStoreKidsApp(getApplicationContext());
-Adjust.disablePlayStoreKidsApp(getApplicationContext());
+adjustConfig.enablePlayStoreKidsCompliance();
 ```
 
 </Tab>
@@ -1101,6 +1084,15 @@ AdjustXiaomiReferrer.getXiaomiInstallReferrer(getApplicationContext(), new OnXia
 </MinorVersion>
 <Tabs>
 <Tab title="Kotlin" sync="kotlin">
+<CodeBlock title="Google Play ADID getter">
+
+```kotlin
+Adjust.getGoogleAdId(this, object : OnGoogleAdIdReadListener {
+   override fun onGoogleAdIdRead(googleAdId: String) {}
+})
+```
+
+</CodeBlock>
 <CodeBlock title="ADID getter">
 
 ```kotlin
@@ -1134,7 +1126,6 @@ AdjustOaid.getOaid(applicationContext, object : OnOaidReadListener() {
 ```kotlin
 Adjust.getAmazonAdId(applicationContext, object : OnAmazonAdIdReadListener {
       override fun onAmazonAdIdRead(amazonAdId: String) {}
-      override fun onFail(message: String) {}
    })
 ```
 
@@ -1159,6 +1150,16 @@ Adjust.isEnabled(applicationContext) { isEnabled ->
 </CodeBlock>
 </Tab>
 <Tab title="Java" sync="java">
+<CodeBlock title="Google Play ADID getter">
+
+```java
+Adjust.getGoogleAdId(this, new OnGoogleAdIdReadListener() {
+    @Override
+    public void onGoogleAdIdRead(String googleAdId) {}
+});
+```
+
+</CodeBlock>
 <CodeBlock title="ADID getter">
 
 ```java
@@ -1203,10 +1204,6 @@ AdjustOaid.getOaid(getApplicationContext(), new OnOaidReadListener() {
 Adjust.getAmazonAdId(getApplicationContext(), new OnAmazonAdIdReadListener() {
     @Override
     public void onAmazonAdIdRead(String amazonAdId) {
-    }
-
-    @Override
-    public void onFail(String message) {
     }
 });
 ```
@@ -1253,7 +1250,7 @@ SDK v5 支持华为 Install Referrer 插件，以记录设备的华为 Install R
 
 ```groovy
 dependencies {
-   implementation 'com.adjust.sdk:adjust-android-huawei-referrer:5.0.0-SNAPSHOT'
+   implementation 'com.adjust.sdk:adjust-android-huawei-referrer:5.0.0'
 }
 ```
 
@@ -1273,7 +1270,7 @@ SDK v5 支持 Meta Install Referrer 插件，以记录[Meta Install Referrer](ht
 
    ```groovy
    dependencies {
-      implementation 'com.adjust.sdk:adjust-android-meta-referrer:5.0.0-SNAPSHOT'
+      implementation 'com.adjust.sdk:adjust-android-meta-referrer:5.0.0'
    }
    ```
 

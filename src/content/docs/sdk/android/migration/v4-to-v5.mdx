@@ -5,12 +5,6 @@ slug: en/sdk/android/migration/v4-to-v5
 sidebar-position: 1
 ---
 
-<Callout type="important" title="Open beta">
-
-SDK v5 is in open beta. All features are subject to change.
-
-</Callout>
-
 ## [Before you begin](before-you-begin)
 
 Here's what you need to do before updating to SDK v5:
@@ -18,35 +12,21 @@ Here's what you need to do before updating to SDK v5:
 1. SDK v5 supports [SDK signature verification](https://help.adjust.com/en/article/sdk-signature) natively. If you currently use the SDK signature library, you need to uninstall this first.
 2. If your app targets API versions lower than [**21**](https://developer.android.com/tools/releases/platforms#5.0) you need to update your app before you can use SDK v5.
 
-## [Install the beta SDK](install-the-sdk)
+## [Install the SDK](install-the-sdk)
 
 To start using SDK v5, you need to add it as a dependency in your project. To do this:
 
-1. Add the beta repository to your `build.gradle` file.
-
-   <CodeBlock title="build.gradle">
-
-   ```groovy
-   repositories {
-      maven {
-         url "https://oss.sonatype.org/content/repositories/snapshots/"
-      }
-   }
-   ```
-
-   </CodeBlock>
-
-2. Remove any older versions of the SDK you currently have in your `build.gradle` file.
-3. Add the following dependencies to your `build.gradle` file:
+1. Remove any older versions of the SDK you currently have in your `build.gradle` file.
+2. Add the following dependencies to your `build.gradle` file:
 
    <CodeBlock title="build.gradle">
 
    ```groovy
    dependencies {
-      implementation 'com.adjust.sdk:adjust-android:5.0.0-SNAPSHOT'
+      implementation 'com.adjust.sdk:adjust-android:5.0.0'
       implementation 'com.android.installreferrer:installreferrer:2.2'
       // Add the following if you are using the Adjust SDK inside web views on your app
-      implementation 'com.adjust.sdk:adjust-android-webbridge:5.0.0-SNAPSHOT'
+      implementation 'com.adjust.sdk:adjust-android-webbridge:5.0.0'
    }
    ```
 
@@ -210,6 +190,50 @@ Adjust.switchBackToOnlineMode() // put SDK back in online mode
 ```java
 Adjust.switchToOfflineMode(); // put SDK in offline mode
 Adjust.switchBackToOnlineMode(); // put SDK back in online mode
+```
+
+</Tab>
+</Tabs>
+
+#### [Preinstall recording](preinstall-recording)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can enable the SDK to record activity from apps that came preinstalled on a user's device by calling the `setPreinstallTrackingEnabled` method of your `AdjustConfig` instance with a boolean argument.
+
+</MinorVersion>
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+adjustConfig.setPreinstallTrackingEnabled(true)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+adjustConfig.setPreinstallTrackingEnabled(true);
+```
+
+</Tab>
+</Tabs>
+
+In SDK v5, this method has been renamed to `enablePreinstallTracking` for clarity. This method takes no arguments.
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+adjustConfig.enablePreinstallTracking()
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+adjustConfig.enablePreinstallTracking();
 ```
 
 </Tab>
@@ -503,7 +527,7 @@ This section covers changes to deep linking in SDK v5.
 
 #### [Reattribution using deep links](reattribution-using-deep-links)
 
-<MinorVersion changed="v5">
+<MinorVersion changed="v5.0.0-beta2">
 
 The method used for passing deep link data to the Adjust SDK has been renamed.
 
@@ -512,16 +536,14 @@ The method used for passing deep link data to the Adjust SDK has been renamed.
 -  v4: `Adjust.appWillOpenUrl()`.
 -  v5: `Adjust.processDeeplink()`.
 
-Both methods accept the same arguments.
-
 <Tabs>
 <Tab title="Kotlin" sync="kotlin">
 
 <CodeBlock useDiffSyntax>
 
 ```kotlin
-- Adjust.appWillOpenUrl(data, applicationContext) //v4
-+ Adjust.processDeeplink(data, applicationContext) //v5
+- Adjust.appWillOpenUrl(url, applicationContext) //v4
++ Adjust.processDeeplink(adjustDeepLink, applicationContext) //v5
 ```
 
 </CodeBlock>
@@ -532,8 +554,8 @@ Both methods accept the same arguments.
 <CodeBlock useDiffSyntax>
 
 ```java
-- Adjust.appWillOpenUrl(data, getApplicationContext()); //v4
-+ Adjust.processDeeplink(data, getApplicationContext()); //v5
+- Adjust.appWillOpenUrl(url, getApplicationContext()); //v4
++ Adjust.processDeeplink(adjustDeepLink, getApplicationContext()); //v5
 ```
 
 </CodeBlock>
@@ -611,7 +633,7 @@ This section covers changes to privacy features in the Adjust SDK.
 
 <MinorVersion changed="v5">
 
-In SDK v4, [COPPA compliance](/en/sdk/android/features/privacy#coppa-compliance) is set using the `AdjustConfig` class and is read during SDK initialization. This means that the value can't be updated once the SDK is initialized.
+In SDK v4, you can mark your app as COPPA compliant by calling the `setCoppaCompliantEnabled` method on your `AdjustConfig` instance with a boolean value.
 
 </MinorVersion>
 
@@ -632,22 +654,20 @@ adjustConfig.setCoppaCompliantEnabled(true);
 </Tab>
 </Tabs>
 
-In SDK v5, this method is available in the `Adjust` class. This means that the setting can be changed at any time by calling `Adjust.enableCoppaCompliance()` to enable COPPA compliance or `disableCoppaCompliance()` to disable COPPA compliance.
+In SDK v5, this method has been renamed to `enableCoppaCompliance` for clarity. This method takes no arguments.
 
 <Tabs>
 <Tab title="Kotlin" sync="kotlin">
 
-```java
-Adjust.enableCoppaCompliance(applicationContext)
-Adjust.disableCoppaCompliance(applicationContext)
+```kotlin
+adjustConfig.enableCoppaCompliance()
 ```
 
 </Tab>
 <Tab title="Java" sync="java">
 
 ```java
-Adjust.enableCoppaCompliance(getApplicactionContext());
-Adjust.disableCoppaCompliance(getApplicationContext());
+adjustConfig.enableCoppaCompliance();
 ```
 
 </Tab>
@@ -657,7 +677,7 @@ Adjust.disableCoppaCompliance(getApplicationContext());
 
 <MinorVersion changed="v5">
 
-In SDK v4, you can mark an app as a [Play Store Kids app](/en/sdk/android/features/privacy#play-store-kids-apps) using the `AdjustConfig` class. This property is read during SDK initialization, which means that the value can't be updated once the SDK is initialized.
+In SDK v4, you can mark an app as a [Play Store Kids app](/en/sdk/android/features/privacy#play-store-kids-apps) by calling the `setPlayStoreKidsAppEnabled` method on your `AdjustConfig` instance with a boolean argument.
 
 </MinorVersion>
 
@@ -678,22 +698,20 @@ adjustConfig.setPlayStoreKidsAppEnabled(true);
 </Tab>
 </Tabs>
 
-In SDK v5, this method is available in the `Adjust` class. This means that the setting can be changed at any time by calling `Adjust.enablePlayStoreKidsApp()` to mark the app as a Play Store Kids app or `disablePlayStoreKidsApp()` to unmark the app as a Play Store Kids app.
+In SDK v5, this method has been renamed to `enablePlayStoreKidsCompliance` for clarity. This method takes no arguments.
 
 <Tabs>
 <Tab title="Kotlin" sync="kotlin">
 
 ```kotlin
-Adjust.enablePlayStoreKidsApp(applicationContext)
-Adjust.disablePlayStoreKidsApp(applicationContext)
+adjustConfig.enablePlayStoreKidsCompliance()
 ```
 
 </Tab>
 <Tab title="Java" sync="java">
 
 ```java
-Adjust.enablePlayStoreKidsApp(getApplicationContext());
-Adjust.disablePlayStoreKidsApp(getApplicationContext());
+adjustConfig.enablePlayStoreKidsCompliance();
 ```
 
 </Tab>
@@ -1174,6 +1192,16 @@ In SDK v4, all device ID getter methods run synchronously. In SDK v5, these meth
 <Tabs>
 <Tab title="Kotlin" sync="kotlin">
 
+<CodeBlock title="Google Play ADID getter">
+
+```kotlin
+Adjust.getGoogleAdId(this, object : OnGoogleAdIdReadListener {
+   override fun onGoogleAdIdRead(googleAdId: String) {}
+})
+```
+
+</CodeBlock>
+
 <CodeBlock title="ADID getter">
 
 ```kotlin
@@ -1210,7 +1238,6 @@ AdjustOaid.getOaid(applicationContext, object : OnOaidReadListener() {
 ```kotlin
 Adjust.getAmazonAdId(applicationContext, object : OnAmazonAdIdReadListener {
       override fun onAmazonAdIdRead(amazonAdId: String) {}
-      override fun onFail(message: String) {}
    })
 ```
 
@@ -1238,6 +1265,17 @@ Adjust.isEnabled(applicationContext) { isEnabled ->
 
 </Tab>
 <Tab title="Java" sync="java">
+
+<CodeBlock title="Google Play ADID getter">
+
+```java
+Adjust.getGoogleAdId(this, new OnGoogleAdIdReadListener() {
+    @Override
+    public void onGoogleAdIdRead(String googleAdId) {}
+});
+```
+
+</CodeBlock>
 
 <CodeBlock title="ADID getter">
 
@@ -1286,10 +1324,6 @@ AdjustOaid.getOaid(getApplicationContext(), new OnOaidReadListener() {
 Adjust.getAmazonAdId(getApplicationContext(), new OnAmazonAdIdReadListener() {
     @Override
     public void onAmazonAdIdRead(String amazonAdId) {
-    }
-
-    @Override
-    public void onFail(String message) {
     }
 });
 ```
@@ -1340,7 +1374,7 @@ SDK v5 supports a Huawei Install Referrer plugin to record a device's Huawei Ins
 
 ```groovy
 dependencies {
-   implementation 'com.adjust.sdk:adjust-android-huawei-referrer:5.0.0-SNAPSHOT'
+   implementation 'com.adjust.sdk:adjust-android-huawei-referrer:5.0.0'
 }
 ```
 
@@ -1360,7 +1394,7 @@ SDK v5 supports a Meta Install Referrer plugin to record [Meta Install Referrer]
 
    ```groovy
    dependencies {
-      implementation 'com.adjust.sdk:adjust-android-meta-referrer:5.0.0-SNAPSHOT'
+      implementation 'com.adjust.sdk:adjust-android-meta-referrer:5.0.0'
    }
    ```
 

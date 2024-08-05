@@ -1,10 +1,8 @@
-import type { Hit } from "@algolia/client-search";
-
-import type { AlgoliaKeys } from "../types";
+import type { Hit, TypesenseKeys } from "../types";
 import type { Locales } from "@i18n/locales";
 
 export interface DevHubIndexProps {
-  algoliaKeys: AlgoliaKeys;
+  typesenseKeys: TypesenseKeys;
   lang: keyof Locales;
 }
 
