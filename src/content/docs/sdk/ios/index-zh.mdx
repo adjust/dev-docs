@@ -8,11 +8,6 @@ multiVersion: true
 ---
 
 <SdkVersion version="v5">
-<Callout type="important" title="Beta 公测">
-
-SDK v5 处于公测阶段。所有功能均可能变更。
-
-</Callout>
 
 通过 Adjust iOS SDK，您可以在 iOS 应用中记录归因、事件以及更多信息。该指南展示了如何将 Adjust SDK 集成至应用。
 
@@ -23,16 +18,50 @@ SDK v5 处于公测阶段。所有功能均可能变更。
 1. SDK v5 支持[SDK 签名验证](https://help.adjust.com/zh/article/sdk-signature)。如果您当前正在使用 SDK 签名库，则需要先将其卸载。
 2. 如果您的应用针对版本 **12\.0** 之前的 iOS 或 tvOS，则需要先更新应用才能使用 SDK v5。
 
-## [1\. 设置环境](set-up-your-environment)
+## [1\. 添加 SDK 至您的项目](1-add-the-sdk-to-your-project)
+
+要在您的 iOS 应用中使用 Adjust SDK，请先将 SDK 加入 Xcode 项目。
+
+要使用 Swift package manager 添加 SDK：
+
+1. 选择 **File \-\-> Swift Packages \-\-> Add Package Dependency**
+2. 在出现的文本框中输入 SDK 的 GitHub 地址： `https://github.com/adjust/ios_sdk`
+3. 在 **Version** 下拉菜单中选择要使用的 Adjust SDK 版本。请查看[发布页面](https://github.com/adjust/ios_sdk/releases)，找到最新版本。
+
+### [其他安装方法](alternative-installation-methods)
+
+<Tabs>
+<Tab title="Cocoapods" sync="cocoapods">
 
 要使用 Cocoapods 添加 SDK，请在 `Podfile` 中指定要使用的版本：
 
-```text
-// Get source directly from GitHub
-pod 'Adjust', :git => 'https://github.com/adjust/ios_sdk.git', :branch => 'v5'
+```rb
+# Get pod from repository
+pod 'Adjust', '~> 5.0.0'
+
+# Get source directly from GitHub
+pod 'Adjust', :git => 'https://github.com/adjust/ios_sdk.git', :tag => 'v5.0.0'
 ```
 
-## [2\. 集成 Adjust SDK](2-integrate-the-adjust-sdk)
+如果您在应用中使用的是 web 视图，请添加下列行以加入 Adjust Web Bridge：
+
+```rb
+pod 'Adjust/AdjustWebBridge', :git => 'https://github.com/adjust/ios_sdk.git', :tag => 'v5.0.0'
+```
+
+</Tab>
+<Tab title="Carthage" sync="carthage">
+
+要使用 Carthage 添加 SDK，请将下列内容添加至您的 `Cartfile`：
+
+```text
+github "adjust/ios_sdk"
+```
+
+</Tab>
+</Tabs>
+
+## [2\. 集成 Adjust SDK](integrate-the-adjust-sdk)
 
 将 Adjust SDK 添加到 `Xcode` 项目后，您需要将其集成至应用。
 
@@ -43,8 +72,8 @@ pod 'Adjust', :git => 'https://github.com/adjust/ios_sdk.git', :branch => 'v5'
 
 要导入 Adjust SDK，请将下列行添加至您的桥接标头文件：
 
-```objc
-#import AdjustSdk
+```swift
+import AdjustSdk
 ```
 
 </Tab>
@@ -59,7 +88,7 @@ pod 'Adjust', :git => 'https://github.com/adjust/ios_sdk.git', :branch => 'v5'
 </Tab>
 </Tabs>
 
-## [3\. 添加 iOS 框架](3-add-ios-frameworks)
+## [3\. 添加 iOS 框架](add-ios-frameworks)
 
 Adjust SDK 依赖各种框架读取具体设备信息。要启用设备信息读取，请添加对应框架，并将其标记为 **可选** 。
 
@@ -69,13 +98,79 @@ Adjust SDK 依赖各种框架读取具体设备信息。要启用设备信息读
 | ----------------------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
 | `AdSupport.framework`               | 允许读取设备 IDFA。对于操作系统为 iOS 14 及更早版本的设备，添加该框架也会允许读取 LAT 信息。                | 如果您的应用属于 "儿童" 类别，那么请勿添加该框架。                                          |
 | `AdServices.framework`              | 处理 ASA 归因。                                                                                             |                                                                                             |
-| `StoreKit.framework`                | 允许访问 SKAdNetwork 框架。                                                                                 | 若要运行 Adjust 处理 iOS 14 或更早操作版本设备上与 SKAdNetwork 的通讯，那么必须添加该框架。 |
+| `StoreKit.framework`                | 允许访问 SKAdNetwork 框架。                                                                                 | 若要允许 Adjust 处理 iOS 14 或更新操作版本设备上与 SKAdNetwork 的通讯，那么必须添加该框架。 |
 | `AppTrackingTransparency.framework` | 若要允许 Adjust SDK 包装用户 ATT 许可对话，并读取 iOS 14 或更新操作版本设备的许可响应，那么必须添加该框架。 | 如果您的应用属于 "儿童" 类别，那么请勿添加该框架                                            |
-| `WebKit.framework`                  | 允许在您的应用程序中使用 web 视图。                                                                         | 只有在应用使用 web 视图时才有必要                                                           |
+| `WebKit.framework`                  | 允许在您的应用中使用 web 视图。                                                                             | 只有在应用使用 web 视图时才有必要                                                           |
 
 </Table>
 
-## [4\. 初始化 Adjust SDK](4-initialize-the-adjust-sdk)
+## [4\. Set up SDK signature](set-up-sdk-signature)
+
+SDK v5 includes the [SDK signature library](https://help.adjust.com/zh/article/sdk-signature). Signature protection is inactive by default. To enable it, you need to [enforce signature validation](https://help.adjust.com/zh/article/sdk-signature#enforce-signature-validation).
+
+## [5\. \(Optional\) set up the Adjust Web Bridge](set-up-web-bridge)
+
+如果您的应用使用的是 web 视图，请务必设置 Adjust Web Bridge，以记录 web 视图中的信息。
+
+### [将 `AdjustBridge` 集成到您的应用中](integrate-adjustbridge-into-your-app)
+
+在项目导航中：
+
+1. 打开您的视图控制器 \(View Controller\) 源文件。
+2. 在文件顶端添加 `import` 导入语句。
+3. 在 Web View Delegate 的 `viewDidLoad` 或 `viewWillAppear` 方法中，添加下列 `AdjustBridge` 调用：
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+import AdjustSdk
+
+func viewWillAppear(_ animated: Bool) {
+    let webView = WKWebView(frame: view.bounds)
+
+    // add var adjustBridge: AdjustBridge? on your interface
+    adjustBridge.loadWKWebViewBridge(webView)
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "<AdjustSdk/AdjustSdk.h>"
+
+- (void)viewWillAppear:(BOOL)animated {
+    WKWebView *webView = [[WKWebView alloc] initWithFrame:self.view.bounds];
+
+    // add @property (nonatomic, strong) AdjustBridge *adjustBridge; on your interface
+    [self.adjustBridge loadWKWebViewBridge:webView];
+}
+
+// Your code here
+```
+
+</Tab>
+</Tabs>
+
+#### [将 `AdjustBridge` 集成进您的 web 视图](integrate-adjustbridge-into-your-web-view)
+
+要在 web 视图上使用 Javascript bridge，您就需要配置 bridge。请添加下列 Javascript 代码，初始化 Adjust iOS web bridge：
+
+<Tabs>
+<Tab title="Javascript" sync="js">
+
+```js
+var yourAppToken = yourAppToken;
+var environment = AdjustConfig.EnvironmentSandbox;
+var adjustConfig = new AdjustConfig(yourAppToken, environment);
+Adjust.initSdk(adjustConfig);
+```
+
+</Tab>
+</Tabs>
+
+## [5\. Initialize the Adjust SDK](initialize-the-adjust-sdk)
 
 要初始化 Adjust SDK，您需要创建一个 config 对象。该对象包含控制 Adjust SDK 行为的配置选项。发送以下参数能够保证最少的设置：
 
@@ -99,7 +194,7 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
         let yourAppToken = "{YourAppToken}"
         let environment = ADJEnvironmentSandbox
         let adjustConfig = ADJConfig(appToken: yourAppToken,
-                                     andEnvironment: environment)
+                                     environment: environment)
 
         Adjust.initSdk(adjustConfig)
        //...
@@ -117,12 +212,22 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
    NSString *yourAppToken = @"{YourAppToken}";
    NSString *environment = ADJEnvironmentSandbox;
    ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:appToken
-                                                andEnvironment:environment];
+                                                environment:environment];
    // Your code here
    [Adjust initSdk:myAdjustConfig];
    // Your code here
    return YES;
 }
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+var yourAppToken = yourAppToken;
+var environment = AdjustConfig.EnvironmentSandbox;
+var adjustConfig = new AdjustConfig(yourAppToken, environment);
+Adjust.initSdk(adjustConfig);
 ```
 
 </Tab>
@@ -215,17 +320,17 @@ func willResignActive(with conversation: MSConversation) {
 </Tab>
 </Tabs>
 
-## [5\. 配置 Adjust SDK](5-configure-the-adjust-sdk)
+## [6\. Configure the Adjust SDK](configure-the-adjust-sdk)
 
 添加 config 对象和初始化逻辑后，您可以配置 Adjust SDK 来记录应用不同部分的信息。请查看[配置参考](/zh/sdk/ios/configuration)和[功能指南](/zh/sdk/ios/features)准确设置您想记录的内容。
 
-## [6\. 测试 Adjust SDK](6-test-the-adjust-sdk)
+## [7\. Test the Adjust SDK](test-the-adjust-sdk)
 
 完成配置，能通过 Adjust SDK 记录应用相关信息后，您就可以进行测试了。Adjust 为您提供[测试控制台](https://help.adjust.com/zh/article/testing-console)和[设备 ID](https://help.adjust.com/zh/article/device-api)，方便您测试应用。
 
 请按照[测试指南](https://help.adjust.com/zh/article/test-the-adjust-sdk)中的说明操作，确保您的应用能将预期值发送给 Adjust。
 
-## [7\. 针对生产环境构建应用](7-build-your-app-for-production)
+## [7\. 针对生产环境构建应用](build-your-app-for-production)
 
 完成测试后，您就可以针对生产环境构建应用了。为此，请更新您的 config 对象。
 
@@ -247,7 +352,7 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
         let adjustConfig = ADJConfig(
             appToken: yourAppToken,
             environment: environment,
-            andSuppressLogLevel: true)
+            suppressLogLevel: true)
         adjustConfig?.logLevel = ADJLogLevelVerbose
         //...
         Adjust.initSdk(adjustConfig)
@@ -266,7 +371,8 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
    NSString *yourAppToken = @"{YourAppToken}";
    NSString *environment = ADJEnvironmentSandbox;
    ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:appToken
-                                                andEnvironment:environment];
+                                                environment:environment
+                                                suppressLogLevel:YES];
    [adjustConfig setLogLevel:ADJLogLevelVerbose];
    //...
    [Adjust initSdk:adjustConfig];
@@ -292,14 +398,14 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
         let environment = ADJEnvironmentSandbox
         let adjustConfig = ADJConfig(
             appToken: yourAppToken,
-            andEnvironment: environment)
+            environment: environment)
         adjustConfig?.logLevel = ADJLogLevelVerbose
 
         #else
         let environment = ADJEnvironmentProduction
         let adjustConfig = ADJConfig(
             appToken: yourAppToken,
-            andEnvironment: environment)
+            environment: environment)
         adjustConfig?.logLevel = ADJLogLevelSuppress
         #endif
         //...
@@ -321,13 +427,13 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
    #if DEBUG
    NSString *environment = ADJEnvironmentSandbox;
    ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:appToken
-                                                andEnvironment:environment];
+                                                environment:environment];
    [adjustConfig setLogLevel:ADJLogLevelVerbose];
 
    #else
    NSString *environment = ADJEnvironmentProduction;
    ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:appToken
-                                                andEnvironment:environment];
+                                                environment:environment];
    [adjustConfig setLogLevel:ADJLogLevelSuppress];
    #endif
    //...
@@ -589,9 +695,9 @@ Adjust SDK 依赖各种框架读取具体设备信息。要启用设备信息读
 | ----------------------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
 | `AdSupport.framework`               | 允许读取设备 IDFA。对于操作系统为 iOS 14 及更早版本的设备，添加该框架也会允许读取 LAT 信息。                | 如果您的应用属于 "儿童" 类别，那么请勿添加该框架。                                          |
 | `AdServices.framework`              | 处理 ASA 归因。                                                                                             |                                                                                             |
-| `StoreKit.framework`                | 允许访问 SKAdNetwork 框架。                                                                                 | 若要运行 Adjust 处理 iOS 14 或更早操作版本设备上与 SKAdNetwork 的通讯，那么必须添加该框架。 |
+| `StoreKit.framework`                | 允许访问 SKAdNetwork 框架。                                                                                 | 若要允许 Adjust 处理 iOS 14 或更新操作版本设备上与 SKAdNetwork 的通讯，那么必须添加该框架。 |
 | `AppTrackingTransparency.framework` | 若要允许 Adjust SDK 包装用户 ATT 许可对话，并读取 iOS 14 或更新操作版本设备的许可响应，那么必须添加该框架。 | 如果您的应用属于 "儿童" 类别，那么请勿添加该框架                                            |
-| `WebKit.framework`                  | 允许在您的应用程序中使用 web 视图。                                                                         | 只有在应用使用 web 视图时才有必要                                                           |
+| `WebKit.framework`                  | 允许在您的应用中使用 web 视图。                                                                             | 只有在应用使用 web 视图时才有必要                                                           |
 
 </Table>
 
@@ -774,7 +880,7 @@ func viewWillAppear(_ animated: Bool) {
     // add @property (nonatomic, strong) AdjustBridge *adjustBridge; on your interface
     [self.adjustBridge loadWKWebViewBridge:webView];
     // optionally you can add a web view delegate so that you can also capture its events
-    // [self.adjustBridge loadWKWebViewBridge:webView wkWebViewDelegate:(id<wknavigationdelegate>)self];
+    // [self.adjustBridge loadWKWebViewBridge:webView wkWebViewDelegate:(id<wknavigationdelegate id="sl-md0000000">)self];
 }
 
 // Your code here
