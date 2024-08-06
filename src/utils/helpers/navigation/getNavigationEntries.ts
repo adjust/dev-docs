@@ -24,12 +24,19 @@ export const getNavigationEntries = (
     const isPage = Object.keys(data).length;
     return isPage && pageData.frontmatter.slug.includes(`${currentLang}/`);
   });
+
   // getting formatted data for the pages
-  const pagesData = filteredPagesData.map((page) => ({
-    ...page.frontmatter,
-    path: page.url?.replace(".mdx", ""),
-    url: page.url ? getLastPath(page.url) : "",
-  }));
+  const pagesData = filteredPagesData.map((page) => {
+    const path = page.url?.replace(".mdx", "");
+    const updatedPath = path?.includes("android/v5")
+      ? path.replace("android/v5", "android")
+      : path;
+    return {
+      ...page.frontmatter,
+      path: updatedPath,
+      url: updatedPath ? getLastPath(updatedPath) : "",
+    };
+  });
 
   // data for the pages under current language root
   const { categories, breadcrumbs, childLinks } = getCategoriesUnderLanguage(
