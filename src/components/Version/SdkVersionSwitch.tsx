@@ -1,19 +1,19 @@
-import { type FC, useEffect, useCallback } from "react";
+import { type FC, useCallback, useEffect } from "react";
 import { ComboBox } from "@adjust/components";
 import { useStore } from "@nanostores/react";
+import type { Option } from "@adjust/components/build/ComboBox/ComboBox";
+
 import type { Locales } from "@i18n/locales";
 import { useTranslations } from "@i18n/utils";
-import type { Option } from "@adjust/components/build/ComboBox/ComboBox";
+import {
+  $versions,
+  changeVersionValue,
+  supportedVersions,
+} from "@store/sdkVersionsStore";
 import {
   getQueryParameter,
   updateQueryParameter,
 } from "@components/utils/queryParamHelpers";
-import { $versions, changeVersionValue } from "@store/sdkVersionsStore";
-
-// Declare the supported values.
-// If another value is provided (e.g. "version=v3"), ignore it.
-
-const supportedVersions = ["v4", "v5"];
 
 const VersionSwitch: FC<{ lang: string }> = ({ lang }) => {
   const t = useTranslations(lang as keyof Locales);
@@ -21,7 +21,10 @@ const VersionSwitch: FC<{ lang: string }> = ({ lang }) => {
 
   useEffect(() => {
     const queryVersion = getQueryParameter("version");
-    if (queryVersion && supportedVersions.includes(queryVersion)) {
+    if (
+      queryVersion &&
+      supportedVersions.find((item) => item.value === queryVersion)
+    ) {
       changeVersionValue({ label: queryVersion, value: queryVersion });
     } else {
       updateQueryParameter("version", versions.currentVersion.value);
@@ -69,7 +72,7 @@ const VersionSwitch: FC<{ lang: string }> = ({ lang }) => {
   return (
     <div
       id="combobox-holder"
-      className="flex flex-col w-full min-h-90px justify-start gap-y-8 bg-slate-100 p-6 rounded-lg mb-14 md:flex-row md:items-center md:gap-x-8"
+      className="flex flex-col w-full min-h-90px justify-start gap-y-4 bg-slate-100 p-6 rounded-lg mb-14"
     >
       <label htmlFor="combobox">{label}</label>
       <ComboBox
