@@ -1,0 +1,228 @@
+---
+title: "購入認証SDK"
+description: "App StoreとPlayストアでの購入認証"
+slug: "ja/sdk/unity/features/purchase-verification"
+multiVersion: true
+---
+
+<SdkVersion version="v5">
+
+[購入認証](https://help.adjust.com/ja/article/purchase-verification)を有効にしている場合、Adjust SDKを使用して購入認証をリクエストできます。Adjust SDKで購入認証を行うには、次の2つの方法があります。
+
+1. 購入を表す`AdjustEvent`オブジェクトを作成し、ターゲットストアの購入プロパティを設定します。
+2. 購入を表す`AdjustAppStorePurchase` （Apple App Store）または`AdjustPlayStorePurchase` （Google Play ストア）オブジェクトを作成します。
+
+<Callout type="tip">
+
+収益イベントを使用してAdjustで購入を計測する場合は、 `AdjustEvent`クラスを使用してください。購入の確認のみをしたいが、イベントには関連付けたくない場合は、 `AdjustAppStorePurchase`または`AdjustPlayStorePurchase`クラスを使用してください。
+
+</Callout>
+
+Adjust SDKで購入情報を送信すると、Adjustは以下を実行します。
+
+1. 関連するストアに情報を送信し、ステータスのレスポンスを待ちます。
+2. ステータスレスポンスをAdjust SDKに転送します。
+
+コールバックを使用することで、購入認証ステータスにアクセスできます。結果は、以下のプロパティを含む`AdjustPurchaseVerificationResult`オブジェクトとして返されます。
+
+-  `VerificationStatus` \( `string` \): 購入のステータス。
+-  `Code` \( `int` \)：購入のステータスコード。
+-  `Message` \( `string` \)ストアから返される全てのメッセージ
+
+## [イベントの記録と購入認証](record-event-and-verify-purchase)
+
+<Tabs>
+<Tab title="App Store" icon="StoreAppStore" sync="appstore">
+<CodeBlock title="メソッドシグネチャー">
+
+```cs
+public static void VerifyAndTrackAppStorePurchase(AdjustEvent adjustEvent, Action<adjustpurchaseverificationresult> callback);
+```
+
+</CodeBlock>
+
+購入認証の目的で収益イベントを送信し、購入認証ステータスを受け取るには、以下の手順に従ってください。
+
+1. イベントトークンを使用して`AdjustEvent`オブジェクトをインスタンス化し、以下のパラメーターを設定します。
+
+   -  `ProductId` （`string`）：購入に成功したアイテムのプロダクトID。
+   -  `TransactionId` \( `string` \)：認証したいトランザクションのID。
+   -  `Receipt` `string`アプリ内購入の受領証。
+
+2. 次の引数を使用して`Adjust.VerifyAndTrackPlayStorePurchase`メソッドを呼び出します：
+   -  `event` \( `AdjustEvent` \)：インスタンス化されたイベントオブジェクト。
+   -  `callback` \( `Action` \)： `AdjustPurchaseVerificationResult`オブジェクトを引数として受け取るデリゲートコールバック関数。
+
+この例では、購入認証レスポンスがログdaemonに出力されます。
+
+```cs
+AdjustEvent adjustEvent = new AdjustEvent("abc123");
+adjustEvent.SetRevenue(6.66, "CAD");
+adjustEvent.TransactionId = "transaction-id";
+adjustEvent.ProductId = "product-id";
+adjustEvent.Receipt = "cmVjZWlwdC12ZXJ5LW5pY2U=";
+Adjust.VerifyAndTrackPlayStorePurchase(adjustEvent, verificationResult =>
+{
+    Debug.Log("Verification status: " + verificationResult.VerificationStatus);
+    Debug.Log("Code: " + verificationResult.Code);
+    Debug.Log("Message: " + verificationResult.Message);
+});
+```
+
+</Tab>
+<Tab title="Google Play" icon="PlatformGooglePlay" sync="playstore">
+<CodeBlock title="メソッドシグネチャー">
+
+```cs
+public static void VerifyAndTrackPlayStorePurchase(AdjustEvent adjustEvent,Action<adjustpurchaseverificationresult> verificationResultCallback);
+```
+
+</CodeBlock>
+
+購入認証の目的で収益イベントを送信し、購入認証ステータスを受け取るには、以下の手順に従ってください。
+
+1. イベントトークンを使用して`AdjustEvent`オブジェクトをインスタンス化し、以下のパラメーターを設定します。
+
+   -  `ProductId` \( `String` \)：購入された商品のID。
+   -  `PurchaseToken` \( `String` \)：購入に関連付けられた購入トークン。
+
+2. 次の引数を使用して`Adjust.VerifyAndTrackPlayStorePurchase`メソッドを呼び出します：
+   -  `ajustEvent` \( `AdjustEvent` \)：インスタンス化されたイベントオブジェクト。
+   -  `callback` \( `Action` \)： `AdjustPurchaseVerificationResult`オブジェクトを引数として受け取るデリゲートコールバック関数。
+
+この例では、購入認証レスポンスがログdaemonに出力されます。
+
+```cs
+AdjustEvent adjustEvent = new AdjustEvent("abc123");
+adjustEvent.SetRevenue(6.66, "CAD");
+adjustEvent.ProductId = "product-id";
+adjustEvent.PurchaseToken = "purchase-token";
+Adjust.VerifyAndTrackPlayStorePurchase(adjustEvent, verificationResult =>
+{
+    Debug.Log("Verification status: " + verificationResult.VerificationStatus);
+    Debug.Log("Code: " + verificationResult.Code);
+    Debug.Log("Message: " + verificationResult.Message);
+});
+```
+
+</Tab>
+</Tabs>
+
+## [購入認証のみの場合](only-verify-purchase)
+
+<Tabs>
+<Tab title="App Store" icon="StoreAppStore" sync="appstore">
+<CodeBlock title="メソッドシグネチャー">
+
+```cs
+public static void VerifyAppStorePurchase(AdjustAppStorePurchase purchase, Action<adjustpurchaseverificationresult> callback);
+```
+
+</CodeBlock>
+
+独立してApp Storeの購入データを送信し、購入認証ステータスを受信するには、次の手順に従ってください。
+
+1. 以下の引数で`AdjustAppStorePurchase`をインスタンス化します：
+
+   -  `ProductId` （`string`）：購入に成功したアイテムのプロダクトID。
+   -  `TransactionId` \( `string` \)：認証したいトランザクションのID。
+   -  `Receipt` `string`アプリ内購入の受領証。
+
+2. 次の引数を使用して`Adjust.VerifyAppStorePurchase`メソッドを呼び出します：
+   -  `purchase` \( `AdjustAppStorePurchase` \)：インスタンス化されたイベントオブジェクト。
+   -  `callback` \( `Action` \)： `AdjustPurchaseVerificationResult`オブジェクトを引数として受け取るデリゲートコールバック関数。
+
+この例では、購入認証レスポンスがログdaemonに出力されます。
+
+```cs
+AdjustAppStorePurchase purchase = new AdjustAppStorePurchase("product-id", "transaction-id", "receipt");
+Adjust.VerifyAppStorePurchase(purchase, verificationResult =>
+{
+    Debug.Log("Verification status: " + verificationResult.VerificationStatus);
+    Debug.Log("Code: " + verificationResult.Code);
+    Debug.Log("Message: " + verificationResult.Message);
+});
+```
+
+</Tab>
+<Tab title="Google Play" icon="PlatformGooglePlay" sync="playstore">
+<CodeBlock title="メソッドシグネチャー">
+
+```cs
+public static void VerifyPlayStorePurchase(AdjustPlayStorePurchase purchase,Action<adjustpurchaseverificationresult> verificationResultCallback);
+```
+
+</CodeBlock>
+
+独立してPlay Storeの購入データを送信し、購入認証ステータスを受信するには、次の手順に従ってください。
+
+1. 以下の引数で`AdjustPlayStorePurchase`をインスタンス化します：
+
+   -  `ProductId` \( `string` \)：購入された商品のID。
+   -  `PurchaseToken` \( `string` \)：購入に関連付けられた購入トークン。
+
+2. 次の引数を使用して`Adjust.VerifyPlayStorePurchase`メソッドを呼び出します：
+   -  `purchase` \( `AdjustPlayStorePurchase` \)：インスタンス化された購入オブジェクト
+   -  `verificationResultCallback` \( `Action` \)： `AdjustPurchaseVerificationResult`オブジェクトを引数として受け取るデリゲートコールバック関数。
+
+この例では、購入認証レスポンスがログdaemonに出力されます。
+
+```cs
+AdjustPlayStorePurchase purchase = new AdjustPlayStorePurchase("product-id", "purchase-token");
+Adjust.VerifyPlayStorePurchase(purchase, verificationResult =>
+{
+    Debug.Log("Verification status: " + verificationResult.VerificationStatus);
+    Debug.Log("Code: " + verificationResult.Code);
+    Debug.Log("Message: " + verificationResult.Message);
+});
+```
+
+</Tab>
+</Tabs>
+</SdkVersion>
+<SdkVersion version="v4">
+
+[購入認証](https://help.adjust.com/ja/article/purchase-verification)を有効にしている場合は、購入イベントと共に追加情報を送信して、購入イベントを認証する必要があります。Adjustのサーバーがこの情報をイベントオブジェクトで受信すると、AppleまたはGoogleにデータを転送し、含まれている情報に応じて購入認証を行います。
+
+<Callout type="seealso">
+
+`AdjustEvent`クラスの詳細については、[イベント情報の送信](/ja/sdk/android/features/events)をご覧ください。
+
+</Callout>
+<Tabs>
+<Tab title="App Store" icon="StoreAppStore" sync="appstore">
+
+App Storeの購入を認証するには、イベントトークンで`AdjustEvent`オブジェクトをインスタンス化し、以下のプロパティを設定します。
+
+-  `productId` （`string`）：購入に成功したアイテムのプロダクトID。
+-  `transactionId` \( `string` \)：認証したいトランザクションのID。
+-  `receipt` `string`アプリ内購入の受領証。
+
+```cs
+AdjustEvent adjustEvent = new AdjustEvent("abc123");
+adjustEvent.setRevenue(6.0, "EUR");
+adjustEvent.setProductId("product-id");
+adjustEvent.setTransactionId("transaction-id");
+adjustEvent.setReceipt("receipt");
+Adjust.trackEvent(adjustEvent);
+```
+
+</Tab>
+<Tab title="Play Store" icon="PlatformGooglePlay" sync="playstore">
+
+Play Storeの購入を認証するには、イベントトークンで`AdjustEvent`オブジェクトをインスタンス化し、以下のプロパティを設定します。
+
+-  `productId` （`string`）：購入に成功したアイテムのプロダクトID。
+-  `purchaseToken` （`string`）：アプリ内購入が正常に完了したために生成された購入トークン。
+
+```cs
+AdjustEvent adjustEvent = new AdjustEvent("abc123");
+adjustEvent.setRevenue(6.0, "EUR");
+adjustEvent.setProductId("product-id");
+adjustEvent.setPurchaseToken("purchase-token");
+Adjust.trackEvent(adjustEvent);
+```
+
+</Tab>
+</Tabs>
+</SdkVersion>
