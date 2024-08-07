@@ -1,0 +1,206 @@
+---
+title: "收入验证"
+description: "验证App Store 和 Play 商店中的购买情况"
+slug: "en/sdk/unity/features/purchase-verification"
+multiVersion: true
+---
+<sdkversion version="v5"> 
+
+如果您已启用[收入验证](https://help.adjust.com/en/article/purchase-verification)，就可以使用 Adjust SDK 请求收入验证。通过 Adjust SDK 验证购买的方法有两种：
+
+1. 创建代表购买的`AdjustEvent`对象并为目标商店配置购买属性。
+2. 创建代表购买的`AdjustAppStorePurchase` \(Apple App Store\) 或`AdjustPlayStorePurchase` \(Google Play 商店\) 对象。
+
+<callout type="tip"> 
+
+如果您在 Adjust 中使用收入事件来监测购买，则应使用`AdjustEvent`类。如果您只想验证购买但不想将其与事件关联，请使用`AdjustAppStorePurchase`或`AdjustPlayStorePurchase`类。
+</Callout> 
+
+当您使用 Adjust SDK 发送购买信息时，Adjust 会进行下列操作：
+
+1. 将信息发送至相关商店并等待状态响应。
+2. 将状态响应转发至 Adjust SDK。
+
+您可以使用回传查看收入验证状态。结果以`AdjustPurchaseVerificationResult`对象的形式返回，包含以下属性：
+
+* `VerificationStatus` \( `string` \)：购买状态。
+* `Code` \( `int` \)：购买的状态代码。
+* `Message` \( `string` \): 商店返回的任何消息。
+
+[记录事件并验证购买](record-event-and-verify-purchase)
+---------------------------------------------
+
+<tabs> <tab title="App Store" icon="StoreAppStore" sync="appstore"> <codeblock title="方法签名"> 
+
+```cs
+public static void VerifyAndTrackAppStorePurchase(AdjustEvent adjustEvent, Action<adjustpurchaseverificationresult id="sl-md0000000"> callback);
+```
+
+</CodeBlock> 
+
+如需发送收入事件进行验证并监听收入验证状态，请按照下列步骤操作：
+
+1. 使用您的事件识别码实例化`AdjustEvent`对象并设置以下参数： 
+   * `ProductId` \(`string`\)：已被成功售出货品的产品识别码。
+   * `TransactionId` \( `string` \)：要验证的交易 ID。
+   * `Receipt` \( `string` \)：应用内购买收据。
+
+2. 请使用下列参数调用 `Adjust.VerifyAndTrackPlayStorePurchase` 方法： 
+   * `event` \( `AdjustEvent` \): 您的实例化事件对象。
+   * `callback` \( `Action` \)：接收`AdjustPurchaseVerificationResult`对象作为参数的委托回传函数。
+
+在此示例中，收入验证响应被输出至日志后台进程。
+
+```cs
+AdjustEvent adjustEvent = new AdjustEvent("abc123");
+adjustEvent.SetRevenue(6.66, "CAD");
+adjustEvent.TransactionId = "transaction-id";
+adjustEvent.ProductId = "product-id";
+adjustEvent.Receipt = "cmVjZWlwdC12ZXJ5LW5pY2U=";
+Adjust.VerifyAndTrackPlayStorePurchase(adjustEvent, verificationResult =>
+{
+    Debug.Log("Verification status: " + verificationResult.VerificationStatus);
+    Debug.Log("Code: " + verificationResult.Code);
+    Debug.Log("Message: " + verificationResult.Message);
+});
+```
+
+</Tab> <tab title="Google Play" icon="PlatformGooglePlay" sync="playstore"> <codeblock title="方法签名"> 
+
+```cs
+public static void VerifyAndTrackPlayStorePurchase(AdjustEvent adjustEvent,Action<adjustpurchaseverificationresult id="sl-md0000000"> verificationResultCallback);
+```
+
+</CodeBlock> 
+
+如需发送收入事件进行验证并监听收入验证状态，请按照下列步骤操作：
+
+1. 使用您的事件识别码实例化`AdjustEvent`对象并设置以下参数： 
+   * `ProductId` \( `String` \)：已购买产品的 ID。
+   * `PurchaseToken` \( `String` \): 与购买关联的购买识别码。
+
+2. 请使用下列参数调用 `Adjust.VerifyAndTrackPlayStorePurchase` 方法： 
+   * `ajustEvent` \( `AdjustEvent` \): 您的实例化事件对象。
+   * `callback` \( `Action` \)：接收`AdjustPurchaseVerificationResult`对象作为参数的委托回传函数。
+
+在此示例中，收入验证响应被输出至日志后台进程。
+
+```cs
+AdjustEvent adjustEvent = new AdjustEvent("abc123");
+adjustEvent.SetRevenue(6.66, "CAD");
+adjustEvent.ProductId = "product-id";
+adjustEvent.PurchaseToken = "purchase-token";
+Adjust.VerifyAndTrackPlayStorePurchase(adjustEvent, verificationResult =>
+{
+    Debug.Log("Verification status: " + verificationResult.VerificationStatus);
+    Debug.Log("Code: " + verificationResult.Code);
+    Debug.Log("Message: " + verificationResult.Message);
+});
+```
+
+</Tab> </Tabs> 
+
+[仅验证购买](only-verify-purchase)
+-----------------------------
+
+<tabs> <tab title="App Store" icon="StoreAppStore" sync="appstore"> <codeblock title="方法签名"> 
+
+```cs
+public static void VerifyAppStorePurchase(AdjustAppStorePurchase purchase, Action<adjustpurchaseverificationresult id="sl-md0000000"> callback);
+```
+
+</CodeBlock> 
+
+如需发送独立的 App Store 购买并监听收入验证状态，请按照下列步骤操作：
+
+1. 使用以下参数实例化`AdjustAppStorePurchase`对象： 
+   * `ProductId` \(`string`\)：已被成功售出货品的产品识别码。
+   * `TransactionId` \( `string` \)：要验证的交易 ID。
+   * `Receipt` \( `string` \)：应用内购买收据。
+
+2. 请使用下列参数调用 `Adjust.VerifyAppStorePurchase` 方法： 
+   * `purchase` \( `AdjustAppStorePurchase` \): 您的实例化事件对象。
+   * `callback` \( `Action` \)：接收`AdjustPurchaseVerificationResult`对象作为参数的委托回传函数。
+
+在此示例中，收入验证响应被输出至日志后台进程。
+
+```cs
+AdjustAppStorePurchase purchase = new AdjustAppStorePurchase("product-id", "transaction-id", "receipt");
+Adjust.VerifyAppStorePurchase(purchase, verificationResult =>
+{
+    Debug.Log("Verification status: " + verificationResult.VerificationStatus);
+    Debug.Log("Code: " + verificationResult.Code);
+    Debug.Log("Message: " + verificationResult.Message);
+});
+```
+
+</Tab> <tab title="Google Play" icon="PlatformGooglePlay" sync="playstore"> <codeblock title="方法签名"> 
+
+```cs
+public static void VerifyPlayStorePurchase(AdjustPlayStorePurchase purchase,Action<adjustpurchaseverificationresult id="sl-md0000000"> verificationResultCallback);
+```
+
+</CodeBlock> 
+
+如需发送独立的 Play 商店购买并监听收入验证状态，请按照下列步骤操作：
+
+1. 使用以下参数实例化`AdjustPlayStorePurchase`： 
+   * `ProductId` \( `string` \)：已购买产品的 ID。
+   * `PurchaseToken` \( `string` \): 与购买关联的购买识别码。
+
+2. 请使用下列参数调用 `Adjust.VerifyPlayStorePurchase` 方法： 
+   * `purchase` \( `AdjustPlayStorePurchase` \): 实例化的购买对象。
+   * `verificationResultCallback` \( `Action` \)：接收`AdjustPurchaseVerificationResult`对象作为参数的委托回传函数。
+
+在此示例中，收入验证响应被输出至日志后台进程。
+
+```cs
+AdjustPlayStorePurchase purchase = new AdjustPlayStorePurchase("product-id", "purchase-token");
+Adjust.VerifyPlayStorePurchase(purchase, verificationResult =>
+{
+    Debug.Log("Verification status: " + verificationResult.VerificationStatus);
+    Debug.Log("Code: " + verificationResult.Code);
+    Debug.Log("Message: " + verificationResult.Message);
+});
+```
+
+</Tab> </Tabs> </SdkVersion> <sdkversion version="v4"> 
+
+如果您已启用[购买验证](https://help.adjust.com/en/article/purchase-verification)，则必须随购买事件一同发送额外信息用于验证。Adjust 服务器在事件对象中接收到此信息后，会将其转发给 Apple 或 Google 以根据所包含的信息来验证购买。
+<callout type="seealso"> 
+
+请参阅[发送事件信息](/en/sdk/android/features/events)，了解有关`AdjustEvent`类的更多信息。
+</Callout> <tabs> <tab title="App Store" icon="StoreAppStore" sync="appstore"> 
+
+要验证 App Store 购买，请使用您的事件识别码实例化`AdjustEvent`对象并设置以下属性：
+
+* `productId` \(`string`\)：已被成功售出货品的产品识别码。
+* `transactionId` \( `string` \)：要验证的交易 ID。
+* `receipt` \( `string` \)：应用内购买收据。
+
+```cs
+AdjustEvent adjustEvent = new AdjustEvent("abc123");
+adjustEvent.setRevenue(6.0, "EUR");
+adjustEvent.setProductId("product-id");
+adjustEvent.setTransactionId("transaction-id");
+adjustEvent.setReceipt("receipt");
+Adjust.trackEvent(adjustEvent);
+```
+
+</Tab> <tab title="Play 商店" icon="PlatformGooglePlay" sync="playstore"> 
+
+要验证 Play 商店购买，请使用您的事件识别码实例化一个`AdjustEvent`对象并设置以下属性：
+
+* `productId` \(`string`\)：已被成功售出货品的产品识别码。
+* `purchaseToken` \(`string`\)：已成功完成的应用内购买的购买识别码。
+
+```cs
+AdjustEvent adjustEvent = new AdjustEvent("abc123");
+adjustEvent.setRevenue(6.0, "EUR");
+adjustEvent.setProductId("product-id");
+adjustEvent.setPurchaseToken("purchase-token");
+Adjust.trackEvent(adjustEvent);
+```
+
+</Tab> </Tabs> </SdkVersion>
+
