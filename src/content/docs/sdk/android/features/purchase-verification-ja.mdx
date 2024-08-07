@@ -1,0 +1,176 @@
+---
+title: "購入認証SDK"
+description: "Play Storeでの購入認証"
+slug: "en/sdk/android/features/purchase-verification"
+multiVersion: true
+---
+<sdkversion version="v5"> <callout type="seealso"> 
+
+プロダクトIDと購入トークンの詳細については、[Google Playの請求システムのドキュメント](https://developer.android.com/google/play/billing#concepts)をご覧ください。
+</Callout> 
+
+[購入認証](https://help.adjust.com/en/article/purchase-verification)を有効にしている場合、Adjust SDKを使用して購入認証をリクエストできます。Adjust SDKで購入認証を行うには、次の2つの方法があります。
+
+1. 購入を示す`AdjustEvent`オブジェクトを作成し、以下のプロパティを追加します。 
+   * `productId` （`String`）：購入に成功したアイテムのプロダクトID。
+   * `purchaseToken` （`String`）：アプリ内購入が正常に完了したために生成された購入トークン。
+
+2. プロダクトIDと購入トークンを使用して、 `AdjustPlayStorePurchase`オブジェクトを作成します。
+
+<callout type="tip"> 
+
+収益イベントを使用してAdjustで購入を計測する場合は、 `AdjustEvent`クラスを使用してください。購入のみを確認したいが、イベントと関連付けない場合は、 `AdjustPlayStorePurchase`クラスを使用してください。
+</Callout> 
+
+Adjust SDKで購入情報を送信すると、Adjustは以下を実行します。
+
+1. Google Playに情報を送信し、ステータスのレスポンスを待ちます。
+2. ステータスレスポンスをAdjust SDKに転送します。
+
+コールバックを使用することで、購入認証ステータスにアクセスできます。結果は、以下のプロパティを含む`AdjustPurchaseVerificationResult`オブジェクトとして返されます。
+
+* `verificationStatus` \( `String` \): 購入のステータス。
+* `code` \( `int` \)：購入のステータスコード。
+* `message` \( `String` \)：Google Playから返される全てのメッセージ。
+
+[イベントの記録と購入認証](record-event-and-verify-purchase)
+------------------------------------------------
+
+<codeblock title="メソッドシグネチャー"> 
+
+```java
+public static void verifyAndTrackPlayStorePurchase(final AdjustEvent event, OnPurchaseVerificationFinishedListener callback)
+```
+
+</CodeBlock> 
+
+購入認証の目的で収益イベントを送信し、購入認証ステータスを受け取るには、以下の手順に従ってください。
+
+1. イベントトークンを使用して`AdjustEvent`オブジェクトをインスタンス化し、以下のパラメーターを設定します。 
+   * `productId` \( `String` \)：購入された商品のID。
+   * `purchaseToken` \( `String` \)：購入に関連付けられた購入トークン。
+
+2. 次の引数を使用して`Adjust.verifyAndTrackPlayStorePurchase`メソッドを呼び出します： 
+   * `event` \( `AdjustEvent` \)：インスタンス化されたイベントオブジェクト。
+   * `callback` \( `OnPurchaseVerificationFinishedListener` \)： `AdjustPurchaseVerificationResult`オブジェクトを引数として受け取るデリゲートコールバック関数。
+
+この例では、購入認証レスポンスがログdaemonに出力されます。
+<tabs> <tab title="Kotlin" sync="kotlin"> 
+
+```kotlin
+val adjustEvent = AdjustEvent("abc123")
+adjustEvent.setRevenue(6.0, "EUR")
+adjustEvent.productId = "product-id"
+adjustEvent.purchaseToken = "purchase-token"
+Adjust.trackEvent(adjustEvent)
+
+Adjust.verifyAndTrackPlayStorePurchase(adjustEvent) {
+    result -> Log.d("Verification status: ", result.verificationStatus)
+    Log.d("Code: ", result.code)
+    Log.d("Message: ", result.message)
+}
+```
+
+</Tab> <tab title="Java" sync="java"> 
+
+```java
+AdjustEvent adjustEvent = new AdjustEvent("abc123");
+adjustEvent.setRevenue(6.0, "EUR");
+adjustEvent.setProductId("product-id");
+adjustEvent.setPurchaseToken("purchase-token");
+Adjust.trackEvent(adjustEvent);
+
+Adjust.verifyAndTrackPlayStorePurchase(adjustEvent, new OnPurchaseVerificationFinishedListener() {
+    @Override
+    public void onFinished(AdjustPurchaseVerificationResult result) {
+       Log.d("Verification status: ", result.verificationStatus);
+       Log.d("Code: ", result.code);
+       Log.d("Message: ", result.message);
+    }
+});
+```
+
+</Tab> </Tabs> 
+
+[購入認証のみの場合](only-verify-purchase)
+---------------------------------
+
+<codeblock title="メソッドシグネチャー"> 
+
+```java
+public static void verifyPlayStorePurchase(final AdjustPlayStorePurchase purchase,
+                                               final OnPurchaseVerificationFinishedListener callback)
+```
+
+</CodeBlock> 
+
+独立して購入データを送信し、購入認証ステータスを受信するには、次の手順に従ってください。
+
+1. 以下の引数で`AdjustPlayStorePurchase`をインスタンス化します： 
+   * `productId` \( `String` \)：購入された商品のID。
+   * `purchaseToken` \( `String` \)：購入に関連付けられた購入トークン。
+
+2. 次の引数を使用して`Adjust.verifyPlayStorePurchase`メソッドを呼び出します： 
+   * `purchase` \( `AdjustPlayStorePurchase` \)：インスタンス化された購入オブジェクト
+   * `callback` \( `OnPurchaseVerificationFinishedListener` \)： `AdjustPurchaseVerificationResult`オブジェクトを引数として受け取るデリゲートコールバック関数。
+
+この例では、購入認証レスポンスがログdaemonに出力されます。
+<tabs> <tab title="Kotlin" sync="kotlin"> 
+
+```kotlin
+val purchase = AdjustPlayStorePurchase("product-id", "purchase-token")
+Adjust.verifyPlayStorePurchase(purchase) {
+    result -> Log.d("Verification status: ", result.verificationStatus)
+    Log.d("Code: ", result.code)
+    Log.d("Message: ", result.message)
+}
+```
+
+</Tab> <tab title="Java" sync="java"> 
+
+```java
+AdjustPlayStorePurchase purchase = new AdjustPlayStorePurchase("product-id", "purchase-token");
+Adjust.verifyPlayStorePurchase(purchase, new OnPurchaseVerificationFinishedListener() {
+    @Override
+    public void onFinished(AdjustPurchaseVerificationResult result) {
+       Log.d("Verification status: ", result.verificationStatus);
+       Log.d("Code: ", result.code);
+       Log.d("Message: ", result.message);
+    }
+});
+```
+
+</Tab> </Tabs> </SdkVersion> <sdkversion version="v4"> 
+
+[購入認証](https://help.adjust.com/en/article/purchase-verification)を有効にしている場合は、購入イベントと共に追加情報を送信して、購入イベントを検証する必要があります。Adjustのサーバーがこの情報を`AdjustEvent`オブジェクトで受け取ると、情報をGoogleに転送して購入を確認します。
+
+購入を検証するには、イベントトークンを使用して`AdjustEvent`オブジェクトをインスタンス化し、以下のプロパティを設定してください。
+
+* `productId` （`String`）：購入に成功したアイテムのプロダクトID
+* `purchaseToken` （`String`）：アプリ内購入が正常に完了したために生成された購入トークン。
+
+<callout type="seealso"> 
+
+`AdjustEvent`クラスの詳細については、[イベント情報の送信](/en/sdk/android/features/events)をご覧ください。
+</Callout> <tabs> <tab title="Kotlin" sync="kotlin"> 
+
+```kotlin
+val adjustEvent = AdjustEvent("abc123")
+adjustEvent.setRevenue(6.0, "EUR");
+adjustEvent.setProductId("product-id");
+adjustEvent.setPurchaseToken("purchase-token");
+Adjust.trackEvent(adjustEvent);
+```
+
+</Tab> <tab title="Java" sync="java"> 
+
+```java
+AdjustEvent adjustEvent = new AdjustEvent("abc123");
+adjustEvent.setRevenue(6.0, "EUR");
+adjustEvent.setProductId("product-id");
+adjustEvent.setPurchaseToken("purchase-token");
+Adjust.trackEvent(adjustEvent);
+```
+
+</Tab> </Tabs> </SdkVersion>
+
