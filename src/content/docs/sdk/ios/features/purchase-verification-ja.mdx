@@ -1,0 +1,183 @@
+---
+title: "購入認証SDK"
+description: "App Storeでの購入認証"
+slug: "en/sdk/ios/features/purchase-verification"
+multiVersion: true
+---
+<sdkversion version="v5"> 
+
+[購入認証](https://help.adjust.com/en/article/purchase-verification)を有効にしている場合、Adjust SDKを使用して購入認証をリクエストできます。
+<callout type="important"> 
+
+購入認証を使用するには、まずAdjustで購入認証を行うためにアプリを設定してください。手順については、[アプリの購入認証の設定](https://help.adjust.com/en/article/set-up-purchase-verification-for-your-app)を参照してください。
+</Callout> 
+
+Adjust SDKで購入認証を行うには、次の2つの方法があります。
+
+1. 購入を示す`ADJEvent`オブジェクトを作成し、以下のプロパティを追加します。 
+   * `transactionId` \( `NSString` \)：認証したいトランザクションのID。
+   * `productId` （`NSString`）：購入に成功したアイテムのプロダクトID。
+
+2. Create an `ADJAppStorePurchase` object with your transaction ID and product ID.
+
+<callout type="tip"> 
+
+収益イベントを使用してAdjustで購入を計測する場合は、 `ADJEvent`クラスを使用してください。購入のみを確認したいが、イベントと関連付けない場合は、 `ADJAppStorePurchase`クラスを使用してください。
+</Callout> 
+
+Adjust SDKで購入情報を送信すると、Adjustは以下を実行します。
+
+1. 情報をApp Storeに送信し、ステータスのレスポンスを待ちます。
+2. ステータスレスポンスをAdjust SDKに転送します。
+
+コールバックを使用することで、購入認証ステータスにアクセスできます。結果は、以下のプロパティを含む`ADJPurchaseVerificationResult`オブジェクトとして返されます。
+
+* `verificationStatus` \( `NSString` \): 購入のステータス。
+* `code` \( `int` \)：購入のステータスコード。
+* `message` \( `NSString` \)：App Storeから返される全てのメッセージ。
+
+[イベントの記録と購入認証](record-event-and-verify-purchase)
+------------------------------------------------
+
+<codeblock title="メソッドシグネチャー"> 
+
+```objc
+- (void)verifyAndTrackAppStorePurchase:(nonnull ADJEvent *)event
+                 withCompletionHandler:(nonnull ADJVerificationResultBlock)completion;
+```
+
+</CodeBlock> 
+
+購入認証の目的で収益イベントを送信し、購入認証ステータスを受け取るには、以下の手順に従ってください。
+
+1. イベントトークンを使用して`ADJEvent`オブジェクトをインスタンス化し、以下のパラメーターを設定します。 
+   * `transactionId` \( `NSString` \)：認証したいトランザクションのID。
+   * `productId` （`NSString`）：購入に成功したアイテムのプロダクトID。
+
+2. 次の引数を使用して`Adjust.verifyAndTrackPlayStorePurchase`メソッドを呼び出します： 
+   * `event` \( `ADJEvent` \)：インスタンス化されたイベントオブジェクト。
+   * `callback` \( `ADJVerificationResultBlock` \)： `ADJPurchaseVerificationResult`オブジェクトを引数として受け取るデリゲートコールバック関数。
+
+この例では、購入認証レスポンスがログdaemonに出力されます。
+<tabs> <tab title="Swift" sync="swift"> 
+
+```swift
+let event = ADJEvent(eventToken: "g3mfiw")!
+event.setProductId("product-id")
+event.setTransactionId("transaction-id")
+
+Adjust.verifyAndTrackAppStorePurchase(event) { verificationResult in
+   print("Verification status: \(verificationResult.verificationStatus)")
+   print("Code: \(verificationResult.code)")
+   print("Message: \(verificationResult.message)")
+}
+```
+
+</Tab> <tab title="Objective-C" sync="objc"> 
+
+```objc
+ADJEvent *event = [[ADJEvent alloc] initWithEventToken:yourEventToken];
+[event setProductId:@"product-id"];
+[event setTransactionId:@"transaction-id"];
+
+[Adjust verifyAndTrackAppStorePurchase:event withCompletionHandler:^(ADJPurchaseVerificationResult * _Nonnull verificationResult) {
+      NSLog(@"Verification status: %@", verificationResult.verificationStatus);
+      NSLog(@"Code: %d", verificationResult.code);
+      NSLog(@"Message: %@", verificationResult.message);
+}];
+```
+
+</Tab> </Tabs> 
+
+[購入認証のみの場合](only-verify-purchase)
+---------------------------------
+
+<codeblock title="メソッドシグネチャー"> 
+
+```objc
+- (void)verifyAppStorePurchase:(nonnull ADJAppStorePurchase *)purchase
+         withCompletionHandler:(nonnull ADJVerificationResultBlock)completion;
+```
+
+</CodeBlock> 
+
+独立して購入データを送信し、購入認証ステータスを受信するには、次の手順に従ってください。
+
+1. 以下の引数で`ADJAppStorePurchase`をインスタンス化します： 
+   * `transactionId` \( `NSString` \)：認証したいトランザクションのID。
+   * `productId` （`NSString`）：購入に成功したアイテムのプロダクトID。
+
+2. 次の引数を使用して`Adjust.verifyAppStorePurchase`メソッドを呼び出します： 
+   * `purchase` \( `ADJAppStorePurchase` \)：インスタンス化された購入オブジェクト
+   * `callback` \( `ADJVerificationResultBlock` \)： `ADJPurchaseVerificationResult`オブジェクトを引数として受け取るデリゲートコールバック関数。
+
+この例では、購入認証レスポンスがログdaemonに出力されます。
+<tabs> <tab title="Swift" sync="swift"> 
+
+```swift
+let appStorePurchase = ADJAppStorePurchase(transactionId: yourTransactionId,
+                           productId: yourProductId;
+
+Adjust.verifyAppStorePurchase(appStorePurchase) { verificationResult in
+   print("Verification status: \(verificationResult.verificationStatus)")
+   print("Code: \(verificationResult.code)")
+   print("Message: \(verificationResult.message)")
+}
+```
+
+</Tab> <tab title="Objective-C" sync="objc"> 
+
+```objc
+ADJAppStorePurchase *appStorePurchase = [[ADJAppStorePurchase alloc]
+                                             initWithTransactionId:yourTranscationId
+                                             productId:yourProductId];
+
+[Adjust verifyAppStorePurchase:appStorePurchase withCompletionHandler:^(ADJPurchaseVerificationResult * _Nonnull verificationResult) {
+     NSLog(@"Verification status: %@", verificationResult.verificationStatus);
+     NSLog(@"Code: %d", verificationResult.code);
+     NSLog(@"Message: %@", verificationResult.message);
+}];
+```
+
+</Tab> </Tabs> </SdkVersion> <sdkversion version="v4"> 
+
+[購入認証](https://help.adjust.com/en/article/purchase-verification)を有効にしている場合は、購入イベントと共に追加情報を送信して、購入イベントを認証する必要があります。Adjustのサーバーがこの情報を`ADJEvent`オブジェクトで受け取ると、情報をAppleに転送して購入を確認します。
+
+購入認証を行うには、イベントトークンを使用して`ADJEvent`オブジェクトをインスタンス化し、以下のプロパティを設定してください。
+
+* `transactionId` （`NSString`）：正常に完了した購入の[`transactionIdentifier`値](https://developer.apple.com/documentation/storekit/skpaymenttransaction/1411288-transactionidentifier)
+* `productId` （`NSString`）：購入に成功したアイテムのプロダクトID
+* `receipt` （`NSData`）：正常に完了した購入に関する情報を含む[署名済みレシート](https://developer.apple.com/documentation/foundation/bundle/1407276-appstorereceipturl)
+
+<callout type="seealso"> 
+
+`ADJEvent`クラスの詳細については、[イベント情報の送信](/en/sdk/ios/features/events)をご覧ください。
+</Callout> <tabs> <tab title="Swift" sync="swift"> 
+
+```swift
+let receiptURL = Bundle.main.appStoreReceiptURL;
+let receipt = try Data(contentsOf: receiptURL, options: .alwaysMapped)
+
+let event = ADJEvent(eventToken: "abc123")
+event?.setRevenue(6.0, currency: "EUR");
+event?.setTransactionId("transaction-id");
+event?.setProductId("product-id");
+event?.setReceipt(receipt);
+Adjust.trackEvent(event)
+```
+
+</Tab> <tab title="Objective-C" sync="objc"> 
+
+```objc
+NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
+NSData *receipt = [NSData dataWithContentsOfURL:receiptURL];
+ADJEvent *event = [ADJEvent eventWithEventToken::@"your-event-token"];
+[event setRevenue:6.0 currency:@"EUR"];
+[event setTransactionId:@"transaction-id"];
+[event setProductId:@"product-id"];
+[event setReceipt:receipt];
+[Adjust trackEvent:event];
+```
+
+</Tab> </Tabs> </SdkVersion>
+
