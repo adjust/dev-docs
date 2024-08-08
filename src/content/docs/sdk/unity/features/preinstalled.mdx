@@ -2,7 +2,126 @@
 title: Send preinstalled app activity
 description: Configure a campaign to send information from preinstalled apps.
 slug: en/sdk/unity/features/preinstalled
+multiVersion: true
 ---
+
+<SdkVersion version="v5">
+
+You can use the Adjust SDK to record activity from apps that came preinstalled on a user's device. This enables you to send information from users who didn't download your app from a campaign.
+
+Control whether preinstall measurement is enabled by setting the `IsPreinstallTrackingEnabled` property of your `AdjustConfig` instance to a `bool` value.
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
+//...
+adjustConfig.IsPreinstallTrackingEnabled = true;
+//...
+Adjust.InitSdk(adjustConfig);
+```
+
+The Adjust SDK provides 5 methods for measuring preinstalled apps:
+
+-  [System Properties](#system-properties) (Android only).
+-  [Content provider](#content-provider) (Android only).
+-  [System Installer Receiver](#system-installer-receiver) (Android only).
+-  [World Readable Directory](#world-readable-directory) (Android only).
+-  [Default link token](#default-link-token) (iOS and Android).
+
+## [System properties](system-properties)
+
+Original Equipment Manufacturer (OEM) partners can leverage Android system properties to attribute preinstalled apps. The OEM (Original Equipment Manufacturer) writes attribution information to a file and adds its path to the system properties. The Adjust SDK reads this file on initialization to attribute the install.
+
+## [Content provider](content-provider)
+
+The content provider method makes use of a read-only content provider. The SDK uses a content resolver to gather preinstall information from the request.
+
+To set the permissions, add the following to your `AndroidManifest.xml` file.
+
+<CodeBlock title="AndroidManifest.xml">
+
+```xml
+<uses-permission android:name="com.adjust.preinstall.READ_PERMISSION"/>
+```
+
+</CodeBlock>
+
+To access a list of preinstalled apps on the device, add the following to your `AndroidManifest.xml` file.
+
+<CodeBlock title="AndroidManifest.xml">
+
+```xml
+<queries>
+   <intent>
+       <action android:name="com.attribution.REFERRAL_PROVIDER"/>
+   </intent>
+</queries>
+
+```
+
+</CodeBlock>
+
+## [System installer receiver](system-installer-receiver)
+
+The system installer method uses a broadcast receiver. The system installer broadcasts preinstall information. The Adjust SDK reads this information using the system preinstall referrer receiver.
+
+To set up the receiver, add the following to your `AndroidManifest.xml` file.
+
+<CodeBlock title="AndroidManifest.xml">
+
+```xml
+<receiver android:name="com.adjust.sdk.AdjustPreinstallReferrerReceiver">
+   <intent-filter>
+      <action android:name="com.attribution.SYSTEM_INSTALLER_REFERRER" />
+   </intent-filter>
+</receiver>
+
+```
+
+</CodeBlock>
+
+## [World-readable directory](world-readable-directory)
+
+Save attribution information for your preinstalled app in a world-readable directory. The SDK reads the information from this file at install to attribute the user. The system encryption protocol protects app data.
+
+Assign the file path at which your preinstall information can be found to the `PreinstallFilePath` property of your `AdjustConfig` instance to give the Adjust SDK access to the information.
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
+//...
+adjustConfig.PreinstallFilePath = "../EngagementFile.xml";
+//...
+Adjust.InitSdk(adjustConfig);
+```
+
+## [Default link token](default-link-token)
+
+Configuring a default link token enables you to attribute all preinstalls to a predefined Adjust link. Adjust records all information against this token until the attribution source changes. To set this up:
+
+1. [Create a new campaign link in Campaign Lab](https://help.adjust.com/en/article/links).
+
+   ```http
+   https://app.adjust.com/{token}
+   ```
+
+2. Copy this token and assign it to the `DefaultTracker` property of your `AdjustConfig` instance in your app delegate file.
+
+   ```cs
+   AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+   //...
+   adjustConfig.DefaultTracker = "{TrackerToken}";
+   //...
+   Adjust.InitSdk(adjustConfig);
+   ```
+
+3. Build and run your app. If you have logging enabled, you should see a message in your log
+
+   ```text
+   Default tracker: 'abc123'.
+   ```
+
+</SdkVersion>
+
+<SdkVersion version="v4">
 
 You can use the Adjust SDK to record activity from apps that came preinstalled on a user's device. This enables you to send information from users who didn't download your app from a campaign.
 
@@ -115,3 +234,5 @@ Configuring a default link token enables you to attribute all preinstalls to a p
    ```text
    Default tracker: 'abc123'.
    ```
+
+</SdkVersion>
