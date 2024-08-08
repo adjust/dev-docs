@@ -15,6 +15,7 @@ import BodyNoScript from "@components/Layout/GoogleTagManager/BodyNoScript.astro
 import Icons from "@components/Layout/Icons.astro";
 import Sidebar from "@components/Layout/LeftSidebar/Sidebar.astro";
 import BigToc from "@components/BigToc.astro";
+import { supportedVersions } from "@store/sdkVersionsStore";
 
 type Props = CollectionEntry<"docs">["data"] & {
   headings: MarkdownHeading[];
@@ -24,12 +25,17 @@ const { headings, ...data } = Astro.props;
 const pages = await Astro.glob("../content/docs/**/*.mdx");
 const currentPage = Astro.url.pathname;
 const currentLang = getLanguageFromURL(currentPage);
+const versionMatch = currentPage?.match(/v\d/gi);
+const version = versionMatch
+  ? versionMatch[0]
+  : supportedVersions.find((version) => version.default)?.value;
 
 const navigationEntries = getNavigationEntries(
   pages,
   currentPage,
   currentLang,
   data?.type,
+  version,
 );
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const homeUrl = `${Astro.url.origin}/${currentLang}`;
