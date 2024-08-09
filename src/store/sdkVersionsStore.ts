@@ -2,21 +2,31 @@ import { persistentMap } from "@nanostores/persistent";
 import { uniqBy } from "lodash-es";
 import type { Option } from "@adjust/components/build/ComboBox/ComboBox";
 
-interface VersionStore {
-  items: Option[];
-  currentVersion: Option;
+export interface VersionStore {
+  items: Option[] & {
+    default?: boolean;
+  };
+  currentVersion: Option & {
+    default?: boolean;
+  };
 }
+
+// Declare the supported values.
+export const supportedVersions = [
+  { label: "v4", value: "v4" },
+  { label: "v5", value: "v5", default: true },
+];
 
 export const $versions = persistentMap<VersionStore>(
   "sdkVersion:",
   {
-    items: [],
-    currentVersion: { label: "v4", value: "v4" }
+    items: supportedVersions,
+    currentVersion: { label: "v5", value: "v5", default: true },
   },
   {
     encode: JSON.stringify,
     decode: JSON.parse,
-  }
+  },
 );
 
 export const changeVersionValue = (version: Option) => {

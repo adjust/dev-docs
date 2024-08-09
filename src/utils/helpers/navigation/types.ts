@@ -11,6 +11,7 @@ export interface CategoryEntry {
   collapsed: boolean;
   level: number;
   path: string;
+  updatedPath: string;
   url?: string;
   topCategory: boolean;
   description: string;
@@ -23,6 +24,7 @@ export interface NavigationEntry {
   "sidebar-label"?: string;
   "category-title"?: string;
   slug: string;
+  updatedPath: string;
   url: string;
   path: string;
   description: string;
