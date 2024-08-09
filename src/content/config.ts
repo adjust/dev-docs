@@ -10,6 +10,13 @@ const docs = defineCollection({
     "category-title": z.string().optional(),
     navPath: z.string().optional(),
     lang: z.literal("en-us").default(SITE.defaultLanguage),
+    redirects: z
+      .object({
+        v4: z.string(),
+        v5: z.string(),
+      })
+      .partial()
+      .optional(),
     dir: z.union([z.literal("ltr"), z.literal("rtl")]).default("ltr"),
     image: z
       .object({

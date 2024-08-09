@@ -1,23 +1,38 @@
 ---
+import type { CollectionEntry } from "astro:content";
 import AudienceDropdown from "@components/AudienceDropdown.astro";
 import AdjustLogo from "@components/Icons/astro/AdjustLogo.astro";
+import SdkVersionSwitch from "@components/Version/SdkVersionSwitch";
 import { type Locales } from "@i18n/locales";
 import { useTranslations } from "@i18n/utils";
-
 interface Props {
   homeUrl: string;
   lang: string;
+  redirects: CollectionEntry<"docs">["data"]["redirects"];
 }
 
-const { homeUrl, lang } = Astro.props;
+const { homeUrl, lang, redirects } = Astro.props;
 const t = useTranslations(lang as keyof Locales);
 ---
 
 <div
-  class="flex flex-row items-center mb-[74px] pt-7 pl-[27px] sidebar-open:justify-center sidebar-open:mb-5 sidebar-open:pt-[6px] sidebar-open:pl-0"
+  class="flex flex-col items-center pt-7 pl-[27px] sidebar-open:justify-center sidebar-open:mb-5 sidebar-open:pt-[6px] sidebar-open:pl-0"
 >
-  <a href={homeUrl} title={t("header.adjust-logo-link-label")}>
-    <AdjustLogo />
-  </a>
-  <AudienceDropdown lang={lang} />
+  <div class="flex flex-row items-center">
+    <a href={homeUrl} title={t("header.adjust-logo-link-label")}>
+      <AdjustLogo />
+    </a>
+    <AudienceDropdown lang={lang} />
+  </div>
+  <div>
+    {
+      Astro.url.pathname.includes("sdk") && (
+        <SdkVersionSwitch
+          client:only="react"
+          lang={lang}
+          redirects={redirects}
+        />
+      )
+    }
+  </div>
 </div>
