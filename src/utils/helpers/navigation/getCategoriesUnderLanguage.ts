@@ -58,12 +58,12 @@ export const getCategoriesUnderLanguage = (
       "sidebar-position": position,
       "category-title": categoryTitle,
       url,
-      path,
+      updatedPath,
       description,
       type,
     } = item;
 
-    const parentId = getParentId(path, currentLang);
+    const parentId = getParentId(updatedPath, currentLang);
 
     const usedTitle = sidebarLabel || categoryTitle || title;
 
@@ -76,6 +76,7 @@ export const getCategoriesUnderLanguage = (
         position,
         title: "Introduction",
         slug: "",
+        updatedPath: `${CONTENT_PATH}`,
         path: `${CONTENT_PATH}`,
         parentId: null,
         collapsed: true,
@@ -98,7 +99,7 @@ export const getCategoriesUnderLanguage = (
         parentId,
         topCategory: false,
         collapsed: false,
-        level: getLevel(path, currentLang),
+        level: getLevel(updatedPath, currentLang),
       });
     }
   });

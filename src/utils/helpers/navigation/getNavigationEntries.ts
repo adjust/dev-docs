@@ -44,7 +44,8 @@ export const getNavigationEntries = (
       : path;
     return {
       ...page.frontmatter,
-      path: updatedPath,
+      updatedPath,
+      path,
       url: updatedPath ? getLastPath(updatedPath) : "",
     };
   });

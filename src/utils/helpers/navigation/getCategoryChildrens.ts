@@ -36,7 +36,10 @@ export const getCategoryChildrens = ({
         child.path?.endsWith(part + "/index") ||
         child.path?.endsWith(part) ||
         child.path?.endsWith(part + `/index-${currentLang}`) ||
-        child.path?.endsWith(part + `-${currentLang}`)
+        child.path?.endsWith(part + `-${currentLang}`) ||
+        // additional check for the versioning logic
+        child.updatedPath?.endsWith(part + "/index") ||
+        child.updatedPath?.endsWith(part)
       ) {
         isCollapsed = true;
         breadcrumbs.unshift({
