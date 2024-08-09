@@ -30,8 +30,8 @@ export const getCategoryChildrens = ({
     let isCollapsed = false;
 
     parts.forEach((part) => {
-      //
-      // breadcrumbs logic. Need to check paths by the new file namings: https://adjustcom.atlassian.net/browse/THC-900
+      // breadcrumbs and collapsed sidebar items logic
+      // Need to check paths by the new file namings: https://adjustcom.atlassian.net/browse/THC-900
       if (
         child.path?.endsWith(part + "/index") ||
         child.path?.endsWith(part) ||
