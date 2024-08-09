@@ -520,8 +520,9 @@ Here is a full example of what has changed:
 AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
    price,
    currency,
-   transactionId,
-   receipt);
+-   transactionId,
+-   receipt);
++  transactionId);
 - subscription.setTransactionDate("transaction-date");
 - subscription.setSalesRegion("sales-region");
 - subscription.addCallbackParameter("key1", "value1");
@@ -588,7 +589,6 @@ The following class properties should be set directly in SDK v5:
 -  `CallbackId`
 -  `TransactionId`
 -  `ProductId`
--  `Receipt`
 -  `PurchaseToken`
 
 The following setters have been renamed:
@@ -597,11 +597,7 @@ The following setters have been renamed:
 -  `addCallbackParameter` -> `AddCallbackParameter`
 -  `addCallbackParameter` -> `AddPartnerParameter`
 
-<Callout type="important">
-
-The `AdjustEvent.setReceiptBase64()` method has been removed. You should always assign a **UnityIAP base64 encoded receipt string** to the `AdjustEvent.Receipt` property.
-
-</Callout>
+The `receipt` property has been removed from the `AdjustEvent` class.
 
 Here is a full example of what has changed:
 
@@ -623,7 +619,6 @@ AdjustEvent adjustEvent = new AdjustEvent("abc123");
 + adjustEvent.CallbackId = "callback-id";
 + adjustEvent.ProductId = "product-id";
 + adjustEvent.PurchaseToken = "purchase-token";
-+ adjustEvent.Receipt = "base64-encoded-receipt";
 + adjustEvent.AddCallbackParameter("key", "value");
 + adjustEvent.AddPartnerParameter("key", "value");
 Adjust.trackEvent(adjustEvent);
@@ -731,10 +726,11 @@ In SDK v4, you can pass your deep link information to the `Adjust.appWillOpenUrl
 Adjust.appWillOpenUrl("url");
 ```
 
-In SDK v5, this has been renamed to `Adjust.ProcessDeeplink()` for clarity.
+In SDK v5, this has been renamed to `Adjust.ProcessDeeplink()` for clarity. A new `AdjustDeeplink` class has been added for constructing deep links. To process a deep link, instantiate an `AdjustDeeplink` object with your deep link URL and pass it to the `Adjust.ProcessDeeplink` method.
 
 ```cs
-Adjust.ProcessDeeplink("url");
+AdjustDeeplink adjustDeeplink = new AdjustDeeplink("url");
+Adjust.ProcessDeeplink(adjustDeeplink);
 ```
 
 #### [Launch deferred deep links](launch-deferred-deeplinks)
@@ -789,11 +785,10 @@ In SDK v4, you can mark an app as a [Play Store Kids app](/en/sdk/unity/features
 adjustConfig.setPlayStoreKidsAppEnabled(true);
 ```
 
-In SDK v5, this method is available in the `Adjust` class. This means that the setting can be changed at any time by calling `Adjust.EnablePlayStoreKidsApp()` to mark the app as a Play Store Kids app or `Adjust.DisablePlayStoreKidsApp()` to unmark the app as a Play Store Kids app.
+In SDK v5, you need to set the `IsPlayStoreKidsComplianceEnabled` property of your `AdjustConfig` instance to `true` to enable compliance.
 
 ```cs
-Adjust.EnablePlayStoreKidsApp(); // Enable Play Store Kids compliance
-Adjust.DisablePlayStoreKidsApp(); // Disable Play Store Kids compliance
+adjustConfig.IsPlayStoreKidsComplianceEnabled = true;
 ```
 
 #### [Set data residency and URL strategy](url-strategy)
