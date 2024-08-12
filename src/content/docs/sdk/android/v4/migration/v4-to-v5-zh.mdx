@@ -1,0 +1,1318 @@
+---
+title: "SDK v5 迁移指南"
+description: "按照此指南从 SDK v4 升级到 SDK v5"
+slug: "zh/sdk/android/v4/migration/v4-to-v5"
+sidebar-position: 1
+---
+
+## [操作前须知](before-you-begin)
+
+在更新到 SDK v5 之前，您需要进行以下操作：
+
+1. SDK v5 支持[SDK 签名验证](https://help.adjust.com/zh/article/sdk-signature)。如果您当前正在使用 SDK 签名库，则需要先将其卸载。
+2. 如果您的应用针对的是低于[**21**](https://developer.android.com/tools/releases/platforms#5.0)的 API 版本，则需要先更新应用才能使用 SDK v5。
+
+## [安装 beta SDK](install-the-sdk)
+
+要开始使用 SDK v5，您需要将其添加为项目的依赖。为此请进行下列操作：
+
+1. 请移除`build.gradle`文件中所有较旧版本的 SDK。
+
+2. 将以下依赖添加至您的`build.gradle`文件：
+
+   <CodeBlock title="build.gradle">
+
+   ```groovy
+   dependencies {
+      implementation 'com.adjust.sdk:adjust-android:5.0.0'
+      implementation 'com.android.installreferrer:installreferrer:2.2'
+      // Add the following if you are using the Adjust SDK inside web views on your app
+      implementation 'com.adjust.sdk:adjust-android-webbridge:5.0.0'
+   }
+   ```
+
+   </CodeBlock>
+
+## [变更](changes)
+
+<Callout type="warning">
+
+SDK v5 是一个重大版本更新。也就是说，SDK 发生了重大变化，需要您更新代码。
+
+</Callout>
+
+安装 v5 SDK 后，您需要更新现有的 Adjust 代码以使用新的 API。
+
+### [初始化方法](init-method)
+
+<MinorVersion changed="v5">
+
+在 SDK v4 中，初始化方法为`Adjust.onCreate(AdjustConfig)` 。在 SDK v5 中，该方法已变为`Adjust.initSdk(AdjustConfig)` 。
+
+</MinorVersion>
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+<CodeBlock useDiffSyntax>
+
+```kotlin
+- Adjust.onCreate(adjustConfig) // v4
++ Adjust.initSdk(adjustConfig) // v5
+```
+
+</CodeBlock>
+</Tab>
+<Tab title="Java" sync="java">
+<CodeBlock useDiffSyntax>
+
+```java
+- Adjust.onCreate(adjustConfig); // v4
++ Adjust.initSdk(adjustConfig); // v5
+```
+
+</CodeBlock>
+</Tab>
+</Tabs>
+
+### [Signature setup](signature-setup)
+
+SDK v5 includes the [SDK signature library](https://help.adjust.com/zh/article/sdk-signature). You can test this by following the testing steps in the [Signature library integration guide](/zh/sdk/android/integrations/signature-library).
+
+Signature protection is inactive by default. To enable it, you need to:
+
+1. [Enforce signature validation](https://help.adjust.com/zh/article/sdk-signature#enforce-signature-validation).
+2. [Provide your app's SHA\-1 fingerprints](https://help.adjust.com/zh/article/sdk-signature#manage-your-certificate-fingerprints) prior to testing.
+
+### [配置](configuration)
+
+本节介绍 SDK 配置变更。
+
+#### [禁用或启用 SDK](disable-enable-sdk)
+
+<MinorVersion changed="v5">
+
+在 SDK v4 中，您可以通过调用带`boolean`值的`Adjust.setEnabled()`来启用和禁用 SDK。
+
+</MinorVersion>
+
+-  调用`Adjust.setEnabled(false)`来禁用 SDK。
+-  调用`Adjust.setEnabled(true)`来启用 SDK。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+Adjust.setEnabled(false) // disable SDK
+Adjust.setEnabled(true) // enable SDK
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+Adjust.setEnabled(false); // disable SDK
+Adjust.setEnabled(true); // enable SDK
+```
+
+</Tab>
+</Tabs>
+
+在 SDK v5 中，为清晰起见，此功能被分成单独的命令。
+
+-  调用`Adjust.disable()`来禁用 SDK。
+-  调用`Adjust.enable()`来启用 SDK。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+Adjust.disable() // disable SDK
+Adjust.enable() // enable SDK
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+Adjust.disable(); // disable SDK
+Adjust.enable(); // enable SDK
+```
+
+</Tab>
+</Tabs>
+
+#### [离线模式](offline-mode)
+
+<MinorVersion changed="v5">
+
+在 SDK v4 中，您可以通过调用带有`boolean`值的`Adjust.setOfflineMode()`来启用或禁用 SDK 中的离线模式。
+
+</MinorVersion>
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+Adjust.setOfflineMode(false) // put SDK in offline mode
+Adjust.setOfflineMode(true) // put SDK back in online mode
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+Adjust.setOfflineMode(false); // put SDK in offline mode
+Adjust.setOfflineMode(true); // put SDK back in online mode
+```
+
+</Tab>
+</Tabs>
+
+在 SDK v5 中，为清晰起见，此功能被分成单独的命令。
+
+-  调用`Adjust.switchToOfflineMode()`将 SDK 设为离线模式。
+-  调用`Adjust.switchBackToOnlineMode()`将 SDK 重新设为在线模式。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+Adjust.switchToOfflineMode() // put SDK in offline mode
+Adjust.switchBackToOnlineMode() // put SDK back in online mode
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+Adjust.switchToOfflineMode(); // put SDK in offline mode
+Adjust.switchBackToOnlineMode(); // put SDK back in online mode
+```
+
+</Tab>
+</Tabs>
+
+#### [事件缓冲](event-buffering)
+
+<MinorVersion removed="v5">
+
+SDK v4 支持事件缓冲。该功能可将请求事件、广告收入、推送标签 \(Push token\) 和其他信息存储在本地缓冲区中以便在之后发送。
+
+</MinorVersion>
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+adjustConfig.setEventBufferingEnabled(true)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+adjustConfig.setEventBufferingEnabled(true);
+```
+
+</Tab>
+</Tabs>
+
+SDK v5 中已删除该设置。
+
+#### [自定义用户代理字符串](custom-user-agent)
+
+<MinorVersion removed="v5">
+
+SDK v4 支持使用用户代理字符串调用 `AdjustConfig.setUserAgent()` 来设置自定义用户代理。
+
+</MinorVersion>
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+adjustConfig.setUserAgent("user_agent_value")
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+adjustConfig.setUserAgent("user_agent_value");
+```
+
+</Tab>
+</Tabs>
+
+SDK v5 中已删除该设置。
+
+#### [设置设备是否已知](set-device-known)
+
+<MinorVersion removed="v5">
+
+在 SDK v4 中，您可以调用`AdjustConfig.setDeviceKnown()`方法，手动告知 SDK 设备是否为已知设备。
+
+</MinorVersion>
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+adjustConfig.setDeviceKnown(true)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+adjustConfig.setDeviceKnown(true);
+```
+
+</Tab>
+</Tabs>
+
+SDK v5 中已删除该设置。
+
+#### [延迟 SDK 启动](delay-sdk-start)
+
+<MinorVersion removed="v5">
+
+SDK v4 支持通过调用`AdjustConfig.setDelayStart()`来延迟 SDK 的启动，最多延迟 **120 秒** 。
+
+</MinorVersion>
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+adjustConfig.setDelayStart(delay)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+adjustConfig.setDelayStart(delay);
+```
+
+</Tab>
+</Tabs>
+
+SDK v5 中已删除该设置。
+
+### [记录功能](recording-features)
+
+本节介绍向 Adjust 发送信息的功能变更。
+
+#### [发送会话信息](send-session-info)
+
+<MinorVersion changed="v5">
+
+在 SDK v4 中，您需要实现`ActivityLifecycleCallbacks`并在 Activity 恢复和暂停时分别调用`Adjust.onResume()`和`Adjust.onPause()`来注册 Activity 生命周期回传。
+
+</MinorVersion>
+
+在 SDK v5 中，`ActivityLifecycleCallbacks`功能由 SDK 处理。请从代码中移除所有自定义活动生命周期回传。
+
+#### [会话回传参数](callback-params)
+
+<MinorVersion changed="v5">
+
+在SDK v5 中，会话回传参数已重命名为统一回传参数。
+
+</MinorVersion>
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+<CodeBlock useDiffSyntax>
+
+```kotlin
+- Adjust.addSessionCallbackParameter("foo", "bar")
+- Adjust.removeSessionCallbackParameter("foo")
+- Adjust.resetSessionCallbackParameters()
+
++ Adjust.addGlobalCallbackParameter("foo", "bar")
++ Adjust.removeGlobalCallbackParameter("foo")
++ Adjust.removeGlobalCallbackParameters()
+```
+
+</CodeBlock>
+</Tab>
+<Tab title="Java" sync="java">
+<CodeBlock useDiffSyntax>
+
+```java
+- Adjust.addSessionCallbackParameter("foo", "bar");
+- Adjust.removeSessionCallbackParameter("foo");
+- Adjust.resetSessionCallbackParameters();
+
++ Adjust.addGlobalCallbackParameter("foo", "bar");
++ Adjust.removeGlobalCallbackParameter("foo");
++ Adjust.removeGlobalCallbackParameters();
+```
+
+</CodeBlock>
+</Tab>
+</Tabs>
+
+#### [会话合作伙伴参数](partner-params)
+
+<MinorVersion changed="v5">
+
+在 SDK v5 中，会话合作伙伴参数已重命名为统一合作伙伴参数。
+
+</MinorVersion>
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+<CodeBlock useDiffSyntax>
+
+```kotlin
+- Adjust.addSessionPartnerParameter("foo", "bar")
+- Adjust.removeSessionPartnerParameter("foo")
+- Adjust.resetSessionPartnerParameters()
+
++ Adjust.addGlobalPartnerParameter("foo", "bar")
++ Adjust.removeGlobalPartnerParameter("foo")
++ Adjust.removeGlobalPartnerParameters()
+```
+
+</CodeBlock>
+</Tab>
+<Tab title="Java" sync="java">
+<CodeBlock useDiffSyntax>
+
+```java
+- Adjust.addSessionPartnerParameter("foo", "bar");
+- Adjust.removeSessionPartnerParameter("foo");
+- Adjust.resetSessionPartnerParameters();
+
++ Adjust.addGlobalPartnerParameter("foo", "bar");
++ Adjust.removeGlobalPartnerParameter("foo");
++ Adjust.removeGlobalPartnerParameters();
+```
+
+</CodeBlock>
+</Tab>
+</Tabs>
+
+#### [事件数据去重](event-deduplication)
+
+<MinorVersion changed="v5">
+
+在 SDK v4 中，事件去重与事件`order ID`同时进行且唯一 ID 的数量上限为 10 个。
+
+</MinorVersion>
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val event = AdjustEvent("event_token")
+event.setOrderId("deduplication_id")
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustEvent event = new AdjustEvent("event_token");
+event.setOrderId("deduplication_id");
+Adjust.trackEvent(event);
+```
+
+</Tab>
+</Tabs>
+
+在 SDK v5 中，该功能与`order ID`分离。事件去重添加了名为`deduplicationId`的新 ID 字段。用户可以自定义`deduplicationId`的数量限制，添加到用于识别重复事件的列表中。默认情况下，上限为 **10** 。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val adjustConfig = AdjustConfig(this, appToken, environment)
+
+adjustConfig.setEventDeduplicationIdsMaxSize(20) // if not set, then 10
+Adjust.initSdk(adjustConfig)
+
+val event = AdjustEvent("event_token")
+event.setDeduplicationId("deduplication_id")
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustConfig adjustConfig = new AdjustConfig(this, appToken, environment);
+
+adjustConfig.setEventDeduplicationIdsMaxSize(20); // if not set, then 10
+Adjust.initSdk(adjustConfig);
+
+AdjustEvent event = new AdjustEvent("event_token");
+event.setDeduplicationId("deduplication_id");
+Adjust.trackEvent(event);
+```
+
+</Tab>
+</Tabs>
+
+#### [AdjustAttribution 类](attribution-class)
+
+<MinorVersion changed="v5">
+
+在 SDK v4 中，`AdjustAttribution`调用包含一个名为`adid`的属性。在 SDK v5 中，`adid`属性已从`AdjustAttribution`类中移除。您可以使用[`getAdid()` getter 方法](#device-id-getters)获取设备的 ADID。
+
+</MinorVersion>
+
+### [深度链接](deep-links)
+
+本节介绍 SDK v5 中对深度链接的变更。
+
+#### [通过深度链接进行再归因](reattribution-using-deep-links)
+
+<MinorVersion changed="v5.0.0-beta2">
+
+向 Adjust SDK 传输深度链接数据的方法已被重命名。
+
+</MinorVersion>
+
+-  v4: `Adjust.appWillOpenUrl()`。
+-  v5: `Adjust.processDeeplink()`。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+<CodeBlock useDiffSyntax>
+
+```kotlin
+- Adjust.appWillOpenUrl(url, applicationContext) //v4
++ Adjust.processDeeplink(adjustDeepLink, applicationContext) //v5
+```
+
+</CodeBlock>
+</Tab>
+<Tab title="Java" sync="java">
+<CodeBlock useDiffSyntax>
+
+```java
+- Adjust.appWillOpenUrl(url, getApplicationContext()); //v4
++ Adjust.processDeeplink(adjustDeepLink, getApplicationContext()); //v5
+```
+
+</CodeBlock>
+</Tab>
+</Tabs>
+
+#### [延迟深度链接回传](deferred-callback)
+
+<MinorVersion changed="v5">
+
+在 SDK v4 中，您可以调用`setOnDeeplinkResponseListener`方法处理延迟深度链接回传。
+
+</MinorVersion>
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+adjustConfig.setOnDeeplinkResponseListener { deeplink ->
+   Log.d("example", "Deferred deep link callback called!")
+   true
+}
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+adjustConfig.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
+            @Override
+            public boolean launchReceivedDeeplink(Uri deeplink) {
+                Log.d("example", "Deferred deep link callback called!");
+                return true;
+            }
+        });
+```
+
+</Tab>
+</Tabs>
+
+在 SDK v5 中，为清晰起见，该方法已被重命名为`setOnDeferredDeeplinkResponseListener` 。所有参数都是相同的。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+adjustConfig.setOnDeferredDeeplinkResponseListener {uri ->
+            Log.d("example", "Deferred deep link callback called!")
+            true
+        }
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+adjustConfig.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListener() {
+            @Override
+            public boolean launchReceivedDeeplink(Uri deeplink) {
+                Log.d("example", "Deferred deep link callback called!");
+                return true;
+            }
+        });
+```
+
+</Tab>
+</Tabs>
+
+### [隐私功能](privacy-features)
+
+本节介绍 Adjust SDK 隐私功能的变更。
+
+#### [《儿童在线隐私权保护法》\(COPPA\) 合规](coppa-compliance)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can mark your app as COPPA compliant by calling the `setCoppaCompliantEnabled` method on your `AdjustConfig` instance with a boolean value.
+
+</MinorVersion>
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+adjustConfig.setCoppaCompliantEnabled(true)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+adjustConfig.setCoppaCompliantEnabled(true);
+```
+
+</Tab>
+</Tabs>
+
+In SDK v5, this method has been renamed to `enableCoppaCompliance` for clarity. This method takes no arguments.
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+adjustConfig.enableCoppaCompliance()
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+adjustConfig.enableCoppaCompliance();
+```
+
+</Tab>
+</Tabs>
+
+#### [Play Store 儿童应用](play-store-kids)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can mark an app as a [Play Store Kids app](/zh/sdk/android/features/privacy#play-store-kids-apps) by calling the `setPlayStoreKidsAppEnabled` method on your `AdjustConfig` instance with a boolean argument.
+
+</MinorVersion>
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+adjustConfig.setPlayStoreKidsAppEnabled(true)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+adjustConfig.setPlayStoreKidsAppEnabled(true);
+```
+
+</Tab>
+</Tabs>
+
+In SDK v5, this method has been renamed to `enablePlayStoreKidsCompliance` for clarity. This method takes no arguments.
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+adjustConfig.enablePlayStoreKidsCompliance()
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+adjustConfig.enablePlayStoreKidsCompliance();
+```
+
+</Tab>
+</Tabs>
+
+#### [发送特定来源的广告收入](send-ad-revenue)
+
+<MinorVersion changed="v5">
+
+在 SDK v4 中，广告收入来源被定义为`AdjustConfig`类中的常量。在 SDK v5 中，广告收入来源需要以字符串形式传递。
+
+</MinorVersion>
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+<CodeBlock useDiffSyntax>
+
+```kotlin
+- val adjustAdRevenue = AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX) // v4
++ val adjustAdRevenue = AdjustAdRevenue("applovin_max_sdk") // v5
+```
+
+</CodeBlock>
+</Tab>
+<Tab title="Java" sync="java">
+<CodeBlock useDiffSyntax>
+
+```java
+- AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX); // v4
++ AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue("applovin_max_sdk"); // v5
+```
+
+</CodeBlock>
+</Tab>
+</Tabs>
+<Table>
+
+| v4                                          | v5                        |
+| ------------------------------------------- | ------------------------- |
+| `AdjustConfig.AD_REVENUE_APPLOVIN_MAX`      | `"applovin_max_sdk"`      |
+| `AdjustConfig.AD_REVENUE_ADMOB`             | `"admob_sdk"`             |
+| `AdjustConfig.AD_REVENUE_IRONSOURCE`        | `"ironsource_sdk"`        |
+| `AdjustConfig.AD_REVENUE_ADMOST`            | `"admost_sdk"`            |
+| `AdjustConfig.AD_REVENUE_UNITY`             | `"unity_sdk"`             |
+| `AdjustConfig.AD_REVENUE_HELIUM_CHARTBOOST` | `"helium_chartboost_sdk"` |
+| `AdjustConfig.AD_REVENUE_ADX`               | `"adx_sdk"`               |
+| `AdjustConfig.AD_REVENUE_SOURCE_PUBLISHER`  | `"publisher_sdk"`         |
+| `AdjustConfig.AD_REVENUE_TRADPLUS`          | `"tradplus_sdk"`          |
+| `AdjustConfig.AD_REVENUE_TOPON`             | `"topon_sdk"`             |
+| `AdjustConfig.AD_REVENUE_MOPUB`             | `"mopub"`                 |
+
+</Table>
+
+#### [设置数据驻留和 URL 策略](url-strategy)
+
+<MinorVersion changed="v5">
+
+在 SDK v4 中，URL 策略和数据驻留域名在`AdjustConfig`类中被定义为常量。
+
+</MinorVersion>
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+adjustConfig.setUrlStrategy(AdjustConfig.DATA_RESIDENCY_EU)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+adjustConfig.setUrlStrategy(AdjustConfig.DATA_RESIDENCY_EU);
+```
+
+</Tab>
+</Tabs>
+
+在 SDK v5 中，您需要将选定的一个或多个域名以数组的形式发送。您还可以进行下列设置：
+
+-  `useSubdomains` \( `boolean` \)：来源是否为子域名作为前缀。
+-  `isDataResidency` \( `boolean` \)：域名是否用于数据驻留。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val domains: List<string> = mutableListOf("domain") // eg. eu.adjust.com
+val useSubdomains = true // or false
+val isDataResidency = false // or true for data residency
+adjustConfig.setUrlStrategy(domains, useSubdomains, isDataResidency)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+List<string> domains = Arrays.asList("domain"); // eg. eu.adjust.com
+boolean useSubdomains = true; // or false
+boolean isDataResidency = false; // or true for data residency
+adjustConfig.setUrlStrategy(domains, useSubdomains, isDataResidency);
+```
+
+</Tab>
+</Tabs>
+
+请查看下方表格，了解如何在 SDK v5 中配置 URL 策略。
+
+<Table autoWidth="1,2">
+
+| v4                                  | v5 \- 主要和后备域名               | v5 \- 使用子域名 | v5 \- 数据驻留 |
+| ----------------------------------- | ---------------------------------- | ---------------- | -------------- |
+| `AdjustConfig.DATA_RESIDENCY_EU`    | `"eu.adjust.com"`                  | `true`           | `true`         |
+| `AdjustConfig.DATA_RESIDENCY_TR`    | `"tr.adjust.com"`                  | `true`           | `true`         |
+| `AdjustConfig.DATA_RESIDENCY_US`    | `"us.adjust.com"`                  | `true`           | `true`         |
+| `AdjustConfig.URL_STRATEGY_CHINA`   | `"adjust.world"`： `"adjust.com"`  | `true`           | `false`        |
+| `AdjustConfig.URL_STRATEGY_CN`      | `"adjust.cn"`： `"adjust.com"`     | `true`           | `false`        |
+| `AdjustConfig.URL_STRATEGY_CN_ONLY` | `"adjust.cn"`                      | `true`           | `false`        |
+| `AdjustConfig.URL_STRATEGY_INDIA`   | `"adjust.net.in"`： `"adjust.com"` | `true`           | `false`        |
+
+</Table>
+
+##### [示例](examples)
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+<CodeBlock title="印度 URL 策略">
+
+```kotlin
+adjustConfig.setUrlStrategy(listOf("adjust.net.in", "adjust.com"), true, false)
+```
+
+</CodeBlock>
+<CodeBlock title="中国 URL 策略">
+
+```kotlin
+adjustConfig.setUrlStrategy(listOf("adjust.world", "adjust.com"), true, false)
+```
+
+</CodeBlock>
+<CodeBlock title="仅限中国地区的 URL 策略">
+
+```kotlin
+adjustConfig.setUrlStrategy(listOf("adjust.cn"), true, false)
+```
+
+</CodeBlock>
+<CodeBlock title="欧盟数据驻留">
+
+```kotlin
+adjustConfig.setUrlStrategy(listOf("eu.adjust.com"), true, true)
+```
+
+</CodeBlock>
+<CodeBlock title="土耳其数据驻留">
+
+```kotlin
+adjustConfig.setUrlStrategy(listOf("tr.adjust.com"), true, true)
+```
+
+</CodeBlock>
+<CodeBlock title="数据驻留">
+
+```kotlin
+adjustConfig.setUrlStrategy(listOf("us.adjust.com"), true, true)
+```
+
+</CodeBlock>
+</Tab>
+<Tab title="Java" sync="java">
+<CodeBlock title="印度 URL 策略">
+
+```java
+config.setUrlStrategy(Arrays.asList("adjust.net.in", "adjust.com"), true, false);
+```
+
+</CodeBlock>
+<CodeBlock title="中国 URL 策略">
+
+```java
+adjustConfig.setUrlStrategy(Arrays.asList("adjust.world", "adjust.com"), true, false);
+```
+
+</CodeBlock>
+<CodeBlock title="仅限中国地区的 URL 策略">
+
+```java
+adjustConfig.setUrlStrategy(Arrays.asList("adjust.cn"), true, false);
+```
+
+</CodeBlock>
+<CodeBlock title="欧盟数据驻留">
+
+```java
+adjustConfig.setUrlStrategy(Arrays.asList("eu.adjust.com"), true, true);
+```
+
+</CodeBlock>
+<CodeBlock title="土耳其数据驻留">
+
+```java
+adjustConfig.setUrlStrategy(Arrays.asList("tr.adjust.com"), true, true);
+```
+
+</CodeBlock>
+<CodeBlock title="数据驻留">
+
+```java
+adjustConfig.setUrlStrategy(Arrays.asList("us.adjust.com"), true, true);
+```
+
+</CodeBlock>
+</Tab>
+</Tabs>
+
+#### [全局禁用第三方分享](disable-sharing-globally)
+
+<MinorVersion removed="v5">
+
+在 SDK v4 中，您可以调用`Adjust.disableThirdPartySharing()`方法来全面禁用第三方信息分享。
+
+</MinorVersion>
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+Adjust.disableThirdPartySharing(applicationContext)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+Adjust.disableThirdPartySharing(getApplicationContext());
+```
+
+</Tab>
+</Tabs>
+
+SDK v5 中已删除该功能。在 SDK v5 中，使用`Adjust.trackThirdPartySharing()`方法来启用或禁用第三方共享。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val adjustThirdPartySharing = AdjustThirdPartySharing(true)
+Adjust.trackThirdPartySharing(adjustThirdPartySharing)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(true);
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+```
+
+</Tab>
+</Tabs>
+
+### [获取设备信息](device-info)
+
+本节介绍 SDK v5 中设备信息 getter 的变更。
+
+#### [Install Referrer getter](install-referrer-getters)
+
+<MinorVersion added="v5">
+
+SDK v5 包含用于调取 Install Referrer 信息的新 getter 方法。
+
+</MinorVersion>
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+<CodeBlock title="Google Play 应用商店 referrer">
+
+```kotlin
+Adjust.getGooglePlayInstallReferrer(
+   applicationContext,
+   object : OnGooglePlayInstallReferrerReadListener {
+         override fun onInstallReferrerRead(referrerDetails: GooglePlayInstallReferrerDetails) {}
+         override fun onFailure(message: String) {}
+   })
+```
+
+</CodeBlock>
+<CodeBlock title="Huawei Install Referrer">
+
+```kotlin
+AdjustHuaweiReferrer.getHuaweiAdsInstallReferrer(
+   applicationContext,
+   object : OnHuaweiInstallReferrerReadListener() {
+         fun onInstallReferrerDetailsRead(referrerDetails: HuaweiInstallReferrerDetails?) {}
+         fun onFail(message: String?) {}
+   })
+
+
+AdjustHuaweiReferrer.getHuaweiAppGalleryInstallReferrer(
+   applicationContext,
+   object : OnHuaweiInstallReferrerReadListener() {
+         fun onInstallReferrerDetailsRead(referrerDetails: HuaweiInstallReferrerDetails?) {}
+         fun onFail(message: String?) {}
+   })
+```
+
+</CodeBlock>
+<CodeBlock title="Samsung Install Referrer">
+
+```kotlin
+AdjustSamsungReferrer.getSamsungInstallReferrer(
+   applicationContext,
+   object : OnSamsungInstallReferrerReadListener() {
+         fun onSamsungInstallReferrerRead(referrerDetails: SamsungInstallReferrerDetails?) {}
+         fun onFail(message: String?) {}
+   })
+```
+
+</CodeBlock>
+<CodeBlock title="Vivo Install Referrer">
+
+```kotlin
+AdjustVivoReferrer.getVivoInstallReferrer(
+   applicationContext,
+   object : OnVivoInstallReferrerReadListener() {
+         fun onVivoInstallReferrerRead(referrerDetails: VivoInstallReferrerDetails?) {}
+         fun onFail(message: String?) {}
+   })
+```
+
+</CodeBlock>
+<CodeBlock title="小米 Install Referrer">
+
+```kotlin
+AdjustXiaomiReferrer.getXiaomiInstallReferrer(
+   applicationContext,
+   object : OnXiaomiInstallReferrerReadListener() {
+         fun onXiaomiInstallReferrerRead(referrerDetails: XiaomiInstallReferrerDetails?) {}
+         fun onFail(message: String?) {}
+   })
+```
+
+</CodeBlock>
+</Tab>
+<Tab title="Java" sync="java">
+<CodeBlock title="Google Play 应用商店 referrer">
+
+```java
+Adjust.getGooglePlayInstallReferrer(getApplicationContext(), new OnGooglePlayInstallReferrerReadListener() {
+    @Override
+    public void onInstallReferrerRead(GooglePlayInstallReferrerDetails referrerDetails) {
+    }
+
+    @Override
+    public void onFailure(String message) {
+    }
+});
+```
+
+</CodeBlock>
+<CodeBlock title="Huawei Install Referrer">
+
+```java
+AdjustHuaweiReferrer.getHuaweiAdsInstallReferrer(getApplicationContext(), new OnHuaweiInstallReferrerReadListener() {
+   @Override
+   public void onInstallReferrerDetailsRead(HuaweiInstallReferrerDetails referrerDetails) {
+   }
+
+
+   @Override
+   public void onFail(String message) {
+   }
+});
+
+AdjustHuaweiReferrer.getHuaweiAppGalleryInstallReferrer(getApplicationContext(), new OnHuaweiInstallReferrerReadListener() {
+   @Override
+   public void onInstallReferrerDetailsRead(HuaweiInstallReferrerDetails referrerDetails) {
+   }
+
+
+   @Override
+   public void onFail(String message) {
+   }
+});
+```
+
+</CodeBlock>
+<CodeBlock title="Samsung Install Referrer">
+
+```java
+AdjustSamsungReferrer.getSamsungInstallReferrer(getApplicationContext(), new OnSamsungInstallReferrerReadListener() {
+   @Override
+   public void onSamsungInstallReferrerRead(SamsungInstallReferrerDetails referrerDetails) {
+   }
+
+
+   @Override
+   public void onFail(String message) {
+   }
+});
+```
+
+</CodeBlock>
+<CodeBlock title="Vivo Install Referrer">
+
+```java
+AdjustVivoReferrer.getVivoInstallReferrer(getApplicationContext(), new OnVivoInstallReferrerReadListener() {
+   @Override
+   public void onVivoInstallReferrerRead(VivoInstallReferrerDetails referrerDetails) {
+   }
+
+
+   @Override
+   public void onFail(String message) {
+   }
+});
+```
+
+</CodeBlock>
+<CodeBlock title="小米 Install Referrer">
+
+```java
+AdjustXiaomiReferrer.getXiaomiInstallReferrer(getApplicationContext(), new OnXiaomiInstallReferrerReadListener() {
+   @Override
+   public void onXiaomiInstallReferrerRead(XiaomiInstallReferrerDetails referrerDetails) {
+   }
+
+
+   @Override
+   public void onFail(String message) {
+   }
+});
+```
+
+</CodeBlock>
+</Tab>
+</Tabs>
+
+#### [设备 ID getter](device-id-getters)
+
+<MinorVersion changed="v5">
+
+在 SDK v4 中，所有设备 ID getter 方法都会同步运行。在 SDK v5 中，这些方法已改为异步运行。
+
+</MinorVersion>
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+<CodeBlock title="Google Play ADID getter">
+
+```kotlin
+Adjust.getGoogleAdId(this, object : OnGoogleAdIdReadListener {
+   override fun onGoogleAdIdRead(googleAdId: String) {}
+})
+```
+
+</CodeBlock>
+<CodeBlock title="ADID getter">
+
+```kotlin
+Adjust.getAdid { adid ->
+	// read adid
+}
+```
+
+</CodeBlock>
+<CodeBlock title="归因信息 getter">
+
+```kotlin
+Adjust.getAttribution {attribution ->
+   // read attribution
+}
+```
+
+</CodeBlock>
+<CodeBlock title="OAID getter">
+
+```kotlin
+AdjustOaid.getOaid(applicationContext, object : OnOaidReadListener() {
+      fun onOaidRead(oaid: String?) {}
+      fun onFail(message: String?) {}
+   })
+```
+
+</CodeBlock>
+<CodeBlock title="Amazon ADID getter">
+
+```kotlin
+Adjust.getAmazonAdId(applicationContext, object : OnAmazonAdIdReadListener {
+      override fun onAmazonAdIdRead(amazonAdId: String) {}
+   })
+```
+
+</CodeBlock>
+<CodeBlock title="SDK 版本 getter">
+
+```kotlin
+Adjust.getSdkVersion {sdkVersion ->
+   // read sdk version
+}
+```
+
+</CodeBlock>
+<CodeBlock title="启用状态 getter">
+
+```kotlin
+Adjust.isEnabled(applicationContext) { isEnabled ->
+   // read isEnabled
+}
+```
+
+</CodeBlock>
+</Tab>
+<Tab title="Java" sync="java">
+<CodeBlock title="Google Play ADID getter">
+
+```java
+Adjust.getGoogleAdId(this, new OnGoogleAdIdReadListener() {
+    @Override
+    public void onGoogleAdIdRead(String googleAdId) {}
+});
+```
+
+</CodeBlock>
+<CodeBlock title="ADID getter">
+
+```java
+Adjust.getAdid(new OnAdidReadListener() {
+    @Override
+    public void onAdidRead(String adid) {
+    }
+});
+```
+
+</CodeBlock>
+<CodeBlock title="归因信息 getter">
+
+```java
+Adjust.getAttribution(new OnAttributionReadListener() {
+    @Override
+    public void onAttributionRead(AdjustAttribution attribution) {
+    }
+});
+```
+
+</CodeBlock>
+<CodeBlock title="OAID getter">
+
+```java
+AdjustOaid.getOaid(getApplicationContext(), new OnOaidReadListener() {
+   @Override
+   public void onOaidRead(String oaid) {
+   }
+
+
+   @Override
+   public void onFail(String message) {
+   }
+});
+```
+
+</CodeBlock>
+<CodeBlock title="Amazon ADID getter">
+
+```java
+Adjust.getAmazonAdId(getApplicationContext(), new OnAmazonAdIdReadListener() {
+    @Override
+    public void onAmazonAdIdRead(String amazonAdId) {
+    }
+});
+```
+
+</CodeBlock>
+<CodeBlock title="SDK 版本 getter">
+
+```java
+Adjust.getSdkVersion(new OnSdkVersionReadListener() {
+    @Override
+    public void onSdkVersionRead(String sdkVersion) {
+    }
+});
+```
+
+</CodeBlock>
+<CodeBlock title="启用状态 getter">
+
+```java
+Adjust.isEnabled(getApplicationContext(), new OnIsEnabledListener() {
+    @Override
+    public void onIsEnabledRead(boolean isEnabled) {
+
+    }
+});
+```
+
+</CodeBlock>
+</Tab>
+</Tabs>
+
+### [插件](plugins)
+
+SDK v5 支持使用插件来扩展其功能。
+
+#### [Huawei Install Referrer 插件](huawei-plugin)
+
+<MinorVersion added="v5">
+
+SDK v5 支持华为 Install Referrer 插件，以记录设备的华为 Install Referrer 信息。要添加插件，请将下列依赖添加至您的`build.gradle`文件：
+
+</MinorVersion>
+<CodeBlock title="build.gradle">
+
+```groovy
+dependencies {
+   implementation 'com.adjust.sdk:adjust-android-huawei-referrer:5.0.0'
+}
+```
+
+</CodeBlock>
+
+#### [Meta Install Referrer 插件](mir-plugin)
+
+<MinorVersion added="v5">
+
+SDK v5 支持 Meta Install Referrer 插件，以记录[Meta Install Referrer](https://developers.facebook.com/docs/app-ads/meta-install-referrer)信息。要阅读此信息：
+
+</MinorVersion>
+
+1. 将以下依赖添加至您的 `build.gradle` 文件：
+
+   <CodeBlock title="build.gradle">
+
+   ```groovy
+   dependencies {
+      implementation 'com.adjust.sdk:adjust-android-meta-referrer:5.0.0'
+   }
+   ```
+
+   </CodeBlock>
+
+2. 在[应用控制面板](https://developers.facebook.com/apps)中找到您的 Meta app ID。更多信息，请参考 Meta 的[应用控制面板文档](https://developers.facebook.com/docs/development/create-an-app/app-dashboard)。
+
+3. 将应用 ID 作为 `String` 参数传递至 `AdjustConfig.setFbAppId` 方法。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+<CodeBlock highlight="{range: 2}">
+
+```kotlin
+val config = AdjustConfig(this, appToken, environment)
+config.setFbAppId(<fb_app_id_string>)
+Adjust.initSdk(config)
+```
+
+</CodeBlock>
+</Tab>
+<Tab title="Java" sync="java">
+<CodeBlock highlight="{range: 2}">
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+config.setFbAppId(<fb_app_id_string>);
+Adjust.initSdk(config);
+```
+
+</CodeBlock>
+</Tab>
+</Tabs>
+
+#### [已移除插件](removed-plugins)
+
+<MinorVersion removed="v5">
+
+SDK v5 中移除了下列插件：
+
+</MinorVersion>
+
+-  Criteo
+-  Trademob
+-  Sociomatic

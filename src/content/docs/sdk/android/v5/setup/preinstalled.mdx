@@ -1,0 +1,202 @@
+---
+title: Send preinstalled app activity
+description: Configure a campaign to send information from preinstalled apps.
+slug: en/sdk/android/setup/preinstalled
+---
+
+You can use the Adjust SDK to record activity from apps that came preinstalled on a user's device. This enables you to send information from users who didn't download your app from a campaign.
+
+Your config object contains a `Boolean` `preinstallTrackingEnabled` property that controls this feature. To enable preinstall measurement, call the `enablePreinstallTracking` method.
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val appToken = "{YourAppToken}"
+val environment = AdjustConfig.ENVIRONMENT_SANDBOX
+val config = AdjustConfig(this, appToken, environment)
+config.enablePreinstallTracking()
+//...
+Adjust.initSdk(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+String appToken = "{YourAppToken}";
+String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+config.enablePreinstallTracking();
+//...
+Adjust.initSdk(config);
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+var yourAppToken = yourAppToken;
+var environment = AdjustConfig.EnvironmentSandbox;
+var adjustConfig = new AdjustConfig(yourAppToken, environment);
+adjustConfig.enablePreinstallTracking();
+```
+
+</Tab>
+</Tabs>
+
+The Adjust SDK provides 5 methods for measuring preinstalled apps:
+
+-  [System properties](#system-properties)
+-  [Content provider](#content-provider)
+-  [System installer receiver](#system-installer-receiver)
+-  [World-readable directory](#world-readable-directory)
+-  [Default link token](#default-link-token)
+
+## [System properties](system-properties)
+
+Original Equipment Manufacturer (OEM) partners can leverage Android system properties to attribute preinstalled apps. The OEM (Original Equipment Manufacturer) writes attribution information to a file and adds its path to the system properties. The Adjust SDK reads this file on initialization to attribute the install.
+
+## [Content provider](content-provider)
+
+The content provider method makes use of a read-only content provider. The SDK uses a content resolver to gather preinstall information from the request.
+
+To set the permissions, add the following to your `AndroidManifest.xml` file.
+
+<CodeBlock title="AndroidManifest.xml">
+
+```xml
+<uses-permission android:name="com.adjust.preinstall.READ_PERMISSION"/>
+```
+
+</CodeBlock>
+
+To access a list of preinstalled apps on the device, add the following to your `AndroidManifest.xml` file.
+
+<CodeBlock title="AndroidManifest.xml">
+
+```xml
+<queries>
+   <intent>
+       <action android:name="com.attribution.REFERRAL_PROVIDER"/>
+   </intent>
+</queries>
+```
+
+</CodeBlock>
+
+## [System installer receiver](system-installer-receiver)
+
+The system installer method uses a broadcast receiver. The system installer broadcasts preinstall information. The Adjust SDK reads this information using the system preinstall referrer receiver.
+
+To set up the receiver, add the following to your `AndroidManifest.xml` file.
+
+<CodeBlock title="AndroidManifest.xml">
+
+```xml
+<receiver android:name="com.adjust.sdk.AdjustPreinstallReferrerReceiver">
+   <intent-filter>
+      <action android:name="com.attribution.SYSTEM_INSTALLER_REFERRER" />
+   </intent-filter>
+</receiver>
+```
+
+</CodeBlock>
+
+## [World-readable directory](world-readable-directory)
+
+Save attribution information for your preinstalled app in a world-readable directory. The SDK reads the information from this file at install to attribute the user. The system encryption protocol protects app data.
+
+Pass the file path at which your preinstall information can be found to the `setPreinstallFilePath` method to give the Adjust SDK access to the information.
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val appToken = "{YourAppToken}"
+val environment = AdjustConfig.ENVIRONMENT_SANDBOX
+val config = AdjustConfig(this, appToken, environment)
+config.setPreinstallFilePath("../EngagementFile.xml")
+//...
+Adjust.initSdk(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+String appToken = "{YourAppToken}";
+String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+config.setPreinstallFilePath("../EngagementFile.xml");
+//...
+Adjust.initSdk(config);
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+var yourAppToken = yourAppToken;
+var environment = AdjustConfig.EnvironmentSandbox;
+var adjustConfig = new AdjustConfig(yourAppToken, environment);
+adjustConfig.setPreinstallFilePath("../EngagementFile.xml");
+```
+
+</Tab>
+</Tabs>
+
+## [Default link token](default-link-token)
+
+Configuring a default link token enables you to attribute all preinstalls to a predefined Adjust link. Adjust records all information against this token until the attribution source changes. To set this up:
+
+1. [Create a new campaign link in Campaign Lab](https://help.adjust.com/en/article/links).
+
+   ```text
+   https://app.adjust.com/{token}
+   ```
+
+2. Copy this token and pass it to the [`setDefaultTracker` method](/en/sdk/android/configuration#set-default-link-token).
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val appToken = "{YourAppToken}"
+val environment = AdjustConfig.ENVIRONMENT_SANDBOX
+val config = AdjustConfig(this, appToken, environment)
+config.setDefaultTracker("{Token}")
+//...
+Adjust.initSdk(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+String appToken = "{YourAppToken}";
+String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+config.setDefaultTracker("{Token}");
+//...
+Adjust.initSdk(config);
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+var yourAppToken = yourAppToken;
+var environment = AdjustConfig.EnvironmentSandbox;
+var adjustConfig = new AdjustConfig(yourAppToken, environment);
+adjustConfig.setDefaultTracker("{Token}");
+```
+
+</Tab>
+</Tabs>
+
+3. Build and run your app. If you have logging enabled, you will see a message in your log.
+
+   ```text
+   Default tracker: 'abc123'.
+   ```

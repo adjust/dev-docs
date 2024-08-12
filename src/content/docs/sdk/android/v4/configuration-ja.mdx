@@ -1,0 +1,616 @@
+---
+title: "設定"
+description: "Adjust SDKを設定するには、このセクションのガイドに従ってください。"
+slug: "ja/sdk/android/v4/configuration"
+sidebar-position: 1
+---
+
+Adjust SDKの動作を設定するには、このドキュメントに記載されたメソッドを使用してください。
+
+## [Configオブジェクトをインスタンス化する](instantiate-your-config-object)
+
+<CodeBlock title="メソッドシグネチャー">
+
+```java
+public AdjustConfig(Context context, String appToken, String environment, boolean allowSuppressLogLevel) {
+        init(context, appToken, environment, allowSuppressLogLevel);
+}
+
+```
+
+</CodeBlock>
+
+Adjust SDKを設定するには、`AdjustConfig`オブジェクトをインスタンス化する必要があります。このオブジェクトには、Adjust SDKにパスする必要のある **読み取り専用** の設定オプションが含まれています。
+
+Configオブジェクトをインスタンス化するには、新しい`AdjustConfig`インスタンスを作成して以下のパラメーターをパスしてください：
+
+-  `context` （`Context`）：アプリが実行されている[Androidコンテキスト](https://developer.android.com/reference/android/content/Context)。現在のアプリのコンテキストを取得するには`this`をパスします。
+-  `appToken` （`String`）：お客様の[Adjustアプリトークン](https://help.adjust.com/ja/article/app-token-and-reporting-currency#view-your-app-details)。
+-  `environment` （`String`）：SDKを実行したい環境。テスト用のサンドボックスモードでSDKを実行するには`AdjustConfig.ENVIRONMENT_SANDBOX`をパスします。リリース用の本番モードでSDKを実行するには`AdjustConfig.ENVIRONMENT_PRODUCTION`をパスします。
+-  `allowSuppressLogLevel` （`Boolean`）：全てのログを無効化するかどうか。ログを無効化するには`true`に、ログを有効化するには`false`に設定します。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val appToken = "{YourAppToken}"
+val environment = AdjustConfig.ENVIRONMENT_SANDBOX
+val config = AdjustConfig(this, appToken, environment, false)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+String appToken = "{YourAppToken}";
+String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
+AdjustConfig config = new AdjustConfig(this, appToken, environment, false);
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+var yourAppToken = yourAppToken;
+var environment = AdjustConfig.EnvironmentSandbox;
+var adjustConfig = new AdjustConfig(yourAppToken, environment, false);
+```
+
+</Tab>
+</Tabs>
+
+## [読み取り専用の設定](read-only-configuration)
+
+**読み取り専用** の設定オプションは、SDKの初期化 **前に** `AdjustConfig`インスタンスで設定されます。これらのオプションは、SDKの実行中は変更できません。`Adjust.onCreate()`を実行する前に、使用したいオプションを設定する必要があります。
+
+### [ログレベルを設定する](set-your-logging-level)
+
+<CodeBlock title="メソッドシグネチャー">
+
+```java
+public void setLogLevel(LogLevel logLevel)
+```
+
+</CodeBlock>
+
+Adjust SDKは、さまざまな量の情報を返すために、設定可能なログレベルを提供しています。以下のログレベルが利用可能です。
+
+<Table>
+
+| logLevel            | 説明                                                   |
+| ------------------- | ------------------------------------------------------ |
+| `LogLevel.VERBOSE`  | ログを全て有効化する                                   |
+| `LogLevel.DEBUG`    | デバッグのログを有効化する                             |
+| `LogLevel.INFO`     | 情報レベルのログのみを表示する（デフォルトオプション） |
+| `LogLevel.WARN`     | 情報警告を無効化する                                   |
+| `LogLevel.ERROR`    | 警告レベル以下のログを無効化する                       |
+| `LogLevel.ASSERT`   | エラーレベル以下のログを無効化する                     |
+| `LogLevel.SUPPRESS` | 全てのログを無効化する                                 |
+
+</Table>
+
+`AdjustConfig`インスタンスの`setLogLevel`メソッドを以下のパラメーターで呼び出すことで、ログレベルを設定できます：
+
+-  `logLevel` （`LogLevel`）：使用したいログレベル
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val appToken = "{YourAppToken}"
+val environment = AdjustConfig.ENVIRONMENT_SANDBOX
+val config = AdjustConfig(this, appToken, environment)
+config.setLogLevel(LogLevel.VERBOSE)
+//...
+Adjust.onCreate(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+String appToken = "{YourAppToken}";
+String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+config.setLogLevel(LogLevel.VERBOSE);
+//...
+Adjust.onCreate(config);
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+var yourAppToken = yourAppToken;
+var environment = AdjustConfig.EnvironmentSandbox;
+var adjustConfig = new AdjustConfig(yourAppToken, environment);
+adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
+```
+
+</Tab>
+</Tabs>
+
+### [外部デバイスIDを設定する](set-external-device-identifier)
+
+<CodeBlock title="メソッドシグネチャー">
+
+```java
+public void setExternalDeviceId(String externalDeviceId)
+```
+
+</CodeBlock>
+
+外部デバイスIDは、デバイスまたはユーザーに割り当てることができるカスタム値です。セッションやプラットフォームを横断してユーザーを認識することができます。また、ユーザーが新規インストールとして2度カウントされないように、ユーザーごとにインストールの重複を排除することも可能です。外部デバイスIDの使用を開始する際は、Adjustの担当者にお問い合わせください。
+
+外部デバイスIDをデバイスのカスタム識別子として使用できます。これは、他のシステム上で継続性を保ちたい場合に役立ちます。以下のパラメーターを使用して、`setExternalDeviceId`メソッドを呼び出すプロパティを設定できます：
+
+-  `externalDeviceId` （`String`）：外部デバイスID。この値は **大文字と小文字を区別します** 。外部デバイスIDをインポートしている場合は、パス値がインポートした値と一致することを確認してください。
+
+<Callout type="seealso">
+
+詳細は、Adjustヘルプセンターの[外部デバイスIDのページ](https://help.adjust.com/ja/article/external-device-identifiers)をご覧ください。
+
+</Callout>
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val appToken = "{YourAppToken}"
+val environment = AdjustConfig.ENVIRONMENT_SANDBOX
+val config = AdjustConfig(this, appToken, environment)
+config.externalDeviceId("{YourExternalDeviceId}")
+//...
+Adjust.onCreate(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+String appToken = "{YourAppToken}";
+String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+config.externalDeviceId("{YourExternalDeviceId}");
+//...
+Adjust.onCreate(config);
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+var yourAppToken = yourAppToken;
+var environment = AdjustConfig.EnvironmentSandbox;
+var adjustConfig = new AdjustConfig(yourAppToken, environment);
+adjustConfig.setExternalDeviceId("yourExternalDeviceId");
+```
+
+</Tab>
+</Tabs>
+
+外部デバイスIDをビジネスアナリティクスに使用する場合は、IDを[セッションコールバックパラメーター](/ja/sdk/android/features/session-parameters)としてパスすることができます。
+
+既存の外部デバイスIDをAdjustにインポートすることが可能です。これにより、Adjustサーバーが今後のデータを既存のデバイス記録と一致させることができます。この設定をご希望の場合は、Adjustの担当者にお問い合わせください。
+
+### [デフォルトのリンクトークンを設定する](set-default-link-token)
+
+<CodeBlock title="メソッドシグネチャー">
+
+```java
+public void setDefaultTracker(String defaultTracker)
+```
+
+</CodeBlock>
+
+アプリがデバイスにプリインストールされている場合、デフォルトのリンクトークンを設定できます。ユーザーがプリインストールされたアプリを初めて起動すると、インストールはデフォルトのリンクトークンにアトリビュートされます。デフォルトのリンクトークンを設定するには、次の引数を使用して`setDefaultTracker`メソッドを呼び出します：
+
+-  `defaultTracker` （`String`）：プリインストールを記録したい[Adjustリンクトークン](https://help.adjust.com/ja/article/links#adjust-link-token)。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val appToken = "{YourAppToken}"
+val environment = AdjustConfig.ENVIRONMENT_SANDBOX
+val config = AdjustConfig(this, appToken, environment)
+config.setDefaultTracker("{Token}")
+//...
+Adjust.onCreate(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+String appToken = "{YourAppToken}";
+String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+config.setDefaultTracker("{Token}");
+//...
+Adjust.onCreate(config);
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+var yourAppToken = yourAppToken;
+var environment = AdjustConfig.EnvironmentSandbox;
+var adjustConfig = new AdjustConfig(yourAppToken, environment);
+adjustConfig.setDefaultTracker("{Token}");
+```
+
+</Tab>
+</Tabs>
+
+### [コストデータの送信を有効化する](enable-cost-data-sending)
+
+<CodeBlock title="メソッドシグネチャー">
+
+```java
+public void setNeedsCost(boolean needsCost)
+```
+
+</CodeBlock>
+
+デフォルトでは、Adjust SDKはユーザーのアトリビューションの一環としてコストデータを送信しません。コストデータの送信を有効化することで、このデータを送信するようにSDKを設定できます。コストデータの送信を有効化するには、次のパラメーターを使用して、configインスタンスで`setNeedsCost`メソッドを呼び出します：
+
+-  `needsCost` （`Boolean`）：コストデータの送信を有効化するには`true`、無効化するには`false`に設定します。
+
+コストデータには、ユーザーの[アトリビューション情報](/ja/sdk/android/features/attribution)でアクセスできます。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val config = AdjustConfig(this, appToken, environment)
+config.setNeedsCost(true)
+Adjust.onCreate(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+config.setNeedsCost(true);
+Adjust.onCreate(config);
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+var adjustConfig = new AdjustConfig(yourAppToken, environment);
+adjustConfig.setNeedsCost(true);
+Adjust.onCreate(adjustConfig);
+```
+
+</Tab>
+</Tabs>
+
+### [バックグランドでの計測機能を有効化する](enable-background-recording)
+
+<CodeBlock title="メソッドシグネチャー">
+
+```java
+public void setSendInBackground(boolean sendInBackground)
+```
+
+</CodeBlock>
+
+デフォルトでは、アプリがバックグラウンドで動作している間、Adjust SDKはリクエストの送信を一時停止します。バックグランドでの計測機能を有効化することで、SDKがバックグランドでリクエストを送信するよう設定することが可能です。バックグランドでの計測機能を有効化するには、次のパラメーターを使用して、configインスタンスで`setSendInBackground`メソッドを呼び出します：
+
+-  `sendInBackground` （`Boolean`）：バックグランドでの送信を有効化するには`true`、無効化するには`false`に設定します。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val appToken = "{YourAppToken}"
+val environment = AdjustConfig.ENVIRONMENT_SANDBOX
+val config = AdjustConfig(this, appToken, environment)
+config.setSendInBackground(true)
+//...
+Adjust.onCreate(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+String appToken = "{YourAppToken}";
+String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+config.setSendInBackground(true);
+//...
+Adjust.onCreate(config);
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+var yourAppToken = yourAppToken;
+var environment = AdjustConfig.EnvironmentSandbox;
+var adjustConfig = new AdjustConfig(yourAppToken, environment);
+adjustConfig.setSendInBackground(true);
+```
+
+</Tab>
+</Tabs>
+
+### [イベントのバッファリングを有効化する](enable-event-buffering)
+
+<CodeBlock title="メソッドシグネチャー">
+
+```java
+public void setEventBufferingEnabled(Boolean eventBufferingEnabled)
+```
+
+</CodeBlock>
+
+Adjust SDKは、ユーザーがアプリ内でイベントをトリガーすると、すぐにイベント情報を送信します。イベントバッファリングを有効にすることで、イベント情報をスケジュールに沿って送信することができます。イベントバッファリングは、デバイス上のローカルバッファにイベントを保存し、1分間に1回、全てのリクエストを送信します。
+
+Configオブジェクトにはブーリアン`eventBufferingEnabled`プロパティが含まれており、それが動作を制御します。このプロパティを設定するには、次のパラメーターを使用して、configオブジェクトの`setEventBufferingEnabled`メソッドを呼び出します：
+
+-  `eventBufferingEnabled` （`Boolean`）：イベントのバッファリングを有効化するには`true`、無効化するには`false`に設定します。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val appToken = "{YourAppToken}"
+val environment = AdjustConfig.ENVIRONMENT_SANDBOX
+val config = AdjustConfig(this, appToken, environment)
+config.setEventBufferingEnabled(true)
+//...
+Adjust.onCreate(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+String appToken = "{YourAppToken}";
+String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+config.setEventBufferingEnabled(true);
+//...
+Adjust.onCreate(config);
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+var yourAppToken = yourAppToken;
+var environment = AdjustConfig.EnvironmentSandbox;
+var adjustConfig = new AdjustConfig(yourAppToken, environment);
+adjustConfig.setEventBufferingEnabled(true);
+```
+
+</Tab>
+</Tabs>
+
+### [SDKの起動を遅らせる](delay-the-start-of-the-sdk)
+
+<CodeBlock title="メソッドシグネチャー">
+
+```java
+public void setDelayStart(double delayStart)
+```
+
+</CodeBlock>
+
+デフォルトでは、Adjust SDKはアプリの起動直後に動作を開始します。起動時に取得できないデータを[セッションパラメーター](/ja/sdk/android/features/session-parameters)で送信したい場合は、SDKの動作開始を遅らせることができます。これは、ユニークな識別子などの情報を送信する場合に便利です。
+
+動作開始の遅延を設定するには、次の引数を使用して`setDelayStart`メソッドを呼び出します。
+
+-  `delayStart` （`double`）：SDKの動作開始を遅らせる時間（秒）。SDKの動作開始を遅らせることができるのは最長 **10秒間** です。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val config = AdjustConfig(this, appToken, environment)
+config.setDelayStart(5.5)
+Adjust.onCreate(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+config.setDelayStart(5.5);
+Adjust.onCreate(config);
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+var adjustConfig = new AdjustConfig(yourAppToken, environment);
+adjustConfig.setDelayStart(5.5);
+Adjust.onCreate(adjustConfig);
+```
+
+</Tab>
+</Tabs>
+
+## [ダイナミックな設定](dynamic-configuration)
+
+**ダイナミック** な設定オプションは、SDKのライフサイクル中に、ユーザーによるイベントやアクションに応じて変更されることがあります。
+
+### [オフラインモードに切り替える](toggle-offline-mode)
+
+<CodeBlock title="メソッドシグネチャー">
+
+```java
+public static void setOfflineMode(boolean enabled)
+```
+
+</CodeBlock>
+<Callout type="important">
+
+このオフラインモード設定は、セッション間では記憶されません。オフラインモードは、新規セッションの開始時に非有効化されます。
+
+</Callout>
+
+Adjust SDKは、イベントとセッションのデータをAdjustのサーバーにリアルタイムで送信します。SDKをオフラインモードにすると、情報の送信を一時停止することができます。オフラインモードでは、SDKは全てのデータをデバイスのローカルファイルに保存します。オフラインモードを無効にすると、SDKはこの情報をAdjustのサーバーに送信します。
+
+以下の引数を使用して`setOfflineMode`メソッドを呼び出すことで、いつでもオフランモードに切り替えられます：
+
+-  `enabled` （`Boolean`）：オフラインモードを有効化するには`true`に、オフラインモードを無効化するには`false`に設定します。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+Adjust.setOfflineMode(true)
+```
+
+</Tab>
+<Tab title="Java" sync="java" >
+
+```java
+Adjust.setOfflineMode(true);
+```
+
+</Tab>
+<Tab title="Javascript" sync="js" >
+
+```js
+Adjust.setOfflineMode(true);
+```
+
+</Tab>
+</Tabs>
+
+### [Pushトークンを設定する](set-push-tokens)
+
+<CodeBlock title="メソッドシグネチャー">
+
+```java
+public static void setPushToken(final String token, final Context context)
+```
+
+</CodeBlock>
+
+Pushトークンは、[Audiences](https://help.adjust.com/ja/article/audiences)機能やクライアントコールバックに使用されます。また、[アンインストール・再インストール計測](https://help.adjust.com/ja/article/uninstalls-reinstalls)にも必要です。
+
+Configオブジェクトは、`pushToken`を保管できる文字列pushTokenを含みます。このプロパティは、`setPushToken`メソッドと以下の引数を呼び出すことで、いつでも更新することが可能です：
+
+-  `token` （`String`）：Push トークン
+-  `context` （`Context`）：アプリが実行されている[Androidコンテキスト](https://developer.android.com/reference/android/content/Context)。現在のアプリのコンテキストを取得するには`getApplicationContext()`をパスします。
+
+<Callout type="note">
+
+Web ViewからPushトークンにアクセスできる場合は、Javascriptで`setPushToken`メソッドを呼び出します。
+
+</Callout>
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+Adjust.setPushToken("{YourPushToken}", getApplicationContext())
+```
+
+</Tab>
+<Tab title="Java" sync="java" >
+
+```java
+Adjust.setPushToken("{YourPushToken}", getApplicationContext());
+```
+
+</Tab>
+<Tab title="Javascript" sync="js" >
+
+```js
+Adjust.setPushToken("{YourPushToken}");
+```
+
+</Tab>
+</Tabs>
+
+### [SDKを無効化または有効化する](disable-or-enable-the-sdk)
+
+<Callout type="important">
+
+このメソッドを呼び出せるのは、初回セッションの後のみです。この設定は、セッション間で持続します。
+
+</Callout>
+<CodeBlock title="メソッドシグネチャー">
+
+```java
+public static void setEnabled(boolean enabled)
+```
+
+</CodeBlock>
+
+Adjust SDKは、デフォルトでアプリが開いている時に実行されます。Adjust SDKを無効化または再有効化することで、計測を一時停止したり再起動したりすることができます。Adjust SDKを無効にすると、Adjustサーバーにデータが送信されなくなります。
+
+以下の引数を使用して`setEnabled`メソッドを呼び出すことで、SDKをいつでも有効化または無効化できます：
+
+-  `enabled` （`Boolean`）：SDKを有効化するには`true`に、SDKを無効化するには`false`に設定します。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+Adjust.setEnabled(false)
+```
+
+</Tab>
+<Tab title="Java" sync="java" >
+
+```java
+Adjust.setEnabled(false);
+```
+
+</Tab>
+<Tab title="Javascript" sync="js" >
+
+```js
+Adjust.setEnabled(false);
+```
+
+</Tab>
+</Tabs>
+
+#### [有効化ステータスを確認する](check-enabled-status)
+
+<CodeBlock title="メソッドシグネチャー">
+
+```java
+public static boolean isEnabled()
+```
+
+</CodeBlock>
+
+Adjust SDKが有効であるかどうかを確認するには、`isEnabled`メソッドを呼び出します。このメソッドは、SDKが **有効** （`true`）か **無効** （`false`）かを示す`Boolean`値を返します。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+Adjust.isEnabled()
+```
+
+</Tab>
+<Tab title="Java" sync="java" >
+
+```java
+Adjust.isEnabled();
+```
+
+</Tab>
+<Tab title="Javascript" sync="js" >
+
+```js
+Adjust.isEnabled();
+```
+
+</Tab>
+</Tabs>

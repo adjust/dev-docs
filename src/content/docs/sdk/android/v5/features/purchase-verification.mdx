@@ -1,0 +1,148 @@
+---
+title: Purchase verification
+description: Verify your Play Store purchases
+slug: en/sdk/android/features/purchase-verification
+---
+
+<Callout type="seealso">
+
+Check [Google Play's billing system documentation](https://developer.android.com/google/play/billing#concepts) for more information about product IDs and purchase tokens.
+
+</Callout>
+
+If you've enabled [purchase verification](https://help.adjust.com/en/article/purchase-verification), you can use the Adjust SDK to request purchase verification. There are two ways to verify purchases with the Adjust SDK:
+
+1. Create an `AdjustEvent` object that represents your purchase and add the following properties:
+   -  `productId` (`String`): The product identifier of the item that was successfully purchased.
+   -  `purchaseToken` (`String`): The purchase token generated for your successfully completed in-app purchase.
+2. Create an `AdjustPlayStorePurchase` object with your product ID and purchase token.
+
+<Callout type="tip">
+
+If you use revenue events to measure your purchases in Adjust, you should use the `AdjustEvent` class. If you only want to verify a purchase but don't want to associate it with an event, use the `AdjustPlayStorePurchase` class.
+
+</Callout>
+
+When you send purchase information with the Adjust SDK, Adjust does the following:
+
+1. Sends the information to Google Play and waits for a status response.
+2. Forwards the status response to the Adjust SDK.
+
+You can access the purchase verification status by using a callback. Results are returned as `AdjustPurchaseVerificationResult` objects containing the following properties:
+
+-  `verificationStatus` (`String`): The status of the purchase.
+-  `code` (`int`): The status code of the purchase.
+-  `message` (`String`): Any message returned by Google Play.
+
+## [Record event and verify purchase](record-event-and-verify-purchase)
+
+<CodeBlock title="Method signature">
+
+```java
+public static void verifyAndTrackPlayStorePurchase(final AdjustEvent event, OnPurchaseVerificationFinishedListener callback)
+```
+
+</CodeBlock>
+
+To send a revenue event for verification and listen for the purchase verification status, follow these steps:
+
+1. Instantiate an `AdjustEvent` object with the your event token and set the following parameters:
+   -  `productId` (`String`): The ID of the product that has been purchased.
+   -  `purchaseToken` (`String`): The purchase token associated with the purchase.
+2. Call the `Adjust.verifyAndTrackPlayStorePurchase` method with the following arguments:
+   -  `event` (`AdjustEvent`): Your instantiated event object.
+   -  `callback` (`OnPurchaseVerificationFinishedListener`): A delegate callback function that receives an `AdjustPurchaseVerificationResult` object as an argument.
+
+In this example, the purchase verification response is output to the logging daemon.
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val adjustEvent = AdjustEvent("abc123")
+adjustEvent.setRevenue(6.0, "EUR")
+adjustEvent.productId = "product-id"
+adjustEvent.purchaseToken = "purchase-token"
+Adjust.trackEvent(adjustEvent)
+
+Adjust.verifyAndTrackPlayStorePurchase(adjustEvent) {
+    result -> Log.d("Verification status: ", result.verificationStatus)
+    Log.d("Code: ", result.code)
+    Log.d("Message: ", result.message)
+}
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustEvent adjustEvent = new AdjustEvent("abc123");
+adjustEvent.setRevenue(6.0, "EUR");
+adjustEvent.setProductId("product-id");
+adjustEvent.setPurchaseToken("purchase-token");
+Adjust.trackEvent(adjustEvent);
+
+Adjust.verifyAndTrackPlayStorePurchase(adjustEvent, new OnPurchaseVerificationFinishedListener() {
+    @Override
+    public void onFinished(AdjustPurchaseVerificationResult result) {
+       Log.d("Verification status: ", result.verificationStatus);
+       Log.d("Code: ", result.code);
+       Log.d("Message: ", result.message);
+    }
+});
+```
+
+</Tab>
+</Tabs>
+
+## [Only verify purchase](only-verify-purchase)
+
+<CodeBlock title="Method signature">
+
+```java
+public static void verifyPlayStorePurchase(final AdjustPlayStorePurchase purchase,
+                                               final OnPurchaseVerificationFinishedListener callback)
+```
+
+</CodeBlock>
+
+To send a standalone purchase and listen for the purchase verification status, follow these steps:
+
+1. Instantiate an `AdjustPlayStorePurchase` with the following arguments:
+   -  `productId` (`String`): The ID of the product that has been purchased.
+   -  `purchaseToken` (`String`): The purchase token associated with the purchase.
+2. Call the `Adjust.verifyPlayStorePurchase` method with the following arguments:
+   -  `purchase` (`AdjustPlayStorePurchase`): Your instantiated purchase object.
+   -  `callback` (`OnPurchaseVerificationFinishedListener`): A delegate callback function that receives an `AdjustPurchaseVerificationResult` object as an argument.
+
+In this example, the purchase verification response is output to the logging daemon.
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val purchase = AdjustPlayStorePurchase("product-id", "purchase-token")
+Adjust.verifyPlayStorePurchase(purchase) {
+    result -> Log.d("Verification status: ", result.verificationStatus)
+    Log.d("Code: ", result.code)
+    Log.d("Message: ", result.message)
+}
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustPlayStorePurchase purchase = new AdjustPlayStorePurchase("product-id", "purchase-token");
+Adjust.verifyPlayStorePurchase(purchase, new OnPurchaseVerificationFinishedListener() {
+    @Override
+    public void onFinished(AdjustPurchaseVerificationResult result) {
+       Log.d("Verification status: ", result.verificationStatus);
+       Log.d("Code: ", result.code);
+       Log.d("Message: ", result.message);
+    }
+});
+```
+
+</Tab>
+</Tabs>

@@ -1,0 +1,76 @@
+---
+title: Segment SDK integration
+description: Use the Segment integration to pass Segment information to Adjust's servers.
+slug: en/sdk/android/v4/integrations/segment
+---
+
+You can integrate the Adjust SDK with the Segment SDK in one of the following ways:
+
+-  **Independent SDK solution** - The Adjust SDK works independently from the Segment SDK. Using this solution makes it easier for you to implement additional Adjust SDK features, such as deep links.
+
+To learn how to complete setting up this integration in the Adjust and Segment dashboards, see [Set up Segment independent integration](https://help.adjust.com/en/article/set-up-segment-independent-integration).
+
+-  **Wrapped SDK solution** - The Segment SDK can wrap the Adjust SDK, connecting both SDKs in your app with minimal effort required. This lets you manage Adjust SDK deployment through the Segment SDK, and allows Adjust and Segment to record events in their respective systems. This solution uses SDK events and so is more robust for SKAdNetwork optimization.
+
+To learn how to complete setting up this integration in the Adjust and Segment dashboards, see [Set up Segment SDK-SDK integration](https://help.adjust.com/en/article/set-up-segment-sdk-sdk-integration).
+
+With both solutions, you need to define your events in the Segment dashboard.
+
+<Callout type="warning">
+
+These solutions don't support [partner parameters](/en/sdk/android/features/events#add-partner-parameters). If you need to send events with custom parameters to your networks, for example to support dynamic retargeting, set up these events in both the Segment SDK and Adjust SDK. Don't link these events in the Segment dashboard to the Adjust destination.
+
+</Callout>
+
+## [Independent SDK solution setup](independent-sdk-solution-setup)
+
+### [1. Segment SDK setup](1-segment-sdk-setup)
+
+In the Segment SDK, you define your [Track API](https://segment.com/docs/connections/sources/catalog/libraries/server/http-api/#track) call events. Each event records a single user action. The Segment SDK makes corresponding `trackEvent` calls to the Adjust SDK in [Cloud Mode](https://segment.com/docs/connections/destinations/#connection-modes).
+
+1. Integrate the [Segment Android SDK](https://segment.com/docs/connections/sources/catalog/libraries/mobile/android).
+
+   <Callout type="note">
+
+   Don't pass `.context.device.id` or `.context.device.type` in the `track` payload. The Segment SDK automatically retrieves these attributes from the device. Manually passing these attributes can cause integration issues.
+
+   </Callout>
+
+2. Create `track` calls for each event that you want to measure in your app ([Android](https://segment.com/docs/connections/sources/catalog/libraries/mobile/android/#track)).
+
+-  Optional: You can pass custom key value pairs into the `properties` object. The Segment SDK will pass these properties into the Adjust SDK event recording call as callback parameters. Adjust partner parameters aren't supported.
+
+### [2. Adjust SDK setup](2-adjust-sdk-setup)
+
+1. Integrate the Adjust Android SDK in your app.
+2. Pass the following parameters to the Adjust SDK as [session partner parameters](/en/sdk/android/features/session-parameters#session-partner-parameters). In order for these parameters to be available on install or start of a session, you need to use [Delay Start](/en/sdk/android/features/session-parameters#delay-start).
+
+-  `anonymous_id` - Required for Adjust to send callbacks to Segment. You can [retrieve the anonymous_id value from the Segment SDK](https://segment.com/docs/connections/sources/catalog/libraries/mobile/android/#anonymousid).
+-  Optional: `user_id` - This is the value that you define, so you can retrieve it from your system.
+
+## [Wrapped SDK solution](wrapped-sdk-solution)
+
+<Callout type="important">
+
+Don't integrate the Adjust SDK directly into your app. If you have already integrated the Adjust SDK directly, remove it from your app.
+
+</Callout>
+
+The Segment SDK initializes the Adjust SDK. Adjust then records installs and/or sessions automatically. The app then makes `track` calls in the Segment SDK, which makes corresponding `trackEvent` calls in the Adjust SDK in [Device Mode](https://segment.com/docs/connections/destinations/#connection-modes). Segment sometimes sends events in **Cloud Mode** even when using **Device Mode**. This is a known issue. This causes Adjust to receive events from the Adjust SDK and the S2S integration, often on the same event token.
+
+1. Integrate the [Segment Android SDK](https://segment.com/docs/connections/sources/catalog/libraries/mobile/android/).
+2. Add the Adjust integration in the Segment SDK ([Android](https://segment.com/docs/connections/destinations/catalog/adjust/#android)).
+3. Add the following to your app:
+   -  [Add Google Play services](/en/sdk/android#2-add-google-play-services)
+   -  [Add permissions](/en/sdk/android#3-add-permissions)
+   -  [Set up Proguard](/en/sdk/android#4-set-up-proguard)
+   -  [Set up install referrer](/en/sdk/android#5-set-up-install-referrer)
+4. Create [`track` calls](https://segment.com/docs/connections/spec/track/) for each event that you want to measure in your app ([Android](https://segment.com/docs/connections/sources/catalog/libraries/mobile/android/#track)).
+
+-  Optional: You can pass custom key value pairs into the `properties` object. The Segment SDK will pass these properties into the Adjust SDK `trackEvent` call as callback parameters. Adjust partner parameters aren't supported.
+
+<Callout type="note">
+
+If you want to implement additional Adjust SDK features that aren't supported in the Segment SDK, such as deep links, see [Segment documentation](https://segment.com/docs/connections/sources/catalog/libraries/mobile/Android/Android-faqs/#how-do-i-know-when-a-destination-is-initialized).
+
+</Callout>

@@ -1,0 +1,78 @@
+---
+title: "SegmentとのSDK連携"
+description: "Segmentとの連携を使用して、Segmentの情報をAdjustサーバーにパスします。"
+slug: "ja/sdk/android/v4/integrations/segment"
+---
+
+Adjust SDKとSegment SDKを連携させるには、以下のいずれかの方法に従ってください。
+
+-  **独立したSDKソリューション** \- Adjust SDKはSegment SDKと独立して動作します。このソリューションを使用すると、ディープリンクなどの追加のAdjust SDK機能の実装が簡単になります。
+
+AdjustおよびSegmentの各ダッシュボードでこの連携を設定する方法については、[Segmentと独自した連携を設定](https://help.adjust.com/ja/article/set-up-segment-independent-integration)をご覧ください。
+
+-  **ラップされたSDKソリューション** \- Segment SDKがAdjust SDKをラップし、アプリ内で最小限の作業で両方を接続することができます。これにより、Segment SDKでAdjust SDKを利用可能な状態にし、AdjustとSegmentがそれぞれのシステムでイベントを計測するようにします。このソリューションはSDKイベントを使用するため、SKAdNetworkの最適化に有効に機能します。
+
+AdjustおよびSegmentの各ダッシュボードでこの連携を設定する方法については、[SegmentとのSDK間連携を設定](https://help.adjust.com/ja/article/set-up-segment-sdk-sdk-integration)をご覧ください。
+
+両方のソリューションを使用して、Segmentダッシュボードでイベントを定義する必要があります。
+
+<Callout type="warning">
+
+これらのソリューションでは[パートナーパラメーター](/ja/sdk/android/features/events#add-partner-parameters)はサポートされていません。カスタムパラメーターを使用してネットワークにイベントを送信する必要がある場合は（例：動的リターゲティングをサポート）、これらのイベントをSegment SDKとAdjust SDKの両方で設定します。これらのイベントを、SegmentダッシュボードでAdjust destinationにリンクしないでください。
+
+</Callout>
+
+## [独立したSDKソリューションの設定](independent-sdk-solution-setup)
+
+### [1\. Segment SDKを設定する](1-segment-sdk-setup)
+
+Segment SDKで、[Track API](https://segment.com/docs/connections/sources/catalog/libraries/server/http-api/#track)コールイベントを定義します。各イベントは単一のユーザーアクションを記録します。Segment SDKは、[Cloud Mode](https://segment.com/docs/connections/destinations/#connection-modes)でAdjust SDKに対応する`trackEvent`コールを作成します。
+
+1. [Segment Android SDK](https://segment.com/docs/connections/sources/catalog/libraries/mobile/android)を実装します。
+
+   <Callout type="note">
+
+   `track`ペイロードでは、`.context.device.id`または`.context.device.type`をパスしないでください。Segment SDKは、これらのアトリビュートを自動的にデバイスから受け取ります。これらのアトリビュートを手動でパスすると、実装に問題が発生する可能性があります。
+
+   </Callout>
+
+2. アプリ（[Android](https://segment.com/docs/connections/sources/catalog/libraries/mobile/android/#track)）で計測したい各イベントに対して`track`コールを作成します。
+
+-  オプション：カスタムキー値のペアを`properties`オブジェクトにパスできます。Segment SDKは、これらのプロパティをコールバックパラメーターとしてAdjust SDKのイベント計測コールにパスします。Adjustのパートナーパラメーターはサポートされません。
+
+### [2\. Adjust SDKの設定](2-adjust-sdk-setup)
+
+1. Adjust Android SDKをアプリに実装します。
+2. 以下のパラメーターを[セッションパートナーパラメーター](/ja/sdk/android/features/session-parameters#session-partner-parameters)としてAdjust SDKにパスします。これらのパラメーターをインストールまたはセッション開始時に使用できるようにするには、[ディレイスタート](/ja/sdk/android/features/session-parameters#delay-start)を使用する必要があります。
+
+-  `anonymous_id` \- AdjustがSegmentにコールバックを送信するために必要です。[Segment SDKからanonymous_idの値を取得](https://segment.com/docs/connections/sources/catalog/libraries/mobile/android/#anonymousid)できます。
+-  オプション：`user_id` \- これはお客様のシステムから取得できるようにするために定義する値です。
+
+## [ラップされたSDKソリューション](wrapped-sdk-solution)
+
+<Callout type="important">
+
+Adjust SDKを直接アプリに実装しないでください。すでにAdjust SDKを直接実装した場合、アプリから削除してください。
+
+</Callout>
+
+Segment SDKがAdjust SDKを初期化します。次にAdjustは、インストールおよび/またはセッションを自動的に記録します。アプリはその後、Segment SDKで`track`コールを作成します。これにより、[Device Mode](https://segment.com/docs/connections/destinations/#connection-modes)でAdjust SDKに対応する`trackEvent`コールを作成します。Segmentは **Device Mode** を使用しているときでも、イベントを **Cloud Mode** で送信することがあります。これは既知の問題です。これにより、Adjustは多くの場合に同じイベントトークンで、Adjust SDKとサーバー間連携からイベントを受け取ることになります。
+
+1. [Segment Android SDK](https://segment.com/docs/connections/sources/catalog/libraries/mobile/android/)を実装します。
+2. Segment SDKにAdjustの実装を追加します（[Android](https://segment.com/docs/connections/destinations/catalog/adjust/#android)）。
+3. 以下をアプリに追加します：
+
+   -  [Google Play 開発者サービスを追加](/ja/sdk/android#2-add-google-play-services)
+   -  [パーミッションを追加](/ja/sdk/android#3-add-permissions)
+   -  [ProGuardを設定する](/ja/sdk/android#4-set-up-proguard)
+   -  [インストールリファラーを設定する](/ja/sdk/android#5-set-up-install-referrer)
+
+4. アプリ（[Android](https://segment.com/docs/connections/sources/catalog/libraries/mobile/android/#track)）で計測したい各イベントに対して[`track`コール](https://segment.com/docs/connections/spec/track/)を作成します。
+
+-  オプション：カスタムキー値のペアを`properties`オブジェクトにパスできます。Segment SDKは、これらのプロパティをコールバックパラメーターとしてAdjust SDKの`trackEvent`コールにパスします。Adjustのパートナーパラメーターはサポートされません。
+
+<Callout type="note">
+
+ディープリンクなど、Segment SDKでサポートされていないAdjust SDKの追加機能を実装したい場合は、[Segmentのドキュメント](https://segment.com/docs/connections/sources/catalog/libraries/mobile/Android/Android-faqs/#how-do-i-know-when-a-destination-is-initialized)をご覧ください。
+
+</Callout>
