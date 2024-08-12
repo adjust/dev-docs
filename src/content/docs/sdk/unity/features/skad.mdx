@@ -62,20 +62,20 @@ If you use Adjust to manage conversion values, the Adjust's servers send convers
 ```cs
 AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
 //...
-adjustConfig.SkanUpdatedDelegate = ConversionValueUpdatedCallback;
+adjustConfig.SkanUpdatedDelegate = SkanUpdatedDelegate;
 //...
 Adjust.InitSdk(adjustConfig);
 ```
 
 The delegate function receives a postback from SKAdNetwork with the following properties:
 
-<Table>
+<Table autoWidth="1,2">
 
-| Arguments     | Data type  | Description                                                                                                                                                                                                                                                                                              |
-| ------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `fineValue`   | `NSNumber` | The conversion value sent by Adjust's servers                                                                                                                                                                                                                                                            |
-| `coarseValue` | `NSString` | The coarse conversion value. This value is used if your app doesn't have sufficient installs to reach the privacy threshold.<ul><li>`none`</li><li>`low`</li><li>`medium`</li><li>`high`</li></ul><br/>Apple sends none whenever none of the conditions that are set for low, medium, and high were met. |
-| `lockWindow`  | `NSNumber` | Whether to send the postback before the conversion window ends. `1` indicates the postback will be sent before the conversion window ends.<br/>Defaults to `0` in SKAdNetwork 4.0 postbacks and `nil` in older SKAdNetwork versions                                                                      |
+| Arguments     | Description                                                                                                                                                                                                                                                                                              |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fineValue`   | The conversion value sent by Adjust's servers                                                                                                                                                                                                                                                            |
+| `coarseValue` | The coarse conversion value. This value is used if your app doesn't have sufficient installs to reach the privacy threshold.<ul><li>`none`</li><li>`low`</li><li>`medium`</li><li>`high`</li></ul><br/>Apple sends none whenever none of the conditions that are set for low, medium, and high were met. |
+| `lockWindow`  | Whether to send the postback before the conversion window ends. `1` indicates the postback will be sent before the conversion window ends.<br/>Defaults to `0` in SKAdNetwork 4.0 postbacks and `nil` in older SKAdNetwork versions                                                                      |
 
 </Table>
 
@@ -91,17 +91,17 @@ public class ExampleGUI : MonoBehaviour {
         if (GUI.Button(new Rect(0, 0, Screen.width, Screen.height), "callback")) {
             AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
             adjustConfig.LogLevel = AdjustLogLevel.Verbose;
-            adjustConfig.SkanUpdatedDelegate = ConversionValueUpdatedCallback;
+            adjustConfig.SkanUpdatedDelegate = SkanUpdatedDelegate;
 
             Adjust.InitSdk(adjustConfig);
         }
 
 
-      private void ConversionValueUpdatedCallback(int conversionValue, string coarseValue, bool lockWindow) {
+      private void SkanUpdatedDelegate(Dictionary<string,string> response) {
          Debug.Log("Conversion value updated. Callback received");
-         Debug.Log("Conversion value: " + fineValue);
-         Debug.Log("Coarse conversion value: " + coarseValue);
-         Debug.Log ("Will send before conversion value window ends: " lockWindow);
+         Debug.Log("Conversion value: " + response["fineValue"]);
+         Debug.Log("Coarse conversion value: " + response["coarseValue"]);
+         Debug.Log ("Will send before conversion value window ends: " response["lockWindow"]);
       }
    }
 };

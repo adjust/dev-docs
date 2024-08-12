@@ -37,9 +37,20 @@ To install the Adjust SDK with the Unity Package Manager, follow these steps:
 
 1. Select the **Package Manager** window in the Unity editor.
 2. Select **Add package from git URL**.
-3. Enter the following URL: `https://github.com/adjust/unity_sdk.git`.
+3. Enter the following URL: `https://github.com/adjust/unity_sdk.git?path=Assets/Adjust`.
 
-## [2. Integrate the SDK](integrate-the-sdk)
+## [2. Install the iOS and Android SDKs](install-ios-and-android-sdks)
+
+SDK v5 no longer uses the iOS and Android SDKs as binary dependencies. To install the underlying iOS and Android SDKs, you need to use the [External Dependency Manager for Unity (EDM4U)](https://github.com/googlesamples/unity-jar-resolver) to install the packages from CocoaPods and Maven.
+
+To ensure that the Privacy Manifest and frameworks are loaded correctly for iOS, you need to disable static linking. To do this:
+
+1. Select **Assets -> External Dependency Manager -> iOS Resolver -> Settings**.
+2. Find the **Link frameworks statically** option and uncheck it.
+
+![A screenshot of the resolver settings menu](@images/unity/link-frameworks-statically.png)
+
+## [3. Integrate the SDK](integrate-the-sdk)
 
 The Adjust SDK contains a Unity [prefab](https://docs.unity3d.com/Manual/Prefabs.html) that includes a template game object and an Adjust script. You can use this script to configure the SDK. To open the prefab in the Unity editor:
 
@@ -65,14 +76,14 @@ Adjust.InitSdk(adjustConfig);
 // ...
 ```
 
-## [3. Set up Android devices](3-set-up-android-devices)
+## [4. Set up Android devices](3-set-up-android-devices)
 
 ### [Add Google Play Services](add-google-play-services)
 
 Apps that target the Google Play Store must use the gps_adid (Google Advertising ID) to identify devices. You need to add the `play-services-ads-identifier` AAR to your project to access the `gps_adid`.
 
 <Tabs>
-<Tab title="External Dependency Manager" sync="google">
+<Tab title="EDM4U" sync="edm4u">
 
 If you are using the [External Dependency Manager plugin](https://developers.google.com/unity/archive#external_dependency_manager_for_unity), add the following to your `Dependencies.xml` file:
 
@@ -95,7 +106,7 @@ To install the ARR (Android Archive) manually, [download it from Maven](https://
 The [App Set Identifier](https://developer.android.com/design-for-safety/privacy-sandbox/reference/adservices/appsetid/AppSetId) is a unique identifier that enables you to measure information from any of your apps that a user has installed on their device. All apps by the same developer share the same App Set ID, meaning you can gather meaningful insights from users across all your apps.
 
 <Tabs>
-<Tab title="External Dependency Manager" sync="google">
+<Tab title="EDM4U" sync="edm4u">
 
 To record a device's App Set ID, you need to add the following dependency to your `Dependencies.xml` file:
 
@@ -113,25 +124,6 @@ To install the ARR (Android Archive) manually, [download it from Maven](https://
 </Tab>
 </Tabs>
 
-### [Set up Proguard](set-up-proguard)
-
-If you are using Proguard, add the following rules to your [custom Proguard file](https://docs.unity3d.com/Manual/class-PlayerSettingsAndroid.html#build).
-
-```groovy
--keep public class com.adjust.sdk.** { *; }
--keep class com.google.android.gms.common.ConnectionResult {
-   int SUCCESS;
-}
--keep class com.google.android.gms.ads.identifier.AdvertisingIdClient {
-   com.google.android.gms.ads.identifier.AdvertisingIdClient$Info getAdvertisingIdInfo(android.content.Context);
-}
--keep class com.google.android.gms.ads.identifier.AdvertisingIdClient$Info {
-   java.lang.String getId();
-   boolean isLimitAdTrackingEnabled();
-}
--keep public class com.android.installreferrer.** { *; }
-```
-
 ### [Set up install referrer](set-up-install-referrer)
 
 The install referrer is a unique identifier which you can use to attribute an app install to a source. The Adjust SDK requires this information to perform attribution. There are two methods you can use to gather this information depending on which stores you target:
@@ -143,7 +135,10 @@ The install referrer is a unique identifier which you can use to attribute an ap
 
 There are 2 ways to add support for the Google Play Referrer API:
 
-1. Add the install referrer library as a dependency in a [custom `build.gradle` file](https://docs.unity3d.com/2023.1/Documentation/Manual/android-gradle-overview.html)
+<Tabs>
+<Tab title="EDM4U" sync="edm4u">
+
+Add the install referrer library as a dependency in a [custom `build.gradle` file](https://docs.unity3d.com/2023.1/Documentation/Manual/android-gradle-overview.html)
 
 ```groovy
 dependencies {
@@ -151,11 +146,13 @@ dependencies {
 }
 ```
 
-2. Download the install referrer library from [Maven](https://maven.google.com/web/index.html?q=install#com.android.installreferrer:installreferrer) and put the ARR (Android Archive) file in your `Plugins/Android` folder.
+</Tab>
+<Tab title="Manual installation" sync="manual">
 
-#### [Huawei Referrer API](huawei-referrer-api)
+Download the install referrer library from [Maven](https://maven.google.com/web/index.html?q=install#com.android.installreferrer:installreferrer) and put the ARR (Android Archive) file in your `Plugins/Android` folder.
 
-The Adjust SDK supports install measurement on Huawei devices using Huawei App Gallery v10.4 and later. You don't need to make any changes to start using the Huawei Referrer API.
+</Tab>
+</Tabs>
 
 #### [Meta referrer integration](meta-referrer-integration)
 
@@ -185,26 +182,14 @@ The Adjust SDK supports the [Meta Install Referrer](https://developers.facebook.
    //...
    config.FbAppId = "{FB_APP_ID_STRING}";
    //...
-   Adjust.InitSDk(config);
+   Adjust.InitSdk(config);
    ```
-
-## [4. Add the iOS privacy manifest](4-add-the-ios-privacy-manifest)
-
-iOS 17 introduced [Privacy manifests](https://developer.apple.com/documentation/bundleresources/privacy_manifest_files), a mechanism that informs the App Store of your app's privacy requirements. The Adjust Unity SDK doesn't bundle this Privacy manifest file, so you need to ensure the contents of the Adjust iOS SDK Privacy manifest file are present in your app's Privacy manifest if your app targets devices running iOS 17 or later.
-
-To add the Adjust Privacy manifest:
-
-1. [Create a Privacy manifest if you haven't already](https://developer.apple.com/documentation/bundleresources/privacy_manifest_files#4284009).
-2. Download the `PrivacyInfo.xcprivacy` file [from GitHub](https://raw.githubusercontent.com/adjust/ios_sdk/master/Adjust/PrivacyInfo.xcprivacy) or copy its contents.
-3. Make sure the content of Adjust's `PrivacyInfo.xcprivacy` file is present in your own Privacy manifest file.
-
-When you submit your app to the App Store, Adjust's privacy declarations are included with your app.
 
 ## [5. Build your app](5-build-your-app)
 
-To complete the app build process, the Adjust Unity package performs custom post-build actions to ensure the Adjust SDK works in your app.
+To complete the app build process, the Adjust Unity package performs custom post-build actions to ensure the Adjust SDK works in your app. This process is performed by the `OnPostprocessBuild` method in `AdjustEditor.cs`.
 
-This process is performed by the `OnPostprocessBuild` method in `AdjustEditor.cs`. Output logs show up in the Unity IDE console output window.
+You can configure post-build options to customize your app build.
 
 ![A screenshot of the Adjust SDK post-build configuration script in the Unity editor.](@images/unity/2-postbuild.png)
 
@@ -219,7 +204,6 @@ To run the iOS post-build process, make sure that you have **iOS build support**
 
 The iOS post-build process makes the following changes to your generated Xcode project:
 
--  Adds the other linker flag `-ObjC`: required to recognize Adjust Objective-C categories at build time.
 -  Enables Objective-C exceptions.
 
 #### [Frameworks](frameworks)
@@ -230,7 +214,6 @@ You can enable the following frameworks to access iOS features:
 -  `AdSupport.framework`: Required to read the device IDFA
 -  `AppTrackingTransparency.framework`: Required to ask for user's consent to be measured and obtain consent status
 -  `StoreKit.framework`: Required to communicate with the SKAdNetwork framework.
--  `iAd.framework` **Deprecated**: Use `AdServices.framework`
 
 #### [App Tracking Transparency consent dialog](app-tracking-transparency-consent-dialog)
 
@@ -267,13 +250,9 @@ To enable deep linking, add the following information:
 </Tab>
 </Tabs>
 
-## [6. Add the Adjust SDK signature](6-add-the-adjust-sdk-signature)
+The output of the process is shown in the Unity IDE console window.
 
-You can use the Adjust SDK signature to sign all communications sent by the Adjust SDK. This enables Adjust’s servers to detect and reject any install activity that's not legitimate.
-
-To enable the Signature library integration, follow the instructions in the [Signature library guide](/en/sdk/unity/integrations/signature-library).
-
-## [7. Test your integration](7-test-your-integration)
+## [6. Test your integration](7-test-your-integration)
 
 <Callout type="tip">
 
