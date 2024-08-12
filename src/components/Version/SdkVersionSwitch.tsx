@@ -29,16 +29,24 @@ const VersionSwitch: FC<SdkVersionSwitchProps> = ({ lang, redirects }) => {
         newVersion.value
       ];
 
-      if (redirectValue) {
-        return (location.href = redirectValue);
+      const href = location.href;
+      if (newVersion.value !== versions.currentVersion.value) {
+        if (redirectValue) {
+          return (location.href = redirectValue);
+        }
+
+        const defaultVersionReg = /\/(\w*)v\d/gi;
+        const versionReg = /\/sdk\/(\w*)(\/|$)/gi;
+
+        if (newVersion.default) {
+          return (location.href = href.replace(defaultVersionReg, "$1"));
+        }
+
+        return (location.href = href.replace(
+          versionReg,
+          `/sdk/$1/${newVersion.value}/`,
+        ));
       }
-
-      const defaultVersionReg = /\/(\w*)v\d/gi;
-      const versionReg = /\/sdk\/(\w*)(\/|$)/gi;
-
-      location.href = newVersion.default
-        ? location.href.replace(defaultVersionReg, "$1")
-        : location.href.replace(versionReg, `/sdk/$1/${newVersion.value}/`);
     },
     [],
   );
@@ -56,7 +64,14 @@ const VersionSwitch: FC<SdkVersionSwitchProps> = ({ lang, redirects }) => {
       }
     }
     // we change the version to the default if we can`t update the version by the current URL
-    return changeVersionValue(supportedVersions.find((item) => item.default)!);
+    if (
+      !urlVersion?.length ||
+      !supportedVersions.find((item) => item.value === urlVersion[0])
+    ) {
+      return changeVersionValue(
+        supportedVersions.find((item) => item.default)!,
+      );
+    }
   };
 
   useEffect(() => {
