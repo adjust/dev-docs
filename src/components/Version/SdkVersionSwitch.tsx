@@ -1,4 +1,4 @@
-import { type FC, useCallback } from "react";
+import { type FC, useCallback, useEffect } from "react";
 import { ComboBox } from "@adjust/components";
 import { useStore } from "@nanostores/react";
 import type { CollectionEntry } from "astro:content";
@@ -8,6 +8,7 @@ import { useTranslations } from "@i18n/utils";
 import {
   $versions,
   changeVersionValue,
+  supportedVersions,
   type VersionStore,
 } from "@store/sdkVersionsStore";
 
@@ -41,6 +42,26 @@ const VersionSwitch: FC<SdkVersionSwitchProps> = ({ lang, redirects }) => {
     },
     [],
   );
+
+  const handleUrlVersion = () => {
+    const url = location.href;
+    const urlVersion = url.match(/(\w*)v\d/gi);
+    // if we have a version in the URL and it`s not the current version we change current selected to this version
+    if (urlVersion?.length && versions.currentVersion.value !== urlVersion[0]) {
+      const version = supportedVersions.find(
+        (item) => item.value === urlVersion[0],
+      );
+      if (version) {
+        return changeVersionValue(version);
+      }
+    }
+    // we change the version to the default if we can`t update the version by the current URL
+    return changeVersionValue(supportedVersions.find((item) => item.default)!);
+  };
+
+  useEffect(() => {
+    handleUrlVersion();
+  }, []);
 
   const label = t("sdkversionswitch.label");
 
