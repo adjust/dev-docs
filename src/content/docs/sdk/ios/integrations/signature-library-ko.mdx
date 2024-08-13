@@ -1,34 +1,44 @@
 ---
 title: "SDK Signature(SDK 서명) 라이브러리 연동"
 description: "Adjust SDK와 Adjust 서버 간 커뮤니케이션의 보안을 위해 iOS 앱에 Signature 라이브러리를 추가합니다."
-slug: "ko/sdk/ios/integrations/signature-library"
-multiVersion: true
+slug: "en/sdk/ios/integrations/signature-library"
 ---
-
-<SdkVersion version="v5">
-
-Adjust SDK v5는 [SDK Signature\(SDK 서명\) 인증](https://help.adjust.com/ko/article/sdk-signature)을 기본적으로 지원합니다. SDK 서명 라이브러리를 이전에 연동한 경우 이것을 삭제하고 관련된 모든 코드를 제거해야 합니다.
-
-</SdkVersion>
-<SdkVersion version="v4">
-
 Adjust의 SDK Signature\(SDK 서명\) 라이브러리는 Adjust SDK의 독립형 플러그인으로 설계되었습니다. 따라서 코드를 변경하거나 앱에서 Adjust SDK를 사용하는 방법을 변경할 필요가 없습니다. 플러그인 설치 후에는 Adjust SDK에서 생성된 모든 요청이 계속 정상적으로 작동합니다.
 
-## [시작에 앞서](before-you-begin)
+[시작에 앞서](before-you-begin)
+--------------------------
 
 Adjust Signature 라이브러리를 iOS 앱에 연동하려면 다음을 확인하시기 바랍니다.
 
--  사용 중인 Adjust SDK 버전이 **4\.35\.2 이상** 이어야 합니다.
--  iOS 또는 tvOS 버전 **12 이상** 이 지원됩니다.
+* 사용 중인 Adjust SDK 버전이 **4\.35\.2 이상** 이어야 합니다.
+* iOS 또는 tvOS 버전 **12 이상** 이 지원됩니다. 
+
+<callout type="important"> 
+
+외부 난독화 툴을 Adjust SDK나 Signature 라이브러리와 함께 사용하면 Signature 라이브러리의 기능에 영향을 줄 수 있습니다. 외부 툴 사용에 대한 확신이 없는 경우 Adjust 담당자 또는 [support@adjust.com](mailto:support@adjust.com) 으로 이메일을 보내 해당 기능이 영향을 받는지 확인하시기 바랍니다.
+</Callout> 
 
 ### [Signature v1 또는 v2 라이브러리에서 마이그레이션](migrating-from-signature-v1-or-v2-library)
 
 이전에 Signature v1 또는 Signature v2를 사용한 적이 있다면 Signature 라이브러리를 연동하기 전에 이전 버전을 제거해야 합니다. 다음 조치를 수행하시기 바랍니다.
 
--  이전에 Signature v1을 연동한 경우 프로젝트에서 서명 함수를 호출하는 모든 코드를 제거합니다.
--  이전에 Signature v2를 연동한 경우 프로젝트에서 Signature v2 라이브러리를 제거합니다.
+* 이전에 Signature v1을 연동한 경우 프로젝트에서 서명 함수를 호출하는 모든 코드를 제거합니다.
+* 이전에 Signature v2를 연동한 경우 프로젝트에서 Signature v2 라이브러리를 제거합니다.
 
-## [연동 단계](integration-steps)
+### [Updating the Signature Library](updating-the-signature-library)
+
+To update the Adjust Signature library, replace the existing Signature library with a new version and rerun your tests. You don't need to make any immediate changes to your app logic or settings in Adjust. Remember to [deactivate your secret IDs if they meet the following criteria](https://help.adjust.com/en/article/sdk-signature#manage-your-secret-ids):
+
+* They're no longer contributing to your install reporting.
+* You've fully released a new version of your app \(across all app platforms and stores\).
+
+[Integrate the signature library \(SDK v4 only\)](integrate-the-signature-library)
+------------------------------------------------------------------------------------
+
+<callout type="note"> 
+
+Adjust SDK v5 supports SDK signature verification natively. If you previously integrated the SDK signature library, you should uninstall it and remove all related code.
+</Callout> 
 
 다음 단계에 따라 iOS 프로젝트에서 서명 라이브러리를 연동하십시오.
 
@@ -51,21 +61,20 @@ Adjust Signature 라이브러리를 iOS 앱에 연동하려면 다음을 확인�
 
 이제 끝입니다\! Signature 라이브러리가 프로젝트에 연동되었습니다.
 
-## [앱 테스트](test-your-app)
+[앱 테스트](test-your-app)
+----------------------
 
-[Adjust 테스팅 콘솔](https://help.adjust.com/ko/article/testing-console)을 사용하여 Signature 라이브러리가 앱에 연동되었는지 확인할 수 있습니다.
-
-<Callout type="important">
+[Adjust 테스팅 콘솔](https://help.adjust.com/en/article/testing-console)을 사용하여 Signature 라이브러리가 앱에 연동되었는지 확인할 수 있습니다.
+<callout type="important"> 
 
 Adjust SDK가 **샌드박스 모드** 에서 실행 중이어야 합니다.
-
-</Callout>
+</Callout> 
 
 다음과 같이 서명 라이브러리 연동을 테스트합니다.
 
 1. 설치 정보가 전송되도록 테스트 기기에서 앱을 완전히 삭제합니다.
 
-2. 테스팅 콘솔을 사용하여 해당 기기의 정보를 삭제하시기 바랍니다. 앱 토큰과 [Adjust InSights 앱](https://apps.apple.com/us/app/adjust-insights/id1125517808)에서 얻은 광고 ID를 전달하여 forget_device 엔드포인트를 사용할 수도 있습니다. 다음의 광고 ID 또한 사용이 가능합니다. `adid`, `idfa`, `idfv`, `imei`, `oaid`
+2. 테스팅 콘솔을 사용하여 해당 기기의 정보를 삭제하시기 바랍니다. 앱 토큰과 [Adjust InSights 앱](https://apps.apple.com/us/app/adjust-insights/id1125517808)에서 얻은 광고 ID를 전달하여 forget\_device 엔드포인트를 사용할 수도 있습니다. 다음의 광고 ID 또한 사용이 가능합니다. `adid`, `idfa`, `idfv`, `imei`, `oaid`
 
    호출은 다음과 같습니다.
 
@@ -80,8 +89,7 @@ Adjust SDK가 **샌드박스 모드** 에서 실행 중이어야 합니다.
    1. `SignatureVerificationResult` 필드에 다음 값이 표시되어야 합니다. `Valid Signature`
    2. `SignatureVersion` 필드에 다음 값이 표시되어야 합니다. `3`
 
-이러한 필드가 있고 올바른 정보를 포함하고 있다면 서명 라이브러리가 성공적으로 연동된 것입니다. 필드에 다른 값이 표시되는 경우, 연동 단계를 다시 검토하거나 [support@adjust.com](mailto:support@adjust.com)에 연락하시기 바랍니다.
+이러한 필드가 있고 올바른 정보를 포함하고 있다면 서명 라이브러리가 성공적으로 연동된 것입니다. 필드에 다른 값이 표시되는 경우, 연동 단계를 다시 검토하거나 [support@adjust.com](mailto:support@adjust.com)에 연락하시기 바랍니다. 
 
-이제 끝입니다\! 서명 라이브러리가 앱에 성공적으로 연동되었습니다. [어트리뷰션 윈도우 2개가 완료](https://help.adjust.com/ko/article/attribution-windows)되면 [SDK Signature\(SDK 서명\) 검증을 시행](https://help.adjust.com/ko/article/sdk-signature#enforce-signature-validation)하여 서명된 요청만 Adjust에서 수락하도록 할 수 있습니다.
+이제 끝입니다\! 서명 라이브러리가 앱에 성공적으로 연동되었습니다. [어트리뷰션 윈도우 2개가 완료](https://help.adjust.com/en/article/attribution-windows)되면 [SDK Signature\(SDK 서명\) 검증을 시행](https://help.adjust.com/en/article/sdk-signature#enforce-signature-validation)하여 서명된 요청만 Adjust에서 수락하도록 할 수 있습니다.
 
-</SdkVersion>
