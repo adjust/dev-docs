@@ -14,6 +14,12 @@ Adjust의 SDK Signature\(SDK 서명\) 라이브러리는 Adjust SDK의 독립형
 -  사용 중인 Adjust SDK 버전이 **4\.37\.2 이상** 이어야 합니다.
 -  Proguard를 사용하는 경우 서명 라이브러리와 Adjust SDK에서 동일한 Proguard 구성을 사용해야 합니다.
 
+<Callout type="important">
+
+외부 난독화 툴을 Adjust SDK나 Signature 라이브러리와 함께 사용하면 Signature 라이브러리의 기능에 영향을 줄 수 있습니다. 외부 툴 사용에 대한 확신이 없는 경우 Adjust 담당자 또는 [support@adjust.com](mailto:support@adjust.com) 으로 이메일을 보내 해당 기능이 영향을 받는지 확인하시기 바랍니다.
+
+</Callout>
+
 ### [Signature v1 또는 v2 라이브러리에서 마이그레이션](migrating-from-signature-v1-or-v2-library)
 
 이전에 Signature v1 또는 Signature v2를 사용한 적이 있다면 Signature 라이브러리를 연동하기 전에 이전 버전을 제거해야 합니다. 다음을 수행하시기 바랍니다.
@@ -21,7 +27,20 @@ Adjust의 SDK Signature\(SDK 서명\) 라이브러리는 Adjust SDK의 독립형
 -  이전에 Signature v1을 연동한 경우 프로젝트에서 서명 함수를 호출하는 모든 코드를 제거합니다.
 -  이전에 Signature v2를 연동한 경우 프로젝트에서 Signature v2 라이브러리를 제거합니다.
 
-## [연동 단계](integration-steps)
+### [Updating the Signature Library](updating-the-signature-library)
+
+To update the Adjust Signature library, replace the existing Signature library with a new version and rerun your tests. You don't need to make any immediate changes to your app logic or settings in Adjust as long as your [certificates are configured and haven't been altered](https://help.adjust.com/ko/article/sdk-signature#manage-your-certificate-fingerprints). Remember to [deactivate your secret IDs if they meet the following criteria](https://help.adjust.com/ko/article/sdk-signature#manage-your-secret-ids):
+
+-  They're no longer contributing to your install reporting.
+-  You've fully released a new version of your app \(across all app platforms and stores\).
+
+## [Integrate the signature library \(SDK v4 only\)](integrate-the-signature-library)
+
+<Callout type="note">
+
+Adjust SDK v5 supports SDK signature verification natively. If you previously integrated the SDK signature library, you should uninstall it and remove all related code.
+
+</Callout>
 
 다음 단계에 따라 Unity 프로젝트에서 서명 라이브러리를 연동합니다.
 
@@ -31,7 +50,7 @@ Adjust의 SDK Signature\(SDK 서명\) 라이브러리는 Adjust SDK의 독립형
 
 이제 끝입니다\! 서명 라이브러리가 프로젝트에 연동되었습니다. 다음 섹션의 단계에 따라 디지털 인증서를 설정합니다.
 
-### [Adjust suite에서 인증서 설정](set-up-your-certificates-in-the-adjust-suite)
+## [Adjust suite에서 인증서 설정](set-up-your-certificates-in-the-adjust-suite)
 
 <Callout type="note">
 
@@ -45,6 +64,12 @@ Signature 라이브러리를 앱에 연동하면 Adjust SDK가 Adjust로 전송�
 
 서명 라이브러리는 인증서 핑거프린트의 인증 여부를 검증할 수 없습니다. 핑거프린트가 포함된 요청을 Adjust가 인증된 것으로 수락하게 하려면 핑거프린트를 Adjust Suite의 허용 리스트에 추가해야 합니다. 이를 위해 인증서의 핑거프린트를 가져와 Adjust에 전송합니다.
 
+<Callout type="important">
+
+You must add the fingerprints of your signing certificates to the allowlist. If no fingerprints are added to the allowlist, traffic from your app can be spoofed.
+
+</Callout>
+
 #### [keystore에서](from-a-keystore)
 
 자체 키스토어를 사용하거나 Android Studio에서 키스토어가 생성된 경우 다음 단계에 따라 인증서의 핑거프린트를 가져올 수 있습니다.
@@ -54,7 +79,7 @@ Signature 라이브러리를 앱에 연동하면 Adjust SDK가 Adjust로 전송�
 2. 다음의 명령어를 실행하여 키를 나열합니다. 괄호 안의 내용은 입력한 정보로 대체합니다.
 
    ```console
-   $ keytool -list -v -keystore <path/to/keystore.jks> -alias <your_key_alias>
+   $ keytool -list -v -keystore <path/to/keystore.jks> -alias <your_key_alias id="sl-md0000000">
    ```
 
    이 명령은 키스토어 암호를 요구합니다. 키스토어를 생성할 때 정의한 암호입니다.

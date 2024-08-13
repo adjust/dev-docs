@@ -2,15 +2,7 @@
 title: "SDK Signature(SDK 서명) 라이브러리 연동"
 description: "Adjust SDK와 Adjust 서버 간 커뮤니케이션의 보안을 위해 Android 앱에 Signature 라이브러리를 추가합니다."
 slug: "ko/sdk/android/integrations/signature-library"
-multiVersion: true
 ---
-
-<SdkVersion version="v5">
-
-Adjust SDK v5는 [SDK Signature\(SDK 서명\) 인증](https://help.adjust.com/ko/article/sdk-signature)을 기본적으로 지원합니다. SDK 서명 라이브러리를 이전에 연동한 경우 이것을 삭제하고 관련된 모든 코드를 제거해야 합니다.
-
-</SdkVersion>
-<SdkVersion version="v4">
 
 Adjust의 SDK Signature\(SDK 서명\) 라이브러리는 Adjust SDK의 독립형 플러그인으로 설계되었습니다. 따라서 코드를 변경하거나 앱에서 Adjust SDK를 사용하는 방법을 변경할 필요가 없습니다. 플러그인 설치 후에는 Adjust SDK에서 생성된 모든 요청이 계속 정상적으로 작동합니다.
 
@@ -22,6 +14,12 @@ Adjust의 SDK Signature\(SDK 서명\) 라이브러리는 Adjust SDK의 독립형
 -  사용 중인 Adjust SDK 버전이 **4\.38\.2 이상** 이어야 합니다.
 -  Proguard를 사용하는 경우 서명 라이브러리와 Adjust SDK에서 동일한 Proguard 구성을 사용해야 합니다.
 
+<Callout type="important">
+
+외부 난독화 툴을 Adjust SDK나 Signature 라이브러리와 함께 사용하면 Signature 라이브러리의 기능에 영향을 줄 수 있습니다. 외부 툴 사용에 대한 확신이 없는 경우 Adjust 담당자 또는 [support@adjust.com](mailto:support@adjust.com) 으로 이메일을 보내 해당 기능이 영향을 받는지 확인하시기 바랍니다.
+
+</Callout>
+
 ### [Signature v1 또는 v2 라이브러리에서 마이그레이션](migrating-from-signature-v1-or-v2-library)
 
 이전에 Signature v1 또는 Signature v2를 사용한 적이 있다면 서명 라이브러리를 연동하기 전에 이전 버전을 제거해야 합니다. 다음을 수행하시기 바랍니다.
@@ -29,7 +27,20 @@ Adjust의 SDK Signature\(SDK 서명\) 라이브러리는 Adjust SDK의 독립형
 -  이전에 Signature v1을 연동한 경우 프로젝트에서 서명 함수를 호출하는 모든 코드를 제거합니다.
 -  이전에 Signature v2를 연동한 경우 프로젝트에서 Signature v2 라이브러리를 제거합니다.
 
-## [연동 단계](integration-steps)
+### [Updating the Signature Library](updating-the-signature-library)
+
+To update the Adjust Signature library, replace the existing Signature library with a new version and rerun your tests. You don't need to make any immediate changes to your app logic or settings in Adjust as long as your [certificates are configured and haven't been altered](https://help.adjust.com/ko/article/sdk-signature#manage-your-certificate-fingerprints). Remember to [deactivate your secret IDs if they meet the following criteria](https://help.adjust.com/ko/article/sdk-signature#manage-your-secret-ids):
+
+-  They're no longer contributing to your install reporting.
+-  You've fully released a new version of your app \(across all app platforms and stores\).
+
+## [Integrate the signature library \(SDK v4 only\)](integrate-the-signature-library)
+
+<Callout type="note">
+
+Adjust SDK v5 supports SDK signature verification natively. If you previously integrated the SDK signature library, you should uninstall it and remove all related code.
+
+</Callout>
 
 다음 단계에 따라 Android 프로젝트에서 서명 라이브러리를 연동합니다.
 
@@ -39,7 +50,7 @@ Adjust의 SDK Signature\(SDK 서명\) 라이브러리는 Adjust SDK의 독립형
 
 ![Android Studio의 디렉터리 스크린샷](@images/sig-v3/aar-in-studio.png)
 
-3. 앱 수준의 `build.gradle` 파일을 열고 다음을 추가합니다.
+4. 앱 수준의 `build.gradle` 파일을 열고 다음을 추가합니다.
 
    ```groovy
    android {
@@ -53,17 +64,23 @@ Adjust의 SDK Signature\(SDK 서명\) 라이브러리는 Adjust SDK의 독립형
    }
    ```
 
-4. Android Studio 팝업창에서 **Sync Now** 를 선택하여 변경 사항을 동기화합니다.
+5. Android Studio 팝업창에서 **Sync Now** 를 선택하여 변경 사항을 동기화합니다.
 
 이제 끝입니다\! Signature 라이브러리가 프로젝트에 연동되었습니다. 다음 섹션의 단계에 따라 Adjust suite의 디지털 인증서를 설정합니다.
 
-### [Adjust suite에서 인증서 설정](set-up-your-certificates-in-the-adjust-suite)
+## [Adjust suite에서 인증서 설정](set-up-your-certificates-in-the-adjust-suite)
 
 Signature 라이브러리를 앱에 연동하면 Adjust SDK가 Adjust로 전송하는 모든 요청이 서명됩니다. Adjust SDK는 또한 서명 인증서의 핑거프린트를 포함한 관련 정보를 Adjust 서버로 전송합니다.
 
 인증서의 핑거프린트는 인증서 내의 공개 정보를 암호화한 해시입니다. 앱의 인증 여부를 검증하는 데 사용할 수 있습니다.
 
 서명 라이브러리는 인증서 핑거프린트의 인증 여부를 검증할 수 없습니다. 핑거프린트가 포함된 요청을 Adjust가 인증된 것으로 수락하게 하려면 핑거프린트를 Adjust Suite의 허용 리스트에 추가해야 합니다. 이를 위해 인증서의 핑거프린트를 가져와 Adjust에 전송합니다.
+
+<Callout type="important">
+
+You must add the fingerprints of your signing certificates to the allowlist. If no fingerprints are added to the allowlist, traffic from your app can be spoofed.
+
+</Callout>
 
 #### [키스토어\(keystore\)에서](from-a-keystore)
 
@@ -74,7 +91,7 @@ Signature 라이브러리를 앱에 연동하면 Adjust SDK가 Adjust로 전송�
 2. 다음의 명령어를 실행하여 키를 나열합니다. 괄호 안의 내용은 입력한 정보로 대체합니다.
 
    ```console
-   $ keytool -list -v -keystore <path/to/keystore.jks> -alias <your_key_alias>
+   $ keytool -list -v -keystore <path/to/keystore.jks> -alias <your_key_alias id="sl-md0000000">
    ```
 
    이 명령은 키스토어 암호를 요구합니다. 키스토어를 생성할 때 정의한 암호입니다.
@@ -213,5 +230,3 @@ Adjust SDK가 **샌드박스 모드** 에서 실행 중이어야 합니다.
 이러한 필드가 있고 올바른 정보를 포함하고 있다면 서명 라이브러리가 성공적으로 연동된 것입니다. 필드에 다른 값이 표시되는 경우, 연동 단계를 다시 검토하거나 [support@adjust.com](mailto:support@adjust.com)에 연락하시기 바랍니다.
 
 이제 끝입니다\! Signature 라이브러리가 앱에 성공적으로 연동되었습니다. [어트리뷰션 윈도우 2개가 완료](https://help.adjust.com/ko/article/attribution-windows)되면 [SDK Signature\(SDK 서명\) 검증을 시행](https://help.adjust.com/ko/article/sdk-signature#enforce-signature-validation)하여 서명된 요청만 Adjust에서 수락하도록 할 수 있습니다.
-
-</SdkVersion>
