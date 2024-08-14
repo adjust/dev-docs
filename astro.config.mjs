@@ -11,6 +11,10 @@ import rehypeExternalLinks from "rehype-external-links";
 import remarkHeaderLinkToId from "./src/integrations/remarkHeaderLinkToId";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import redirectList from "./src/redirects.json";
+import {
+  remarkDefinitionList,
+  defListHastHandlers,
+} from "remark-definition-list";
 
 console.log(
   `${import.meta.env.VITE_GITHUB_TOKEN ? "Token found" : "No token found"}`,
@@ -69,7 +73,14 @@ export default defineConfig({
   ],
   site: "https://dev.adjust.com/",
   markdown: {
-    remarkPlugins: [[remarkReplaceVersions, versions], remarkHeaderLinkToId],
+    remarkPlugins: [
+      [remarkReplaceVersions, versions],
+      remarkHeaderLinkToId,
+      remarkDefinitionList,
+    ],
+    remarkRehype: {
+      handlers: defListHastHandlers,
+    },
     rehypePlugins: [
       [
         rehypeAutolinkHeadings,
