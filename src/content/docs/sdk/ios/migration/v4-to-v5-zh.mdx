@@ -5,12 +5,6 @@ slug: "zh/sdk/ios/migration/v4-to-v5"
 sidebar-position: 1
 ---
 
-<Callout type="important" title="Beta 公测">
-
-SDK v5 处于公测阶段。所有功能均可能变更。
-
-</Callout>
-
 ## [操作前须知](before-you-begin)
 
 在更新到 SDK v5 之前，您需要进行以下操作：
@@ -21,12 +15,6 @@ SDK v5 处于公测阶段。所有功能均可能变更。
    -  tvOS: **12\.0**
 
 ## [安装 beta SDK](install-the-sdk)
-
-<Callout type="important">
-
-SDK v5 当前仅在 Cocoapods 上可用。
-
-</Callout>
 
 要开始使用 SDK v5，您需要将其添加为 XCode 项目的依赖。为此请进行下列操作：
 
@@ -115,13 +103,19 @@ Adjust.initSdk(adjustConfig)
 NSString *yourAppToken = @"{YourAppToken}";
 NSString *environment = ADJEnvironmentSandbox;
 ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:yourAppToken
-                                             andEnvironment:environment];
+                                                  environment:environment];
 
 [Adjust initSdk:adjustConfig];
 ```
 
 </Tab>
 </Tabs>
+
+### [签名设置](signature-setup)
+
+SDK v5 包含[SDK 签名库](https://help.adjust.com/zh/article/sdk-signature)。您可以按照[签名库集成指南](/zh/sdk/ios/integrations/signature-library)中的测试步骤对此进行测试。
+
+签名保护功能默认处于禁用状态。要启用签名，您需要[执行签名验证](https://help.adjust.com/zh/article/sdk-signature#enforce-signature-validation)。
 
 ### [配置](configuration)
 
@@ -868,7 +862,7 @@ Adjust.trackEvent(event)
 NSString *yourAppToken = @"{YourAppToken}";
 NSString *environment = ADJEnvironmentSandbox;
 ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:yourAppToken
-                                             andEnvironment:environment];
+                                                  environment:environment];
 
 [adjustConfig setEventDeduplicationIdsMaxSize:20];
 [Adjust initSdk:adjustConfig];
@@ -1065,7 +1059,7 @@ func adjustDeferredDeeplinkReceived(_ deeplink: URL?) -> Bool {
 
 <MinorVersion changed="v5">
 
-在 SDK v4 中，您可以使用`ADJConfig`类设置[COPPA 合规](/zh/sdk/ios/features/privacy#coppa-compliance)并在 SDK 初始化期间读取。也就是说，SDK 初始化后该值就无法再更新。
+在 SDK v4 中，您可以使用布尔值在`ADJConfig`实例上调用`setCoppaCompliantEnabled`方法，将应用标记为 COPPA 合规。
 
 </MinorVersion>
 <Tabs>
@@ -1085,22 +1079,20 @@ adjustConfig.setCoppaCompliantEnabled(true)
 </Tab>
 </Tabs>
 
-在 SDK v5 中，此方法位于`Adjust`类中。也就是说，您可以随时更改设置，只需调用`[Adjust enableCoppaCompliance]` 启用 COPPA 合规或调用`[Adjust disableCoppaCompliance]` 禁用 COPPA 合规。
+在 SDK v5 中，为清晰起见，该方法已被重命名为`enableCoppaCompliance` 。该方法不带参数。
 
 <Tabs>
 <Tab title="Swift" sync="swift">
 
 ```swift
-Adjust.enableCoppaCompliance()
-Adjust.disableCoppaCompliance()
+adjustConfig?.enableCoppaCompliance()
 ```
 
 </Tab>
 <Tab title="Objective-C" sync="objc">
 
 ```objc
-[Adjust enableCoppaCompliance];
-[Adjust disableCoppaCompliance];
+[adjustConfig enableCoppaCompliance];
 ```
 
 </Tab>
@@ -1380,7 +1372,7 @@ adjustConfig.deactivateSKAdNetworkHandling()
 ```objc
 ADJConfig *adjustConfig = [[ADJConfig alloc]
                                initWithAppToken:@"{YourAppToken}"
-                               andEnvironment:ADJEnvironmentSandbox];
+                               environment:ADJEnvironmentSandbox];
 
 [adjustConfig deactivateSKAdNetworkHandling];
 ```
@@ -1409,7 +1401,7 @@ adjustConfig.disableSkanAttribution()
 ```objc
 ADJConfig *adjustConfig = [[ADJConfig alloc]
                                initWithAppToken:@"{YourAppToken}"
-                               andEnvironment:ADJEnvironmentSandbox];
+                               environment:ADJEnvironmentSandbox];
 
 [adjustConfig disableSkanAttribution];
 ```
@@ -1492,10 +1484,10 @@ func adjustConversionValueUpdated(_ fineValue: NSNumber, coarseValue: String, lo
 
 在 SDK v5 中，这两种方法已被单个`adjustSkanUpdatedWithConversionData`方法所取代，该方法会返回无类型字典。当前支持下列键：
 
--  `conversion_value`: 更新后的转化值。
--  `coarse_value`: 更新后的[粗粒度转化值](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
--  `lock_window`: 是否在转化窗口结束前发送回调。
--  `error`: 更新返回的错误信息。
+-  `conversion_value`: The updated conversion value.
+-  `coarse_value`: The updated [coarse conversion value](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
+-  `lock_window`: Whether to send the postback before the conversion window ends
+-  `error`: Any error message returned by the update.
 
 <Tabs>
 <Tab title="Swift" sync="swift">
