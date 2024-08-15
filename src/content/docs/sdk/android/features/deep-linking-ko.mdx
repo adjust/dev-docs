@@ -23,7 +23,6 @@ SDK는 사용자가 링크를 통해 앱을 실행한 이후에 딥링크 데이
 1. **스킴 이름** 을 `AndroidManifest.xml` 파일 내 활동에 지정합니다.
 2. 활동 정의에 `intent-filter` 노드를 추가합니다.
 3. `intent-filter` 노드에 **스킴 이름** 을 포함하는 `android:scheme` 데이터 노드를 추가합니다.
-4. [Android 앱 링크](https://help.adjust.com/ko/article/set-up-android-app-links)의 경우, `intent` 필터를 추가하여 앱이 처리할 수 있는 URL을 지정합니다. `intent` 필터에 `android:autoVerify="true"` 어트리뷰션과 함께 `data` 요소를 포함합니다.
 
 ### [예시](example)
 
@@ -46,27 +45,12 @@ SDK는 사용자가 링크를 통해 앱을 실행한 이후에 딥링크 데이
       <data android:scheme="adjustExample" />
    </intent-filter>
 
-   <intent-filter android:autoVerify="true">
-    <action android:name="android.intent.action.VIEW" />
-    <category android:name="android.intent.category.DEFAULT" />
-    <category android:name="android.intent.category.BROWSABLE" />
-    <data android:scheme="http" android:host="insights.go.link" />
-    <data android:scheme="https" android:host="insights.go.link" />
-   </intent-filter>
-
 </activity>
 ```
 
 </CodeBlock>
-<Callout type="info">
 
-`insights.go.link` Android 앱 링크로 정의된 브랜드 도메인입니다.
-
-</Callout>
-
-이제 앱이 URI 스킴과 Android 앱 링크를 모두 처리할 수 있습니다. 사용자가 선언된 URI 스킴 또는 Android 앱 링크와 일치하는 링크를 클릭하면 앱이 자동으로 실행됩니다.
-
-사용자가 **스킴 이름** 을 포함하는 `deep_link` 파라미터가 포함된 링크를 클릭하면 이 활동이 실행됩니다.
+이제 앱이 URI 스킴을 처리할 수 있습니다. 사용자가 **스킴 이름** 을 포함하는 `deep_link` 파라미터가 포함된 링크를 클릭하면 이 활동이 실행됩니다.
 
 <CodeBlock highlight="deep_link=adjustExample%3A%2F%2F">
 
@@ -75,6 +59,30 @@ https://app.adjust.com/abc123?deep_link=adjustExample%3A%2F%2F
 ```
 
 </CodeBlock>
+
+## [Android 앱 링크 구성](configure-android-app-links)
+
+[Android 앱 링크](https://help.adjust.com/ko/article/set-up-android-app-links)의 경우, `intent` 필터를 추가하여 앱이 처리할 수 있는 URL을 지정합니다. `android:autoVerify="true"` 필터에 `data` 어트리뷰션과 함께 `AndroidManifest.xml` 요소를 포함합니다.
+
+       <intent-filter android:autoVerify="true">
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="http" android:host="insights.go.link" />
+        <data android:scheme="https" android:host="insights.go.link" />
+       </intent-filter>
+
+<Callout type="info">
+
+`insights.go.link` Android 앱 링크로 정의된 브랜드 도메인입니다.
+
+</Callout>
+
+이제 앱이 Android 앱 링크를 처리할 수 있습니다. 사용자가 `insights.go.link` 도메인이 포함된 링크를 클릭하면 앱이 자동으로 실행됩니다.
+
+```html
+https://insights.go.link/login?adj_t=abc123
+```
 
 ## [딥링크 정보 액세스](access-deep-link-information)
 
@@ -245,7 +253,7 @@ config.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListe
 <CodeBlock title="메서드 서명">
 
 ```java
-public static void processDeeplink(Uri url, Context context)
+public static void processDeeplink(AdjustDeeplink adjustDeeplink, Context context)
 ```
 
 </CodeBlock>
@@ -264,7 +272,8 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
    val intent = intent
    val data = intent.data
-   Adjust.processDeeplink(data, applicationContext)
+   val adjustDeeplink = AdjustDeeplink(data)
+   Adjust.processDeeplink(adjustDeeplink, applicationContext)
 }
 ```
 
@@ -279,8 +288,49 @@ protected void onCreate(Bundle savedInstanceState) {
 
     Intent intent = getIntent();
     Uri data = intent.getData();
-    Adjust.processDeeplink(data, getApplicationContext());
+    AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+    Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
 }
+```
+
+</Tab>
+</Tabs>
+
+## [마지막으로 해석된 링크 얻기](get-the-last-resolved-link)
+
+<CodeBlock title="메서드 서명">
+
+```java
+public static void getLastDeeplink(final Context context, final OnLastDeeplinkReadListener onLastDeeplinkReadListener)
+```
+
+</CodeBlock>
+
+`Adjust.getLastDeeplink()` 메서드를 호출하여 `Adjust.processDeeplink()` 또는 [`Adjust.processAndResolveDeepLink()` 메서드](/ko/sdk/android/features/short-links) 에 의해 해석된 마지막 딥링크 URL을 반환할 수 있습니다. 이 메서드는 마지막으로 해석된 딥링크를 딥링크 객체로 반환합니다.
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+Adjust.getLastDeeplink(context) { deeplink ->
+   if (deeplink != null) {
+       Log.d("Example", deeplink.toString())
+   }
+}
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+Adjust.getLastDeeplink(context, new OnLastDeeplinkReadListener() {
+   @Override
+   public void onLastDeeplinkRead(Uri deeplink) {
+       if (deeplink != null) {
+           Log.d("Example", deeplink.toString());
+       }
+   }
+});
 ```
 
 </Tab>
@@ -322,7 +372,8 @@ Adjust SDK는 URL을 해석할 때 최대 10개의 리다이렉트를 따릅니�
 ```kotlin
 AdjustLinkResolution.resolveLink(url, arrayOf("example.com"), object : AdjustLinkResolution.AdjustLinkResolutionCallback {
    override fun resolvedLinkCallback(resolvedLink: Uri) {
-         Adjust.processDeeplink(resolvedLink, applicationContext)
+         val adjustDeeplink = AdjustDeeplink(resolvedLink)
+         Adjust.processDeeplink(adjustDeeplink, applicationContext)
    }
 })
 ```
@@ -334,7 +385,8 @@ AdjustLinkResolution.resolveLink(url, arrayOf("example.com"), object : AdjustLin
 AdjustLinkResolution.resolveLink(url, new String[]{"example.com"}, new AdjustLinkResolution.AdjustLinkResolutionCallback() {
    @Override
    public void resolvedLinkCallback(Uri resolvedLink) {
-      Adjust.processDeeplink(resolvedLink, getApplicationContext());
+      AdjustDeeplink adjustDeeplink = new AdjustDeeplink(resolvedLink);
+      Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
    }
 });
 ```
@@ -360,7 +412,6 @@ SDK는 사용자가 링크를 통해 앱을 실행한 이후에 딥링크 데이
 1. **스킴 이름** 을 `AndroidManifest.xml` 파일 내 활동에 지정합니다.
 2. 활동 정의에 `intent-filter` 노드를 추가합니다.
 3. `intent-filter` 노드에 **스킴 이름** 을 포함하는 `android:scheme` 데이터 노드를 추가합니다.
-4. [Android 앱 링크](https://help.adjust.com/ko/article/set-up-android-app-links)의 경우, `intent` 필터를 추가하여 앱이 처리할 수 있는 URL을 지정합니다. `intent` 필터에 `android:autoVerify="true"` 어트리뷰션과 함께 `data` 요소를 포함합니다.
 
 ### [예시](example)
 
@@ -395,15 +446,8 @@ SDK는 사용자가 링크를 통해 앱을 실행한 이후에 딥링크 데이
 ```
 
 </CodeBlock>
-<Callout type="info">
 
-`insights.go.link` Android 앱 링크로 정의된 브랜드 도메인입니다.
-
-</Callout>
-
-이제 앱이 URI 스킴과 Android 앱 링크를 모두 처리할 수 있습니다. 사용자가 선언된 URI 스킴 또는 Android 앱 링크와 일치하는 링크를 클릭하면 앱이 자동으로 실행됩니다.
-
-사용자가 **스킴 이름** 을 포함하는 `deep_link` 파라미터가 포함된 링크를 클릭하면 이 활동이 실행됩니다.
+이제 앱이 URI 스킴을 처리할 수 있습니다. 사용자가 **스킴 이름** 을 포함하는 `deep_link` 파라미터가 포함된 링크를 클릭하면 이 활동이 실행됩니다.
 
 <CodeBlock highlight="deep_link=adjustExample%3A%2F%2F">
 
@@ -413,7 +457,31 @@ https://app.adjust.com/abc123?deep_link=adjustExample%3A%2F%2F
 
 </CodeBlock>
 
-### [딥링크 정보 액세스](access-deep-link-information)
+## [Android 앱 링크 구성](configure-android-app-links)
+
+[Android 앱 링크](https://help.adjust.com/ko/article/set-up-android-app-links)의 경우, `intent` 필터를 추가하여 앱이 처리할 수 있는 URL을 지정합니다. `android:autoVerify="true"` 필터에 `data` 어트리뷰션과 함께 `AndroidManifest.xml` 요소를 포함합니다.
+
+       <intent-filter android:autoVerify="true">
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="http" android:host="insights.go.link" />
+        <data android:scheme="https" android:host="insights.go.link" />
+       </intent-filter>
+
+<Callout type="info">
+
+`insights.go.link` Android 앱 링크로 정의된 브랜드 도메인입니다.
+
+</Callout>
+
+이제 앱이 Android 앱 링크를 처리할 수 있습니다. 사용자가 `insights.go.link` 도메인이 포함된 링크를 클릭하면 앱이 자동으로 실행됩니다.
+
+```html
+https://insights.go.link/login?adj_t=abc123
+```
+
+## [딥링크 정보 액세스](access-deep-link-information)
 
 `deep_link` 파라미터의 콘텐츠 전송 위치를 지정할 수 있습니다. 이를 위해 `AndroidManifest.xml` 파일에서 활동에서 `android:launchMode` 속성을 설정합니다.
 
