@@ -5,12 +5,6 @@ slug: "zh/sdk/unity/migration/v4-to-v5"
 sidebar-position: 1
 ---
 
-<Callout type="important" title="Beta 公测">
-
-SDK v5 处于公测阶段。所有功能均可能变更。
-
-</Callout>
-
 ## [操作前须知](before-you-begin)
 
 在更新到 SDK v5 之前，您需要进行以下操作：
@@ -20,7 +14,7 @@ SDK v5 处于公测阶段。所有功能均可能变更。
    -  iOS: **12\.0**
    -  安卓： **21**
 
-## [安装 beta SDK](install-the-sdk)
+## [安装 SDK](install-the-sdk)
 
 在安装 SDK v5 之前，请先从项目中移除所有 SDK v4 资源和代码。
 
@@ -42,7 +36,17 @@ SDK v5 处于公测阶段。所有功能均可能变更。
 3. 请删除 Android Studio 项目中所有对`Adjust`的引用。
    -  在项目的`libs`目录中找到并删除`adjust-android.jar`库。
 
-从项目中移除所有 SDK v4 资源后，请从[GitHub 发布页面](https://github.com/adjust/unity_sdk/releases/tag/v5.0.0-beta1)下载 Adjust `unitypackage`并将其导入您的项目中。
+从项目中移除所有 SDK v4 资源后，您就可以安装 SDK v5 了。为此您可以选择：
+
+-  从[GitHub 发布页面](https://github.com/adjust/unity_sdk/releases/latest)下载 Adjust `unitypackage`并将其导入您的项目。
+-  使用 Unity Package Manager 安装包：
+   1. 在 Unity 编辑器中选择 **Package Manager** 窗口。
+   2. 选择 **Add package from git URL** 。
+   3. 输入以下 URL：`https://github.com/adjust/unity_sdk.git` .
+
+### [安装 iOS 和安卓 SDK](install-ios-and-android-sdks)
+
+SDK v5 不再使用 iOS 和安卓 SDK 作为二进制依赖。要安装底层 iOS 和安卓 SDK，您需要使用[External Dependency Manager for Unity \(EDM4U\)](https://github.com/googlesamples/unity-jar-resolver)从 CocoaPods 和 Maven 安装包。
 
 ## [变更](changes)
 
@@ -77,6 +81,15 @@ Adjust.start(adjustConfig);
 AdjustConfig adjustConfig = new AdjustConfig("appToken", AdjustEnvironment.Sandbox);
 Adjust.InitSdk(adjustConfig);
 ```
+
+### [签名设置](signature-setup)
+
+SDK v5 包含[SDK 签名库](https://help.adjust.com/zh/article/sdk-signature)。您可以按照[签名库集成指南](/zh/sdk/unity/integrations/signature-library)中的测试步骤对此进行测试。
+
+签名保护功能默认处于禁用状态。要启用该功能，您需要：
+
+1. [执行签名验证](https://help.adjust.com/zh/article/sdk-signature#enforce-signature-validation)。
+2. 在测试前[提供应用的 SHA\-1 指纹](https://help.adjust.com/zh/article/sdk-signature#manage-your-certificate-fingerprints)。
 
 ### [配置](configuration)
 
@@ -509,8 +522,9 @@ adjustConfig.EventFailureDelegate = eventFailureCallback; // Event failure callb
 AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
    price,
    currency,
-   transactionId,
-   receipt);
+-   transactionId,
+-   receipt);
++  transactionId);
 - subscription.setTransactionDate("transaction-date");
 - subscription.setSalesRegion("sales-region");
 - subscription.addCallbackParameter("key1", "value1");
@@ -577,7 +591,6 @@ Adjust.trackPlayStoreSubscription(subscription);
 -  `CallbackId`
 -  `TransactionId`
 -  `ProductId`
--  `Receipt`
 -  `PurchaseToken`
 
 以下 setter 已被重命名：
@@ -586,11 +599,7 @@ Adjust.trackPlayStoreSubscription(subscription);
 -  `addCallbackParameter` \-> `AddCallbackParameter`
 -  `addCallbackParameter` \-> `AddPartnerParameter`
 
-<Callout type="important">
-
-`AdjustEvent.setReceiptBase64()`方法已被移除。您应当始终为`AdjustEvent.Receipt`属性指定一个 **UnityIAP base64 编码的收据字符串** 。
-
-</Callout>
+`receipt`属性已从`AdjustEvent`类中移除。
 
 以下是变更内容的完整示例：
 
@@ -612,7 +621,6 @@ AdjustEvent adjustEvent = new AdjustEvent("abc123");
 + adjustEvent.CallbackId = "callback-id";
 + adjustEvent.ProductId = "product-id";
 + adjustEvent.PurchaseToken = "purchase-token";
-+ adjustEvent.Receipt = "base64-encoded-receipt";
 + adjustEvent.AddCallbackParameter("key", "value");
 + adjustEvent.AddPartnerParameter("key", "value");
 Adjust.trackEvent(adjustEvent);
@@ -720,10 +728,11 @@ adjustConfig.AttributionChangedDelegate = attributionCallback;
 Adjust.appWillOpenUrl("url");
 ```
 
-为清晰起见，在 SDK v5 中，该方法已重命名为`Adjust.ProcessDeeplink()` 。
+为清晰起见，在 SDK v5 中，该方法已重命名为`Adjust.ProcessDeeplink()` 。其中添加了新的`AdjustDeeplink`类用于构建深度链接。要处理深度链接，请使用您的深度链接 URL 实例化`AdjustDeeplink`对象并将其传递至`Adjust.ProcessDeeplink`方法。
 
 ```cs
-Adjust.ProcessDeeplink("url");
+AdjustDeeplink adjustDeeplink = new AdjustDeeplink("url");
+Adjust.ProcessDeeplink(adjustDeeplink);
 ```
 
 #### [启动延迟深度链接](launch-deferred-deeplinks)
@@ -752,7 +761,7 @@ adjustConfig.IsDeferredDeeplinkOpeningEnabled = true;
 
 <MinorVersion changed="v5">
 
-在 SDK v4 中，您可以使用`AdjustConfig`类设置[COPPA 合规](/zh/sdk/unity/features/privacy#coppa-compliance)并在 SDK 初始化期间读取。也就是说，SDK 初始化后该值就无法再更新。
+在 SDK v4 中，您可以通过使用`bool`值在`AdjustConfig`实例上调用`setCoppaCompliantEnabled`方法，将应用标记为 COPPA 合规。
 
 </MinorVersion>
 
@@ -760,11 +769,10 @@ adjustConfig.IsDeferredDeeplinkOpeningEnabled = true;
 adjustConfig.setCoppaCompliantEnabled(true);
 ```
 
-在 SDK v5 中，此方法位于`Adjust`类中。也就是说，您可以随时更改设置，只需调用`Adjust.EnableCoppaCompliance()` 启用 COPPA 合规或调用`Adjust.DisableCoppaCompliance()` 禁用 COPPA 合规。
+在 SDK v5 中，您需要将`AdjustConfig`实例的`IsCoppaComplianceEnabled`属性设置为`bool` 值。
 
 ```cs
-Adjust.EnableCoppaCompliance(); // Enable COPPA compliance
-Adjust.DisableCoppaCompliance(); // Disable COPPA compliance
+adjustConfig.IsCoppaComplianceEnabled = true;
 ```
 
 #### [Play Store 儿童应用](play-store-kids)
@@ -779,11 +787,10 @@ Adjust.DisableCoppaCompliance(); // Disable COPPA compliance
 adjustConfig.setPlayStoreKidsAppEnabled(true);
 ```
 
-在 SDK v5 中，此方法位于`Adjust`类中。也就是说您可以随时更改设置，只需调用`Adjust.EnablePlayStoreKidsApp()` 来将应用标记为 Play 商店儿童应用或调用`Adjust.DisablePlayStoreKidsApp()` 来取消应用的 Play 商店儿童应用标记。
+在 SDK v5 中，您需要将`AdjustConfig`实例的`IsPlayStoreKidsComplianceEnabled`属性设置为`true`，才能启用合规。
 
 ```cs
-Adjust.EnablePlayStoreKidsApp(); // Enable Play Store Kids compliance
-Adjust.DisablePlayStoreKidsApp(); // Disable Play Store Kids compliance
+adjustConfig.IsPlayStoreKidsComplianceEnabled = true;
 ```
 
 #### [设置数据驻留和 URL 策略](url-strategy)
@@ -804,7 +811,7 @@ adjustConfig.setUrlStrategy(AdjustConfig.AdjustDataResidencyEU);
 -  `isDataResidency` \( `bool` \)：域名是否用于数据驻留。
 
 ```cs
-adjustConfig.SetUrlStrategy(new List<string > {"eu.adjust.com"}, true, true);
+adjustConfig.SetUrlStrategy(new List<string> {"eu.adjust.com"}, true, true);
 ```
 
 请查看下方表格，了解如何在 SDK v5 中配置 URL 策略。
@@ -828,42 +835,42 @@ adjustConfig.SetUrlStrategy(new List<string > {"eu.adjust.com"}, true, true);
 <CodeBlock title="印度 URL 策略">
 
 ```cs
-adjustConfig.SetUrlStrategy(new List<string > {"adjust.net.in", "adjust.com"}, true, false);
+adjustConfig.SetUrlStrategy(new List<string> {"adjust.net.in", "adjust.com"}, true, false);
 ```
 
 </CodeBlock>
 <CodeBlock title="中国 URL 策略">
 
 ```cs
-adjustConfig.SetUrlStrategy(new List<string > {"adjust.world", "adjust.com"}, true, false);
+adjustConfig.SetUrlStrategy(new List<string> {"adjust.world", "adjust.com"}, true, false);
 ```
 
 </CodeBlock>
 <CodeBlock title="仅限中国地区的 URL 策略">
 
 ```cs
-adjustConfig.SetUrlStrategy(new List<string > {"adjust.cn"}, true, false);
+adjustConfig.SetUrlStrategy(new List<string> {"adjust.cn"}, true, false);
 ```
 
 </CodeBlock>
 <CodeBlock title="欧盟数据驻留">
 
 ```cs
-adjustConfig.SetUrlStrategy(new List<string > {"eu.adjust.com"}, true, true);
+adjustConfig.SetUrlStrategy(new List<string> {"eu.adjust.com"}, true, true);
 ```
 
 </CodeBlock>
 <CodeBlock title="土耳其数据驻留">
 
 ```cs
-adjustConfig.SetUrlStrategy(new List<string > {"tr.adjust.com"}, true, true);
+adjustConfig.SetUrlStrategy(new List<string> {"tr.adjust.com"}, true, true);
 ```
 
 </CodeBlock>
 <CodeBlock title="数据驻留">
 
 ```cs
-adjustConfig.SetUrlStrategy(new List<string > {"us.adjust.com"}, true, true);
+adjustConfig.SetUrlStrategy(new List<string> {"us.adjust.com"}, true, true);
 ```
 
 </CodeBlock>
@@ -1011,7 +1018,7 @@ Adjust.trackAdRevenue(adRevenue);
 
 <MinorVersion changed="v5">
 
-在 SDK v4 中，您可以使用`AdjustConfig.setAttConsentWaitingInterval()`方法配置 ATT 延迟显示的时间间隔。
+在 SDK v4 中，您可以使用`AdjustConfig`实例中的`setAttConsentWaitingInterval`方法来设置向 Adjust 发送安装信息的延迟时间。通过设置延迟，您可以给用户更多时间与 ATT 弹窗进行交互。
 
 </MinorVersion>
 
@@ -1092,7 +1099,7 @@ adjust.SkanUpdatedDelegate = skanUpdatedCallback;
 -  `conversionValue` \( `int` \)：更新后的转化值
 -  `coarseValue` \( `string` \)：更新后的[粗粒度转化值](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
 -  `lockWindow` \(`bool`\)：是否在转化窗口结束前发送回调
--  `callback` \( `Action<string >` \): 可以处理发生的任何错误的回传函数
+-  `callback` \( `Action<string>` \): 可以处理发生的任何错误的回传函数
 
 ```cs
 Adjust.UpdateSkanConversionValue(1, "low", false, error =>
@@ -1166,16 +1173,6 @@ Adjust.RequestAppTrackingAuthorization((status) =>
 Adjust.GetIdfa(idfa =>
 {
     // use idfa
-});
-```
-
-</CodeBlock>
-<CodeBlock title="IDFV getter">
-
-```cs
-Adjust.GetIdfv(idfv =>
-{
-    // use idfv
 });
 ```
 
