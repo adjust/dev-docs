@@ -1,22 +1,52 @@
 ---
 title: "ChartboostのHelium SDKの連携"
 description: "Heliumとの連携を使用して、Heliumの情報をAdjustサーバーにパスします。"
-slug: "ja/sdk/unity/integrations/helium"
+slug: "en/sdk/unity/integrations/helium"
+multiVersion: true
 ---
-
-<Callout type="note">
+<sdkversion version="v5"> <callout type="note"> 
 
 Helium by Chartboostとの連携による広告収益計測についてご質問がございましたら、担当のテクニカルアカウントマネージャーもしくは[support@adjust.com](mailto:support@adjust.com)までお問い合わせください。
-
-</Callout>
+</Callout> 
 
 Helium by Chartboostで広告収益を計測したい場合は、SDK間連携の機能を使用することで、Adjustサーバーにこの情報をパスすることができます。
 
-## [要件](requirements)
+[例](example)
+------------
 
--  Adjust Unity SDKバージョン4\.29\.6以降をアプリに実装すること
+```cs
+void DidReceiveImpressionLevelRevenueData(string placement, Hashtable impressionData)
+{
+    var json = HeliumJSON.Serialize(impressionData);
 
-## [例](example)
+    ParsedJsonObject parsedJsonObject = foobar.parse(json); //app developer defined function to parse Helium impressionData JSON string
+
+    AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue("helium_chartboost_sdk");
+    adjustAdRevenue.SetRevenue(parsedJsonObject.ad_revenue, parsedJsonObject.currency_type);
+
+    // optional fields
+    adjustAdRevenue.AdRevenueNetwork = parsedJsonObject.network_name;     // Helium demand network name
+    adjustAdRevenue.AdRevenueUnit = parsedJsonObject.placement_name;      // Helium placement name
+    adjustAdRevenue.AdRevenuePlacement = parsedJsonObject.line_item_name; // Helium line item name
+    // Send Adjust ad revenue
+    Adjust.TrackAdRevenue(adjustAdRevenue);
+}
+```
+
+</SdkVersion> <sdkversion version="v4"> <callout type="note"> 
+
+Helium by Chartboostとの連携による広告収益計測についてご質問がございましたら、担当のテクニカルアカウントマネージャーもしくは[support@adjust.com](mailto:support@adjust.com)までお問い合わせください。
+</Callout> 
+
+Helium by Chartboostで広告収益を計測したい場合は、SDK間連携の機能を使用することで、Adjustサーバーにこの情報をパスすることができます。
+
+[要件](requirements)
+------------------
+
+* Adjust Unity SDKバージョン4\.29\.6以降をアプリに実装すること
+
+[例](example)
+------------
 
 ```cs
 void DidReceiveImpressionLevelRevenueData(string placement, Hashtable impressionData)
@@ -36,3 +66,6 @@ void DidReceiveImpressionLevelRevenueData(string placement, Hashtable impression
     Adjust.trackAdRevenue(adjustAdRevenue);
 }
 ```
+
+</SdkVersion>
+
