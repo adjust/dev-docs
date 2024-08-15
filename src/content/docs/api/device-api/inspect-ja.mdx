@@ -1,42 +1,84 @@
 ---
-title: "デバイスエンドポイントの検査"
+title: "Inspect deviceエンドポイント"
 description: "Inspect deviceエンドポイントを使うことで、デバイス情報が確認できます。アプリに関連したデバイスおよびリンク情報を返すには、そのアプリIDとデバイスの広告IDを提供してください。"
-slug: "ja/api/device-api/inspect"
+slug: "en/api/device-api/inspect"
 sidebar-position: 2
+multiVersion: true
 ---
-
 Inspect deviceエンドポイントを使うことで、デバイス情報が確認できます。アプリに関連したデバイスおよびリンク情報を返すには、そのアプリIDとデバイスの広告IDを提供してください。
+<apiversion version="v2"> <codeblock title="エンドポイント" highlight="/inspect_device"> 
 
-<CodeBlock title="エンドポイント" highlight="/inspect_device">
+```http
+GET https://api.adjust.com/device_service/api/v2/inspect_device
+```
+
+</CodeBlock> </ApiVersion> <apiversion version="v1"> <codeblock title="エンドポイント" highlight="/inspect_device"> 
 
 ```http
 GET https://api.adjust.com/device_service/api/v1/inspect_device
 ```
 
-</CodeBlock>
+</CodeBlock> </ApiVersion> 
 
-## [デバイス情報を取得する](fetch-device-information)
+[デバイス情報を取得する](fetch-device-information)
+---------------------------------------
 
 デバイス情報をJSONオブジェクトとして返します。
+<table> 
 
-<Table>
+|       パラメーター        |  データタイプ  | 入力する値 |                         説明                         |
+|---------------------|----------|-------|----------------------------------------------------|
+| `app_token`\*      | `String` | クエリ   | アプリの12桁の識別子                                        |
+| `advertising_id`\* | `String` | クエリ   | デバイスの一意の広告ID。以下の[広告ID](#advertising-ids)を参照してください。 |
 
-| パラメーター       | データタイプ | 入力する値 | 説明                                                                         |
-| ------------------ | ------------ | ---------- | ---------------------------------------------------------------------------- |
-| `app_token`\*      | `String`     | クエリ     | アプリの12桁の識別子                                                         |
-| `advertising_id`\* | `String`     | クエリ     | デバイスの一意の広告ID。以下の[広告ID](#advertising-ids)を参照してください。 |
+</Table> <apiversion version="v2"> <accordion title="広告ID"> 
 
-</Table>
-<Accordion title="広告ID">
+* `idfa` （iOSデバイス）
+* `gps_adid` （Google広告ID）
+* `android_id` （Android ID）
+* `fire_adid` （Amazon Fire ID）
+* `win_adid` （Windows広告ID）
 
--  `idfa` （iOSデバイス）
--  `gps_adid` （Google広告ID）
--  `android_id` （Android ID）
--  `fire_adid` （Amazon Fire ID）
--  `win_adid` （Windows広告ID）
+</Accordion> <codeblock title="レスポンスの形式"> 
 
-</Accordion>
-<CodeBlock title="レスポンスの形式">
+```json
+{
+   "Adid": "string",
+   "AdvertisingId": "string",
+   "Tracker": "string",
+   "TrackerName": "string",
+   "Environment": "string",
+   "ClickTime": "date-time",
+   "InstallTime": "date-time",
+   "LastSessionTime": "date-time",
+   "LastEventsInfo": {
+      "{event_id}": {
+         "name": "string",
+         "time": "date-time"
+      },
+      "{event_id}": {
+         "name": "string",
+         "time": "date-time"
+      },
+      "{event_id}": {
+         "name": "string",
+         "time": "date-time"
+      }
+   },
+   "LastSdkVersion": "ios4.37.2",
+   "State": "string"
+}
+```
+
+</CodeBlock> </ApiVersion> <apiversion version="v1"> <accordion title="広告ID"> 
+
+* `idfa` （iOSデバイス）
+* `gps_adid` （Google広告ID）
+* `android_id` （Android ID）
+* `fire_adid` （Amazon Fire ID）
+* `win_adid` （Windows広告ID）
+
+</Accordion> <codeblock title="レスポンスの形式"> 
 
 ```json
 {
@@ -57,11 +99,53 @@ GET https://api.adjust.com/device_service/api/v1/inspect_device
 }
 ```
 
-</CodeBlock>
+</CodeBlock> </ApiVersion> 
 
-## [例](example)
+[例](example)
+------------
 
-<CodeBlock title="cURL" highlight="advertising_id=1234-5678-9012-3456, app_token=gwzpeepw8uf8">
+<apiversion version="v2"> <codeblock title="cURL" highlight="advertising_id=1234-5678-9012-3456, app_token=gwzpeepw8uf8"> 
+
+```console
+$ curl \
+--header "Authorization: Bearer ask43jskdp2tg2hg87" \
+-L -X GET "https://api.adjust.com/device_service/api/v2/inspect_device?advertising_id=1234-5678-9012-3456&app_token=gwzpeepw8uf8"
+```
+
+</CodeBlock> <codeblock title="成功レスポンス"> 
+
+```json
+{
+   "Adid": "acf8534f2f052395e617a38730682ccc",
+   "AdvertisingId": "1234-5678-9012-3456",
+   "Tracker": "abc123",
+   "TrackerName": "Organic",
+   "FirstTracker": "zr5vueb",
+   "FirstTrackerName": "Organic",
+   "Environment": "sandbox",
+   "ClickTime": "0001-01-01T00:00:00Z",
+   "InstallTime": "2015-08-19T03:42:03Z",
+   "LastSessionTime": "2017-07-29T17:29:17Z",
+   "LastEventsInfo": {
+      "kgfcul": {
+         "name": "Copy IDFA",
+         "time": "2024-07-18T10:01:16Z"
+      },
+      "wz9qqz": {
+         "name": "Accept Terms",
+         "time": "2024-07-01T14:13:47Z"
+      },
+      "z3f773": {
+         "name": "Copy IDFV",
+         "time": "2024-07-01T19:01:39Z"
+      }
+   },
+   "LastSdkVersion": "ios4.37.2",
+   "State": "installed"
+}
+```
+
+</CodeBlock> </ApiVersion> <apiversion version="v1"> <codeblock title="cURL" highlight="advertising_id=1234-5678-9012-3456, app_token=gwzpeepw8uf8"> 
 
 ```console
 $ curl \
@@ -69,8 +153,7 @@ $ curl \
 -L -X GET "https://api.adjust.com/device_service/api/v1/inspect_device?advertising_id=1234-5678-9012-3456&app_token=gwzpeepw8uf8"
 ```
 
-</CodeBlock>
-<CodeBlock title="成功レスポンス（Successful response）">
+</CodeBlock> <codeblock title="成功レスポンス"> 
 
 ```json
 {
@@ -91,4 +174,5 @@ $ curl \
 }
 ```
 
-</CodeBlock>
+</CodeBlock> </ApiVersion>
+
