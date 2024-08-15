@@ -1,32 +1,21 @@
 ---
 title: "SDK v5 마이그레이션 가이드"
 description: "이 가이드에 따라 SDK v4에서 SDK v5로 업그레이드하시기 바랍니다."
-slug: "ko/sdk/ios/migration/v4-to-v5"
+slug: "en/sdk/ios/migration/v4-to-v5"
 sidebar-position: 1
 ---
-
-<Callout type="important" title="오픈 베타">
-
-SDK v5는 오픈 베타 상태입니다. 모든 기능은 변경될 수 있습니다.
-
-</Callout>
-
-## [시작에 앞서](before-you-begin)
+[시작에 앞서](before-you-begin)
+--------------------------
 
 SDK v5로 업데이트하기 전에 다음을 수행하시기 바랍니다.
 
-1. SDK v5는 [SDK Signature\(SDK 서명\) 인증](https://help.adjust.com/ko/article/sdk-signature)을 기본적으로 지원합니다. 현재 SDK 서명 라이브러리를 사용하는 경우 먼저 이것을 삭제해야 합니다.
-2. 앱이 다음보다 낮은 버전의 API를 대상으로 하는 경우 SDK v5를 사용하려면 앱을 업데이트해야 합니다.
-   -  iOS: **12\.0**
-   -  tvOS: **12\.0**
+1. SDK v5는 [SDK Signature\(SDK 서명\) 인증](https://help.adjust.com/en/article/sdk-signature)을 기본적으로 지원합니다. 현재 SDK 서명 라이브러리를 사용하는 경우 먼저 이것을 삭제해야 합니다.
+2. 앱이 다음보다 낮은 버전의 API를 대상으로 하는 경우 SDK v5를 사용하려면 앱을 업데이트해야 합니다. 
+   * iOS: **12\.0** 
+   * tvOS: **12\.0** 
 
-## [베타 SDK 설치](install-the-sdk)
-
-<Callout type="important">
-
-SDK v5는 현재 Cocoapods에서만 이용 가능합니다.
-
-</Callout>
+[베타 SDK 설치](install-the-sdk)
+----------------------------
 
 SDK v5를 사용하려면 XCode 프로젝트에서 디펜던시로 추가해야 합니다. 다음을 수행하시기 바랍니다.
 
@@ -34,35 +23,31 @@ SDK v5를 사용하려면 XCode 프로젝트에서 디펜던시로 추가해야 
 
 2. `Podfile`에 다음 줄을 추가합니다.
 
-   <CodeBlock title="Podfile">
+   <codeblock title="Podfile"> 
 
    ```rb
    pod 'Adjust', :git => 'https://github.com/adjust/ios_sdk.git', :branch => 'v5'
    ```
 
-   </CodeBlock>
-
+   </CodeBlock> 
 3. `pod install`을 실행하여 디펜던시를 설치합니다.
 
-## [변경 사항](changes)
+[변경 사항](changes)
+----------------
 
-<Callout type="warning">
+<callout type="warning"> 
 
 SDK v5는 주요 버전 업데이트입니다. 이는 코드 업데이트가 필요한 중대한 변경 사항이 있다는 것을 의미합니다.
-
-</Callout>
+</Callout> 
 
 v5 SDK를 설치한 후에는 새로운 API를 사용할 수 있도록 기존의 Adjust 코드를 업데이트해야 합니다.
 
 ### [초기화 메서드](init-method)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
 SDK v4에서는 `ADJConfig` 객체를 구성하고 이를 `[Adjust appDidLaunch]` 메서드에 전달하는 방식으로 SDK를 초기화합니다.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 let yourAppToken = "{YourAppToken}"
@@ -74,8 +59,7 @@ let adjustConfig = ADJConfig(
 Adjust.appDidLaunch(adjustConfig)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 #import "Adjust.h"
@@ -88,13 +72,10 @@ NSString *environment = ADJEnvironmentSandbox;
 [Adjust appDidLaunch:adjustConfig];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 SDK v5에서는 이 메서드의 이름이 `[Adjust initSdk]`로 변경되었습니다.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 let yourAppToken = "{YourAppToken}"
@@ -106,8 +87,7 @@ let adjustConfig = ADJConfig(
 Adjust.initSdk(adjustConfig)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 #import "Adjust.h"
@@ -115,13 +95,18 @@ Adjust.initSdk(adjustConfig)
 NSString *yourAppToken = @"{YourAppToken}";
 NSString *environment = ADJEnvironmentSandbox;
 ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:yourAppToken
-                                             andEnvironment:environment];
+                                                  environment:environment];
 
 [Adjust initSdk:adjustConfig];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
+
+### [서명 설정](signature-setup)
+
+SDK v5는 [SDK Signature 라이브러리](https://help.adjust.com/en/article/sdk-signature) 를 포함합니다. 이를 테스트하려면 [Signature 라이브러리 연동 가이드](/en/sdk/ios/integrations/signature-library) 에 나온 테스트 단계를 수행하시기 바랍니다.
+
+서명 보호는 기본 설정에 따라 비활성화되어 있습니다. 이를 활성화하려면 [서명 검증을 시행](https://help.adjust.com/en/article/sdk-signature#enforce-signature-validation) 해야 합니다.
 
 ### [구성](configuration)
 
@@ -129,375 +114,303 @@ ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:yourAppToken
 
 #### [SDK 비활성화 및 활성화](disable-enable-sdk)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
 SDK v4에서는 `BOOL` 값과 함께 `[Adjust setEnabled]`를 호출하여 SDK를 활성화 및 비활성화할 수 있습니다.
+</MinorVersion> 
 
-</MinorVersion>
+* SDK를 비활성화하려면 `[Adjust setEnabled:NO]`를 호출합니다.
+* SDK를 활성화하려면 `[Adjust setEnabled:YES]`를 호출합니다.
 
--  SDK를 비활성화하려면 `[Adjust setEnabled:NO]`를 호출합니다.
--  SDK를 활성화하려면 `[Adjust setEnabled:YES]`를 호출합니다.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 Adjust.setEnabled(false) //disable SDK
 Adjust.setEnabled(true) //enable SDK
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [Adjust setEnabled:NO]; // disable SDK
 [Adjust setEnabled:YES]; // enable SDK
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 SDK v5에서는 명확성을 위해 이 기능이 별도의 명령으로 분리되었습니다.
 
--  SDK를 비활성화하려면 `[Adjust disable]`를 호출합니다.
--  SDK를 활성화하려면 `[Adjust enable]`를 호출합니다.
+* SDK를 비활성화하려면 `[Adjust disable]`를 호출합니다.
+* SDK를 활성화하려면 `[Adjust enable]`를 호출합니다.
 
-<Tabs>
-<Tab title="Swift" sync="swift">
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 Adjust.disable() //disable SDK
 Adjust.enable() //enable SDK
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [Adjust disable]; // disable SDK
 [Adjust enable]; // enable SDK
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 #### [백그라운드에서 정보 전송](send-in-background)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
 SDK v4에서는 `true` 인수와 함께 `[ADJConfig setSendInBackground]` 메서드를 호출하여 앱이 백그라운드에서 실행 중일 때 SDK가 Adjust에 정보를 전달하도록 설정할 수 있습니다.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 adjustConfig.setSendInBackground(true)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [adjustConfig setSendInBackground:YES];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 SDK v5에서는 앱이 백그라운드에서 실행 중일 때 SDK가 Adjust에 정보를 전송할 수 있게 하려면 인수 없이 `[ADJConfig enableSendingInBackground]` 메서드를 호출해야 합니다.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 adjustConfig.enableSendingInBackground()
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [adjustConfig enableSendingInBackground];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 #### [AdServices 정보 읽기 비활성화](disable-adservices)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
 SDK v4에서는 `false` 인수와 함께 `[ADJConfig setAllowAdServicesInfoReading]` 메서드를 호출하여 Adjust SDK가 AdServices 정보를 읽는 것을 방지할 수 있습니다.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 adjustConfig.setAllowAdServicesInfoReading(false)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [adjustConfig setAllowAdServicesInfoReading:NO];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 SDK v5에서는 Adjust SDK가 AdServices 정보를 읽는 것을 방지하려면 인수 없이 `disableAdServices` 메서드를 호출해야 합니다.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 adjustConfig.disableAdServices()
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [adjustConfig disableAdServices];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 #### [IDFA 읽기 비활성화](disable-idfa)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
 SDK v4에서는 `false` 인수와 함께 `[ADJConfig setAllowIdfaReading]` 메서드를 호출하여 Adjust SDK가 기기의 IDFA를 읽는 것을 방지할 수 있습니다.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 adjustConfig.setAllowIdfaReading(false)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [adjustConfig setAllowIdfaReading:NO];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 SDK v5에서는 Adjust SDK가 기기의 IDFA를 읽는 것을 방지하려면 인수 없이 `disableIdfaReading` 메서드를 호출해야 합니다.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 adjustConfig.disableIdfaReading()
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [adjustConfig disableIdfaReading];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 #### [어트리뷰션에서 비용 데이터 활성화](enable-cost-data)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
 SDK v4에서는 `true` 인수와 함께 `[ADJConfig setNeedsCost]` 메서드를 호출하여 기기의 어트리뷰션 정보에서 비용 데이터를 활성화할 수 있습니다.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 adjustConfig.setNeedsCost(true)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [adjustConfig setNeedsCost:YES];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 SDK v5에서는 인수 없이 `[ADJConfig enableCostDataInAttribution]` 메서드를 호출해야 합니다.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 adjustConfig.enableCostDataInAttribution()
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [adjustConfig enableCostDataInAttribution];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 #### [LinkMe 활성화](enable-linkme)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
-SDK v4에서는 `true` 인수와 함께 `[ADJConfig setLinkMeEnabled]` 메서드를 호출하여 [Adjust LinkMe](https://help.adjust.com/ko/article/linkme)를 활성화할 수 있습니다.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+SDK v4에서는 `true` 인수와 함께 `[ADJConfig setLinkMeEnabled]` 메서드를 호출하여 [Adjust LinkMe](https://help.adjust.com/en/article/linkme)를 활성화할 수 있습니다.
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 adjustConfig.setLinkMeEnabled(true)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [adjustConfig setLinkMeEnabled:YES];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 SDK v5에서는 인수 없이 `[ADJConfig enableLinkMe]` 메서드를 호출해야 합니다.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 adjustConfig.enableLinkMe()
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [adjustConfig enableLinkMe];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 #### [기기 ID를 한 번만 읽기](read-device-id-once)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
 SDK v4에서는 `true` 인수와 함께 `[ADJConfig setReadDeviceInfoOnceEnabled]` 메서드를 호출하여 SDK가 기기 식별자를 앱 시작 시 한 번만 읽도록 설정할 수 있습니다.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 adjustConfig.setReadDeviceInfoOnceEnabled(true)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [adjustConfig setReadDeviceInfoOnceEnabled:YES];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 SDK v5에서는 인수 없이 `[ADJConfig enableDeviceIdsReadingOnce]` 메서드를 호출해야 합니다.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 adjustConfig.enableDeviceIdsReadingOnce()
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [adjustConfig enableDeviceIdsReadingOnce];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 #### [오프라인 모드](offline-mode)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
 SDK v4에서는 `BOOL` 인수와 함께 `[Adjust setOfflineMode]`를 호출하여 SDK의 오프라인 모드를 활성화 및 비활성화할 수 있습니다.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 Adjust.setOfflineMode(true) // put the SDK in offline mode
 Adjust.setOfflineMode(false) // put the SDK back in online mode
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [Adjust setOfflineMode:YES]; // put the SDK in offline mode
 [Adjust setOfflineMode:NO]; // put the SDK back in online mode
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 SDK v5에서는 명확성을 위해 이 기능이 별도의 명령으로 분리되었습니다.
 
--  SDK를 오프라인 모드로 설정하려면 `[Adjust switchToOfflineMode]`를 호출합니다.
--  SDK를 온라인 모드로 전환하려면`[Adjust switchBackToOnlineMode]`를 호출합니다.
+* SDK를 오프라인 모드로 설정하려면 `[Adjust switchToOfflineMode]`를 호출합니다.
+* SDK를 온라인 모드로 전환하려면`[Adjust switchBackToOnlineMode]`를 호출합니다.
 
-<Tabs>
-<Tab title="Swift" sync="swift">
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 Adjust.switchToOfflineMode() // put the SDK in offline mode
 Adjust.switchBackToOnlineMode() // put the SDK back in online mode
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [Adjust switchToOfflineMode]; // put the SDK in offline mode
 [Adjust switchBackToOnlineMode]; // put the SDK back in online mode
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 #### [푸시 토큰](push-tokens)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
 SDK v4에서는 `[Adjust setDeviceToken]` 메서드를 사용하여 푸시 토큰을 설정할 수 있습니다.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 func application(_ app: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
@@ -505,8 +418,7 @@ func application(_ app: UIApplication, didRegisterForRemoteNotificationsWithDevi
 }
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 - (void)application:(UIApplication *)app didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
@@ -514,13 +426,10 @@ func application(_ app: UIApplication, didRegisterForRemoteNotificationsWithDevi
 }
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 이 메서드는 SDK v5에서 이름이 `[Adjust setPushToken]`으로 변경되었습니다.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 func application(_ app: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken pushToken: Data) {
@@ -528,8 +437,7 @@ func application(_ app: UIApplication, didRegisterForRemoteNotificationsWithDevi
 }
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 - (void)application:(UIApplication *)app didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)pushToken {
@@ -537,115 +445,92 @@ func application(_ app: UIApplication, didRegisterForRemoteNotificationsWithDevi
 }
 ```
 
-</Tab>
-</Tabs>
-<Callout type="note">
+</Tab> </Tabs> <callout type="note"> 
 
 SDK v4에는 `NSString` 값을 사용하는 `setPushToken`이라는 이름의 메서드가 포함되어 있습니다. SDK v5에서 `setPushToken` 메서드는 `NSData` 값을 허용합니다.
-
-</Callout>
+</Callout> 
 
 #### [이벤트 버퍼링](event-buffering)
 
-<MinorVersion removed="v5">
+<minorversion removed="v5"> 
 
 SDK v4는 이벤트 버퍼링을 지원합니다. 이 기능은 요청 이벤트, 광고 매출, 푸시 토큰 및 기타 정보를 로컬 버퍼에 저장하여 나중에 전송할 수 있게 해줍니다.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 Adjust.setEventBufferingEnabled(true)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [adjustConfig setEventBufferingEnabled:YES];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 이 설정은 SDK v5에서 제거되었습니다.
 
 #### [사용자 지정 사용자 에이전트 문자열](custom-user-agent)
 
-<MinorVersion removed="v5">
+<minorversion removed="v5"> 
 
 SDK v4는 사용자 에이전트 문자열과 함께 `[AdjustConfig setUserAgent]`를 호출하여 사용자 지정 사용자 에이전트를 설정하는 기능을 지원합니다.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 adjustConfig.setUserAgent("user_agent_value")
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [adjustConfig setUserAgent:@"user_agent_value"];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 이 설정은 SDK v5에서 제거되었습니다.
 
 #### [알려진 기기 여부 설정](set-device-known)
 
-<MinorVersion removed="v5">
+<minorversion removed="v5"> 
 
 SDK v4에서는 `[AdjustConfig setIsDeviceKnown];` 메서드를 호출하여 알려진 기기인지 여부를 수동으로 SDK에 알릴 수 있습니다.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 adjustConfig.setIsDeviceKnown(true)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [adjustConfig setIsDeviceKnown:YES];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 이 설정은 SDK v5에서 제거되었습니다.
 
 #### [SDK 작동 시작 지연](delay-sdk-start)
 
-<MinorVersion removed="v5">
+<minorversion removed="v5"> 
 
 SDK v4는 `[AdjustConfig setDelayStart];`를 호출하여 SDK 작동 시작을 최대 **10초** 간 지연하는 기능을 지원합니다.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 adjustConfig.setDelayStart(10)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [adjustConfig setDelayStart:10];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 이 설정은 SDK v5에서 제거되었습니다.
 
@@ -655,13 +540,10 @@ adjustConfig.setDelayStart(10)
 
 #### [세션 콜백 파라미터](callback-params)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
 SDK v4에서는 키\-값 쌍을 `[Adjust addSessionCallbackParameter]` 메서드에 전달하여 세션 파라미터를 추가하고, `[Adjust removeSessionCallbackParameter]` 메서드를 사용하여 개별 파라미터를 제거할 수 있습니다.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 Adjust.addSessionCallbackParameter("foo", value: "bar")
@@ -669,8 +551,7 @@ Adjust.removeSessionCallbackParameter("foo")
 Adjust.resetSessionCallbackParameters
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [Adjust addSessionCallbackParameter:@"foo" value:@"bar"];
@@ -678,13 +559,10 @@ Adjust.resetSessionCallbackParameters
 [Adjust resetSessionCallbackParameters];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 SDK v5에서는 세션 파라미터가 글로벌 파라미터로 이름이 변경되었습니다. 키와 값을 위치 인수로 할당하는 대신 SDK v5는 `forKey` 인스턴스 메서드를 사용하여 값을 키에 할당합니다.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 Adjust.addGlobalCallbackParameter("bar", forKey: "foo")
@@ -692,8 +570,7 @@ Adjust.removeGlobalCallbackParameter(forKey: "foo")
 Adjust.removeGlobalCallbackParameters()
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [Adjust addGlobalCallbackParameter:@"bar" forKey:@"foo"];
@@ -701,18 +578,14 @@ Adjust.removeGlobalCallbackParameters()
 [Adjust removeGlobalCallbackParameters];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 #### [세션 파트너 파라미터](partner-params)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
 SDK v4에서는 키\-값 쌍을 `[Adjust addSessionPartnerParameter]` 메서드에 전달하여 파트너 파라미터를 추가하고, `[Adjust removeSessionPartnerParameter]` 메서드를 사용하여 개별 파라미터를 제거할 수 있습니다.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 Adjust.addSessionPartnerParameter("foo", value: "bar")
@@ -720,8 +593,7 @@ Adjust.removeSessionPartnerParameter("foo")
 Adjust.resetSessionPartnerParameters()
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [Adjust addSessionPartnerParameter:@"foo" value:@"bar"];
@@ -729,13 +601,10 @@ Adjust.resetSessionPartnerParameters()
 [Adjust resetSessionPartnerParameters];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 SDK v5에서는 세션 파트너 파라미터가 글로벌 파트너 파라미터로 이름이 변경되었습니다. 키와 값을 위치 인수로 할당하는 대신 SDK v5는 `forKey` 인스턴스 메서드를 사용하여 값을 키에 할당합니다.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 Adjust.addGlobalPartnerParameter("bar", forKey: "foo")
@@ -743,8 +612,7 @@ Adjust.removeGlobalPartnerParameter(forKey: "foo")
 Adjust.removeGlobalPartnerParameters()
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [Adjust addGlobalPartnerParameter:@"bar" forKey:@"foo"];
@@ -752,18 +620,14 @@ Adjust.removeGlobalPartnerParameters()
 [Adjust removeGlobalPartnerParameters];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 #### [구독 정보 전송](send-subscriptions)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
 SDK v4에서는 `ADJSubscription` 클래스를 사용하여 Adjust에 전송할 구독 정보의 페이로드를 생성할 수 있습니다.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 let subscription = ADJSubscription(
@@ -773,8 +637,7 @@ let subscription = ADJSubscription(
     andReceipt: receipt)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:price
@@ -783,13 +646,10 @@ ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:price
                                                             andReceipt:receipt];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 이 클래스는 명확성을 위해 SDK v5에서 이름이 `ADJAppStoreSubscription`으로 변경되었습니다.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 let subscription = ADJAppStoreSubscription(
@@ -799,8 +659,7 @@ let subscription = ADJAppStoreSubscription(
     andReceipt: receipt)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 ADJAppStoreSubscription *subscription = [[ADJAppStoreSubscription alloc]
@@ -810,18 +669,14 @@ ADJAppStoreSubscription *subscription = [[ADJAppStoreSubscription alloc]
                                              andReceipt:receipt];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 #### [이벤트 중복 제거](event-deduplication)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
 SDK v4에서는 이벤트 중복 제거가 이벤트 `transaction ID`와 결합되어 있으며 최대 10개의 고유 ID로 제한됩니다.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 let event = ADJEvent(eventToken: "eventToken")
@@ -829,8 +684,7 @@ event.setTransactionId("deduplication_id")
 Adjust.trackEvent(event)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 ADJEvent *event = [ADJEvent eventWithEventToken:@"event_token"];
@@ -838,13 +692,10 @@ ADJEvent *event = [ADJEvent eventWithEventToken:@"event_token"];
 [Adjust trackEvent:event];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 SDK v5에서는 이 기능이 `transaction ID`와 분리되었습니다. 이벤트 중복 제거를 위해 `deduplicationId`라는 새로운 ID 필드가 추가되었습니다. 사용자는 중복 이벤트를 식별하기 위해 목록에 추가할 수 있는 `deduplicationId` 수의 사용자 지정 한도를 설정할 수 있습니다. 기본 설정에 따라 한도는 **10** 으로 설정되어 있습니다.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 let yourAppToken = "{YourAppToken}"
@@ -861,14 +712,13 @@ event.setDeduplicationId("deduplication_id")
 Adjust.trackEvent(event)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 NSString *yourAppToken = @"{YourAppToken}";
 NSString *environment = ADJEnvironmentSandbox;
 ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:yourAppToken
-                                             andEnvironment:environment];
+                                                  environment:environment];
 
 [adjustConfig setEventDeduplicationIdsMaxSize:20];
 [Adjust initSdk:adjustConfig];
@@ -878,28 +728,23 @@ ADJEvent *event = [[ADJEvent alloc] initWithEventToken:kEventToken3];
 [Adjust trackEvent:event];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 #### [AdjustAttribution 클래스](attribution-class)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
 SDK v4에서는 `AdjustAttribution` 호출에 `adid`라는 속성이 있습니다. SDK v5에서는 `adid` 속성이 `AdjustAttribution` 클래스에서 제거되었습니다. [`[Adjust adidWithCompletionHandler]` 게터 메서드](#device-id-getters)를 사용하여 기기의 ADID를 조회할 수 있습니다.
-
-</MinorVersion>
+</MinorVersion> 
 
 ### [딥링킹](deep-links)
 
 #### [딥링크를 사용한 리어트리뷰션](reattribution-using-deep-links)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
 SDK v4에서는 딥링크 정보를 `[Adjust appWillOpenUrl]` 메서드에 전달할 수 있습니다.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 func application(
@@ -919,8 +764,7 @@ func application(
 }
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 - (BOOL)application:(UIApplication *)app
@@ -938,13 +782,10 @@ func application(
 }
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 SDK v5에서는 명확성을 위해 이름이 `[Adjust processDeeplink]`로 변경되었습니다.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 func application(
@@ -964,8 +805,7 @@ func application(
 }
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 - (BOOL)application:(UIApplication *)app
@@ -983,18 +823,14 @@ func application(
 }
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 #### [디퍼드 딥링크 콜백](deferred-callback)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
 SDK v4에서는 `adjustDeepLinkResponse` 메서드를 호출하여 디퍼드 딥링크 콜백을 처리할 수 있습니다.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 func adjustDeeplinkResponse(_ deeplink: URL?) -> Bool {
@@ -1007,8 +843,7 @@ func adjustDeeplinkResponse(_ deeplink: URL?) -> Bool {
 }
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 - (BOOL)adjustDeeplinkResponse:(NSURL *)deeplink {
@@ -1021,13 +856,10 @@ func adjustDeeplinkResponse(_ deeplink: URL?) -> Bool {
 }
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 SDK v5에서는 명확성을 위해 이 메서드의 이름이 `adjustDeferredDeeplinkReceived`로 변경되었습니다. 모든 인수는 동일합니다.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 func adjustDeferredDeeplinkReceived(_ deeplink: URL?) -> Bool {
@@ -1040,8 +872,7 @@ func adjustDeferredDeeplinkReceived(_ deeplink: URL?) -> Bool {
 }
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 - (BOOL)adjustDeferredDeeplinkReceived:(NSURL *)deeplink {
@@ -1054,8 +885,7 @@ func adjustDeferredDeeplinkReceived(_ deeplink: URL?) -> Bool {
 }
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 ### [프라이버시 기능](privacy-features)
 
@@ -1063,69 +893,51 @@ func adjustDeferredDeeplinkReceived(_ deeplink: URL?) -> Bool {
 
 #### [COPPA 준수](coppa-compliance)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
-SDK v4에서는 [COPPA 준수](/ko/sdk/ios/features/privacy#coppa-compliance)가 `ADJConfig` 클래스를 사용하여 설정되며 SDK 초기화 중에 읽히게 됩니다. 따라서 SDK가 초기화된 후에는 해당 값을 업데이트할 수 없습니다.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+SDK v4에서는 부울 값과 함께 `ADJConfig` 인스턴스의 `setCoppaCompliantEnabled` 메서드를 호출하여 앱을 COPPA 준수로 표시할 수 있습니다.
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 adjustConfig.setCoppaCompliantEnabled(true)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [adjustConfig setCoppaCompliantEnabled:YES];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-SDK v5에서는 이 메서드를 `Adjust` 클래스에서 이용할 수 있습니다. 따라서 COPPA 준수 활성화를 위해 `[Adjust enableCoppaCompliance]`를 호출하거나 COPPA 준수 비활성화를 위해 `[Adjust disableCoppaCompliance]`를 호출하여 언제든지 설정을 변경할 수 있습니다.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+SDK v5에서는 명확성을 위해 이 메서드의 이름이 `enableCoppaCompliance`로 변경되었습니다. 이 메서드는 인수를 사용하지 않습니다.
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
-Adjust.enableCoppaCompliance()
-Adjust.disableCoppaCompliance()
+adjustConfig?.enableCoppaCompliance()
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
-[Adjust enableCoppaCompliance];
-[Adjust disableCoppaCompliance];
+[adjustConfig enableCoppaCompliance];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 #### [특정 소스로부터 광고 매출 전송](send-ad-revenue)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
 SDK v4에서는 광고 매출 소스가 `ADJConfig` 클래스의 상수로 정의됩니다. SDK v5에서는 광고 매출 소스를 문자열로 전달해야 합니다.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
-<CodeBlock useDiffSyntax>
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> <codeblock useDiffSyntax> 
 
 ```swift
 - let adRevenue = ADJAdRevenue(source: ADJAdRevenueSourceAppLovinMAX); //v4
 + let adRevenue = ADJAdRevenue(source: "applovin_max_sdk") //v5
 ```
 
-</CodeBlock>
-</Tab>
-<Tab title="Objective-C" sync="objc">
-<CodeBlock useDiffSyntax>
+</CodeBlock> </Tab> <tab title="Objective-C" sync="objc"> <codeblock useDiffSyntax> 
 
 ```objc
 - ADJAdRevenue *revenue = [[ADJAdRevenue alloc]
@@ -1134,13 +946,10 @@ SDK v4에서는 광고 매출 소스가 `ADJConfig` 클래스의 상수로 정�
 +                               initWithSource:@"applovin_max_sdk"]; // v5
 ```
 
-</CodeBlock>
-</Tab>
-</Tabs>
-<Table>
+</CodeBlock> </Tab> </Tabs> <table> 
 
-| v4                                   | v5                        |
-| ------------------------------------ | ------------------------- |
+|                  v4                  |            v5             |
+|--------------------------------------|---------------------------|
 | `ADJAdRevenueSourceAppLovinMAX`      | `"applovin_max_sdk"`      |
 | `ADJAdRevenueSourceAdMob`            | `"admob_sdk"`             |
 | `ADJAdRevenueSourceIronSource`       | `"ironsource_sdk"`        |
@@ -1153,15 +962,14 @@ SDK v4에서는 광고 매출 소스가 `ADJConfig` 클래스의 상수로 정�
 | `ADJAdRevenueSourceTopOn`            | `"topon_sdk"`             |
 | `ADJAdRevenueSourceMopub`            | `"mopub"`                 |
 
-</Table>
+</Table> 
 
 #### [데이터 레지던시 및 URL 전략 설정](url-strategy)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
 SDK v4에서는 URL 전략 및 데이터 레지던시 도메인이 `ADJConfig` 클래스의 상수로 정의됩니다.
-
-</MinorVersion>
+</MinorVersion> 
 
 ```objc
 [adjustConfig setUrlStrategy:ADJDataResidencyEU];
@@ -1169,8 +977,8 @@ SDK v4에서는 URL 전략 및 데이터 레지던시 도메인이 `ADJConfig` �
 
 SDK v5에서는 선택한 도메인을 배열로 전달해야 합니다. 또한 다음 항목을 설정할 수 있습니다.
 
--  `withSubdomains` \(`BOOL`\): 소스가 하위 도메인을 접두사로 사용해야 하는지 여부.
--  `andDataResidency` \(`BOOL`\): 도메인을 데이터 레지던시에 사용해야 하는지 여부.
+* `withSubdomains` \(`BOOL`\): 소스가 하위 도메인을 접두사로 사용해야 하는지 여부.
+* `andDataResidency` \(`BOOL`\): 도메인을 데이터 레지던시에 사용해야 하는지 여부.
 
 ```objc
 NSArray *domain = [];
@@ -1179,76 +987,65 @@ NSArray *domain = [];
 ```
 
 아래 표를 보고 SDK v5에서 URL 전략을 구성하는 방법을 확인하시기 바랍니다.
+<table autoWidth="1,2"> 
 
-<Table autoWidth="1,2">
+|           v4           |        v5 \- 메인 및 폴백 도메인         | v5 \- 하위 도메인 사용 | v5 \- 데이터 레지던시 여부 |
+|------------------------|-----------------------------------|------------------|--------------------|
+| `ADJDataResidencyEU`   | `"eu.adjust.com"`                 | `true`           | `true`             |
+| `ADJDataResidencyTR`   | `"tr.adjust.com"`                 | `true`           | `true`             |
+| `ADJDataResidencyUS`   | `"us.adjust.com"`                 | `true`           | `true`             |
+| `ADJUrlStrategyChina`  | `"adjust.world"`, `"adjust.com"`  | `true`           | `false`            |
+| `ADJUrlStrategyCn`     | `"adjust.cn"`, `"adjust.com"`     | `true`           | `false`            |
+| `ADJUrlStrategyCnOnly` | `"adjust.cn"`                     | `true`           | `false`            |
+| `ADJUrlStrategyIndia`  | `"adjust.net.in"`, `"adjust.com"` | `true`           | `false`            |
 
-| v4                     | v5 \- 메인 및 폴백 도메인         | v5 \- 하위 도메인 사용 | v5 \- 데이터 레지던시 여부 |
-| ---------------------- | --------------------------------- | ---------------------- | -------------------------- |
-| `ADJDataResidencyEU`   | `"eu.adjust.com"`                 | `true`                 | `true`                     |
-| `ADJDataResidencyTR`   | `"tr.adjust.com"`                 | `true`                 | `true`                     |
-| `ADJDataResidencyUS`   | `"us.adjust.com"`                 | `true`                 | `true`                     |
-| `ADJUrlStrategyChina`  | `"adjust.world"`, `"adjust.com"`  | `true`                 | `false`                    |
-| `ADJUrlStrategyCn`     | `"adjust.cn"`, `"adjust.com"`     | `true`                 | `false`                    |
-| `ADJUrlStrategyCnOnly` | `"adjust.cn"`                     | `true`                 | `false`                    |
-| `ADJUrlStrategyIndia`  | `"adjust.net.in"`, `"adjust.com"` | `true`                 | `false`                    |
-
-</Table>
+</Table> 
 
 ##### [예시](examples)
 
-<Tabs>
-<Tab title="Swift" sync="swift">
-<CodeBlock title="인도 URL 전략">
+<tabs> <tab title="Swift" sync="swift"> <codeblock title="인도 URL 전략"> 
 
 ```swift
 let domain = ["adjust.net.in", "adjust.com"]
 adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: false)
 ```
 
-</CodeBlock>
-<CodeBlock title="중국 URL 전략">
+</CodeBlock> <codeblock title="중국 URL 전략"> 
 
 ```swift
 let domain = ["adjust.world", "adjust.com"]
 adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: false)
 ```
 
-</CodeBlock>
-<CodeBlock title="중국 전용 URL 전략">
+</CodeBlock> <codeblock title="중국 전용 URL 전략"> 
 
 ```swift
 let domain = ["adjust.cn"]
 adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: false)
 ```
 
-</CodeBlock>
-<CodeBlock title="EU 데이터 레지던시">
+</CodeBlock> <codeblock title="EU 데이터 레지던시"> 
 
 ```swift
 let domain = ["eu.adjust.com"]
 adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: true)
 ```
 
-</CodeBlock>
-<CodeBlock title="터키 데이터 레지던시">
+</CodeBlock> <codeblock title="터키 데이터 레지던시"> 
 
 ```swift
 let domain = ["tr.adjust.com"]
 adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: true)
 ```
 
-</CodeBlock>
-<CodeBlock title="미국 데이터 레지던시">
+</CodeBlock> <codeblock title="미국 데이터 레지던시"> 
 
 ```swift
 let domain = ["us.adjust.com"]
 adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: true)
 ```
 
-</CodeBlock>
-</Tab>
-<Tab title="Objective-C" sync="objc">
-<CodeBlock title="인도 URL 전략">
+</CodeBlock> </Tab> <tab title="Objective-C" sync="objc"> <codeblock title="인도 URL 전략"> 
 
 ```objc
 NSArray *domain = [[NSArray alloc]
@@ -1256,8 +1053,7 @@ NSArray *domain = [[NSArray alloc]
 [adjustConfig setUrlStrategy:domain withSubdomains:YES andDataResidency:NO];
 ```
 
-</CodeBlock>
-<CodeBlock title="중국 URL 전략">
+</CodeBlock> <codeblock title="중국 URL 전략"> 
 
 ```objc
 NSArray *domain = [[NSArray alloc]
@@ -1265,8 +1061,7 @@ NSArray *domain = [[NSArray alloc]
 [adjustConfig setUrlStrategy:domain withSubdomains:YES andDataResidency:NO];
 ```
 
-</CodeBlock>
-<CodeBlock title="중국 전용 URL 전략">
+</CodeBlock> <codeblock title="중국 전용 URL 전략"> 
 
 ```objc
 NSArray *domain = [[NSArray alloc]
@@ -1274,8 +1069,7 @@ NSArray *domain = [[NSArray alloc]
 [adjustConfig setUrlStrategy:domain withSubdomains:YES andDataResidency:NO];
 ```
 
-</CodeBlock>
-<CodeBlock title="EU 데이터 레지던시">
+</CodeBlock> <codeblock title="EU 데이터 레지던시"> 
 
 ```objc
 NSArray *domain = [[NSArray alloc]
@@ -1283,8 +1077,7 @@ NSArray *domain = [[NSArray alloc]
 [adjustConfig setUrlStrategy:domain withSubdomains:YES andDataResidency:YES];
 ```
 
-</CodeBlock>
-<CodeBlock title="터키 데이터 레지던시">
+</CodeBlock> <codeblock title="터키 데이터 레지던시"> 
 
 ```objc
 NSArray *domain = [[NSArray alloc]
@@ -1292,8 +1085,7 @@ NSArray *domain = [[NSArray alloc]
 [adjustConfig setUrlStrategy:domain withSubdomains:YES andDataResidency:YES];
 ```
 
-</CodeBlock>
-<CodeBlock title="미국 데이터 레지던시">
+</CodeBlock> <codeblock title="미국 데이터 레지던시"> 
 
 ```objc
 NSArray *domain = [[NSArray alloc]
@@ -1301,54 +1093,43 @@ NSArray *domain = [[NSArray alloc]
 [adjustConfig setUrlStrategy:domain withSubdomains:YES andDataResidency:YES];
 ```
 
-</CodeBlock>
-</Tab>
-</Tabs>
+</CodeBlock> </Tab> </Tabs> 
 
 #### [글로벌 서드파티 공유 비활성화](disable-sharing-globally)
 
-<MinorVersion removed="v5">
+<minorversion removed="v5"> 
 
 SDK v4에서는 `Adjust.disableThirdPartySharing()` 메서드를 호출하여 전 세계에서 서드파티와의 정보 공유를 비활성화할 수 있습니다.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 Adjust.disableThirdPartySharing()
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [Adjust disableThirdPartySharing];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 이 기능은 SDK v5에서 제거되었습니다. SDK v5에서는 `[Adjust trackThirdPartySharing]` 메서드를 사용하여 서드파티 공유를 활성화 또는 비활성화합니다.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 let adjustThirdPartySharing = ADJThirdPartySharing.initWithIsEnabled(false)
 Adjust.trackThirdPartySharing(adjustThirdPartySharing)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc] initWithIsEnabled:@NO];
 [Adjust trackThirdPartySharing:adjustThirdPartySharing];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 ### [SKAdNetwork 및 ATT](skad-att)
 
@@ -1356,13 +1137,10 @@ ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc] in
 
 #### [SKAdNetwork 커뮤니케이션 비활성화](disable-skan)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
 SDK v4에서는 `[ADJConfig deactivateSKAdNetworkHandling]` 메서드를 호출하여 SDK가 SKAdNetwork와 통신하는 것을 방지할 수 있습니다.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 let yourAppToken = "{YourAppToken}"
@@ -1374,24 +1152,20 @@ let adjustConfig = ADJConfig(
 adjustConfig.deactivateSKAdNetworkHandling()
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 ADJConfig *adjustConfig = [[ADJConfig alloc]
                                initWithAppToken:@"{YourAppToken}"
-                               andEnvironment:ADJEnvironmentSandbox];
+                               environment:ADJEnvironmentSandbox];
 
 [adjustConfig deactivateSKAdNetworkHandling];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 SDK v5에서는 명확성을 위해 이 메서드의 이름이 `[ADJConfig disableSkanAttribution]`로 변경되었습니다.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 let yourAppToken = "{YourAppToken}"
@@ -1403,55 +1177,45 @@ let adjustConfig = ADJConfig(
 adjustConfig.disableSkanAttribution()
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 ADJConfig *adjustConfig = [[ADJConfig alloc]
                                initWithAppToken:@"{YourAppToken}"
-                               andEnvironment:ADJEnvironmentSandbox];
+                               environment:ADJEnvironmentSandbox];
 
 [adjustConfig disableSkanAttribution];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 #### [승인 상태 변경 확인](check-att-status-change)
 
-<MinorVersion removed="v5">
+<minorversion removed="v5"> 
 
 SDK v4에서는 `[Adjust checkForNewAttStatus]` 메서드를 사용하여 SDK가 사용자의 ATT 상태를 읽고 해당 정보를 Adjust 서버에 전달하도록 설정할 수 있습니다.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 Adjust.checkForNewAttStatus()
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [Adjust checkForNewAttStatus];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 이 메서드는 SDK v5에서 제거되었습니다.
 
 #### [전환값 업데이트 수신](listen-for-cv-updates)
 
-<MinorVersion removed="v5">
+<minorversion removed="v5"> 
 
 SDK v4에서는 `adjustConversionValueUpdated` 메서드를 사용하여 SKAdNetwork 업데이트를 수신할 수 있습니다.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 func adjustConversionValueUpdated(_ conversionValue: NSNumber) {
@@ -1468,8 +1232,7 @@ func adjustConversionValueUpdated(_ fineValue: NSNumber, coarseValue: String, lo
 
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 - (void)adjustConversionValueUpdated:(NSNumber *)conversionValue {
@@ -1487,18 +1250,16 @@ func adjustConversionValueUpdated(_ fineValue: NSNumber, coarseValue: String, lo
 }
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 SDK v5에서는 이 두 메서드가 단일 `adjustSkanUpdatedWithConversionData` 메서드로 교체되었으며 이 메서드는 유형이 지정되지 않은 딕셔너리를 반환합니다. 현재 지원되는 키는 다음과 같습니다.
 
--  `conversion_value`: 업데이트된 전환값
--  `coarse_value`: 업데이트된 [coarse 전환값](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
--  `lock_window`: 전환값 윈도우가 종료되기 전에 포스트백을 전송할지 여부
--  `error`: 업데이트로 반환된 모든 오류 메시지
+* `conversion_value`: The updated conversion value.
+* `coarse_value`: The updated [coarse conversion value](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
+* `lock_window`: Whether to send the postback before the conversion window ends
+* `error`: Any error message returned by the update.
 
-<Tabs>
-<Tab title="Swift" sync="swift">
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 func adjustSkanUpdated(withConversionData data: [String: String]) {
@@ -1507,8 +1268,7 @@ func adjustSkanUpdated(withConversionData data: [String: String]) {
 }
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 - (void)adjustSkanUpdatedWithConversionData:(NSDictionary<NSString *, NSString *> *)data {
@@ -1517,25 +1277,22 @@ func adjustSkanUpdated(withConversionData data: [String: String]) {
 }
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 #### [전환값 업데이트](update-cvs)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
 SDK v4에서는 `updateConversionValue` 메서드를 사용하여 Adjust에 업데이트된 전환값을 전송할 수 있습니다. 이 메서드는 Apple의 지원 종료된 [`updateConversionValue` 메서드](https://developer.apple.com/documentation/storekit/skadnetwork/3566697-updateconversionvalue)를 래핑하며 SDK v5에서는 제거되었습니다.
-
-</MinorVersion>
+</MinorVersion> 
 
 SDK v5에서는 다음 인수와 함께 `[Adjust updateSkanConversionValue]` 메서드를 사용하여 전환값을 업데이트할 수 있습니다.
 
--  `conversionValue` \(`NSInteger`\): 업데이트된 전환값
--  `coarseValue` \(`NSString`\): 업데이트된 [coarse 전환값](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
--  `lockWindow` \(`BOOL`\): 전환값 윈도우가 종료되기 전에 포스트백을 전송할지 여부
+* `conversionValue` \(`NSInteger`\): 업데이트된 전환값
+* `coarseValue` \(`NSString`\): 업데이트된 [coarse 전환값](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
+* `lockWindow` \(`BOOL`\): 전환값 윈도우가 종료되기 전에 포스트백을 전송할지 여부
 
-<Tabs>
-<Tab title="Swift" sync="swift">
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 Adjust.updateSkanConversionValue(
@@ -1548,8 +1305,7 @@ Adjust.updateSkanConversionValue(
 }
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [Adjust updateSkanConversionValue:1
@@ -1560,18 +1316,14 @@ Adjust.updateSkanConversionValue(
 }];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 #### [App Tracking Transparency\(ATT\) 승인 래퍼](att-wrapper)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
 SDK v4에서는 `[Adjust requestTrackingAuthorizationWithCompletionHandler]` 메서드를 사용하여 사용자의 ATT 승인 상태 변경 사항을 처리할 수 있습니다.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 Adjust.requestTrackingAuthorization() { status in
@@ -1594,8 +1346,7 @@ Adjust.requestTrackingAuthorization() { status in
 }
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [Adjust requestTrackingAuthorizationWithCompletionHandler:^(NSUInteger status) {
@@ -1616,13 +1367,10 @@ Adjust.requestTrackingAuthorization() { status in
 }];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 명확성을 위해 SDK v5에서 이름이 `[Adjust requestAppTrackingAuthorizationWithCompletionHandler]`으로 변경되었습니다.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 Adjust.requestAppTrackingAuthorization() { status in
@@ -1645,8 +1393,7 @@ Adjust.requestAppTrackingAuthorization() { status in
 }
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 [Adjust requestAppTrackingAuthorizationWithCompletionHandler:^(NSUInteger status) {
@@ -1667,19 +1414,14 @@ Adjust.requestAppTrackingAuthorization() { status in
 }];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 ### [디바이스 정보 확인](device-info)
 
-<MinorVersion changed="v5">
+<minorversion changed="v5"> 
 
 SDK v4에서는 모든 기기 정보 게터 메서드가 동기적으로 실행됩니다. SDK v5에서는 이러한 메서드가 비동기적으로 실행되도록 변경되었습니다. 비동기 프로세스가 완료되면 콜백 기능을 추가하여 해당 정보를 처리할 수 있습니다.
-
-</MinorVersion>
-<Tabs>
-<Tab title="Swift" sync="swift">
-<CodeBlock title="ADID 게터">
+</MinorVersion> <tabs> <tab title="Swift" sync="swift"> <codeblock title="ADID 게터"> 
 
 ```swift
 Adjust.adid() { adid in
@@ -1687,8 +1429,7 @@ Adjust.adid() { adid in
 };
 ```
 
-</CodeBlock>
-<CodeBlock title="IDFA 게터">
+</CodeBlock> <codeblock title="IDFA 게터"> 
 
 ```swift
 Adjust.idfa() { idfa in
@@ -1696,8 +1437,7 @@ Adjust.idfa() { idfa in
 };
 ```
 
-</CodeBlock>
-<CodeBlock title="IDFV 게터">
+</CodeBlock> <codeblock title="IDFV 게터"> 
 
 ```swift
 Adjust.idfv() { idfv in
@@ -1705,8 +1445,7 @@ Adjust.idfv() { idfv in
 };
 ```
 
-</CodeBlock>
-<CodeBlock title="SDK 버전 게터">
+</CodeBlock> <codeblock title="SDK 버전 게터"> 
 
 ```swift
 Adjust.sdkVersion() { sdkVersion in
@@ -1714,8 +1453,7 @@ Adjust.sdkVersion() { sdkVersion in
 };
 ```
 
-</CodeBlock>
-<CodeBlock title="활성화된 상태 게터">
+</CodeBlock> <codeblock title="활성화된 상태 게터"> 
 
 ```swift
 Adjust.isEnabled() { isEnabled in
@@ -1723,8 +1461,7 @@ Adjust.isEnabled() { isEnabled in
 };
 ```
 
-</CodeBlock>
-<CodeBlock title="어트리뷰션 게터">
+</CodeBlock> <codeblock title="어트리뷰션 게터"> 
 
 ```swift
 Adjust.attribution() { attribution in
@@ -1732,10 +1469,7 @@ Adjust.attribution() { attribution in
 }
 ```
 
-</CodeBlock>
-</Tab>
-<Tab title="Objective-C" sync="objc">
-<CodeBlock title="ADID 게터">
+</CodeBlock> </Tab> <tab title="Objective-C" sync="objc"> <codeblock title="ADID 게터"> 
 
 ```objc
 [Adjust adidWithCompletionHandler:^(NSString * _Nullable adid) {
@@ -1743,8 +1477,7 @@ Adjust.attribution() { attribution in
 }];
 ```
 
-</CodeBlock>
-<CodeBlock title="IDFA 게터">
+</CodeBlock> <codeblock title="IDFA 게터"> 
 
 ```objc
 [Adjust idfaWithCompletionHandler:^(NSString * _Nullable idfa) {
@@ -1752,8 +1485,7 @@ Adjust.attribution() { attribution in
 }];
 ```
 
-</CodeBlock>
-<CodeBlock title="IDFV 게터">
+</CodeBlock> <codeblock title="IDFV 게터"> 
 
 ```objc
 [Adjust idfvWithCompletionHandler:^(NSString * _Nullable idfv) {
@@ -1761,8 +1493,7 @@ Adjust.attribution() { attribution in
 }];
 ```
 
-</CodeBlock>
-<CodeBlock title="SDK 버전 게터">
+</CodeBlock> <codeblock title="SDK 버전 게터"> 
 
 ```objc
 [Adjust sdkVersionWithCompletionHandler:^(NSString * _Nullable sdkVersion) {
@@ -1770,8 +1501,7 @@ Adjust.attribution() { attribution in
 }];
 ```
 
-</CodeBlock>
-<CodeBlock title="활성화된 상태 게터">
+</CodeBlock> <codeblock title="활성화된 상태 게터"> 
 
 ```objc
 [Adjust isEnabledWithCompletionHandler:^(BOOL isEnabled) {
@@ -1779,8 +1509,7 @@ Adjust.attribution() { attribution in
 }];
 ```
 
-</CodeBlock>
-<CodeBlock title="어트리뷰션 게터">
+</CodeBlock> <codeblock title="어트리뷰션 게터"> 
 
 ```objc
 [Adjust attributionWithCompletionHandler:^(ADJAttribution * _Nullable attribution) {
@@ -1788,9 +1517,7 @@ Adjust.attribution() { attribution in
 }
 ```
 
-</CodeBlock>
-</Tab>
-</Tabs>
+</CodeBlock> </Tab> </Tabs> 
 
 ### [플러그인](plugins)
 
@@ -1798,12 +1525,12 @@ Adjust SDK는 기능 확장을 위한 플러그인을 지원합니다. 이 섹�
 
 #### [제거된 플러그인](removed-plugins)
 
-<MinorVersion removed="v5">
+<minorversion removed="v5"> 
 
 다음 플러그인은 SDK v5에서 제거되었습니다.
+</MinorVersion> 
 
-</MinorVersion>
+* Criteo
+* Trademob
+* Sociomatic
 
--  Criteo
--  Trademob
--  Sociomatic
