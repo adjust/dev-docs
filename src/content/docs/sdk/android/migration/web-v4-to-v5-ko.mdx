@@ -1,20 +1,19 @@
 ---
 title: "Android Web bridge v5 마이그레이션 가이드"
 description: "본 가이드를 참조하여 Android Web Bridge를 SDK v4에서 SDK v5로 업그레이드하시기 바랍니다."
-slug: "en/sdk/android/migration/web-v4-to-v5"
+slug: "ko/sdk/android/migration/web-v4-to-v5"
 sidebar-position: 2
 sidebar-label: "Web bridge v5"
 ---
-[시작에 앞서](before-you-begin)
---------------------------
+
+## [시작에 앞서](before-you-begin)
 
 SDK v5로 업데이트하기 전에 다음을 수행하시기 바랍니다.
 
-1. SDK v5는 [SDK Signature\(SDK 서명\) 인증](https://help.adjust.com/en/article/sdk-signature)을 기본적으로 지원합니다. 현재 SDK 서명 라이브러리를 사용하는 경우 먼저 이것을 삭제해야 합니다.
+1. SDK v5는 [SDK Signature\(SDK 서명\) 인증](https://help.adjust.com/ko/article/sdk-signature)을 기본적으로 지원합니다. 현재 SDK 서명 라이브러리를 사용하는 경우 먼저 이것을 삭제해야 합니다.
 2. 앱이 [**21**](https://developer.android.com/tools/releases/platforms#5.0)보다 낮은 버전의 API를 대상으로 하는 경우 SDK v5를 사용하려면 앱을 업데이트해야 합니다.
 
-[SDK 설치](install-the-sdk)
--------------------------
+## [SDK 설치](install-the-sdk)
 
 SDK v5를 사용하려면 프로젝트에서 디펜던시로 추가해야 합니다. 다음을 수행하시기 바랍니다.
 
@@ -22,7 +21,7 @@ SDK v5를 사용하려면 프로젝트에서 디펜던시로 추가해야 합니
 
 2. 다음의 디펜던시를 `build.gradle` 파일에 추가합니다.
 
-   <codeblock title="build.gradle"> 
+   <CodeBlock title="build.gradle">
 
    ```groovy
    dependencies {
@@ -33,24 +32,26 @@ SDK v5를 사용하려면 프로젝트에서 디펜던시로 추가해야 합니
    }
    ```
 
-   </CodeBlock> 
+   </CodeBlock>
 
-[변경 사항](changes)
-----------------
+## [변경 사항](changes)
 
-<callout type="warning"> 
+<Callout type="warning">
 
 SDK v5는 주요 버전 업데이트입니다. 이는 코드 업데이트가 필요한 중대한 변경 사항이 있다는 것을 의미합니다.
-</Callout> 
+
+</Callout>
 
 v5 SDK를 설치한 후에는 새로운 API를 사용할 수 있도록 기존의 Adjust 코드를 업데이트해야 합니다.
 
 ### [초기화 메서드](init-method)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
 SDK v4에서 초기화 메서드는 `Adjust.onCreate(AdjustConfig)`입니다. 이것이 SDK v5에서 `Adjust.initSdk(AdjustConfig)`로 변경되었습니다.
-</MinorVersion> <codeblock useDiffSyntax> 
+
+</MinorVersion>
+<CodeBlock useDiffSyntax>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -59,7 +60,7 @@ const adjustConfig = new AdjustConfig(this, appToken, environment);
 +Adjust.initSdk(adjustConfig); // v5
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 ### [구성](configuration)
 
@@ -67,13 +68,14 @@ const adjustConfig = new AdjustConfig(this, appToken, environment);
 
 #### [SDK 비활성화 및 활성화](disable-enable-sdk)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
 SDK v4에서는 `boolean` 값과 함께 `Adjust.setEnabled()`를 호출하여 SDK를 활성화 및 비활성화할 수 있습니다.
-</MinorVersion> 
 
-* SDK를 비활성화하려면 `Adjust.setEnabled(false)`를 호출합니다.
-* SDK를 활성화하려면 `Adjust.setEnabled(true)`를 호출합니다.
+</MinorVersion>
+
+-  SDK를 비활성화하려면 `Adjust.setEnabled(false)`를 호출합니다.
+-  SDK를 활성화하려면 `Adjust.setEnabled(true)`를 호출합니다.
 
 ```js
 Adjust.setEnabled(false); // disable SDK
@@ -82,8 +84,8 @@ Adjust.setEnabled(true); // enable SDK
 
 SDK v5에서는 명확성을 위해 이 기능이 별도의 명령으로 분리되었습니다.
 
-* SDK를 비활성화하려면 `Adjust.disable()`를 호출합니다.
-* SDK를 활성화하려면 `Adjust.enable()`를 호출합니다.
+-  SDK를 비활성화하려면 `Adjust.disable()`를 호출합니다.
+-  SDK를 활성화하려면 `Adjust.enable()`를 호출합니다.
 
 ```js
 Adjust.disable(); // disable SDK
@@ -92,10 +94,11 @@ Adjust.enable(); // enable SDK
 
 #### [오프라인 모드](offline-mode)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
 SDK v4에서는 `boolean` 값과 함께 `Adjust.setOfflineMode()`를 호출하여 SDK의 오프라인 모드를 활성화 및 비활성화할 수 있습니다.
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 Adjust.setOfflineMode(false); // put SDK in offline mode
@@ -104,8 +107,8 @@ Adjust.setOfflineMode(true); // put SDK back in online mode
 
 SDK v5에서는 명확성을 위해 이 기능이 별도의 명령으로 분리되었습니다.
 
-* SDK를 오프라인 모드로 설정하려면 `Adjust.switchToOfflineMode()`를 호출합니다.
-* SDK를 온라인 모드로 전환하려면`Adjust.switchBackToOnlineMode()`를 호출합니다.
+-  SDK를 오프라인 모드로 설정하려면 `Adjust.switchToOfflineMode()`를 호출합니다.
+-  SDK를 온라인 모드로 전환하려면`Adjust.switchBackToOnlineMode()`를 호출합니다.
 
 ```js
 Adjust.switchToOfflineMode(); // put SDK in offline mode
@@ -114,10 +117,11 @@ Adjust.switchBackToOnlineMode(); // put SDK back in online mode
 
 #### [사전 설치 기록](preinstall-recording)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
 SDK v4에서는 `AdjustConfig` 인스턴스의 `setPreinstallTrackingEnabled` 메서드를 부울 인수와 함께 호출하여, 앱이 기기에 사전 설치된 경우 Adjust SDK가 설치 데이터를 Adjust에 전송하도록 할 수 있습니다.
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -133,10 +137,11 @@ adjustConfig.enablePreinstallTracking();
 
 #### [어트리뷰션에서 비용 데이터 활성화](enable-cost-data-in-attribution)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
 SDK v4에서는 부울 인수와 함께 `AdjustConfig` 인스턴스의 `setNeedsCost` 메서드를 호출하여 SDK가 사용자 어트리뷰션의 일부로서 비용 데이터를 전송하도록 할 수 있습니다.
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -152,10 +157,11 @@ adjustConfig.enableCostDataInAttribution();
 
 #### [백그라운드에서 정보 전송](send-information-in-background)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
 SDK v4에서는 `AdjustConfig` 인스턴스의 `setSendInBackground` 메서드를 부울 인수로 호출하여 앱이 백그라운드에서 실행 중일 때 SDK가 Adjust에 정보를 전송하도록 할 수 있습니다.
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -171,10 +177,11 @@ adjustConfig.enableSendingInBackground();
 
 #### [기기 ID를 한 번만 읽기](read-device-ids-only-once)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
 SDK v4에서는 `AdjustConfig` 인스턴스의 `setReadDeviceInfoOnceEnabled` 메서드를 부울 값과 함께 호출하여 초기화 시 기기 ID를 한 번만 읽도록 SDK를 구성할 수 있습니다.
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -190,10 +197,11 @@ adjustConfig.enableDeviceIdsReadingOnce();
 
 #### [이벤트 버퍼링](event-buffering)
 
-<minorversion removed="v5"> 
+<MinorVersion removed="v5">
 
 SDK v4는 이벤트 버퍼링을 지원합니다. 이 기능은 요청 이벤트, 광고 매출, 푸시 토큰 및 기타 정보를 로컬 버퍼에 저장하여 나중에 전송할 수 있게 해줍니다.
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -204,10 +212,11 @@ adjustConfig.setEventBufferingEnabled(true);
 
 #### [사용자 지정 사용자 에이전트 문자열](custom-user-agent)
 
-<minorversion removed="v5"> 
+<MinorVersion removed="v5">
 
 SDK v4는 사용자 에이전트 문자열로 `AdjustConfig` 인스턴스의 `setUserAgent` 메서드를 호출하여 커스텀 사용자 에이전트 설정을 지원합니다.
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -218,10 +227,11 @@ adjustConfig.setUserAgent("user_agent_value");
 
 #### [알려진 기기 여부 설정](set-device-known)
 
-<minorversion removed="v5"> 
+<MinorVersion removed="v5">
 
 SDK v4에서는 `setDeviceKnown` 메서드를 호출하여 알려진 기기인지 여부를 수동으로 SDK에 알릴 수 있습니다.
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -232,10 +242,11 @@ adjustConfig.setDeviceKnown(true);
 
 #### [SDK 작동 시작 지연](delay-sdk-start)
 
-<minorversion removed="v5"> 
+<MinorVersion removed="v5">
 
 SDK v4는 최대 **120초** 지연과 함께 `AdjustConfig` 인스턴스에서 `setDelayStart` 메서드를 호출하여 SDK 시작 지연을 지원합니다. 지연이 끝나기 전에 앱이 준비된 경우 `Adjust.sendFirstPackages` 를 호출하여 정보를 즉시 전송할 수 있습니다.
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -252,10 +263,12 @@ Adjust.sendFirstPackages();
 
 #### [세션 콜백 파라미터](callback-params)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
 세션 콜백 파라미터가 SDK v5에서 글로벌 콜백 파라미터로 이름이 변경되었습니다.
-</MinorVersion> <codeblock useDiffSyntax> 
+
+</MinorVersion>
+<CodeBlock useDiffSyntax>
 
 ```js
 -Adjust.addSessionCallbackParameter("foo", "bar");
@@ -267,14 +280,16 @@ Adjust.sendFirstPackages();
 +Adjust.removeGlobalCallbackParameters();
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 #### [세션 파트너 파라미터](partner-params)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
 세션 파트너 파라미터가 SDK v5에서 글로벌 파트너 파라미터로 이름이 변경되었습니다.
-</MinorVersion> <codeblock useDiffSyntax> 
+
+</MinorVersion>
+<CodeBlock useDiffSyntax>
 
 ```js
 -Adjust.addSessionPartnerParameter("foo", "bar");
@@ -286,14 +301,15 @@ Adjust.sendFirstPackages();
 +Adjust.removeGlobalPartnerParameters();
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 #### [이벤트 중복 제거](event-deduplication)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
 SDK v4에서는 이벤트 중복 제거가 이벤트 `order ID`와 결합되어 있으며 최대 10개의 고유 ID로 제한됩니다.
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 const event = new AdjustEvent("event_token");
@@ -320,10 +336,11 @@ Adjust.trackEvent(event);
 
 #### [딥링크를 사용한 리어트리뷰션](reattribution-using-deep-links)
 
-<minorversion removed="v5"> 
+<MinorVersion removed="v5">
 
 SDK v4에서는 `Adjust.appWillOpenUrl()` 메서드를 호출하여 웹 브릿지에서 Adjust에 딥링크 URL을 전달할 수 있습니다.
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 Adjust.appWillOpenUrl(data, getApplicationContext());
@@ -337,10 +354,11 @@ Adjust.appWillOpenUrl(data, getApplicationContext());
 
 #### [COPPA 준수](coppa-compliance)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
-SDK v4에서 [COPPA 준수](/en/sdk/android/features/privacy#coppa-compliance) 는 boolean 인수와 함께 config 객체의 `setCoppaCompliantEnabled` 메서드를 호출하여 설정됩니다.
-</MinorVersion> 
+SDK v4에서 [COPPA 준수](/ko/sdk/android/features/privacy#coppa-compliance) 는 boolean 인수와 함께 config 객체의 `setCoppaCompliantEnabled` 메서드를 호출하여 설정됩니다.
+
+</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -356,10 +374,11 @@ adjustConfig.enableCoppaCompliance();
 
 #### [플레이 스토어 어린이용 앱](play-store-kids)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
-SDK v4에서는 boolean 인수와 함께 config 객체의 `setPlayStoreKidsAppEnabled` 메서드를 호출하여 앱을 [Play Store Kids 앱](/en/sdk/android/features/privacy#play-store-kids-apps) 으로 표시할 수 있습니다.
-</MinorVersion> 
+SDK v4에서는 boolean 인수와 함께 config 객체의 `setPlayStoreKidsAppEnabled` 메서드를 호출하여 앱을 [Play Store Kids 앱](/ko/sdk/android/features/privacy#play-store-kids-apps) 으로 표시할 수 있습니다.
+
+</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -375,10 +394,11 @@ adjustConfig.enablePlayStoreKidsCompliance();
 
 #### [특정 소스로부터 광고 매출 전송](send-ad-revenue)
 
-<minorversion removed="v5"> 
+<MinorVersion removed="v5">
 
 SDK v4에서는 소스와 페이로드를 `Adjust.trackAdRevenue()` 메서드에 전달하여 특정 소스로부터의 광고 매출을 전송할 수 있습니다.
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 Adjust.trackAdRevenue(source, payload);
@@ -388,10 +408,11 @@ Adjust.trackAdRevenue(source, payload);
 
 #### [데이터 레지던시 및 URL 전략 설정](url-strategy)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
 SDK v4에서는 URL 전략 및 데이터 레지던시 도메인이 `AdjustConfig` 클래스의 상수로 정의됩니다.
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -400,8 +421,8 @@ adjustConfig.setUrlStrategy(AdjustConfig.DataResidencyEU);
 
 SDK v5에서는 선택한 도메인을 배열로 전달해야 합니다. 또한 다음 항목을 설정할 수 있습니다.
 
-* `useSubdomains` \(`boolean`\): 소스가 하위 도메인을 접두사로 사용해야 하는지 여부.
-* `isDataResidency` \(`boolean`\): 도메인을 데이터 레지던시에 사용해야 하는지 여부.
+-  `useSubdomains` \(`boolean`\): 소스가 하위 도메인을 접두사로 사용해야 하는지 여부.
+-  `isDataResidency` \(`boolean`\): 도메인을 데이터 레지던시에 사용해야 하는지 여부.
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -412,72 +433,79 @@ adjustConfig.setUrlStrategy(domains, useSubdomains, isDataResidency);
 ```
 
 아래 표를 보고 SDK v5에서 URL 전략을 구성하는 방법을 확인하시기 바랍니다.
-<table autoWidth="1,2"> 
 
-|                v4                |        v5 \- 메인 및 폴백 도메인         | v5 \- 하위 도메인 사용 | v5 \- 데이터 레지던시 여부 |
-|----------------------------------|-----------------------------------|------------------|--------------------|
-| `AdjustConfig.DataResidencyEU`   | `"eu.adjust.com"`                 | `true`           | `true`             |
-| `AdjustConfig.DataResidencyTR`   | `"tr.adjust.com"`                 | `true`           | `true`             |
-| `AdjustConfig.DataResidencyUS`   | `"us.adjust.com"`                 | `true`           | `true`             |
-| `AdjustConfig.UrlStrategyChina`  | `"adjust.world"`, `"adjust.com"`  | `true`           | `false`            |
-| `AdjustConfig.UrlStrategyCn`     | `"adjust.cn"`, `"adjust.com"`     | `true`           | `false`            |
-| `AdjustConfig.UrlStrategyCnOnly` | `"adjust.cn"`                     | `true`           | `false`            |
-| `AdjustConfig.UrlStrategyIndia`  | `"adjust.net.in"`, `"adjust.com"` | `true`           | `false`            |
+<Table autoWidth="1,2">
 
-</Table> 
+| v4                               | v5 \- 메인 및 폴백 도메인         | v5 \- 하위 도메인 사용 | v5 \- 데이터 레지던시 여부 |
+| -------------------------------- | --------------------------------- | ---------------------- | -------------------------- |
+| `AdjustConfig.DataResidencyEU`   | `"eu.adjust.com"`                 | `true`                 | `true`                     |
+| `AdjustConfig.DataResidencyTR`   | `"tr.adjust.com"`                 | `true`                 | `true`                     |
+| `AdjustConfig.DataResidencyUS`   | `"us.adjust.com"`                 | `true`                 | `true`                     |
+| `AdjustConfig.UrlStrategyChina`  | `"adjust.world"`, `"adjust.com"`  | `true`                 | `false`                    |
+| `AdjustConfig.UrlStrategyCn`     | `"adjust.cn"`, `"adjust.com"`     | `true`                 | `false`                    |
+| `AdjustConfig.UrlStrategyCnOnly` | `"adjust.cn"`                     | `true`                 | `false`                    |
+| `AdjustConfig.UrlStrategyIndia`  | `"adjust.net.in"`, `"adjust.com"` | `true`                 | `false`                    |
+
+</Table>
 
 ##### [예시](examples)
 
-<codeblock title="인도 URL 전략"> 
+<CodeBlock title="인도 URL 전략">
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
 adjustConfig.setUrlStrategy(["adjust.net.in", "adjust.com"], true, false);
 ```
 
-</CodeBlock> <codeblock title="중국 URL 전략"> 
+</CodeBlock>
+<CodeBlock title="중국 URL 전략">
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
 adjustConfig.setUrlStrategy(["adjust.world", "adjust.com"], true, false);
 ```
 
-</CodeBlock> <codeblock title="중국 전용 URL 전략"> 
+</CodeBlock>
+<CodeBlock title="중국 전용 URL 전략">
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
 adjustConfig.setUrlStrategy(["adjust.cn"], true, false);
 ```
 
-</CodeBlock> <codeblock title="EU 데이터 레지던시"> 
+</CodeBlock>
+<CodeBlock title="EU 데이터 레지던시">
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
 adjustConfig.setUrlStrategy(["eu.adjust.com"], true, true);
 ```
 
-</CodeBlock> <codeblock title="터키 데이터 레지던시"> 
+</CodeBlock>
+<CodeBlock title="터키 데이터 레지던시">
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
 adjustConfig.setUrlStrategy(["tr.adjust.com"], true, true);
 ```
 
-</CodeBlock> <codeblock title="미국 데이터 레지던시"> 
+</CodeBlock>
+<CodeBlock title="미국 데이터 레지던시">
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
 adjustConfig.setUrlStrategy(["us.adjust.com"], true, true);
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 #### [글로벌 서드파티 공유 비활성화](disable-sharing-globally)
 
-<minorversion removed="v5"> 
+<MinorVersion removed="v5">
 
 SDK v4에서는 `Adjust.disableThirdPartySharing()` 메서드를 호출하여 전 세계에서 서드파티와의 정보 공유를 비활성화할 수 있습니다.
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 Adjust.disableThirdPartySharing();
@@ -496,10 +524,12 @@ Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 
 #### [기기 ID 게터](device-id-getters)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
 SDK v4에서는 모든 기기 ID 게터 메서드가 동기적으로 실행됩니다. SDK v5에서는 이러한 메서드가 비동기적으로 실행되도록 변경되었습니다.
-</MinorVersion> <codeblock title="ADID 게터"> 
+
+</MinorVersion>
+<CodeBlock title="ADID 게터">
 
 ```js
 Adjust.getAdid(function (adid) {
@@ -507,7 +537,8 @@ Adjust.getAdid(function (adid) {
 });
 ```
 
-</CodeBlock> <codeblock title="어트리뷰션 정보 게터"> 
+</CodeBlock>
+<CodeBlock title="어트리뷰션 정보 게터">
 
 ```js
 Adjust.getAttribution(function (attribution) {
@@ -536,7 +567,8 @@ Adjust.getAttribution(function (attribution) {
 });
 ```
 
-</CodeBlock> <codeblock title="SDK 버전 게터"> 
+</CodeBlock>
+<CodeBlock title="SDK 버전 게터">
 
 ```js
 Adjust.getSdkVersion(function (sdkVersion) {
@@ -544,7 +576,8 @@ Adjust.getSdkVersion(function (sdkVersion) {
 });
 ```
 
-</CodeBlock> <codeblock title="활성화된 상태 게터"> 
+</CodeBlock>
+<CodeBlock title="활성화된 상태 게터">
 
 ```js
 Adjust.isEnabled(function (isEnabled) {
@@ -553,4 +586,3 @@ Adjust.isEnabled(function (isEnabled) {
 ```
 
 </CodeBlock>
-

@@ -1,22 +1,21 @@
 ---
 title: "iOS Web bridge v5 迁移指南"
 description: "按照此指南将 iOS Web bridge 从 SDK v4 升级到 SDK v5"
-slug: "en/sdk/ios/migration/web-v4-to-v5"
+slug: "zh/sdk/ios/migration/web-v4-to-v5"
 sidebar-position: 2
 sidebar-label: "Web bridge v5"
 ---
-[操作前须知](before-you-begin)
--------------------------
+
+## [操作前须知](before-you-begin)
 
 在更新到 SDK v5 之前，您需要进行以下操作：
 
-1. SDK v5 支持[SDK 签名验证](https://help.adjust.com/en/article/sdk-signature)。如果您当前正在使用 SDK 签名库，则需要先将其卸载。
-2. 如果您的应用针对低于以下版本的 API，则需要先更新应用才能使用 SDK v5： 
-   * iOS: **12\.0** 
-   * tvOS: **12\.0** 
+1. SDK v5 支持[SDK 签名验证](https://help.adjust.com/zh/article/sdk-signature)。如果您当前正在使用 SDK 签名库，则需要先将其卸载。
+2. 如果您的应用针对低于以下版本的 API，则需要先更新应用才能使用 SDK v5：
+   -  iOS: **12\.0**
+   -  tvOS: **12\.0**
 
-[安装 SDK](install-the-sdk)
--------------------------
+## [安装 SDK](install-the-sdk)
 
 要开始使用 SDK v5，您需要将其添加为 XCode 项目的依赖。为此请进行下列操作：
 
@@ -24,31 +23,34 @@ sidebar-label: "Web bridge v5"
 
 2. 添加下列行至您的 `Podfile`：
 
-   <codeblock title="Podfile"> 
+   <CodeBlock title="Podfile">
 
    ```rb
    pod 'Adjust/AdjustWebBridge', :git => 'https://github.com/adjust/ios_sdk.git', :tag => 'v5.0.0'
    ```
 
-   </CodeBlock> 
+   </CodeBlock>
+
 3. 运行`pod install`来安装依赖。
 
-[变更](changes)
--------------
+## [变更](changes)
 
-<callout type="warning"> 
+<Callout type="warning">
 
 SDK v5 是一个重大版本更新。也就是说，SDK 发生了重大变化，需要您更新代码。
-</Callout> 
+
+</Callout>
 
 安装 v5 SDK 后，您需要更新现有的 Adjust 代码以使用新的 API。
 
 ### [初始化方法](init-method)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
 在 SDK v4 中，初始化方法为`Adjust.onCreate(AdjustConfig)` 。在 SDK v5 中，该方法已变为`Adjust.initSdk(AdjustConfig)` 。
-</MinorVersion> <codeblock useDiffSyntax> 
+
+</MinorVersion>
+<CodeBlock useDiffSyntax>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -57,7 +59,7 @@ const adjustConfig = new AdjustConfig(this, appToken, environment);
 +Adjust.initSdk(adjustConfig); // v5
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 ### [配置](configuration)
 
@@ -65,10 +67,11 @@ const adjustConfig = new AdjustConfig(this, appToken, environment);
 
 #### [禁用 IDFA 读取](disable-idfa-reading)
 
-<minorversion added="v5"> 
+<MinorVersion added="v5">
 
 在 SDK v5 中，您可以通过在`AdjustConfig`实例上调用`disableIdfaReading`方法来阻止 Adjust SDK 读取广告主设备 ID \(IDFA\)。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -77,10 +80,11 @@ adjustConfig.disableIdfaReading();
 
 #### [禁用 AdServices 信息读取](disable-adservices)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
 在 SDK v4 中，您可以使用`false`参数调用`AdjustConfig`实例的`setAllowAdServicesInfoReading`方法，阻止 Adjust SDK 读取 AdServices 信息。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -96,13 +100,14 @@ adjustConfig.disableAdServices();
 
 #### [禁用或启用 SDK](disable-enable-sdk)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
 在 SDK v4 中，您可以通过调用带`boolean`值的`Adjust.setEnabled()`来启用和禁用 SDK。
-</MinorVersion> 
 
-* 调用`Adjust.setEnabled(false)`来禁用 SDK。
-* 调用`Adjust.setEnabled(true)`来启用 SDK。
+</MinorVersion>
+
+-  调用`Adjust.setEnabled(false)`来禁用 SDK。
+-  调用`Adjust.setEnabled(true)`来启用 SDK。
 
 ```js
 Adjust.setEnabled(false); // disable SDK
@@ -111,8 +116,8 @@ Adjust.setEnabled(true); // enable SDK
 
 在 SDK v5 中，为清晰起见，此功能被分成单独的命令。
 
-* 调用`Adjust.disable()`来禁用 SDK。
-* 调用`Adjust.enable()`来启用 SDK。
+-  调用`Adjust.disable()`来禁用 SDK。
+-  调用`Adjust.enable()`来启用 SDK。
 
 ```js
 Adjust.disable(); // disable SDK
@@ -121,10 +126,11 @@ Adjust.enable(); // enable SDK
 
 #### [离线模式](offline-mode)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
 在 SDK v4 中，您可以通过调用带有`boolean`值的`Adjust.setOfflineMode()`来启用或禁用 SDK 中的离线模式。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 Adjust.setOfflineMode(false); // put SDK in offline mode
@@ -133,8 +139,8 @@ Adjust.setOfflineMode(true); // put SDK back in online mode
 
 在 SDK v5 中，为清晰起见，此功能被分成单独的命令。
 
-* 调用`Adjust.switchToOfflineMode()`将 SDK 设为离线模式。
-* 调用`Adjust.switchBackToOnlineMode()`将 SDK 重新设为在线模式。
+-  调用`Adjust.switchToOfflineMode()`将 SDK 设为离线模式。
+-  调用`Adjust.switchBackToOnlineMode()`将 SDK 重新设为在线模式。
 
 ```js
 Adjust.switchToOfflineMode(); // put SDK in offline mode
@@ -143,10 +149,11 @@ Adjust.switchBackToOnlineMode(); // put SDK back in online mode
 
 #### [在归因中启用成本数据](enable-cost-data-in-attribution)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
 在 SDK v4 中，您可以使用布尔参数调用`AdjustConfig`实例的`setNeedsCost`方法，使用 SDK 在用户归因数据中发送成本数据。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -162,10 +169,11 @@ adjustConfig.enableCostDataInAttribution();
 
 #### [事件缓冲](event-buffering)
 
-<minorversion removed="v5"> 
+<MinorVersion removed="v5">
 
 SDK v4 支持事件缓冲。该功能可将请求事件、广告收入、推送标签 \(Push token\) 和其他信息存储在本地缓冲区中以便在之后发送。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -176,10 +184,11 @@ SDK v5 中已删除该设置。
 
 #### [自定义用户代理字符串](custom-user-agent)
 
-<minorversion removed="v5"> 
+<MinorVersion removed="v5">
 
 SDK v4 支持使用用户代理字符串调用`AdjustConfig`实例的`setUserAgent`方法来设置自定义用户代理。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -190,10 +199,11 @@ SDK v5 中已删除该设置。
 
 #### [设置设备是否已知](set-device-known)
 
-<minorversion removed="v5"> 
+<MinorVersion removed="v5">
 
 在 SDK v4 中，您可以调用`AdjustConfig`实例的`setDeviceKnown`方法，手动告知 SDK 设备是否为已知设备。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -204,10 +214,11 @@ SDK v5 中已删除该设置。
 
 #### [延迟 SDK 启动](delay-sdk-start)
 
-<minorversion removed="v5"> 
+<MinorVersion removed="v5">
 
 SDK v4 支持通过在`AdjustConfig`实例上调用`setDelayStart`方法来延迟 SDK 启动，最多延迟 **120 秒** 。如果应用在延迟结束前就绪，则可以通过调用`Adjust.sendFirstPackages`立即发送信息。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -220,10 +231,11 @@ Adjust.sendFirstPackages();
 
 #### [setPushToken](set-push-token)
 
-<minorversion removed="v5"> 
+<MinorVersion removed="v5">
 
 SDK v4 支持通过您的推送标签 \(Push token\) 调用`Adjust.setDeviceToken`来设置设备推送标签。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 Adjust.setDeviceToken(deviceToken);
@@ -237,10 +249,12 @@ SDK v5 中已删除该功能。
 
 #### [会话回传参数](callback-params)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
 在SDK v5 中，会话回传参数已重命名为统一回传参数。
-</MinorVersion> <codeblock useDiffSyntax> 
+
+</MinorVersion>
+<CodeBlock useDiffSyntax>
 
 ```js
 -Adjust.addSessionCallbackParameter("foo", "bar");
@@ -252,14 +266,16 @@ SDK v5 中已删除该功能。
 +Adjust.removeGlobalCallbackParameters();
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 #### [会话合作伙伴参数](partner-params)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
 在 SDK v5 中，会话合作伙伴参数已重命名为统一合作伙伴参数。
-</MinorVersion> <codeblock useDiffSyntax> 
+
+</MinorVersion>
+<CodeBlock useDiffSyntax>
 
 ```js
 -Adjust.addSessionPartnerParameter("foo", "bar");
@@ -271,14 +287,15 @@ SDK v5 中已删除该功能。
 +Adjust.removeGlobalPartnerParameters();
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 #### [事件数据去重](event-deduplication)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
 在 SDK v4 中，事件去重与事件`order ID`同时进行且唯一 ID 的数量上限为 10 个。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 const event = new AdjustEvent("event_token");
@@ -305,10 +322,11 @@ Adjust.trackEvent(event);
 
 #### [禁用延迟深度链接打开](disable-deferred-deep-link-opening)
 
-<minorversion added="v5"> 
+<MinorVersion added="v5">
 
 在 SDK v5 中，您可以通过调用`AdjustConfig`实例的`disableDeferredDeeplinkOpening`方法来阻止 SDK 打开延迟深度链接。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -317,10 +335,11 @@ adjustConfig.disableDeferredDeepLinkOpening();
 
 #### [通过深度链接进行再归因](reattribution-using-deep-links)
 
-<minorversion removed="v5"> 
+<MinorVersion removed="v5">
 
 在 SDK v4 中，您可以在 Web bridge 中通过调用`Adjust.appWillOpenUrl()`方法向 Adjust 发送深度链接 URL。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 Adjust.appWillOpenUrl(data, getApplicationContext());
@@ -330,10 +349,11 @@ Adjust.appWillOpenUrl(data, getApplicationContext());
 
 #### [Adjust LinkMe](adjust-linkme)
 
-<minorversion removed="v5"> 
+<MinorVersion removed="v5">
 
-在 SDK v4 中，您可以使用 Adjust 网桥，通过布尔参数调用`AdjustConfig`实例的`setLinkMeEnabled`方法来启用[Adjust LinkMe](https://help.adjust.com/en/article/linkme) 。
-</MinorVersion> 
+在 SDK v4 中，您可以使用 Adjust 网桥，通过布尔参数调用`AdjustConfig`实例的`setLinkMeEnabled`方法来启用[Adjust LinkMe](https://help.adjust.com/zh/article/linkme) 。
+
+</MinorVersion>
 
 ```js
 setupWebViewJavascriptBridge(function (bridge) {
@@ -352,10 +372,11 @@ setupWebViewJavascriptBridge(function (bridge) {
 
 #### [《儿童在线隐私权保护法》\(COPPA\) 合规](coppa-compliance)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
-在 SDK v4 中，您可以通过布尔参数在`AdjustConfig`实例上调用`setCoppaCompliantEnabled`方法来设置[COPPA 合规性](/en/sdk/android/features/privacy#coppa-compliance)。
-</MinorVersion> 
+在 SDK v4 中，您可以通过布尔参数在`AdjustConfig`实例上调用`setCoppaCompliantEnabled`方法来设置[COPPA 合规性](/zh/sdk/android/features/privacy#coppa-compliance)。
+
+</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -371,10 +392,11 @@ adjustConfig.enableCoppaCompliance();
 
 #### [发送特定来源的广告收入](send-ad-revenue)
 
-<minorversion removed="v5"> 
+<MinorVersion removed="v5">
 
 在SDK v4 中，您可以发送来源和负载至 `Adjust.trackAdRevenue()` 方法来发送特定来源的广告收入。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 Adjust.trackAdRevenue(source, payload);
@@ -384,10 +406,11 @@ Adjust.trackAdRevenue(source, payload);
 
 #### [设置数据驻留和 URL 策略](url-strategy)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
 在 SDK v4 中，URL 策略和数据驻留域名在`AdjustConfig`类中被定义为常量。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -396,8 +419,8 @@ adjustConfig.setUrlStrategy(AdjustConfig.DataResidencyEU);
 
 在 SDK v5 中，您需要将选定的一个或多个域名以数组的形式发送。您还可以进行下列设置：
 
-* `useSubdomains` \( `boolean` \)：来源是否为子域名作为前缀。
-* `isDataResidency` \( `boolean` \)：域名是否用于数据驻留。
+-  `useSubdomains` \( `boolean` \)：来源是否为子域名作为前缀。
+-  `isDataResidency` \( `boolean` \)：域名是否用于数据驻留。
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -408,72 +431,79 @@ adjustConfig.setUrlStrategy(domains, useSubdomains, isDataResidency);
 ```
 
 请查看下方表格，了解如何在 SDK v5 中配置 URL 策略。
-<table autoWidth="1,2"> 
 
-|                v4                |          v5 \- 主要和后备域名           | v5 \- 使用子域名 | v5 \- 数据驻留 |
-|----------------------------------|-----------------------------------|--------------|-------------|
-| `AdjustConfig.DataResidencyEU`   | `"eu.adjust.com"`                 | `true`       | `true`      |
-| `AdjustConfig.DataResidencyTR`   | `"tr.adjust.com"`                 | `true`       | `true`      |
-| `AdjustConfig.DataResidencyUS`   | `"us.adjust.com"`                 | `true`       | `true`      |
-| `AdjustConfig.UrlStrategyChina`  | `"adjust.world"`： `"adjust.com"`  | `true`       | `false`     |
-| `AdjustConfig.UrlStrategyCn`     | `"adjust.cn"`： `"adjust.com"`     | `true`       | `false`     |
-| `AdjustConfig.UrlStrategyCnOnly` | `"adjust.cn"`                     | `true`       | `false`     |
-| `AdjustConfig.UrlStrategyIndia`  | `"adjust.net.in"`： `"adjust.com"` | `true`       | `false`     |
+<Table autoWidth="1,2">
 
-</Table> 
+| v4                               | v5 \- 主要和后备域名               | v5 \- 使用子域名 | v5 \- 数据驻留 |
+| -------------------------------- | ---------------------------------- | ---------------- | -------------- |
+| `AdjustConfig.DataResidencyEU`   | `"eu.adjust.com"`                  | `true`           | `true`         |
+| `AdjustConfig.DataResidencyTR`   | `"tr.adjust.com"`                  | `true`           | `true`         |
+| `AdjustConfig.DataResidencyUS`   | `"us.adjust.com"`                  | `true`           | `true`         |
+| `AdjustConfig.UrlStrategyChina`  | `"adjust.world"`： `"adjust.com"`  | `true`           | `false`        |
+| `AdjustConfig.UrlStrategyCn`     | `"adjust.cn"`： `"adjust.com"`     | `true`           | `false`        |
+| `AdjustConfig.UrlStrategyCnOnly` | `"adjust.cn"`                      | `true`           | `false`        |
+| `AdjustConfig.UrlStrategyIndia`  | `"adjust.net.in"`： `"adjust.com"` | `true`           | `false`        |
+
+</Table>
 
 ##### [示例](examples)
 
-<codeblock title="印度 URL 策略"> 
+<CodeBlock title="印度 URL 策略">
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
 adjustConfig.setUrlStrategy(["adjust.net.in", "adjust.com"], true, false);
 ```
 
-</CodeBlock> <codeblock title="中国 URL 策略"> 
+</CodeBlock>
+<CodeBlock title="中国 URL 策略">
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
 adjustConfig.setUrlStrategy(["adjust.world", "adjust.com"], true, false);
 ```
 
-</CodeBlock> <codeblock title="仅限中国地区的 URL 策略"> 
+</CodeBlock>
+<CodeBlock title="仅限中国地区的 URL 策略">
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
 adjustConfig.setUrlStrategy(["adjust.cn"], true, false);
 ```
 
-</CodeBlock> <codeblock title="欧盟数据驻留"> 
+</CodeBlock>
+<CodeBlock title="欧盟数据驻留">
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
 adjustConfig.setUrlStrategy(["eu.adjust.com"], true, true);
 ```
 
-</CodeBlock> <codeblock title="土耳其数据驻留"> 
+</CodeBlock>
+<CodeBlock title="土耳其数据驻留">
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
 adjustConfig.setUrlStrategy(["tr.adjust.com"], true, true);
 ```
 
-</CodeBlock> <codeblock title="数据驻留"> 
+</CodeBlock>
+<CodeBlock title="数据驻留">
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
 adjustConfig.setUrlStrategy(["us.adjust.com"], true, true);
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 #### [全局禁用第三方分享](disable-sharing-globally)
 
-<minorversion removed="v5"> 
+<MinorVersion removed="v5">
 
 在 SDK v4 中，您可以调用`Adjust.disableThirdPartySharing()`方法来全面禁用第三方信息分享。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 Adjust.disableThirdPartySharing();
@@ -492,10 +522,11 @@ Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 
 #### [禁用 SKAdNetwork 归因](disable-skan-attribution)
 
-<minorversion added="v5"> 
+<MinorVersion added="v5">
 
 在 SDK v5 中，您可以调用`AdjustConfig`实例的`disableSkanAttributionHandling`方法来阻止 Adjust SDK 向 Apple 的 SKAdNetwork 发送归因信息。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -504,10 +535,11 @@ adjustConfig.disableSkanAttributionHandling();
 
 #### [SKAdNetwork 更新回传](skan-update-callback)
 
-<minorversion added="v5"> 
+<MinorVersion added="v5">
 
 在 SDK v5 中，您可以配置 Adjust SDK，通过使用回传函数调用`AdjustConfig`实例的`setSkanUpdatedCallback`方法来在用户 SKAdNetwork 转化值发生变化时执行回传函数。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -519,10 +551,11 @@ adjustConfig.setSkanUpdatedCallback(function (skanData) {
 
 #### [请求 ATT 授权状态](request-att-authorization-status)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
 在 SDK v4 中，您可以使用`Adjust.requestTrackingAuthorizationWithCompletionHandler`方法处理用户 ATT 授权状态变更。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 Adjust.requestTrackingAuthorizationWithCompletionHandler(function(status) {
@@ -540,10 +573,11 @@ Adjust.requestAppTrackingAuthorizationWithCompletionHandler(function(status) {
 
 #### [查看 ATT 状态](check-for-att-status)
 
-<minorversion removed="v5"> 
+<MinorVersion removed="v5">
 
 在 SDK v4 中，您可以通过调用`Adjust.checkForNewAttStatus`方法来检查用户 ATT 状态的变化。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 Adjust.checkForNewAttStatus();
@@ -557,10 +591,12 @@ Adjust.checkForNewAttStatus();
 
 #### [设备 ID getter](device-id-getters)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
 在 SDK v4 中，所有设备 ID getter 方法都会同步运行。在 SDK v5 中，这些方法已改为异步运行。
-</MinorVersion> <codeblock title="ADID getter"> 
+
+</MinorVersion>
+<CodeBlock title="ADID getter">
 
 ```js
 Adjust.getAdid(function (adid) {
@@ -568,7 +604,8 @@ Adjust.getAdid(function (adid) {
 });
 ```
 
-</CodeBlock> <codeblock title="归因信息 getter"> 
+</CodeBlock>
+<CodeBlock title="归因信息 getter">
 
 ```js
 Adjust.getAttribution(function (attribution) {
@@ -597,7 +634,8 @@ Adjust.getAttribution(function (attribution) {
 });
 ```
 
-</CodeBlock> <codeblock title="SDK 版本 getter"> 
+</CodeBlock>
+<CodeBlock title="SDK 版本 getter">
 
 ```js
 Adjust.getSdkVersion(function (sdkVersion) {
@@ -605,7 +643,8 @@ Adjust.getSdkVersion(function (sdkVersion) {
 });
 ```
 
-</CodeBlock> <codeblock title="启用状态 getter"> 
+</CodeBlock>
+<CodeBlock title="启用状态 getter">
 
 ```js
 Adjust.isEnabled(function (isEnabled) {
@@ -614,4 +653,3 @@ Adjust.isEnabled(function (isEnabled) {
 ```
 
 </CodeBlock>
-

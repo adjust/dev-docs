@@ -1,22 +1,21 @@
 ---
 title: "iOS Web Bridge v5移行ガイド"
 description: "iOS Web BridgeをSDK v4からSDK v5にアップグレードする方法"
-slug: "en/sdk/ios/migration/web-v4-to-v5"
+slug: "ja/sdk/ios/migration/web-v4-to-v5"
 sidebar-position: 2
 sidebar-label: "Web Bridge v5"
 ---
-[事前準備](before-you-begin)
-------------------------
+
+## [事前準備](before-you-begin)
 
 SDK v5にアップデートする前に、以下を行ってください。
 
-1. SDK v5は[SDKシグネチャーの検証](https://help.adjust.com/en/article/sdk-signature)をネイティブにサポートします。現在SDKシグネチャーライブラリを使用している場合は、まずこれをアンインストールしてください。
-2. アプリが以下のバージョン以前のAPIバージョンを対象にしている場合、SDK v5を使用する前にアプリをアップデートする必要があります： 
-   * iOS： **12\.0** 
-   * tvOS： **12\.0** 
+1. SDK v5は[SDKシグネチャーの検証](https://help.adjust.com/ja/article/sdk-signature)をネイティブにサポートします。現在SDKシグネチャーライブラリを使用している場合は、まずこれをアンインストールしてください。
+2. アプリが以下のバージョン以前のAPIバージョンを対象にしている場合、SDK v5を使用する前にアプリをアップデートする必要があります：
+   -  iOS： **12\.0**
+   -  tvOS： **12\.0**
 
-[SDKのインストール](install-the-sdk)
------------------------------
+## [SDKのインストール](install-the-sdk)
 
 SDK v5の使用を開始するには、XCodeプロジェクトにdependencyとしてSDK v5を追加する必要があります。これを行うには、以下の手順に従ってください。
 
@@ -24,31 +23,34 @@ SDK v5の使用を開始するには、XCodeプロジェクトにdependencyと�
 
 2. 以下を`Podfile`ファイルに追加します：
 
-   <codeblock title="Podfile"> 
+   <CodeBlock title="Podfile">
 
    ```rb
    pod 'Adjust/AdjustWebBridge', :git => 'https://github.com/adjust/ios_sdk.git', :tag => 'v5.0.0'
    ```
 
-   </CodeBlock> 
+   </CodeBlock>
+
 3. `pod install`を実行してdependencyをインストールします。
 
-[変更内容](changes)
----------------
+## [変更内容](changes)
 
-<callout type="warning"> 
+<Callout type="warning">
 
 SDK v5はメジャーバージョンアップです。つまり、コードを更新しなければならないような大きな変更があるということです。
-</Callout> 
+
+</Callout>
 
 v5 SDKをインストールしたら、新しいAPIを使用するために既存のAdjustコードを更新する必要があります。
 
 ### [初期化メソッド](init-method)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
 SDK v4では、初期化メソッドは`Adjust.onCreate(AdjustConfig)`です。SDK v5では`Adjust.initSdk(AdjustConfig)`に変更されています。
-</MinorVersion> <codeblock useDiffSyntax> 
+
+</MinorVersion>
+<CodeBlock useDiffSyntax>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -57,7 +59,7 @@ const adjustConfig = new AdjustConfig(this, appToken, environment);
 +Adjust.initSdk(adjustConfig); // v5
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 ### [設定](configuration)
 
@@ -65,10 +67,11 @@ const adjustConfig = new AdjustConfig(this, appToken, environment);
 
 #### [IDFAの読み取りを無効化する](disable-idfa-reading)
 
-<minorversion added="v5"> 
+<MinorVersion added="v5">
 
 SDK v5では、 `AdjustConfig` インスタンスの `disableIdfaReading` メソッドを呼び出すことで、 Adjust SDKが広告主のデバイスID IDFAを読み取らないようにすることができます。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -77,10 +80,11 @@ adjustConfig.disableIdfaReading();
 
 #### [AdServices情報の読み取りを無効化する](disable-adservices)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
 SDK v4では、`AdjustConfig`インスタンスの`setAllowAdServicesInfoReading`メソッドを`false`引数をつけて呼び出すことで、Adjust SDKがAdServices情報を読み取らないようにすることができます。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -96,13 +100,14 @@ adjustConfig.disableAdServices();
 
 #### [SDKを無効化・有効化する](disable-enable-sdk)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
 SDK v4では、`boolean`値で`Adjust.setEnabled()`を呼び出すことで、SDKを有効化・無効化することができます。
-</MinorVersion> 
 
-* SDKを無効化するには、`Adjust.setEnabled(false)`を呼び出します。
-* SDKを有効化するには、`Adjust.setEnabled(true)`を呼び出します。
+</MinorVersion>
+
+-  SDKを無効化するには、`Adjust.setEnabled(false)`を呼び出します。
+-  SDKを有効化するには、`Adjust.setEnabled(true)`を呼び出します。
 
 ```js
 Adjust.setEnabled(false); // disable SDK
@@ -111,8 +116,8 @@ Adjust.setEnabled(true); // enable SDK
 
 より明確にするため、SDK v5では、この機能は別々のコマンドに分割されています。
 
-* SDKを無効化するには、`Adjust.disable()`を呼び出します。
-* SDKを有効化するには、`Adjust.enable()`を呼び出します。
+-  SDKを無効化するには、`Adjust.disable()`を呼び出します。
+-  SDKを有効化するには、`Adjust.enable()`を呼び出します。
 
 ```js
 Adjust.disable(); // disable SDK
@@ -121,10 +126,11 @@ Adjust.enable(); // enable SDK
 
 #### [オフラインモード](offline-mode)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
 SDK v4では、`boolean`値で`Adjust.setOfflineMode()`を呼び出すことで、SDKでオフラインモードを有効化・無効化することができます。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 Adjust.setOfflineMode(false); // put SDK in offline mode
@@ -133,8 +139,8 @@ Adjust.setOfflineMode(true); // put SDK back in online mode
 
 より明確にするため、SDK v5では、この機能は別々のコマンドに分割されています。
 
-* SDKをオフラインモードに設定するには、`Adjust.switchToOfflineMode()`を呼び出します。
-* SDKをオンラインモードに戻すには、`Adjust.switchBackToOnlineMode()`を呼び出します。
+-  SDKをオフラインモードに設定するには、`Adjust.switchToOfflineMode()`を呼び出します。
+-  SDKをオンラインモードに戻すには、`Adjust.switchBackToOnlineMode()`を呼び出します。
 
 ```js
 Adjust.switchToOfflineMode(); // put SDK in offline mode
@@ -143,10 +149,11 @@ Adjust.switchBackToOnlineMode(); // put SDK back in online mode
 
 #### [アトリビューションにコストデータを有効化する](enable-cost-data-in-attribution)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
 SDK v4では、ブーリアン引数で`AdjustConfig`インスタンスの`setNeedsCost`メソッドを呼び出すことで、SDKがユーザーのアトリビューションの一部としてコストデータを送信できるようにすることができます。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -162,10 +169,11 @@ adjustConfig.enableCostDataInAttribution();
 
 #### [イベントバッファリング](event-buffering)
 
-<minorversion removed="v5"> 
+<MinorVersion removed="v5">
 
 SDK v4はイベントのバッファリングをサポートしています。この機能は、リクエストイベント、広告収益、Pushトークン、その他の情報をローカルバッファに保存し、後日送信します。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -176,10 +184,11 @@ adjustConfig.setEventBufferingEnabled(true);
 
 #### [カスタムユーザーエージェント文字列](custom-user-agent)
 
-<minorversion removed="v5"> 
+<MinorVersion removed="v5">
 
 SDK v4は、ユーザーエージェント文字列で`AdjustConfig`インスタンスの`setUserAgent`メソッドを呼び出すことで、カスタムユーザーエージェントの設定をサポートしています。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -190,10 +199,11 @@ adjustConfig.setUserAgent("user_agent_value");
 
 #### [既知のデバイスかどうかを設定する](set-device-known)
 
-<minorversion removed="v5"> 
+<MinorVersion removed="v5">
 
 SDK v4では、`AdjustConfig`インスタンスの`setDeviceKnown`メソッドを呼び出して、既知のデバイスかどうかをSDKに手動で通知することができます。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -204,10 +214,11 @@ adjustConfig.setDeviceKnown(true);
 
 #### [SDKの起動開始を遅延させる](delay-sdk-start)
 
-<minorversion removed="v5"> 
+<MinorVersion removed="v5">
 
 SDK v4では、最大 **120秒** の遅延で`AdjustConfig`インスタンスの`setDelayStart`メソッドを呼び出すことで、SDKの起動を遅らせることができます。遅延が終了する前にアプリの準備ができている場合、 `Adjust.sendFirstPackages`を呼び出すことで情報がすぐに送信されます。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -220,10 +231,11 @@ SDK v5では、これら両方のメソッドが削除されました。
 
 #### [setPushToken](set-push-token)
 
-<minorversion removed="v5"> 
+<MinorVersion removed="v5">
 
 SDK v4は、プッシュトークンで`Adjust.setDeviceToken`を呼び出すことによる、デバイスプッシュトークンの設定をサポートしています。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 Adjust.setDeviceToken(deviceToken);
@@ -237,10 +249,12 @@ Adjust.setDeviceToken(deviceToken);
 
 #### [セッションコールバックパラメーター](callback-params)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
 SDK v5では、セッション コールバック パラメーターはグローバル コールバック パラメーターに名称変更されました。
-</MinorVersion> <codeblock useDiffSyntax> 
+
+</MinorVersion>
+<CodeBlock useDiffSyntax>
 
 ```js
 -Adjust.addSessionCallbackParameter("foo", "bar");
@@ -252,14 +266,16 @@ SDK v5では、セッション コールバック パラメーターはグロー
 +Adjust.removeGlobalCallbackParameters();
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 #### [セッションパートナーパラメーター](partner-params)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
 SDK v5では、セッション パートナー パラメーターはグローバル パートナー パラメーターに名称変更されました。
-</MinorVersion> <codeblock useDiffSyntax> 
+
+</MinorVersion>
+<CodeBlock useDiffSyntax>
 
 ```js
 -Adjust.addSessionPartnerParameter("foo", "bar");
@@ -271,14 +287,15 @@ SDK v5では、セッション パートナー パラメーターはグローバ
 +Adjust.removeGlobalPartnerParameters();
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 #### [イベントの重複排除](event-deduplication)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
 SDK v4では、イベント重複排除はイベント`order ID`と組み合わされ、最大10個のユニークIDに制限されています。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 const event = new AdjustEvent("event_token");
@@ -305,10 +322,11 @@ Adjust.trackEvent(event);
 
 #### [ディファードディープリンクを無効にする](disable-deferred-deep-link-opening)
 
-<minorversion added="v5"> 
+<MinorVersion added="v5">
 
 SDK v5では、 `AdjustConfig`インスタンスの`disableDeferredDeeplinkOpening`メソッドを呼び出すことで、SDKがディファードディープリンクを開かないようにすることができます。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -317,10 +335,11 @@ adjustConfig.disableDeferredDeepLinkOpening();
 
 #### [ディープリンクを使用したリアトリビューション](reattribution-using-deep-links)
 
-<minorversion removed="v5"> 
+<MinorVersion removed="v5">
 
 SDK v4では、 `Adjust.appWillOpenUrl()`メソッドを呼び出すことで、Web BridgeでディープリンクURLをAdjustにパスすることができます。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 Adjust.appWillOpenUrl(data, getApplicationContext());
@@ -330,10 +349,11 @@ Adjust.appWillOpenUrl(data, getApplicationContext());
 
 #### [Adjust LinkMe](adjust-linkme)
 
-<minorversion removed="v5"> 
+<MinorVersion removed="v5">
 
-SDK v4では、ブーリアン引数で`AdjustConfig`インスタンスの`setLinkMeEnabled`メソッドを呼び出すことで、Adjust Web bridgeを使用して[Adjust LinkMe](https://help.adjust.com/en/article/linkme)を有効にできます。
-</MinorVersion> 
+SDK v4では、ブーリアン引数で`AdjustConfig`インスタンスの`setLinkMeEnabled`メソッドを呼び出すことで、Adjust Web bridgeを使用して[Adjust LinkMe](https://help.adjust.com/ja/article/linkme)を有効にできます。
+
+</MinorVersion>
 
 ```js
 setupWebViewJavascriptBridge(function (bridge) {
@@ -352,10 +372,11 @@ setupWebViewJavascriptBridge(function (bridge) {
 
 #### [児童オンラインプライバシー保護法（COPPA）コンプライアンス](coppa-compliance)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
-SDK v4では、 [COPPAへの準拠](/en/sdk/android/features/privacy#coppa-compliance)は、ブーリアン引数で`AdjustConfig`インスタンスの`setCoppaCompliantEnabled`メソッドを呼び出すことで設定されます。
-</MinorVersion> 
+SDK v4では、 [COPPAへの準拠](/ja/sdk/android/features/privacy#coppa-compliance)は、ブーリアン引数で`AdjustConfig`インスタンスの`setCoppaCompliantEnabled`メソッドを呼び出すことで設定されます。
+
+</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -371,10 +392,11 @@ adjustConfig.enableCoppaCompliance();
 
 #### [特定のソースの広告収益を送信する](send-ad-revenue)
 
-<minorversion removed="v5"> 
+<MinorVersion removed="v5">
 
 SDK v4では、 `Adjust.trackAdRevenue()`メソッドにソースとペイロードをパスすることで、特定のソースから広告収益を送信することができます。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 Adjust.trackAdRevenue(source, payload);
@@ -384,10 +406,11 @@ Adjust.trackAdRevenue(source, payload);
 
 #### [データレジデンシーとURL戦略を設定する](url-strategy)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
 SDK v4では、URL戦略とデータレジデンシーのドメインは`AdjustConfig`クラスの定数として定義されています。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -396,8 +419,8 @@ adjustConfig.setUrlStrategy(AdjustConfig.DataResidencyEU);
 
 SDK v5では、選択したドメインを配列としてパスする必要があります。また、以下を設定することも可能です：
 
-* `useSubdomains` （`boolean`）：ソースにサブドメインのプレフィックスを付けるかどうか。
-* `isDataResidency` （`boolean`）：ドメインをデータレジデンシーに使用するかどうか。
+-  `useSubdomains` （`boolean`）：ソースにサブドメインのプレフィックスを付けるかどうか。
+-  `isDataResidency` （`boolean`）：ドメインをデータレジデンシーに使用するかどうか。
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -408,72 +431,79 @@ adjustConfig.setUrlStrategy(domains, useSubdomains, isDataResidency);
 ```
 
 SDK v5でURL戦略を設定する方法については、以下の表をご確認ください。
-<table autoWidth="1,2"> 
 
-|                v4                |     v5 \- メインおよびフォールバックドメイン      | v5 \- サブドメインの使用 | v5 \- データレジデンシー |
-|----------------------------------|-----------------------------------|------------------|------------------|
-| `AdjustConfig.DataResidencyEU`   | `"eu.adjust.com"`                 | `true`           | `true`           |
-| `AdjustConfig.DataResidencyTR`   | `"tr.adjust.com"`                 | `true`           | `true`           |
-| `AdjustConfig.DataResidencyUS`   | `"us.adjust.com"`                 | `true`           | `true`           |
-| `AdjustConfig.UrlStrategyChina`  | `"adjust.world"`。 `"adjust.com"`  | `true`           | `false`          |
-| `AdjustConfig.UrlStrategyCn`     | `"adjust.cn"`。 `"adjust.com"`     | `true`           | `false`          |
-| `AdjustConfig.UrlStrategyCnOnly` | `"adjust.cn"`                     | `true`           | `false`          |
-| `AdjustConfig.UrlStrategyIndia`  | `"adjust.net.in"`。 `"adjust.com"` | `true`           | `false`          |
+<Table autoWidth="1,2">
 
-</Table> 
+| v4                               | v5 \- メインおよびフォールバックドメイン | v5 \- サブドメインの使用 | v5 \- データレジデンシー |
+| -------------------------------- | ---------------------------------------- | ------------------------ | ------------------------ |
+| `AdjustConfig.DataResidencyEU`   | `"eu.adjust.com"`                        | `true`                   | `true`                   |
+| `AdjustConfig.DataResidencyTR`   | `"tr.adjust.com"`                        | `true`                   | `true`                   |
+| `AdjustConfig.DataResidencyUS`   | `"us.adjust.com"`                        | `true`                   | `true`                   |
+| `AdjustConfig.UrlStrategyChina`  | `"adjust.world"`。 `"adjust.com"`        | `true`                   | `false`                  |
+| `AdjustConfig.UrlStrategyCn`     | `"adjust.cn"`。 `"adjust.com"`           | `true`                   | `false`                  |
+| `AdjustConfig.UrlStrategyCnOnly` | `"adjust.cn"`                            | `true`                   | `false`                  |
+| `AdjustConfig.UrlStrategyIndia`  | `"adjust.net.in"`。 `"adjust.com"`       | `true`                   | `false`                  |
+
+</Table>
 
 ##### [例](examples)
 
-<codeblock title="インド URL戦略"> 
+<CodeBlock title="インド URL戦略">
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
 adjustConfig.setUrlStrategy(["adjust.net.in", "adjust.com"], true, false);
 ```
 
-</CodeBlock> <codeblock title="中国 URL戦略"> 
+</CodeBlock>
+<CodeBlock title="中国 URL戦略">
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
 adjustConfig.setUrlStrategy(["adjust.world", "adjust.com"], true, false);
 ```
 
-</CodeBlock> <codeblock title="中国限定 URL設定"> 
+</CodeBlock>
+<CodeBlock title="中国限定 URL設定">
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
 adjustConfig.setUrlStrategy(["adjust.cn"], true, false);
 ```
 
-</CodeBlock> <codeblock title="EU データレジデンシー"> 
+</CodeBlock>
+<CodeBlock title="EU データレジデンシー">
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
 adjustConfig.setUrlStrategy(["eu.adjust.com"], true, true);
 ```
 
-</CodeBlock> <codeblock title="トルコ データレジデンシー"> 
+</CodeBlock>
+<CodeBlock title="トルコ データレジデンシー">
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
 adjustConfig.setUrlStrategy(["tr.adjust.com"], true, true);
 ```
 
-</CodeBlock> <codeblock title="米国 データレジデンシー"> 
+</CodeBlock>
+<CodeBlock title="米国 データレジデンシー">
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
 adjustConfig.setUrlStrategy(["us.adjust.com"], true, true);
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 #### [サードパーティとの共有をグローバルに無効化する](disable-sharing-globally)
 
-<minorversion removed="v5"> 
+<MinorVersion removed="v5">
 
 SDK v4では、`Adjust.disableThirdPartySharing()`メソッドを呼び出すことで、サードパーティとの情報共有をグローバルに無効化することができます。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 Adjust.disableThirdPartySharing();
@@ -492,10 +522,11 @@ Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 
 #### [SKAdNetworkアトリビューションを無効化](disable-skan-attribution)
 
-<minorversion added="v5"> 
+<MinorVersion added="v5">
 
 SDK v5では、 `AdjustConfig`インスタンスの`disableSkanAttributionHandling`メソッドを呼び出すことで、Adjust SDKがAppleのSKAdNetworkにアトリビューション情報を送信するのを防ぐことができます。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -504,10 +535,11 @@ adjustConfig.disableSkanAttributionHandling();
 
 #### [SKAdNetworkアップデートコールバック](skan-update-callback)
 
-<minorversion added="v5"> 
+<MinorVersion added="v5">
 
 SDK v5では、コールバック関数で`AdjustConfig`インスタンスの`setSkanUpdatedCallback`メソッドを呼び出すことで、ユーザーのSKAdNetworkのconversion valueが変更された時にコールバック関数を実行するようにAdjust SDKを設定することができます。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -519,10 +551,11 @@ adjustConfig.setSkanUpdatedCallback(function (skanData) {
 
 #### [ATTの承認ステータスをリクエスト](request-att-authorization-status)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
 SDK v4では、`Adjust.requestTrackingAuthorizationWithCompletionHandler`メソッドを使用してユーザーのATT認証ステータスの変更を処理できます。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 Adjust.requestTrackingAuthorizationWithCompletionHandler(function(status) {
@@ -540,10 +573,11 @@ Adjust.requestAppTrackingAuthorizationWithCompletionHandler(function(status) {
 
 #### [ATTステータスを確認](check-for-att-status)
 
-<minorversion removed="v5"> 
+<MinorVersion removed="v5">
 
 SDK v4では、 `Adjust.checkForNewAttStatus`メソッドを呼び出すことで、ユーザーのATTステータスの変更を確認できます。
-</MinorVersion> 
+
+</MinorVersion>
 
 ```js
 Adjust.checkForNewAttStatus();
@@ -557,10 +591,12 @@ Adjust.checkForNewAttStatus();
 
 #### [デバイスIDゲッター](device-id-getters)
 
-<minorversion changed="v5"> 
+<MinorVersion changed="v5">
 
 SDK v4では、全てのデバイスIDのゲッターメソッドは同期的に実行されます。SDK v5では、これらのメソッドは非同期に実行されるように変更されています。
-</MinorVersion> <codeblock title="ADIDゲッター"> 
+
+</MinorVersion>
+<CodeBlock title="ADIDゲッター">
 
 ```js
 Adjust.getAdid(function (adid) {
@@ -568,7 +604,8 @@ Adjust.getAdid(function (adid) {
 });
 ```
 
-</CodeBlock> <codeblock title="アトリビューション情報ゲッター"> 
+</CodeBlock>
+<CodeBlock title="アトリビューション情報ゲッター">
 
 ```js
 Adjust.getAttribution(function (attribution) {
@@ -597,7 +634,8 @@ Adjust.getAttribution(function (attribution) {
 });
 ```
 
-</CodeBlock> <codeblock title="SDKバージョンゲッター"> 
+</CodeBlock>
+<CodeBlock title="SDKバージョンゲッター">
 
 ```js
 Adjust.getSdkVersion(function (sdkVersion) {
@@ -605,7 +643,8 @@ Adjust.getSdkVersion(function (sdkVersion) {
 });
 ```
 
-</CodeBlock> <codeblock title="有効化ステータスゲッター"> 
+</CodeBlock>
+<CodeBlock title="有効化ステータスゲッター">
 
 ```js
 Adjust.isEnabled(function (isEnabled) {
@@ -614,4 +653,3 @@ Adjust.isEnabled(function (isEnabled) {
 ```
 
 </CodeBlock>
-
