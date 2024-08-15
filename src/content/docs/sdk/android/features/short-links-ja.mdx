@@ -1,43 +1,41 @@
 ---
 title: "ショートブランドリンクを解析"
 description: "Campaign Labで作成された短縮リンクを解析します。"
-slug: "ja/sdk/android/features/short-links"
+slug: "en/sdk/android/features/short-links"
 multiVersion: true
 ---
+<sdkversion version="v5"> 
 
-<SdkVersion version="v5">
-
-Adjustの[リンク短縮ソリューション](https://help.adjust.com/ja/article/short-branded-links)は、複雑で長いリンクをより簡潔で短いリンクに変換します。短縮リンクはディープリンクとキャンペーン情報を保持し、アプリがインストールされていない場合は、ユーザーをApp Storeに誘導します。
+Adjustの[リンク短縮ソリューション](https://help.adjust.com/en/article/short-branded-links)は、複雑で長いリンクをより簡潔で短いリンクに変換します。短縮リンクはディープリンクとキャンペーン情報を保持し、アプリがインストールされていない場合は、ユーザーをApp Storeに誘導します。
 
 このセクションで説明するメソッドを使用して、短縮リンクを解析します。
 
-## [Adjust SDKでディープリンクを設定](set-up-deep-linking-in-the-adjust-sdk)
+[Adjust SDKでディープリンクを設定](set-up-deep-linking-in-the-adjust-sdk)
+--------------------------------------------------------------
 
 Adjust SDKに、以下のサポートを追加してください。
 
--  [URIスキーム](/ja/sdk/android/features/deep-links)
--  [ディファードディープリンク](/ja/sdk/android/features/deep-links#deferred-deep-linking)
+* [URIスキーム](/en/sdk/android/features/deep-links)
+* [ディファードディープリンク](/en/sdk/android/features/deep-links#deferred-deep-linking)
 
-<Callout type="note">
+<callout type="note"> 
 
-Adjustのリンク短縮ソリューションを使用するために、[リンク解析](/ja/sdk/android/features/deep-links#link-resolution)を設定する必要はありません。
+Adjustのリンク短縮ソリューションを使用するために、[リンク解析](/en/sdk/android/features/deep-links#link-resolution)を設定する必要はありません。
+</Callout> 
 
-</Callout>
+[Adjust SDKを設定して短縮リンクを解析](set-up-the-adjust-sdk-to-resolve-short-links)
+-----------------------------------------------------------------------
 
-## [Adjust SDKを設定して短縮リンクを解析](set-up-the-adjust-sdk-to-resolve-short-links)
-
-<CodeBlock title="メソッドシグネチャー">
+<codeblock title="メソッドシグネチャー"> 
 
 ```java
 public static void processAndResolveDeeplink(Uri url, Context context, OnDeeplinkResolvedListener callback)
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 Adjust SDKは、`onCreate`または`onNewIntent`メソッドを使ってアクティビティ内のintentオブジェクトにディープリンク情報を送信します。ディープリンクは、 `intent`オブジェクトの`data`プロパティで利用可能です。アプリが起動し、これらのメソッドのいずれかが起動すれば、ディープリンクにアクセスできます。`processAndResolveDeeplink`メソッドを呼び出して、ディープリンクでユーザーをアプリに誘導した短縮AdjustリンクURLを解析します。
-
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+<tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,7 +44,8 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
    val intent = intent
    val webpageURL = intent.data
-   Adjust.processAndResolveDeeplink(webpageURL, this) { resolvedLink ->
+   val adjustDeeplink = AdjustDeeplink(webpageURL)
+   Adjust.processAndResolveDeeplink(adjustDeeplink, this) { resolvedLink ->
       // resolvedLink contains either resolved URL (if it was unshortened)
       // or just echoed URL if it was not shortened
       Log.d("Example", resolvedLink)
@@ -54,8 +53,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
 }
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 @Override
@@ -65,7 +63,8 @@ protected void onCreate(Bundle savedInstanceState) {
 
    Intent intent = getIntent();
    Uri webpageURL = intent.getData();
-   Adjust.processAndResolveDeeplink(webpageURL, this, new   OnDeeplinkResolvedListener() {
+   AdjustDeeplink adjustDeeplink = new AdjustDeeplink(webpageURL);
+   Adjust.processAndResolveDeeplink(adjustDeeplink, this, new   OnDeeplinkResolvedListener() {
       @Override
       public void onDeeplinkResolved(String resolvedLink) {
             // resolvedLink contains either resolved URL (if it was unshortened)
@@ -76,17 +75,15 @@ protected void onCreate(Bundle savedInstanceState) {
 }
 ```
 
-</Tab>
-</Tabs>
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+</Tab> </Tabs> <tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 override fun onNewIntent(intent: Intent?) {
    super.onNewIntent(intent)
 
    val webpageURL = intent.data
-   Adjust.processAndResolveDeeplink(webpageURL, this) { resolvedLink ->
+   val adjustDeeplink = AdjustDeeplink(webpageURL)
+   Adjust.processAndResolveDeeplink(adjustDeeplink, this) { resolvedLink ->
       // resolvedLink contains either resolved URL (if it was unshortened)
       // or just echoed URL if it was not shortened
       Log.d("Example", resolvedLink)
@@ -94,8 +91,7 @@ override fun onNewIntent(intent: Intent?) {
 }
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 @Override
@@ -103,56 +99,53 @@ protected void onNewIntent(Intent intent) {
    super.onNewIntent(intent);
 
    Uri webpageURL = intent.getData();
-   Adjust.processAndResolveDeeplink(webpageURL, this, new   OnDeeplinkResolvedListener() {
-      @Override
-      public void onDeeplinkResolved(String resolvedLink) {
+   AdjustDeeplink adjustDeeplink = new AdjustDeeplink(webpageURL);
+   Adjust.processAndResolveDeeplink(adjustDeeplink, this, new   OnDeeplinkResolvedListener() {
+   @Override
+   public void onDeeplinkResolved(String resolvedLink) {
             // resolvedLink contains either resolved URL (if it was unshortened)
             // or just echoed URL if it was not shortened
             Log.d("Example", resolvedLink);
-      }
+   }
    });
 }
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 `processAndResolveDeeplink`メソッドに送信したリンクが短縮されていた場合、 `resolvedLink`は拡張された元のリンクを返します。メソッドにパスしたリンクが短縮されていない場合、 `resolvedLink`にはパスした同じリンクが含まれます。
+</SdkVersion> <sdkversion version="v4"> 
 
-</SdkVersion>
-<SdkVersion version="v4">
-
-Adjustの[リンク短縮ソリューション](https://help.adjust.com/ja/article/short-branded-links)は、複雑で長いリンクをより簡潔で短いリンクに変換します。短縮リンクはディープリンクとキャンペーン情報を保持し、アプリがインストールされていない場合は、ユーザーをApp Storeに誘導します。
+Adjustの[リンク短縮ソリューション](https://help.adjust.com/en/article/short-branded-links)は、複雑で長いリンクをより簡潔で短いリンクに変換します。短縮リンクはディープリンクとキャンペーン情報を保持し、アプリがインストールされていない場合は、ユーザーをApp Storeに誘導します。
 
 このセクションで説明するメソッドを使用して、短縮リンクを解析します。
 
-## [Adjust SDKでディープリンクを設定](set-up-deep-linking-in-the-adjust-sdk)
+[Adjust SDKでディープリンクを設定](set-up-deep-linking-in-the-adjust-sdk)
+--------------------------------------------------------------
 
 Adjust SDKに、以下のサポートを追加してください。
 
--  [URIスキーム](/ja/sdk/android/features/deep-links)
--  [ディファードディープリンク](/ja/sdk/android/features/deep-links#deferred-deep-linking)
+* [URIスキーム](/en/sdk/android/features/deep-links)
+* [ディファードディープリンク](/en/sdk/android/features/deep-links#deferred-deep-linking)
 
-<Callout type="note">
+<callout type="note"> 
 
-Adjustのリンク短縮ソリューションを使用するために、[リンク解析](/ja/sdk/android/features/deep-links#link-resolution)を設定する必要はありません。
+Adjustのリンク短縮ソリューションを使用するために、[リンク解析](/en/sdk/android/features/deep-links#link-resolution)を設定する必要はありません。
+</Callout> 
 
-</Callout>
+[Adjust SDKを設定して短縮リンクを解析](set-up-the-adjust-sdk-to-resolve-short-links)
+-----------------------------------------------------------------------
 
-## [Adjust SDKを設定して短縮リンクを解析](set-up-the-adjust-sdk-to-resolve-short-links)
-
-<CodeBlock title="メソッドシグネチャー">
+<codeblock title="メソッドシグネチャー"> 
 
 ```java
 public static void processDeeplink(Uri url, Context context, OnDeeplinkResolvedListener callback)
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 Adjust SDKは、`onCreate`または`onNewIntent`メソッドを使ってアクティビティ内のintentオブジェクトにディープリンク情報を送信します。ディープリンクは、 `intent`オブジェクトの`data`プロパティで利用可能です。アプリが起動し、これらのメソッドのいずれかが起動すれば、ディープリンクにアクセスできます。`processDeeplink`メソッドを呼び出して、ディープリンクでユーザーをアプリに誘導した短縮AdjustリンクURLを解析します。
-
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+<tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 override fun onCreate(savedInstanceState: Bundle?) {
@@ -169,8 +162,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
 }
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 @Override
@@ -191,10 +183,7 @@ protected void onCreate(Bundle savedInstanceState) {
 }
 ```
 
-</Tab>
-</Tabs>
-<Tabs>
-<Tab title="Kotlin" sync="kotlin">
+</Tab> </Tabs> <tabs> <tab title="Kotlin" sync="kotlin"> 
 
 ```kotlin
 override fun onNewIntent(intent: Intent?) {
@@ -209,8 +198,7 @@ override fun onNewIntent(intent: Intent?) {
 }
 ```
 
-</Tab>
-<Tab title="Java" sync="java">
+</Tab> <tab title="Java" sync="java"> 
 
 ```java
 @Override
@@ -229,9 +217,8 @@ protected void onNewIntent(Intent intent) {
 }
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
 `processDeeplink`メソッドに送信したリンクが短縮されていた場合、 `resolvedLink`は拡張された元のリンクを返します。メソッドにパスしたリンクが短縮されていない場合、 `resolvedLink`にはパスした同じリンクが含まれます。
-
 </SdkVersion>
+
