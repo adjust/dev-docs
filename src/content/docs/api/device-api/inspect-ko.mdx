@@ -1,42 +1,84 @@
 ---
 title: "디바이스 엔드포인트 검사"
 description: "디바이스 엔드포인트 검사(inspect device endpoint)를 사용하면 기기에 대한 정보를 확인할 수 있습니다. 앱 관련 기기 및 링크 정보를 반환하기 위해 앱 ID 및 기기의 광고 ID를 입력하시기 바랍니다."
-slug: "ko/api/device-api/inspect"
+slug: "en/api/device-api/inspect"
 sidebar-position: 2
+multiVersion: true
 ---
-
 디바이스 엔드포인트 검사\(inspect device endpoint\)를 사용하면 기기에 대한 정보를 확인할 수 있습니다. 앱 관련 기기 및 링크 정보를 반환하기 위해 앱 ID 및 기기의 광고 ID를 입력하시기 바랍니다.
+<apiversion version="v2"> <codeblock title="엔드포인트" highlight="/inspect_device"> 
 
-<CodeBlock title="엔드포인트" highlight="/inspect_device">
+```http
+GET https://api.adjust.com/device_service/api/v2/inspect_device
+```
+
+</CodeBlock> </ApiVersion> <apiversion version="v1"> <codeblock title="엔드포인트" highlight="/inspect_device"> 
 
 ```http
 GET https://api.adjust.com/device_service/api/v1/inspect_device
 ```
 
-</CodeBlock>
+</CodeBlock> </ApiVersion> 
 
-## [기기 정보 불러오기](fetch-device-information)
+[기기 정보 불러오기](fetch-device-information)
+--------------------------------------
 
 기기 정보를 JSON 객체로 반환.
+<table> 
 
-<Table>
+|        파라미터         |  데이터 유형  |  In   |                       설명                        |
+|---------------------|----------|-------|-------------------------------------------------|
+| `app_token`\*      | `String` | Query | 앱의 12자리 ID                                      |
+| `advertising_id`\* | `String` | Query | 기기의 고유 광고 ID. 아래의 [광고 ID](#advertising-ids) 참조. |
 
-| 파라미터           | 데이터 유형 | In    | 설명                                                          |
-| ------------------ | ----------- | ----- | ------------------------------------------------------------- |
-| `app_token`\*      | `String`    | Query | 앱의 12자리 ID                                                |
-| `advertising_id`\* | `String`    | Query | 기기의 고유 광고 ID. 아래의 [광고 ID](#advertising-ids) 참조. |
+</Table> <apiversion version="v2"> <accordion title="광고 ID(Advertising IDs)"> 
 
-</Table>
-<Accordion title="광고 ID(Advertising IDs)">
+* `idfa` \(iOS 기기\)
+* `gps_adid` \(Google 광고 ID\)
+* `android_id` \(Android ID\)
+* `fire_adid` \(Amazon Fire ID\)
+* `win_adid` \(Windows 광고 ID\)
 
--  `idfa` \(iOS 기기\)
--  `gps_adid` \(Google 광고 ID\)
--  `android_id` \(Android ID\)
--  `fire_adid` \(Amazon Fire ID\)
--  `win_adid` \(Windows 광고 ID\)
+</Accordion> <codeblock title="응답 형식"> 
 
-</Accordion>
-<CodeBlock title="응답 형식">
+```json
+{
+   "Adid": "string",
+   "AdvertisingId": "string",
+   "Tracker": "string",
+   "TrackerName": "string",
+   "Environment": "string",
+   "ClickTime": "date-time",
+   "InstallTime": "date-time",
+   "LastSessionTime": "date-time",
+   "LastEventsInfo": {
+      "{event_id}": {
+         "name": "string",
+         "time": "date-time"
+      },
+      "{event_id}": {
+         "name": "string",
+         "time": "date-time"
+      },
+      "{event_id}": {
+         "name": "string",
+         "time": "date-time"
+      }
+   },
+   "LastSdkVersion": "ios4.37.2",
+   "State": "string"
+}
+```
+
+</CodeBlock> </ApiVersion> <apiversion version="v1"> <accordion title="광고 ID(Advertising IDs)"> 
+
+* `idfa` \(iOS 기기\)
+* `gps_adid` \(Google 광고 ID\)
+* `android_id` \(Android ID\)
+* `fire_adid` \(Amazon Fire ID\)
+* `win_adid` \(Windows 광고 ID\)
+
+</Accordion> <codeblock title="응답 형식"> 
 
 ```json
 {
@@ -57,11 +99,53 @@ GET https://api.adjust.com/device_service/api/v1/inspect_device
 }
 ```
 
-</CodeBlock>
+</CodeBlock> </ApiVersion> 
 
-## [예시](example)
+[예시](example)
+-------------
 
-<CodeBlock title="cURL" highlight="advertising_id=1234-5678-9012-3456, app_token=gwzpeepw8uf8">
+<apiversion version="v2"> <codeblock title="cURL" highlight="advertising_id=1234-5678-9012-3456, app_token=gwzpeepw8uf8"> 
+
+```console
+$ curl \
+--header "Authorization: Bearer ask43jskdp2tg2hg87" \
+-L -X GET "https://api.adjust.com/device_service/api/v2/inspect_device?advertising_id=1234-5678-9012-3456&app_token=gwzpeepw8uf8"
+```
+
+</CodeBlock> <codeblock title="성공적인 응답"> 
+
+```json
+{
+   "Adid": "acf8534f2f052395e617a38730682ccc",
+   "AdvertisingId": "1234-5678-9012-3456",
+   "Tracker": "abc123",
+   "TrackerName": "Organic",
+   "FirstTracker": "zr5vueb",
+   "FirstTrackerName": "Organic",
+   "Environment": "sandbox",
+   "ClickTime": "0001-01-01T00:00:00Z",
+   "InstallTime": "2015-08-19T03:42:03Z",
+   "LastSessionTime": "2017-07-29T17:29:17Z",
+   "LastEventsInfo": {
+      "kgfcul": {
+         "name": "Copy IDFA",
+         "time": "2024-07-18T10:01:16Z"
+      },
+      "wz9qqz": {
+         "name": "Accept Terms",
+         "time": "2024-07-01T14:13:47Z"
+      },
+      "z3f773": {
+         "name": "Copy IDFV",
+         "time": "2024-07-01T19:01:39Z"
+      }
+   },
+   "LastSdkVersion": "ios4.37.2",
+   "State": "installed"
+}
+```
+
+</CodeBlock> </ApiVersion> <apiversion version="v1"> <codeblock title="cURL" highlight="advertising_id=1234-5678-9012-3456, app_token=gwzpeepw8uf8"> 
 
 ```console
 $ curl \
@@ -69,8 +153,7 @@ $ curl \
 -L -X GET "https://api.adjust.com/device_service/api/v1/inspect_device?advertising_id=1234-5678-9012-3456&app_token=gwzpeepw8uf8"
 ```
 
-</CodeBlock>
-<CodeBlock title="성공적인 응답">
+</CodeBlock> <codeblock title="성공적인 응답"> 
 
 ```json
 {
@@ -91,4 +174,5 @@ $ curl \
 }
 ```
 
-</CodeBlock>
+</CodeBlock> </ApiVersion>
+
