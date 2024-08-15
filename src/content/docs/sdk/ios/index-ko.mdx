@@ -2,24 +2,23 @@
 title: "iOS SDK 연동 가이드"
 description: "iOS SDK를 사용해 iOS 앱의 Adjust 기능에 액세스"
 category-title: "iOS SDK"
-slug: "en/sdk/ios"
+slug: "ko/sdk/ios"
 sidebar-position: 2
 multiVersion: true
 ---
-<sdkversion version="v5"> 
+
+<SdkVersion version="v5">
 
 Adjust iOS SDK를 사용하면 iOS 앱에서 어트리뷰션, 이벤트 등을 기록할 수 있습니다. 이 가이드에서는 Adjust SDK를 앱과 연동하는 방법이 다루어집니다.
 
-[시작에 앞서](before-you-begin)
---------------------------
+## [시작에 앞서](before-you-begin)
 
 SDK v5로 업데이트하기 전에 다음을 수행하시기 바랍니다.
 
-1. SDK v5는 [SDK Signature\(SDK 서명\) 인증](https://help.adjust.com/en/article/sdk-signature)을 기본적으로 지원합니다. 현재 SDK 서명 라이브러리를 사용하는 경우 먼저 이것을 삭제해야 합니다.
+1. SDK v5는 [SDK Signature\(SDK 서명\) 인증](https://help.adjust.com/ko/article/sdk-signature)을 기본적으로 지원합니다. 현재 SDK 서명 라이브러리를 사용하는 경우 먼저 이것을 삭제해야 합니다.
 2. 앱이 **12\.0** 보다 낮은 버전의 iOS 또는 tvOS를 대상으로 하는 경우 SDK v5를 사용하려면 앱을 업데이트해야 합니다.
 
-[1\. 프로젝트에 SDK 추가](1-add-the-sdk-to-your-project)
---------------------------------------------------
+## [1\. 프로젝트에 SDK 추가](1-add-the-sdk-to-your-project)
 
 iOS 앱에서 Adjust SDK를 사용하려면 우선 Xcode 프로젝트에 Adjust SDK를 추가해야 합니다.
 
@@ -31,7 +30,8 @@ Swift 패키지 매니저를 사용하여 SDK를 추가하는 경우:
 
 ### [대체 설치 방법](alternative-installation-methods)
 
-<tabs> <tab title="Cocoapods" sync="cocoapods"> 
+<Tabs>
+<Tab title="Cocoapods" sync="cocoapods">
 
 Cocoapods를 사용하여 SDK를 추가하려면 `Podfile`에서 사용하고자 하는 버전을 명시합니다:
 
@@ -49,7 +49,8 @@ pod 'Adjust', :git => 'https://github.com/adjust/ios_sdk.git', :tag => 'v5.0.0'
 pod 'Adjust/AdjustWebBridge', :git => 'https://github.com/adjust/ios_sdk.git', :tag => 'v5.0.0'
 ```
 
-</Tab> <tab title="Carthage" sync="carthage"> 
+</Tab>
+<Tab title="Carthage" sync="carthage">
 
 Carthage를 사용하여 SDK를 추가하려면 `Cartfile`에 다음을 추가합니다.
 
@@ -57,15 +58,17 @@ Carthage를 사용하여 SDK를 추가하려면 `Cartfile`에 다음을 추가�
 github "adjust/ios_sdk"
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
-[2\. Adjust SDK 연동](integrate-the-adjust-sdk)
-----------------------------------------------
+## [2\. Adjust SDK 연동](integrate-the-adjust-sdk)
 
 `Xcode` 프로젝트에 Adjust SDK를 추가하고 나면 앱에 연동해야 합니다.
 
 프로젝트 파일에 관련 가져오기 명령어를 추가합니다.
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 Adjust SDK를 가져오기하려면 다음을 브리징 헤더 파일에 추가합니다.
 
@@ -73,7 +76,8 @@ Adjust SDK를 가져오기하려면 다음을 브리징 헤더 파일에 추가�
 import AdjustSdk
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 Adjust SDK를 가져오기하려면, 다음을 `AppDelegate.h` 파일에 추가합니다.
 
@@ -81,31 +85,30 @@ Adjust SDK를 가져오기하려면, 다음을 `AppDelegate.h` 파일에 추가�
 #import <AdjustSdk/Adjust.h>
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
-[3\. iOS 프레임워크 추가](add-ios-frameworks)
----------------------------------------
+## [3\. iOS 프레임워크 추가](add-ios-frameworks)
 
 Adjust SDK는 특정 기기 정보 액세스를 위해 프레임워크에 의존합니다. 이 정보 읽기를 활성화하려면 프레임워크를 추가하고 프레임워크를 **옵션** 으로 표시하시기 바랍니다.
-<table autoWidth="1" width="2: 300, 3: 300"> 
 
-|                프레임워크                |                                        설명                                         |                                   참고 사항                                   |
-|-------------------------------------|-----------------------------------------------------------------------------------|---------------------------------------------------------------------------|
-| `AdSupport.framework`               | 디바이스 IDFA에 대한 액세스와, iOS 14 이하 버전의 기기에서 LAT에 대한 액세스도 활성화합니다.                       | 앱이 "아동" 카테고리를 타겟으로 하는 경우 이 프레임워크를 추가하지 않습니다.                              |
-| `AdServices.framework`              | ASA 어트리뷰션을 취급합니다.                                                                 |                                                                           |
-| `StoreKit.framework`                | SKAdNetwork 프레임워크에 대한 액세스를 활성화합니다.                                                | Adjust SDK가 iOS 14 이상 버전의 기기에서 SKAdNetwork와의 커뮤니케이션을 처리하도록 허용하기 위해 필요합니다. |
-| `AppTrackingTransparency.framework` | Adjust SDK가 iOS 14 이상 버전의 기기에서 사용자 ATT 동의 다이얼로그 및 액세스 동의 응답을 래핑하도록 허용하기 위해 필요합니다. | 앱이 "아동" 카테고리를 타겟으로 하는 경우 이 프레임워크를 추가하지 않습니다.                              |
-| `WebKit.framework`                  | 애플리케이션의 웹뷰 사용을 활성화합니다.                                                            | 앱이 웹뷰를 사용하는 경우에만 필요합니다.                                                   |
+<Table autoWidth="1" width="2: 300, 3: 300">
 
-</Table> 
+| 프레임워크                          | 설명                                                                                                                           | 참고 사항                                                                                                    |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ |
+| `AdSupport.framework`               | 디바이스 IDFA에 대한 액세스와, iOS 14 이하 버전의 기기에서 LAT에 대한 액세스도 활성화합니다.                                   | 앱이 "아동" 카테고리를 타겟으로 하는 경우 이 프레임워크를 추가하지 않습니다.                                 |
+| `AdServices.framework`              | ASA 어트리뷰션을 취급합니다.                                                                                                   |                                                                                                              |
+| `StoreKit.framework`                | SKAdNetwork 프레임워크에 대한 액세스를 활성화합니다.                                                                           | Adjust SDK가 iOS 14 이상 버전의 기기에서 SKAdNetwork와의 커뮤니케이션을 처리하도록 허용하기 위해 필요합니다. |
+| `AppTrackingTransparency.framework` | Adjust SDK가 iOS 14 이상 버전의 기기에서 사용자 ATT 동의 다이얼로그 및 액세스 동의 응답을 래핑하도록 허용하기 위해 필요합니다. | 앱이 "아동" 카테고리를 타겟으로 하는 경우 이 프레임워크를 추가하지 않습니다.                                 |
+| `WebKit.framework`                  | 애플리케이션의 웹뷰 사용을 활성화합니다.                                                                                       | 앱이 웹뷰를 사용하는 경우에만 필요합니다.                                                                    |
 
-[4\. Set up SDK signature](set-up-sdk-signature)
--------------------------------------------------
+</Table>
 
-SDK v5 includes the [SDK signature library](https://help.adjust.com/en/article/sdk-signature). Signature protection is inactive by default. To enable it, you need to [enforce signature validation](https://help.adjust.com/en/article/sdk-signature#enforce-signature-validation).
+## [4\. Set up SDK signature](set-up-sdk-signature)
 
-[5\. \(선택 사항\) Adjust Web Bridge 설정](set-up-web-bridge)
-----------------------------------------------------------
+SDK v5 includes the [SDK signature library](https://help.adjust.com/ko/article/sdk-signature). Signature protection is inactive by default. To enable it, you need to [enforce signature validation](https://help.adjust.com/ko/article/sdk-signature#enforce-signature-validation).
+
+## [5\. \(선택 사항\) Adjust Web Bridge 설정](set-up-web-bridge)
 
 앱이 웹뷰를 사용하는 경우 Adjust Web Bridge를 설정해 웹뷰 내 활동을 기록해야 합니다.
 
@@ -117,7 +120,8 @@ Project Navigator:
 2. 파일 가장 위에 `import` 명령어를 추가합니다.
 3. `AdjustBridge`에 대해 웹뷰 델리게이트의 `viewDidLoad` 또는 `viewWillAppear` 메서드에서 다음의 콜을 추가합니다.
 
-<tabs> <tab title="Swift" sync="swift"> 
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 import AdjustSdk
@@ -130,7 +134,8 @@ func viewWillAppear(_ animated: Bool) {
 }
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 #import "<AdjustSdk/AdjustSdk.h>"
@@ -145,12 +150,15 @@ func viewWillAppear(_ animated: Bool) {
 // Your code here
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
 #### [`AdjustBridge`를 웹뷰에 연동](integrate-adjustbridge-into-your-web-view)
 
 웹뷰에서 자바스크립트 브릿지를 사용하려면 브릿지를 구성해야 합니다. 다음 자바스크립트 코드를 추가하여 Adjust iOS 웹브릿지를 초기화합니다:
-<tabs> <tab title="Javascript" sync="js"> 
+
+<Tabs>
+<Tab title="Javascript" sync="js">
 
 ```js
 var yourAppToken = yourAppToken;
@@ -159,15 +167,15 @@ var adjustConfig = new AdjustConfig(yourAppToken, environment);
 Adjust.initSdk(adjustConfig);
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
-[5\. Initialize the Adjust SDK](initialize-the-adjust-sdk)
------------------------------------------------------------
+## [5\. Initialize the Adjust SDK](initialize-the-adjust-sdk)
 
 Adjust SDK를 초기화하려면 config 객체를 만들어야 합니다. 이 객체에는 Adjust SDK 행동을 통제하는 구성 옵션이 포함되어 있습니다. 최소 설정을 위한 다음 인수를 전달합니다.
 
-* `appToken`: Your [app's token](https://help.adjust.com/en/article/app-settings#view-your-app-token).
-* `environment`: The environment you want to run the SDK in. Set this to `ADJEnvironmentSandbox`.
+-  `appToken`: Your [app's token](https://help.adjust.com/ko/article/app-settings#view-your-app-token).
+-  `environment`: The environment you want to run the SDK in. Set this to `ADJEnvironmentSandbox`.
 
 이 config 객체로 Adjust SDK 초기화:
 
@@ -175,7 +183,8 @@ Adjust SDK를 초기화하려면 config 객체를 만들어야 합니다. 이 �
 2. `ADJLogLevelVerbose`\(verbose\)에 config 개체의 `logLevel` 속성을 설정합니다. 디바이스 정보를 검색하려면 verbose 로깅을 활성화해야 합니다.
 3. `initSdk` 메서드에 인수로 config 개체를 전달합니다.
 
-<tabs> <tab title="Swift" sync="swift"> 
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 import AdjustSdk
@@ -193,7 +202,8 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
  }
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 #import <AdjustSdk/Adjust.h>
@@ -210,7 +220,8 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 }
 ```
 
-</Tab> <tab title="Javascript" sync="js"> 
+</Tab>
+<Tab title="Javascript" sync="js">
 
 ```js
 var yourAppToken = yourAppToken;
@@ -219,26 +230,30 @@ var adjustConfig = new AdjustConfig(yourAppToken, environment);
 Adjust.initSdk(adjustConfig);
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
 ### [iMessage 앱 설정](set-up-your-imessage-app)
 
-<callout type="important"> 
+<Callout type="important">
 
 iMessage 확장 프로그램은 앱과 다른 번들 식별자를 가지며 다른 메모리 공간에서 실행됩니다. 동일한 토큰으로 두 가지를 모두 설정하는 경우 SDK는 혼합 데이터를 반환합니다. 따라서 Adjust 대시보드에서 iMessage 앱 전용으로 별도의 앱을 생성해야 하며, Adjust SDK를 초기화할 때 해당 토큰을 사용해야 합니다.
-</Callout> 
+
+</Callout>
 
 앱이 iMessage를 타겟으로 하는 경우 설정해야 하는 추가적인 설정이 몇 가지 있습니다.
 
-* 소스에서 Adjust SDK를 추가한 경우, iMessage 프로젝트 설정에 `ADJUST_IM=1` 프리프로세서 매크로를 추가합니다.
-* Adjust SDK를 프레임워크로 추가한 경우, **Build Phases** 프로젝트 설정에 **New Copy Files Phase** 를 추가해야 합니다. 프레임워크 폴더에 복사될 `AdjustSdkIm.framework`를 설정합니다.
+-  소스에서 Adjust SDK를 추가한 경우, iMessage 프로젝트 설정에 `ADJUST_IM=1` 프리프로세서 매크로를 추가합니다.
+-  Adjust SDK를 프레임워크로 추가한 경우, **Build Phases** 프로젝트 설정에 **New Copy Files Phase** 를 추가해야 합니다. 프레임워크 폴더에 복사될 `AdjustSdkIm.framework`를 설정합니다.
 
 #### [세션 기록](record-sessions)
 
 Adjust SDK는 iMessage 앱에서 iOS 시스템 알림을 구독하지 않습니다. 앱이 포그라운드에 진입했거나 나간 경우 Adjust SDK에 알리려면 `trackSubsessionStart` 및 `trackSubsessionEnd` 메서드를 콜해야 합니다.
 
 `didBecomeActiveWithConversation:` 메서드 안의 `trackSubsessionStart`에 콜을 추가합니다.
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 func didBecomeActive(with conversation: MSConversation) {
@@ -250,7 +265,8 @@ func didBecomeActive(with conversation: MSConversation) {
 }
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 -(void)didBecomeActiveWithConversation:(MSConversation *)conversation {
@@ -262,10 +278,13 @@ func didBecomeActive(with conversation: MSConversation) {
 }
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
 `willResignActiveWithConversation:` 메서드 안의 `trackSubsessionEnd`에 콜을 추가합니다.
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 func willResignActive(with conversation: MSConversation) {
@@ -281,7 +300,8 @@ func willResignActive(with conversation: MSConversation) {
 }
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 -(void)willResignActiveWithConversation:(MSConversation *)conversation {
@@ -297,31 +317,30 @@ func willResignActive(with conversation: MSConversation) {
 }
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
-[6\. Configure the Adjust SDK](configure-the-adjust-sdk)
----------------------------------------------------------
+## [6\. Configure the Adjust SDK](configure-the-adjust-sdk)
 
-config 개체와 초기화 로직을 추가하고 나면 Adjust SDK를 설정해 앱의 다양한 부분에 대한 정보를 기록할 수 있습니다. [구성 참조](/en/sdk/ios/configuration) 및 [기능 가이드](/en/sdk/ios/features)를 확인하여 기록할 항목을 정확히 설정합니다.
+config 개체와 초기화 로직을 추가하고 나면 Adjust SDK를 설정해 앱의 다양한 부분에 대한 정보를 기록할 수 있습니다. [구성 참조](/ko/sdk/ios/configuration) 및 [기능 가이드](/ko/sdk/ios/features)를 확인하여 기록할 항목을 정확히 설정합니다.
 
-[7\. Test the Adjust SDK](test-the-adjust-sdk)
------------------------------------------------
+## [7\. Test the Adjust SDK](test-the-adjust-sdk)
 
-Adjust SDK를 설정해 앱 정보를 기록할 수 있으므로 이제 테스트할 차례입니다. Adjust는 앱 테스트에 도움이 되는 [테스팅 콘솔](https://help.adjust.com/en/article/testing-console)과 [Device API](https://help.adjust.com/en/article/device-api)를 제공합니다.
+Adjust SDK를 설정해 앱 정보를 기록할 수 있으므로 이제 테스트할 차례입니다. Adjust는 앱 테스트에 도움이 되는 [테스팅 콘솔](https://help.adjust.com/ko/article/testing-console)과 [Device API](https://help.adjust.com/ko/article/device-api)를 제공합니다.
 
-[테스트 가이드](https://help.adjust.com/en/article/test-the-adjust-sdk)를 따라 Adjust가 앱에서 예상값을 수신하는지 확인합니다.
+[테스트 가이드](https://help.adjust.com/ko/article/test-the-adjust-sdk)를 따라 Adjust가 앱에서 예상값을 수신하는지 확인합니다.
 
-[8\. 프로덕션을 위한 앱 빌드](build-your-app-for-production)
----------------------------------------------------
+## [8\. 프로덕션을 위한 앱 빌드](build-your-app-for-production)
 
 테스트를 완료한 후에 프로덕션을 위한 앱을 빌드할 수 있습니다. 이를 위해 config 객체를 업데이트해야 합니다.
 
 다음 값 업데이트:
 
-* `environment`: Set this to `ADJEnvironmentProduction`.
-* `logLevel`: Choose a [logging level](/en/sdk/ios/configuration#set-your-logging-level), or disable logging completely by passing an `allowSuppressLogLevel` argument in your config object.
+-  `environment`: Set this to `ADJEnvironmentProduction`.
+-  `logLevel`: Choose a [logging level](/ko/sdk/ios/configuration#set-your-logging-level), or disable logging completely by passing an `allowSuppressLogLevel` argument in your config object.
 
-<tabs> <tab title="Swift" sync="swift"> 
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 import AdjustSdk
@@ -342,7 +361,8 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 }
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 #import <AdjustSdk/Adjust.h>
@@ -361,10 +381,13 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 }
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
 디버그 빌드 또는 프로덕션 빌드를 만들지 여부에 따라 `Xcode` 빌드 플래그를 사용해 config를 동적으로 업데이트할 수 있습니다.
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -392,7 +415,8 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 }
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 #import "Adjust.h"
@@ -419,12 +443,14 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 }
 ```
 
-</Tab> </Tabs> </SdkVersion> <sdkversion version="v4"> 
+</Tab>
+</Tabs>
+</SdkVersion>
+<SdkVersion version="v4">
 
 Adjust iOS SDK를 사용하면 iOS 앱에서 어트리뷰션, 이벤트 등을 기록할 수 있습니다. 이 가이드에서는 Adjust SDK를 앱과 연동하는 방법이 다루어집니다.
 
-[1\. 프로젝트에 SDK 추가](1-add-the-sdk-to-your-project)
---------------------------------------------------
+## [1\. 프로젝트에 SDK 추가](1-add-the-sdk-to-your-project)
 
 iOS 앱에서 Adjust SDK를 사용하려면 우선 Xcode 프로젝트에 Adjust SDK를 추가해야 합니다.
 
@@ -436,7 +462,8 @@ Swift 패키지 매니저를 사용하여 SDK를 추가하는 경우:
 
 ### [대체 설치 방법](alternative-installation-methods)
 
-<tabs> <tab title="Cocoapods" sync="cocoapods"> 
+<Tabs>
+<Tab title="Cocoapods" sync="cocoapods">
 
 Cocoapods를 사용하여 SDK를 추가하려면 `Podfile`에서 사용하고자 하는 버전을 명시합니다:
 
@@ -454,7 +481,8 @@ pod 'Adjust', :git => 'https://github.com/adjust/ios_sdk.git', :tag => 'v$IOS_V4
 pod 'Adjust/WebBridge', '~> $IOS_V4_VERSION'
 ```
 
-</Tab> <tab title="Carthage" sync="carthage"> 
+</Tab>
+<Tab title="Carthage" sync="carthage">
 
 Carthage를 사용하여 SDK를 추가하려면 `Cartfile`에 다음을 추가합니다.
 
@@ -462,20 +490,25 @@ Carthage를 사용하여 SDK를 추가하려면 `Cartfile`에 다음을 추가�
 github "adjust/ios_sdk"
 ```
 
-</Tab> <tab title="프레임워크로 추가" sync="framework"> <callout type="important"> 
+</Tab>
+<Tab title="프레임워크로 추가" sync="framework">
+<Callout type="important">
 
-정적 프레임워크의 배포는 [프라이버시 매니페스트](https://help.adjust.com/en/article/submit-privacy-details-to-apple#privacy-manifest) 를 포함하지 않기 때문에 버전 4\.38\.0부터 지원이 중단됩니다.
-</Callout> <minorversion removed="v4.38.0"> 
+정적 프레임워크의 배포는 [프라이버시 매니페스트](https://help.adjust.com/ko/article/submit-privacy-details-to-apple#privacy-manifest) 를 포함하지 않기 때문에 버전 4\.38\.0부터 지원이 중단됩니다.
+
+</Callout>
+<MinorVersion removed="v4.38.0">
 
 프로젝트에 Adjust SDK를 프레임워크로 추가하여 연동할 수도 있습니다. [배포 페이지](https://github.com/adjust/ios_sdk/releases/latest)에서 다음 아카이브를 찾을 수 있습니다.
-</MinorVersion> 
 
-* `AdjustSdkStatic.framework.zip`: For devices running iOS 7 and below
-* `AdjustSdkDynamic.framework.zip`: For devices running iOS 8 and above
-* `AdjustSdkTvDynamic.framework.zip`: Dynamic framework for tvOS apps
-* `AdjustSdkTvStatic.framework.zip`: Static framework for tvOS apps
-* `AdjustSdkImDynamic.framework.zip`: Dynamic framework for iMessage apps
-* `AdjustSdkWebBridgeDynamic.framework.zip`: Dynamic framework for web views
+</MinorVersion>
+
+-  `AdjustSdkStatic.framework.zip`: For devices running iOS 7 and below
+-  `AdjustSdkDynamic.framework.zip`: For devices running iOS 8 and above
+-  `AdjustSdkTvDynamic.framework.zip`: Dynamic framework for tvOS apps
+-  `AdjustSdkTvStatic.framework.zip`: Static framework for tvOS apps
+-  `AdjustSdkImDynamic.framework.zip`: Dynamic framework for iMessage apps
+-  `AdjustSdkWebBridgeDynamic.framework.zip`: Dynamic framework for web views
 
 필요한 프레임워크를 선택하고 `Xcode` 프로젝트에 해당 프레임워크를 추가하시기 바랍니다.
 
@@ -483,16 +516,20 @@ github "adjust/ios_sdk"
 2. 컴퓨터에서 아카이브를 압축 해제합니다.
 3. `.framework` 폴더를 `Xcode` 프로젝트에 복사합니다.
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
-[2\. Adjust SDK 연동](2-integrate-the-adjust-sdk)
-------------------------------------------------
+## [2\. Adjust SDK 연동](2-integrate-the-adjust-sdk)
 
 `Xcode` 프로젝트에 Adjust SDK를 추가하고 나면 앱에 연동해야 합니다.
-<tabs> <tab title="Cocoapods" sync="cocoapods"> 
+
+<Tabs>
+<Tab title="Cocoapods" sync="cocoapods">
 
 프로젝트 파일에 관련 가져오기 명령어를 추가합니다.
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 Adjust SDK를 가져오기하려면 다음을 브리징 헤더 파일에 추가합니다.
 
@@ -506,7 +543,8 @@ Adjust Web Bridge를 사용하는 경우, 다음을 브리징 헤더 파일에 �
 #import "AdjustBridge.h"
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 Adjust SDK를 가져오기하려면, 다음을 `AppDelegate.h` 파일에 추가합니다.
 
@@ -520,10 +558,15 @@ Adjust Web Bridge를 사용하는 경우 `AppDelegate.h` 파일에 다음을 추
 #import "AdjustBridge.h"
 ```
 
-</Tab> </Tabs> </Tab> <tab title="Carthage" sync="carthage"> 
+</Tab>
+</Tabs>
+</Tab>
+<Tab title="Carthage" sync="carthage">
 
 관련 가져오기 명령어를 프로젝트 파일에 추가합니다.
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 Adjust SDK를 가져오기하려면 다음을 브리징 헤더 파일에 추가합니다.
 
@@ -549,7 +592,8 @@ iMessage 앱에서 Adjust SDK를 사용하는 경우, 다음을 브리징 헤더
 #import <AdjustSdkIm/Adjust.h>
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 Adjust SDK를 가져오기하려면, 다음을 `AppDelegate.h` 파일에 추가합니다.
 
@@ -575,10 +619,15 @@ iMessage 앱에서 Adjust SDK를 사용하는 경우 다음을 `AppDelegate.h` �
 #import <AdjustSdkIm/Adjust.h>
 ```
 
-</Tab> </Tabs> </Tab> <tab title="프레임워크 가져오기" sync="framework"> 
+</Tab>
+</Tabs>
+</Tab>
+<Tab title="프레임워크 가져오기" sync="framework">
 
 관련 가져오기 명령어를 프로젝트 파일에 추가합니다.
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 Adjust SDK를 가져오기하려면 다음을 브리징 헤더 파일에 추가합니다.
 
@@ -604,7 +653,8 @@ iMessage 앱에서 Adjust SDK를 사용하는 경우, 다음을 브리징 헤더
 #import <AdjustSdkIm/Adjust.h>
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 Adjust SDK를 가져오기하려면, 다음을 `AppDelegate.h` 파일에 추가합니다.
 
@@ -630,31 +680,33 @@ iMessage 앱에서 Adjust SDK를 사용하는 경우 다음을 `AppDelegate.h` �
 #import <AdjustSdkIm/Adjust.h>
 ```
 
-</Tab> </Tabs> </Tab> </Tabs> 
+</Tab>
+</Tabs>
+</Tab>
+</Tabs>
 
-[3\. iOS 프레임워크 추가](3-add-ios-frameworks)
------------------------------------------
+## [3\. iOS 프레임워크 추가](3-add-ios-frameworks)
 
 Adjust SDK는 특정 기기 정보 액세스를 위해 프레임워크에 의존합니다. 이 정보 읽기를 활성화하려면 프레임워크를 추가하고 프레임워크를 **옵션** 으로 표시하시기 바랍니다.
-<table height="500"> 
 
-|                프레임워크                |                                        설명                                         |                                   참고 사항                                   |
-|-------------------------------------|-----------------------------------------------------------------------------------|---------------------------------------------------------------------------|
-| `AdSupport.framework`               | 디바이스 IDFA에 대한 액세스와, iOS 14 이하 버전의 기기에서 LAT에 대한 액세스도 활성화합니다.                       | 앱이 "아동" 카테고리를 타겟으로 하는 경우 이 프레임워크를 추가하지 않습니다.                              |
-| `AdServices.framework`              | ASA 어트리뷰션을 취급합니다.                                                                 |                                                                           |
-| `StoreKit.framework`                | SKAdNetwork 프레임워크에 대한 액세스를 활성화합니다.                                                | Adjust SDK가 iOS 14 이상 버전의 기기에서 SKAdNetwork와의 커뮤니케이션을 처리하도록 허용하기 위해 필요합니다. |
-| `AppTrackingTransparency.framework` | Adjust SDK가 iOS 14 이상 버전의 기기에서 사용자 ATT 동의 다이얼로그 및 액세스 동의 응답을 래핑하도록 허용하기 위해 필요합니다. | 앱이 "아동" 카테고리를 타겟으로 하는 경우 이 프레임워크를 추가하지 않습니다.                              |
-| `WebKit.framework`                  | 애플리케이션의 웹뷰 사용을 활성화합니다.                                                            | 앱이 웹뷰를 사용하는 경우에만 필요합니다.                                                   |
+<Table height="500">
 
-</Table> 
+| 프레임워크                          | 설명                                                                                                                           | 참고 사항                                                                                                    |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ |
+| `AdSupport.framework`               | 디바이스 IDFA에 대한 액세스와, iOS 14 이하 버전의 기기에서 LAT에 대한 액세스도 활성화합니다.                                   | 앱이 "아동" 카테고리를 타겟으로 하는 경우 이 프레임워크를 추가하지 않습니다.                                 |
+| `AdServices.framework`              | ASA 어트리뷰션을 취급합니다.                                                                                                   |                                                                                                              |
+| `StoreKit.framework`                | SKAdNetwork 프레임워크에 대한 액세스를 활성화합니다.                                                                           | Adjust SDK가 iOS 14 이상 버전의 기기에서 SKAdNetwork와의 커뮤니케이션을 처리하도록 허용하기 위해 필요합니다. |
+| `AppTrackingTransparency.framework` | Adjust SDK가 iOS 14 이상 버전의 기기에서 사용자 ATT 동의 다이얼로그 및 액세스 동의 응답을 래핑하도록 허용하기 위해 필요합니다. | 앱이 "아동" 카테고리를 타겟으로 하는 경우 이 프레임워크를 추가하지 않습니다.                                 |
+| `WebKit.framework`                  | 애플리케이션의 웹뷰 사용을 활성화합니다.                                                                                       | 앱이 웹뷰를 사용하는 경우에만 필요합니다.                                                                    |
 
-[4\. Adjust SDK 초기화](4-initialize-the-adjust-sdk)
---------------------------------------------------
+</Table>
+
+## [4\. Adjust SDK 초기화](4-initialize-the-adjust-sdk)
 
 Adjust SDK를 초기화하려면 config 객체를 만들어야 합니다. 이 객체에는 Adjust SDK 행동을 통제하는 구성 옵션이 포함되어 있습니다. 최소 설정을 위한 다음 인수를 전달합니다.
 
-* `appToken`: Your [app's token](https://help.adjust.com/en/article/app-settings#view-your-app-token).
-* `environment`: The environment you want to run the SDK in. Set this to `ADJEnvironmentSandbox`.
+-  `appToken`: Your [app's token](https://help.adjust.com/ko/article/app-settings#view-your-app-token).
+-  `environment`: The environment you want to run the SDK in. Set this to `ADJEnvironmentSandbox`.
 
 이 config 객체로 Adjust SDK 초기화:
 
@@ -662,7 +714,8 @@ Adjust SDK를 초기화하려면 config 객체를 만들어야 합니다. 이 �
 2. `ADJLogLevelVerbose`\(verbose\)에 config 개체의 `logLevel` 속성을 설정합니다. 디바이스 정보를 검색하려면 verbose 로깅을 활성화해야 합니다.
 3. `appDidLaunch` 메서드에 인수로 config 개체를 전달합니다.
 
-<tabs> <tab title="Swift" sync="swift"> 
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -679,7 +732,8 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 }
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 #import "Adjust.h"
@@ -697,26 +751,30 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 }
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
 ### [iMessage 앱 설정](set-up-your-imessage-app)
 
-<callout type="important"> 
+<Callout type="important">
 
 iMessage 확장 프로그램은 앱과 다른 번들 식별자를 가지며 다른 메모리 공간에서 실행됩니다. 동일한 토큰으로 두 가지를 모두 설정하는 경우 SDK는 혼합 데이터를 반환합니다. 따라서 Adjust 대시보드에서 iMessage 앱 전용으로 별도의 앱을 생성해야 하며, Adjust SDK를 초기화할 때 해당 토큰을 사용해야 합니다.
-</Callout> 
+
+</Callout>
 
 앱이 iMessage를 타겟으로 하는 경우 설정해야 하는 추가적인 설정이 몇 가지 있습니다.
 
-* 소스에서 Adjust SDK를 추가한 경우, iMessage 프로젝트 설정에 `ADJUST_IM=1` 프리프로세서 매크로를 추가합니다.
-* Adjust SDK를 프레임워크로 추가한 경우, **Build Phases** 프로젝트 설정에 **New Copy Files Phase** 를 추가해야 합니다. 프레임워크 폴더에 복사될 `AdjustSdkIm.framework`를 설정합니다.
+-  소스에서 Adjust SDK를 추가한 경우, iMessage 프로젝트 설정에 `ADJUST_IM=1` 프리프로세서 매크로를 추가합니다.
+-  Adjust SDK를 프레임워크로 추가한 경우, **Build Phases** 프로젝트 설정에 **New Copy Files Phase** 를 추가해야 합니다. 프레임워크 폴더에 복사될 `AdjustSdkIm.framework`를 설정합니다.
 
 #### [세션 기록](record-sessions)
 
 Adjust SDK는 iMessage 앱에서 iOS 시스템 알림을 구독하지 않습니다. 앱이 포그라운드에 진입했거나 나간 경우 Adjust SDK에 알리려면 `trackSubsessionStart` 및 `trackSubsessionEnd` 메서드를 콜해야 합니다.
 
 `didBecomeActiveWithConversation:` 메서드 안의 `trackSubsessionStart`에 콜을 추가합니다.
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 func didBecomeActive(with conversation: MSConversation) {
@@ -728,7 +786,8 @@ func didBecomeActive(with conversation: MSConversation) {
 }
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 -(void)didBecomeActiveWithConversation:(MSConversation *)conversation {
@@ -740,10 +799,13 @@ func didBecomeActive(with conversation: MSConversation) {
 }
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
 `willResignActiveWithConversation:` 메서드 안의 `trackSubsessionEnd`에 콜을 추가합니다.
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 func willResignActive(with conversation: MSConversation) {
@@ -759,7 +821,8 @@ func willResignActive(with conversation: MSConversation) {
 }
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 -(void)willResignActiveWithConversation:(MSConversation *)conversation {
@@ -775,7 +838,8 @@ func willResignActive(with conversation: MSConversation) {
 }
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
 ### [Adjust Web Bridge 설정](set-up-the-adjust-web-bridge)
 
@@ -789,7 +853,8 @@ Project Navigator:
 2. 파일 가장 위에 `import` 명령어를 추가합니다.
 3. `AdjustBridge`에 대해 웹뷰 델리게이트의 `viewDidLoad` 또는 `viewWillAppear` 메서드에서 다음의 콜을 추가합니다.
 
-<tabs> <tab title="Swift" sync="swift"> 
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 func viewWillAppear(_ animated: Bool) {
@@ -802,7 +867,8 @@ func viewWillAppear(_ animated: Bool) {
 }
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 #import "AdjustBridge.h"
@@ -820,14 +886,17 @@ func viewWillAppear(_ animated: Bool) {
 // Your code here
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
 `AdjustBridge` 인스턴스의 `bridgeRegister` 속성을 설정하여 포함된 `WebViewJavascriptBridge`를 사용할 수도 있습니다. 자세한 사용 방법은 [라이브러리 문서](https://github.com/marcuswestin/WebViewJavascriptBridge#usage)를 참조하시기 바랍니다.
 
 #### [`AdjustBridge`를 웹뷰에 연동](integrate-adjustbridge-into-your-web-view)
 
 웹뷰에서 자바스크립트 브릿지를 사용하려면 브릿지를 구성해야 합니다. 다음 자바스크립트 코드를 추가하여 Adjust iOS 웹브릿지를 초기화합니다:
-<tabs> <tab title="Javascript" sync="js"> 
+
+<Tabs>
+<Tab title="Javascript" sync="js">
 
 ```js
 function setupWebViewJavascriptBridge(callback) {
@@ -861,31 +930,30 @@ setupWebViewJavascriptBridge(function (bridge) {
 });
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
-[5\. Adjust SDK 설정](5-configure-the-adjust-sdk)
-------------------------------------------------
+## [5\. Adjust SDK 설정](5-configure-the-adjust-sdk)
 
 config 개체와 초기화 로직을 추가하고 나면 Adjust SDK를 설정해 앱의 다양한 부분에 대한 정보를 기록할 수 있습니다. SDK 설정 기능과 기록 기능에 대한 안내를 확인하고 기록하고 싶은 내용을 정확히 설정해 보십시오.
 
-[6\. Adjust SDK 테스트](6-test-the-adjust-sdk)
---------------------------------------------
+## [6\. Adjust SDK 테스트](6-test-the-adjust-sdk)
 
-Adjust SDK를 설정해 앱 정보를 기록할 수 있으므로 이제 테스트할 차례입니다. Adjust는 앱 테스트에 도움이 되는 [테스팅 콘솔](https://help.adjust.com/en/article/testing-console)과 [Device API](https://help.adjust.com/en/article/device-api)를 제공합니다.
+Adjust SDK를 설정해 앱 정보를 기록할 수 있으므로 이제 테스트할 차례입니다. Adjust는 앱 테스트에 도움이 되는 [테스팅 콘솔](https://help.adjust.com/ko/article/testing-console)과 [Device API](https://help.adjust.com/ko/article/device-api)를 제공합니다.
 
-[테스트 가이드](https://help.adjust.com/en/article/test-the-adjust-sdk)를 따라 Adjust가 앱에서 예상값을 수신하는지 확인합니다.
+[테스트 가이드](https://help.adjust.com/ko/article/test-the-adjust-sdk)를 따라 Adjust가 앱에서 예상값을 수신하는지 확인합니다.
 
-[7\. 프로덕션을 위한 앱 빌드](7-build-your-app-for-production)
------------------------------------------------------
+## [7\. 프로덕션을 위한 앱 빌드](7-build-your-app-for-production)
 
 테스트를 완료한 후에 프로덕션을 위한 앱을 빌드할 수 있습니다. 이를 위해 config 객체를 업데이트해야 합니다.
 
 다음 값 업데이트:
 
-* `environment`: Set this to `ADJEnvironmentProduction`.
-* `logLevel`: Choose a [logging level](/en/sdk/ios/configuration#set-your-logging-level), or disable logging completely by passing an `allowSuppressLogLevel` argument in your config object.
+-  `environment`: Set this to `ADJEnvironmentProduction`.
+-  `logLevel`: Choose a [logging level](/ko/sdk/ios/configuration#set-your-logging-level), or disable logging completely by passing an `allowSuppressLogLevel` argument in your config object.
 
-<tabs> <tab title="Swift" sync="swift"> 
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -903,7 +971,8 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 }
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 #import "Adjust.h"
@@ -922,10 +991,13 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 }
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
 디버그 빌드 또는 프로덕션 빌드를 만들지 여부에 따라 `Xcode` 빌드 플래그를 사용해 config를 동적으로 업데이트할 수 있습니다.
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -953,7 +1025,8 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 }
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 #import "Adjust.h"
@@ -981,5 +1054,6 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 }
 ```
 
-</Tab> </Tabs> </SdkVersion>
-
+</Tab>
+</Tabs>
+</SdkVersion>
