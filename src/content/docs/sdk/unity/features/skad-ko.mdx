@@ -2,8 +2,137 @@
 title: "SKAdNetwork 및 전환값 설정"
 description: "iOS 앱의 SKAdNetwork 기능을 구성합니다."
 slug: "ko/sdk/unity/features/skad"
+multiVersion: true
 ---
 
+<SdkVersion version="v5">
+<Callout type="important">
+
+이 기능은 iOS 14 이상 버전의 기기에서만 사용할 수 있습니다.
+
+</Callout>
+
+SKAdNetwork\(StoreKit Ad Network\)는 앱 설치와 재설치를 어트리뷰션하는 Apple의 자체 어트리뷰션 프레임워크입니다. SKAdNetwork 워크플로우는 다음과 같습니다.
+
+1. Apple은 어트리뷰션 정보를 수집하고, 관련 광고 네트워크에게 이를 알립니다.
+2. 네트워크는 Adjust에 해당 정보와 함께 포스트백을 전송합니다.
+3. Adjust는 [Datascape](https://help.adjust.com/ko/suite/article/datascape) 에 SKAdNetwork 데이터를 표시합니다.
+
+## [SKAdNetwork 커뮤니케이션 비활성화](disable-skadnetwork-communication)
+
+<CodeBlock title="속성 선언">
+
+```cs
+public bool? IsSkanAttributionEnabled { get; set; }
+```
+
+</CodeBlock>
+
+Adjust SDK는 기본값에 따라 SKAdNetwork와 정보를 주고 받습니다. SDK는 초기화 시 SKAdNetwork의 어트리뷰션을 기록합니다.
+
+`AdjustConfig` 인스턴스의 `IsSkanAttributionEnabled` 속성을 `bool` 값으로 설정하여 이 동작을 제어할 수 있습니다.
+
+<Callout type="important">
+
+이 속성은 Adjust SDK 초기화 _전에_ 설정해야 합니다.
+
+</Callout>
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
+//...
+adjustConfig.IsSkanAttributionEnabled = false;
+//...
+Adjust.InitSdk(adjustConfig);
+```
+
+## [전환값 변경 사항 수신](listen-for-changes-to-conversion-values)
+
+<CodeBlock title="속성 선언">
+
+```cs
+public Action<Dictionary<string, string>> SkanUpdatedDelegate { get; set; }
+```
+
+</CodeBlock>
+
+전환값 관리에 Adjust 솔루션을 사용하는 경우, Adjust 서버는 전환값 업데이트를 SDK에 전송합니다. 델리게이트 함수를 설정하여 이러한 변경 사항을 수신 대기하고 `AdjustConfig` 인스턴스의 `SkanUpdatedDelegate` 속성에 함수를 할당할 수 있습니다.
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
+//...
+adjustConfig.SkanUpdatedDelegate = SkanUpdatedDelegate;
+//...
+Adjust.InitSdk(adjustConfig);
+```
+
+델리게이트 함수는 SKAdNetwork로부터 다음의 속성과 함께 포스트백을 수신합니다.
+
+<Table autoWidth="1,2">
+
+| 인수 \(Arguments\) | 설명                                                                                                                                                                                                                                                                         |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fine_value`       | Adjust의 서버가 전송하는 전환값                                                                                                                                                                                                                                              |
+| `coarse_value`     | coarse\-grained 전환값. 앱의 설치 수가 Privacy Threshold를 충족하지 못하는 경우에 사용됩니다.<ul><li>`none`</li><li>`low`</li><li>`medium`</li><li>`high`</li></ul><br/>Apple은 low, medium, high로 설정된 조건 중 어느 것도 충족되지 않는 경우 아무 것도 전송하지 않습니다. |
+| `lock_window`      | 전환값 윈도우가 종료되기 전에 포스트백을 전송할지 여부. `1`은 전환값 윈도우 종료 전에 포스트백이 전송됨을 의미합니다.<br/>SKAdNetwork 4\.0 포스트백에서는 `0`, 그 이전 SKAdNetwork 버전에서는 `nil` 로 기본 설정되어 있습니다.                                               |
+| `error`            | 오류가 발생한 경우 오류 메시지를 포함합니다.                                                                                                                                                                                                                                 |
+
+</Table>
+
+### [예시](example-1)
+
+본 예시에서 Adjust는 fine\-grained 전환값, coarse\-grained 전환값, SKAdNetwork 포스트백이 전환값 종료 전에 전송되도록 설정되었는지 여부를 로그합니다.
+
+```cs
+using com.adjust.sdk;
+
+public class ExampleGUI : MonoBehaviour {
+    void OnGUI() {
+        if (GUI.Button(new Rect(0, 0, Screen.width, Screen.height), "callback")) {
+            AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
+            adjustConfig.LogLevel = AdjustLogLevel.Verbose;
+            adjustConfig.SkanUpdatedDelegate = SkanUpdatedDelegate;
+
+            Adjust.InitSdk(adjustConfig);
+        }
+
+
+      private void SkanUpdatedDelegate(Dictionary<string,string> response) {
+         Debug.Log("Conversion value updated. Callback received");
+         Debug.Log("Conversion value: " + response["fine_value"]);
+         Debug.Log("Coarse conversion value: " + response["coarse_value"]);
+         Debug.Log ("Will send before conversion value window ends: " response["lock_window"]);
+         Debug.Log("Error message: " response["error"]);
+      }
+   }
+};
+```
+
+## [다이렉트 설치 포스트백\(direct install postback\) 설정하기](set-up-direct-install-postbacks)
+
+<Callout type="note">
+
+다이렉트 설치 포스트백은 SKAdNetwork 정보만 포함합니다. 캠페인 데이터와 같은 정보는 다이렉트 설치 포스트백에 포함되지 않습니다.
+
+</Callout>
+
+Adjust에 SKAdNetwork 콜백의 사본을 전송하도록 앱을 구성하면, 고객님의 애널리틱스에서 SKAdNetwork 정보를 사용하실 수 있습니다.
+
+다이렉트 설치 포스트백 설정을 위해, 귀하의 `Info.plist` 파일에 Adjust 콜백 URL을 추가해야 합니다.
+
+1. Xcode의 프로젝트 네비게이터\(Project navigator\)에서 **Info.plist** 를 선택하세요.
+2. 속성 리스트 에디터의 키 옆에 있는 추가 버튼\(\+\)을 선택한 후, `Return`을 누르세요.
+3. _`NSAdvertisingAttributionReportEndpoint`_ 를 키 이름으로 입력하세요.
+4. 팝업 메뉴의 **Type** 을 **String** 으로 설정하세요.
+5. _`https://adjust-skadnetwork.com`_ 주소를 입력하세요.
+
+<Callout type="seealso">
+
+자세한 정보는 Apple의 [Configuring an Advertised App 설명서](https://developer.apple.com/documentation/storekit/skadnetwork/configuring_an_advertised_app)를 참조하시기 바랍니다.
+
+</Callout>
+</SdkVersion>
+<SdkVersion version="v4">
 <Callout type="important">
 
 이 기능은 iOS 14 이상 버전의 기기에서만 사용할 수 있습니다.
@@ -163,13 +292,14 @@ public class ExampleGUI : MonoBehaviour {
         }
 
 
-   private void ConversionValueUpdatedCallback(int conversionValue, string coarseValue, bool lockWindow) {
-      Debug.Log("Conversion value updated. Callback received");
-      Debug.Log("Conversion value: " + fineValue);
-      Debug.Log("Coarse conversion value: " + coarseValue);
-      Debug.Log ("Will send before conversion value window ends: " lockWindow);
+      private void ConversionValueUpdatedCallback(int conversionValue, string coarseValue, bool lockWindow) {
+         Debug.Log("Conversion value updated. Callback received");
+         Debug.Log("Conversion value: " + fineValue);
+         Debug.Log("Coarse conversion value: " + coarseValue);
+         Debug.Log ("Will send before conversion value window ends: " lockWindow);
+      }
    }
-}
+};
 ```
 
 ## [다이렉트 설치 포스트백\(direct install postback\) 설정하기](set-up-direct-install-postbacks)
@@ -195,3 +325,4 @@ Adjust에 SKAdNetwork 콜백의 사본을 전송하도록 앱을 구성하면, �
 자세한 정보는 Apple의 [Configuring an Advertised App 설명서](https://developer.apple.com/documentation/storekit/skadnetwork/configuring_an_advertised_app)를 참조하시기 바랍니다.
 
 </Callout>
+</SdkVersion>
