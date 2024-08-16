@@ -1,0 +1,350 @@
+---
+title: "ブロックリスト API"
+description: "AdjustブロックリストAPIは、ダイナミックあるいはモジュールパートナー用に作成されたトラッカーURLのうち、不正あるいは期限切れのリンクによるトラフィックを阻止するために使用されます。"
+category-title: "ブロックリスト API"
+slug: "ja/api/blocklist-api"
+sidebar-position: 3
+---
+
+<Callout type="important">
+
+Adjustでは、「ブラックリスト」を「ブロックリスト」、「ホワイトリスト」を「許可リスト」にそれぞれ変更しました。現在、この更新作業をAdjustのUIとドキュメントに行なっています。Adjustではコードベースの更新も予定していますが、その期間中APIエンドポイントに「blacklist」と表示されることがありますのでご留意ください。
+
+</Callout>
+
+AdjustブロックリストAPIは、不正あるいは期限切れのリンクによるトラフィックを阻止するために使用されます。ブロックリストに登録されたリンクは、ダッシュボードに **BLOCKLISTED** というラベルを表示します。
+
+ダイナミックおよびモジュールパートナーのリンクをブロックリストに登録できます。API連携パートナー（SAN）のリンクをブロックリストに登録することはできません。SANパートナーのURLからのトラフィックを阻止する場合は、SANパートナーを削除してください。
+
+<Callout type="seealso">
+
+API連携パートナーのリストは、[API連携ネットワークの設定](https://help.adjust.com/ja/suite/article/self-attributing-network-san-setup)をご覧ください。
+
+</Callout>
+
+## [1\. コールを認証する](1-authenticate-your-calls)
+
+AdjustブロックリストAPIを使用するには、Adjust APIトークンが必要です。このトークンをAPIで使用するには、認証ガイドの手順に従ってください。
+
+## [2\. リンクをブロックリストに登録する](2-blocklist-a-link)
+
+[リンクをブロックリストに登録](#blocklist-endpoint)すると、以下の情報をブロックします。
+
+-  エンゲージメント
+
+   -  クリック数
+   -  インプレッション
+
+-  パートナーとネットワークへのコールバック
+   -  モジュールコールバック
+   -  ダイナミックコールバック
+
+リンクに関連付けられた既存の全てのアトリビューションは、関連付けられたままの状態になります。アトリビュートされたユーザーのデータは、そのユーザーが別のリンクにリアトリビュートされるまで、そのリンクに関連付けられます。
+
+## [3\. リンクをブロックリストから解除する](3-unblocklist-a-link)
+
+リンクURLを再有効化したい場合は、[ブロックリストを解除](#unblocklist-endpoint)できます。リンクをブロックリストから解除すると、Adjustはエンゲージメントの計測とコールバック送信を再開します。
+
+<Callout type="note">
+
+ブロックリストを解除すると、リンクは直ちに有効になります。ブロックリストに登録されている間、リンクに関連付けられたアトリビューションデータは計上されません。リンクの有効時に受信されたエンゲージメントのみが、アトリビューションファネルで考慮されます。
+
+</Callout>
+
+## [4\. リンクステータスを閲覧する](4-view-link-status)
+
+[Campaign Lab](https://help.adjust.com/ja/article/campaign-setup)で、ブロックリストに登録されているトラッカーを確認できます。次の手順に従ってください。
+
+1. Campaign Labに移動します。
+2. パートナーを選択すると、関連するリンクのリストが表示されます。
+
+ブロックリストに登録されたリンクは **Blocklisted** と表示されます。
+
+ブロックリストに登録されたリンクは編集できませんが、Campaign Labで非表示にすることができます。リンクを非表示にする方法の詳細は、[Campaign Labでリンクを非表示にする](https://help.adjust.com/ja/article/manage-ad-network-setup#hidden-links)をご覧ください。
+
+## [認証](authentication)
+
+ブロックリストAPIを使用するには、[ベアラートークン](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication)が必要となります。ベアラートークンの取得については、このガイドをご覧ください。
+
+### [Adjust APIトークンを見つける](find-your-adjust-api-token)
+
+Adjust APIコールを作成する前に、まずAdjustダッシュボードでAPIトークンを見つけます。AdjustダッシュボードからAdjustのAPIトークンを確認してください。
+
+<Callout type="important">
+
+SSO（シングルサインオン）を設定している場合、APIトークンはAdjustダッシュボードで確認することができません。APIトークン関して不明な点がございましたら、Adjustの担当者または[support@adjust.com](mailto:support@adjust.com)までお問い合わせください。
+
+</Callout>
+
+Adjust APIトークンは **profile** 内にあります。それを確認するには、以下の手順に従ってください。
+
+1. 左下隅にある設定アイコンを選択します。
+2. **アカウント設定（Account Settings）** を選択します。アカウント設定のページが開きます。
+3. **マイプロフィール（My Profile）** を選択します。
+4. **APIトークン** が **ユーザー情報（User details）** に表示されます。コピーボタンを選択して、トークンをクリップボードにコピーします。
+
+### [Adjust APIトークンをリセットする](reset-your-adjust-api-token)
+
+Adjust APIトークンはいつでもリセットできます。 トークンをリセットすると、古いトークンが無効になります。 つまり、古いトークンを使用して送信されたリクエストは機能しません。 Adjust APIトークンをリセットした場合、使用中のあらゆる場所でトークンを更新する必要があります。
+
+1. 左下隅にある設定アイコンを選択します。
+2. **アカウント設定（Account Settings）** を選択します。アカウント設定のページが開きます。
+3. **マイプロフィール（My Profile）** を選択します。
+4. **APIトークン** が **ユーザー情報（User details）** に表示されます。
+5. **APIトークンをリセットする（Reset API token）** を選択します。ポップアップモーダルが表示されます。
+6. モーダルでアカウントのパスワードを入力し、 **リセット（Reset）** を選択してAPIトークンをリセットします。モーダルが閉じ、画面右上に確認メッセージが表示されます。
+7. **APIトークン** の横にあるコピーボタンを選択して、トークンをクリップボードにコピーします。
+
+## [エンドポイントをブロックリストに登録する](blocklist-endpoint)
+
+リンクをブロックリストに登録すると、エンゲージメントの計測、アトリビューション、トラッカーおよびトラッカーと関連するサブリンクへのコールバックを阻止します。
+
+<CodeBlock title="エンドポイント" highlight="{link}/blacklist">
+
+```http
+POST https://api.adjust.com/dashboard/api/trackers/{link}/blacklist
+```
+
+</CodeBlock>
+
+## [リンクをブロックリストに登録する](blocklist-link)
+
+特定のリンクをブロックリストに登録します。
+
+### [パラメーター](blocklist-parameters)
+
+以下のパラメーターがクエリパスに含まれければなりません：
+
+`link` （`String`）
+
+: 英数字のAdjustリンクトークン
+
+### [レスポンスの形式](blocklist-response-format)
+
+<CodeBlock title="レスポンスの形式">
+
+```json
+{
+   "label": "string",
+   "token": "string",
+   "name": "string",
+   "url": "string",
+   "path": "string",
+   "has_subtrackers": true,
+   "archived": true,
+   "visible": true,
+   "attribution_partner": true,
+   "creative_token": "string",
+   "adgroup_token": "string",
+   "campaign_token": "string",
+   "network_token": "string",
+   "click_url": "string",
+   "impression_url": "string",
+   "allow_partner_linking": true,
+   "settings": {
+      "partner_id": "string",
+      "partner_display_name": "string",
+      "tracking_parameters": "string",
+      "cost_data_parameters": "string",
+      "cost_data": true,
+      "partner_cost_data_parameters": "string",
+      "campaign_structure": "string",
+      "additional_parameters": "string",
+      "attribution_settings": "string",
+      "blacklisted": true
+   },
+   "urls": {
+      "descendants": "string",
+      "ancestors": "string",
+      "update": "string",
+      "show": "string",
+      "archive": "string",
+      "unarchive": "string"
+   }
+}
+```
+
+</CodeBlock>
+
+## [例](blocklist-example)
+
+<CodeBlock title="cURL" highlight="abc123">
+
+```console
+$ curl \
+--header "Authorization: Token token={api_token}" \
+-L -X POST "https://api.adjust.com/dashboard/api/trackers/abc123/blacklist"
+```
+
+</CodeBlock>
+<CodeBlock title="成功レスポンス">
+
+```json
+{
+   "label": "Twitter installs",
+   "token": "abc123",
+   "name": "Twitter installs",
+   "url": "https://app.adjust.com/abc123",
+   "path": "",
+   "has_subtrackers": true,
+   "archived": false,
+   "visible": true,
+   "attribution_partner": false,
+   "creative_token": null,
+   "adgroup_token": null,
+   "campaign_token": null,
+   "network_token": "abc123",
+   "click_url": "https://app.adjust.com/abc123",
+   "impression_url": "https://view.adjust.com/impression/abc123",
+   "allow_partner_linking": true,
+   "settings": {
+      "partner_id": null,
+      "partner_display_name": null,
+      "tracking_parameters": null,
+      "cost_data_parameters": null,
+      "cost_data": false,
+      "partner_cost_data_parameters": null,
+      "campaign_structure": null,
+      "additional_parameters": null,
+      "attribution_settings": null,
+      "blacklisted": true
+   },
+   "urls": {
+      "descendants": "/api/trackers/abc123/descendants.json",
+      "ancestors": "/api/trackers/abc123/ancestors.json",
+      "update": "/api/trackers/abc123.json",
+      "show": "/api/trackers/abc123.json",
+      "archive": "/api/trackers/abc123/archive.json",
+      "unarchive": "/api/trackers/abc123/unarchive.json"
+   }
+}
+```
+
+</CodeBlock>
+
+## [エンドポイントをブロックリストから解除する](unblocklist-endpoint)
+
+エンゲージメントの計測、アトリビューション、およびそのリンクと関連するサブリンクへのコールバックを再度有効化するには、リンクのブロックリストを解除してください。
+
+<CodeBlock title="エンドポイント" highlight="{link}/unblacklist">
+
+```http
+POST https://api.adjust.com/dashboard/api/trackers/{link}/unblacklist
+```
+
+</CodeBlock>
+
+## [リンクをブロックリストから解除する](unblocklist-link)
+
+特定のリンクをブロックリストから解除します。
+
+<Table>
+
+| パラメーター | データタイプ | 入力する値 | 説明                                                 |
+| ------------ | ------------ | ---------- | ---------------------------------------------------- |
+| `{link}`\*   | `String`     | パス       | アルファベットと数字で構成されたAdjustリンクトークン |
+
+</Table>
+
+### [レスポンスの形式](unblocklist-response-format)
+
+<CodeBlock title="レスポンスの形式">
+
+```json
+{
+   "label": "string",
+   "token": "string",
+   "name": "string",
+   "url": "string",
+   "path": "string",
+   "has_subtrackers": true,
+   "archived": true,
+   "visible": true,
+   "attribution_partner": true,
+   "creative_token": "string",
+   "adgroup_token": "string",
+   "campaign_token": "string",
+   "network_token": "string",
+   "click_url": "string",
+   "impression_url": "string",
+   "allow_partner_linking": true,
+   "settings": {
+      "partner_id": "string",
+      "partner_display_name": "string",
+      "tracking_parameters": "string",
+      "cost_data_parameters": "string",
+      "cost_data": true,
+      "partner_cost_data_parameters": "string",
+      "campaign_structure": "string",
+      "additional_parameters": "string",
+      "attribution_settings": "string",
+      "blacklisted": true
+   },
+   "urls": {
+      "descendants": "string",
+      "ancestors": "string",
+      "update": "string",
+      "show": "string",
+      "archive": "string",
+      "unarchive": "string"
+   }
+}
+```
+
+</CodeBlock>
+
+## [例](unblocklist-example)
+
+<CodeBlock title="cURL" highlight="abc123">
+
+```console
+$ curl \
+--header "Authorization: Token token={api_token}" \
+-L -X POST "https://api.adjust.com/dashboard/api/trackers/abc123/unblacklist"
+```
+
+</CodeBlock>
+<CodeBlock title="成功レスポンス">
+
+```json
+{
+   "label": "Twitter installs",
+   "token": "abc123",
+   "name": "Twitter installs",
+   "url": "https://app.adjust.com/abc123",
+   "path": "",
+   "has_subtrackers": true,
+   "archived": false,
+   "visible": true,
+   "attribution_partner": false,
+   "creative_token": null,
+   "adgroup_token": null,
+   "campaign_token": null,
+   "network_token": "abc123",
+   "click_url": "https://app.adjust.com/abc123",
+   "impression_url": "https://view.adjust.com/impression/abc123",
+   "allow_partner_linking": true,
+   "settings": {
+      "partner_id": null,
+      "partner_display_name": null,
+      "tracking_parameters": null,
+      "cost_data_parameters": null,
+      "cost_data": false,
+      "partner_cost_data_parameters": null,
+      "campaign_structure": null,
+      "additional_parameters": null,
+      "attribution_settings": null,
+      "blacklisted": false
+   },
+   "urls": {
+      "descendants": "/api/trackers/abc123/descendants.json",
+      "ancestors": "/api/trackers/abc123/ancestors.json",
+      "update": "/api/trackers/abc123.json",
+      "show": "/api/trackers/abc123.json",
+      "archive": "/api/trackers/abc123/archive.json",
+      "unarchive": "/api/trackers/abc123/unarchive.json"
+   }
+}
+```
+
+</CodeBlock>
