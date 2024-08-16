@@ -23,7 +23,6 @@ multiVersion: true
 1. 在您的 `AndroidManifest.xml` 文件中为活动指定 **scheme 名称** 。
 2. 向活动定义添加一个 `intent-filter` 节点。
 3. 在 `intent-filter` 节点中添加一个包含 **Scheme 名称** 的`android:scheme` 数据节点。
-4. 对于[安卓应用链接](https://help.adjust.com/zh/article/set-up-android-app-links)，添加`intent`过滤器，指定应用可以处理的 URL。在`intent`过滤器中纳入带`android:autoVerify="true"`属性的`data`元素。
 
 ### [示例](example)
 
@@ -46,27 +45,12 @@ multiVersion: true
       <data android:scheme="adjustExample" />
    </intent-filter>
 
-   <intent-filter android:autoVerify="true">
-    <action android:name="android.intent.action.VIEW" />
-    <category android:name="android.intent.category.DEFAULT" />
-    <category android:name="android.intent.category.BROWSABLE" />
-    <data android:scheme="http" android:host="insights.go.link" />
-    <data android:scheme="https" android:host="insights.go.link" />
-   </intent-filter>
-
 </activity>
 ```
 
 </CodeBlock>
-<Callout type="info">
 
-`insights.go.link` 是被定义为安卓应用链接的品牌化域名。
-
-</Callout>
-
-您的应用现在可以同时处理 URI 方案和安卓应用链接了。当用户点击的链接与已声明的 URI scheme 或安卓应用链接相匹配时，您的应用就会自动打开。
-
-如果用户点击了带有 `deep_link` 参数的连接，且该参数中包含您的 **Scheme 名称** ，那么活动就会触发。
+您的应用现在将可以处理 URI scheme。如果用户点击了带有 `deep_link` 参数的连接，且该参数中包含您的 **Scheme 名称** ，那么活动就会触发。
 
 <CodeBlock highlight="deep_link=adjustExample%3A%2F%2F">
 
@@ -75,6 +59,30 @@ https://app.adjust.com/abc123?deep_link=adjustExample%3A%2F%2F
 ```
 
 </CodeBlock>
+
+## [设置安卓应用链接](configure-android-app-links)
+
+对于[安卓应用链接](https://help.adjust.com/zh/article/set-up-android-app-links)，添加`intent`过滤器至您的`AndroidManifest.xml`文件，指定应用可以处理的 URL。在`intent`过滤器中纳入带`android:autoVerify="true"`属性的`data`元素。
+
+       <intent-filter android:autoVerify="true">
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="http" android:host="insights.go.link" />
+        <data android:scheme="https" android:host="insights.go.link" />
+       </intent-filter>
+
+<Callout type="info">
+
+`insights.go.link` 是被定义为安卓应用链接的品牌化域名。
+
+</Callout>
+
+您的应用现在可以处理安卓应用链接了。当有用户点击了带有`insights.go.link`域名的链接时，您的应用会自动打开。
+
+```html
+https://insights.go.link/login?adj_t=abc123
+```
 
 ## [访问深度链接信息](access-deep-link-information)
 
@@ -245,7 +253,7 @@ config.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListe
 <CodeBlock title="方法签名">
 
 ```java
-public static void processDeeplink(Uri url, Context context)
+public static void processDeeplink(AdjustDeeplink adjustDeeplink, Context context)
 ```
 
 </CodeBlock>
@@ -264,7 +272,8 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
    val intent = intent
    val data = intent.data
-   Adjust.processDeeplink(data, applicationContext)
+   val adjustDeeplink = AdjustDeeplink(data)
+   Adjust.processDeeplink(adjustDeeplink, applicationContext)
 }
 ```
 
@@ -279,8 +288,49 @@ protected void onCreate(Bundle savedInstanceState) {
 
     Intent intent = getIntent();
     Uri data = intent.getData();
-    Adjust.processDeeplink(data, getApplicationContext());
+    AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+    Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
 }
+```
+
+</Tab>
+</Tabs>
+
+## [获取最近解析链接](get-the-last-resolved-link)
+
+<CodeBlock title="方法签名">
+
+```java
+public static void getLastDeeplink(final Context context, final OnLastDeeplinkReadListener onLastDeeplinkReadListener)
+```
+
+</CodeBlock>
+
+您可以通过调用`Adjust.getLastDeeplink()`方法返回由`Adjust.processDeeplink()`或[`Adjust.processAndResolveDeepLink()`方法](/zh/sdk/android/features/short-links)解析的最近一个深度链接 URL。此方法会以深度链接对象的形式返回最近解析的深度链接。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+Adjust.getLastDeeplink(context) { deeplink ->
+   if (deeplink != null) {
+       Log.d("Example", deeplink.toString())
+   }
+}
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+Adjust.getLastDeeplink(context, new OnLastDeeplinkReadListener() {
+   @Override
+   public void onLastDeeplinkRead(Uri deeplink) {
+       if (deeplink != null) {
+           Log.d("Example", deeplink.toString());
+       }
+   }
+});
 ```
 
 </Tab>
@@ -322,7 +372,8 @@ public static void resolveLink(final String url,
 ```kotlin
 AdjustLinkResolution.resolveLink(url, arrayOf("example.com"), object : AdjustLinkResolution.AdjustLinkResolutionCallback {
    override fun resolvedLinkCallback(resolvedLink: Uri) {
-         Adjust.processDeeplink(resolvedLink, applicationContext)
+         val adjustDeeplink = AdjustDeeplink(resolvedLink)
+         Adjust.processDeeplink(adjustDeeplink, applicationContext)
    }
 })
 ```
@@ -334,7 +385,8 @@ AdjustLinkResolution.resolveLink(url, arrayOf("example.com"), object : AdjustLin
 AdjustLinkResolution.resolveLink(url, new String[]{"example.com"}, new AdjustLinkResolution.AdjustLinkResolutionCallback() {
    @Override
    public void resolvedLinkCallback(Uri resolvedLink) {
-      Adjust.processDeeplink(resolvedLink, getApplicationContext());
+      AdjustDeeplink adjustDeeplink = new AdjustDeeplink(resolvedLink);
+      Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
    }
 });
 ```
@@ -360,7 +412,6 @@ AdjustLinkResolution.resolveLink(url, new String[]{"example.com"}, new AdjustLin
 1. 在您的 `AndroidManifest.xml` 文件中为活动指定 **scheme 名称** 。
 2. 向活动定义添加一个 `intent-filter` 节点。
 3. 在 `intent-filter` 节点中添加一个包含 **Scheme 名称** 的`android:scheme` 数据节点。
-4. 对于[安卓应用链接](https://help.adjust.com/zh/article/set-up-android-app-links)，添加`intent`过滤器，指定应用可以处理的 URL。在`intent`过滤器中纳入带`android:autoVerify="true"`属性的`data`元素。
 
 ### [示例](example)
 
@@ -395,15 +446,8 @@ AdjustLinkResolution.resolveLink(url, new String[]{"example.com"}, new AdjustLin
 ```
 
 </CodeBlock>
-<Callout type="info">
 
-`insights.go.link` 是被定义为安卓应用链接的品牌化域名。
-
-</Callout>
-
-您的应用现在可以同时处理 URI 方案和安卓应用链接了。当用户点击的链接与已声明的 URI scheme 或安卓应用链接相匹配时，您的应用就会自动打开。
-
-如果用户点击了带有 `deep_link` 参数的连接，且该参数中包含您的 **Scheme 名称** ，那么活动就会触发。
+您的应用现在将可以处理 URI scheme。如果用户点击了带有 `deep_link` 参数的连接，且该参数中包含您的 **Scheme 名称** ，那么活动就会触发。
 
 <CodeBlock highlight="deep_link=adjustExample%3A%2F%2F">
 
@@ -413,7 +457,31 @@ https://app.adjust.com/abc123?deep_link=adjustExample%3A%2F%2F
 
 </CodeBlock>
 
-### [访问深度链接信息](access-deep-link-information)
+## [设置安卓应用链接](configure-android-app-links)
+
+对于[安卓应用链接](https://help.adjust.com/zh/article/set-up-android-app-links)，添加`intent`过滤器至您的`AndroidManifest.xml`文件，指定应用可以处理的 URL。在`intent`过滤器中纳入带`android:autoVerify="true"`属性的`data`元素。
+
+       <intent-filter android:autoVerify="true">
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="http" android:host="insights.go.link" />
+        <data android:scheme="https" android:host="insights.go.link" />
+       </intent-filter>
+
+<Callout type="info">
+
+`insights.go.link` 是被定义为安卓应用链接的品牌化域名。
+
+</Callout>
+
+您的应用现在可以处理安卓应用链接了。当有用户点击了带有`insights.go.link`域名的链接时，您的应用会自动打开。
+
+```html
+https://insights.go.link/login?adj_t=abc123
+```
+
+## [访问深度链接信息](access-deep-link-information)
 
 您可以指定 `deep_link` 参数内容的发送位置。为此，请在 `AndroidManifest.xml` 文件中设置活动的 `android:launchMode` 属性。
 

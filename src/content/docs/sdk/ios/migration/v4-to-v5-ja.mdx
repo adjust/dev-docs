@@ -5,12 +5,6 @@ slug: "ja/sdk/ios/migration/v4-to-v5"
 sidebar-position: 1
 ---
 
-<Callout type="important" title="オープンベータ版">
-
-SDK v5はオープンベータ版です。全ての機能は変更される可能性があります。
-
-</Callout>
-
 ## [事前準備](before-you-begin)
 
 SDK v5にアップデートする前に、以下を行ってください。
@@ -21,12 +15,6 @@ SDK v5にアップデートする前に、以下を行ってください。
    -  tvOS： **12\.0**
 
 ## [ベータ版のSDKをインストールする](install-the-sdk)
-
-<Callout type="important">
-
-SDK v5は、現在Cocoapodsでのみ利用可能です。
-
-</Callout>
 
 SDK v5の使用を開始するには、XCodeプロジェクトにdependencyとしてSDK v5を追加する必要があります。これを行うには、以下の手順に従ってください。
 
@@ -115,13 +103,19 @@ Adjust.initSdk(adjustConfig)
 NSString *yourAppToken = @"{YourAppToken}";
 NSString *environment = ADJEnvironmentSandbox;
 ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:yourAppToken
-                                             andEnvironment:environment];
+                                                  environment:environment];
 
 [Adjust initSdk:adjustConfig];
 ```
 
 </Tab>
 </Tabs>
+
+### [シグネチャー設定](signature-setup)
+
+SDK v5には、 [SDKシグネチャーライブラリ](https://help.adjust.com/ja/article/sdk-signature)が含まれています。これをテストするには[シグネチャーライブラリ連携ガイド](/ja/sdk/ios/integrations/signature-library)の手順に従ってください。
+
+シグネチャーの保護機能は、デフォルトで非アクティブになっています。これを有効化するには、[シグネチャーの検証](https://help.adjust.com/ja/article/sdk-signature#enforce-signature-validation)を有効化してください。
 
 ### [設定](configuration)
 
@@ -755,7 +749,7 @@ Adjust.removeGlobalPartnerParameters()
 </Tab>
 </Tabs>
 
-#### [サブスクリプション情報を送信する](send-subscriptions)
+#### [サブスクリプション情報の送信](send-subscriptions)
 
 <MinorVersion changed="v5">
 
@@ -868,7 +862,7 @@ Adjust.trackEvent(event)
 NSString *yourAppToken = @"{YourAppToken}";
 NSString *environment = ADJEnvironmentSandbox;
 ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:yourAppToken
-                                             andEnvironment:environment];
+                                                  environment:environment];
 
 [adjustConfig setEventDeduplicationIdsMaxSize:20];
 [Adjust initSdk:adjustConfig];
@@ -1065,7 +1059,7 @@ func adjustDeferredDeeplinkReceived(_ deeplink: URL?) -> Bool {
 
 <MinorVersion changed="v5">
 
-SDK v4では、[COPPAコンプライアンス](/ja/sdk/ios/features/privacy#coppa-compliance)は`ADJConfig`クラスを使用して設定され、SDKの初期化中に読み込まれます。つまり、SDKを初期化したら値を更新することはできません。
+SDK v4では、ブーリアン値で`ADJConfig`インスタンスの`setCoppaCompliantEnabled`メソッドを呼び出すことで、アプリをCOPPAに準拠していることをマークできます。
 
 </MinorVersion>
 <Tabs>
@@ -1085,22 +1079,20 @@ adjustConfig.setCoppaCompliantEnabled(true)
 </Tab>
 </Tabs>
 
-SDK v5では、このメソッドは`Adjust`クラスで利用可能です。つまり、`[Adjust enableCoppaCompliance]`を呼び出してCOPPAコンプライアンスを有効化するか、`[Adjust disableCoppaCompliance]`を呼び出してCOPPAコンプライアンスを無効化することで、いつでも設定を変更することができます。
+SDK v5では、このメソッドは`enableCoppaCompliance`に改名されています。このメソッドは引数を取りません。
 
 <Tabs>
 <Tab title="Swift" sync="swift">
 
 ```swift
-Adjust.enableCoppaCompliance()
-Adjust.disableCoppaCompliance()
+adjustConfig?.enableCoppaCompliance()
 ```
 
 </Tab>
 <Tab title="Objective-C" sync="objc">
 
 ```objc
-[Adjust enableCoppaCompliance];
-[Adjust disableCoppaCompliance];
+[adjustConfig enableCoppaCompliance];
 ```
 
 </Tab>
@@ -1187,10 +1179,10 @@ SDK v5でURL戦略を設定する方法については、以下の表をご確�
 | `ADJDataResidencyEU`   | `"eu.adjust.com"`                        | `true`                   | `true`                   |
 | `ADJDataResidencyTR`   | `"tr.adjust.com"`                        | `true`                   | `true`                   |
 | `ADJDataResidencyUS`   | `"us.adjust.com"`                        | `true`                   | `true`                   |
-| `ADJUrlStrategyChina`  | `"adjust.world"`。 `"adjust.com"`        | `true`                   | `false`                  |
-| `ADJUrlStrategyCn`     | `"adjust.cn"`。 `"adjust.com"`           | `true`                   | `false`                  |
+| `ADJUrlStrategyChina`  | `"adjust.world"`、 `"adjust.com"`        | `true`                   | `false`                  |
+| `ADJUrlStrategyCn`     | `"adjust.cn"`、 `"adjust.com"`           | `true`                   | `false`                  |
 | `ADJUrlStrategyCnOnly` | `"adjust.cn"`                            | `true`                   | `false`                  |
-| `ADJUrlStrategyIndia`  | `"adjust.net.in"`。 `"adjust.com"`       | `true`                   | `false`                  |
+| `ADJUrlStrategyIndia`  | `"adjust.net.in"`、 `"adjust.com"`       | `true`                   | `false`                  |
 
 </Table>
 
@@ -1380,7 +1372,7 @@ adjustConfig.deactivateSKAdNetworkHandling()
 ```objc
 ADJConfig *adjustConfig = [[ADJConfig alloc]
                                initWithAppToken:@"{YourAppToken}"
-                               andEnvironment:ADJEnvironmentSandbox];
+                               environment:ADJEnvironmentSandbox];
 
 [adjustConfig deactivateSKAdNetworkHandling];
 ```
@@ -1409,7 +1401,7 @@ adjustConfig.disableSkanAttribution()
 ```objc
 ADJConfig *adjustConfig = [[ADJConfig alloc]
                                initWithAppToken:@"{YourAppToken}"
-                               andEnvironment:ADJEnvironmentSandbox];
+                               environment:ADJEnvironmentSandbox];
 
 [adjustConfig disableSkanAttribution];
 ```
@@ -1492,10 +1484,10 @@ func adjustConversionValueUpdated(_ fineValue: NSNumber, coarseValue: String, lo
 
 SDK v5では、これら2つのメソッドは、型付けされていない辞書を返す単一の`adjustSkanUpdatedWithConversionData`メソッドに置き換えられました。現在サポートされているキーは以下の通りです：
 
--  `conversion_value`：更新されたconversion value
--  `coarse_value`：更新された[粗いconversion value](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
--  `lock_window`：コンバージョン期間が終了する前にポストバックを送信するかどうか
--  `error`：更新によって返されたエラーメッセージ
+-  `conversion_value`: The updated conversion value.
+-  `coarse_value`: The updated [coarse conversion value](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
+-  `lock_window`: Whether to send the postback before the conversion window ends
+-  `error`: Any error message returned by the update.
 
 <Tabs>
 <Tab title="Swift" sync="swift">

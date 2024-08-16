@@ -5,12 +5,6 @@ slug: "ko/sdk/ios/migration/v4-to-v5"
 sidebar-position: 1
 ---
 
-<Callout type="important" title="오픈 베타">
-
-SDK v5는 오픈 베타 상태입니다. 모든 기능은 변경될 수 있습니다.
-
-</Callout>
-
 ## [시작에 앞서](before-you-begin)
 
 SDK v5로 업데이트하기 전에 다음을 수행하시기 바랍니다.
@@ -21,12 +15,6 @@ SDK v5로 업데이트하기 전에 다음을 수행하시기 바랍니다.
    -  tvOS: **12\.0**
 
 ## [베타 SDK 설치](install-the-sdk)
-
-<Callout type="important">
-
-SDK v5는 현재 Cocoapods에서만 이용 가능합니다.
-
-</Callout>
 
 SDK v5를 사용하려면 XCode 프로젝트에서 디펜던시로 추가해야 합니다. 다음을 수행하시기 바랍니다.
 
@@ -115,13 +103,19 @@ Adjust.initSdk(adjustConfig)
 NSString *yourAppToken = @"{YourAppToken}";
 NSString *environment = ADJEnvironmentSandbox;
 ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:yourAppToken
-                                             andEnvironment:environment];
+                                                  environment:environment];
 
 [Adjust initSdk:adjustConfig];
 ```
 
 </Tab>
 </Tabs>
+
+### [서명 설정](signature-setup)
+
+SDK v5는 [SDK Signature 라이브러리](https://help.adjust.com/ko/article/sdk-signature) 를 포함합니다. 이를 테스트하려면 [Signature 라이브러리 연동 가이드](/ko/sdk/ios/integrations/signature-library) 에 나온 테스트 단계를 수행하시기 바랍니다.
+
+서명 보호는 기본 설정에 따라 비활성화되어 있습니다. 이를 활성화하려면 [서명 검증을 시행](https://help.adjust.com/ko/article/sdk-signature#enforce-signature-validation) 해야 합니다.
 
 ### [구성](configuration)
 
@@ -868,7 +862,7 @@ Adjust.trackEvent(event)
 NSString *yourAppToken = @"{YourAppToken}";
 NSString *environment = ADJEnvironmentSandbox;
 ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:yourAppToken
-                                             andEnvironment:environment];
+                                                  environment:environment];
 
 [adjustConfig setEventDeduplicationIdsMaxSize:20];
 [Adjust initSdk:adjustConfig];
@@ -1065,7 +1059,7 @@ func adjustDeferredDeeplinkReceived(_ deeplink: URL?) -> Bool {
 
 <MinorVersion changed="v5">
 
-SDK v4에서는 [COPPA 준수](/ko/sdk/ios/features/privacy#coppa-compliance)가 `ADJConfig` 클래스를 사용하여 설정되며 SDK 초기화 중에 읽히게 됩니다. 따라서 SDK가 초기화된 후에는 해당 값을 업데이트할 수 없습니다.
+SDK v4에서는 부울 값과 함께 `ADJConfig` 인스턴스의 `setCoppaCompliantEnabled` 메서드를 호출하여 앱을 COPPA 준수로 표시할 수 있습니다.
 
 </MinorVersion>
 <Tabs>
@@ -1085,22 +1079,20 @@ adjustConfig.setCoppaCompliantEnabled(true)
 </Tab>
 </Tabs>
 
-SDK v5에서는 이 메서드를 `Adjust` 클래스에서 이용할 수 있습니다. 따라서 COPPA 준수 활성화를 위해 `[Adjust enableCoppaCompliance]`를 호출하거나 COPPA 준수 비활성화를 위해 `[Adjust disableCoppaCompliance]`를 호출하여 언제든지 설정을 변경할 수 있습니다.
+SDK v5에서는 명확성을 위해 이 메서드의 이름이 `enableCoppaCompliance`로 변경되었습니다. 이 메서드는 인수를 사용하지 않습니다.
 
 <Tabs>
 <Tab title="Swift" sync="swift">
 
 ```swift
-Adjust.enableCoppaCompliance()
-Adjust.disableCoppaCompliance()
+adjustConfig?.enableCoppaCompliance()
 ```
 
 </Tab>
 <Tab title="Objective-C" sync="objc">
 
 ```objc
-[Adjust enableCoppaCompliance];
-[Adjust disableCoppaCompliance];
+[adjustConfig enableCoppaCompliance];
 ```
 
 </Tab>
@@ -1380,7 +1372,7 @@ adjustConfig.deactivateSKAdNetworkHandling()
 ```objc
 ADJConfig *adjustConfig = [[ADJConfig alloc]
                                initWithAppToken:@"{YourAppToken}"
-                               andEnvironment:ADJEnvironmentSandbox];
+                               environment:ADJEnvironmentSandbox];
 
 [adjustConfig deactivateSKAdNetworkHandling];
 ```
@@ -1409,7 +1401,7 @@ adjustConfig.disableSkanAttribution()
 ```objc
 ADJConfig *adjustConfig = [[ADJConfig alloc]
                                initWithAppToken:@"{YourAppToken}"
-                               andEnvironment:ADJEnvironmentSandbox];
+                               environment:ADJEnvironmentSandbox];
 
 [adjustConfig disableSkanAttribution];
 ```
@@ -1492,10 +1484,10 @@ func adjustConversionValueUpdated(_ fineValue: NSNumber, coarseValue: String, lo
 
 SDK v5에서는 이 두 메서드가 단일 `adjustSkanUpdatedWithConversionData` 메서드로 교체되었으며 이 메서드는 유형이 지정되지 않은 딕셔너리를 반환합니다. 현재 지원되는 키는 다음과 같습니다.
 
--  `conversion_value`: 업데이트된 전환값
--  `coarse_value`: 업데이트된 [coarse 전환값](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
--  `lock_window`: 전환값 윈도우가 종료되기 전에 포스트백을 전송할지 여부
--  `error`: 업데이트로 반환된 모든 오류 메시지
+-  `conversion_value`: The updated conversion value.
+-  `coarse_value`: The updated [coarse conversion value](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
+-  `lock_window`: Whether to send the postback before the conversion window ends
+-  `error`: Any error message returned by the update.
 
 <Tabs>
 <Tab title="Swift" sync="swift">
