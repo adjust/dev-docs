@@ -1,0 +1,92 @@
+---
+title: "Partner ad spend push API"
+description: "The Partner ad spend API allows you to send ad spend information associated with a campaign."
+category-title: Partner ad spend API
+slug: en/api/ad-spend-api
+sidebar-position: 2
+---
+
+The Partner ad spend API allows you to send ad spend information associated with a campaign. Adjust accepts ad spend data for an engagement **up to seven days** after the engagement occurs.
+
+## [Cost ID](cost-id)
+
+**Cost ID**
+
+: A unique ad spend engagement identifier value **between 12 and 256 characters** in length.
+
+You MUST include a unique **Cost ID** associated with a campaign with each call you make to the Partner ad spend API. Adjust uses the Cost ID to match ad spend data you send with a click or impression.
+
+The Cost ID MUST be unique. Adjust RECOMMENDS using a Universally Unique Identifier (UUID) or prefixing your ID with your company's name. For example: `network_name_848dsf4939fgwjn028erg4`
+
+You may use your pre-existing `click_id` or `impression_id`. If you don't generate your own click or impression IDs, you can combine two or more placeholders to form it. For example for Cost Per Impression (CPI), you could combine the user’s IDFA (ID For Advertisers) and the app ID.
+
+### [Measure CPM with Adjust](measure-cpm-with-adjust)
+
+To send CPM (Cost Per Mille) data to Adjust, add a `cost_id` parameter to your impression URL with the same value as the the `cost_id` you send in your Partner ad spend API calls. You MUST send CPM with **each** impression when measuring CPM.
+
+## [Send ad spend data](send-ad-spend-data)
+
+<CodeBlock title="Endpoint" highlight="/cost">
+
+```http
+POST https://app.adjust.com/cost
+```
+
+</CodeBlock>
+
+Send a POST request to the `/cost` endpoint to send ad spend information to Adjust.
+
+### [Parameters](parameters)
+
+The following parameters MUST be sent in the **query parameters** of your API call. All parameters MUST be sent in **lowercase**.
+
+`cost_type` (`String`)
+
+: The pricing model. For example: `cpc`, `cpi`, `cpe`.
+
+`cost_currency` (`String`)
+
+: The currency code of your ad spend information. This MUST be formatted as an [ISO 4217](https://www.iban.com/currency-codes) currency code. See the [full list of supported currencies](https://help.adjust.com/en/article/supported-currencies).
+
+`cost_id` (`String`)
+
+: Your unique Cost ID. See the [Cost ID section above](#cost-id) for more information.
+
+`tag` (`String`)
+
+: A label used for logging and debugging. This value MUST be a maximum of 128 characters.
+
+### [Example](example)
+
+<CodeBlock title="cURL" highlight="cost_type, cost_currency, cost_amount, cost_id, tag">
+
+```console
+$ curl -X POST https://app.adjust.com/cost \
+-d "cost_type=cpi&cost_currency=usd&cost_amount=2&cost_id=abc123_company_name_test_1&tag=company_name_test"
+```
+
+</CodeBlock>
+
+## [Responses](responses)
+
+`200 Success`
+
+: Ad spend information was submitted to Adjust.
+
+`400 Bad request`
+
+: Your request isn't properly formatted. Make sure to include [all required parameters](#parameters).
+
+`401 Unauthorized`
+
+: Your request couldn't be processed because you didn't provide required authentication information. Contact wizards@adjust.com to set up your partner credentials.
+
+`403 Forbidden`
+
+: Your provided credential doesn't have permission to post the information you've sent. Contact wizards@adjust.com to troubleshoot the issue.
+
+## [Test your integration](test-your-integration)
+
+Once you've configured your server to send the required parameters, reach out to wizards@adjust.com. Adjust provides you with a series of tests. You can check for discrepancies in the different ad spend types and address any issues before setting the integration live. Adjust also conducts tests on the Adjust API to ensure the API integration functions as expected.
+
+Once testing is complete, Adjust adds you to a [list of integrated ad spend partners](https://help.adjust.com/en/article/ad-spend-api-integrations#supported-partners).
