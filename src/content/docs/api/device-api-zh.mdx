@@ -1,0 +1,320 @@
+---
+title: "设备 API"
+description: "使用设备 API 查看设备信息，并从 Adjust 中清除设备历史记录以进行测试。"
+category-title: "设备 API"
+slug: "zh/api/device-api"
+sidebar-position: 6
+---
+
+使用设备 API 查看设备信息，并从 Adjust 中清除设备历史记录以进行测试。
+
+## [工作原理](how-it-works)
+
+1. **认证您的调用**
+
+   要使用设备 API 终端，您首先需要获取 Adjust API 识别码。按照此[认证文档](/zh/api/device-api/authentication)中的说明进行操作，了解如何在 API 中应用识别码。
+
+2. **查询设备详情**
+
+   使用[查询设备终端](/zh/api/device-api/inspect)来查看设备信息及关联用户活动。
+
+3. **清除设备**
+
+   使用[忘记设备终端](/zh/api/device-api/forget)来从 Adjust 清除设备历史。在需要清除设备数据来测试同一设备上的多次安装时，可以使用此功能。
+
+## [认证](authentication)
+
+要使用设备 API，您需要持有 [bearer token](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication)。您可以按照本文中的步骤在 Adjust 控制面板中获取此信息。
+
+### [查找 Adjust API 识别码](find-your-adjust-api-token)
+
+开始进行 API 调用前，您首先需要找到 Adjust API 识别码。您可以在 Adjust 控制面板中找到 Adjust API 识别码。
+
+<Callout type="important">
+
+如果您配置了 SSO，那么就无法在 Adjust 控制面板中找到 API 识别码。请联系您的 Adjust 代表或发送邮件至[support@adjust.com](mailto:support@adjust.com)获取该信息。
+
+</Callout>
+
+您的 Adjust API 识别码位于个人 **档案** 中。要找到该信息，请按照下列步骤操作。
+
+1. 选择左下角的设置图标。
+2. 选择 **账户设置** 。这会打开账户设置页面。
+3. 选择 **我的档案** 标签页。
+4. 您的 **API 识别码** 会显示在 **用户详情** 中。选择复制按钮来将识别码复制到您的系统剪贴板。
+
+### [重置 Adjust API 识别码](reset-your-adjust-api-token)
+
+您可以随时重置 Adjust API 识别码。重置后，旧的识别码将失效。也就是说，任何通过旧识别码发送的请求都将无效。如果您重置了 Adjust API 识别码，那么就需要在使用时对其进行更新。
+
+1. 选择左下角的设置图标。
+2. 选择 **账户设置** 。这会打开账户设置页面。
+3. 选择 **我的档案** 标签页。
+4. 您的 **API 识别码** 会显示在 **用户详情** 中。
+5. 选择 **重置 API 识别码** 。此时会出现一个弹窗。
+6. 在窗口中输入账户密码并选择 **重置** 来重置您的 API 识别码。窗口关闭，屏幕右上角出现确认信息。
+7. 选择 **API 识别码** 旁的复制按钮来将识别码复制到您的系统剪贴板。
+
+## [查询设备终端](inspect-device)
+
+使用查询设备终端来查看设备信息。提供您的应用 ID 和设备的广告 ID，返回与应用相关的设备和链接信息。
+
+<Tabs>
+<Tab title="v2" sync="v2">
+
+<CodeBlock title="终端" highlight="/inspect_device">
+
+```http
+GET https://api.adjust.com/device_service/api/v2/inspect_device
+```
+
+</CodeBlock>
+
+</Tab>
+<Tab title="v1" sync="v1">
+
+<CodeBlock title="终端" highlight="/inspect_device">
+
+```http
+GET https://api.adjust.com/device_service/api/v1/inspect_device
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
+
+## [调取设备信息](fetch-device-information)
+
+以 JSON 对象的形式返回设备信息。
+
+<Table>
+
+| 参数               | 数据类型 | 位置 | 描述                                                       |
+| ------------------ | -------- | ---- | ---------------------------------------------------------- |
+| `app_token`\*      | `String` | 查询 | 应用的 12 位数标识符                                       |
+| `advertising_id`\* | `String` | 查询 | 设备的唯一广告 ID。请查看下方[广告 ID](#advertising-ids)。 |
+
+</Table>
+
+<Accordion title="广告 ID">
+
+-  `idfa` \(iOS 设备\)
+-  `gps_adid` \(Google 广告 ID\)
+-  `android_id` \(Android ID\)
+-  `fire_adid` \(Amazon Fire ID\)
+-  `win_adid` \(Windows 广告 ID\)
+
+</Accordion>
+
+<Tabs>
+<Tab title="v2" sync="v2">
+
+<CodeBlock title="响应格式">
+
+```json
+{
+   "Adid": "string",
+   "AdvertisingId": "string",
+   "Tracker": "string",
+   "TrackerName": "string",
+   "Environment": "string",
+   "ClickTime": "date-time",
+   "InstallTime": "date-time",
+   "LastSessionTime": "date-time",
+   "LastEventsInfo": {
+      "{event_id}": {
+         "name": "string",
+         "time": "date-time"
+      },
+      "{event_id}": {
+         "name": "string",
+         "time": "date-time"
+      },
+      "{event_id}": {
+         "name": "string",
+         "time": "date-time"
+      }
+   },
+   "LastSdkVersion": "ios4.37.2",
+   "State": "string"
+}
+```
+
+</CodeBlock>
+
+</Tab>
+<Tab title="v1" sync="v1">
+
+<CodeBlock title="响应格式">
+
+```json
+{
+   "Adid": "string",
+   "AdvertisingId": "string",
+   "Tracker": "string",
+   "TrackerName": "string",
+   "ClickTime": "date-time",
+   "InstallTime": "date-time",
+   "LastSessionTime": "date-time",
+   "LastEventTimes": {
+      "string": "date-time",
+      "string": "date-time",
+      "string": "date-time",
+      "string": "date-time"
+   },
+   "State": "string"
+}
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
+
+## [示例](inspect-device-example)
+
+<Tabs>
+<Tab title="v2" sync="v2">
+
+<CodeBlock title="cURL" highlight="advertising_id=1234-5678-9012-3456, app_token=gwzpeepw8uf8">
+
+```console
+$ curl \
+--header "Authorization: Bearer ask43jskdp2tg2hg87" \
+-L -X GET "https://api.adjust.com/device_service/api/v2/inspect_device?advertising_id=1234-5678-9012-3456&app_token=gwzpeepw8uf8"
+```
+
+</CodeBlock>
+<CodeBlock title="成功响应">
+
+```json
+{
+   "Adid": "acf8534f2f052395e617a38730682ccc",
+   "AdvertisingId": "1234-5678-9012-3456",
+   "Tracker": "abc123",
+   "TrackerName": "Organic",
+   "FirstTracker": "zr5vueb",
+   "FirstTrackerName": "Organic",
+   "Environment": "sandbox",
+   "ClickTime": "0001-01-01T00:00:00Z",
+   "InstallTime": "2015-08-19T03:42:03Z",
+   "LastSessionTime": "2017-07-29T17:29:17Z",
+   "LastEventsInfo": {
+      "kgfcul": {
+         "name": "Copy IDFA",
+         "time": "2024-07-18T10:01:16Z"
+      },
+      "wz9qqz": {
+         "name": "Accept Terms",
+         "time": "2024-07-01T14:13:47Z"
+      },
+      "z3f773": {
+         "name": "Copy IDFV",
+         "time": "2024-07-01T19:01:39Z"
+      }
+   },
+   "LastSdkVersion": "ios4.37.2",
+   "State": "installed"
+}
+```
+
+</CodeBlock>
+
+</Tab>
+<Tab title="v1" sync="v1">
+
+<CodeBlock title="cURL" highlight="advertising_id=1234-5678-9012-3456, app_token=gwzpeepw8uf8">
+
+```console
+$ curl \
+--header "Authorization: Bearer ask43jskdp2tg2hg87" \
+-L -X GET "https://api.adjust.com/device_service/api/v1/inspect_device?advertising_id=1234-5678-9012-3456&app_token=gwzpeepw8uf8"
+```
+
+</CodeBlock>
+<CodeBlock title="成功响应">
+
+```json
+{
+   "Adid": "acf8534f2f052395e617a38730682ccc",
+   "AdvertisingId": "1234-5678-9012-3456",
+   "Tracker": "abc123",
+   "TrackerName": "Organic",
+   "ClickTime": "0001-01-01T00:00:00Z",
+   "InstallTime": "2015-08-19T03:42:03Z",
+   "LastSessionTime": "2017-07-29T17:29:17Z",
+   "LastEventTimes": {
+      "a1a1a1": "2017-07-29T17:29:55Z",
+      "b2b2b2": "2017-07-29T17:29:21Z",
+      "c3c3c3": "2017-07-29T17:29:38Z",
+      "4d4d4d": "2017-07-29T17:29:58Z"
+   },
+   "State": "installed"
+}
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
+
+## [清除设备终端](forget-device)
+
+通过 Adjust 清除设备终端来清除 Adjust 上的设备历史记录，并在同一设备上测试多个安装。
+
+<Callout type="seealso" title="操作前须知">
+
+您需要拥有 **管理员** 或 **编辑员** 权限才能遗忘设备。如果您拥有 **自定义编辑员** 权限，则需要对目标应用有编辑权限。要了解更多信息，请查看[用户权限](https://help.adjust.com/zh/article/users)。
+
+</Callout>
+<CodeBlock title="终端" highlight="/forget_device">
+
+```http
+POST https://api.adjust.com/device_service/api/v1/forget_device
+```
+
+</CodeBlock>
+
+## [清除设备](forget-a-device)
+
+从 Adjust 清除设备信息。
+
+<Table>
+
+| 参数          | 数据类型 | 位置 | 描述                 |
+| ------------- | -------- | ---- | -------------------- |
+| `app_token`\* | `String` | 数据 | 应用的 12 位数标识符 |
+| `adid`\*      | `String` | 数据 | 设备的 Adjust ID     |
+
+</Table>
+
+## [示例](example)
+
+<CodeBlock title="cURL" highlight="gwzpeepw8uf8, acf8534f2f052395e617a38730682ccc">
+
+```console
+$ curl \
+--header "Authorization: Token token=ask43jskdp2tg2hg87" \
+--location --request POST "https://api.adjust.com/device_service/api/v1/forget_device" \
+--data "adid=acf8534f2f052395e617a38730682ccc&app_token=gwzpeepw8uf8"
+```
+
+</CodeBlock>
+<CodeBlock title="成功响应">
+
+```http
+200: Forgot device
+```
+
+</CodeBlock>
+
+### [响应代码](response-codes)
+
+<Table>
+
+| 响应  | 消息          | 描述     |
+| ----- | ------------- | -------- |
+| `200` | Forgot device | 成功响应 |
+
+</Table>
