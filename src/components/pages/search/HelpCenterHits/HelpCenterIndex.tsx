@@ -1,6 +1,6 @@
 import { Configure, InstantSearch } from "react-instantsearch";
 import { useEffect, useState, type FC } from "react";
-import algoliasearch from "algoliasearch";
+import { algoliasearch } from "algoliasearch";
 
 import { getSearchParams } from "../utils";
 import HelpCenterHits from "./HelpCenterHits";
