@@ -8,7 +8,7 @@ import expressiveCode from "astro-expressive-code";
 import remarkReplaceVersions from "./src/integrations/remarkReplaceVersions";
 import { fetchVersions } from "./src/integrations/fetchSdkVersions";
 import rehypeExternalLinks from "rehype-external-links";
-import remarkHeaderLinkToId from "./src/integrations/remarkHeaderLinkToId";
+import remarkCustomHeadingId from "remark-custom-heading-id";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import redirectList from "./src/redirects.json";
 import {
@@ -75,7 +75,7 @@ export default defineConfig({
   markdown: {
     remarkPlugins: [
       [remarkReplaceVersions, versions],
-      remarkHeaderLinkToId,
+      remarkCustomHeadingId,
       remarkDefinitionList,
     ],
     remarkRehype: {
