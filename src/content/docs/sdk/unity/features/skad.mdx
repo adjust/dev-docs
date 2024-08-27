@@ -2,7 +2,140 @@
 title: Set up SKAdNetwork and conversion values
 description: Configure SKAdNetwork features for your iOS apps.
 slug: en/sdk/unity/features/skad
+multiVersion: true
 ---
+
+<SdkVersion version="v5">
+
+<Callout type="important">
+
+This feature is only available on devices running iOS 14 and above.
+
+</Callout>
+
+StoreKit Ad Network (SKAdNetwork) is Apple's attribution framework for app install and reinstall attribution. The SKAdNetwork workflow goes like this:
+
+1. Apple gathers attribution information and notifies the relevant ad network.
+2. The network sends a postback with this information to Adjust.
+3. Adjust displays SKAdNetwork data in [Datascape](https://help.adjust.com/en/suite/article/datascape).
+
+## [Disable SKAdNetwork communication](disable-skadnetwork-communication)
+
+<CodeBlock title="Property declaration">
+
+```cs
+public bool? IsSkanAttributionEnabled { get; set; }
+```
+
+</CodeBlock>
+
+The Adjust SDK communicates with SKAdNetwork by default. The SDK registers for SKAdNetwork attribution upon initialization.
+
+You can control this behavior by setting the `IsSkanAttributionEnabled` property of your `AdjustConfig` instance to a `bool` value.
+
+<Callout type="important">
+
+You must set this property _before_ initializing the Adjust SDK.
+
+</Callout>
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
+//...
+adjustConfig.IsSkanAttributionEnabled = false;
+//...
+Adjust.InitSdk(adjustConfig);
+```
+
+## [Listen for changes to conversion values](listen-for-changes-to-conversion-values)
+
+<CodeBlock title="Property declaration">
+
+```cs
+public Action<Dictionary<string, string>> SkanUpdatedDelegate { get; set; }
+```
+
+</CodeBlock>
+
+If you use Adjust to manage conversion values, the Adjust's servers send conversion value updates to the SDK. You can set up a delegate function to listen for these changes assigning a function to the `SkanUpdatedDelegate` property of your `AdjustConfig` instance.
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
+//...
+adjustConfig.SkanUpdatedDelegate = SkanUpdatedDelegate;
+//...
+Adjust.InitSdk(adjustConfig);
+```
+
+The delegate function receives a postback from SKAdNetwork with the following properties:
+
+<Table autoWidth="1,2">
+
+| Arguments      | Description                                                                                                                                                                                                                                                                                              |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fine_value`   | The conversion value sent by Adjust's servers                                                                                                                                                                                                                                                            |
+| `coarse_value` | The coarse conversion value. This value is used if your app doesn't have sufficient installs to reach the privacy threshold.<ul><li>`none`</li><li>`low`</li><li>`medium`</li><li>`high`</li></ul><br/>Apple sends none whenever none of the conditions that are set for low, medium, and high were met. |
+| `lock_window`  | Whether to send the postback before the conversion window ends. `1` indicates the postback will be sent before the conversion window ends.<br/>Defaults to `0` in SKAdNetwork 4.0 postbacks and `nil` in older SKAdNetwork versions.                                                                     |
+| `error`        | Contains the error message if an error occured.                                                                                                                                                                                                                                                          |
+
+</Table>
+
+### [Example](example-1)
+
+This example shows how to log the the fine conversion value, the coarse conversion value, and whether the SKAdNetwork postback is set to send before the conversion window ends.
+
+```cs
+using com.adjust.sdk;
+
+public class ExampleGUI : MonoBehaviour {
+    void OnGUI() {
+        if (GUI.Button(new Rect(0, 0, Screen.width, Screen.height), "callback")) {
+            AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
+            adjustConfig.LogLevel = AdjustLogLevel.Verbose;
+            adjustConfig.SkanUpdatedDelegate = SkanUpdatedDelegate;
+
+            Adjust.InitSdk(adjustConfig);
+        }
+
+
+      private void SkanUpdatedDelegate(Dictionary<string,string> response) {
+         Debug.Log("Conversion value updated. Callback received");
+         Debug.Log("Conversion value: " + response["fine_value"]);
+         Debug.Log("Coarse conversion value: " + response["coarse_value"]);
+         Debug.Log ("Will send before conversion value window ends: " response["lock_window"]);
+         Debug.Log("Error message: " response["error"]);
+      }
+   }
+};
+```
+
+## [Set up direct install postbacks](set-up-direct-install-postbacks)
+
+<Callout type="note">
+
+Direct install postbacks contain only SKAdNetwork information. Information such as campaign data isn't included in these postbacks.
+
+</Callout>
+
+You can configure your app to send a copy of winning SKAdNetwork callbacks to Adjust. This enables you to use SKAdNetwork information in your analytics.
+
+To set up direct install postbacks, you need to add the Adjust callback URL to your `Info.plist` file:
+
+1. Select **Info.plist** in the Project navigator in Xcode.
+2. Select the Add button beside a key in the property list editor and press `Return`.
+3. Enter _`NSAdvertisingAttributionReportEndpoint`_ as the key name.
+4. Set the **Type** to **String** in the pop up menu.
+5. Enter the address _`https://adjust-skadnetwork.com`_.
+
+<Callout type="seealso">
+
+See Apple's guide on [Configuring an Advertised App](https://developer.apple.com/documentation/storekit/skadnetwork/configuring_an_advertised_app) for more information.
+
+</Callout>
+
+</SdkVersion>
+
+<SdkVersion version="v4">
 
 <Callout type="important">
 
@@ -165,13 +298,14 @@ public class ExampleGUI : MonoBehaviour {
         }
 
 
-   private void ConversionValueUpdatedCallback(int conversionValue, string coarseValue, bool lockWindow) {
-      Debug.Log("Conversion value updated. Callback received");
-      Debug.Log("Conversion value: " + fineValue);
-      Debug.Log("Coarse conversion value: " + coarseValue);
-      Debug.Log ("Will send before conversion value window ends: " lockWindow);
+      private void ConversionValueUpdatedCallback(int conversionValue, string coarseValue, bool lockWindow) {
+         Debug.Log("Conversion value updated. Callback received");
+         Debug.Log("Conversion value: " + fineValue);
+         Debug.Log("Coarse conversion value: " + coarseValue);
+         Debug.Log ("Will send before conversion value window ends: " lockWindow);
+      }
    }
-}
+};
 ```
 
 ## [Set up direct install postbacks](set-up-direct-install-postbacks)
@@ -197,3 +331,5 @@ To set up direct install postbacks, you need to add the Adjust callback URL to y
 See Apple's guide on [Configuring an Advertised App](https://developer.apple.com/documentation/storekit/skadnetwork/configuring_an_advertised_app) for more information.
 
 </Callout>
+
+</SdkVersion>

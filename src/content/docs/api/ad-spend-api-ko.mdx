@@ -1,0 +1,104 @@
+---
+title: "파트너 광고 비용 푸시 API"
+description: "파트너 광고 비용 API를 사용하여 캠페인과 관련된 광고 비용 정보를 전송할 수 있습니다."
+category-title: "파트너 광고 비용 API"
+slug: "ko/api/ad-spend-api"
+sidebar-position: 2
+---
+
+파트너 광고 비용 API를 사용하여 캠페인과 관련된 광고 비용 정보를 전송할 수 있습니다. API는 측정을 위해 캠페인과 관련된 cost id가 필요합니다.
+
+광고 비용 API를 성공적으로 설정하는 방법:
+
+1. 비용 ID 설정하기
+
+   **비용 ID** 는 Adjust가 클릭 또는 노출과 비용 데이터를 매칭할 수 있도록 해주는 고유한 비용 인게이지먼트 식별자입니다. 설정 관련 상세 정보는 [비용 ID 설정 문서](/ko/api/ad-spend-api/cost-id)를 참조하시기 바랍니다.
+
+2. API 연동 설정하기
+
+   Adjust는 `/cost` 엔드포인트를 통해 광고 비용 데이터를 받습니다. POST 요청 설정에 관한 자세한 정보는 [광고 비용 엔드포인트 문서](/ko/api/ad-spend-api/cost-endpoint)의 설명을 참조하시기 바랍니다.
+
+3. Adjust와의 연동 테스트 및 최종 확인하기
+
+   필수 파라미터를 보낼 수 있도록 서버 구성이 완료되면 [wizards@adjust.com](mailto:wizards@adjust.com)으로 연락하시기 바랍니다. Adjust가 이후 연동을 위한 테스트를 시작합니다.
+
+   Adjust는 여러 차례의 테스트를 제공합니다. 이를 통해 연동이 라이브되기 전에 각각의 비용 유형 내 불일치를 확인하고, 문제를 파악할 수 있습니다. Adjust는 또한 Adjust API 테스트를 통해 API 연동이 올바르게 작동하는지 확인합니다.
+
+   테스트 결과가 만족스러운 경우, Adjust는 고객사를 공식 Adjust 광고 비용 API 파트너 목록에 광고 비용 연동 파트너로 추가합니다.
+
+## [비용 ID](cost-id)
+
+**비용 ID** 는 12~256자 길이의 고유한 비용 인게이지먼트 식별자입니다. Adjust는 `cost_id` 파라미터를 사용하여 수신한 비용 데이터를 클릭/노출과 매칭합니다.
+
+광고 비용 API와 `cost_id`를 사용할 때 고려해야 할 사항은 다음과 같습니다.
+
+-  Adjust의 다른 네트워크 파트너 중 하나의 값과 매칭하는 것을 방지하려면 `cost_id` 값이 반드시 고유해야 합니다. Adjust는 UUID\(Universally Unique Identifier, 범용 고유 식별자\) 또는 회사 이름을 ID의 접두사로 사용하는 것을 권장합니다. 예: `network_name_848dsf4939fgwjn028erg4`.
+-  기존의 `click_id` 또는 `impression_id`도 사용이 가능합니다. 고유의 클릭 또는 노출 ID를 생성하지 않은 경우, 2개 이상의 플레이스홀더를 조합하여 ID를 만들 수 있습니다. 예를 들어 CPI의 경우, 사용자의 IDFA\(광고주용 ID\)와 앱 ID를 조합합니다.
+
+### Adjust를 통한 CPM 측정
+
+CPM\(1,000회당 비용\) 데이터를 Adjust로 전송하려면 노출 URL을 통해 `cost_id`를 전송하고, 이를 광고 비용 API 콜에서 참조합니다. 각 노출별로 CPM을 전송하시기 바랍니다.
+
+## [엔드포인트](endpoint)
+
+<CodeBlock title="엔드포인트" highlight="/cost">
+
+```http
+POST https://app.adjust.com/cost
+```
+
+</CodeBlock>
+
+### [POST 요청](post-request)
+
+POST 메서드는 `cost_id`를 통해 캠페인의 비용 정보를 전송합니다.
+
+<Callout type="important">
+
+광고 비용 API는 대문자를 처리할 수 없습니다. 모든 파라미터를 소문자로 입력하시기 바랍니다.
+
+</Callout>
+
+#### [파라미터](parameters)
+
+<Table search>
+
+| 파라미터          | 데이터 유형 | In    | 설명                                                                                                                                                            |
+| ----------------- | ----------- | ----- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `cost_type`\*     | `String`    | Query | 가격 모델. `cpc` \| `cpi` \| `cpe` \| `cpm`                                                                                                                     |
+| `cost_currency`\* | `String`    | Query | [ISO 4217](https://www.iban.com/currency-codes) 통화 코드. [지원되는 통화 목록](https://help.adjust.com/ko/article/supported-currencies)을 참조하시기 바랍니다. |
+| `cost_id`\*       | `String`    | Query | 인게이지먼트에 대한 매칭 비용 정보의 고유 값이며, 12~256자 사이여야 합니다.                                                                                     |
+| `tag`\*           | `String`    | Query | 로그와 디버그에 사용한 레이블로, 최대 128자입니다.                                                                                                              |
+
+</Table>
+
+## [예시](example)
+
+<Callout type="tip">
+
+요청 형식에 대한 문의가 있을 경우, 연동 담당 팀\([wizards@adjust.com](mailto:wizards@adjust.com)\)으로 문의하시기 바랍니다.
+
+</Callout>
+<CodeBlock title="cURL" highlight="cost_type, cost_currency, cost_amount, cost_id, tag">
+
+```console
+$ curl -X POST https://app.adjust.com/cost \
+-d "cost_type=cpi&cost_currency=usd&cost_amount=2&cost_id=abc123_company_name_test_1&tag=company_name_test"
+```
+
+</CodeBlock>
+
+## [응답](responses)
+
+다음은 발생 가능한 서버 응답 목록입니다.
+
+<Table>
+
+| 코드  | 응답                |
+| ----- | ------------------- |
+| `200` | Successful response |
+| `400` | Bad request         |
+| `401` | Unauthorized        |
+| `403` | Forbidden           |
+
+</Table>

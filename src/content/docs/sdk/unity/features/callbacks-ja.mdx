@@ -2,7 +2,219 @@
 title: "コールバックの設定"
 description: "SDKがAdjustに情報を送信する時に関数をトリガーするコールバックを設定します。"
 slug: "ja/sdk/unity/features/callbacks"
+multiVersion: true
 ---
+
+<SdkVersion version="v5">
+
+SDKがAdjustに情報を送信する時に関数をトリガーするコールバックを設定します。コールバックは **セッション** と **イベント** に対して設定できます。
+
+<Callout type="important">
+
+SDKを初期化する **前** にコールバックパラメーターを登録することが必要です。
+
+</Callout>
+
+## [セッションコールバック](session-callbacks)
+
+SDKがセッション情報を送信した時に関数をトリガーする、セッションコールバックを設定します。 **Success** コールバックと **failure** コールバックが作成できます。 **Success** コールバックは、SDKが情報をAdjustのサーバーに送信する時にトリガーします。 **Failure** コールバックは、SDKが情報を送信している間に問題が発生した際にトリガーします。
+
+セッションコールバックは、レスポンス データ オブジェクトにアクセスできます。そのプロパティをコールバック関数内で使用することが可能です。
+
+<Table>
+
+| プロパティ     | データタイプ                 | 説明                                                 |
+| -------------- | ---------------------------- | ---------------------------------------------------- |
+| `Message`      | `string`                     | サーバーからのメッセージまたはSDKのエラーログ        |
+| `Timestamp`    | `string`                     | Adjustのサーバーからのタイムスタンプ                 |
+| `Adid`         | `string`                     | Adjustから提供されるユニークデバイスID               |
+| `JsonResponse` | `Dictionary<string, object>` | サーバーからのレスポンスを含むJSONオブジェクト       |
+| `WillRetry`    | `bool`                       | 失敗したパッケージの再送を試みるかどうかを示します。 |
+
+</Table>
+
+### [Successコールバック](success-callbacks)
+
+<CodeBlock title="プロパティ宣言">
+
+```cs
+public Action<adjustsessionsuccess> SessionSuccessDelegate { get; set; }
+```
+
+</CodeBlock>
+
+SDKがセッションを記録した時に関数をトリガーする、successコールバックを設定します。
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
+adjustConfig.LogLevel = AdjustLogLevel.Verbose;
+adjustConfig.SessionSuccessDelegate = SessionSuccessCallback;
+//...
+Adjust.InitSdk(adjustConfig);
+//...
+public void SessionSuccessCallback (AdjustSessionSuccess sessionSuccessData) {
+   //...
+}
+```
+
+### [例](example)
+
+この例では、コールバック関数`SessionSuccess`を作成し、 **success** コールバックとして登録する方法を示しています。その関数は、SDKがセッションを記録した際にタイムスタンプをログに記録します。
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
+adjustConfig.LogLevel = AdjustLogLevel.Verbose;
+adjustConfig.SessionSuccessDelegate = SessionSuccess;
+// ...
+Adjust.InitSdk(adjustConfig);
+// ...
+public void SessionSuccess (AdjustSessionSuccess sessionSuccessData) {
+   Debug.Log("Session recorded at " + sessionSuccessData.Timestamp);
+}
+```
+
+### [Failureコールバック](failure-callbacks)
+
+<CodeBlock title="プロパティ宣言">
+
+```cs
+public Action<adjustsessionfailure> SessionFailureDelegate { get; set; }
+```
+
+</CodeBlock>
+
+SDKがセッションの記録に失敗した時に関数をトリガーする、failureコールバックを設定します。
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
+adjustConfig.LogLevel = AdjustLogLevel.Verbose;
+adjustConfig.SessionFailureDelegate = SessionFailureCallback;
+//...
+Adjust.InitSdk(adjustConfig);
+//...
+public void SessionFailureCallback (AdjustSessionFailure sessionFailureData) {
+   //...
+}
+```
+
+### [例](example-1)
+
+この例では、コールバック関数`SessionFailure`を作成し、 **failure** コールバックとして登録する方法を示します。その関数は、セッションの失敗メッセージをログに記録します。
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
+adjustConfig.LogLevel = AdjustLogLevel.Verbose;
+adjustConfig.SessionFailureDelegate = SessionFailure;
+// ...
+Adjust.InitSdk(adjustConfig);
+// ...
+public void SessionFailure (AdjustSessionFailure sessionFailureData) {
+   Debug.Log("Session recording failed. Response: " + sessionFailureData.Message);
+}
+```
+
+## [イベントコールバック](event-callbacks)
+
+SDKがイベント情報を送信した時に関数をトリガーする、イベントコールバックを設定します。 **Success** コールバックと **failure** コールバックが作成できます。 **Success** コールバックは、SDKが情報をAdjustのサーバーに送信する時にトリガーします。 **Failure** コールバックは、SDKが情報を送信している間に問題が発生した際にトリガーします。
+
+イベントコールバックは、レスポンス データ オブジェクトにアクセスできます。そのプロパティをコールバック関数内で使用することが可能です。
+
+<Table>
+
+| プロパティ     | データタイプ                 | 説明                                                   |
+| -------------- | ---------------------------- | ------------------------------------------------------ |
+| `Message`      | `string`                     | サーバーからのメッセージまたはSDKのエラーログ          |
+| `Timestamp`    | `string`                     | Adjustのサーバーからのタイムスタンプ                   |
+| `Adid`         | `string`                     | Adjustから提供されるユニークデバイスID                 |
+| `JsonResponse` | `Dictionary<string, object>` | サーバーからのレスポンスを含むJSONオブジェクト         |
+| `EventToken`   | `string`                     | イベントトークン                                       |
+| `CallbackId`   | `string`                     | イベントオブジェクトに設定されたカスタムコールバックID |
+| `WillRetry`    | `bool`                       | 失敗したパッケージの再送を試みるかどうかを示します。   |
+
+</Table>
+
+### [Successコールバック](success-callbacks-1)
+
+<CodeBlock title="プロパティ宣言">
+
+```cs
+public Action<adjusteventsuccess> EventSuccessDelegate { get; set; }
+```
+
+</CodeBlock>
+
+SDKがイベントを記録した時に関数をトリガーする、successコールバックを設定します。
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
+adjustConfig.LogLevel = AdjustLogLevel.Verbose;
+adjustConfig.EventSuccessDelegate = EventSuccessCallback;
+//...
+Adjust.InitSdk(adjustConfig);
+//...
+public void EventSuccessCallback(AdjustEventSuccess eventSuccessData) {
+   //...
+}
+```
+
+### [例](example-2)
+
+この例では、コールバック関数`EventSuccess`を作成し、 **success** コールバックとして登録する方法を示しています。その関数は、SDKがイベントを記録した際にタイムスタンプをログに記録します。
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
+adjustConfig.LogLevel = AdjustLogLevel.Verbose;
+adjustConfig.EventSuccessDelegate = EventSuccess;
+// ...
+Adjust.InitSdk(adjustConfig);
+// ...
+public void EventSuccess (AdjustEventSuccess eventSuccessData) {
+   Debug.Log("Event recorded at " + eventSuccessData.Timestamp);
+}
+```
+
+### [Failureコールバック](failure-callbacks-1)
+
+<CodeBlock title="プロパティ宣言">
+
+```cs
+public Action<adjusteventfailure> EventFailureDelegate { get; set; }
+```
+
+</CodeBlock>
+
+SDKがセッションの記録に失敗した時に関数をトリガーする、failureコールバックを設定します。
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
+adjustConfig.LogLevel = AdjustLogLevel.Verbose;
+adjustConfig.EventFailureDelegate = EventFailureCallback;
+//...
+Adjust.InitSdk(adjustConfig);
+//...
+public void EventFailureCallback(AdjustEventFailure eventFailureData) {
+   //...
+}
+```
+
+### [例](example-3)
+
+この例では、コールバック関数`EventFailure`を作成し、 **failure** コールバックとして登録する方法を示します。その関数は、イベントの失敗メッセージをログに記録します。
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("{Your App Token}", AdjustEnvironment.Sandbox);
+adjustConfig.LogLevel = AdjustLogLevel.Verbose;
+adjustConfig.EventFailureDelegate = EventFailure;
+// ...
+Adjust.InitSdk(adjustConfig);
+// ...
+public void EventFailure (AdjustEventFailure eventFailureData) {
+   Debug.Log("Event recording failed. Response: " + eventFailureData.Message);
+}
+```
+
+</SdkVersion>
+<SdkVersion version="v4">
 
 SDKがAdjustに情報を送信する時に関数をトリガーするコールバックを設定します。コールバックは **セッション** と **イベント** に対して設定できます。
 
@@ -35,7 +247,7 @@ SDKがセッション情報を送信した時に関数をトリガーする、�
 <CodeBlock title="メソッドシグネチャー">
 
 ```cs
-public void setSessionSuccessDelegate(Action<adjustsessionsuccess> sessionSuccessDelegate, string sceneName = "Adjust");
+public void setSessionSuccessDelegate(Action<adjustsessionsuccess id="sl-md0000000"> sessionSuccessDelegate, string sceneName = "Adjust");
 ```
 
 </CodeBlock>
@@ -75,7 +287,7 @@ public void sessionSuccess (AdjustSessionSuccess sessionSuccessData) {
 <CodeBlock title="メソッドシグネチャー">
 
 ```cs
-public void setSessionFailureDelegate(Action<adjustsessionfailure> sessionFailureDelegate, string sceneName = "Adjust");
+public void setSessionFailureDelegate(Action<adjustsessionfailure id="sl-md0000000"> sessionFailureDelegate, string sceneName = "Adjust");
 ```
 
 </CodeBlock>
@@ -135,7 +347,7 @@ SDKがイベント情報を送信した時に関数をトリガーする、イ�
 <CodeBlock title="メソッドシグネチャー">
 
 ```cs
-public void setEventSuccessDelegate(Action<adjusteventsuccess> eventSuccessDelegate, string sceneName = "Adjust");
+public void setEventSuccessDelegate(Action<adjusteventsuccess id="sl-md0000000"> eventSuccessDelegate, string sceneName = "Adjust");
 ```
 
 </CodeBlock>
@@ -175,7 +387,7 @@ public void eventSuccess (AdjustEventSuccess eventSuccessData) {
 <CodeBlock title="メソッドシグネチャー">
 
 ```cs
-public void setEventFailureDelegate(Action<adjusteventfailure> eventFailureDelegate, string sceneName = "Adjust");
+public void setEventFailureDelegate(Action<adjusteventfailure id="sl-md0000000"> eventFailureDelegate, string sceneName = "Adjust");
 ```
 
 </CodeBlock>
@@ -209,3 +421,5 @@ public void eventFailure (AdjustEventFailure eventFailureData) {
    Debug.Log("Event recording failed. Response: " + eventFailureData.Message);
 }
 ```
+
+</SdkVersion>

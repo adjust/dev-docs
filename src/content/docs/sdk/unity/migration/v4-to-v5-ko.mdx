@@ -5,12 +5,6 @@ slug: "ko/sdk/unity/migration/v4-to-v5"
 sidebar-position: 1
 ---
 
-<Callout type="important" title="오픈 베타">
-
-SDK v5는 오픈 베타 상태입니다. 모든 기능은 변경될 수 있습니다.
-
-</Callout>
-
 ## [시작에 앞서](before-you-begin)
 
 SDK v5로 업데이트하기 전에 다음을 수행하시기 바랍니다.
@@ -20,7 +14,7 @@ SDK v5로 업데이트하기 전에 다음을 수행하시기 바랍니다.
    -  iOS: **12\.0**
    -  Android: **21**
 
-## [베타 SDK 설치](install-the-sdk)
+## [SDK 설치](install-the-sdk)
 
 SDK v5를 설치하기 전에 프로젝트에서 모든 SDK v4 에셋과 코드를 삭제해야 합니다.
 
@@ -42,7 +36,17 @@ SDK v5를 설치하기 전에 프로젝트에서 모든 SDK v4 에셋과 코드�
 3. Android Studio 프로젝트에서 `Adjust` 에 대한 모든 레퍼런스를 삭제합니다.
    -  프로젝트의 `libs` 디렉토리에서 `adjust-android.jar` 라이브러리를 찾아 삭제합니다.
 
-프로젝트에서 모든 SDK v4 에셋을 제거한 뒤 [, GitHub 릴리스 페이지](https://github.com/adjust/unity_sdk/releases/tag/v5.0.0-beta1) 에서 Adjust `unitypackage` 를 다운로드하고 프로젝트로 가져옵니다.
+프로젝트에서 모든 SDK v4 에셋을 제거한 후에는 SDK v5를 설치할 수 있습니다. 다음 중 하나를 수행하시기 바랍니다.
+
+-  [GitHub 릴리스 페이지](https://github.com/adjust/unity_sdk/releases/latest) 에서 Adjust `unitypackage` 를 다운로드하고 프로젝트로 가져옵니다.
+-  Unity 패키지 매니저를 사용하여 패키지를 설치합니다.
+   1. Unity 에디터에서 **패키지 매니저** 창을 선택합니다.
+   2. **git URL에서 패키지 추가** 를 선택합니다.
+   3. 다음 URL을 입력합니다: `https://github.com/adjust/unity_sdk.git`.
+
+### [iOS 및 Android SDK 설치](install-ios-and-android-sdks)
+
+SDK v5는 더 이상 iOS 및 Android SDK를 바이너리 디펜던시로 사용하지 않습니다. 기본 iOS 및 Android SDK를 설치하려면 [Unity용 External Dependency Manager\(EDM4U\)](https://github.com/googlesamples/unity-jar-resolver) 를 사용하여 CocoaPods 및 Maven에서 패키지를 설치해야 합니다.
 
 ## [변경 사항](changes)
 
@@ -77,6 +81,15 @@ SDK v5에서는 이 메서드의 이름이 `Adjust.InitSdk()`로 변경되었습
 AdjustConfig adjustConfig = new AdjustConfig("appToken", AdjustEnvironment.Sandbox);
 Adjust.InitSdk(adjustConfig);
 ```
+
+### [서명 설정](signature-setup)
+
+SDK v5는 [SDK Signature 라이브러리](https://help.adjust.com/ko/article/sdk-signature) 를 포함합니다. 이를 테스트하려면 [Signature 라이브러리 연동 가이드](/ko/sdk/unity/integrations/signature-library) 에 나온 테스트 단계를 수행하시기 바랍니다.
+
+서명 보호는 기본 설정에 따라 비활성화되어 있습니다. 활성화하려면 다음이 필요합니다.
+
+1. Signature 검증 시행
+2. 테스트 전 [앱의 SHA\-1 핑거프린트를 제공합니다](https://help.adjust.com/ko/article/sdk-signature#manage-your-certificate-fingerprints) .
 
 ### [구성](configuration)
 
@@ -509,8 +522,9 @@ adjustConfig.EventFailureDelegate = eventFailureCallback; // Event failure callb
 AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
    price,
    currency,
-   transactionId,
-   receipt);
+-   transactionId,
+-   receipt);
++  transactionId);
 - subscription.setTransactionDate("transaction-date");
 - subscription.setSalesRegion("sales-region");
 - subscription.addCallbackParameter("key1", "value1");
@@ -577,7 +591,6 @@ Adjust.trackPlayStoreSubscription(subscription);
 -  `CallbackId`
 -  `TransactionId`
 -  `ProductId`
--  `Receipt`
 -  `PurchaseToken`
 
 다음의 setter 이름이 변경되었습니다.
@@ -586,11 +599,7 @@ Adjust.trackPlayStoreSubscription(subscription);
 -  `addCallbackParameter` \-> `AddCallbackParameter`
 -  `addCallbackParameter` \-> `AddPartnerParameter`
 
-<Callout type="important">
-
-`AdjustEvent.setReceiptBase64()` 메서드가 삭제되었습니다. 항상 **UnityIAP base64로 인코딩된 영수증 문자열** 을 `AdjustEvent.Receipt` 속성에 할당해야 합니다.
-
-</Callout>
+`receipt` 속성이 `AdjustEvent` 클래스에서 삭제되었습니다.
 
 변경된 내용의 전체 예시는 다음과 같습니다.
 
@@ -612,7 +621,6 @@ AdjustEvent adjustEvent = new AdjustEvent("abc123");
 + adjustEvent.CallbackId = "callback-id";
 + adjustEvent.ProductId = "product-id";
 + adjustEvent.PurchaseToken = "purchase-token";
-+ adjustEvent.Receipt = "base64-encoded-receipt";
 + adjustEvent.AddCallbackParameter("key", "value");
 + adjustEvent.AddPartnerParameter("key", "value");
 Adjust.trackEvent(adjustEvent);
@@ -720,10 +728,11 @@ SDK v4에서는 딥링크 정보를 `Adjust.appWillOpenUrl()` 메서드에 전�
 Adjust.appWillOpenUrl("url");
 ```
 
-SDK v5에서는 명확성을 위해 이름이 `Adjust.ProcessDeeplink()`로 변경되었습니다.
+SDK v5에서는 명확성을 위해 이름이 `Adjust.ProcessDeeplink()`로 변경되었습니다. 딥링크 생성을 위해 새로운 `AdjustDeeplink` 클래스가 추가되었습니다. 딥링크를 처리하려면 딥링크 URL과 함께 `AdjustDeeplink` 객체를 인스턴스화하고 `Adjust.ProcessDeeplink` 메서드에 전달합니다.
 
 ```cs
-Adjust.ProcessDeeplink("url");
+AdjustDeeplink adjustDeeplink = new AdjustDeeplink("url");
+Adjust.ProcessDeeplink(adjustDeeplink);
 ```
 
 #### [디퍼드 딥링크 실행](launch-deferred-deeplinks)
@@ -752,7 +761,7 @@ adjustConfig.IsDeferredDeeplinkOpeningEnabled = true;
 
 <MinorVersion changed="v5">
 
-SDK v4에서는 [COPPA 준수](/ko/sdk/unity/features/privacy#coppa-compliance)가 `AdjustConfig` 클래스를 사용하여 설정되며 SDK 초기화 중에 읽히게 됩니다. 따라서 SDK가 초기화된 후에는 해당 값을 업데이트할 수 없습니다.
+SDK v4에서는 `AdjustConfig` 인스턴스의 `setCoppaCompliantEnabled` 메서드를 `bool` 값과 함께 호출하여 앱을 COPPA 준수로 표시할 수 있습니다.
 
 </MinorVersion>
 
@@ -760,11 +769,10 @@ SDK v4에서는 [COPPA 준수](/ko/sdk/unity/features/privacy#coppa-compliance)�
 adjustConfig.setCoppaCompliantEnabled(true);
 ```
 
-SDK v5에서는 이 메서드를 `Adjust` 클래스에서 이용할 수 있습니다. 따라서 COPPA 준수 활성화를 위해 `Adjust.EnableCoppaCompliance()`를 호출하거나 COPPA 준수 비활성화를 위해 `Adjust.DisableCoppaCompliance()`를 호출하여 언제든지 설정을 변경할 수 있습니다.
+SDK v5에서는 `AdjustConfig` 인스턴스의 `IsCoppaComplianceEnabled` 속성을 `bool` 값으로 설정해야 합니다.
 
 ```cs
-Adjust.EnableCoppaCompliance(); // Enable COPPA compliance
-Adjust.DisableCoppaCompliance(); // Disable COPPA compliance
+adjustConfig.IsCoppaComplianceEnabled = true;
 ```
 
 #### [플레이 스토어 어린이용 앱](play-store-kids)
@@ -779,11 +787,10 @@ SDK v4에서는 `AdjustConfig` 클래스를 사용하여 앱을 [플레이 스�
 adjustConfig.setPlayStoreKidsAppEnabled(true);
 ```
 
-SDK v5에서는 이 메서드를 `Adjust` 클래스에서 이용할 수 있습니다. 따라서 앱을 플레이 스토어 어린이용 앱을 표시하기 위해 `Adjust.EnablePlayStoreKidsApp()`을 호출하거나 플레이 스토어 어린이용 앱의 표시를 해제하기 위해 `Adjust.DisablePlayStoreKidsApp()`을 호출하여 언제든지 설정을 변경할 수 있습니다.
+SDK v5에서는 규정 준수를 위해 `AdjustConfig` 인스턴스의 `IsPlayStoreKidsComplianceEnabled` 속성을 `true` 로 설정해야 합니다.
 
 ```cs
-Adjust.EnablePlayStoreKidsApp(); // Enable Play Store Kids compliance
-Adjust.DisablePlayStoreKidsApp(); // Disable Play Store Kids compliance
+adjustConfig.IsPlayStoreKidsComplianceEnabled = true;
 ```
 
 #### [데이터 레지던시 및 URL 전략 설정](url-strategy)
@@ -804,7 +811,7 @@ SDK v5에서는 선택한 도메인을 배열로 전달해야 합니다. 또한 
 -  `isDataResidency` \(`bool`\): 도메인을 데이터 레지던시에 사용해야 하는지 여부.
 
 ```cs
-adjustConfig.SetUrlStrategy(new List<string > {"eu.adjust.com"}, true, true);
+adjustConfig.SetUrlStrategy(new List<string> {"eu.adjust.com"}, true, true);
 ```
 
 아래 표를 보고 SDK v5에서 URL 전략을 구성하는 방법을 확인하시기 바랍니다.
@@ -828,42 +835,42 @@ adjustConfig.SetUrlStrategy(new List<string > {"eu.adjust.com"}, true, true);
 <CodeBlock title="인도 URL 전략">
 
 ```cs
-adjustConfig.SetUrlStrategy(new List<string > {"adjust.net.in", "adjust.com"}, true, false);
+adjustConfig.SetUrlStrategy(new List<string> {"adjust.net.in", "adjust.com"}, true, false);
 ```
 
 </CodeBlock>
 <CodeBlock title="중국 URL 전략">
 
 ```cs
-adjustConfig.SetUrlStrategy(new List<string > {"adjust.world", "adjust.com"}, true, false);
+adjustConfig.SetUrlStrategy(new List<string> {"adjust.world", "adjust.com"}, true, false);
 ```
 
 </CodeBlock>
 <CodeBlock title="중국 전용 URL 전략">
 
 ```cs
-adjustConfig.SetUrlStrategy(new List<string > {"adjust.cn"}, true, false);
+adjustConfig.SetUrlStrategy(new List<string> {"adjust.cn"}, true, false);
 ```
 
 </CodeBlock>
 <CodeBlock title="EU 데이터 레지던시">
 
 ```cs
-adjustConfig.SetUrlStrategy(new List<string > {"eu.adjust.com"}, true, true);
+adjustConfig.SetUrlStrategy(new List<string> {"eu.adjust.com"}, true, true);
 ```
 
 </CodeBlock>
 <CodeBlock title="터키 데이터 레지던시">
 
 ```cs
-adjustConfig.SetUrlStrategy(new List<string > {"tr.adjust.com"}, true, true);
+adjustConfig.SetUrlStrategy(new List<string> {"tr.adjust.com"}, true, true);
 ```
 
 </CodeBlock>
 <CodeBlock title="미국 데이터 레지던시">
 
 ```cs
-adjustConfig.SetUrlStrategy(new List<string > {"us.adjust.com"}, true, true);
+adjustConfig.SetUrlStrategy(new List<string> {"us.adjust.com"}, true, true);
 ```
 
 </CodeBlock>
@@ -1011,7 +1018,7 @@ Adjust.trackAdRevenue(adRevenue);
 
 <MinorVersion changed="v5">
 
-SDK v4에서는 `AdjustConfig.setAttConsentWaitingInterval()` 메서드를 사용하여 ATT 팝업이 일시 정지되도록 인터벌을 구성할 수 있습니다.
+SDK v4에서는 `AdjustConfig` 인스턴스의 `setAttConsentWaitingInterval` 메서드를 사용하여 Adjust로의 설치 정보 전송을 지연시키는 인터벌을 구성할 수 있습니다. 이러한 지연은 사용자에게 ATT 팝업창을 표시할 시간을 줍니다.
 
 </MinorVersion>
 
@@ -1092,7 +1099,7 @@ SDK v5에서는 다음 인수와 함께 `Adjust.UpdateSkanConversionValue()` 메
 -  `conversionValue` \(`int`\): 업데이트된 전환값
 -  `coarseValue` \(`string`\): 업데이트된 [coarse 전환값](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
 -  `lockWindow` \(`bool`\): 전환값 윈도우가 종료되기 전에 포스트백을 전송할지 여부
--  `callback` \(`Action<string >`\): 발생하는 모든 오류를 처리할 수 있는 콜백 함수
+-  `callback` \(`Action<string>`\): 발생하는 모든 오류를 처리할 수 있는 콜백 함수
 
 ```cs
 Adjust.UpdateSkanConversionValue(1, "low", false, error =>
@@ -1166,16 +1173,6 @@ SDK v4에서는 모든 기기 정보 게터 메서드가 동기적으로 실행�
 Adjust.GetIdfa(idfa =>
 {
     // use idfa
-});
-```
-
-</CodeBlock>
-<CodeBlock title="IDFV 게터">
-
-```cs
-Adjust.GetIdfv(idfv =>
-{
-    // use idfv
 });
 ```
 

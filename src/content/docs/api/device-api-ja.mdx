@@ -1,0 +1,320 @@
+---
+title: "デバイスAPI"
+description: "デバイスAPIを使ってデバイス情報を確認し、テスト用にAdjustからデバイス履歴を消去します。"
+category-title: "デバイスAPI"
+slug: "ja/api/device-api"
+sidebar-position: 6
+---
+
+デバイスAPIを使ってデバイス情報を確認し、テスト用にAdjustからデバイス履歴を消去します。
+
+## [仕組み](how-it-works)
+
+1. **コールを認証する**
+
+   このデバイスAPIエンドポイントを使用するには、Adjust APIのトークンが必要です。このトークンをAPIで使用するには、[認証ガイド](#authentication)の設定手順に従ってください。
+
+2. **デバイスの挙動を調査する**
+
+   [inspect device endpoint](#inspect-device)を使って、デバイスと関連するユーザーアクティビティについての情報を返します。
+
+3. **デバイスデータを削除する**
+
+   [forget device endpoint](#forget-device)を使って、Adjustからデバイス情報の履歴を削除します。同一のデバイスで複数のインストールをテストする場合に便利です。
+
+## [認証](authentication)
+
+デバイスAPIを使用するには、[ベアラートークン](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication)が必要となります。ベアラートークンの取得については、このガイドをご覧ください。
+
+### [Adjust APIトークンを見つける](find-your-adjust-api-token)
+
+Adjust APIコールを作成する前に、まずAdjustダッシュボードでAPIトークンを見つけます。AdjustダッシュボードからAdjustのAPIトークンを確認してください。
+
+<Callout type="important">
+
+SSO（シングルサインオン）を設定している場合、APIトークンはAdjustダッシュボードで確認することができません。APIトークン関して不明な点がございましたら、Adjustの担当者または[support@adjust.com](mailto:support@adjust.com)までお問い合わせください。
+
+</Callout>
+
+Adjust APIトークンは **profile** 内にあります。それを確認するには、以下の手順に従ってください。
+
+1. 左下隅にある設定アイコンを選択します。
+2. **アカウント設定（Account Settings）** を選択します。アカウント設定のページが開きます。
+3. **マイプロフィール（My Profile）** を選択します。
+4. **APIトークン** が **ユーザー情報（User details）** に表示されます。コピーボタンを選択して、トークンをクリップボードにコピーします。
+
+### [Adjust APIトークンをリセットする](reset-your-adjust-api-token)
+
+Adjust APIトークンはいつでもリセットできます。 トークンをリセットすると、古いトークンが無効になります。 つまり、古いトークンを使用して送信されたリクエストは機能しません。 Adjust APIトークンをリセットした場合、使用中のあらゆる場所でトークンを更新する必要があります。
+
+1. 左下隅にある設定アイコンを選択します。
+2. **アカウント設定（Account Settings）** を選択します。アカウント設定のページが開きます。
+3. **マイプロフィール（My Profile）** を選択します。
+4. **APIトークン** が **ユーザー情報（User details）** に表示されます。
+5. **APIトークンをリセットする（Reset API token）** を選択します。ポップアップモーダルが表示されます。
+6. モーダルでアカウントのパスワードを入力し、 **リセット（Reset）** を選択してAPIトークンをリセットします。モーダルが閉じ、画面右上に確認メッセージが表示されます。
+7. **APIトークン** の横にあるコピーボタンを選択して、トークンをクリップボードにコピーします。
+
+## [Inspect deviceエンドポイント](inspect-device)
+
+Inspect deviceエンドポイントを使うことで、デバイス情報が確認できます。アプリに関連したデバイスおよびリンク情報を返すには、そのアプリIDとデバイスの広告IDを提供してください。
+
+<Tabs>
+<Tab title="v2" sync="v2">
+
+<CodeBlock title="エンドポイント" highlight="/inspect_device">
+
+```http
+GET https://api.adjust.com/device_service/api/v2/inspect_device
+```
+
+</CodeBlock>
+
+</Tab>
+<Tab title="v1" sync="v1">
+
+<CodeBlock title="エンドポイント" highlight="/inspect_device">
+
+```http
+GET https://api.adjust.com/device_service/api/v1/inspect_device
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
+
+### [デバイス情報を取得する](fetch-device-information)
+
+デバイス情報をJSONオブジェクトとして返します。
+
+<Table>
+
+| パラメーター       | データタイプ | 入力する値 | 説明                                                                         |
+| ------------------ | ------------ | ---------- | ---------------------------------------------------------------------------- |
+| `app_token`\*      | `String`     | クエリ     | アプリの12桁の識別子                                                         |
+| `advertising_id`\* | `String`     | クエリ     | デバイスの一意の広告ID。以下の[広告ID](#advertising-ids)を参照してください。 |
+
+</Table>
+
+<Accordion title="広告ID">
+
+-  `idfa` （iOSデバイス）
+-  `gps_adid` （Google広告ID）
+-  `android_id` （Android ID）
+-  `fire_adid` （Amazon Fire ID）
+-  `win_adid` （Windows広告ID）
+
+</Accordion>
+
+<Tabs>
+<Tab title="v2" sync="v2">
+
+<CodeBlock title="レスポンスの形式">
+
+```json
+{
+   "Adid": "string",
+   "AdvertisingId": "string",
+   "Tracker": "string",
+   "TrackerName": "string",
+   "Environment": "string",
+   "ClickTime": "date-time",
+   "InstallTime": "date-time",
+   "LastSessionTime": "date-time",
+   "LastEventsInfo": {
+      "{event_id}": {
+         "name": "string",
+         "time": "date-time"
+      },
+      "{event_id}": {
+         "name": "string",
+         "time": "date-time"
+      },
+      "{event_id}": {
+         "name": "string",
+         "time": "date-time"
+      }
+   },
+   "LastSdkVersion": "ios4.37.2",
+   "State": "string"
+}
+```
+
+</CodeBlock>
+
+</Tab>
+<Tab title="v1" sync="v1">
+
+<CodeBlock title="レスポンスの形式">
+
+```json
+{
+   "Adid": "string",
+   "AdvertisingId": "string",
+   "Tracker": "string",
+   "TrackerName": "string",
+   "ClickTime": "date-time",
+   "InstallTime": "date-time",
+   "LastSessionTime": "date-time",
+   "LastEventTimes": {
+      "string": "date-time",
+      "string": "date-time",
+      "string": "date-time",
+      "string": "date-time"
+   },
+   "State": "string"
+}
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
+
+### [例](inspect-device-example)
+
+<Tabs>
+<Tab title="v2" sync="v2">
+
+<CodeBlock title="cURL" highlight="advertising_id=1234-5678-9012-3456, app_token=gwzpeepw8uf8">
+
+```console
+$ curl \
+--header "Authorization: Bearer ask43jskdp2tg2hg87" \
+-L -X GET "https://api.adjust.com/device_service/api/v2/inspect_device?advertising_id=1234-5678-9012-3456&app_token=gwzpeepw8uf8"
+```
+
+</CodeBlock>
+<CodeBlock title="成功レスポンス">
+
+```json
+{
+   "Adid": "acf8534f2f052395e617a38730682ccc",
+   "AdvertisingId": "1234-5678-9012-3456",
+   "Tracker": "abc123",
+   "TrackerName": "Organic",
+   "FirstTracker": "zr5vueb",
+   "FirstTrackerName": "Organic",
+   "Environment": "sandbox",
+   "ClickTime": "0001-01-01T00:00:00Z",
+   "InstallTime": "2015-08-19T03:42:03Z",
+   "LastSessionTime": "2017-07-29T17:29:17Z",
+   "LastEventsInfo": {
+      "kgfcul": {
+         "name": "Copy IDFA",
+         "time": "2024-07-18T10:01:16Z"
+      },
+      "wz9qqz": {
+         "name": "Accept Terms",
+         "time": "2024-07-01T14:13:47Z"
+      },
+      "z3f773": {
+         "name": "Copy IDFV",
+         "time": "2024-07-01T19:01:39Z"
+      }
+   },
+   "LastSdkVersion": "ios4.37.2",
+   "State": "installed"
+}
+```
+
+</CodeBlock>
+
+</Tab>
+<Tab title="v1" sync="v1">
+
+<CodeBlock title="cURL" highlight="advertising_id=1234-5678-9012-3456, app_token=gwzpeepw8uf8">
+
+```console
+$ curl \
+--header "Authorization: Bearer ask43jskdp2tg2hg87" \
+-L -X GET "https://api.adjust.com/device_service/api/v1/inspect_device?advertising_id=1234-5678-9012-3456&app_token=gwzpeepw8uf8"
+```
+
+</CodeBlock>
+<CodeBlock title="成功レスポンス">
+
+```json
+{
+   "Adid": "acf8534f2f052395e617a38730682ccc",
+   "AdvertisingId": "1234-5678-9012-3456",
+   "Tracker": "abc123",
+   "TrackerName": "Organic",
+   "ClickTime": "0001-01-01T00:00:00Z",
+   "InstallTime": "2015-08-19T03:42:03Z",
+   "LastSessionTime": "2017-07-29T17:29:17Z",
+   "LastEventTimes": {
+      "a1a1a1": "2017-07-29T17:29:55Z",
+      "b2b2b2": "2017-07-29T17:29:21Z",
+      "c3c3c3": "2017-07-29T17:29:38Z",
+      "4d4d4d": "2017-07-29T17:29:58Z"
+   },
+   "State": "installed"
+}
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
+
+## [Forget deviceのエンドポイント](forget-device)
+
+Adjustのforget deviceエンドポイントを使用してAdjustからデバイス情報の履歴を削除することにより、同一のデバイスで複数のインストールをテストすることができます。
+
+<Callout type="seealso" title="事前準備">
+
+デバイス情報を削除（forget device）するには、 **管理者** または **編集者** のユーザー権限が必要です。 **カスタム編集者** の権限がある場合は、ターゲットとするアプリを編集する権限が必要です。詳細は[ユーザー権限の設定](https://help.adjust.com/ja/article/users)をご覧ください。
+
+</Callout>
+<CodeBlock title="エンドポイント" highlight="/forget_device">
+
+```http
+POST https://api.adjust.com/device_service/api/v1/forget_device
+```
+
+</CodeBlock>
+
+### [デバイスデータを削除する](forget-a-device)
+
+Adjustからデバイス情報を削除します。
+
+<Table>
+
+| パラメーター  | データタイプ | 入力する値 | 説明                 |
+| ------------- | ------------ | ---------- | -------------------- |
+| `app_token`\* | `String`     | データ     | アプリの12桁の識別子 |
+| `adid`\*      | `String`     | データ     | デバイスのAdjust ID  |
+
+</Table>
+
+### [例](forget-device-example)
+
+<CodeBlock title="cURL" highlight="gwzpeepw8uf8, acf8534f2f052395e617a38730682ccc">
+
+```console
+$ curl \
+--header "Authorization: Token token=ask43jskdp2tg2hg87" \
+--location --request POST "https://api.adjust.com/device_service/api/v1/forget_device" \
+--data "adid=acf8534f2f052395e617a38730682ccc&app_token=gwzpeepw8uf8"
+```
+
+</CodeBlock>
+<CodeBlock title="成功レスポンス">
+
+```http
+200: Forgot device
+```
+
+</CodeBlock>
+
+### [レスポンスコード](response-codes)
+
+<Table>
+
+| レスポンス | メッセージ    | 説明           |
+| ---------- | ------------- | -------------- |
+| `200`      | Forgot device | 成功レスポンス |
+
+</Table>

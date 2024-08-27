@@ -1,0 +1,959 @@
+---
+title: "Campaign API"
+description: "Use the Campaign API to get link, sublink, and partner information."
+category-title: Campaign API
+slug: en/api/campaign-api
+sidebar-position: 4
+---
+
+Use the Campaign API to get link, sublink, and partner information. Create new links and update existing links with new partner information.
+
+## [Authentication](authentication)
+
+The Campaign API uses [Bearer tokens](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication) for authentication. You MUST include your Adjust API token in an `Authorization` header with each request you make to the Campaign API.
+
+If your organization has enabled Single Sign-On (SSO), contact your Adjust representative or email support@adjust.com for help with finding your API token.
+
+For non-SSO accounts, API tokens are located in a user's **profile**. To find your token, follow these steps:
+
+1. Select the account (user) icon.
+2. Select **Account settings**.
+3. Select the **My profile** tab.
+4. Your **API Token** is shown with your **User Details**. Select the copy button to copy the token to your system clipboard.
+
+### [Reset your Adjust API token](reset-your-adjust-api-token)
+
+You can reset your Adjust API token at any time. Resetting your token invalidates the old token. If you reset your Adjust API token, you MUST replace your old token anywhere that you're using it. Requests made with an invalidated token are rejected by Adjust.
+
+To reset your Adjust API token:
+
+1. Select the account (user) icon.
+2. Select **Account settings**.
+3. Select the **My Profile** tab.
+4. Your **API Token** is shown with your **User details**.
+5. Select **Reset API token**.
+6. Enter your account password in the modal that appears and select **Reset** to reset your API token. A confirmation appears in the top right of the screen.
+7. Select the copy button next to the **API Token** to copy the token to your system clipboard.
+
+## [Fetch partners](fetch-partners)
+
+<CodeBlock title="Endpoint" highlight="/partners">
+
+```http
+GET https://api.adjust.com/public/v1/partners
+```
+
+</CodeBlock>
+
+Use this endpoint to fetch a list of partners and associated data. Data are returned in an array of partner objects.
+
+### [Parameters](fetch-partners-parameters)
+
+You MAY pass the following parameters as **query parameters**:
+
+`after` (`String`)
+
+: The [cursor position](#fetch-partners-pagination) from which to start your request.
+
+`before` (`String`)
+
+: The [cursor position](#fetch-partners-pagination) at which to end your request.
+
+`limit` (`Integer`)
+
+: The maximum number of results to include in the response. This value MUST be a positive integer value. Defaults to `50`.
+
+### [Pagination](fetch-partners-pagination)
+
+Results from this endpoint are paginated using a cursor. Each page returns the location of the `previous` and `next` pages. You can include these in your calls to return specific pages.
+
+Each results page contains a `paging` object containing the cursor positions. You can use these cursor positions to programmatically move between pages. For example, the first page might contain the following `paging` object:
+
+<CodeBlock title="Pagination example">
+
+```json
+"paging": {
+   "page_size": "50",
+   "collection_size": "49",
+   "total": "199",
+   "cursors": {
+      "after": "g2wAAAACYhW1_gxkAANuaWxq",
+      "before": null
+   },
+   "next": "https://api.adjust.com/public/v1/apps/yxs12pfewq/trackers?after=g2wAAAACYhW1_gxkAANuaWxq&limit=50",
+   "previous": null
+}
+```
+
+</CodeBlock>
+
+To go to the second page, add the `after` value to the next request in the `after` parameter. For example:
+
+<CodeBlock title="cURL" highlight="after=g2wAAAACYhW1_gxkAANuaWxq">
+
+```console
+$ curl "https://api.adjust.com/public/v1/apps/yxs12pfewq/trackers?after=g2wAAAACYhW1_gxkAANuaWxq"
+```
+
+</CodeBlock>
+
+### [Response format](fetch-partners-response-format)
+
+```json
+{
+   "data": {
+      "api_version": "string",
+      "request_id": "string",
+      "timestamp": "datetime",
+      "paging": {
+         "page_size": "string",
+         "collection_size": "string",
+         "total": "string",
+         "next": "string",
+         "previous": "string",
+         "cursors": {
+            "after": "string",
+            "before": "string"
+         }
+      },
+      "items": [
+         {
+            "id": 100,
+            "display_name": "string",
+            "supports_cost_data": true
+         }
+      ]
+   }
+}
+```
+
+### [Example](fetch-partners-example)
+
+<CodeBlock title="cURL">
+
+```console
+$ curl \
+--header 'Authorization: Token token={API_TOKEN}' \
+-L -X GET 'https://api.adjust.com/public/v1/partners?limit=1'
+```
+
+</CodeBlock>
+
+<CodeBlock title="Success response">
+
+```json
+{
+   "data": {
+      "api_version": "1",
+      "request_id": "FcK55-tdJUDOWQIAABsB",
+      "timestamp": "2019-09-09T09:07:06Z",
+      "paging": {
+         "page_size": "1",
+         "collection_size": "1",
+         "total": "199",
+         "next": "https://api.adjust.com/public/v1/partners?after=g2wAAAACYhW1_gxkAANuaWxq&limit=1",
+         "previous": null,
+         "cursors": {
+            "after": "g2wAAAACYhW1_gxkAANuaWxq",
+            "before": null
+         }
+      },
+      "items": [
+         {
+            "id": 174,
+            "display_name": "Adcolony",
+            "supports_cost_data": true
+         }
+      ]
+   }
+}
+```
+
+</CodeBlock>
+
+## [Fetch links](fetch-links)
+
+<Tabs>
+<Tab title="v2" sync="v2">
+
+<CodeBlock title="Endpoint" highlight="v2/apps/{app_token}/trackers">
+
+```http
+GET https://api.adjust.com/public/v2/apps/{app_token}/trackers
+```
+
+</CodeBlock>
+
+</Tab>
+<Tab title="v1" sync="v1">
+
+<CodeBlock title="Endpoint" highlight="v1/apps/{app_token}/trackers">
+
+```http
+GET https://api.adjust.com/public/v1/apps/{app_token}/trackers
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
+
+Use this endpoint to fetch network-level links associated with your app.
+
+### [Parameters](fetch-links-parameters)
+
+<Tabs>
+<Tab title="v2" sync="v2">
+
+You MUST pass the following parameter in the **path** of your request:
+
+`app_token` (`String`)
+
+: The [alphanumeric token that identifies your app](https://help.adjust.com/en/article/app-token-and-reporting-currency#view-your-app-details). This MUST be 12 characters long.
+
+You MAY pass the following parameters as **query parameters**:
+
+`cursor` (`String`)
+
+: A cursor position.
+
+`limit` (`Integer`)
+
+: The maximum number of results to include in the response. This value MUST be a positive integer value. Defaults to `50`.
+
+</Tab>
+<Tab title="v1" sync="v1">
+
+You MUST pass the following parameter in the **path** of your request:
+
+`app_token` (`String`)
+
+: The [alphanumeric token that identifies your app](https://help.adjust.com/en/article/app-token-and-reporting-currency#view-your-app-details). This MUST be 12 characters long.
+
+You MAY pass the following parameters as **query parameters**:
+
+`after` (`String`)
+
+: The [cursor position](#fetch-partners-pagination) from which to start your request.
+
+`before` (`String`)
+
+: The [cursor position](#fetch-partners-pagination) at which to end your request.
+
+`limit` (`Integer`)
+
+: The maximum number of results to include in the response. This value MUST be a positive integer value. Defaults to `50`.
+
+</Tab>
+</Tabs>
+
+### [Pagination](fetch-links-pagination)
+
+<Tabs>
+<Tab title="v2" sync="v2">
+
+Results from this endpoint are paginated using a cursor. Each results page contains a `paging` object containing cursor positions. You can use these cursor positions to programmatically move between pages. For example, the first page might contain results like this:
+
+<CodeBlock title="Pagination example">
+
+```json
+"paging": {
+   "next": "https://api.adjust.com/public/v2/apps/yxs12pfewq/trackers?cursor=g2wAAAACYhW1_gxkAANuaWxq&limit=50",
+   "cursor": "g2wAAAACYhW1_gxkAANuaWxq"
+}
+```
+
+</CodeBlock>
+
+To go to the second page, follow the `next` link to return results from the next specified `cursor` position.
+
+<CodeBlock title="cURL" highlight="cursor=g2wAAAACYhW1_gxkAANuaWxq">
+
+```console
+$ curl "https://api.adjust.com/public/v2/apps/yxs12pfewq/trackers?cursor=g2wAAAACYhW1_gxkAANuaWxq&limit=50"
+```
+
+</CodeBlock>
+
+To return to a specific location in the results, pass a `cursor` value in your requests **query params**.
+
+</Tab>
+<Tab title="v1" sync="v1">
+
+Results from this endpoint are paginated using a cursor. Each page returns the location of the `previous` and `next` pages. You can include these in your calls to return specific pages.
+
+Each results page contains a `paging` object containing the cursor positions. You can use these cursor positions to programmatically move between pages. For example, the first page might contain the following `paging` object:
+
+<CodeBlock title="Pagination example">
+
+```json
+"paging": {
+   "page_size": "50",
+   "collection_size": "49",
+   "total": "199",
+   "cursors": {
+      "after": "g2wAAAACYhW1_gxkAANuaWxq",
+      "before": null
+   },
+   "next": "https://api.adjust.com/public/v1/apps/yxs12pfewq/trackers?after=g2wAAAACYhW1_gxkAANuaWxq&limit=50",
+   "previous": null
+}
+```
+
+</CodeBlock>
+
+To go to the second page, follow the `next` link to return results from the next specified `cursor` position.
+
+<CodeBlock title="cURL" highlight="after=g2wAAAACYhW1_gxkAANuaWxq">
+
+```console
+$ curl "https://api.adjust.com/public/v1/apps/yxs12pfewq/trackers?after=g2wAAAACYhW1_gxkAANuaWxq"
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
+
+### [Response format](fetch-links-response-format)
+
+All links are returned as items in the following format:
+
+<CodeBlock title="Success response">
+
+```json
+{
+   "name": "String",
+   "token": "String",
+   "label": "String",
+   "level": 1,
+   "archived": false,
+   "has_subtrackers": false,
+   "partner_id": 3,
+   "cost_data_enabled": false,
+   "url": "String",
+   "click_url": "String",
+   "impression_url": "String"
+}
+```
+
+</CodeBlock>
+
+### [Example](fetch-links-example)
+
+<Tabs>
+<Tab title="v2" sync="v2">
+
+<CodeBlock title="cURL" highlight="gwzpeepw8uf8">
+
+```console
+$ curl \
+--header 'Authorization: Token token={API_TOKEN}' \
+-L -X GET 'https://api.adjust.com/public/v2/apps/gwzpeepw8uf8/trackers?limit=1'
+```
+
+</CodeBlock>
+
+<CodeBlock title="Success response">
+
+```json
+{
+   "data": {
+      "paging": {
+         "cursor": "g2wAAAACYhW1_gxkAANuaWxq",
+         "next": "https://api.adjust.com/public/v2/apps/gwzpeepw8uf8/trackers?after=g2wAAAACYhW1_gxkAANuaWxq&limit=1"
+      },
+      "items": [
+         {
+            "archived": false,
+            "has_subtrackers": false,
+            "partner_id": 3,
+            "cost_data_enabled": false,
+            "label": "Adroll",
+            "level": 1,
+            "name": "Adroll",
+            "token": "abc123",
+            "url": "https://app.adjust.com/abc123",
+            "click_url": "https://app.adjust.com/abc123?campaign={campaign_name}&idfa={idfa}&deeplink=http%3A%2F%2Fa.b%2Fc%3Fd%3D1%26e%3D%%MACROS%%",
+            "impression_url": "https://s2s.adjust.com/impression/abc123?campaign={campaign_name}&idfa={idfa}&s2s=1"
+         }
+      ]
+   }
+}
+```
+
+</CodeBlock>
+
+</Tab>
+<Tab title="v1" sync="v1">
+
+<CodeBlock title="cURL" highlight="gwzpeepw8uf8">
+
+```console
+$ curl \
+--header 'Authorization: Token token={API_TOKEN}' \
+-L -X GET 'https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers?limit=1'
+```
+
+</CodeBlock>
+
+<CodeBlock title="Success response">
+
+```json
+{
+   "data": {
+      "api_version": "1",
+      "request_id": "FcK55-tdJUDOWQIAABsB",
+      "timestamp": "2019-09-09T09:07:06Z",
+      "paging": {
+         "page_size": "1",
+         "collection_size": "1",
+         "total": "199",
+         "next": "https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers?after=g2wAAAACYhW1_gxkAANuaWxq&limit=1",
+         "previous": null,
+         "cursors": {
+            "after": "g2wAAAACYhW1_gxkAANuaWxq",
+            "before": null
+         }
+      },
+      "items": [
+         {
+            "archived": false,
+            "has_subtrackers": false,
+            "partner_id": 3,
+            "cost_data_enabled": false,
+            "label": "Adroll",
+            "level": 1,
+            "name": "Adroll",
+            "token": "abc123",
+            "url": "https://app.adjust.com/abc123",
+            "click_url": "https://app.adjust.com/abc123?campaign={campaign_name}&idfa={idfa}&deeplink=http%3A%2F%2Fa.b%2Fc%3Fd%3D1%26e%3D%%MACROS%%",
+            "impression_url": "https://s2s.adjust.com/impression/abc123?campaign={campaign_name}&idfa={idfa}&s2s=1"
+         }
+      ]
+   }
+}
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
+
+## [Fetch sublinks](fetch-sublinks)
+
+<Tabs>
+<Tab title="v2" sync="v2">
+
+<CodeBlock title="Endpoint" highlight="v2/apps/{app_token}/trackers/{link_token}/children">
+
+```http
+GET https://api.adjust.com/public/v2/apps/{app_token}/trackers/{link_token}/children
+```
+
+</CodeBlock>
+
+</Tab>
+<Tab title="v1" sync="v1">
+
+<CodeBlock title="Endpoint" highlight="v1/apps/{app_token}/trackers/{link_token}/children">
+
+```http
+GET https://api.adjust.com/public/v1/apps/{app_token}/trackers/{link_token}/children
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
+
+Use this endpoint to get the sublinks for your specified app.
+
+### [Parameters](fetch-sublinks-parameters)
+
+<Tabs>
+<Tab title="v2" sync="v2">
+
+You MUST pass the following parameters in the **path** of your request:
+
+`app_token` (`String`)
+
+: The [alphanumeric token that identifies your app](https://help.adjust.com/en/article/app-token-and-reporting-currency#view-your-app-details). This MUST be 12 characters long.
+
+`tracker_token` (`String`)
+
+: The link token of the **parent link** the sublink is nested under.
+
+You MAY pass the following parameters in your request's **query parameters**
+
+`cursor` (`String`)
+
+: A cursor position.
+
+`limit` (`Integer`)
+
+: The maximum number of results to include in the response. This value MUST be a positive integer value. Defaults to `50`.
+
+</Tab>
+<Tab title="v1" sync="v1">
+
+You MUST pass the following parameters in the **path** of your request:
+
+`app_token` (`String`)
+
+: The [alphanumeric token that identifies your app](https://help.adjust.com/en/article/app-token-and-reporting-currency#view-your-app-details). This MUST be 12 characters long.
+
+`tracker_token` (`String`)
+
+: The link token of the **parent link** the sublink is nested under.
+
+You MAY pass the following parameters in your request's **query parameters**
+
+`after` (`String`)
+
+: The [cursor position](#fetch-sublinks-pagination) from which to start your request.
+
+`before` (`String`)
+
+: The [cursor position](#fetch-sublinks-pagination) at which to end your request.
+
+`limit` (`Integer`)
+
+: The maximum number of results to include in the response. This value MUST be a positive integer value. Defaults to `50`.
+
+</Tab>
+</Tabs>
+
+### [Pagination](fetch-sublinks-pagination)
+
+<Tabs>
+<Tab title="v2" sync="v2">
+
+Results from this endpoint are paginated using a cursor. Each results page contains a `paging` object containing cursor positions. You can use these cursor positions to programmatically move between pages. For example, the first page might contain results like this:
+
+<CodeBlock title="Pagination example">
+
+```json
+"paging": {
+   "next": "https://api.adjust.com/public/v2/apps/gwzpeepw8uf8/trackers/abc123/children?cursor=g2wAAAACYhW1_gxkAANuaWxq",
+   "cursor": "g2wAAAACYhW1_gxkAANuaWxq"
+}
+```
+
+</CodeBlock>
+
+To go to the second page, follow the `next` link to return results from the next specified `cursor` position.
+
+<CodeBlock title="cURL" highlight="cursor=g2wAAAACYhW1_gxkAANuaWxq">
+
+```console
+$ curl "https://api.adjust.com/public/v2/apps/gwzpeepw8uf8/trackers/abc123/children?cursor=g2wAAAACYhW1_gxkAANuaWxq"
+```
+
+</CodeBlock>
+
+To return to a specific location in the results, pass a `cursor` value in your requests **query params**.
+
+</Tab>
+<Tab title="v1" sync="v1">
+
+Results from this endpoint are paginated using a cursor. Each page returns the location of the `previous` and `next` pages. You can include these in your calls to return specific pages.
+
+Each results page contains a `paging` object containing the cursor positions. You can use these cursor positions to programmatically move between pages. For example, the first page might contain the following `paging` object:
+
+<CodeBlock title="Pagination example">
+
+```json
+"paging": {
+   "page_size": "50",
+   "collection_size": "49",
+   "total": "199",
+   "cursors": {
+      "after": "g2wAAAACYhW1_gxkAANuaWxq",
+      "before": null
+   },
+   "next": "https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers/abc123/children?after=g2wAAAACYhW1_gxkAANuaWxq&limit=50",
+   "previous": null
+}
+```
+
+</CodeBlock>
+
+To go to the second page, follow the `next` link to return results from the next specified `cursor` position.
+
+<CodeBlock title="cURL" highlight="after=g2wAAAACYhW1_gxkAANuaWxq">
+
+```console
+$ curl "https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers/abc123/children?after=g2wAAAACYhW1_gxkAANuaWxq"
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
+
+### [Response format](fetch-sublinks-response-format)
+
+```json
+{
+   "name": "String",
+   "token": "String",
+   "label": "String",
+   "level": 2,
+   "archived": false,
+   "has_subtrackers": false,
+   "partner_id": null,
+   "cost_data_enabled": false,
+   "url": "String",
+   "click_url": "String",
+   "impression_url": "String"
+}
+```
+
+### [Example](fetch-sublinks-example)
+
+<Tabs>
+<Tab title="v2" sync="v2">
+
+<CodeBlock title="cURL" highlight="gwzpeepw8uf8, abc123">
+
+```console
+$ curl \
+--header 'Authorization: Token token={API_TOKEN}'
+-L -X GET 'https://api.adjust.com/public/v2/apps/gwzpeepw8uf8/trackers/abc123/children?limit=1' \
+```
+
+</CodeBlock>
+
+<CodeBlock title="Success response">
+
+```json
+{
+   "data": {
+      "paging": {
+         "next": "https://api.adjust.com/public/v2/apps/gwzpeepw8uf8/trackers/abc123/children?cursor=g2wAAAACYhW1_gxkAANuaWxq&limit=1",
+         "cursor": "g2wAAAACYhW1_gxkAANuaWxq"
+      },
+      "items": [
+         {
+            "name": "Adroll::SpringCampaign",
+            "token": "xyz456",
+            "label": "SpringCampaign",
+            "level": 2,
+            "archived": false,
+            "has_subtrackers": false,
+            "partner_id": null,
+            "cost_data_enabled": false,
+            "url": "https://app.adjust.com/xyz456",
+            "click_url": "https://app.adjust.com/xyz456?idfa={idfa}&deeplink=http%3A%2F%2Fa.b%2Fc%3Fd%3D1%26e%3D%%MACROS%%",
+            "impression_url": "https://s2s.adjust.com/impression/xyz456?idfa={idfa}&s2s=1"
+         }
+      ]
+   }
+}
+```
+
+</CodeBlock>
+
+</Tab>
+<Tab title="v1" sync="v1">
+
+<CodeBlock title="cURL" highlight="gwzpeepw8uf8, abc123">
+
+```console
+$ curl \
+--header 'Authorization: Token token={API_TOKEN}'
+-L -X GET 'https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers/abc123/children?limit=1' \
+```
+
+</CodeBlock>
+
+<CodeBlock title="Success response">
+
+```json
+{
+   "data": {
+      "api_version": "1",
+      "request_id": "FcK55-tdJUDOWQIAABsB",
+      "timestamp": "2019-09-09T09:07:06Z",
+      "paging": {
+         "page_size": "1",
+         "collection_size": "1",
+         "total": "199",
+         "next": "https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers/abc123/children?after=g2wAAAACYhW1_gxkAANuaWxq&limit=1",
+         "previous": null,
+         "cursors": {
+            "after": "g2wAAAACYhW1_gxkAANuaWxq",
+            "before": null
+         }
+      },
+      "items": [
+         {
+            "name": "Adroll::SpringCampaign",
+            "token": "xyz456",
+            "label": "SpringCampaign",
+            "level": 2,
+            "archived": false,
+            "has_subtrackers": false,
+            "partner_id": null,
+            "cost_data_enabled": false,
+            "url": "https://app.adjust.com/xyz456",
+            "click_url": "https://app.adjust.com/xyz456?idfa={idfa}&deeplink=http%3A%2F%2Fa.b%2Fc%3Fd%3D1%26e%3D%%MACROS%%",
+            "impression_url": "https://s2s.adjust.com/impression/xyz456?idfa={idfa}&s2s=1"
+         }
+      ]
+   }
+}
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
+
+## [Create links](create-links)
+
+<CodeBlock title="Endpoint" highlight="{app_token}/trackers">
+
+```http
+POST https://api.adjust.com/public/v1/apps/{app_token}/trackers
+```
+
+</CodeBlock>
+
+Use this endpoint to create new links and sublinks for your app.
+
+### [Parameters](create-links-parameters)
+
+You MUST pass the following parameter in the **path** of your request:
+
+`app_token` (`String`)
+
+: The [alphanumeric token that identifies your app](https://help.adjust.com/en/article/app-token-and-reporting-currency#view-your-app-details). This MUST be 12 characters long.
+
+You MUST pass the following parameter in your request **data**:
+
+`name` (`String`)
+
+: The name of the new link.
+
+You MAY pass the following parameter in your request **data**:
+
+`parent_token` (`String`)
+
+: The link token of the **parent link** the sublink is nested under. Only required if you're creating a sublink.
+
+### [Response format](create-links-response-format)
+
+```json
+{
+   "name": "String",
+   "token": "String",
+   "label": "String",
+   "level": 1,
+   "archived": false,
+   "has_subtrackers": false,
+   "partner_id": 3,
+   "cost_data_enabled": false,
+   "url": "String",
+   "click_url": "String",
+   "impression_url": "String"
+}
+```
+
+The following `level` values are available:
+
+-  `1`: Network level
+-  `2`: Campaign level
+-  `3`: Adgroup level
+-  `4`: Creative level
+
+### [Example](create-links-example)
+
+The following examples demonstrate how to create a **link** and a **sublink**.
+
+#### [Create a link](create-a-link-example)
+
+<CodeBlock title="cURL">
+
+```console
+$ curl --location --request POST 'https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers' \
+--header 'Authorization: Token token={API_TOKEN}' \
+--header 'Content-Type: application/json' \
+--data-raw '{"name": "Adroll"}'
+```
+
+</CodeBlock>
+
+<CodeBlock title="Success response">
+
+```json
+{
+   "data": {
+      "api_version": "1",
+      "request_id": "FcK55-tdJUDOWQIAABsB",
+      "timestamp": "2019-09-09T09:07:06Z",
+      "items": [
+         {
+            "name": "Adroll",
+            "token": "abc123",
+            "label": "Adroll",
+            "level": 1,
+            "archived": false,
+            "has_subtrackers": false,
+            "partner_id": 3,
+            "cost_data_enabled": false,
+            "url": "https://app.adjust.com/abc123",
+            "click_url": "https://app.adjust.com/abc123?campaign={campaign_name}&idfa={idfa}&deeplink=http%3A%2F%2Fa.b%2Fc%3Fd%3D1%26e%3D%%MACROS%%",
+            "impression_url": "https://s2s.adjust.com/impression/abc123?campaign={campaign_name}&idfa={idfa}&s2s=1"
+         }
+      ]
+   }
+}
+```
+
+</CodeBlock>
+
+#### [Create a sublink](create-a-sublink-example)
+
+<CodeBlock title="cURL" highlight="parent_token">
+
+```console
+$ curl --location --request POST 'https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers' \
+--header 'Authorization: Token token={API_TOKEN}' \
+--header 'Content-Type: application/json' \
+--data-raw '{"parent_token": "abc123", "name": "SpringCampaign"}'
+```
+
+</CodeBlock>
+
+<CodeBlock title="Success response">
+
+```json
+{
+   "data": {
+      "api_version": "1",
+      "request_id": "FcK55-tdJUDOWQIAABsB",
+      "timestamp": "2019-09-09T09:07:06Z",
+      "items": [
+         {
+            "name": "Adroll::SpringCampaign",
+            "token": "xyz456",
+            "label": "SpringCampaign",
+            "level": 2,
+            "archived": false,
+            "has_subtrackers": false,
+            "partner_id": 3,
+            "cost_data_enabled": false,
+            "url": "https://app.adjust.com/xyz456",
+            "click_url": "https://app.adjust.com/xyz456?campaign={campaign_name}&idfa={idfa}&deeplink=http%3A%2F%2Fa.b%2Fc%3Fd%3D1%26e%3D%%MACROS%%",
+            "impression_url": "https://s2s.adjust.com/impression/xyz456?campaign={campaign_name}&idfa={idfa}&s2s=1"
+         }
+      ]
+   }
+}
+```
+
+</CodeBlock>
+
+## [Update links](update-links)
+
+<CodeBlock title="Endpoint" highlight="{app_token}/trackers/{link_token}">
+
+```http
+PATCH https://api.adjust.com/public/v1/apps/{app_token}/trackers/{link_token}
+```
+
+</CodeBlock>
+
+Use this endpoint to update existing links and sublinks for your app. You can add new partners to links or control whether cost data is enabled.
+
+### [Parameters](update-links-parameters)
+
+You MUST pass the following parameters in the **path** of your request:
+
+`app_token` (`String`)
+
+: The [alphanumeric token that identifies your app](https://help.adjust.com/en/article/app-token-and-reporting-currency#view-your-app-details). This MUST be 12 characters long.
+
+`tracker_token` (`String`)
+
+: The link token of the link you want to update.
+
+You MAY pass the following parameters in the **data** of your request:
+
+`partner_id` (`Integer`)
+
+: The ID of the partner you want to attach to the link. See [Fetch partners](#fetch-partners) above to fetch a list of partners and their IDs.
+
+`cost_data_enabled` (`Boolean`)
+
+: Whether to enable [Ad spend data](https://help.adjust.com/en/article/spendworks-adjust-ad-spend-solution) for the link.
+
+### [Response parameters](response-parameters)
+
+```json
+{
+   "name": "String",
+   "token": "String",
+   "label": "String",
+   "level": 1,
+   "archived": false,
+   "has_subtrackers": false,
+   "partner_id": 3,
+   "cost_data_enabled": false,
+   "url": "String",
+   "click_url": "String",
+   "impression_url": "String"
+}
+```
+
+The following `level` values are available:
+
+-  `1`: Network level
+-  `2`: Campaign level
+-  `3`: Adgroup level
+-  `4`: Creative level
+
+### [Example](update-links-example)
+
+<CodeBlock title="cURL" highlight="gwzpeepw8uf8, klm789">
+
+```console
+$ curl \
+--header 'Authorization: Token token={API_TOKEN}' \
+--header 'Content-Type: application/json' \
+--location --request PATCH 'https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers/klm789' \
+--data-raw '{"partner_id": 174, "cost_data_enabled": false}'
+```
+
+</CodeBlock>
+
+<CodeBlock title="Success response">
+
+```json
+{
+   "data": {
+      "api_version": "1",
+      "request_id": "FcK55-tdJUDOWQIAABsB",
+      "timestamp": "2019-09-09T09:07:06Z",
+      "items": [
+         {
+            "name": "Adcolony",
+            "token": "klm789",
+            "label": "Adcolony",
+            "level": 1,
+            "archived": false,
+            "has_subtrackers": false,
+            "partner_id": 174,
+            "cost_data_enabled": true,
+            "url": "https://app.adjust.com/klm789",
+            "impression_url": "https://s2s.adjust.com/impression/klm789?s2s=1&idfa=[IDFA]&gps_adid=[GOOGLE_AD_ID]&ip_address=  [IP_ADDRESS]&adcolony_click_id=[CLICK_ID]&android_id_upper_sha1=[SHA1_ANDROID_ID]&cost_id=[CLICK_ID]&cost_type=[BID_TYPE]&cost_amount=[BID]&cost_currency=USD",
+            "click_url": "https://s2s.app.adjust.com/klm789?s2s=1&idfa=[IDFA]&gps_adid=[GOOGLE_AD_ID]&ip_address=[IP_ADDRESS]&adcolony_click_id=[CLICK_ID]&android_id_upper_sha1=[SHA1_ANDROID_ID]&cost_id=[CLICK_ID]&cost_type=[BID_TYPE]&cost_amount=[BID]&cost_currency=USD"
+         }
+      ]
+   }
+}
+```
+
+</CodeBlock>
