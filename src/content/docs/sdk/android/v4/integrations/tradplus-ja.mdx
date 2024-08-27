@@ -1,0 +1,41 @@
+---
+title: "TradPlus SDKとの連携"
+description: "TradPlusとの連携を使用して、TradPlusの情報をAdjustサーバーにパスします。"
+slug: "ja/sdk/android/v4/integrations/tradplus"
+---
+
+<MinorVersion added="v4.38.1">
+
+TradPlus SDKで広告収益を計測したい場合は、SDK間連携の機能を使用することで、Adjustサーバーにこの情報をパスすることができます。
+
+</MinorVersion>
+<Callout type="note">
+
+TradPlusとの連携による広告収益計測についてご質問がございましたら、担当のテクニカルアカウントマネージャーもしくは[support@adjust.com](mailto:support@adjust.com)までお問い合わせください。
+
+</Callout>
+
+## [事前準備](before-you-begin)
+
+[連携ガイド](/ja/sdk/android)に従ってAdjust SDKをアプリに実装してください。
+
+## [例](example)
+
+Adjustで広告収益情報を記録するには、 `TradPlusSdk.setGlobalImpressionListener`関数内で`AdjustAdRevenue`インスタンスを作成します。詳細については、 [広告収益情報の送信](/ja/sdk/android/features/ad-revenue)をご覧ください。
+
+```java
+TradPlusSdk.setGlobalImpressionListener(new GlobalImpressionManager.GlobalImpressionListener() {
+
+    @Override
+    public void onImpressionSuccess(TPAdInfo tpAdInfo) {
+        AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue("TradPlus");
+        double ecpm = Double.valueOf(tpAdInfo.ecpm) / 1000;
+        adjustAdRevenue.setRevenue(ecpm, "USD");
+        adjustAdRevenue.setAdRevenueNetwork(tpAdInfo.adSourceName);
+        adjustAdRevenue.setAdRevenueUnit(tpAdInfo.tpAdUnitId);
+        adjustAdRevenue.setAdRevenuePlacement(tpAdInfo.format);
+
+        Adjust.trackAdRevenue(adjustAdRevenue);
+    }
+});
+```

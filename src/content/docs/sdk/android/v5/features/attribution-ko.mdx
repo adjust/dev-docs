@@ -1,0 +1,176 @@
+---
+title: "어트리뷰션 정보 확인"
+description: "Adjust SDK를 사용하여 어트리뷰션 변경 사항 수신"
+slug: "ko/sdk/android/features/attribution"
+---
+
+사용자가 Adjust 링크와 상호작용하면 어트리뷰션 정보가 업데이트됩니다. 이는 사용자가 [딥링크](https://help.adjust.com/ko/article/deep-links)와 상호작용하는 경우에 발생할 수 있습니다. 사용자의 어트리뷰션 관련 정보는 `AdjustAttribution` 클래스에 나타납니다.
+
+## [AdjustAttribution 클래스 속성](adjustattribution-class-properties)
+
+`AdjustAttribution` 클래스는 기기의 현재 어트리뷰션 상태에 관한 세부 내용을 포함합니다. 해당 사용자에 대해 입력되지 않은 모든 값은 `null` 값으로 반환됩니다.
+
+<Callout type="note">
+
+다음 값은 [`AdjustConfig` 인스턴스의 `needsCost` 속성](/ko/sdk/android/configuration#enable-cost-data-sending)이 `true`인 경우에만 액세스할 수 있습니다.
+
+-  `costType`
+-  `costAmount`
+-  `costCurrency`
+
+</Callout>
+<Table>
+
+| 값                  | 데이터 유형 | 설명                                                                                         |
+| ------------------- | ----------- | -------------------------------------------------------------------------------------------- |
+| `trackerToken`      | `String`    | 디바이스가 현재 어트리뷰션된 링크의 토큰                                                     |
+| `trackerName`       | `String`    | 디바이스가 현재 어트리뷰션된 링크의 이름                                                     |
+| `network`           | `String`    | 디바이스가 현재 어트리뷰션된 네트워크의 이름                                                 |
+| `campaign`          | `String`    | 디바이스가 현재 어트리뷰션된 캠페인의 이름                                                   |
+| `adgroup`           | `String`    | 디바이스가 현재 어트리뷰션된 광고그룹의 이름                                                 |
+| `creative`          | `String`    | 디바이스가 현재 어트리뷰션된 크리에이티브의 이름                                             |
+| `clickLabel`        | `String`    | 설치가 태그된 [click label](https://help.adjust.com/ko/article/user-rewards)                 |
+| `costType`          | `String`    | 캠페인 가격 모델\(예: CPI\)                                                                  |
+| `costAmount`        | `Double`    | 설치 비용                                                                                    |
+| `costCurrency`      | `String`    | 비용 관련 [3자 ISO 4217 통화 코드](https://www.iban.com/currency-codes)                      |
+| `fbInstallReferrer` | `String`    | [Facebook install referrer](https://developers.facebook.com/docs/app-ads/install-referrer/). |
+
+</Table>
+
+## [어트리뷰션 변경 시 함수 트리거](trigger-a-function-when-attribution-changes)
+
+<CodeBlock title="메서드 서명">
+
+```java
+public void setOnAttributionChangedListener(OnAttributionChangedListener onAttributionChangedListener)
+```
+
+</CodeBlock>
+
+SDK는 어트리뷰션 변경 사항을 받고 업데이트가 감지되면 함수를 호출합니다. 콜백 함수를 구성하려면 함수 이름을 인수로 사용하여 `setOnAttributionChangedListener` 메서드를 호출합니다.
+
+<Callout type="important">
+
+`setOnAttributionChangedListener` 메서드는 앱에서 Adjust SDK를 초기화하기 **이전** 에 호출해야 합니다.
+
+</Callout>
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val config = AdjustConfig(this, appToken, environment)
+//...
+config.setOnAttributionChangedListener {
+   override fun onAttributionChanged(attribution: AdjustAttribution) {}
+   }
+//...
+Adjust.initSdk(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+//...
+config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
+   @Override
+   public void onAttributionChanged(AdjustAttribution attribution) {}
+});
+//...
+Adjust.initSdk(config);
+```
+
+</Tab>
+</Tabs>
+
+### [Facebook 설치 리퍼러](facebook-install-referrer)
+
+Adjust SDK는 Facebook 설치 리퍼러 정보를 [`AdjustAttribution`객체](#adjustattribution-class-properties)의 `String` 속성으로 수신합니다. 이 정보는 컨텐츠를 JSON 객체로 serialize하여 액세스할 수 있습니다.
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val config = AdjustConfig(this, appToken, environment)
+//...
+config.setOnAttributionChangedListener {
+   val fbInstallReferrerJSONObject = extractFBInstallReferrerJSON(it)
+}
+
+fun extractFBInstallReferrerJSON(adjustAttribution: AdjustAttribution): JSONObject? {
+   try {
+      return JSONObject(adjustAttribution.fbInstallReferrer)
+   } catch (e: JSONException) {
+      Log.d("example", e.message!!)
+   }
+   return null
+}
+//...
+Adjust.initSdk(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+//...
+config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
+   @Override
+   public void onAttributionChanged(AdjustAttribution adjustAttribution) {
+   JSONObject fbInstallReferrerJSONObject = extractFBInstallReferrerJSON(adjustAttribution);
+   }
+});
+
+@Nullable
+JSONObject extractFBInstallReferrerJSON(AdjustAttribution adjustAttribution) {
+   try {
+      return new JSONObject(adjustAttribution.fbInstallReferrer);
+   } catch (JSONException e) {
+      Log.d("example", e.getMessage());
+   }
+   return null;
+}
+//...
+Adjust.initSdk(config);
+```
+
+</Tab>
+</Tabs>
+
+## [현재 어트리뷰션 정보 확인](get-current-attribution-information)
+
+<CodeBlock title="메서드 서명">
+
+```java
+public static void getAttribution(final OnAttributionReadListener attributionReadListener)
+```
+
+</CodeBlock>
+
+사용자가 앱을 설치하면 Adjust는 해당 설치를 캠페인에 어트리뷰션합니다. Adjust SDK를 사용하면 설치 캠페인 어트리뷰션 정보에 액세스할 수 있습니다. 이 정보를 반환하려면 `Adjust.getAttribution` 메서드에 리스터 함수를 전달합니다. SDK는 비동기적으로 정보를 가져와 이 정보를 `AdjustAttribution` 객체로 리스너 함수에 전달합니다.
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+Adjust.getAttribution {attribution ->
+            // read attribution
+        }
+```
+
+</Tab>
+<Tab title="Java" sync="java" >
+
+```java
+Adjust.getAttribution(new OnAttributionReadListener() {
+    @Override
+    public void onAttributionRead(AdjustAttribution attribution) {
+    }
+});
+
+```
+
+</Tab>
+</Tabs>

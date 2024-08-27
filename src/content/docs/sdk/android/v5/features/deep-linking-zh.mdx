@@ -1,0 +1,340 @@
+---
+title: "设置深度链接"
+description: "配置 SDK 以使用深度链接。"
+slug: "zh/sdk/android/features/deep-links"
+---
+
+您可以创建深度链接来将用户转到应用中的特定页面。针对用户是否已在设备上安装您的应用，Adjust SDK 会使用不同的逻辑：
+
+-  直接深度链接：用于用户已经安装应用的情况。用户会被转向链接中指定的页面。
+-  如果用户尚未安装应用，那么就会发生延迟深度链接。链接首先会将用户转向应用商店页面来安装应用。用户安装后，就会被带到链接中指定的页面。
+
+用户通过链接打开应用后，SDK 就可以读取深度链接数据了。
+
+## [配置方案名称](configure-your-scheme-name)
+
+如果用户已经安装了您的应用，那么在与包含深度链接信息的链接互动时，应用就会打开。Adjust SDK 中包含的工具能够解析深度链接信息，在应用中使用。要设置深度链接，请选择一个唯一的 **Scheme 名称** 。
+
+您可以进行设置，在用户与深度链接互动时启动特定活动。为此请进行下列操作：
+
+1. 在您的 `AndroidManifest.xml` 文件中为活动指定 **scheme 名称** 。
+2. 向活动定义添加一个 `intent-filter` 节点。
+3. 在 `intent-filter` 节点中添加一个包含 **Scheme 名称** 的`android:scheme` 数据节点。
+4. 对于[安卓应用链接](https://help.adjust.com/zh/article/set-up-android-app-links)，添加`intent`过滤器，指定应用可以处理的 URL。在`intent`过滤器中纳入带`android:autoVerify="true"`属性的`data`元素。
+
+### [示例](example)
+
+该示例展示了如何设置名为 `MainActivity` 的活动，并以 **Scheme 名称** `adjustExample` 将其打开。
+
+<CodeBlock title="AndroidManifest.xml" highlight=".MainActivity, adjustExample">
+
+```xml
+<activity    android:name=".MainActivity"    android:configChanges="orientation|keyboardHidden"    android:label="@string/app_name"    android:screenOrientation="portrait">
+
+   <intent-filter>
+      <action android:name="android.intent.action.MAIN" />
+      <category android:name="android.intent.category.LAUNCHER" />
+   </intent-filter>
+
+   <intent-filter>
+      <action android:name="android.intent.action.VIEW" />
+      <category android:name="android.intent.category.DEFAULT" />
+      <category android:name="android.intent.category.BROWSABLE" />
+      <data android:scheme="adjustExample" />
+   </intent-filter>
+
+   <intent-filter android:autoVerify="true">
+    <action android:name="android.intent.action.VIEW" />
+    <category android:name="android.intent.category.DEFAULT" />
+    <category android:name="android.intent.category.BROWSABLE" />
+    <data android:scheme="http" android:host="insights.go.link" />
+    <data android:scheme="https" android:host="insights.go.link" />
+   </intent-filter>
+
+</activity>
+```
+
+</CodeBlock>
+<Callout type="info">
+
+`insights.go.link` 是被定义为安卓应用链接的品牌化域名。
+
+</Callout>
+
+您的应用现在可以同时处理 URI 方案和安卓应用链接了。当用户点击的链接与已声明的 URI scheme 或安卓应用链接相匹配时，您的应用就会自动打开。
+
+如果用户点击了带有 `deep_link` 参数的连接，且该参数中包含您的 **Scheme 名称** ，那么活动就会触发。
+
+<CodeBlock highlight="deep_link=adjustExample%3A%2F%2F">
+
+```html
+https://app.adjust.com/abc123?deep_link=adjustExample%3A%2F%2F
+```
+
+</CodeBlock>
+
+## [访问深度链接信息](access-deep-link-information)
+
+您可以指定 `deep_link` 参数内容的发送位置。为此，请在 `AndroidManifest.xml` 文件中设置活动的 `android:launchMode` 属性。
+
+<Callout type="seealso">
+
+请查看 [`android:launchMode` 文档](https://developer.android.com/guide/topics/manifest/activity-element.html) ，了解更多信息。
+
+</Callout>
+
+Adjust SDK 会使用 `onCreate` 或 `onNewIntent` 方法，传递活动 intent 对象中的深度连接信息。应用启动，且上述方法之一被调用后，您就可以读取深度链接内容了。然后，您可以在应用的其他位置访问这些信息。
+
+在 `onCreate` 或 `onNewIntent` 方法中调用 `getData()` 方法，以提取深度链接信息。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+override fun onCreate(savedInstanceState: Bundle?) {
+   super.onCreate(savedInstanceState)
+   setContentView(R.layout.activity_main)
+
+   val intent = intent
+   val data = intent.data
+   // data.toString() -> This is your deep_link parameter value.
+}
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+   super.onCreate(savedInstanceState);
+   setContentView(R.layout.activity_main);
+
+   Intent intent = getIntent();
+   Uri data = intent.getData();
+   // data.toString() -> This is your deep_link parameter value.
+}
+```
+
+</Tab>
+</Tabs>
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+override fun onNewIntent(intent: Intent?) {
+   super.onNewIntent(intent)
+   val data = intent?.data
+   // data.toString() -> This is your deep_link parameter value.
+}
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+@Override
+protected void onNewIntent(Intent intent) {
+   super.onNewIntent(intent);
+
+   Uri data = intent.getData();
+   // data.toString() -> This is your deep_link parameter value.
+}
+```
+
+</Tab>
+</Tabs>
+
+## [延迟深度链接](deferred-deep-linking)
+
+Adjust SDK 默认自动打开延迟深度链接。无需额外设置。如果您想禁用该行为，则需要使用 `AdjustConfig.setOnDeferredDeeplinkResponseListener` 方法设置一个延迟深度链接回传。
+
+### [设置延迟深度链接回传](set-up-a-deferred-deep-link-callback)
+
+<CodeBlock title="方法签名">
+
+```java
+public void setOnDeferredDeeplinkResponseListener(OnDeferredDeeplinkResponseListener onDeferredDeeplinkResponseListener)
+```
+
+</CodeBlock>
+
+您可以配置 Adjust SDK，使其在接收到延迟深度链接时调用一个委托函数。委托函数会以 `String` 参数的形式接收深度链接。
+
+如果想打开深度链接，请在委托函数中返回 `true` 。如果不想打开，请返回 `false`。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+<CodeBlock highlight="{range: 3-7}">
+
+```kotlin
+val config = AdjustConfig(this, appToken, environment)
+//...
+config.setOnDeferredDeeplinkResponseListener { deeplink ->
+   Log.d("example", "Deferred deep link callback called!")
+   Log.d("example", "Deep link URL: $deeplink")
+   true
+}
+//...
+Adjust.initSdk(config)
+```
+
+</CodeBlock>
+</Tab>
+<Tab title="Java" sync="java">
+<CodeBlock highlight="{range: 3-12}">
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+//...
+// Evaluate the deeplink to be launched.
+config.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListener() {
+   @Override
+   public boolean launchReceivedDeeplink(Uri deeplink) {
+      Log.d("example", "Deferred deep link callback called!");
+      Log.d("example", "Deep link URL: " + deeplink);
+
+      return true;
+   }
+});
+//...
+Adjust.initSdk(config);
+```
+
+</CodeBlock>
+</Tab>
+</Tabs>
+
+### [示例](example-1)
+
+本示例展示了如何通过在回传函数中返回 `false` 值来阻止 SDK 启动活动。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+<CodeBlock highlight="false">
+
+```kotlin
+config.setOnDeferredDeeplinkResponseListener { deeplink ->
+   false
+}
+```
+
+</CodeBlock>
+</Tab>
+<Tab title="Java" sync="java">
+<CodeBlock highlight="false">
+
+```java
+config.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListener() {
+   @Override
+   public boolean launchReceivedDeeplink(Uri deeplink) {
+      return false;
+   }
+});
+```
+
+</CodeBlock>
+</Tab>
+</Tabs>
+
+## [通过深度链接进行再归因](reattribution-via-deep-links)
+
+<CodeBlock title="方法签名">
+
+```java
+public static void processDeeplink(Uri url, Context context)
+```
+
+</CodeBlock>
+
+Adjust 支持使用深度链接进行再交互推广活动。要了解更多信息，请查看如何[在 Campaign Lab 中设置深度链接](https://help.adjust.com/zh/article/deep-links)。
+
+要对用户进行再归因，您需要在打开 Activity 的`onCreate`和`onNewIntent`方法中调用`Adjust.processDeeplink`方法。这样，Adjust SDK 就会在深度链接中寻找新的归因信息。如果 SDK 找到新信息，就会将其转发至 Adjust 服务器进行再归因。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+override fun onCreate(savedInstanceState: Bundle?) {
+   super.onCreate(savedInstanceState)
+   setContentView(R.layout.activity_main)
+
+   val intent = intent
+   val data = intent.data
+   Adjust.processDeeplink(data, applicationContext)
+}
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+
+    Intent intent = getIntent();
+    Uri data = intent.getData();
+    Adjust.processDeeplink(data, getApplicationContext());
+}
+```
+
+</Tab>
+</Tabs>
+
+## [链接解析](link-resolution)
+
+<CodeBlock title="方法签名">
+
+```java
+public static void resolveLink(final String url,
+                               final String[] resolveUrlSuffixArray,
+                               final AdjustLinkResolutionCallback adjustLinkResolutionCallback)
+```
+
+</CodeBlock>
+
+有的电子邮件服务提供商 \(ESP\) 会针对营销推广活动使用自有的自定义域名。如果您需要通过自定义域名监测点击，就要设置 SDK 以解析链接。为此，请调用 `AdjustLinkResolution` 类的 `resolveLink` 方法。此时，Adjust SDK 就会跟随自定义链接，在打开深度链接时进行解析。这样，您就能记录用户与电子邮件推广活动的互动了。
+
+`resolveLinkWithUrl` 方法使用下列参数：
+
+-  `url` \(`String`\)：打开应用的深度链接。
+-  `resolveUrlSuffixArray` \(`String[]`\)：需要解析的、已设置推广活动的自定义域名。
+-  `adjustLinkResolutionCallback` \(`AdjustLinkResolutionCallback`\)：返回最终 URL 的回传。
+
+该方法会比对深度链接和 `resolveUrlSuffixArray`中的域。如果找不到任何匹配，就会按原样转发深度链接 URL。如果找到了匹配，就会尝试解析链接并返回得出的深度链接，然后将其保存在回传参数中。
+
+<Callout type="note">
+
+在尝试解析 URL 时，Adjust SDK 会追溯最多 10 个重定向，并将其中最新的 URL 返回为回传 URL。也就是说，如果要追溯的重定向超过 10 个，那么 SDK 就会返回第 **10** 个重定向 URL。
+
+</Callout>
+
+此时，您就可以使用返回的深度链接进行用户再归因了。为此，请将深度链接传递至 `Adjust.processDeeplink` 方法。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+AdjustLinkResolution.resolveLink(url, arrayOf("example.com"), object : AdjustLinkResolution.AdjustLinkResolutionCallback {
+   override fun resolvedLinkCallback(resolvedLink: Uri) {
+         Adjust.processDeeplink(resolvedLink, applicationContext)
+   }
+})
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustLinkResolution.resolveLink(url, new String[]{"example.com"}, new AdjustLinkResolution.AdjustLinkResolutionCallback() {
+   @Override
+   public void resolvedLinkCallback(Uri resolvedLink) {
+      Adjust.processDeeplink(resolvedLink, getApplicationContext());
+   }
+});
+```
+
+</Tab>
+</Tabs>

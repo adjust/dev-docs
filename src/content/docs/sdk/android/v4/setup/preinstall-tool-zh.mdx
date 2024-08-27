@@ -1,0 +1,191 @@
+---
+title: "Adjust 商店和预安装工具"
+description: "设置 Adjust SDK 预安装工具。"
+slug: "zh/sdk/android/v4/setup/preinstall-tool"
+---
+
+如果设备上预安装了您的应用，就需要使用预安装链接进行用户归因。您可以通过 Adjust 商店和预安装工具 \(`adjust-dtt`\) 将该信息插入 APK。Adjust SDK 会读取 `adjust-dtt` 插入的信息，从而将预安装应用的用户归因至特定的 Adjust 链接。
+
+## [操作前须知](before-you-begin)
+
+<Callout type="note">
+
+任何能生成 APK 的开发框架都可以使用该工具。
+
+</Callout>
+
+首先，请从 [GitHub](https://github.com/adjust/android_sdk/blob/master/tools/adjust-dtt) 下载 `adjust-dtt` 工具。您需要将下载的文件设为可执行文件才能使用。要将文件格式设为可执行，请运行下列命令：
+
+```console
+$ chmod +x adjust-dtt
+```
+
+在能够使用 `adjust-dtt` 之前，您必须完成机器设置。`adjust-dtt` 要求您在设备上安装下列工具：
+
+-  `ruby`：用来运行 `adjust-dtt` 的语言工具。
+-  `apktool`：用来解包和重新打包 APK 的工具。
+-  `jarsigner`：用来进行 APK 签名的工具。
+
+请按照对应说明，安装所有工具。
+
+<Callout type="important">
+
+您系统的 `PATH` 中必须安装有全部上述工具，才能运行 `adjust-dtt`。
+
+</Callout>
+
+### [ruby](ruby)
+
+<Tabs>
+<Tab title="Mac OS" sync="mac">
+
+macOS 设备上已预装 Ruby。
+
+</Tab>
+<Tab title="Linux" sync="linux">
+
+请查看 [ruby\-lang 网站上列出](https://www.ruby-lang.org/en/documentation/installation/)的对应发布版本说明。
+
+</Tab>
+</Tabs>
+
+### [apktool](apktool)
+
+<Tabs>
+<Tab title="Mac OS" sync="mac">
+
+您可以使用 [Homebrew](https://brew.sh/) 安装 Apktool。
+
+```console
+$ brew install apktool
+```
+
+您也可以按照 [Apktool 网站](https://ibotpeaches.github.io/Apktool/install/)上的说明操作。
+
+</Tab>
+<Tab title="Linux" sync="linux">
+
+请查看 [Apktool 网站上列出](https://ibotpeaches.github.io/Apktool/install/)的对应发布版本说明。
+
+</Tab>
+</Tabs>
+
+### [jarsigner](jarsigner)
+
+<Tabs>
+<Tab title="Mac OS" sync="mac">
+
+`jarsigner` 已经包含在 Java Development Kit \(JDK\) 中，OpenJDK 和 Oracle JDK 安装均可用。您可以使用 [Homebrew](https://brew.sh) 安装 OpenJDK。为此，请运行下列命令：
+
+```console
+$ brew install openjdk@16
+```
+
+如果您使用的是 Oracle JDK，请按照 [Oracle 网站](https://docs.oracle.com/en/java/javase/16/install/installation-jdk-macos.html#GUID-E8A251B6-D9A9-4276-ABC8-CC0DAD62EA33)上的说明操作。
+
+</Tab>
+<Tab title="Linux" sync="linux">
+
+`jarsigner` 已经包含在 Java Development Kit \(JDK\) 中，OpenJDK 和 Oracle JDK 安装均可用。许多主要发行版的库中都有 OpenJDK。请查看发行版对应的安装说明，安装 OpenJDK。要使用`jarsigner`，您需要安装开发包。
+
+如果您使用的是 Oracle JDK，请按照 [Oracle 网站](https://docs.oracle.com/en/java/javase/16/install/installation-jdk-linux-platforms.html#GUID-737A84E4-2EFF-4D38-8E60-3E29D1B884B8)上的说明操作。
+
+</Tab>
+</Tabs>
+
+## [添加预安装链接信息](add-preinstall-link-info)
+
+### [步骤 1\. 获取密钥库文件](step-1-get-keystore-file)
+
+创建 APK 后，Android Studio 就会为其签名。即便您生成了 "unsigned" \(未签名\) 版本的 APK 也是如此，这种情况下，Android Studio 会使用默认调试签名密钥库文件为 APK 签名。该密钥库文件默认位于`~/.android/debug.keystore`。
+
+如果从 Android Studio 导出已签名的 APK，您就需要使用自定义签名密钥库文件为 APK 签名。
+
+您需要拥有默认密钥库文件或自定义密钥库文件访问权限，才能使用`adjust-dtt`，因为使用`apktool`解包 APK 时，所有签名都会被 apktool 移除。重新打包 APK 并不会重新启用签名。您需要使用签名信息运行`jarsigner`，才能为 APK 重新签名，然后向 安卓 设备发送。
+
+### [第 2 步. 创建链接](step-2-create-link)
+
+下一步，请在 Adjust 控制面板中创建链接。该链接识别码将会是预安装应用的默认推广链接。也就是说，所有预先安装应用的用户都会被归因至该识别码。
+
+### [步骤 3\. 创建 config 文件](step-3-create-a-config-file)
+
+具备密钥库文件和链接识别码后，就可以创建配置 \(config\) 文件了。`adjust-dtt`使用一个`adjust-config.yaml`配置文件来读取您的设置。该文件中包含需要您设置的不同应用商店选项。
+
+<Table>
+
+| 参数              | 数据类型 | 全局设置或按商店设置 | 描述                               |
+| ----------------- | -------- | -------------------- | ---------------------------------- |
+| `apk_path`        | `String` | 两者兼需             | APK 的绝对路径。                   |
+| `keystore_path`   | `String` | 两者兼需             | 密钥库文件的绝对路径。             |
+| `keystore_pass`   | `String` | 两者兼需             | 密钥库签名密码。                   |
+| `keystore_alias`  | `String` | 两者兼需             | 密钥库名称。                       |
+| `default_tracker` | `String` | 按商店设置           | 用来归因预安装的 Adjust 链接识别码 |
+
+</Table>
+
+下方示例 `adjust-config.yaml` 文件中包含名为 `store_1`、`store_2` 和 `store_3` 的三个商店。
+
+<CodeBlock title="adjust-config.yaml">
+
+```yaml
+apk_path: /Users/username/Desktop/apk/example-release.apk
+keystore_path: /Users/username/Desktop/apk/mykeystore.jks
+keystore_pass: mykeystorepass
+keystore_alias: mykeystorealias
+stores:
+   store_1:
+      default_tracker: abc123
+   store_2:
+      default_tracker: abc456
+   store_3:
+      default_tracker: abc789
+```
+
+</CodeBlock>
+
+如果您想为所有商店应用同样的设置，请在根文件中定义全局参数。单个商店设置的参数将覆盖该商店的全局参数。例如：
+
+<CodeBlock title="adjust-config.yaml">
+
+```yaml
+apk_path: /Users/username/Desktop/apk/example-release.apk
+keystore_path: /Users/username/Desktop/apk/mykeystore.jks
+keystore_pass: mykeystorepass
+keystore_alias: mykeystorealias
+stores:
+   store_1:
+      default_tracker: abc123
+      keystore_path: /Users/username/Desktop/apk/differentkeystore.jks
+      keystore_pass: differentkeystorepass
+      keystore_alias: differentkeystorealias
+   store_2:
+      default_tracker: abc456
+   store_3:
+      default_tracker: abc789
+```
+
+</CodeBlock>
+
+在此示例中，`adjust-dtt` 工具在生成 `store_1` 的 APK 时，将使用`differentkeystore.jks`、`differentkeystorepass`和`differentkeystorealias`。该工具会针对每个商店生成经过调整的 APK。
+
+### [步骤 4\. 运行 adjust\-dtt 工具](step-4-run-the-adjust-dtt-tool)
+
+`adjust-dtt`工具将`adjust-config.yaml`文件路径作为一个参数。要向 APK 添加跟踪链接信息，请按照下列方式运行工具：
+
+```console
+$ adjust-dtt adjust-config.yaml
+```
+
+`adjust-dtt` 可实现下列功能：
+
+1. 将 APK 解包至文件夹。文件夹与 APK 位于同一个目录，名称与 APK 相同。
+2. 查找 `assets` 文件夹和 `adjust_config.properties` 文件。`adjust_config.properties` 中包含默认推广活动信息。
+
+   1. 创建`assets`文件夹和`adjust_config.properties`文件（如二者尚未被创建）。工具将您的`default_tracker`信息写入`adjust_config.properties`文件。
+   2. 将 `default_tracker` 信息写入 `adjust_config.properties` 文件（如该文件存在）。如果文件已经包含默认推广活动值，那么工具就会比较两个推广活动值。如果两者不相同，现有的值就会被 `adjust-config.yaml` 文件中的跟踪链接值覆盖。
+
+3. 重新打包 APK。
+4. 使用`adjust-config.yaml`中的信息为 APK 签名。使用`keystore_path`、`keystore_pass`、和`keystore_alias`参数。
+5. 生成 APK，名称与原 APK 相同，但带有 `_[store_name]`后缀。在上述示例中，工具生成了 3 个 APK 文件。这些文件将被命名为`example-release_store_1.apk`、`example-release_store_2.apk`和`example-release_store_3.apk`。您可以在文件生成后进行重命名。
+
+如果您在使用该工具时遇到了任何疑问或问题，请联系 [support@adjust.com](mailto:support@adjust.com)。

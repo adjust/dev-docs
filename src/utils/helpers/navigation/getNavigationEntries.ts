@@ -15,28 +15,47 @@ export const getNavigationEntries = (
   pages: MDXInstance<Record<string, any>>[],
   currentPage: string,
   currentLang: keyof Locales,
-  currentPageType?: NavigationEntry["type"]
+  currentPageType?: NavigationEntry["type"],
+  currentVersion: string = "v5",
 ): NavigationData => {
   // filtering data by the current language
   const filteredPagesData = pages.filter((pageData) => {
     const data = pageData.frontmatter;
     // as we have partials inside content structure we don`t need to parse this data for the tree
     const isPage = Object.keys(data).length;
-    return isPage && pageData.frontmatter.slug.includes(`${currentLang}/`);
+    const url = pageData.url || "";
+    const isVersioned = /\/\w*v\d/gi.test(url);
+    const isCurrentVersion = isVersioned
+      ? url?.includes(`/${currentVersion}/`)
+      : true;
+
+    return (
+      isPage &&
+      pageData.frontmatter.slug.includes(`${currentLang}/`) &&
+      isCurrentVersion
+    );
   });
+
   // getting formatted data for the pages
-  const pagesData = filteredPagesData.map((page) => ({
-    ...page.frontmatter,
-    path: page.url?.replace(".mdx", ""),
-    url: page.url ? getLastPath(page.url) : "",
-  }));
+  const pagesData = filteredPagesData.map((page) => {
+    const path = page.url?.replace(".mdx", "");
+    const updatedPath = path?.includes(`/${currentVersion}/`)
+      ? path.replace(`/${currentVersion}/`, "/")
+      : path;
+    return {
+      ...page.frontmatter,
+      updatedPath,
+      path,
+      url: updatedPath ? getLastPath(updatedPath) : "",
+    };
+  });
 
   // data for the pages under current language root
   const { categories, breadcrumbs, childLinks } = getCategoriesUnderLanguage(
     pagesData as NavigationEntry[],
     currentPage,
     currentLang,
-    currentPageType
+    currentPageType,
   );
 
   // language object with a hierarchy for the categories

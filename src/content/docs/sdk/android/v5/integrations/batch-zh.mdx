@@ -1,0 +1,47 @@
+---
+title: "Batch.com SDK 集成"
+description: "使用 Batch.com 集成，向 Adjust 服务器传送 Batch.com 信息。"
+slug: "zh/sdk/android/integrations/batch"
+---
+
+您可以使用以下方法之一实现 Adjust SDK 与 Batch.com 事件的集成。
+
+## [操作前须知](before-you-begin)
+
+要使用该功能，请先下载并设置 Adjust Android SDK。
+
+要集成 Adjust 和 Batch.com SDK，您需要将归因发送到 Batch.com SDK。收到 Adjust 服务器响应后，您应该发送此信息。为此，请按照[归因回传设置指南](/zh/sdk/android/features/callbacks)中的步骤进行操作。
+
+## [示例](example)
+
+您可通过以下方式设置回传方法：
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+
+config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
+    @Override
+    public void onAttributionChanged(AdjustAttribution attribution) {
+        // Initiate Batch user editor to set new attributes.
+        BatchUserDataEditor editor = Batch.User.editor();
+
+        if (attribution.network != null) {
+            editor.setAttribute("adjust_network", attribution.network);
+        }
+        if (attribution.campaign != null) {
+            editor.setAttribute("adjust_campaign", attribution.campaign);
+        }
+        if (attribution.adgroup != null) {
+            editor.setAttribute("adjust_adgroup", attribution.adgroup);
+        }
+        if (attribution.creative != null) {
+            editor.setAttribute("adjust_creative", attribution.creative);
+        }
+
+        // Send new attributes to Batch servers.
+        editor.save();
+    }
+});
+
+Adjust.initSdk(config);
+```

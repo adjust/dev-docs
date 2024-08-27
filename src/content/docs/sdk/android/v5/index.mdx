@@ -1,0 +1,387 @@
+---
+title: Android SDK integration guide
+description: Use the Android SDK to access Adjust's features in your Android apps
+category-title: Android SDK
+slug: en/sdk/android
+sidebar-position: 1
+redirects:
+   v4: /en/sdk/android/v4
+---
+
+The Adjust Android SDK enables you to record attribution, events, and more in your Android app. Follow the steps in this guide to set up your app to work with the Adjust SDK.
+
+## [Before you begin](before-you-begin)
+
+Here's what you need to do before updating to SDK v5:
+
+1. SDK v5 supports [SDK signature verification](https://help.adjust.com/en/article/sdk-signature) natively. If you currently use the SDK signature library, you need to uninstall this first.
+2. If your app targets API versions lower than [**21**](https://developer.android.com/tools/releases/platforms#5.0) you need to update your app before you can use SDK v5.
+
+## [1. Set up your environment](set-up-your-environment)
+
+To use the Adjust SDK, you need to add it to your project as a dependency. The Adjust SDK is available on [Maven](https://maven.apache.org).
+
+To add the Adjust SDK to your project:
+
+1. Add the Adjust SDK and Android install referrer implementations to your `build.gradle` file. Optionally add the Adjust web view bridge if you use web views in your app.
+
+   <CodeBlock title="build.gradle">
+
+   ```groovy
+   dependencies {
+      implementation 'com.adjust.sdk:adjust-android:5.0.0'
+      implementation 'com.android.installreferrer:installreferrer:2.2'
+      // Add the following if you are using the Adjust SDK inside web views on your app
+      implementation 'com.adjust.sdk:adjust-android-webbridge:5.0.0'
+   }
+   ```
+
+   </CodeBlock>
+
+## [2. Add Google Play Services](add-google-play-services)
+
+Apps that target the Google Play Store must use the `gps_adid` (Google Advertising ID) to identify devices. You need to add the `play-services-ads-identifier` AAR to your project to access the `gps_adid`.
+
+If you're using Maven, add the following to your `build.gradle` file:
+
+<CodeBlock title="build.gradle">
+
+```groovy
+dependencies {
+   implementation 'com.google.android.gms:play-services-ads-identifier:18.0.1'
+}
+```
+
+</CodeBlock>
+
+## [3. Add permissions](add-permissions)
+
+To give the Adjust SDK access to device information, you need to declare which permissions your app requires. To do this, add permissions to your `AndroidManifest.xml` file.
+
+Add the following permissions to get access to online features:
+
+<CodeBlock title="AndroidManifest.xml">
+
+```xml
+<uses-permission android:name="android.permission.INTERNET"/>
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+```
+
+</CodeBlock>
+
+If your app doesn't target the Google Play Store, add the following permission to access the device's network state:
+
+<CodeBlock title="AndroidManifest.xml">
+
+```xml
+<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+```
+
+</CodeBlock>
+
+The Adjust SDK includes the `com.google.android.gms.AD_ID` permission by default. If you need to make your app COPPA (Children's Online Privacy Protection Act) compliant or if your app doesn't target the Google Play Store, you must remove this permission using a `remove` directive.
+
+<CodeBlock title="AndroidManifest.xml">
+
+```xml
+<uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
+```
+
+</CodeBlock>
+
+## [4. Set up Proguard](set-up-proguard)
+
+If you're using Proguard to optimize your app, you must add rules to prevent Proguard from removing classes.
+
+<CodeBlock title="Proguard.pro">
+
+```java
+-keep class com.adjust.sdk.** { *; }
+-keep class com.google.android.gms.common.ConnectionResult {
+   int SUCCESS;
+}
+-keep class com.google.android.gms.ads.identifier.AdvertisingIdClient {
+   com.google.android.gms.ads.identifier.AdvertisingIdClient$Info getAdvertisingIdInfo(android.content.Context);
+}
+-keep class com.google.android.gms.ads.identifier.AdvertisingIdClient$Info {
+   java.lang.String getId();
+   boolean isLimitAdTrackingEnabled();
+}
+-keep public class com.android.installreferrer.** { *; }
+```
+
+</CodeBlock>
+
+If you're not publishing your app in the Google Play Store, add the following rule:
+
+<CodeBlock title="Proguard.pro">
+
+```java
+-keep public class com.adjust.sdk.** { *; }
+```
+
+</CodeBlock>
+
+## [5. Set up install referrer](set-up-install-referrer)
+
+An install referrer is a unique identifier used to attribute an install to a source. The Adjust SDK requires this information to perform attribution. Use one of the following methods to retrieve the install referrer information:
+
+### [Google Play Referrer API](google-play-referrer-api)
+
+The Google Play Referrer API is available to apps that target the Google Play Store.
+
+To support the Google Play Referrer API, add the following to your `build.gradle` file:
+
+<CodeBlock title="build.gradle">
+
+```groovy
+dependencies {
+   implementation 'com.android.installreferrer:installreferrer:2.2'
+}
+```
+
+</CodeBlock>
+
+If you're using Proguard, remember to add a rule to prevent the dependency from being removed.
+
+<CodeBlock title="Proguard.pro">
+
+```java
+-keep public class com.android.installreferrer.** { *; }
+```
+
+</CodeBlock>
+
+### [Huawei Referrer API](huawei-referrer-api)
+
+The Huawei Referrer API is available to apps that target Huawei devices. The Adjust SDK can record installs on Huawei devices using the Adjust Huawei Referrer plugin.
+
+To install this plugin, add the following dependency to your `build.gradle` file:
+
+<CodeBlock title="build.gradle">
+
+```groovy
+dependencies {
+   implementation: "com.adjust.sdk:adjust-android-huawei-referrer:5.0.0"
+}
+```
+
+</CodeBlock>
+
+### [Xiaomi referrer plugin](xiaomi-referrer-plugin)
+
+The Xiaomi referrer plugin enables you to record install referrer values for apps that target Xiaomi devices. See the [plugin documentation](/en/sdk/android/plugins/xiaomi-referrer) for install information.
+
+### [Samsung referrer plugin](samsung-referrer-plugin)
+
+The Samsung referrer plugin enables you to record install referrer values for apps that target the Samsung Galaxy store. See the [plugin documentation](/en/sdk/android/plugins/samsung-referrer-plugin) for install information.
+
+### [Meta referrer integration](meta-referrer-integration)
+
+The Adjust SDK supports the [Meta Install Referrer](https://developers.facebook.com/docs/app-ads/meta-install-referrer) using the Adjust Meta Install Referrer plugin. [See the documentation for integration details](/en/sdk/android/plugins/meta-referrer-plugin).
+
+## [6. Set up SDK Signature](set-up-sdk-signature)
+
+SDK v5 includes the [SDK signature library](https://help.adjust.com/en/article/sdk-signature). Signature protection is inactive by default. To enable it, you need to:
+
+1. [Enforce signature validation](https://help.adjust.com/en/article/sdk-signature#enforce-signature-validation).
+2. [Provide your app's SHA-1 fingerprints](https://help.adjust.com/en/article/sdk-signature#manage-your-certificate-fingerprints) prior to testing.
+
+## [7. Integrate the Adjust SDK](integrate-the-adjust-sdk)
+
+The following information is required to initialize the Adjust SDK:
+
+-  `appToken`: Your [Adjust app token](https://help.adjust.com/en/article/app-settings#view-your-app-token).
+-  `environment`: The environment your app is running in. Set this to `AdjustConfig.ENVIRONMENT_SANDBOX` to test your app locally.
+
+The recommended way to initialize the Adjust SDK is inside a global Android [Application class](http://developer.android.com/reference/android/app/Application.html). If you haven't already set this up for your app, follow these steps:
+
+1. Create a class that extends the `Application`.
+2. Open the `AndroidManifest.xml` file and locate the `<application>` element.
+3. Add the `android:name` attribute to the `<application>` element and set it to the name of your application class. For example, if your `Application` class is named `GlobalApplication`, you would set the following:
+
+   <CodeBlock title="AndroidManifest.xml">
+
+   ```xml
+   <application android:name=".GlobalApplication">
+      <!-- ... -->
+   </application>
+   ```
+
+   </CodeBlock>
+
+4. Find the `initSdk` method in your `Application` class or add one if it doesn't exist. Pass the following parameters to initialize the Adjust SDK:
+
+   -  Your `appToken`
+   -  The `environment` you want to run the app in
+   -  The `LogLevel` you want to record
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustConfig;
+
+class GlobalApplication : Application () {
+   override fun onCreate() {
+      super.onCreate()
+
+      val appToken = "{YourAppToken}"
+      val environment = AdjustConfig.ENVIRONMENT_SANDBOX;
+      val config = AdjustConfig(this, appToken, environment)
+      config.setLogLevel(LogLevel.VERBOSE)
+      Adjust.initSdk(config)
+   }
+}
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustConfig;
+
+public class GlobalApplication extends Application {
+   @Override
+   public void onCreate() {
+      super.onCreate();
+
+      String appToken = "{YourAppToken}";
+      String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
+      AdjustConfig config = new AdjustConfig(this, appToken, environment);
+      config.setLogLevel(LogLevel.VERBOSE)
+      Adjust.initSdk(config);
+   }
+}
+```
+
+</Tab>
+</Tabs>
+
+### [Integrate the Adjust Web View SDK](integrate-the-adjust-web-view-sdk)
+
+If your app uses web views, you need to use the Adjust Web View SDK to record information. You need to obtain the reference to your `WebView` object. Once you've done this, follow these steps:
+
+1. Call `webView.getSettings().setJavaScriptEnabled(true)` to enable Javascript in the web view.
+2. Start the default `AdjustBridgeInstance` by calling `AdjustBridge.registerAndGetInstance(getApplication(), webview)`. This registers the Adjust bridge as a Javascript interface in the web view.
+3. Call `AdjustBridge.setWebView()` to set a new `WebView`.
+4. Call `AdjustBridge.unregister()` to unregister the `AdjustBridgeInstance` and the `WebView`.
+5. Here's an example of a full setup:
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+class MainActivity : Activity() {
+   override fun onCreate(savedInstanceState: Bundle?) {
+         super.onCreate(savedInstanceState)
+         setContentView(R.layout.activity_main)
+
+         val webView = findViewById<WebView>(R.id.webView)
+         webView.settings.javaScriptEnabled = true
+         webView.webChromeClient = WebChromeClient()
+         webView.webViewClient = WebViewClient()
+
+         AdjustBridge.registerAndGetInstance(application, webView)
+         try {
+            webView.loadUrl("file:///android_asset/AdjustExample-WebView.html")
+         } catch (e: Exception) {
+            e.printStackTrace()
+         }
+   }
+
+   override fun onDestroy() {
+      AdjustBridge.unregister()
+
+      super.onDestroy()
+   }
+}
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+public class MainActivity extends Activity {
+   @Override
+   protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      setContentView(R.layout.activity_main);
+
+      WebView webView = (WebView) findViewById(R.id.webView);
+      webView.getSettings().setJavaScriptEnabled(true);
+      webView.setWebChromeClient(new WebChromeClient());
+      webView.setWebViewClient(new WebViewClient());
+
+      AdjustBridge.registerAndGetInstance(getApplication(), webview);
+      try {
+            webView.loadUrl("file:///android_asset/AdjustExample-WebView.html");
+      } catch (Exception e) {
+            e.printStackTrace();
+      }
+   }
+
+   @Override
+   protected void onDestroy() {
+      AdjustBridge.unregister();
+
+      super.onDestroy();
+   }
+}
+```
+
+</Tab>
+</Tabs>
+
+6. Import the Adjust Javascript files in your HTML:
+
+   ```html
+   <script type="text/javascript" src="adjust.js"></script>
+   <script type="text/javascript" src="adjust_event.js"></script>
+   <script type="text/javascript" src="adjust_third_party_sharing.js"></script>
+   <script type="text/javascript" src="adjust_config.js"></script>
+   ```
+
+7. You can now initialize the Adjust SDK in your web view by passing your `appToken` and `environment` to the `AdjustConfig` class:
+
+   ```js
+   let yourAppToken = "{YourAppToken}";
+   let environment = AdjustConfig.EnvironmentSandbox;
+   let adjustConfig = new AdjustConfig(yourAppToken, environment);
+   adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
+   Adjust.initSdk(adjustConfig);
+   ```
+
+## [8. Build your app for production](build-your-app-for-production)
+
+Once you've finished your testing, you can build your app for production. To do this, you need to update your config object.
+
+1. Adjust your log level to return only what you need.
+2. Set your `environment` to `AdjustConfig.ENVIRONMENT_PRODUCTION`.
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val appToken = "{YourAppToken}"
+val environment = AdjustConfig.ENVIRONMENT_PRODUCTION;
+val config = AdjustConfig(this, appToken, environment)
+config.setLogLevel(LogLevel.WARN)
+Adjust.initSdk(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+String appToken = "{YourAppToken}";
+String environment = AdjustConfig.ENVIRONMENT_PRODUCTION;
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+config.setLogLevel(LogLevel.WARN)
+Adjust.initSdk(config);
+```
+
+</Tab>
+</Tabs>
