@@ -21,6 +21,15 @@ const docs = defineCollection({
     ogLocale: z.string().optional(),
     type: z.enum(["category"]).optional(),
     multiVersion: z.boolean().default(false),
+    versions: z
+      .array(
+        z.object({
+          value: z.string(),
+          label: z.string(),
+          default: z.boolean().optional(),
+        }),
+      )
+      .optional(),
   }),
 });
 
