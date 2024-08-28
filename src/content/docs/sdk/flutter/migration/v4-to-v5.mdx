@@ -4,3 +4,798 @@ description: Follow this guide to upgrade from SDK v4 to SDK v5
 slug: en/sdk/flutter/migration/v4-to-v5
 sidebar-position: 1
 ---
+
+## [Before you begin](before-you-begin)
+
+Here's what you need to do before updating to SDK v5:
+
+1. SDK v5 supports [SDK signature verification](https://help.adjust.com/en/article/sdk-signature) natively. If you currently use the SDK signature library, you need to uninstall this first.
+2. The minimum supported API versions for SDK v5 have been updated. If your app targets a lower version, you need to update it first.
+
+   -  iOS: **12.0**
+   -  Android: **21**
+
+   ## [Install the SDK](install-the-sdk)
+
+To start using SDK v5, you need to add it as a dependency in your project. To do this:
+
+1. Remove any older versions of the SDK you currently have in your `pubspec.yaml` file.
+2. Add the following dependency to your `build.gradle` file:
+
+   <CodeBlock title="pubspec.yaml">
+
+   ```yaml
+   dependencies:
+   adjust_sdk: 5.0.x
+   ```
+
+   </CodeBlock>
+
+## [Changes](changes)
+
+<Callout type="warning">
+
+SDK v5 is a major version update. This means there are breaking changes that require you to update your code.
+
+</Callout>
+
+Once you've installed the v5 SDK, you need to update your existing Adjust code to use the new APIs.
+
+### [Initialization method](init-method)
+
+<MinorVersion changed="v5">
+
+In SDK v4, the initialization method is `Adjust.start(adjustConfig);`. This has been changed to `Adjust.initSdk(adjustConfig)` in SDK v5.
+
+</MinorVersion>
+
+<CodeBlock useDiffSyntax>
+
+```dart
+- Adjust.start(adjustConfig); // v4
++ Adjust.initSdk(adjustConfig); // v5
+```
+
+</CodeBlock>
+
+### [Configuration](configuration)
+
+This section covers changes to SDK configuration.
+
+#### [Disable and enable the SDK](disable-enable-sdk)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can enable and disable the SDK by calling `Adjust.setEnabled()` with a `boolean` value.
+
+</MinorVersion>
+
+-  Call `Adjust.setEnabled(false);` to disable the SDK.
+-  Call `Adjust.setEnabled(true);` to enable the SDK
+
+```dart
+Adjust.setEnabled(false); // disable SDK
+Adjust.setEnabled(true); // enable SDK
+```
+
+In SDK v5, this feature is split into separate commands for clarity.
+
+-  Call `Adjust.disable();` to disable the SDK.
+-  Call `Adjust.enable();` to enable the SDK.
+
+```dart
+Adjust.disable(); // disable SDK
+Adjust.enable(); // enable SDK
+```
+
+#### [Send information in background](send-in-background)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can set the `sendInBackground` property on your `adjustConfig` instance to `true` to enable the SDK to send information to Adjust while your app is running in the background.
+
+</MinorVersion>
+
+```dart
+adjustConfig.sendInBackground = true;
+```
+
+In SDK v5, you need to set the `isSendingInBackgroundEnabled` property on your `adjustConfig` instance to `true` to enable the SDK to send information to Adjust while your app is running in the background.
+
+```dart
+adjustConfig.isSendingInBackgroundEnabled = true;
+```
+
+#### [Preinstalled app measurement](preinstalled-app)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can set the `preinstallTrackingEnabled` property on your `adjustConfig` instance to `true` to enable measuring preinstalled apps.
+
+</MinorVersion>
+
+```dart
+adjustConfig.preinstallTrackingEnabled = true;
+```
+
+In SDK v5, you need to set the `isPreinstallTrackingEnabled` property on your `adjustConfig` instance to `true` to enable measuring preinstalled apps.
+
+```dart
+adjustConfig.isPreinstallTrackingEnabled = true;
+```
+
+#### [Disable AdServices information reading](disable-adservices)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can set the `allowAdServicesInfoReading` property on your `adjustConfig` instance to `false` to prevent the Adjust SDK from reading AdServices information.
+
+</MinorVersion>
+
+```dart
+adjustConfig.allowAdServicesInfoReading = false;
+```
+
+In SDK v5, you need to set the `isAdServicesEnabled` property on your `adjustConfig` instance to `false` to prevent the Adjust SDK from reading AdServices information.
+
+```dart
+adjustConfig.isAdServicesEnabled = false;
+```
+
+#### [Disable IDFA reading](disable-idfa)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can set the `allowIdfaReading` property on your `adjustConfig` instance to `false` to prevent the Adjust SDK from reading the device's IDFA.
+
+</MinorVersion>
+
+```dart
+adjustConfig.allowIdfaReading = false;
+```
+
+In SDK v5, you need to set the `isIdfaReadingEnabled` property on your `adjustConfig` instance to `false` to prevent the Adjust SDK from reading the device's IDFA.
+
+```dart
+adjustConfig.isIdfaReadingEnabled = false;
+```
+
+#### [Enable cost data in attribution](enable-cost-data)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can set the `needsCost` property on your `adjustConfig` instance to `true` to enable cost data in the device's attribution information.
+
+</MinorVersion>
+
+```dart
+adjustConfig.needsCost = true;
+```
+
+In SDK v5, you need to set the `isCostDataInAttributionEnabled` property on your `adjustConfig` instance to `true` to enable cost data in the device's attribution information.
+
+```dart
+adjustConfig.isCostDataInAttributionEnabled = true;
+```
+
+#### [Enable LinkMe](enable-linkme)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can set the `LinkMeEnabled` property on your `adjustConfig` instance to `true` to enable [Adjust LinkMe](https://help.adjust.com/en/article/linkme).
+
+</MinorVersion>
+
+```dart
+adjustConfig.linkMeEnabled = true;
+```
+
+In SDK v5, you need to set the `isLinkMeEnabled` property on your `adjustConfig` instance to `true` to enable [Adjust LinkMe](https://help.adjust.com/en/article/linkme).
+
+```dart
+adjustConfig.isLinkMeEnabled = true;
+```
+
+#### [Only read device IDs once](read-device-id-once)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can set the `readDeviceInfoOnceEnabled` property on your `adjustConfig` instance to `true` to instruct the SDK to only read device IDs once.
+
+</MinorVersion>
+
+```dart
+adjustConfig.readDeviceInfoOnceEnabled = true;
+```
+
+In SDK v5, you need to set the `isDeviceIdsReadingOnceEnabled` property on your `adjustConfig` instance to `true` to instruct the SDK to only read device IDs once.
+
+```dart
+adjustConfig.isDeviceIdsReadingOnceEnabled = true;
+```
+
+#### [Offline mode](offline-mode)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can enable and disable offline mode the SDK by calling `Adjust.setOfflineMode()` with a `bool` argument.
+
+</MinorVersion>
+
+```dart
+Adjust.setOfflineMode(true);
+Adjust.setOfflineMode(false);
+```
+
+In SDK v5, this feature is split into separate commands for clarity.
+
+-  Call `Adjust.switchToOfflineMode()` to set the SDK to offline mode.
+-  Call `Adjust.switchBackToOnlineMode()` to set the SDK back to online mode.
+
+```dart
+Adjust.switchToOfflineMode(); // Put the SDK in offline mode
+Adjust.switchBackToOnlineMode(); // Put the SDK back in online mode
+```
+
+#### [Event buffering](event-buffering)
+
+<MinorVersion removed="v5">
+
+SDK v4 supports event buffering. This feature stores requests event, ad revenue, push tokens, and other information on a local buffer to send at a later date.
+
+</MinorVersion>
+
+```dart
+adjustConfig.eventBufferingEnabled = true;
+```
+
+This setting has been removed in SDK v5.
+
+#### [Custom user agent string](custom-user-agent)
+
+<MinorVersion removed="v5">
+
+SDK v4 supports setting a custom User Agent by assigning a user string agent to the`userAgent` property on your `adjustConfig` instance.
+
+</MinorVersion>
+
+```dart
+adjustConfig.userAgent = 'custom-user-agent';
+```
+
+This setting has been removed in SDK v5.
+
+#### [Set whether a device is known](set-device-known)
+
+<MinorVersion removed="v5">
+
+In SDK v4, you can set the `isDeviceKnown` property on your `adjustConfig` instance to manually inform the SDK whether a device is known.
+
+</MinorVersion>
+
+```dart
+adjustConfig.isDeviceKnown = true;
+```
+
+This setting has been removed in SDK v5.
+
+#### [Delay SDK start](delay-sdk-start)
+
+<MinorVersion removed="v5">
+
+SDK v4 supports delaying the start of the SDK by setting the `delayStart` property on your `adjustConfig` instance a delay. You can set up this delay for up to **10 seconds**.
+
+</MinorVersion>
+
+```dart
+adjustConfig.delayStart = 10;
+```
+
+This setting has been removed in SDK v5.
+
+#### [Final Android attribution](final-android-attribution)
+
+<MinorVersion removed="v5">
+
+In SDK v4, you can set the `finalAndroidAttributionEnabled` property on your `adjustConfig` instance to `true` to deliver final Android attribution.
+
+</MinorVersion>
+
+```dart
+adjustConfig.finalAndroidAttributionEnabled = true;
+```
+
+This setting has been removed in SDK v5 since now only the final attribution will be delivered through the attribution callback on the Android platform.
+
+### [AdjustEvent changes](adjustevent-changes)
+
+<MinorVersion removed="v5">
+
+In SDK v4, you can send a `receipt` to the `adjustEvent.receipt` property on your `adjustEvent` for subscriptions and purchases.
+
+</MinorVersion>
+
+```dart
+adjustEvent.receipt = 'receipt';
+```
+
+This class property has been removed in SDK v5 since it's no longer needed for purchase verification.
+
+### [Recording features](recording-features)
+
+This section covers changes to features that send information to Adjust.
+
+#### [Session callback parameters](callback-params)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can add session parameters by passing a key-value pair to the `Adjust.addSessionCallbackParameter()` method and remove individual parameters using the `Adjust.removeSessionCallbackParameter()` method.
+
+</MinorVersion>
+
+```dart
+Adjust.addSessionCallbackParameter('key', 'value');
+Adjust.removeSessionCallbackParameter('key');
+Adjust.resetSessionCallbackParameters();
+```
+
+In SDK v5, session parameters are renamed to global parameters.
+
+```dart
+Adjust.addGlobalCallbackParameter('key', 'value');
+Adjust.removeGlobalCallbackParameter('key');
+Adjust.removeGlobalCallbackParameters();
+```
+
+#### [Session partner parameters](partner-params)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can add session partner parameters by passing a key-value pair to the `Adjust.addSessionPartnerParameter()` method and remove individual parameters using the `Adjust.removeSessionPartnerParameter()` method.
+
+</MinorVersion>
+
+```dart
+Adjust.addSessionPartnerParameter('key', 'value');
+Adjust.removeSessionPartnerParameter('key');
+Adjust.resetSessionPartnerParameters();
+```
+
+In SDK v5, session partner parameters are renamed to global partner parameters.
+
+```dart
+Adjust.addGlobalPartnerParameter('key', 'value');
+Adjust.removeGlobalPartnerParameter('key');
+Adjust.removeGlobalPartnerParameters();
+```
+
+### [Send subscription information](send-subscriptions)
+
+This section covers changes to subscription sending in the Adjust SDK.
+
+#### [App Store Subscriptions](app-store-subscriptions)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can set a new subscription by configuring an `AdjustAppStoreSubscription` object. This object is initialized with four arguments: `price`, `currency`, `transactionId`, and `receipt`.
+
+</MinorVersion>
+
+```dart
+AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
+   price,
+   currency,
+   transactionId,
+   receipt);
+```
+
+In SDK v5, you don't need to pass the `receipt` argument as it's no longer needed for purchase verification.
+
+```dart
+AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
+   price,
+   currency,
+   transactionId);
+```
+
+#### [App Store Purchases](app-store-purchase)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can set a new purchase by configuring an `AdjustAppStoreSubscription` object. This object is initialized with four arguments: `price`, `currency`, `transactionId`, and `receipt`.
+
+</MinorVersion>
+
+```dart
+AdjustAppStoreSubscription purchase = new AdjustAppStoreSubscription(
+   price,
+   currency,
+   transactionId,
+   receipt);
+```
+
+In SDK v5, you don't need to pass the `receipt` argument as it's no longer needed for purchase verification.
+
+```dart
+AdjustAppStoreSubscription purchase = new AdjustAppStoreSubscription(
+   price,
+   currency,
+   transactionId);
+```
+
+#### [Play Store Subscriptions](play-store-subscriptions)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can record the date on which the user purchased a subscription by passing a timestamp to the `setPurchaseTime()` method.
+
+</MinorVersion>
+
+```dart
+adjustPlayStoreSubscription.setPurchaseTime('purchase-time');
+```
+
+In SDK v5, you need to assign a timestamp to the `purchaseTime` property on the `adjustPlayStoreSubscription` instance to record the date on which the user purchased a subscription.
+
+```dart
+adjustPlayStoreSubscription.purchaseTime = 'purchase-time';
+```
+
+### [Deep linking](deep-links)
+
+This section covers changes to deep linking in the Adjust SDK.
+
+#### [Reattribution using deep links](reattribution-using-deep-links)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can pass your deep link information to the `Adjust.appWillOpenUrl()` method.
+
+</MinorVersion>
+
+```dart
+Adjust.appWillOpenUrl("url");
+```
+
+In SDK v5, this has been renamed to `Adjust.ProcessDeeplink()` for clarity. A new `AdjustDeeplink` class has been added for constructing deep links. To process a deep link, instantiate an `AdjustDeeplink` object with your deep link URL and pass it to the `Adjust.ProcessDeeplink` method.
+
+```dart
+Adjust.processDeeplink(new AdjustDeeplink('url'));
+```
+
+#### [Launch deferred deep links](launch-deferred-deeplinks)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can set the `launchDeferredDeeplink` property on your `adjustConfig` instance to `true` to enable the SDK to open deep links.
+
+</MinorVersion>
+
+```dart
+adjustConfig.launchDeferredDeeplink = true;
+```
+
+In SDK v5, you need to set the `isDeferredDeeplinkOpeningEnabled` property on your `adjustConfig` instance to `true` to enable the SDK to open deep links.
+
+```dart
+adjustConfig.isDeferredDeeplinkOpeningEnabled = true;
+```
+
+#### [Deep link resolution](deeplink-resolution)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can resolve a shortened deep link by passing the `url` to the `processDeeplink()` method.
+
+</MinorVersion>
+
+```dart
+Adjust.processDeeplink('url').then((resolvedLink) {
+    // resolvedLink is the unshortened link
+};
+```
+
+In SDK v5, you need to send an `AdjustDeeplink` object initialized with the deep link `url`. This returns the original unshortened deep link.
+
+```dart
+Adjust.processAndResolveDeeplink(new AdjustDeeplink('url')).then((resolvedLink) {
+    // resolvedLink is the unshortened link
+};
+```
+
+### [Privacy features](privacy-features)
+
+This section covers changes to privacy features in the Adjust SDK.
+
+#### [COPPA compliance](coppa-compliance)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can set the `coppaCompliantEnabled` property on your `adjustConfig` instance to `true` to enable COPPA compliance.
+
+</MinorVersion>
+
+```dart
+adjustConfig.coppaCompliantEnabled = true;
+```
+
+In SDK v5, you need to set the `isCoppaComplianceEnabled` property on your `adjustConfig` instance to a `true` to enable COPPA compliance.
+
+```dart
+adjustConfig.isCoppaComplianceEnabled = true;
+```
+
+#### [Play Store Kids Apps](play-store-kids)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can mark an app as a [Play Store Kids app](/en/sdk/unity/features/privacy#play-store-kids-apps) setting the `playStoreKidsAppEnabled` property on your `adjustConfig` instance to `true`. This property is read during SDK initialization, which means that the value can't be updated once the SDK is initialized.
+
+</MinorVersion>
+
+```dart
+adjustConfig.playStoreKidsAppEnabled = true;
+```
+
+In SDK v5, you need to set the `isPlayStoreKidsComplianceEnabled` property of your `adjustConfig` instance to `true` to enable compliance.
+
+```dart
+adjustConfig.isPlayStoreKidsComplianceEnabled = true;
+```
+
+#### [Set data residency and URL strategy](url-strategy)
+
+<MinorVersion changed="v5">
+
+In SDK v4, URL strategy and data residency domains are defined as constants in the `adjustConfig` class.
+
+</MinorVersion>
+
+```dart
+adjustConfig.setUrlStrategy(AdjustConfig.DataResidencyEU);
+```
+
+In SDK v5, you need to pass your chosen domain or domains as an array. You can also set the following:
+
+-  `shouldUseSubdomains` (`bool`): Whether the source should prefix a subdomain.
+-  `isDataResidency` (`bool`): Whether the domain should be used for data residency.
+
+```dart
+adjustConfig.setUrlStrategy(['eu.adjust.com'], true, true);
+```
+
+Check the table below to see how to configure your URL strategy in SDK v5.
+
+<Table autoWidth="1,2">
+
+| v4                               | v5 - main and fallback domain     | v5 - use sub domains | v5 - is Data Residency |
+| -------------------------------- | --------------------------------- | -------------------- | ---------------------- |
+| `adjustConfig.DataResidencyEU`   | `"eu.adjust.com"`                 | `true`               | `true`                 |
+| `adjustConfig.DataResidencyTR`   | `"tr.adjust.com"`                 | `true`               | `true`                 |
+| `adjustConfig.DataResidencyUS`   | `"us.adjust.com"`                 | `true`               | `true`                 |
+| `adjustConfig.UrlStrategyChina`  | `"adjust.world"`, `"adjust.com"`  | `true`               | `false`                |
+| `adjustConfig.UrlStrategyCn`     | `"adjust.cn"`, `"adjust.com"`     | `true`               | `false`                |
+| `adjustConfig.UrlStrategyCnOnly` | `"adjust.cn"`                     | `true`               | `false`                |
+| `adjustConfig.UrlStrategyIndia`  | `"adjust.net.in"`, `"adjust.com"` | `true`               | `false`                |
+
+</Table>
+
+##### [Examples](examples)
+
+<CodeBlock title="India URL strategy">
+
+```dart
+adjustConfig.setUrlStrategy(['adjust.net.in', 'adjust.com'], true, false);
+```
+
+</CodeBlock>
+
+<CodeBlock title="China URL strategy">
+
+```dart
+adjustConfig.setUrlStrategy(['adjust.world', 'adjust.com'], true, false);
+```
+
+</CodeBlock>
+
+<CodeBlock title="China only URL strategy">
+
+```dart
+adjustConfig.setUrlStrategy(['adjust.cn'], true, false);
+```
+
+</CodeBlock>
+
+<CodeBlock title="EU URL strategy">
+
+```dart
+adjustConfig.setUrlStrategy(['eu.adjust.com'], true, true);
+```
+
+</CodeBlock>
+
+<CodeBlock title="Turkey URL strategy">
+
+```dart
+adjustConfig.setUrlStrategy(['tr.adjust.com'], true, true);
+```
+
+</CodeBlock>
+
+<CodeBlock title="US URL strategy">
+
+```dart
+adjustConfig.setUrlStrategy(['us.adjust.com'], true, true);
+```
+
+</CodeBlock>
+
+### [Third party sharing changes](third-party-sharing-changes)
+
+This section covers changes to third party sharing features in SDK v5.
+
+#### [Disable third party sharing globally](disable-sharing-globally)
+
+<MinorVersion removed="v5">
+
+In SDK v4, you can call the `Adjust.disableThirdPartySharing()` method to globally disable sharing information with third parties globally.
+
+</MinorVersion>
+
+```dart
+Adjust.disableThirdPartySharing();
+```
+
+This feature has been removed from SDK v5. In SDK v5, use the `Adjust.trackThirdPartySharing()` method to enable or disable third party sharing.
+
+```dart
+AdjustThirdPartySharing thirdPartySharing = new AdjustThirdPartySharing(false);
+Adjust.trackThirdPartySharing(thirdPartySharing);
+```
+
+### [Ad revenue](ad-revenue)
+
+This section covers changes to ad revenue features in SDK v5.
+
+#### [Send ad revenue from a specific source](send-ad-revenue)
+
+<MinorVersion changed="v5">
+
+In SDK v4, ad revenue sources are defined as constants in the `adjustConfig` class. In SDK v5, ad revenue sources need to be passed as a string.
+
+</MinorVersion>
+
+<CodeBlock useDiffSyntax>
+
+```dart
+- AdjustAdRevenue adRevenue = new AdjustAdRevenue(AdjustConfig.AdRevenueSourceAppLovinMAX);
++ AdjustAdRevenue adRevenue = new AdjustAdRevenue("applovin_max_sdk");
+```
+
+</CodeBlock>
+
+<Table>
+
+| v4                                             | v5                        |
+| ---------------------------------------------- | ------------------------- |
+| `adjustConfig.AdRevenueAppLovinMAX`            | `"applovin_max_sdk"`      |
+| `adjustConfig.AdRevenueSourceAdMob`            | `"admob_sdk"`             |
+| `adjustConfig.AdRevenueSourceIronSource`       | `"ironsource_sdk"`        |
+| `adjustConfig.AdRevenueSourceAdMost`           | `"admost_sdk"`            |
+| `adjustConfig.AdRevenueSourceUnity`            | `"unity_sdk"`             |
+| `adjustConfig.AdRevenueSourceHeliumChartboost` | `"helium_chartboost_sdk"` |
+| `adjustConfig.AdRevenueSourceADX`              | `"adx_sdk"`               |
+| `adjustConfig.AdRevenueSourcePublisher`        | `"publisher_sdk"`         |
+| `adjustConfig.AdRevenueSourceTradplus`         | `"tradplus_sdk"`          |
+| `adjustConfig.AdRevenueSourceTopOn`            | `"topon_sdk"`             |
+| `adjustConfig.AdRevenueSourceMopub`            | No longer supported       |
+
+</Table>
+
+### [SKAdNetwork and ATT](skad-att)
+
+This section covers changes to SKAdNetwork and App Tracking Transparency (ATT) features in SDK v5.
+
+#### [Disable SKAdNetwork communication](disable-skan)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can prevent the SDK from communicating with SKAdNetwork by calling the `adjustConfig.deactivateSKAdNetworkHandling()` method.
+
+</MinorVersion>
+
+```dart
+adjustConfig.deactivateSKAdNetworkHandling();
+```
+
+In SDK v5, you need to set the `isSkanAttributionEnabled` property on your `adjustConfig` instance to `false` to disable SKAdNetwork communication.
+
+```dart
+adjustConfig.isSkanAttributionEnabled = false;
+```
+
+#### [Update conversion values](update-cvs)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can give the `skad4ConversionValueUpdatedCallback` property on your `adjustConfig` an updated conversion value to send to Adjust. Before SKAN4, you could use the `conversionValueUpdatedCallback` property.
+
+</MinorVersion>
+
+```dart
+// pre-SKAN4 callback
+adjustConfig.conversionValueUpdatedCallback = (num? conversionValue) {
+};
+
+
+// SKAN4 callback
+adjustConfig.skad4ConversionValueUpdatedCallback = (num? conversionValue, String? coarseValue, bool? lockWindow) {
+};
+```
+
+To update conversion values in SDK v5, give the `skanUpdatedCallback` property on your `adjustConfig` an updated conversion value.
+
+```dart
+config.skanUpdatedCallback = (Map<String, String> skanUpdateData) {
+    // process skanUpdateData map
+    // example: {conversion_value: 0, lock_window: false, coarse_value: low}
+};
+```
+
+#### [App Tracking Transparency authorization wrapper](att-wrapper)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can handle changes to a user's ATT authorization status using the `Adjust.requestTrackingAuthorizationWithCompletionHandler()` method.
+
+</MinorVersion>
+
+```dart
+Adjust.requestTrackingAuthorizationWithCompletionHandler().then((status) {
+  print('[Adjust]: Authorization status update!');
+  switch (status) {
+    case 0:
+      print(
+          '[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusNotDetermined');
+      break;
+    case 1:
+      print(
+          '[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusRestricted');
+      break;
+    case 2:
+      print(
+          '[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusDenied');
+      break;
+    case 3:
+      print(
+          '[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusAuthorized');
+      break;
+  }
+});
+```
+
+This has been renamed to `Adjust.requestAppTrackingAuthorization()` in SDK v5 for clarity.
+
+```dart
+Adjust.requestAppTrackingAuthorization().then((status) {
+  print('[Adjust]: Authorization status update!');
+  switch (status) {
+    case 0:
+      print(
+          '[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusNotDetermined');
+      break;
+    case 1:
+      print(
+          '[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusRestricted');
+      break;
+    case 2:
+      print(
+          '[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusDenied');
+      break;
+    case 3:
+      print(
+          '[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusAuthorized');
+      break;
+  }
+});
+```
