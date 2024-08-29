@@ -36,12 +36,29 @@ export const getNavigationEntries = (
     );
   });
 
+  const versions: NavigationData["versions"] = {
+    api: [],
+    sdk: [],
+  };
+
   // getting formatted data for the pages
   const pagesData = filteredPagesData.map((page) => {
     const path = page.url?.replace(".mdx", "");
     const updatedPath = path?.includes(`/${currentVersion}/`)
       ? path.replace(`/${currentVersion}/`, "/")
       : path;
+
+    // versioning logic
+    const versionsData = page.frontmatter.versions;
+    const isApi = path?.includes("/api/");
+    if (versionsData?.length) {
+      if (isApi) {
+        versions.api!.push(...versionsData);
+      } else {
+        versions.sdk!.push(...versionsData);
+      }
+    }
+
     return {
       ...page.frontmatter,
       updatedPath,
@@ -67,5 +84,5 @@ export const getNavigationEntries = (
     },
   };
 
-  return { languageTree, breadcrumbs, childLinks };
+  return { languageTree, breadcrumbs, childLinks, versions };
 };

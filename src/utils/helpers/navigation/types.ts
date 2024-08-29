@@ -1,4 +1,5 @@
 import type { Locales } from "@i18n/locales";
+import type { CollectionEntry } from "astro:content";
 
 export type NavItemTypes = "category";
 
@@ -50,4 +51,8 @@ export interface NavigationData {
     level: number;
   }[];
   childLinks: ChildLink[];
+  versions: {
+    sdk: CollectionEntry<"docs">["data"]["versions"];
+    api: CollectionEntry<"docs">["data"]["versions"];
+  };
 }
