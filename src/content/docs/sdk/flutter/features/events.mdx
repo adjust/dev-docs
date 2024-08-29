@@ -11,7 +11,7 @@ The Adjust SDK provides an `AdjustEvent` object which can be used to structure a
 <CodeBlock title="Method signature">
 
 ```dart
-AdjustEvent(string eventToken)
+AdjustEvent(String eventToken)
 ```
 
 </CodeBlock>
@@ -35,57 +35,6 @@ Adjust.trackEvent(myAdjustEvent);
 ```dart
 static void trackEvent(AdjustEvent event)
 ```
-
-</CodeBlock>
-
-You can associate your [Adjust event tokens](https://help.adjust.com/en/article/add-events#add-event) to actions in your app to record them. To record an event:
-
--  Create a new Adjust event instance and pass your event token as a string argument.
--  Call the `trackEvent` method with your event instance as an argument.
-
-```dart
-AdjustEvent myAdjustEvent = new AdjustEvent('abc123');
-//...
-Adjust.trackEvent(myAdjustEvent);
-```
-
-### [Example](example)
-
-This example shows how to record an event with the token `g3mfiw` whenever a user interacts with a button.
-
-<CodeBlock title="util.dart">
-
-```dart
-import 'package:adjust_sdk/adjust_event.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-
-class Util {
-   static const String EVENT_TOKEN_SIMPLE = 'g3mfiw';
-
-   static Widget buildCupertinoButton(String text, Function action) {
-      return new CupertinoButton(
-         child: Text(text),
-         color: CupertinoColors.activeBlue,
-         padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 30.0),
-         onPressed: action as void Function()?,
-      );
-   }
-
-   static AdjustEvent myAdjustEvent() {
-      return new AdjustEvent(EVENT_TOKEN_SIMPLE);
-   }
-}
-
-// main.dart
-import 'util.dart';
-
-Util.buildCupertinoButton('Track Simple Event',
-   () => Adjust.trackEvent(Util.myAdjustEvent())),
-const Padding(padding: const EdgeInsets.all(7.0))
-```
-
-</CodeBlock>
 
 <CodeBlock title="Event log" collapse="6-46">
 
@@ -112,7 +61,7 @@ Parameters:
   environment      sandbox
   event_buffering_enabled 0
   event_count      3
-  event_token      g3mfiw
+  event_token      abc123
   gps_adid         5962dfc1-3a53-4692-850b-22c4bf4311a5
   gps_adid_attempt 2
   gps_adid_src     service
@@ -145,7 +94,7 @@ Parameters:
 <CodeBlock title="Method signature">
 
 ```dart
-void setRevenue(Num revenue, String currency)
+void setRevenue(num revenue, String currency)
 ```
 
 </CodeBlock>
@@ -171,49 +120,6 @@ adjustEvent.setRevenue(0.01, 'EUR');
 Adjust.trackEvent(myAdjustEvent);
 ```
 
-### [Example](example-1)
-
-This example shows how to record an event with the token `g3mfiw` whenever a user interacts with a button. The function sets the `revenue` property of this event to _`0.25`_ and the `currency` property to _`EUR`_.
-
-<CodeBlock title="util.dart">
-
-```dart
-import 'package:adjust_sdk/adjust_event.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-
-class Util {
-   static const String EVENT_TOKEN_REVENUE = 'g3mfiw';
-
-   static Widget buildCupertinoButton(String text, Function action) {
-      return new CupertinoButton(
-         child: Text(text),
-         color: CupertinoColors.activeBlue,
-         padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 30.0),
-         onPressed: action as void Function()?,
-      );
-   }
-
-   static AdjustEvent myAdjustEvent() {
-      AdjustEvent event = new AdjustEvent(EVENT_TOKEN_REVENUE);
-      event.setRevenue(0.25, 'EUR');
-      return event;
-   }
-
-}
-
-// main.dart
-import 'util.dart';
-
-// Send revenue event button.
-Util.buildCupertinoButton('Send Revenue Event',
-   () => Adjust.trackEvent(Util.myAdjustEvent())),
-const Padding(padding: const EdgeInsets.all(7.0))
-
-```
-
-</CodeBlock>
-
 <CodeBlock title="Event log" highlight="{range: 7-8}">
 
 ```txt
@@ -223,7 +129,7 @@ Parameters:
   environment      sandbox
   event_count      3
   event_token      abc123
-  revenue          0.25
+  revenue          0.01
   currency         EUR
 ```
 
@@ -234,66 +140,25 @@ Parameters:
 <CodeBlock title="Property declaration">
 
 ```dart
-String? transactionId;
+String? deduplicationId;
 ```
 
 </CodeBlock>
 
-You can pass an optional identifier to avoid recording duplicate events. The SDK stores the last ten identifiers and skips revenue events with duplicate transaction IDs.
+You can pass an optional identifier to avoid recording duplicate events. By default, the SDK stores the last ten identifiers and skips revenue events with duplicate transaction IDs. In case you would like the SDK to store more than 10 identifiers, you can set the desired number of identifiers by assigning the value to `eventDeduplicationIdsMaxSize` of the `AdjustConfig` instance.
 
-To set the identifier, assign your transaction ID to the `setTransactionId` property of your event instance.
+To set the identifier, assign your deduplcation ID to the `deduplicationId` property of your event instance.
 
 ```dart
+adjustConfig.eventDeduplicationIdsMaxSize = 20;
+Adjust.initSdk(config);
+
+// ...
+
 AdjustEvent myAdjustEvent = new AdjustEvent('abc123');
-//...
-myAdjustEvent.transactionId = '{TransactionId}';
-//...
+myAdjustEvent.deduplicationId = 'deduplication-id';
 Adjust.trackEvent(myAdjustEvent);
 ```
-
-### [Example](example-2)
-
-This example shows how to record an event with the token `g3mfiw` whenever a user interacts with a button. The function sets the `uniqueId` to `5e85484b-1ebc-4141-aab7-25b869e54c49` using the `setTransactionId` method.
-
-<CodeBlock title="util.dart">
-
-```dart
-import 'package:adjust_sdk/adjust_event.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-
-class Util {
-   static const String EVENT_TOKEN_REVENUE = 'g3mfiw';
-   static const String UNIQUE_ID = '5e85484b-1ebc-4141-aab7-25b869e54c49';
-
-   static Widget buildCupertinoButton(String text, Function action) {
-      return new CupertinoButton(
-         child: Text(text),
-         color: CupertinoColors.activeBlue,
-         padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 30.0),
-         onPressed: action as void Function()?,
-      );
-   }
-
-   static AdjustEvent myAdjustEvent() {
-      AdjustEvent event = new AdjustEvent(EVENT_TOKEN_REVENUE);
-      event.transactionId = UNIQUE_ID;
-      return event;
-   }
-
-}
-
-// main.dart
-import 'util.dart';
-
-// Send revenue event button.
-Util.buildCupertinoButton('Send Revenue Event',
-   () => Adjust.trackEvent(Util.myAdjustEvent())),
-const Padding(padding: const EdgeInsets.all(7.0))
-
-```
-
-</CodeBlock>
 
 <CodeBlock title="Event log" highlight="{range: 7}">
 
@@ -304,7 +169,7 @@ Parameters:
   environment      sandbox
   event_count      3
   event_token      abc123
-  transaction_id   5e85484b-1ebc-4141-aab7-25b869e54c49
+  transaction_id   deduplication-id
 ```
 
 </CodeBlock>
@@ -327,11 +192,23 @@ Add callback parameters to your event by calling the `addCallbackParameter` meth
 
 ```dart
 AdjustEvent myAdjustEvent = new AdjustEvent('abc123');
-//...
 adjustEvent.addCallbackParameter('key', 'value');
-//...
 Adjust.trackEvent(myAdjustEvent);
 ```
+
+<CodeBlock title="Event log" highlight="{range: 4}">
+
+```txt
+Path:      /event
+ClientSdk: flutter$FLUTTER_VERSION
+Parameters:
+  callback_params  {"key":"value"}
+  environment      sandbox
+  event_count      1
+  event_token      abc123
+```
+
+</CodeBlock>
 
 The Adjust SDK measures the event and sends a request to your URL with the callback parameters. For example, if you register the URL `https://www.mydomain.com/callback`, your callback looks like this:
 
@@ -354,76 +231,6 @@ Adjust supports many placeholders which you can use to pass information from the
 You can read more about using URL callbacks, including a full list of available values, in the [callbacks guide](https://help.adjust.com/en/article/callbacks).
 
 </Callout>
-
-### [Example](example-3)
-
-This example shows how to record an event with the token `g3mfiw` whenever a user interacts with a button. The following callback parameters are added:
-
--  The `event_token`
--  The `revenue_amount` generated by the event
-
-The resulting callback URL looks like this:
-
-<CodeBlock highlight="event_token=g3mfiw, revenue_amount=0.05">
-
-```http
-http://www.mydomain.com/callback?event_token=g3mfiw&revenue_amount=0.05
-```
-
-</CodeBlock>
-
-<CodeBlock title="util.dart">
-
-```dart
-import 'package:adjust_sdk/adjust_event.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-
-class Util {
-   static const String EVENT_TOKEN_CALLBACK = 'g3mfiw';
-
-   static Widget buildCupertinoButton(String text, Function action) {
-      return new CupertinoButton(
-         child: Text(text),
-         color: CupertinoColors.activeBlue,
-         padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 30.0),
-         onPressed: action as void Function()?,
-      );
-   }
-
-   static AdjustEvent buildCallbackEvent() {
-      AdjustEvent event = new AdjustEvent(EVENT_TOKEN_CALLBACK);
-         event.addCallbackParameter('event_token', EVENT_TOKEN_CALLBACK);
-         event.addCallbackParameter('revenue_amount', '0.05');
-   return event;
-   }
-
-}
-
-// main.dart
-import 'util.dart';
-
-// Send callback event button.
-Util.buildCupertinoButton('Send Callback Event',
-   () => Adjust.trackEvent(Util.buildCallbackEvent())),
-const Padding(padding: const EdgeInsets.all(7.0))
-```
-
-</CodeBlock>
-
-<CodeBlock title="Event log" highlight="{range: 4}">
-
-```txt
-Path:      /event
-ClientSdk: flutter$FLUTTER_VERSION
-Parameters:
-  callback_params  {"event_token":"g3mfiw","revenue_amount":"0.05"}
-  environment      sandbox
-  event_count      1
-  event_token      g3mfiw
-```
-
-</CodeBlock>
 
 ## [Add partner parameters](add-partner-parameters)
 
@@ -449,57 +256,9 @@ Add partner parameters to your event by calling the `addPartnerParameter` method
 
 ```dart
 AdjustEvent myAdjustEvent = new AdjustEvent('abc123');
-//...
 adjustEvent.addPartnerParameter('key', 'value');
-//...
 Adjust.trackEvent(myAdjustEvent);
 ```
-
-### [Example](example-4)
-
-This example shows how to record an event with the token `g3mfiw` whenever a user interacts with a button. The following partner parameters are added:
-
--  The `product_id` of the associated product
--  The `user_id` of the user who triggered the event
-
-<CodeBlock title="util.dart">
-
-```dart
-import 'package:adjust_sdk/adjust_event.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-
-class Util {
-   static const String EVENT_TOKEN_PARTNER = 'g3mfiw';
-
-   static Widget buildCupertinoButton(String text, Function action) {
-      return new CupertinoButton(
-         child: Text(text),
-         color: CupertinoColors.activeBlue,
-         padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 30.0),
-         onPressed: action as void Function()?,
-      );
-   }
-
-   static AdjustEvent buildPartnerEvent() {
-      AdjustEvent event = new AdjustEvent(EVENT_TOKEN_PARTNER);
-      event.addPartnerParameter('product_id', '29');
-      event.addPartnerParameter('user_id', '835');
-      return event;
-   }
-
-}
-
-// main.dart
-import 'util.dart';
-
-// Send partner event button.
-Util.buildCupertinoButton('Send Partner Event',
-   () => Adjust.trackEvent(Util.buildPartnerEvent())),
-const Padding(padding: const EdgeInsets.all(7.0))
-```
-
-</CodeBlock>
 
 <CodeBlock title="Event log" highlight="{range: 4}">
 
@@ -507,13 +266,11 @@ const Padding(padding: const EdgeInsets.all(7.0))
 Path:      /event
 ClientSdk: flutter$FLUTTER_VERSION
 Parameters:
-  partner_params  {"product_id":"29","user_id":"835"}
+  partner_params  {"key":"value"}
   environment      sandbox
   event_count      1
-  event_token      g3mfiw
+  event_token      abc123
 ```
-
-</CodeBlock>
 
 ## [Add a callback identifier](add-a-callback-identifier)
 
@@ -531,56 +288,9 @@ Set up this identifier by assigning your ID to the `callbackId` property on your
 
 ```dart
 AdjustEvent myAdjustEvent = new AdjustEvent('abc123');
-//...
-myAdjustEvent.callbackId = '{your_callback_id}';
-//...
+myAdjustEvent.callbackId = 'your-callback-id';
 Adjust.trackEvent(myAdjustEvent);
 ```
-
-### [Example](example-5)
-
-This example shows how to record an event with the token `g3mfiw` whenever a user interacts with a button. In this example, the `callbackId` is set to `f2e728d8-271b-49ab-80ea-27830a215147`.
-
-<CodeBlock title="util.dart">
-
-<CodeBlock title="util.dart">
-
-```dart
-import 'package:adjust_sdk/adjust_event.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-
-class Util {
-   static const String EVENT_TOKEN_SIMPLE = 'g3mfiw';
-   static const String CALLBACK_ID = "f2e728d8-271b-49ab-80ea-27830a215147"
-
-   static Widget buildCupertinoButton(String text, Function action) {
-      return new CupertinoButton(
-         child: Text(text),
-         color: CupertinoColors.activeBlue,
-         padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 30.0),
-         onPressed: action as void Function()?,
-      );
-   }
-
-   static AdjustEvent myAdjustEvent() {
-      AdjustEvent event = new AdjustEvent(EVENT_TOKEN_SIMPLE);
-      event.callbackId = CALLBACK_ID;
-      return event;
-}
-
-// main.dart
-import 'util.dart';
-
-Util.buildCupertinoButton('Send Callback Event',
-   () => Adjust.trackEvent(Util.myAdjustEvent())),
-const Padding(padding: const EdgeInsets.all(7.0))
-
-```
-
-</CodeBlock>
-
-</CodeBlock>
 
 <CodeBlock title="Event log" highlight="{range: 7}">
 
@@ -590,8 +300,9 @@ ClientSdk: flutter$FLUTTER_VERSION
 Parameters:
   environment      sandbox
   event_count      3
-  event_token      g3mfiw
-  callback_id      f2e728d8-271b-49ab-80ea-27830a215147
+  event_token      abc123
+  callback_id      your-callback-id
 ```
 
 </CodeBlock>
+
