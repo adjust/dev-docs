@@ -2,6 +2,7 @@ import { type FC, useCallback, useEffect } from "react";
 import { ComboBox } from "@adjust/components";
 import { useStore } from "@nanostores/react";
 import type { CollectionEntry } from "astro:content";
+import type { Option } from "@adjust/components/build/ComboBox/ComboBox";
 
 import type { Locales } from "@i18n/locales";
 import { useTranslations } from "@i18n/utils";
@@ -9,15 +10,22 @@ import {
   $versions,
   changeVersionValue,
   supportedVersions,
+  updateVersionsItems,
   type VersionStore,
 } from "@store/sdkVersionsStore";
+import type { NavigationData } from "@utils/helpers/navigation/types";
 
 interface SdkVersionSwitchProps {
   lang: string;
   redirects: CollectionEntry<"docs">["data"]["redirects"];
+  sdkVersions: NavigationData["versions"]["sdk"];
 }
 
-const VersionSwitch: FC<SdkVersionSwitchProps> = ({ lang, redirects }) => {
+const VersionSwitch: FC<SdkVersionSwitchProps> = ({
+  lang,
+  redirects,
+  sdkVersions,
+}) => {
   const t = useTranslations(lang as keyof Locales);
   const versions = useStore($versions);
 
@@ -76,6 +84,11 @@ const VersionSwitch: FC<SdkVersionSwitchProps> = ({ lang, redirects }) => {
 
   useEffect(() => {
     handleUrlVersion();
+  }, []);
+
+  // need to add versions from the page data to the SDK versions store
+  useEffect(() => {
+    updateVersionsItems(sdkVersions as Option[]);
   }, []);
 
   const label = t("sdkversionswitch.label");
