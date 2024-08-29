@@ -19,21 +19,12 @@ export const getNavigationEntries = (
   currentVersion: string = "v5",
 ): NavigationData => {
   // filtering data by the current language
-  const filteredPagesData = pages.filter((pageData) => {
+  const filteredPagesByLang = pages.filter((pageData) => {
     const data = pageData.frontmatter;
     // as we have partials inside content structure we don`t need to parse this data for the tree
     const isPage = Object.keys(data).length;
-    const url = pageData.url || "";
-    const isVersioned = /\/\w*v\d/gi.test(url);
-    const isCurrentVersion = isVersioned
-      ? url?.includes(`/${currentVersion}/`)
-      : true;
 
-    return (
-      isPage &&
-      pageData.frontmatter.slug.includes(`${currentLang}/`) &&
-      isCurrentVersion
-    );
+    return isPage && pageData.frontmatter.slug.includes(`${currentLang}/`);
   });
 
   const versions: NavigationData["versions"] = {
@@ -41,16 +32,11 @@ export const getNavigationEntries = (
     sdk: [],
   };
 
-  // getting formatted data for the pages
-  const pagesData = filteredPagesData.map((page) => {
-    const path = page.url?.replace(".mdx", "");
-    const updatedPath = path?.includes(`/${currentVersion}/`)
-      ? path.replace(`/${currentVersion}/`, "/")
-      : path;
-
-    // versioning logic
-    const versionsData = page.frontmatter.versions;
-    const isApi = path?.includes("/api/");
+  const filteredPagesByVersion = filteredPagesByLang.filter((pageData) => {
+    const url = pageData.url || "";
+    // populating versions data from the frontmatter
+    const versionsData = pageData.frontmatter.versions;
+    const isApi = url?.includes("/api/");
     if (versionsData?.length) {
       if (isApi) {
         versions.api!.push(...versionsData);
@@ -58,6 +44,21 @@ export const getNavigationEntries = (
         versions.sdk!.push(...versionsData);
       }
     }
+    // check for the current selected version
+    const isVersioned = /\/\w*v\d/gi.test(url);
+    const isCurrentVersion = isVersioned
+      ? url?.includes(`/${currentVersion}/`)
+      : true;
+
+    return isCurrentVersion;
+  });
+
+  // getting formatted data for the pages
+  const pagesData = filteredPagesByVersion.map((page) => {
+    const path = page.url?.replace(".mdx", "");
+    const updatedPath = path?.includes(`/${currentVersion}/`)
+      ? path.replace(`/${currentVersion}/`, "/")
+      : path;
 
     return {
       ...page.frontmatter,
