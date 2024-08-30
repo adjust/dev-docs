@@ -5,11 +5,12 @@ import { useStore } from "@nanostores/react";
 import type { Locales } from "@i18n/locales";
 import { useTranslations } from "@i18n/utils";
 import type { Option } from "@adjust/components/build/ComboBox/ComboBox";
-import { $versions, changeVersionValue } from "@store/apiVersionsStore";
 import {
-  getQueryParameter,
-  updateQueryParameter,
-} from "@components/utils/queryParamHelpers";
+  $versions,
+  changeVersionValue,
+  updateVersionsItems,
+  type VersionStore,
+} from "@store/apiVersionsStore";
 import type { CollectionEntry } from "astro:content";
 import type { NavigationData } from "@utils/helpers/navigation/types";
 
@@ -19,64 +20,70 @@ interface VersionSwitchProps {
   apiVersions: NavigationData["versions"]["api"];
 }
 
-const VersionSwitch: FC<VersionSwitchProps> = ({ lang }) => {
+const VersionSwitch: FC<VersionSwitchProps> = ({
+  lang,
+  apiVersions,
+  redirects,
+}) => {
   const t = useTranslations(lang as keyof Locales);
   const versions = useStore($versions);
 
-  if (versions.items.length < 1) {
-    return null; // Return null if there's less than one version
-  }
+  const handleVersionChange = useCallback(
+    (newVersion: VersionStore["currentVersion"]) => {
+      changeVersionValue(newVersion);
 
-  // For APIs, we don't use "v4" as the default value. Instead, we should default to the
-  // highest value in the array (e.g. "v2" over "v1")
+      const redirectValue = (redirects as { [key: string]: string })?.[
+        newVersion.value
+      ];
 
-  useEffect(() => {
-    const higherVersion = versions.items.reduce((prev, current) =>
-      prev && prev.value > current.value ? prev : current,
-    );
-    const queryVersion = getQueryParameter("version");
-    if (
-      queryVersion &&
-      versions.items.some((version) => version.label === queryVersion)
-    ) {
-      const versionOption: Option = {
-        label: queryVersion,
-        value: queryVersion,
-      };
-      changeVersionValue(versionOption);
-    } else {
-      changeVersionValue(higherVersion);
-    }
-  }, [versions.items]);
+      const href = location.href;
+      if (newVersion.value !== versions.currentVersion.value) {
+        if (redirectValue) {
+          return (location.href = redirectValue);
+        }
 
-  const updateApiVersionVisibility = useCallback(() => {
-    const apiVersionSelectors = document.querySelectorAll(
-      "[role='ApiVersionSelector']",
-    );
+        const defaultVersionReg = /\/(\w*)v\d/gi;
+        const versionReg = /\/api\/(\w*)(\/|$)/gi;
 
-    apiVersionSelectors.forEach((selector) => {
-      const version = selector.getAttribute("data-message"); // The version number is assigned to the data-message attribute
-      const currentVersion = versions.currentVersion.value;
+        if (newVersion.default) {
+          return (location.href = href.replace(defaultVersionReg, "$1"));
+        }
 
-      if (version !== currentVersion) {
-        selector.classList.add("hidden");
-      } else {
-        selector.classList.remove("hidden");
+        return (location.href = href.replace(
+          versionReg,
+          `/api/$1/${newVersion.value}/`,
+        ));
       }
-    });
-    const event = new Event("versionUpdated");
-    document.dispatchEvent(event);
-  }, [versions.currentVersion.value]);
+    },
+    [],
+  );
+
+  const handleUrlVersion = () => {
+    const url = location.href;
+    const urlVersion = url.match(/(\w*)v\d/gi);
+    // if we have a version in the URL and it`s not the current version we change current selected to this version
+    if (urlVersion?.length && versions.currentVersion.value !== urlVersion[0]) {
+      const version = apiVersions!.find((item) => item.value === urlVersion[0]);
+      if (version) {
+        return changeVersionValue(version);
+      }
+    }
+    // we change the version to the default if we can`t update the version by the current URL
+    if (
+      !urlVersion?.length ||
+      !apiVersions!.find((item) => item.value === urlVersion[0])
+    ) {
+      return changeVersionValue(apiVersions!.find((item) => item.default)!);
+    }
+  };
 
   useEffect(() => {
-    updateApiVersionVisibility();
-  }, [updateApiVersionVisibility]);
+    handleUrlVersion();
+  }, []);
 
-  const handleVersionChange = useCallback((newVersion: Option) => {
-    // Set the new value in the store
-    changeVersionValue(newVersion);
-    // Update the query params in the URL
-    updateQueryParameter("version", newVersion.value);
+  // need to add versions from the page data to the SDK versions store
+  useEffect(() => {
+    updateVersionsItems(apiVersions as Option[]);
   }, []);
 
   const label = t("apiversionswitch.label");
