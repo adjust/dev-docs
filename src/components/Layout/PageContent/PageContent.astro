@@ -4,7 +4,6 @@ import type { MarkdownHeading } from "astro";
 import TableOfContents from "@components/TableOfContents.astro";
 import type { NavigationData } from "@utils/helpers/navigation/types";
 import CategoryCard from "@components/Cards/CategoryCard.astro";
-import ApiVersionSwitch from "@components/Version/ApiVersionSwitch";
 
 import { getLanguageFromURL } from "@i18n/utils";
 import { type Locales } from "@i18n/locales";
@@ -18,11 +17,10 @@ type Props = {
   title: string;
   headings: MarkdownHeading[];
   childLinks: NavigationData["childLinks"];
-  multiVersion: boolean;
   type?: string;
 };
 
-const { title, headings, childLinks, multiVersion, type } = Astro.props;
+const { title, headings, childLinks, type } = Astro.props;
 
 const sortedLinks = childLinks.sort((a, b) => {
   if (!a.position && !b.position) {
@@ -41,12 +39,7 @@ const sortedLinks = childLinks.sort((a, b) => {
   {
     headings && headings.length > 0 && type !== "category" && (
       <aside title={t("toc.header")}>
-        <TableOfContents
-          title={title}
-          multiVersion={multiVersion}
-          headings={headings}
-          lang={currentLang}
-        />
+        <TableOfContents title={title} headings={headings} lang={currentLang} />
       </aside>
     )
   }
@@ -55,11 +48,6 @@ const sortedLinks = childLinks.sort((a, b) => {
       {title}
     </h1>
     <div class="article-content" id="article-content">
-      {
-        Astro.url.pathname.includes("api") && multiVersion && (
-          <ApiVersionSwitch client:only="react" lang={currentLang} />
-        )
-      }
       <slot />
       <!-- Category cards for the entry with "category" type and childs -->
       {
@@ -76,18 +64,6 @@ const sortedLinks = childLinks.sort((a, b) => {
 </article>
 
 <script>
-  import { updateVersionsItems as updateApiVersions } from "@store/apiVersionsStore";
-
-  class ApiVersionBlock extends HTMLElement {
-    constructor() {
-      super();
-
-      const version = this.dataset.message!;
-      updateApiVersions([{ label: version, value: version }]);
-    }
-  }
-  customElements.define("api-version-block", ApiVersionBlock);
-
   document.addEventListener("DOMContentLoaded", () => {
     const headerLinks = document.querySelectorAll(".copy-link");
 

@@ -32,7 +32,8 @@ export const getNavigationEntries = (
     sdk: [],
   };
 
-  const filteredPagesByVersion = filteredPagesByLang.filter((pageData) => {
+  // extract versions from the page data
+  for (const pageData of filteredPagesByLang) {
     const url = pageData.url || "";
     // populating versions data from the frontmatter
     const versionsData = pageData.frontmatter.versions;
@@ -44,6 +45,10 @@ export const getNavigationEntries = (
         versions.sdk!.push(...versionsData);
       }
     }
+  }
+
+  const filteredPagesByVersion = filteredPagesByLang.filter((pageData) => {
+    const url = pageData.url || "";
     // check for the current selected version
     const isVersioned = /\/\w*v\d/gi.test(url);
     const isCurrentVersion = isVersioned

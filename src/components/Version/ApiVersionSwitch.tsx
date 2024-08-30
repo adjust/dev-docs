@@ -1,6 +1,7 @@
 import { type FC, useEffect, useCallback } from "react";
 import { ComboBox } from "@adjust/components";
 import { useStore } from "@nanostores/react";
+
 import type { Locales } from "@i18n/locales";
 import { useTranslations } from "@i18n/utils";
 import type { Option } from "@adjust/components/build/ComboBox/ComboBox";
@@ -9,8 +10,16 @@ import {
   getQueryParameter,
   updateQueryParameter,
 } from "@components/utils/queryParamHelpers";
+import type { CollectionEntry } from "astro:content";
+import type { NavigationData } from "@utils/helpers/navigation/types";
 
-const VersionSwitch: FC<{ lang: string }> = ({ lang }) => {
+interface VersionSwitchProps {
+  lang: string;
+  redirects: CollectionEntry<"docs">["data"]["redirects"];
+  apiVersions: NavigationData["versions"]["api"];
+}
+
+const VersionSwitch: FC<VersionSwitchProps> = ({ lang }) => {
   const t = useTranslations(lang as keyof Locales);
   const versions = useStore($versions);
 
