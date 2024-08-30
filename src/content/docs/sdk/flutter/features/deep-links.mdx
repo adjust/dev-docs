@@ -92,13 +92,13 @@ class AppDelegate {
 }
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
-   [Adjust appWillOpenUrl:url];
+   [Adjust processDeeplink:[ADJDeeplink alloc] initWithDeeplink:url]];
    return YES;
 }
 
 - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> *restorableObjects))restorationHandler {
    if ([[userActivity activityType] isEqualToString:NSUserActivityTypeBrowsingWeb]) {
-      [Adjust appWillOpenUrl:[userActivity webpageURL]];
+      [Adjust processDeeplink:[ADJDeeplink alloc] initWithDeeplink:[userActivity webpageURL]]];
    }
    return YES;
 }
@@ -119,7 +119,7 @@ public static void processDeeplink(AdjustDeeplink deeplink)
 
 </CodeBlock>
 
-To enable deep linking for Android, call the `appWillOpenUrl` method with a `true` value inside your main activity.
+To enable Adjust reattribution via deep linking, make sure to call `Adjust.processDeeplink` method once you obtain the deep link in your activity.
 
 <Tabs>
 <Tab title="Kotlin" sync="kotlin">
@@ -138,14 +138,14 @@ class MainActivity : FlutterActivity() {
       // Used only for pre flutter 1.12 Android projects
       Intent intent = getIntent()
       Uri data = intent.getData()
-      AdjustSdk.appWillOpenUrl(data, this)
+      Adjust.processDeeplink(new AdjustDeeplink(data), this)
    }
 
    // Or make the call in onNewIntent.
    override fun onNewIntent(intent: Intent?) {
       super.onNewIntent(intent)
       Uri data = intent.getData()
-      AdjustSdk.appWillOpenUrl(data, this)
+      Adjust.processDeeplink(new AdjustDeeplink(data), this)
    }
 }
 ```
@@ -167,7 +167,7 @@ public class MainActivity extends FlutterActivity {
 
       Intent intent = getIntent();
       Uri data = intent.getData();
-      AdjustSdk.appWillOpenUrl(data, this);
+      Adjust.processDeeplink(new AdjustDeeplink(data), this);
    }
 
    // Or make the cakll in onNewIntent.
@@ -175,7 +175,7 @@ public class MainActivity extends FlutterActivity {
    protected void onNewIntent(Intent intent) {
       super.onNewIntent(intent);
       Uri data = intent.getData();
-      AdjustSdk.appWillOpenUrl(data, this);
+      Adjust.processDeeplink(new AdjustDeeplink(data), this);
    }
 }
 ```
@@ -211,7 +211,7 @@ Adjust.initSdk(adjustConfig);
 <CodeBlock title="Property declaration">
 
 ```dart
-typedef void DeferredDeeplinkCallback(String? uri);
+typedef void DeferredDeeplinkCallback(String? deeplink);
 DeferredDeeplinkCallback? deferredDeeplinkCallback;
 
 ```

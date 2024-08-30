@@ -40,7 +40,7 @@ You must set this property _before_ initializing the Adjust SDK.
 </Callout>
 
 ```dart
-AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox, true);
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox, true);
 //...
 adjustConfig.isSkanAttributionEnabled = false;
 //...
@@ -65,9 +65,9 @@ If you manage your conversion values with Adjust, the servers update this value 
 
 | Argument      | Data type                                                                                                                   | Description                                                                                                                                                                                                                                                                         |
 | ------------- | --------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `fineValue`   | Integer                                                                                                                     | Your conversion value. Must be between `0` and `63`.                                                                                                                                                                                                                                |
-| `coarseValue` | [`SKAdNetwork.CoarseConversionValue`](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue) | The coarse conversion value. This value is used if your app doesn't have sufficient installs to reach the privacy threshold.<ul><li>`SKAdNetworkCoarseConversionValueLow`</li><li>`SKAdNetworkCoarseConversionValueMedium`</li><li>`SKAdNetworkCoarseConversionValueHigh`</li></ul> |
-| `lockWindow`  | Boolean                                                                                                                     | Whether to send the postback before the conversion window ends.<br/>Use `true` to tell the system to send the postback without waiting for the end of the conversion window. Defaults to `false`.                                                                                   |
+| `conversionValue`   | int                                                                                                                     | Your conversion value. Must be between `0` and `63`.                                                                                                                                                                                                                                |
+| `coarseValue` | String ([`SKAdNetwork.CoarseConversionValue`](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)) | The coarse conversion value. This value is used if your app doesn't have sufficient installs to reach the privacy threshold.<ul><li>`'low'` (for `SKAdNetworkCoarseConversionValueLow`)</li><li>`'medium'` (for `SKAdNetworkCoarseConversionValueMedium`)</li><li>`'high'` (for `SKAdNetworkCoarseConversionValueHigh`)</li></ul> |
+| `lockWindow`  | bool?                                                                                                                     | Whether to send the postback before the conversion window ends.<br/>Use `true` to tell the system to send the postback without waiting for the end of the conversion window. Defaults to `false`.                                                                                   |
 
 </Table>
 
@@ -82,16 +82,19 @@ Adjust.updateSkanConversionValue(6, 'coarse-value', true).then((error) {
 <CodeBlock title="Property declaration">
 
 ```dart
-typedef void ConversionValueUpdatedCallback(num? conversionValue);
+typedef void SkanUpdatedCallback(Map<String, String> skanUpdateData);
+SkanUpdatedCallback? skanUpdatedCallback;
 ```
 
 </CodeBlock>
 
-If you use Adjust to manage conversion values, the Adjust's servers send conversion value updates to the SDK. You can set up a delegate function to listen for these changes using the `conversionValueUpdatedCallback` method. Pass your function as an argument.
+If you use Adjust to manage conversion values, the Adjust's servers send conversion value updates to the SDK. You can set up a delegate function to listen for these changes using the `skanUpdatedCallback` method. Pass your function as an argument.
 
 ```dart
 AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
-config.conversionValueUpdatedCallback = (num? conversionValue) {
+adjustConfig.skanUpdatedCallback = (Map<String, String> data) {
+    print(Skan Callback: $data');
+};
    print('[Adjust]: Received conversion value update: ' + conversionValue!.toString());
 };
 Adjust.initSdk(adjustConfig);
