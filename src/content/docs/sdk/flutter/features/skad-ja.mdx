@@ -1,38 +1,42 @@
 ---
 title: "SKAdNetworkとconversion valueの設定"
 description: "iOSアプリのSKAdNetwork機能を設定します。"
-slug: "en/sdk/flutter/features/skan"
+slug: "ja/sdk/flutter/features/skan"
 multiVersion: true
 ---
-<sdkversion version="v5"> <callout type="important"> 
+
+<SdkVersion version="v5">
+<Callout type="important">
 
 この機能は、iOS 14以降のiOSデバイスのみにおいて利用可能です。
-</Callout> 
+
+</Callout>
 
 StoreKit AdNetwork（SKAdNetwork）は、アプリのインストールおよび再インストールアトリビューションのための、Appleのフレームワークです。SKAdNetworkのワークフローは以下のようになります：
 
 1. Appleがアトリビューション情報を収集し、関連するアドネットワークに通知します。
 2. ネットワークがこの情報をAdjustにポストバックで送信します。
-3. Adjustが[Datascape](https://help.adjust.com/en/suite/article/datascape)上にSKAdNetworkデータを表示します。
+3. Adjustが[Datascape](https://help.adjust.com/ja/suite/article/datascape)上にSKAdNetworkデータを表示します。
 
-[SKAdNetworkの通信を無効化する](disable-skadnetwork-communication)
----------------------------------------------------------
+## [SKAdNetworkの通信を無効化する](disable-skadnetwork-communication)
 
-<codeblock title="プロパティ宣言"> 
+<CodeBlock title="プロパティ宣言">
 
 ```dart
 bool? isSkanAttributionEnabled;
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 Adjust SDKはデフォルトでSKAdNetworkと通信を行います。SDKは初期化時にSKAdNetworkのアトリビューションを記録します。
 
 この動作は、`AdjustConfig`インスタンスの`isSkanAttributionEnabled`プロパティを`bool`値に設定することで制御できます。
-<callout type="important"> 
 
-Adjust SDKを初期化する *前* に、このプロパティを呼び出す必要があります。
-</Callout> 
+<Callout type="important">
+
+Adjust SDKを初期化する _前_ に、このプロパティを呼び出す必要があります。
+
+</Callout>
 
 ```dart
 AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox, true);
@@ -42,29 +46,29 @@ adjustConfig.isSkanAttributionEnabled = false;
 Adjust.initSdk(adjustConfig);
 ```
 
-[Conversion valueを更新する](update-conversion-values)
--------------------------------------------------
+## [Conversion valueを更新する](update-conversion-values)
 
-<codeblock title="メソッドシグネチャー"> 
+<CodeBlock title="メソッドシグネチャー">
 
 ```dart
 static Future<String?> updateSkanConversionValue(int conversionValue, String coarseValue, bool lockWindow)
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 Conversion valueは、SKAdNetworkでアプリ内のユーザー行動を計測するためのメカニズムです。64の条件を`0`～`63`の値に対応させ、ユーザーのインストール時にこの整数値をSKAdNetworkに送信することができます。これによって、はじめの3日間のユーザー行動に関するインサイトを取得することが可能です。これによって、はじめの3日間のユーザー行動に関するインサイトを取得することが可能です。
 
 Adjustでconversion valueを管理している場合、AdjustのサーバーはSDKでこの値を更新します。また、`updateSkanConversionValue`メソッドを使用して、この値を更新することもできます。このメソッドは[Appleの`updateConversionValue`メソッド](https://developer.apple.com/documentation/storekit/skadnetwork/3566697-updateconversionvalue)をラップしており、次の引数を受け入れます。
-<table> 
 
-|        引数         |                                                                 データタイプ                                                                  |                                                                                                                               説明                                                                                                                               |
-|-------------------|-----------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `conversionValue` | int                                                                                                                                     | Conversion value。`0`～`63`の値であることが必須です。                                                                                                                                                                                                                         |
+<Table>
+
+| 引数              | データタイプ                                                                                                                             | 説明                                                                                                                                                                                                                                                                                                                      |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `conversionValue` | int                                                                                                                                      | Conversion value。`0`～`63`の値であることが必須です。                                                                                                                                                                                                                                                                     |
 | `coarseValue`     | 文字列 \( [`SKAdNetwork.CoarseConversionValue`](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue) \) | 粒度が粗いconversion value。この値は、プライバシーのしきい値に到達するだけのアプリインストール数でない場合に使用されます。<ul><li>`'low'` `SKAdNetworkCoarseConversionValueLow`対象</li><li>`'medium'` `SKAdNetworkCoarseConversionValueMedium`対象</li><li>`'high'` `SKAdNetworkCoarseConversionValueHigh`対象</li></ul> |
-| `lockWindow`      | bool?                                                                                                                                   | Conversion期間の終了前にポストバックを送信するかどうか。<br/>`true`を指定した場合、conversion期間の終了を待たずにポストバックを送信するようにシステムに指示します。デフォルトの設定は`false`となっています。                                                                                                                                      |
+| `lockWindow`      | bool?                                                                                                                                    | Conversion期間の終了前にポストバックを送信するかどうか。<br/>`true`を指定した場合、conversion期間の終了を待たずにポストバックを送信するようにシステムに指示します。デフォルトの設定は`false`となっています。                                                                                                              |
 
-</Table> 
+</Table>
 
 ```dart
 Adjust.updateSkanConversionValue(6, 'coarse-value', true).then((error) {
@@ -72,17 +76,16 @@ Adjust.updateSkanConversionValue(6, 'coarse-value', true).then((error) {
 });
 ```
 
-[Conversion valueの変更を受信する](listen-for-changes-to-conversion-values)
--------------------------------------------------------------------
+## [Conversion valueの変更を受信する](listen-for-changes-to-conversion-values)
 
-<codeblock title="プロパティ宣言"> 
+<CodeBlock title="プロパティ宣言">
 
 ```dart
 typedef void SkanUpdatedCallback(Map<String, String> skanUpdateData);
 SkanUpdatedCallback? skanUpdatedCallback;
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 Adjustを使用してconversion valueを管理している場合、Adjustのサーバーはconversion valueのアップデートをSDKに送信します。`skanUpdatedCallback`メソッドを使用して、こうした変更を受信するデリゲート関数を設定できます。関数を引数としてパスしてください。
 
@@ -100,10 +103,10 @@ Adjust.initSdk(adjustConfig);
 
 この例では、conversion valueが更新されたときに以下を記録する方法を示しています：
 
-* conversion valueのアップデートを確認するメッセージ
-* 新しいconversion value
+-  conversion valueのアップデートを確認するメッセージ
+-  新しいconversion value
 
-<codeblock title="main.dart"> 
+<CodeBlock title="main.dart">
 
 ```dart
 import 'package:adjust_sdk/adjust.dart';
@@ -126,21 +129,21 @@ Adjust.initSdk(config);
 }
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
-[SKAdNetwork 4\.0コールバック](skadnetwork-4-0-callbacks)
-----------------------------------------------------
+## [SKAdNetwork 4\.0コールバック](skadnetwork-4-0-callbacks)
 
 SKAdNetwork 4\.0のポストバックにはいくつかの追加情報が含まれており、広告主はユーザーに関する詳細なインサイトを得ることができます。この追加情報は、Adjustサーバーによってconversion valueが更新されるときにペイロードで送信されます。この情報には、`skanUpdatedCallback`コールバックメソッドを使用してアクセスできます。
-<table> 
 
-|        引数         |  データタイプ  |                                                                                                     説明                                                                                                      |
-|-------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `conversionValue` | `String` | Adjustサーバーから送信されるconversion value。                                                                                                                                                                          |
-| `coarseValue`     | `String` | 粒度が粗いconversion value。この値は、プライバシーのしきい値に到達するだけのアプリインストール数でない場合に使用されます。<ul><li>`none`</li><li>`low`</li><li>`medium`</li><li>`high`</li></ul><br/>Appleは、low, medium, highに設定された条件がいずれも満たされなかった場合、noneを送信します。 |
-| `lockWindow`      | `bool`   | Conversion期間の終了前にポストバックを送信するかどうか。`1`の場合、conversion期間の終了前にポストバックが送信されることを示します。<br/>デフォルト値は、SKAdNetwork 4\.0のポストバックでは`0`、それ以前のSKAdNetworkのポストバックでは`nil`になります。                                                |
+<Table>
 
-</Table> 
+| 引数              | データタイプ | 説明                                                                                                                                                                                                                                                                                              |
+| ----------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `conversionValue` | `String`     | Adjustサーバーから送信されるconversion value。                                                                                                                                                                                                                                                    |
+| `coarseValue`     | `String`     | 粒度が粗いconversion value。この値は、プライバシーのしきい値に到達するだけのアプリインストール数でない場合に使用されます。<ul><li>`none`</li><li>`low`</li><li>`medium`</li><li>`high`</li></ul><br/>Appleは、low, medium, highに設定された条件がいずれも満たされなかった場合、noneを送信します。 |
+| `lockWindow`      | `bool`       | Conversion期間の終了前にポストバックを送信するかどうか。`1`の場合、conversion期間の終了前にポストバックが送信されることを示します。<br/>デフォルト値は、SKAdNetwork 4\.0のポストバックでは`0`、それ以前のSKAdNetworkのポストバックでは`nil`になります。                                           |
+
+</Table>
 
 ### [例](example-3)
 
@@ -170,13 +173,13 @@ initPlatformState() async {
 }
 ```
 
-[ダイレクトインストールポストバックの設定](set-up-direct-install-postbacks)
--------------------------------------------------------
+## [ダイレクトインストールポストバックの設定](set-up-direct-install-postbacks)
 
-<callout type="note"> 
+<Callout type="note">
 
 ダイレクトインストールポストバックには、SKAdNetworkの情報のみが含まれます。キャンペーンデータなどの情報は含まれません。
-</Callout> 
+
+</Callout>
 
 獲得したSKAdNetworkコールバックのコピーをAdjustに送信するようにアプリを設定できます。これにより、SKAdNetworkの情報をアナリティクスで使用できるようになります。
 
@@ -184,43 +187,51 @@ initPlatformState() async {
 
 1. Xcodeのプロジェクトナビゲーターで **Info.plist** を選択します。
 2. プロパティリストエディタでキーの横にある追加ボタンを選択し、`Return`キーを押します。
-3. キーの名前として *`NSAdvertisingAttributionReportEndpoint`* を入力します。
+3. キーの名前として _`NSAdvertisingAttributionReportEndpoint`_ を入力します。
 4. ポップアップ画面で **Type** から **String** までを設定します。
-5. アドレス *`https://adjust-skadnetwork.com`* を入力します。
+5. アドレス _`https://adjust-skadnetwork.com`_ を入力します。
 
-<callout type="seealso"> 
+<Callout type="seealso">
 
 詳しくはAppleのガイド[Configuring an Advertised App](https://developer.apple.com/documentation/storekit/skadnetwork/configuring_an_advertised_app)をご覧ください。
-</Callout> </SdkVersion> <sdkversion version="v4"> <callout type="important"> 
+
+</Callout>
+</SdkVersion>
+<SdkVersion version="v4">
+<Callout type="important">
 
 この機能は、iOS 14以降のiOSデバイスのみにおいて利用可能です。
-</Callout> 
+
+</Callout>
 
 StoreKit AdNetwork（SKAdNetwork）は、アプリのインストールおよび再インストールアトリビューションのための、Appleのフレームワークです。SKAdNetworkのワークフローは以下のようになります：
 
 1. Appleがアトリビューション情報を収集し、関連するアドネットワークに通知します。
 2. ネットワークがこの情報をAdjustにポストバックで送信します。
-3. Adjustが[Datascape](https://help.adjust.com/en/suite/article/datascape)上にSKAdNetworkデータを表示します。
+3. Adjustが[Datascape](https://help.adjust.com/ja/suite/article/datascape)上にSKAdNetworkデータを表示します。
 
-[SKAdNetworkの通信を無効化する](disable-skadnetwork-communication)
----------------------------------------------------------
+## [SKAdNetworkの通信を無効化する](disable-skadnetwork-communication)
 
-<codeblock title="メソッドシグネチャー"> 
+<CodeBlock title="メソッドシグネチャー">
 
 ```dart
 void deactivateSKAdNetworkHandling()
 ```
 
-</CodeBlock> <minorversion added="v4.23.0"> 
+</CodeBlock>
+<MinorVersion added="v4.23.0">
 
 Adjust SDKはv4\.23\.0以降ではデフォルトでSKAdNetworkと通信を行います。SDKは初期化時にSKAdNetworkのアトリビューションを記録します。
-</MinorVersion> 
+
+</MinorVersion>
 
 Configオブジェクトにはブーリアン値の`isSKAdNetworkHandlingActive`プロパティが含まれており、それが動作を制御します。SKAdNetworkとの通信を非有効化するには、引数なしで`deactivateSKAdNetworkHandling`メソッドを呼び出してください。
-<callout type="important"> 
+
+<Callout type="important">
 
 Adjust SDKを初期化する **前** に、`deactivateSKAdNetworkHandling`メソッドを呼び出す必要があります。
-</Callout> 
+
+</Callout>
 
 ```dart
 AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox, true);
@@ -230,16 +241,15 @@ adjustConfig.deactivateSKAdNetworkHandling();
 Adjust.start(adjustConfig);
 ```
 
-[Conversion valueを更新する](update-conversion-values)
--------------------------------------------------
+## [Conversion valueを更新する](update-conversion-values)
 
-<codeblock title="メソッドシグネチャー"> 
+<CodeBlock title="メソッドシグネチャー">
 
 ```dart
 static void updateConversionValue(int conversionValue)
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 Conversion valueは、SKAdNetworkでアプリ内のユーザー行動を計測するためのメカニズムです。64の条件を`0`～`63`の値に対応させ、ユーザーのインストール時にこの整数値をSKAdNetworkに送信することができます。これによって、はじめの3日間のユーザー行動に関するインサイトを取得することが可能です。これによって、はじめの3日間のユーザー行動に関するインサイトを取得することが可能です。
 
@@ -249,16 +259,15 @@ Adjustでconversion valueを管理している場合、AdjustのサーバーはS
 Adjust.updateConversionValue(6);
 ```
 
-[Conversion valueの変更を受信する](listen-for-changes-to-conversion-values)
--------------------------------------------------------------------
+## [Conversion valueの変更を受信する](listen-for-changes-to-conversion-values)
 
-<codeblock title="プロパティ宣言"> 
+<CodeBlock title="プロパティ宣言">
 
 ```dart
 typedef void ConversionValueUpdatedCallback(num? conversionValue);
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 Adjustを使用してconversion valueを管理している場合、Adjustのサーバーはconversion valueのアップデートをSDKに送信します。`conversionValueUpdatedCallback`メソッドを使用して、こうした変更を受信するデリゲート関数を設定できます。関数を引数としてパスしてください。
 
@@ -274,10 +283,10 @@ Adjust.start(adjustConfig);
 
 この例では、conversion valueが更新されたときに以下を記録する方法を示しています：
 
-* conversion valueのアップデートを確認するメッセージ
-* 新しいconversion value
+-  conversion valueのアップデートを確認するメッセージ
+-  新しいconversion value
 
-<codeblock title="main.dart"> 
+<CodeBlock title="main.dart">
 
 ```dart
 import 'package:adjust_sdk/adjust.dart';
@@ -300,23 +309,24 @@ Adjust.start(config);
 }
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
-[SKAdNetwork 4\.0コールバック](skadnetwork-4-0-callbacks)
-----------------------------------------------------
+## [SKAdNetwork 4\.0コールバック](skadnetwork-4-0-callbacks)
 
-<minorversion added="v4.33.0"> 
+<MinorVersion added="v4.33.0">
 
 SKAdNetwork 4\.0のポストバックにはいくつかの追加情報が含まれており、広告主はユーザーに関する詳細なインサイトを得ることができます。この追加情報は、Adjustサーバーによってconversion valueが更新されるときにペイロードで送信されます。この情報には、`Skad4ConversionValueUpdatedCallback`コールバックメソッドを使用してアクセスできます。
-</MinorVersion> <table> 
 
-|      引数       |   データタイプ   |                                                                                                     説明                                                                                                      |
-|---------------|------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `fineValue`   | `NSNumber` | Adjustサーバーから送信されるconversion value。                                                                                                                                                                          |
-| `coarseValue` | `NSString` | 粒度が粗いconversion value。この値は、プライバシーのしきい値に到達するだけのアプリインストール数でない場合に使用されます。<ul><li>`none`</li><li>`low`</li><li>`medium`</li><li>`high`</li></ul><br/>Appleは、low, medium, highに設定された条件がいずれも満たされなかった場合、noneを送信します。 |
-| `lockWindow`  | `NSNumber` | Conversion期間の終了前にポストバックを送信するかどうか。`1`の場合、conversion期間の終了前にポストバックが送信されることを示します。<br/>デフォルト値は、SKAdNetwork 4\.0のポストバックでは`0`、それ以前のSKAdNetworkのポストバックでは`nil`になります。                                                |
+</MinorVersion>
+<Table>
 
-</Table> 
+| 引数          | データタイプ | 説明                                                                                                                                                                                                                                                                                              |
+| ------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fineValue`   | `NSNumber`   | Adjustサーバーから送信されるconversion value。                                                                                                                                                                                                                                                    |
+| `coarseValue` | `NSString`   | 粒度が粗いconversion value。この値は、プライバシーのしきい値に到達するだけのアプリインストール数でない場合に使用されます。<ul><li>`none`</li><li>`low`</li><li>`medium`</li><li>`high`</li></ul><br/>Appleは、low, medium, highに設定された条件がいずれも満たされなかった場合、noneを送信します。 |
+| `lockWindow`  | `NSNumber`   | Conversion期間の終了前にポストバックを送信するかどうか。`1`の場合、conversion期間の終了前にポストバックが送信されることを示します。<br/>デフォルト値は、SKAdNetwork 4\.0のポストバックでは`0`、それ以前のSKAdNetworkのポストバックでは`nil`になります。                                           |
+
+</Table>
 
 ### [例](example-3)
 
@@ -344,13 +354,13 @@ Adjust.start(config);
 }
 ```
 
-[ダイレクトインストールポストバックの設定](set-up-direct-install-postbacks)
--------------------------------------------------------
+## [ダイレクトインストールポストバックの設定](set-up-direct-install-postbacks)
 
-<callout type="note"> 
+<Callout type="note">
 
 ダイレクトインストールポストバックには、SKAdNetworkの情報のみが含まれます。キャンペーンデータなどの情報は含まれません。
-</Callout> 
+
+</Callout>
 
 獲得したSKAdNetworkコールバックのコピーをAdjustに送信するようにアプリを設定できます。これにより、SKAdNetworkの情報をアナリティクスで使用できるようになります。
 
@@ -358,12 +368,13 @@ Adjust.start(config);
 
 1. Xcodeのプロジェクトナビゲーターで **Info.plist** を選択します。
 2. プロパティリストエディタでキーの横にある追加ボタンを選択し、`Return`キーを押します。
-3. キーの名前として *`NSAdvertisingAttributionReportEndpoint`* を入力します。
+3. キーの名前として _`NSAdvertisingAttributionReportEndpoint`_ を入力します。
 4. ポップアップ画面で **Type** から **String** までを設定します。
-5. アドレス *`https://adjust-skadnetwork.com`* を入力します。
+5. アドレス _`https://adjust-skadnetwork.com`_ を入力します。
 
-<callout type="seealso"> 
+<Callout type="seealso">
 
 詳しくはAppleのガイド[Configuring an Advertised App](https://developer.apple.com/documentation/storekit/skadnetwork/configuring_an_advertised_app)をご覧ください。
-</Callout> </SdkVersion>
 
+</Callout>
+</SdkVersion>
