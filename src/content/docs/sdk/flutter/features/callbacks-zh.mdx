@@ -1,38 +1,37 @@
 ---
 title: "设置回传"
 description: "设置回传来在 SDK 向 Adjust 发送信息时触发函数。"
-slug: "zh/sdk/flutter/features/callbacks"
+slug: "en/sdk/flutter/features/callbacks"
+multiVersion: true
 ---
+<sdkversion version="v5"> 
 
 设置回传来在 SDK 向 Adjust 发送信息时触发函数。您可以针对会话和事件设置回传。
-
-<Callout type="important">
+<callout type="important"> 
 
 您必须在初始化 SDK **之前** 注册回传。
+</Callout> 
 
-</Callout>
-
-## [会话回传](session-callbacks)
+[会话回传](session-callbacks)
+-------------------------
 
 设置会话回传来在 SDK 向 Adjust 发送会话信息时触发函数。您可以创建 **success** 回传和 **failure** 回传。SDK 向 Adjust 服务器发送信息时会触发 **success** 回传。SDK 向 Adjust 发送信息时出现问题会触发 **failure** 回传。
 
 会话回传可访问响应数据对象。您可以在回传函数中使用其属性。
+<table> 
 
-<Table>
+|       属性       |   数据类型   |          描述          |
+|----------------|----------|----------------------|
+| `message`      | `String` | 服务器信息或者 SDK 记录的错误信息。 |
+| `timestamp`    | `String` | 来自 Adjust 服务器的时间戳。   |
+| `jsonResponse` | `String` | 带服务器响应的 JSON 字符串。    |
+| `willRetry`    | `bool`   | 指示包发送失败后是否再次尝试发送。    |
 
-| 属性           | 数据类型              | 描述                                |
-| -------------- | --------------------- | ----------------------------------- |
-| `Message`      | `String`              | 服务器信息或者 SDK 记录的错误信息。 |
-| `Timestamp`    | `String`              | 来自 Adjust 服务器的时间戳。        |
-| `Adid`         | `String`              | 由 Adjust 提供的设备唯一标识符。    |
-| `JsonResponse` | `Map<String, Object>` | 带服务器响应的 JSON 对象。          |
-| `WillRetry`    | `bool`                | 指示包发送失败后是否再次尝试发送。  |
-
-</Table>
+</Table> 
 
 ### [success 回传](success-callbacks)
 
-<CodeBlock title="属性声明">
+<codeblock title="属性声明"> 
 
 ```dart
 typedef void SessionSuccessCallback(AdjustSessionSuccess successData);
@@ -40,7 +39,274 @@ SessionSuccessCallback? sessionSuccessCallback;
 
 ```
 
-</CodeBlock>
+</CodeBlock> 
+
+设置 success 回传来在 SDK 记录到会话时触发函数。
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
+
+config.sessionSuccessCallback = (AdjustSessionSuccess sessionSuccessData) {
+   print('[Adjust]: Session recording success!');
+
+   if (sessionSuccessData.message != null) {
+      print('[Adjust]: Message: ' + sessionSuccessData.message);
+   }
+   if (sessionSuccessData.timestamp != null) {
+      print('[Adjust]: Timestamp: ' + sessionSuccessData.timestamp);
+   }
+   if (sessionSuccessData.adid != null) {
+      print('[Adjust]: Adid: ' + sessionSuccessData.adid);
+   }
+   if (sessionSuccessData.jsonResponse != null) {
+      print('[Adjust]: JSON response: ' + sessionSuccessData.jsonResponse);
+   }
+};
+
+Adjust.initSdk(adjustConfig);
+```
+
+#### [示例](example)
+
+该示例展示了如何注册一个 `sessionSuccessCallback`，来输出 SDK 向 Adjust 发送会话数据的时间戳。
+
+```dart
+AdjustConfig myConfig = new AdjustConfig('{Your App Token}', AdjustEnvironment.sandbox);
+//...
+myConfig.sessionSuccessCallback = (AdjustSessionSuccess sessionSuccessData) {
+   print('Session measured at ' + sessionSuccessData.timestamp);
+}
+//...
+Adjust.initSdk(myConfig);
+```
+
+### [failure 回传](failure-callbacks)
+
+<codeblock title="属性声明"> 
+
+```dart
+typedef void SessionFailureCallback(AdjustSessionFailure failureData);
+SessionFailureCallback? sessionFailureCallback;
+
+```
+
+</CodeBlock> 
+
+设置 failure 回传来在 SDK 未能记录到会话时触发函数。
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
+
+config.sessionFailureCallback = (AdjustSessionFailure sessionFailureData) {
+   print('[Adjust]: Session recording failure!');
+
+   if (sessionFailureData.message != null) {
+      print('[Adjust]: Message: ' + sessionFailureData.message);
+   }
+   if (sessionFailureData.timestamp != null) {
+      print('[Adjust]: Timestamp: ' + sessionFailureData.timestamp);
+   }
+   if (sessionFailureData.adid != null) {
+      print('[Adjust]: Adid: ' + sessionFailureData.adid);
+   }
+   if (sessionFailureData.willRetry != null) {
+      print('[Adjust]: Will retry: ' + sessionFailureData.willRetry.toString());
+   }
+   if (sessionFailureData.jsonResponse != null) {
+      print('[Adjust]: JSON response: ' + sessionFailureData.jsonResponse);
+   }
+};
+
+Adjust.initSdk(adjustConfig);
+```
+
+#### [示例](example-1)
+
+该示例展示了如何注册一个 `sessionFailureCallback`，来输出 SDK 发送会话数据失败的原因。
+
+```dart
+AdjustConfig myConfig = new AdjustConfig('{Your App Token}', AdjustEnvironment.sandbox);
+//...
+myConfig.sessionFailureCallback = (AdjustSessionFailure sessionFailureData) {
+   print('Session failure due to ' + sessionFailureData.message);
+}
+//...
+Adjust.initSdk(myConfig);
+```
+
+[事件回传](event-callbacks)
+-----------------------
+
+设置事件回传来在 SDK 向 Adjust 发送事件信息时触发函数。您可以创建 **success** 回传和 **failure** 回传。SDK 向 Adjust 服务器发送信息时会触发 **success** 回传。SDK 向 Adjust 发送信息时出现问题会触发 **failure** 回传。
+
+事件回传可访问响应数据对象。您可以在回传函数中使用其属性。
+<table> 
+
+|       属性       |   数据类型   |          描述          |
+|----------------|----------|----------------------|
+| `message`      | `String` | 服务器信息或者 SDK 记录的错误信息。 |
+| `timestamp`    | `String` | 来自 Adjust 服务器的时间戳。   |
+| `jsonResponse` | `String` | 带服务器响应的 JSON 字符串。    |
+| `eventToken`   | `String` | 事件识别码                |
+| `callbackId`   | `String` | 事件对象上设置的自定义回传 ID     |
+| `willRetry`    | `bool`   | 指示包发送失败后是否再次尝试发送。    |
+
+</Table> 
+
+### [success 回传](success-callbacks-1)
+
+<codeblock title="属性声明"> 
+
+```dart
+typedef void EventSuccessCallback(AdjustEventSuccess successData);
+EventSuccessCallback? eventSuccessCallback;
+
+```
+
+</CodeBlock> 
+
+设置 success 回传来在 SDK 记录到事件时触发函数。
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
+
+config.eventSuccessCallback = (AdjustEventSuccess eventSuccessData) {
+   print('[Adjust]: Event recording success!');
+
+   if (eventSuccessData.eventToken != null) {
+      print('[Adjust]: Event token: ' + eventSuccessData.eventToken);
+   }
+   if (eventSuccessData.message != null) {
+      print('[Adjust]: Message: ' + eventSuccessData.message);
+   }
+   if (eventSuccessData.timestamp != null) {
+      print('[Adjust]: Timestamp: ' + eventSuccessData.timestamp);
+   }
+   if (eventSuccessData.adid != null) {
+      print('[Adjust]: Adid: ' + eventSuccessData.adid);
+   }
+   if (eventSuccessData.callbackId != null) {
+      print('[Adjust]: Callback ID: ' + eventSuccessData.callbackId);
+   }
+   if (eventSuccessData.jsonResponse != null) {
+      print('[Adjust]: JSON response: ' + eventSuccessData.jsonResponse);
+   }
+};
+
+Adjust.initSdk(adjustConfig);
+```
+
+#### [示例](example-2)
+
+该示例展示了如何注册一个 `eventSuccessCallback`，来输出 SDK 向 Adjust 发送事件数据的时间戳。
+
+```dart
+AdjustConfig myConfig = new AdjustConfig('{Your App Token}', AdjustEnvironment.sandbox);
+//...
+myConfig.eventSuccessCallback = (AdjustEventSuccess eventSuccessData) {
+   print('Session measured at ' + eventSuccessData.timestamp);
+}
+//...
+Adjust.initSdk(myConfig);
+```
+
+### [failure 回传](failure-callbacks-1)
+
+<codeblock title="属性声明"> 
+
+```dart
+typedef void EventFailureCallback(AdjustEventFailure failureData);
+EventFailureCallback? eventFailureCallback;
+
+```
+
+</CodeBlock> 
+
+设置 failure 回传来在 SDK 未能记录到事件时触发函数。
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
+
+config.eventFailureCallback = (AdjustEventFailure eventFailureData) {
+   print('[Adjust]: Event recording failure!');
+
+   if (eventFailureData.eventToken != null) {
+      print('[Adjust]: Event token: ' + eventFailureData.eventToken);
+   }
+   if (eventFailureData.message != null) {
+      print('[Adjust]: Message: ' + eventFailureData.message);
+   }
+   if (eventFailureData.timestamp != null) {
+      print('[Adjust]: Timestamp: ' + eventFailureData.timestamp);
+   }
+   if (eventFailureData.adid != null) {
+      print('[Adjust]: Adid: ' + eventFailureData.adid);
+   }
+   if (eventFailureData.callbackId != null) {
+      print('[Adjust]: Callback ID: ' + eventFailureData.callbackId);
+   }
+   if (eventFailureData.willRetry != null) {
+      print('[Adjust]: Will retry: ' + eventFailureData.willRetry.toString());
+   }
+   if (eventFailureData.jsonResponse != null) {
+      print('[Adjust]: JSON response: ' + eventFailureData.jsonResponse);
+   }
+};
+
+Adjust.initSdk(adjustConfig);
+```
+
+#### [示例](example-3)
+
+该示例展示了如何注册一个 `eventFailureCallback`，来输出 SDK 发送事件数据失败的原因。
+
+```dart
+AdjustConfig myConfig = new AdjustConfig('{Your App Token}', AdjustEnvironment.sandbox);
+//...
+myConfig.eventFailureCallback = (AdjustEventFailure eventFailureData) {
+   print('Session failure due to ' + eventFailureData.message);
+}
+//...
+Adjust.initSdk(myConfig);
+```
+
+</SdkVersion> <sdkversion version="v4"> 
+
+设置回传来在 SDK 向 Adjust 发送信息时触发函数。您可以针对会话和事件设置回传。
+<callout type="important"> 
+
+您必须在初始化 SDK **之前** 注册回传。
+</Callout> 
+
+[会话回传](session-callbacks)
+-------------------------
+
+设置会话回传来在 SDK 向 Adjust 发送会话信息时触发函数。您可以创建 **success** 回传和 **failure** 回传。SDK 向 Adjust 服务器发送信息时会触发 **success** 回传。SDK 向 Adjust 发送信息时出现问题会触发 **failure** 回传。
+
+会话回传可访问响应数据对象。您可以在回传函数中使用其属性。
+<table> 
+
+|       属性       |         数据类型          |          描述          |
+|----------------|-----------------------|----------------------|
+| `Message`      | `String`              | 服务器信息或者 SDK 记录的错误信息。 |
+| `Timestamp`    | `String`              | 来自 Adjust 服务器的时间戳。   |
+| `Adid`         | `String`              | 由 Adjust 提供的设备唯一标识符。 |
+| `JsonResponse` | `Map<String, Object>` | 带服务器响应的 JSON 对象。     |
+| `WillRetry`    | `bool`                | 指示包发送失败后是否再次尝试发送。    |
+
+</Table> 
+
+### [success 回传](success-callbacks)
+
+<codeblock title="属性声明"> 
+
+```dart
+typedef void SessionSuccessCallback(AdjustSessionSuccess successData);
+SessionSuccessCallback? sessionSuccessCallback;
+
+```
+
+</CodeBlock> 
 
 设置 success 回传来在 SDK 记录到会话时触发函数。
 
@@ -69,7 +335,7 @@ Adjust.start(adjustConfig);
 
 #### [示例](example)
 
-该示例展示了如何注册一个 `sessionSuccessCallback`，来打印 SDK 向 Adjust 发送会话数据的时间戳。
+该示例展示了如何注册一个 `sessionSuccessCallback`，来输出 SDK 向 Adjust 发送会话数据的时间戳。
 
 ```dart
 AdjustConfig myConfig = new AdjustConfig('{Your App Token}', AdjustEnvironment.sandbox);
@@ -83,7 +349,7 @@ Adjust.start(myConfig);
 
 ### [failure 回传](failure-callbacks)
 
-<CodeBlock title="属性声明">
+<codeblock title="属性声明"> 
 
 ```dart
 typedef void SessionFailureCallback(AdjustSessionFailure failureData);
@@ -91,7 +357,7 @@ SessionFailureCallback? sessionFailureCallback;
 
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 设置 failure 回传来在 SDK 未能记录到会话时触发函数。
 
@@ -123,7 +389,7 @@ Adjust.start(adjustConfig);
 
 #### [示例](example-1)
 
-该示例展示了如何注册一个 `sessionFailureCallback`，来打印 SDK 发送会话数据失败的原因。
+该示例展示了如何注册一个 `sessionFailureCallback`，来输出 SDK 发送会话数据失败的原因。
 
 ```dart
 AdjustConfig myConfig = new AdjustConfig('{Your App Token}', AdjustEnvironment.sandbox);
@@ -135,29 +401,29 @@ myConfig.sessionFailureCallback = (AdjustSessionFailure sessionFailureData) {
 Adjust.start(myConfig);
 ```
 
-## [事件回传](event-callbacks)
+[事件回传](event-callbacks)
+-----------------------
 
 设置事件回传来在 SDK 向 Adjust 发送事件信息时触发函数。您可以创建 **success** 回传和 **failure** 回传。SDK 向 Adjust 服务器发送信息时会触发 **success** 回传。SDK 向 Adjust 发送信息时出现问题会触发 **failure** 回传。
 
 事件回传可访问响应数据对象。您可以在回传函数中使用其属性。
+<table> 
 
-<Table>
-
-| 属性           | 数据类型              | 描述                                |
-| -------------- | --------------------- | ----------------------------------- |
+|       属性       |         数据类型          |          描述          |
+|----------------|-----------------------|----------------------|
 | `Message`      | `String`              | 服务器信息或者 SDK 记录的错误信息。 |
-| `Timestamp`    | `String`              | 来自 Adjust 服务器的时间戳。        |
-| `Adid`         | `String`              | 由 Adjust 提供的设备唯一标识符。    |
-| `JsonResponse` | `Map<String, Object>` | 带服务器响应的 JSON 对象。          |
-| `EventToken`   | `String`              | 事件识别码                          |
-| `CallbackId`   | `String`              | 事件对象上设置的自定义回传 ID       |
-| `WillRetry`    | `bool`                | 指示包发送失败后是否再次尝试发送。  |
+| `Timestamp`    | `String`              | 来自 Adjust 服务器的时间戳。   |
+| `Adid`         | `String`              | 由 Adjust 提供的设备唯一标识符。 |
+| `JsonResponse` | `Map<String, Object>` | 带服务器响应的 JSON 对象。     |
+| `EventToken`   | `String`              | 事件识别码                |
+| `CallbackId`   | `String`              | 事件对象上设置的自定义回传 ID     |
+| `WillRetry`    | `bool`                | 指示包发送失败后是否再次尝试发送。    |
 
-</Table>
+</Table> 
 
 ### [success 回传](success-callbacks-1)
 
-<CodeBlock title="属性声明">
+<codeblock title="属性声明"> 
 
 ```dart
 typedef void EventSuccessCallback(AdjustEventSuccess successData);
@@ -165,7 +431,7 @@ EventSuccessCallback? eventSuccessCallback;
 
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 设置 success 回传来在 SDK 记录到事件时触发函数。
 
@@ -200,7 +466,7 @@ Adjust.start(adjustConfig);
 
 #### [示例](example-2)
 
-该示例展示了如何注册一个 `eventSuccessCallback`，来打印 SDK 向 Adjust 发送事件数据的时间戳。
+该示例展示了如何注册一个 `eventSuccessCallback`，来输出 SDK 向 Adjust 发送事件数据的时间戳。
 
 ```dart
 AdjustConfig myConfig = new AdjustConfig('{Your App Token}', AdjustEnvironment.sandbox);
@@ -214,7 +480,7 @@ Adjust.start(myConfig);
 
 ### [failure 回传](failure-callbacks-1)
 
-<CodeBlock title="属性声明">
+<codeblock title="属性声明"> 
 
 ```dart
 typedef void EventFailureCallback(AdjustEventFailure failureData);
@@ -222,7 +488,7 @@ EventFailureCallback? eventFailureCallback;
 
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 设置 failure 回传来在 SDK 未能记录到事件时触发函数。
 
@@ -260,7 +526,7 @@ Adjust.start(adjustConfig);
 
 #### [示例](example-3)
 
-该示例展示了如何注册一个 `eventFailureCallback`，来打印 SDK 发送事件数据失败的原因。
+该示例展示了如何注册一个 `eventFailureCallback`，来输出 SDK 发送事件数据失败的原因。
 
 ```dart
 AdjustConfig myConfig = new AdjustConfig('{Your App Token}', AdjustEnvironment.sandbox);
@@ -271,3 +537,6 @@ myConfig.eventFailureCallback = (AdjustEventFailure eventFailureData) {
 //...
 Adjust.start(myConfig);
 ```
+
+</SdkVersion>
+
