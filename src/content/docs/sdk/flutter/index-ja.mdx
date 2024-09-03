@@ -1,20 +1,21 @@
 ---
 title: "Flutter SDK 連携ガイド"
-description: "Flutter SDKを使用してFlutterアプリでAdjustの機能にアクセスする"
+description: "Flutter SDKを使用して、FlutterアプリでAdjustの機能にアクセスしましょう。"
 category-title: "Flutter SDK"
-slug: "ja/sdk/flutter"
+slug: "en/sdk/flutter"
 sidebar-position: 5
+multiVersion: true
 ---
+<sdkversion version="v5"> 
 
-Adjust Flutter SDKを実装することで、アトリビューションやイベントなどのさまざまなデータをFlutterアプリで計測できます。以下の手順に従って、Adjust SDKをアプリに実装してください。また、[GitHub](https://github.com/adjust/flutter_sdk/tree/master/example)のサンプルアプリもご覧ください。
+Adjust Unity SDKを実装することで、アトリビューションやイベントなどのさまざまなデータをUnityアプリで計測できます。Adjust SDKをアプリに実装するには、以下の手順に従ってください。また、[GitHub](https://github.com/adjust/flutter_sdk/tree/master/example)でサンプルアプリも確認できます。
+<callout type="important"> 
 
-<Callout type="important">
+Adjust SDKは、iOS 12以降またはAndroid APIレベル21（Lollipop）以降に対応しています。
+</Callout> 
 
-Adjust SDKは、iOS 9以降またはAndroid APIレベル9（Gingerbread）以降に対応しています。
-
-</Callout>
-
-## [1\. プロジェクトにSDKを追加する](1-add-the-sdk-to-your-project)
+[1\. プロジェクトにSDKを追加する](1-add-the-sdk-to-your-project)
+-----------------------------------------------------
 
 Flutterアプリで[Adjust Flutter SDK](https://github.com/adjust/flutter_sdk/releases)を使用するには、それをプロジェクトに追加する必要があります。
 
@@ -22,14 +23,14 @@ Adjust SDKをFlutterプロジェクトに連携させるには、次のステッ
 
 1. 以下を`pubspec.yaml`ファイルに追加します：
 
-<CodeBlock title="pubspec.yaml">
+<codeblock title="pubspec.yaml"> 
 
 ```yaml
 dependencies:
    adjust_sdk: ^$FLUTTER_VERSION
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 2. プロジェクトに移動して、次のコマンドを実行します。Visual Studioは、`pubspec.yaml`ファイルが編集された後に、このコマンドを自動的に実行します。
 
@@ -37,61 +38,201 @@ dependencies:
 $ flutter packages get
 ```
 
-## [2\. Androidデバイスを設定する](2-set-up-android-devices)
+[2\. Androidデバイスを設定する](2-set-up-android-devices)
+-------------------------------------------------
 
 ### [Google Play 開発者サービスを追加する](add-google-play-services)
 
 Google Playストアを対象とするアプリは、[Google広告ID](https://support.google.com/googleplay/android-developer/answer/6048248?hl=en)（`gps_adid`）を使用してデバイスを識別する必要があります。これを行うには、以下のdependencyを`build.gradle`ファイルの `dependencies`セクションに追加してください。
+<codeblock title="build.gradle"> 
 
-<CodeBlock title="build.gradle">
+```groovy
+implementation 'com.google.android.gms:play-services-ads-identifier:18.1.0'
+```
+
+</CodeBlock> <callout type="note"> 
+
+Adjust SDKは、`play-services-ads-identifier`dependencyのどのバージョンとも関連付けられていません。Google Play 開発者サービスのライブラリの任意のバージョンを使用できます。
+</Callout> 
+
+### [パーミッションを追加](add-permissions)
+
+Adjust SDKには以下のパーミッションが必要です。まだ存在しない場合は、`AndroidManifest.xml`ファイルに追加してください。
+<codeblock title="AndroidManifest.xml"> 
+
+```xml
+<uses-permission android:name="android.permission.INTERNET" id="sl-md0000000"/>
+
+```
+
+</CodeBlock> 
+
+Adjust SDKには、デフォルトで`com.google.android.gms.AD_ID`パーミッションが含まれています。アプリを児童オンラインプライバシー保護法（COPPA）に準拠させる必要がある場合や、Google Play ストアをターゲットにしていない場合は、`remove`ディレクティブを追加することでこれを削除することができます。
+<codeblock title="AndroidManifest.xml"> 
+
+```xml
+<uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" id="sl-md0000000"/>
+```
+
+</CodeBlock> <callout type="seealso"> 
+
+このパーミッションに関する詳細は、Googleの[`AdvertisingIdClient.Info documentation`](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid)をご参照ください。
+</Callout> 
+
+### [インストールリファラーを設定する](set-up-install-referrer)
+
+インストールリファラーは、アプリインストールをソースにアトリビュートするために使用できる一意の識別子です。Adjust SDKは、アトリビューションを実行するためにこの情報を必要とします。
+
+* [Google Play Referrer API](https://developer.android.com/google/play/installreferrer)を使用する
+
+#### [Google Play Referrer API](google-play-referrer-api)
+
+Google Play Referrer APIをサポートするには、`build.gradle`ファイルに以下を追加します。
+<codeblock title="build.gradle"> 
+
+```groovy
+implementation 'com.android.installreferrer:installreferrer:2.2'
+```
+
+</CodeBlock> 
+
+#### [Metaとのリファラー連携](meta-referrer-integration)
+
+Adjust SDKは、Adjust Metaインストールリファラープラグインを使用して[Metaインストールリファラー](https://developers.facebook.com/docs/app-ads/meta-install-referrer)をサポートしています。[連携の詳細については、Flutter Meta インストール リファラープラグインをご覧ください](/en/sdk/flutter/plugins/meta-referrer-plugin)。
+
+[3\. iOS frameworksを追加する](3-add-ios-frameworks)
+------------------------------------------------
+
+特定のiOS frameworksをアプリに実装すると、Adjust SDKは追加の情報を取得できます。これらのframeworksによって特定のSDK機能を有効にできますが、SDKが正常に動作するために必須というわけではありません。フレームワークを追加し、その後、 **Project Settings \-\-> Build Phases \-\-> Link Binary With Libraries** で **Optional** としてマークすることができます。
+<table> 
+
+|              Framework              |                                     説明                                     |                            注意                             |
+|-------------------------------------|----------------------------------------------------------------------------|-----------------------------------------------------------|
+| `AdSupport.framework`               | デバイスのIDFAにアクセスできるようにします。また、iOS 14以前のデバイスでLAT情報にアクセスできるようになります。             | アプリが「子供向け」カテゴリーをターゲットにしている場合、このフレームワークは追加しないでください。        |
+| `AdServices.framework`              | Apple Search Adsのアトリビューションを処理します。                                          |                                                           |
+| `StoreKit.framework`                | SKAdNetworkフレームワークにアクセスできるようにします。                                          | iOS14以降のデバイスでAdjust SDKがSKAdNetworkとのコミュニケーションを行うために必要です。 |
+| `AppTrackingTransparency.framework` | Adjust SDKがユーザーのATT同意ダイアログをラップし、iOS 14以降のデバイスで同意レスポンスにアクセスできるようにするために必要です。 | アプリが「子供向け」カテゴリーをターゲットにしている場合、このフレームワークは追加しないでください。        |
+
+</Table> 
+
+[4\. Adjust SDKを初期化する](4-initialize-the-adjust-sdk)
+----------------------------------------------------
+
+Flutterアプリ内で、出来るだけ早くAdjust SDKを初期化するようにしてください。これを行うには、アプリトークンを使ってConfigオブジェクトとアプリを実行したい環境を初期化します。
+<callout type="important"> 
+
+テストを実行する際は、環境が`AdjustEnvironment.sandbox`に設定されていることを確認してください。アプリをApp Storeに提出する前に、これを`AdjustEnvironment.production`に変更してください。
+</Callout> 
+
+```dart
+AdjustConfig config = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox);
+Adjust.initSdk(config);
+```
+
+[5\. アプリをビルドする](5-build-your-app)
+----------------------------------
+
+設定が完了しました。これでFlutterアプリのビルドと実行が可能になります。ログを有効化して、問題がないか確認してください。ログに、`Install tracked`メッセージがあるか確認してください。
+
+Adjust SDKを使用してユーザーをアトリビューションできるようになりました。
+
+[6\. 実装をテストする](6-test-your-integration)
+----------------------------------------
+
+Adjust SDKは、実装をテストとトラブルシューティングのためのツールを提供します。以下の手順に従って、実装をテストしてください。
+
+* 環境を`AdjustEnvironment.sandbox`に設定します。
+* Adjustダッシュボードにサンドボックスフィルターを追加します。
+* ログレベルを`AdjustLogLevel.verbose`に設定します。
+
+<callout type="tip"> 
+
+問題が発生した場合は、全ての詳細情報とログを添付し、[support@adjust.com](mailto:support@adjust.com)までメールをお送りください。
+</Callout> 
+
+### [Google Play 開発者サービスの連携をテストする](test-google-play-services-integration)
+
+Adjust SDKがデバイスのGoogle広告IDを受信できるかどうかテストするには、ログレベルを`AdjustLogLevel.verbose`に、環境を`AdjustEnvironment.sandbox`に設定します。アプリを起動してセッションまたはイベントを計測します。SDKが広告IDを読み取った場合、SDKは`gps_adid`（Google Play開発者サービス広告ID\)パラメーターをログに記録します。
+
+Google広告IDを取得する際に問題が発生した場合は、SDK [Githubリポジトリ](https://github.com/adjust/flutter_sdk)で質問を投稿するか、[support@adjust.com](mailto:support@adjust.com)までお問い合わせください。
+</SdkVersion> <sdkversion version="v4"> 
+
+Adjust Flutter SDKを実装することで、アトリビューションやイベントなどのさまざまなデータをFlutterアプリで計測できます。以下の手順に従って、Adjust SDKをアプリに実装してください。また、[GitHub](https://github.com/adjust/flutter_sdk/tree/master/example)のサンプルアプリもご覧ください。
+<callout type="important"> 
+
+Adjust SDKは、iOS 9以降またはAndroid APIレベル9（Gingerbread）以降に対応しています。
+</Callout> 
+
+[1\. プロジェクトにSDKを追加する](1-add-the-sdk-to-your-project)
+-----------------------------------------------------
+
+Flutterアプリで[Adjust Flutter SDK](https://github.com/adjust/flutter_sdk/releases)を使用するには、それをプロジェクトに追加する必要があります。
+
+Adjust SDKをFlutterプロジェクトに連携させるには、次のステップに従ってください。
+
+1. 以下を`pubspec.yaml`ファイルに追加します：
+
+<codeblock title="pubspec.yaml"> 
+
+```yaml
+dependencies:
+   adjust_sdk: ^$FLUTTER_VERSION
+```
+
+</CodeBlock> 
+
+2. プロジェクトに移動して、次のコマンドを実行します。Visual Studioは、`pubspec.yaml`ファイルが編集された後に、このコマンドを自動的に実行します。
+
+```console
+$ flutter packages get
+```
+
+[2\. Androidデバイスを設定する](2-set-up-android-devices)
+-------------------------------------------------
+
+### [Google Play 開発者サービスを追加する](add-google-play-services)
+
+Google Playストアを対象とするアプリは、[Google広告ID](https://support.google.com/googleplay/android-developer/answer/6048248?hl=en)（`gps_adid`）を使用してデバイスを識別する必要があります。これを行うには、以下のdependencyを`build.gradle`ファイルの `dependencies`セクションに追加してください。
+<codeblock title="build.gradle"> 
 
 ```groovy
 implementation 'com.google.android.gms:play-services-ads-identifier:18.0.1'
 ```
 
-</CodeBlock>
-<Callout type="note">
+</CodeBlock> <callout type="note"> 
 
 Adjust SDKは、`play-services-ads-identifier`dependencyのどのバージョンとも関連付けられていません。Google Play 開発者サービスのライブラリの任意のバージョンを使用できます。
-
-</Callout>
+</Callout> 
 
 ### [パーミッションを追加](add-permissions)
 
 Adjust SDKには以下のパーミッションが必要です。まだ存在しない場合は、`AndroidManifest.xml`ファイルに追加してください。
-
-<CodeBlock title="AndroidManifest.xml">
+<codeblock title="AndroidManifest.xml"> 
 
 ```xml
-<uses-permission android:name="android.permission.INTERNET"/>
-<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+<uses-permission android:name="android.permission.INTERNET" id="sl-md0000000"/>
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" id="sl-md0000000"/>
 
 ```
 
-</CodeBlock>
-<MinorVersion changed="v4.32.0">
+</CodeBlock> <minorversion changed="v4.32.0"> 
 
 Adjust SDKには、バージョン4\.32\.0以降、デフォルトで`com.google.android.gms.AD_ID`パーミッションが含まれています。アプリをCOPPAに準拠させる必要がある場合や、Google Playストアをターゲットにしていない場合は、`remove`ディレクティブを追加することでこれを削除することができます。
-
-</MinorVersion>
-<CodeBlock title="AndroidManifest.xml">
+</MinorVersion> <codeblock title="AndroidManifest.xml"> 
 
 ```xml
-<uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
+<uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" id="sl-md0000000"/>
 ```
 
-</CodeBlock>
-<Callout type="seealso">
+</CodeBlock> <callout type="seealso"> 
 
 このパーミッションに関する詳細は、Googleの[`AdvertisingIdClient.Info documentation`](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid)をご参照ください。
-
-</Callout>
+</Callout> 
 
 ### [ProGuardを設定する](set-up-proguard)
 
 ProGuardを使用している場合は、以下のルールを[カスタムのProGuardファイル](https://docs.unity3d.com/Manual/class-PlayerSettingsAndroid.html#build)に追加してください。
-
-<CodeBlock title="Proguard.pro">
+<codeblock title="Proguard.pro"> 
 
 ```java
 -keep public class com.adjust.sdk.** { *; }
@@ -109,73 +250,65 @@ ProGuardを使用している場合は、以下のルールを[カスタムのPr
 
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 Google Play ストアでアプリを公開していない場合は、以下のルールをProGuardファイルに追加してください。
-
-<CodeBlock title="Proguard.pro">
+<codeblock title="Proguard.pro"> 
 
 ```java
 -keep public class com.adjust.sdk.** { *; }
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 ### [インストールリファラーを設定する](set-up-install-referrer)
 
 インストールリファラーはアプリインストールをソースにアトリビュートするのに使用できる、ユニークな識別子です。Adjust SDKは、アトリビューションにこの情報を必要とします。この情報を収集する方法は3つあります。
 
--  [Google Play Referrer API](https://developer.android.com/google/play/installreferrer)を使用する
--  Huawei Referrer APIを使用する（Huaweiデバイスのみ）
+* [Google Play Referrer API](https://developer.android.com/google/play/installreferrer)を使用する
+* Huawei Referrer APIを使用する（Huaweiデバイスのみ）
 
-<Callout type="important">
+<callout type="important"> 
 
 [Googleは、Google Play 開発者サービスのリファラー情報を提供する `INSTALL_REFERRER`インテントメソッド](https://android-developers.googleblog.com/2019/11/still-using-installbroadcast-switch-to.html)を廃止しました 。現在このメソッドを使用している場合は、Google Play Referrer APIに移行してください。
-
-</Callout>
+</Callout> 
 
 #### [Google Play Referrer API](google-play-referrer-api)
 
 Google Play Referrer APIをサポートするには、`build.gradle`ファイルに以下を追加します。
-
-<CodeBlock title="build.gradle">
+<codeblock title="build.gradle"> 
 
 ```groovy
 implementation 'com.android.installreferrer:installreferrer:2.2'
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 Proguardを使用している場合は、Proguardファイルに以下の設定が含まれていることを確認してください。
-
-<CodeBlock title="Proguard.pro">
+<codeblock title="Proguard.pro"> 
 
 ```java
 -keep public class com.android.installreferrer.** { *; }
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 #### [Huawei Referrer API](huawei-referrer-api)
 
-<MinorVersion added="v4.22.0">
+<minorversion added="v4.22.0"> 
 
 バージョン4\.22\.0以降より、Adjust SDKはHuawei AppGalleryバージョン10\.4以降のHuaweiデバイスでのインストールの記録をサポートしています。Huawei Referrer APIの使用を開始するために行う設定変更はありません。
-
-</MinorVersion>
+</MinorVersion> 
 
 #### [Metaとのリファラー連携](meta-referrer-integration)
 
-<Callout type="note">
+<callout type="note"> 
 
-[Metaの要件](https://developers.facebook.com/docs/app-ads/meta-install-referrer#step-1--add-the-meta-apps)により、Adjust SDKは`<queries>`エレメントをバンドルしています。これらを`AndroidManifest.xml`に追加する必要はありません。
-
-</Callout>
-<MinorVersion added="v4.36.0">
+[Metaの要件](https://developers.facebook.com/docs/app-ads/meta-install-referrer#step-1--add-the-meta-apps)により、Adjust SDKは`<queries id="sl-md0000000">`エレメントをバンドルしています。これらを`AndroidManifest.xml`に追加する必要はありません。
+</Callout> <minorversion added="v4.36.0"> 
 
 Adjust SDKはv4\.36\.0以降で[Metaインストールリファラー](https://developers.facebook.com/docs/app-ads/meta-install-referrer)をサポートしています。この機能を有効にする方法：
-
-</MinorVersion>
+</MinorVersion> 
 
 1. [App Dashboard](https://developers.facebook.com/apps)でMetaアプリIDを検索します。詳しくはMetaの[App Dashboardのドキュメント](https://developers.facebook.com/docs/development/create-an-app/app-dashboard)をご覧ください。
 
@@ -183,48 +316,46 @@ Adjust SDKはv4\.36\.0以降で[Metaインストールリファラー](https://d
 
    ```dart
    AdjustConfig config = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox);
-   config.fbAppId = "<fb_app_id_string>";
+   config.fbAppId = "<fb_app_id_string id="sl-md0000000">";
    ```
 
-## [3\. iOS frameworksを追加する](3-add-ios-frameworks)
+[3\. iOS frameworksを追加する](3-add-ios-frameworks)
+------------------------------------------------
 
 特定のiOS frameworksをアプリに実装した場合、Adjust SDKは追加の情報を取得できます。これらのframeworksによって特定のSDK機能を有効にできますが、SDKが正常に動作するために必須というわけではありません。Frameworksを実装して、 **プロジェクト設定（Project Settings） > ビルドフェーズ（Build Phases） > バイナリとライブラリをリンク（Link Binary With Libraries）** でそれらをオプションとしてマークすることができます。
+<table> 
 
-<Table>
+|              Framework              |                                     説明                                     |                            注意                             |
+|-------------------------------------|----------------------------------------------------------------------------|-----------------------------------------------------------|
+| `AdSupport.framework`               | デバイスのIDFAにアクセスできるようにします。また、iOS 14以前のデバイスでLAT情報にアクセスできるようになります。             | アプリが「子供向け」カテゴリーをターゲットにしている場合、このフレームワークは追加しないでください。        |
+| `AdServices.framework`              | Apple Search Adsのアトリビューションを処理します。                                          |                                                           |
+| `StoreKit.framework`                | SKAdNetworkフレームワークにアクセスできるようにします。                                          | iOS14以降のデバイスでAdjust SDKがSKAdNetworkとのコミュニケーションを行うために必要です。 |
+| `AppTrackingTransparency.framework` | Adjust SDKがユーザーのATT同意ダイアログをラップし、iOS 14以降のデバイスで同意レスポンスにアクセスできるようにするために必要です。 | アプリが「子供向け」カテゴリーをターゲットにしている場合、このフレームワークは追加しないでください。        |
 
-| Framework                           | 説明                                                                                                                              | 注意                                                                                                 |
-| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `AdSupport.framework`               | デバイスのIDFAにアクセスできるようにします。また、iOS 14以前のデバイスでLAT情報にアクセスできるようになります。                   | アプリが「子供向け」カテゴリーをターゲットにしている場合、このフレームワークは追加しないでください。 |
-| `AdServices.framework`              | Apple Search Adsのアトリビューションを処理します。                                                                                |                                                                                                      |
-| `StoreKit.framework`                | SKAdNetworkフレームワークにアクセスできるようにします。                                                                           | iOS14以降のデバイスでAdjust SDKがSKAdNetworkとのコミュニケーションを行うために必要です。             |
-| `AppTrackingTransparency.framework` | Adjust SDKがユーザーのATT同意ダイアログをラップし、iOS 14以降のデバイスで同意レスポンスにアクセスできるようにするために必要です。 | アプリが「子供向け」カテゴリーをターゲットにしている場合、このフレームワークは追加しないでください。 |
+</Table> 
 
-</Table>
-
-## [4\. Adjust SDKを初期化する](4-initialize-the-adjust-sdk)
+[4\. Adjust SDKを初期化する](4-initialize-the-adjust-sdk)
+----------------------------------------------------
 
 Flutterアプリ内で、出来るだけ早くAdjust SDKを初期化するようにしてください。これを行うには、アプリトークンを使ってConfigオブジェクトとアプリを実行したい環境を初期化します。
-
-<Callout type="important">
+<callout type="important"> 
 
 テストを実行する際は、環境が`AdjustEnvironment.sandbox`に設定されていることを確認してください。アプリをApp Storeに提出する前に、これを`AdjustEnvironment.production`に変更してください。
-
-</Callout>
+</Callout> 
 
 ```dart
 AdjustConfig config = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox);
 Adjust.start(config);
 ```
 
-## [5\. セッション記録を設定する](5-set-up-session-recording)
+[5\. セッション記録を設定する](5-set-up-session-recording)
+-----------------------------------------------
 
 SDKがセッション情報をAdjustサーバーにパスできるようにするには、セッションの記録を設定する必要があります。
-
-<Callout type="note">
+<callout type="note"> 
 
 iOSデバイスのセッションの記録は、デフォルトでサポートされています。
-
-</Callout>
+</Callout> 
 
 Androidデバイスのセッションの記録を設定するには、アプリがフォアグラウンドで実行しているときは`Adjust.onResume()`メソッドを呼び出し、アプリがフォアグラウンドで実行していないときは`Adjust.onPause()`メソッドを呼び出します。これはグローバルまたはウィジェットごとに実行できます。
 
@@ -244,7 +375,7 @@ class MainScreen extends StatefulWidget {
    State createState() => new MainScreenState();
 }
 
-class MainScreenState extends State<mainscreen> with WidgetsBindingObserver {
+class MainScreenState extends State<mainscreen id="sl-md0000000"> with WidgetsBindingObserver {
    @override
    initState() {
       super.initState();
@@ -276,34 +407,38 @@ class MainScreenState extends State<mainscreen> with WidgetsBindingObserver {
 }
 ```
 
-## [6\. アプリのビルド](6-build-your-app)
+[6\. アプリのビルド](6-build-your-app)
+--------------------------------
 
 設定が完了しました。これでFlutterアプリのビルドと実行が可能になります。ログを有効化して、問題がないか確認してください。ログに、`Install tracked`メッセージがあるか確認してください。
 
 Adjust SDKを使用してユーザーをアトリビューションできるようになりました。
 
-## [7\. Adjust SDKシグネチャーを追加する](7-add-the-adjust-sdk-signature)
+[7\. Adjust SDKシグネチャーを追加する](7-add-the-adjust-sdk-signature)
+------------------------------------------------------------
 
 Adjust SDKシグネチャーを使用して、Adjust SDKによって送信される全ての通信に署名できます。これによりAdjustのサーバーは、シグネチャーがない不正インストールを検出し、拒否することができます。
 
 Adjust SDKシグネチャーの使用を開始するには、担当のテクニカルアカウントマネージャーまたは[support@adjust.com](mailto:support@adjust.com)までお問い合わせください。
 
-## [8\. 実装をテストする](8-test-your-integration)
+[8\. 実装をテストする](8-test-your-integration)
+----------------------------------------
 
 Adjust SDKは、実装をテストとトラブルシューティングのためのツールを提供します。以下の手順に従って、実装をテストしてください。
 
--  環境を`AdjustEnvironment.sandbox`に設定します。
--  Adjustダッシュボードにサンドボックスフィルターを追加します。
--  ログレベルを`AdjustLogLevel.verbose`に設定します。
+* 環境を`AdjustEnvironment.sandbox`に設定します。
+* Adjustダッシュボードにサンドボックスフィルターを追加します。
+* ログレベルを`AdjustLogLevel.verbose`に設定します。
 
-<Callout type="tip">
+<callout type="tip"> 
 
 問題が発生した場合は、全ての詳細情報とログを添付し、[support@adjust.com](mailto:support@adjust.com)までメールをお送りください。
-
-</Callout>
+</Callout> 
 
 ### [Google Play 開発者サービスの連携をテストする](test-google-play-services-integration)
 
 Adjust SDKがデバイスのGoogle広告IDを受信できるかどうかテストするには、ログレベルを`AdjustLogLevel.verbose`に、環境を`AdjustEnvironment.sandbox`に設定します。アプリを起動してセッションまたはイベントを計測します。SDKが広告IDを読み取った場合、SDKは`gps_adid`（Google Play開発者サービス広告ID\)パラメーターをログに記録します。
 
 Google広告IDを取得する際に問題が発生した場合は、SDK [Githubリポジトリ](https://github.com/adjust/flutter_sdk)で質問を投稿するか、[support@adjust.com](mailto:support@adjust.com)までお問い合わせください。
+</SdkVersion>
+
