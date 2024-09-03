@@ -2,116 +2,60 @@
 title: "ブロックリスト API"
 description: "AdjustブロックリストAPIは、ダイナミックあるいはモジュールパートナー用に作成されたトラッカーURLのうち、不正あるいは期限切れのリンクによるトラフィックを阻止するために使用されます。"
 category-title: "ブロックリスト API"
-slug: "ja/api/blocklist-api"
+slug: "en/api/blocklist-api"
 sidebar-position: 3
 ---
+<callout type="note"> 
 
-<Callout type="important">
+Adjustおよび関連ドキュメントでは、「ブラックリスト」を「ブロックリスト」、「ホワイトリスト」を「許可リスト」にそれぞれ変更しました。エンドポイント名では、当初の用語が引き続き使用されています。
+</Callout> 
 
-Adjustでは、「ブラックリスト」を「ブロックリスト」、「ホワイトリスト」を「許可リスト」にそれぞれ変更しました。現在、この更新作業をAdjustのUIとドキュメントに行なっています。Adjustではコードベースの更新も予定していますが、その期間中APIエンドポイントに「blacklist」と表示されることがありますのでご留意ください。
+AdjustブロックリストAPIは、不正あるいは期限切れのリンクによるトラフィックを阻止するために使用されます。カスタムリンクとパートナーリンクをブロックリストに登録することができます。API連携パートナー（SAN）のパートナーリンクはブロックリストに登録できません。API連携パートナーリンクからのトラフィックをブロックするには、API連携パートナーを削除する必要があります。API連携パートナーのリストは、[API連携ネットワークの設定](https://help.adjust.com/en/suite/article/self-attributing-network-san-setup)をご覧ください。
 
-</Callout>
+[認証](authentication)
+--------------------
 
-AdjustブロックリストAPIは、不正あるいは期限切れのリンクによるトラフィックを阻止するために使用されます。ブロックリストに登録されたリンクは、ダッシュボードに **BLOCKLISTED** というラベルを表示します。
+ブロックリストAPIは認証に[ベアラートークン](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication)を使用します。ブロックリストAPIにリクエストを行う全てのリクエストには、Adjust APIトークンを`Authorization`ヘッダーに含める必要があります。
 
-ダイナミックおよびモジュールパートナーのリンクをブロックリストに登録できます。API連携パートナー（SAN）のリンクをブロックリストに登録することはできません。SANパートナーのURLからのトラフィックを阻止する場合は、SANパートナーを削除してください。
+自社でシングルサインオン（SSO）を有効にしている場合は、 Adjustの担当者または[support@adjust.com](mailto:support@adjust.com)にお問い合わせください。APIトークンの取得方法についてサポートいたします。
 
-<Callout type="seealso">
+SSO以外のアカウントの場合、APIガイドはユーザーの **プロフィール** に表示されます。トークンを確認するには、以下の手順に従ってください。
 
-API連携パートナーのリストは、[API連携ネットワークの設定](https://help.adjust.com/ja/suite/article/self-attributing-network-san-setup)をご覧ください。
-
-</Callout>
-
-## [1\. コールを認証する](1-authenticate-your-calls)
-
-AdjustブロックリストAPIを使用するには、Adjust APIトークンが必要です。このトークンをAPIで使用するには、認証ガイドの手順に従ってください。
-
-## [2\. リンクをブロックリストに登録する](2-blocklist-a-link)
-
-[リンクをブロックリストに登録](#blocklist-endpoint)すると、以下の情報をブロックします。
-
--  エンゲージメント
-
-   -  クリック数
-   -  インプレッション
-
--  パートナーとネットワークへのコールバック
-   -  モジュールコールバック
-   -  ダイナミックコールバック
-
-リンクに関連付けられた既存の全てのアトリビューションは、関連付けられたままの状態になります。アトリビュートされたユーザーのデータは、そのユーザーが別のリンクにリアトリビュートされるまで、そのリンクに関連付けられます。
-
-## [3\. リンクをブロックリストから解除する](3-unblocklist-a-link)
-
-リンクURLを再有効化したい場合は、[ブロックリストを解除](#unblocklist-endpoint)できます。リンクをブロックリストから解除すると、Adjustはエンゲージメントの計測とコールバック送信を再開します。
-
-<Callout type="note">
-
-ブロックリストを解除すると、リンクは直ちに有効になります。ブロックリストに登録されている間、リンクに関連付けられたアトリビューションデータは計上されません。リンクの有効時に受信されたエンゲージメントのみが、アトリビューションファネルで考慮されます。
-
-</Callout>
-
-## [4\. リンクステータスを閲覧する](4-view-link-status)
-
-[Campaign Lab](https://help.adjust.com/ja/article/campaign-setup)で、ブロックリストに登録されているトラッカーを確認できます。次の手順に従ってください。
-
-1. Campaign Labに移動します。
-2. パートナーを選択すると、関連するリンクのリストが表示されます。
-
-ブロックリストに登録されたリンクは **Blocklisted** と表示されます。
-
-ブロックリストに登録されたリンクは編集できませんが、Campaign Labで非表示にすることができます。リンクを非表示にする方法の詳細は、[Campaign Labでリンクを非表示にする](https://help.adjust.com/ja/article/manage-ad-network-setup#hidden-links)をご覧ください。
-
-## [認証](authentication)
-
-ブロックリストAPIを使用するには、[ベアラートークン](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication)が必要となります。ベアラートークンの取得については、このガイドをご覧ください。
-
-### [Adjust APIトークンを見つける](find-your-adjust-api-token)
-
-Adjust APIコールを作成する前に、まずAdjustダッシュボードでAPIトークンを見つけます。AdjustダッシュボードからAdjustのAPIトークンを確認してください。
-
-<Callout type="important">
-
-SSO（シングルサインオン）を設定している場合、APIトークンはAdjustダッシュボードで確認することができません。APIトークン関して不明な点がございましたら、Adjustの担当者または[support@adjust.com](mailto:support@adjust.com)までお問い合わせください。
-
-</Callout>
-
-Adjust APIトークンは **profile** 内にあります。それを確認するには、以下の手順に従ってください。
-
-1. 左下隅にある設定アイコンを選択します。
-2. **アカウント設定（Account Settings）** を選択します。アカウント設定のページが開きます。
+1. アカウント（ユーザー）アイコンを選択します。
+2. **アカウント設定（Account Settings）** を選択します。
 3. **マイプロフィール（My Profile）** を選択します。
 4. **APIトークン** が **ユーザー情報（User details）** に表示されます。コピーボタンを選択して、トークンをクリップボードにコピーします。
 
 ### [Adjust APIトークンをリセットする](reset-your-adjust-api-token)
 
-Adjust APIトークンはいつでもリセットできます。 トークンをリセットすると、古いトークンが無効になります。 つまり、古いトークンを使用して送信されたリクエストは機能しません。 Adjust APIトークンをリセットした場合、使用中のあらゆる場所でトークンを更新する必要があります。
+Adjust APIトークンはいつでもリセットできます。トークンをリセットすると、古いトークンは無効になります。Adjust APIトークンをリセットした場合、使用中の古いトークンを新しいトークンに置き換える必要があります。無効になったトークンを使用したリクエストは、Adjustによって拒否されます。
 
-1. 左下隅にある設定アイコンを選択します。
-2. **アカウント設定（Account Settings）** を選択します。アカウント設定のページが開きます。
+Adjust APIトークンをリセットする方法：
+
+1. アカウント（ユーザー）アイコンを選択します。
+2. **アカウント設定（Account Settings）** を選択します。
 3. **マイプロフィール（My Profile）** を選択します。
 4. **APIトークン** が **ユーザー情報（User details）** に表示されます。
-5. **APIトークンをリセットする（Reset API token）** を選択します。ポップアップモーダルが表示されます。
-6. モーダルでアカウントのパスワードを入力し、 **リセット（Reset）** を選択してAPIトークンをリセットします。モーダルが閉じ、画面右上に確認メッセージが表示されます。
+5. **APIトークンをリセットする（Reset API token）** を選択します。
+6. 表示されたモーダルにアカウントのパスワードを入力し、 **リセット（Reset）** を選択してAPIトークンをリセットします。画面の右上に確認メッセージが表示されます。
 7. **APIトークン** の横にあるコピーボタンを選択して、トークンをクリップボードにコピーします。
 
-## [エンドポイントをブロックリストに登録する](blocklist-endpoint)
+[リンクをブロックリストに登録する](blocklist-a-link)
+------------------------------------
 
-リンクをブロックリストに登録すると、エンゲージメントの計測、アトリビューション、トラッカーおよびトラッカーと関連するサブリンクへのコールバックを阻止します。
-
-<CodeBlock title="エンドポイント" highlight="{link}/blacklist">
+<codeblock title="エンドポイント" highlight="{link}/blacklist"> 
 
 ```http
 POST https://api.adjust.com/dashboard/api/trackers/{link}/blacklist
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-## [リンクをブロックリストに登録する](blocklist-link)
+リンクをブロックリストに登録することで、エンゲージメントとコールバックの記録を停止することができます。ブロックリストに登録されたリンクは、ユーザーが別のリンクにリアトリビュートされるまで既存のアトリビューションを保持します。
 
-特定のリンクをブロックリストに登録します。
+リンクをブロックリストに登録する前に記録されたクリックとインプレッションは、引き続きアトリビューションの対象となります。例えば、アトリビューション期間を7日間に設定し、2日目にリンクをブロックリストに登録した場合、Adjustは1日目のエンゲージメントをアトリビューションとして考慮します。
 
-### [パラメーター](blocklist-parameters)
+### [パラメータ](blocklist-parameters)
 
 以下のパラメーターがクエリパスに含まれければなりません：
 
@@ -120,8 +64,6 @@ POST https://api.adjust.com/dashboard/api/trackers/{link}/blacklist
 : 英数字のAdjustリンクトークン
 
 ### [レスポンスの形式](blocklist-response-format)
-
-<CodeBlock title="レスポンスの形式">
 
 ```json
 {
@@ -164,11 +106,9 @@ POST https://api.adjust.com/dashboard/api/trackers/{link}/blacklist
 }
 ```
 
-</CodeBlock>
+### [例](blocklist-example)
 
-## [例](blocklist-example)
-
-<CodeBlock title="cURL" highlight="abc123">
+<codeblock title="cURL" highlight="abc123"> 
 
 ```console
 $ curl \
@@ -176,8 +116,7 @@ $ curl \
 -L -X POST "https://api.adjust.com/dashboard/api/trackers/abc123/blacklist"
 ```
 
-</CodeBlock>
-<CodeBlock title="成功レスポンス">
+</CodeBlock> <codeblock title="成功レスポンス"> 
 
 ```json
 {
@@ -220,35 +159,32 @@ $ curl \
 }
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-## [エンドポイントをブロックリストから解除する](unblocklist-endpoint)
+[リンクをブロックリストから解除する](unblocklist-a-link)
+---------------------------------------
 
-エンゲージメントの計測、アトリビューション、およびそのリンクと関連するサブリンクへのコールバックを再度有効化するには、リンクのブロックリストを解除してください。
-
-<CodeBlock title="エンドポイント" highlight="{link}/unblacklist">
+<codeblock title="エンドポイント" highlight="{link}/unblacklist"> 
 
 ```http
 POST https://api.adjust.com/dashboard/api/trackers/{link}/unblacklist
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-## [リンクをブロックリストから解除する](unblocklist-link)
+リンクは、いつでもブロックリストから解除して、再有効化することができます。リンクをブロックリストから解除すると、Adjustはエンゲージメントの計測とコールバック送信を再開します。
 
-特定のリンクをブロックリストから解除します。
+リンクの有効時に受信されたエンゲージメントのみが、アトリビューションファネルで考慮されます。
 
-<Table>
+### [パラメータ](unblocklist-parameters)
 
-| パラメーター | データタイプ | 入力する値 | 説明                                                 |
-| ------------ | ------------ | ---------- | ---------------------------------------------------- |
-| `{link}`\*   | `String`     | パス       | アルファベットと数字で構成されたAdjustリンクトークン |
+以下のパラメーターがクエリパスに含まれければなりません：
 
-</Table>
+`link` （`String`）
+
+: 英数字のAdjustリンクトークン
 
 ### [レスポンスの形式](unblocklist-response-format)
-
-<CodeBlock title="レスポンスの形式">
 
 ```json
 {
@@ -291,11 +227,9 @@ POST https://api.adjust.com/dashboard/api/trackers/{link}/unblacklist
 }
 ```
 
-</CodeBlock>
+### [例](unblocklist-example)
 
-## [例](unblocklist-example)
-
-<CodeBlock title="cURL" highlight="abc123">
+<codeblock title="cURL" highlight="abc123"> 
 
 ```console
 $ curl \
@@ -303,8 +237,7 @@ $ curl \
 -L -X POST "https://api.adjust.com/dashboard/api/trackers/abc123/unblacklist"
 ```
 
-</CodeBlock>
-<CodeBlock title="成功レスポンス">
+</CodeBlock> <codeblock title="成功レスポンス"> 
 
 ```json
 {
@@ -347,4 +280,15 @@ $ curl \
 }
 ```
 
-</CodeBlock>
+</CodeBlock> 
+
+[リンクステータスを表示する](view-link-status)
+---------------------------------
+
+[Campaign Lab](https://help.adjust.com/en/article/campaign-setup)で、ブロックリストに登録されているトラッカーを確認できます。次の手順に従ってください。
+
+1. Campaign Labに移動します。
+2. パートナーを選択すると、関連するリンクのリストが表示されます。 ブロックリストに登録されたリンクは **Blocklisted** と表示されます。
+
+Campaign Labでは、ブロックリストに登録されたリンクを非表示にできます。手順については、[Campaign Labの非表示リンク](https://help.adjust.com/en/article/manage-ad-network-setup#hidden-links)をご覧ください。
+
