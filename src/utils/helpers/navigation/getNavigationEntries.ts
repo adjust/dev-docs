@@ -11,12 +11,78 @@ const getLastPath = (value: string) => {
   return value?.replace(/\/[\w\d\-\.]*$/, "");
 };
 
+const filterByVersion = (
+  currentPage: string,
+  currentLang: string,
+  versions: NavigationData["versions"],
+  filteredPagesByLang: MDXInstance<Record<string, any>>[],
+) => {
+  const isCurrentPageApi = currentPage.includes(`${currentLang}/api`);
+  const defaultApiVersion = versions.api?.find((item) => item.default);
+  const defaultSdkVersion = versions.sdk?.find((item) => item.default);
+
+  // need to extract value from the link and assign default version value depending on the current page
+  const versionMatch = currentPage?.match(/v\d/gi);
+  let currentVersion = versionMatch?.[0];
+  if (!versionMatch) {
+    if (isCurrentPageApi) {
+      currentVersion = defaultApiVersion?.value;
+    } else {
+      currentVersion = defaultSdkVersion?.value;
+    }
+  }
+
+  // we need to show default docs in case if we are currently viewing other docs
+  // for example if we are opened API docs we should see default version in the SDK section of the sidebar
+  const getUsedVersion = (isApiPage?: boolean) => {
+    if (isCurrentPageApi && !isApiPage) {
+      return defaultSdkVersion?.value;
+    }
+    if (!isCurrentPageApi && isApiPage) {
+      return defaultApiVersion?.value;
+    }
+    return currentVersion;
+  };
+
+  const filteredPagesByVersion = filteredPagesByLang.filter((pageData) => {
+    const url = pageData.url || "";
+    const isApiPage = url.includes("/api");
+    const usedVersion = getUsedVersion(isApiPage);
+
+    // check for the current selected version
+    const isVersioned = /\/\w*v\d/gi.test(url);
+    const isCurrentVersion = isVersioned
+      ? url?.includes(`/${usedVersion}/`)
+      : true;
+
+    return isCurrentVersion;
+  });
+
+  // getting formatted data for the pages
+  const pagesData = filteredPagesByVersion.map((page) => {
+    const path = page.url?.replace(".mdx", "");
+    const isApiPage = path?.includes("/api");
+    const usedVersion = getUsedVersion(isApiPage);
+    const updatedPath = path?.includes(`/${usedVersion}/`)
+      ? path.replace(`/${usedVersion}/`, "/")
+      : path;
+
+    return {
+      ...page.frontmatter,
+      updatedPath,
+      path,
+      url: updatedPath ? getLastPath(updatedPath) : "",
+    };
+  });
+
+  return pagesData;
+};
+
 export const getNavigationEntries = (
   pages: MDXInstance<Record<string, any>>[],
   currentPage: string,
   currentLang: keyof Locales,
   currentPageType?: NavigationEntry["type"],
-  currentVersion: string = "v5",
 ): NavigationData => {
   // filtering data by the current language
   const filteredPagesByLang = pages.filter((pageData) => {
@@ -47,31 +113,12 @@ export const getNavigationEntries = (
     }
   }
 
-  const filteredPagesByVersion = filteredPagesByLang.filter((pageData) => {
-    const url = pageData.url || "";
-    // check for the current selected version
-    const isVersioned = /\/\w*v\d/gi.test(url);
-    const isCurrentVersion = isVersioned
-      ? url?.includes(`/${currentVersion}/`)
-      : true;
-
-    return isCurrentVersion;
-  });
-
-  // getting formatted data for the pages
-  const pagesData = filteredPagesByVersion.map((page) => {
-    const path = page.url?.replace(".mdx", "");
-    const updatedPath = path?.includes(`/${currentVersion}/`)
-      ? path.replace(`/${currentVersion}/`, "/")
-      : path;
-
-    return {
-      ...page.frontmatter,
-      updatedPath,
-      path,
-      url: updatedPath ? getLastPath(updatedPath) : "",
-    };
-  });
+  const pagesData = filterByVersion(
+    currentPage,
+    currentLang,
+    versions,
+    filteredPagesByLang,
+  );
 
   // data for the pages under current language root
   const { categories, breadcrumbs, childLinks } = getCategoriesUnderLanguage(
