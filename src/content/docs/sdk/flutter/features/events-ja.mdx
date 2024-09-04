@@ -2,7 +2,317 @@
 title: "イベント情報の送信"
 description: "Adjustにイベント情報を送信するには、これらのメソッドを使用してください。"
 slug: "ja/sdk/flutter/features/events"
+multiVersion: true
 ---
+
+<SdkVersion version="v5">
+
+Adjust SDKは`AdjustEvent`オブジェクトを提供しており、アプリのイベント情報を構造化してAdjustのサーバーに送信することができます。
+
+## [AdjustEventオブジェクトをインスタンス化する](instantiate-an-adjustevent-object)
+
+<CodeBlock title="メソッドシグネチャー">
+
+```dart
+AdjustEvent(String eventToken)
+```
+
+</CodeBlock>
+
+Adjust SDKでイベント情報を送信するには、`AdjustEvent`オブジェクトをインスタンス化する必要があります。このオブジェクトには、アプリでイベントが発生した時にAdjustに送信される変数が含まれます。
+
+イベントオブジェクトをインスタンス化するには、新しい`AdjustEvent`インスタンスを作成して以下のパラメーターをパスしてください：
+
+-  `eventToken` （`String`）：お客様のAdjust[イベントトークン](https://help.adjust.com/ja/article/add-events#manage-your-events)。
+
+```dart
+AdjustEvent myAdjustEvent = new AdjustEvent('abc123');
+//...
+Adjust.trackEvent(myAdjustEvent);
+```
+
+## [イベントを送信する](send-an-event)
+
+<CodeBlock title="メソッドシグネチャー">
+
+```dart
+static void trackEvent(AdjustEvent event)
+```
+
+</CodeBlock>
+<CodeBlock title="イベントログ" collapse="6-46">
+
+```txt
+Path:      /event
+ClientSdk: flutter$FLUTTER_VERSION
+Parameters:
+  android_uuid     781f17d5-5048-4fae-a4e5-77b58bab62b9
+  api_level        34
+  app_token        2fm9gkqubvpc
+  app_version      1.0
+  attribution_deeplink 1
+  callback_params  {"key":"value","foo":"bar"}
+  connectivity_type 1
+  country          US
+  cpu_type         arm64-v8a
+  created_at       2024-01-25T14:13:16.151Z+0100
+  currency         EUR
+  device_manufacturer Google
+  device_name      sdk_gphone64_arm64
+  device_type      phone
+  display_height   2205
+  display_width    1080
+  environment      sandbox
+  event_buffering_enabled 0
+  event_count      3
+  event_token      abc123
+  gps_adid         5962dfc1-3a53-4692-850b-22c4bf4311a5
+  gps_adid_attempt 2
+  gps_adid_src     service
+  hardware_name    UE1A.230829.036
+  language         en
+  mcc              310
+  mnc              260
+  needs_response_details 1
+  os_build         UE1A.230829.036
+  os_name          android
+  os_version       14
+  package_name     com.adjust.examples
+  partner_params   {"key":"value","foo":"bar"}
+  revenue          0.25
+  screen_density   high
+  screen_format    long
+  screen_size      normal
+  session_count    2
+  session_length   23
+  subsession_count 1
+  time_spent       23
+  tracking_enabled 1
+  ui_mode          1
+```
+
+</CodeBlock>
+
+## [イベント収益の記録](record-event-revenue)
+
+<CodeBlock title="メソッドシグネチャー">
+
+```dart
+void setRevenue(num revenue, String currency)
+```
+
+</CodeBlock>
+
+イベントインスタンスにrevenueとcurrencyプロパティを設定することで、イベントに関連する収益を記録できます。この機能を使用して、アプリ内で収益が生成されるアクションを記録しましょう。
+
+これらのプロパティを設定するには、`setRevenue`メソッドを呼び出し、以下の引数をパスします。
+
+-  `revenue` （`num`）：イベントによって発生した収益額
+-  `currency` （`String`）：イベント通貨の[ISO 4217コード](https://www.iban.com/currency-codes)
+
+<Callout type="seealso">
+
+詳細は、[異なる通貨での購入記録](https://help.adjust.com/ja/article/currency-conversion)に関するガイドをご覧ください。
+
+</Callout>
+
+```dart
+AdjustEvent myAdjustEvent = new AdjustEvent('abc123');
+//...
+adjustEvent.setRevenue(0.01, 'EUR');
+//...
+Adjust.trackEvent(myAdjustEvent);
+```
+
+<CodeBlock title="イベントログ" highlight="{range: 7-8}">
+
+```txt
+Path:      /event
+ClientSdk: flutter$FLUTTER_VERSION
+Parameters:
+  environment      sandbox
+  event_count      3
+  event_token      abc123
+  revenue          0.01
+  currency         EUR
+```
+
+</CodeBlock>
+
+## [収益イベントの重複排除](deduplicate-revenue-events)
+
+<CodeBlock title="プロパティ宣言">
+
+```dart
+String? deduplicationId;
+```
+
+</CodeBlock>
+
+イベントを重複して計測するのを防ぐため、オプションとして任意のIDをパスすることもできます。デフォルトでは、SDKが最新10件のIDを保存し、トランザクションIDが重複した収益イベントを排除します。SDKに10以上の識別子を保存させたい場合は、 `AdjustConfig`インスタンスの`eventDeduplicationIdsMaxSize`に値を割り当てることで、希望する識別子の数を指定できます。
+
+識別子を設定するには、イベントインスタンスの`deduplicationId`プロパティにトランザクションIDを割り当てます。
+
+```dart
+adjustConfig.eventDeduplicationIdsMaxSize = 20;
+Adjust.initSdk(config);
+
+// ...
+
+AdjustEvent myAdjustEvent = new AdjustEvent('abc123');
+myAdjustEvent.deduplicationId = 'deduplication-id';
+Adjust.trackEvent(myAdjustEvent);
+```
+
+<CodeBlock title="イベントログ" highlight="{range: 7}">
+
+```txt
+Path:      /event
+ClientSdk: flutter$FLUTTER_VERSION
+Parameters:
+  environment        sandbox
+  event_count        3
+  event_token        abc123
+  deduplication_id   deduplication-id
+```
+
+</CodeBlock>
+
+## [コールバックパラメーターを追加する](add-callback-parameters)
+
+<CodeBlock title="メソッドシグネチャー">
+
+```dart
+void addCallbackParameter(String key, String value)
+```
+
+</CodeBlock>
+
+Adjustダッシュボードで[コールバックURLを登録](https://help.adjust.com/ja/article/set-up-callbacks)した場合、SDKがイベントを記録する際にコールバックURLにGETリクエストを送信します。
+
+サーバーに送信するコールバックパラメーターを設定できます。イベントにパラメーターを設定すると、SDKはそれらを[コールバックURL](https://help.adjust.com/ja/article/raw-data-exports)に追加します。この情報を使用して、自社のBIシステムでユーザーのアプリ内行動を分析することが可能です。
+
+イベントにコールバックパラメーターを追加するには、`String` key\-value引数を指定して`addCallbackParameter`メソッドを呼び出してください。このメソッドを複回呼び出すことで、複数のパラメーターを追加することができます。
+
+```dart
+AdjustEvent myAdjustEvent = new AdjustEvent('abc123');
+adjustEvent.addCallbackParameter('key', 'value');
+Adjust.trackEvent(myAdjustEvent);
+```
+
+<CodeBlock title="イベントログ" highlight="{range: 4}">
+
+```txt
+Path:      /event
+ClientSdk: flutter$FLUTTER_VERSION
+Parameters:
+  callback_params  {"key":"value"}
+  environment      sandbox
+  event_count      1
+  event_token      abc123
+```
+
+</CodeBlock>
+
+Adjust SDKはイベントを計測し、コールバックパラメーターが追加されたURLにリクエストを送信します。例えば、URL `https://www.mydomain.com/callback`が登録されている場合、コールバックは以下のようになります：
+
+```http
+https://www.mydomain.com/callback?key=value&foo=bar
+```
+
+<Callout type="note">
+
+Adjustは、カスタムコールバックパラメーターを保存しません。カスタムパラメーターは、コールバックURLにのみ追加されます。
+
+</Callout>
+
+CSVレポートを使用している場合、CSVの定義欄にパラメーターを追加するようにしてください。
+
+Adjustでは、SDKからURLに情報をパスするための様々なプレースホルダーをサポートしています。例えば、iOSの`{idfa}`プレースホルダーやAndroidの`{gps_adid}`プレースホルダーなどです。`{publisher_parameter}`プレースホルダーは、単一の文字列での全てのコールバックパラメーターを表示します。
+
+<Callout type="seealso">
+
+使用可能な値の全リストを含むURLコールバックの詳細については、[コールバックガイド](https://help.adjust.com/ja/article/callbacks)をご覧ください。
+
+</Callout>
+
+## [パートナーパラメーターの追加](add-partner-parameters)
+
+<CodeBlock title="メソッドシグネチャー">
+
+```dart
+void addPartnerParameter(String key, String value)
+```
+
+</CodeBlock>
+
+[パートナーパラメーター](https://help.adjust.com/ja/article/data-sharing-ad-network#map-parameters)を追加することで、ネットワークパートナーに追加情報を送信することができます。
+
+Adjustは、設定した[外部パートナー](https://help.adjust.com/ja/article/integrated-partners)にパートナーパラメーターを送信します。この情報は、より詳細な分析やリターゲティング施策にご利用いただけます。パートナー用にパラメーターの設定が完了し、機能が有効化されると、Adjustのサーバーはデータ転送を開始します。
+
+<Callout type="note">
+
+パートナーパラメーターはデフォルトではローデータに表示されません。ご希望の場合は、プレースホルダー`{partner_parameters}`を追加することで、それらを単一の文字列として受信することができます。
+
+</Callout>
+
+イベントにパートナーパラメーターを追加するには、`String` key\-value引数を指定して`addPartnerParameter`メソッドを呼び出してください。このメソッドを複回呼び出すことで、複数のパラメーターを追加することができます。
+
+```dart
+AdjustEvent myAdjustEvent = new AdjustEvent('abc123');
+adjustEvent.addPartnerParameter('key', 'value');
+Adjust.trackEvent(myAdjustEvent);
+```
+
+<CodeBlock title="イベントログ" highlight="{range: 4}">
+
+```txt
+Path:      /event
+ClientSdk: flutter$FLUTTER_VERSION
+Parameters:
+  partner_params  {"key":"value"}
+  environment      sandbox
+  event_count      1
+  event_token      abc123
+```
+
+</CodeBlock>
+
+## [コールバックIDを追加](add-a-callback-identifier)
+
+<CodeBlock title="プロパティ宣言">
+
+```dart
+String? callbackId;
+```
+
+</CodeBlock>
+
+計測したいイベントにカスタムの文字列識別子を追加できます。Adjustのサーバーが、この識別子をイベントコールバックでレポートします。これにより、どのイベントが正確に計測されたかを確認することが可能です。
+
+イベントインスタンスの`callbackId`プロパティにIDを割り当てることで、この識別子を設定します。
+
+```dart
+AdjustEvent myAdjustEvent = new AdjustEvent('abc123');
+myAdjustEvent.callbackId = 'your-callback-id';
+Adjust.trackEvent(myAdjustEvent);
+```
+
+<CodeBlock title="イベントログ" highlight="{range: 7}">
+
+```txt
+Path:      /event
+ClientSdk: flutter$FLUTTER_VERSION
+Parameters:
+  environment      sandbox
+  event_count      3
+  event_token      abc123
+  callback_id      your-callback-id
+```
+
+</CodeBlock>
+</SdkVersion>
+<SdkVersion version="v4">
 
 Adjust SDKは`AdjustEvent`オブジェクトを提供しており、アプリのイベント情報を構造化してAdjustのサーバーに送信することができます。
 
@@ -586,3 +896,4 @@ Parameters:
 ```
 
 </CodeBlock>
+</SdkVersion>
