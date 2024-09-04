@@ -2,115 +2,90 @@
 title: "设备 API"
 description: "使用设备 API 查看设备信息，并从 Adjust 中清除设备历史记录以进行测试。"
 category-title: "设备 API"
-slug: "zh/api/device-api"
+slug: "en/api/device-api"
 sidebar-position: 6
 ---
-
 使用设备 API 查看设备信息，并从 Adjust 中清除设备历史记录以进行测试。
 
-## [工作原理](how-it-works)
+[要求](requirements)
+------------------
 
-1. **认证您的调用**
+[清除设备](#forget-device)属于 **破坏性** 的操作。您的账户必须拥有以下[用户权限](https://help.adjust.com/en/article/users) **之一** ， 才能使用清除设备终端。
 
-   要使用设备 API 终端，您首先需要获取 Adjust API 识别码。按照此[认证文档](#authentication)中的说明进行操作，了解如何在 API 中应用识别码。
+* **管理员** 。
+* **编辑员** 。
+* 拥有目标应用访问权限的 **自定义编辑员** 
 
-2. **查询设备详情**
+[认证](authentication)
+--------------------
 
-   使用[查询设备终端](#inspect-device)来查看设备信息及关联用户活动。
+设备 API 使用 [Bearer 识别码](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication)进行认证。向设备 API 发出的每个请求的 `Authorization` 标头中必须包含 Adjust API 识别码。
 
-3. **清除设备**
+如果您的组织启用了单点登录 \(SSO\)，请联系您的 Adjust 代表，或发送电子邮件至 [support@adjust.com](mailto:support@adjust.com)，我们将帮您查找 API 识别码。
 
-   使用[忘记设备终端](#forget-device)来从 Adjust 清除设备历史。在需要清除设备数据来测试同一设备上的多次安装时，可以使用此功能。
+非单点登录账户的 API 识别码位于用户 **个人档案** 中。要找到该识别码，请按照下列步骤操作。
 
-## [认证](authentication)
-
-要使用设备 API，您需要持有 [bearer token](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication)。您可以按照本文中的步骤在 Adjust 控制面板中获取此信息。
-
-### [查找 Adjust API 识别码](find-your-adjust-api-token)
-
-开始进行 API 调用前，您首先需要找到 Adjust API 识别码。您可以在 Adjust 控制面板中找到 Adjust API 识别码。
-
-<Callout type="important">
-
-如果您配置了 SSO，那么就无法在 Adjust 控制面板中找到 API 识别码。请联系您的 Adjust 代表或发送邮件至[support@adjust.com](mailto:support@adjust.com)获取该信息。
-
-</Callout>
-
-您的 Adjust API 识别码位于个人 **档案** 中。要找到该信息，请按照下列步骤操作。
-
-1. 选择左下角的设置图标。
-2. 选择 **账户设置** 。这会打开账户设置页面。
-3. 选择 **我的档案** 标签页。
-4. 您的 **API 识别码** 会显示在 **用户详情** 中。选择复制按钮来将识别码复制到您的系统剪贴板。
+1. 选择账户 \(用户\) 图标。
+2. 选择 **账户设置** 。
+3. 选择 **个人档案** 标签页。
+4. 您的 **API 识别码** 会显示在 **用户详细信息** 中。选择复制按钮来将识别码复制到您的系统剪贴板。
 
 ### [重置 Adjust API 识别码](reset-your-adjust-api-token)
 
-您可以随时重置 Adjust API 识别码。重置后，旧的识别码将失效。也就是说，任何通过旧识别码发送的请求都将无效。如果您重置了 Adjust API 识别码，那么就需要在使用时对其进行更新。
+您可以随时重置 Adjust API 识别码。重置后，旧的识别码将失效。如果您重置了 Adjust API 识别码，请务必在所有使用识别码的位置进行替换。使用无效识别码发送的请求会被 Adjust 拒绝。
 
-1. 选择左下角的设置图标。
-2. 选择 **账户设置** 。这会打开账户设置页面。
-3. 选择 **我的档案** 标签页。
+重置 Adjust API 识别码
+
+1. 选择账户 \(用户\) 图标。
+2. 选择 **账户设置** 。
+3. 选择 **个人档案** 标签页。
 4. 您的 **API 识别码** 会显示在 **用户详情** 中。
-5. 选择 **重置 API 识别码** 。此时会出现一个弹窗。
-6. 在窗口中输入账户密码并选择 **重置** 来重置您的 API 识别码。窗口关闭，屏幕右上角出现确认信息。
+5. 选择 **重置 API 识别码** 。
+6. 在窗口中输入账户密码并选择 **重置** 来重置您的 API 识别码。屏幕右上角会显示确认信息。
 7. 选择 **API 识别码** 旁的复制按钮来将识别码复制到您的系统剪贴板。
 
-## [查询设备终端](inspect-device)
+[查询设备](inspect-device)
+----------------------
 
-使用查询设备终端来查看设备信息。提供您的应用 ID 和设备的广告 ID，返回与应用相关的设备和链接信息。
-
-<Tabs>
-<Tab title="v2" sync="v2">
-
-<CodeBlock title="终端" highlight="/inspect_device">
+<tabs> <tab title="v2" sync="v2"> <codeblock title="终端"> 
 
 ```http
 GET https://api.adjust.com/device_service/api/v2/inspect_device
 ```
 
-</CodeBlock>
-
-</Tab>
-<Tab title="v1" sync="v1">
-
-<CodeBlock title="终端" highlight="/inspect_device">
+</CodeBlock> </Tab> <tab title="v1" sync="v1"> <codeblock title="终端"> 
 
 ```http
 GET https://api.adjust.com/device_service/api/v1/inspect_device
 ```
 
-</CodeBlock>
+</CodeBlock> </Tab> </Tabs> 
 
-</Tab>
-</Tabs>
+使用查询设备终端，调取与应用相关的设备和链接信息。
 
-## [调取设备信息](fetch-device-information)
+### [参数](inspect-device-parameters)
 
-以 JSON 对象的形式返回设备信息。
+以下参数必须作为 **查询参数** 添加。
 
-<Table>
+`app_token` \(`String`\)
 
-| 参数               | 数据类型 | 位置 | 描述                                                       |
-| ------------------ | -------- | ---- | ---------------------------------------------------------- |
-| `app_token`\*      | `String` | 查询 | 应用的 12 位数标识符                                       |
-| `advertising_id`\* | `String` | 查询 | 设备的唯一广告 ID。请查看下方[广告 ID](#advertising-ids)。 |
+: [用于标识应用的字母数字识别码](https://help.adjust.com/en/article/app-token-and-reporting-currency#view-your-app-details)。长度必须为 12 个字符。
 
-</Table>
+`advertising_id` \(`String`\)
 
-<Accordion title="广告 ID">
+: 与您的设备关联的唯一广告 ID。
 
--  `idfa` \(iOS 设备\)
--  `gps_adid` \(Google 广告 ID\)
--  `android_id` \(Android ID\)
--  `fire_adid` \(Amazon Fire ID\)
--  `win_adid` \(Windows 广告 ID\)
+可用的广告 ID 如下：
 
-</Accordion>
+* `idfa`: 广告主 ID。仅适用于 iOS 设备。
+* `gps_adid`: Google 广告 ID。仅适用于使用 Google Play 商店的 Android 设备。
+* `android_id`: Android 设备 ID。仅适用于 Android 设备。
+* `fire_adid`: Amazon Fire 广告 ID。仅适用于使用 Amazon Fire 商店的 Android 设备。
+* `win_adid`: Windows 广告 ID仅适用于 Windows 设备。
 
-<Tabs>
-<Tab title="v2" sync="v2">
+### [响应格式](inspect-device-response-format)
 
-<CodeBlock title="响应格式">
+<tabs> <tab title="v2" sync="v2"> 
 
 ```json
 {
@@ -141,12 +116,7 @@ GET https://api.adjust.com/device_service/api/v1/inspect_device
 }
 ```
 
-</CodeBlock>
-
-</Tab>
-<Tab title="v1" sync="v1">
-
-<CodeBlock title="响应格式">
+</Tab> <tab title="v1" sync="v1"> 
 
 ```json
 {
@@ -167,17 +137,11 @@ GET https://api.adjust.com/device_service/api/v1/inspect_device
 }
 ```
 
-</CodeBlock>
+</Tab> </Tabs> 
 
-</Tab>
-</Tabs>
+### [示例](inspect-device-example)
 
-## [示例](inspect-device-example)
-
-<Tabs>
-<Tab title="v2" sync="v2">
-
-<CodeBlock title="cURL" highlight="advertising_id=1234-5678-9012-3456, app_token=gwzpeepw8uf8">
+<tabs> <tab title="v2" sync="v2"> <codeblock title="cURL" highlight="advertising_id=1234-5678-9012-3456, app_token=gwzpeepw8uf8"> 
 
 ```console
 $ curl \
@@ -185,8 +149,7 @@ $ curl \
 -L -X GET "https://api.adjust.com/device_service/api/v2/inspect_device?advertising_id=1234-5678-9012-3456&app_token=gwzpeepw8uf8"
 ```
 
-</CodeBlock>
-<CodeBlock title="成功响应">
+</CodeBlock> <codeblock title="成功响应"> 
 
 ```json
 {
@@ -219,12 +182,7 @@ $ curl \
 }
 ```
 
-</CodeBlock>
-
-</Tab>
-<Tab title="v1" sync="v1">
-
-<CodeBlock title="cURL" highlight="advertising_id=1234-5678-9012-3456, app_token=gwzpeepw8uf8">
+</CodeBlock> </Tab> <tab title="v1" sync="v1"> <codeblock title="cURL" highlight="advertising_id=1234-5678-9012-3456, app_token=gwzpeepw8uf8"> 
 
 ```console
 $ curl \
@@ -232,8 +190,7 @@ $ curl \
 -L -X GET "https://api.adjust.com/device_service/api/v1/inspect_device?advertising_id=1234-5678-9012-3456&app_token=gwzpeepw8uf8"
 ```
 
-</CodeBlock>
-<CodeBlock title="成功响应">
+</CodeBlock> <codeblock title="成功响应"> 
 
 ```json
 {
@@ -254,44 +211,36 @@ $ curl \
 }
 ```
 
-</CodeBlock>
+</CodeBlock> </Tab> </Tabs> 
 
-</Tab>
-</Tabs>
+[清除设备](forget-device)
+---------------------
 
-## [清除设备终端](forget-device)
-
-通过 Adjust 清除设备终端来清除 Adjust 上的设备历史记录，并在同一设备上测试多个安装。
-
-<Callout type="seealso" title="操作前须知">
-
-您需要拥有 **管理员** 或 **编辑员** 权限才能遗忘设备。如果您拥有 **自定义编辑员** 权限，则需要对目标应用有编辑权限。要了解更多信息，请查看[用户权限](https://help.adjust.com/zh/article/users)。
-
-</Callout>
-<CodeBlock title="终端" highlight="/forget_device">
+<codeblock title="终端" highlight="/forget_device"> 
 
 ```http
 POST https://api.adjust.com/device_service/api/v1/forget_device
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-## [清除设备](forget-a-device)
+使用清除设备终端，从 Adjust 服务器中清除设备信息。借此，您可以在同一台设备上多次测试安装。
 
-从 Adjust 清除设备信息。
+### [参数](forget-device-parameters)
 
-<Table>
+以下参数必须作为 **请求数据** 添加。
 
-| 参数          | 数据类型 | 位置 | 描述                 |
-| ------------- | -------- | ---- | -------------------- |
-| `app_token`\* | `String` | 数据 | 应用的 12 位数标识符 |
-| `adid`\*      | `String` | 数据 | 设备的 Adjust ID     |
+`app_token` \(`String`\)
 
-</Table>
+: [用于标识应用的字母数字识别码](https://help.adjust.com/en/article/app-token-and-reporting-currency#view-your-app-details)。长度必须为 12 个字符。
 
-## [示例](example)
+`adid` \(`String`\)
 
-<CodeBlock title="cURL" highlight="gwzpeepw8uf8, acf8534f2f052395e617a38730682ccc">
+: 设备的唯一 Adjust 标识符。使用[检查设备终端](#inspect-device)查找您设备的 ADID。
+
+### [示例](forget-device-example)
+
+<codeblock title="cURL" highlight="acf8534f2f052395e617a38730682ccc, gwzpeepw8uf8"> 
 
 ```console
 $ curl \
@@ -300,8 +249,7 @@ $ curl \
 --data "adid=acf8534f2f052395e617a38730682ccc&app_token=gwzpeepw8uf8"
 ```
 
-</CodeBlock>
-<CodeBlock title="成功响应">
+</CodeBlock> <codeblock title="成功响应"> 
 
 ```http
 200: Forgot device
@@ -309,12 +257,3 @@ $ curl \
 
 </CodeBlock>
 
-### [响应代码](response-codes)
-
-<Table>
-
-| 响应  | 消息          | 描述     |
-| ----- | ------------- | -------- |
-| `200` | Forgot device | 成功响应 |
-
-</Table>
