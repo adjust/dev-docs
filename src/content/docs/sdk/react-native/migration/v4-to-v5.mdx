@@ -1,0 +1,316 @@
+---
+title: SDK v5 migration guide
+description: Follow this guide to upgrade from SDK v4 to SDK v5
+slug: en/sdk/react-native/migration/v4-to-v5
+sidebar-position: 1
+---
+
+## [Before you begin](before-you-begin)
+
+Here's what you need to do before updating to SDK v5:
+
+1. SDK v5 supports [SDK signature verification](https://help.adjust.com/en/article/sdk-signature) natively. If you currently use the SDK signature library, you need to remove the signature library from your app first.
+2. The minimum supported API versions for SDK v5 have been updated. If your app targets a lower version, you need to update it first.
+
+   -  iOS: **12.0**
+   -  Android: **21**
+
+## [Install the SDK](install-the-sdk)
+
+To start using SDK v5, you need to add it as a dependency in your project. To do this, add the following dependency to your `pubspec.yaml` file:
+
+<CodeBlock title="pubspec.yaml">
+
+```yaml
+dependencies:
+adjust_sdk: ^5.0.0
+```
+
+</CodeBlock>
+
+## [Changes](changes)
+
+<Callout type="warning">
+
+SDK v5 is a major version update. This means there are breaking changes that require you to update your code.
+
+</Callout>
+
+Once you've installed the v5 SDK, you need to update your existing Adjust code to use the new APIs.
+
+### [Initialization method](init-method)
+
+<MinorVersion changed="v5">
+
+In SDK v4, the initialization method is `Adjust.create`. This has been changed to `Adjust.initSdk` in SDK v5.
+
+</MinorVersion>
+
+<CodeBlock useDiffSyntax>
+
+```jsx
+-Adjust.create(adjustConfig); // v4
++Adjust.initSdk(adjustConfig); // v5
+```
+
+</CodeBlock>
+
+### [Configuration](configuration)
+
+This section covers changes to SDK configuration.
+
+#### [Disable and enable the SDK](disable-enable-sdk)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can enable and disable the SDK by calling `Adjust.setEnabled` with a `bool` value.
+
+</MinorVersion>
+
+```jsx
+Adjust.setEnabled(false); // disable SDK
+Adjust.setEnabled(true); // enable SDK
+```
+
+In SDK v5, this feature is split into separate commands for clarity.
+
+-  Call `Adjust.disable` to disable the SDK.
+-  Call `Adjust.enable` to enable the SDK.
+
+```jsx
+Adjust.disable();
+Adjust.enable();
+```
+
+#### [Send information in background](send-in-background)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can call the `setSendInBackground` method on your `adjustConfig` instance with a `bool` value to enable the SDK to send information to Adjust while your app is running in the background.
+
+</MinorVersion>
+
+```jsx
+adjustConfig.setSendInBackground(true);
+```
+
+In SDK v5, you need to call the `enableSendingInBackground` method on your `adjustConfig` instance to enable the SDK to send information to Adjust while your app is running in the background. The default state is `false`.
+
+```jsx
+adjustConfig.enableSendingInBackground();
+```
+
+#### [Preinstalled app measurement](preinstalled-app)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can call the `setPreinstallTrackingEnabled` method on your `adjustConfig` instance with the value `true` to enable measuring preinstalled apps.
+
+</MinorVersion>
+
+```jsx
+adjustConfig.setPreinstallTrackingEnabled = true;
+```
+
+In SDK v5, you need to call the `enablePreinstallTracking` method on your `adjustConfig` instance to enable measuring preinstalled apps. The default state is `false`.
+
+```jsx
+adjustConfig.enablePreinstallTracking();
+```
+
+#### [Disable AdServices information reading](disable-adservices)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can call the `setAllowAdServicesInfoReading` method on your `adjustConfig` with the value `false` to prevent the Adjust SDK from reading AdServices information.
+
+</MinorVersion>
+
+```jsx
+adjustConfig.setAllowAdServicesInfoReading(false);
+```
+
+In SDK v5, you need to call the `disableAdServices` method on your `adjustConfig` instance to prevent the Adjust SDK from reading AdServices information. The default state is `true`.
+
+```jsx
+adjustConfig.disableAdServices();
+```
+
+#### [Disable IDFA reading](disable-idfa)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can call the `setAllowIdfaReading` method on your `adjustConfig` with the value `false` to prevent the Adjust SDK from reading the device's IDFA.
+
+</MinorVersion>
+
+```jsx
+adjustConfig.setAllowIdfaReading(false);
+```
+
+In SDK v5, you need to call the `disableIdfaReading` method on your `adjustConfig` instance to prevent the Adjust SDK from reading the device's IDFA. The default state is `true`.
+
+```jsx
+adjustConfig.disableIdfaReading();
+```
+
+#### [Enable cost data in attribution](enable-cost-data)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can call the `setNeedsCost` method on your `adjustConfig` instance with the value `true` to enable cost data in the device's attribution information.
+
+</MinorVersion>
+
+```jsx
+adjustConfig.setNeedsCost(true);
+```
+
+In SDK v5, you need to call the `enableCostDataInAttribution` method on your `adjustConfig` instance to enable cost data in the device's attribution information. The default state is `false`.
+
+```jsx
+adjustConfig.enableCostDataInAttribution();
+```
+
+#### [Enable LinkMe](enable-linkme)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can call the `setLinkMeEnabled` method on your `adjustConfig` instance with the value `true` to enable [Adjust LinkMe](https://help.adjust.com/en/article/linkme).
+
+</MinorVersion>
+
+```jsx
+adjustConfig.setLinkMeEnabled(true);
+```
+
+In SDK v5, you need to call the `enableLinkMe` method on your `adjustConfig` instance to enable [Adjust LinkMe](https://help.adjust.com/en/article/linkme). The default state is `false`.
+
+```jsx
+adjustConfig.enableLinkMe();
+```
+
+#### [Only read device IDs once](read-device-id-once)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can call the `setReadDeviceInfoOnceEnabled` method on your `adjustConfig` with the value `true` to instruct the SDK to only read device IDs once.
+
+</MinorVersion>
+
+```jsx
+adjustConfig.setReadDeviceInfoOnceEnabled(true);
+```
+
+In SDK v5, you need to call the `enableDeviceIdsReadingOnce` method on your `adjustConfig` to instruct the SDK to only read device IDs once. The default state is `false`.
+
+```jsx
+adjustConfig.enableDeviceIdsReadingOnce();
+```
+
+#### [Offline mode](offline-mode)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can enable and disable offline mode the SDK by calling `Adjust.setOfflineMode` with a `bool` argument.
+
+</MinorVersion>
+
+```jsx
+Adjust.setOfflineMode(true);
+Adjust.setOfflineMode(false);
+```
+
+In SDK v5, this feature is split into separate commands for clarity.
+
+-  Call `Adjust.switchToOfflineMode` to set the SDK to offline mode.
+-  Call `Adjust.switchBackToOnlineMode` to set the SDK back to online mode.
+
+```jsx
+Adjust.switchToOfflineMode(); // Put the SDK in offline mode
+Adjust.switchBackToOnlineMode(); // Put the SDK back in online mode
+```
+
+#### [Event buffering](event-buffering)
+
+<MinorVersion removed="v5">
+
+SDK v4 supports event buffering. This feature stores requests event, ad revenue, push tokens, and other information on a local buffer to send at a later date.
+
+</MinorVersion>
+
+```jsx
+adjustConfig.setEventBufferingEnabled(true);
+```
+
+This method has been removed in SDK v5.
+
+#### [Custom user agent string](custom-user-agent)
+
+<MinorVersion removed="v5">
+
+SDK v4 supports setting a custom User Agent by passing a user string agent to the`setUserAgent` method on your `adjustConfig` instance.
+
+</MinorVersion>
+
+```jsx
+adjustConfig.setUserAgent("custom-user-agent");
+```
+
+This method has been removed in SDK v5.
+
+#### [Set whether a device is known](set-device-known)
+
+<MinorVersion removed="v5">
+
+In SDK v4, you can call the `setDeviceKnown` method on your `adjustConfig` instance to manually inform the SDK whether a device is known.
+
+</MinorVersion>
+
+```jsx
+adjustConfig.setDeviceKnown(true);
+```
+
+This method has been removed in SDK v5.
+
+#### [Delay SDK start](delay-sdk-start)
+
+<MinorVersion removed="v5">
+
+SDK v4 supports delaying the start of the SDK by calling the `setDelayStart` method on your `adjustConfig` instance with a delay. You can set up this delay for up to **10 seconds**.
+
+</MinorVersion>
+
+```jsx
+adjustConfig.setDelayStart(10);
+```
+
+This method has been removed in SDK v5.
+
+#### [Check for new ATT status](check-new-att-status)
+
+<MinorVersion removed="v5">
+
+SDK v4 supports the `Adjust.checkForNewAttStatus` method. Calling this method would make the SDK stop the delay and continue with its work.
+
+</MinorVersion>
+
+```jsx
+Adjust.checkForNewAttStatus();
+```
+
+This method has been removed in SDK v5.
+
+#### [Final Android attribution](final-android-attribution)
+
+<MinorVersion removed="v5">
+
+In SDK v4, you can call the `setFinalAndroidAttributionEnabled` method on your `adjustConfig` instance with the value `true` to deliver final Android attribution.
+
+</MinorVersion>
+
+```jsx
+adjustConfig.setFinalAndroidAttributionEnabled(true);
+```
+
+This setting has been removed in SDK v5 since now only the final attribution will be delivered through the attribution callback on the Android platform.
