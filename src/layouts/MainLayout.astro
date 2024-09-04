@@ -15,7 +15,6 @@ import BodyNoScript from "@components/Layout/GoogleTagManager/BodyNoScript.astro
 import Icons from "@components/Layout/Icons.astro";
 import Sidebar from "@components/Layout/LeftSidebar/Sidebar.astro";
 import BigToc from "@components/BigToc.astro";
-import { supportedVersions } from "@store/sdkVersionsStore";
 
 type Props = CollectionEntry<"docs">["data"] & {
   headings: MarkdownHeading[];
@@ -26,18 +25,13 @@ const pages = await Astro.glob("../content/docs/**/*.mdx");
 const currentPage = Astro.url.pathname;
 const currentLang = getLanguageFromURL(currentPage);
 
-const versionMatch = currentPage?.match(/v\d/gi);
-const version = versionMatch
-  ? versionMatch[0]
-  : supportedVersions.find((version) => version.default)?.value;
-
 const navigationEntries = getNavigationEntries(
   pages,
   currentPage,
   currentLang,
   data?.type,
-  version,
 );
+
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const homeUrl = `${Astro.url.origin}/${currentLang}`;
 const t = useTranslations(currentLang as keyof Locales);
@@ -63,6 +57,7 @@ const t = useTranslations(currentLang as keyof Locales);
         redirects={data.redirects}
         lang={currentLang}
         navigationEntries={navigationEntries?.languageTree}
+        versions={navigationEntries.versions}
       />
       <div class="flex flex-col lg:w-[calc(100%-294px)]">
         <div
@@ -74,7 +69,6 @@ const t = useTranslations(currentLang as keyof Locales);
             title={data.title}
             headings={headings}
             childLinks={navigationEntries.childLinks}
-            multiVersion={data.multiVersion}
             type={data.type}
           >
             <slot />

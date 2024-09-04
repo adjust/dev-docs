@@ -20,7 +20,7 @@ export const supportedVersions = [
 export const $versions = persistentMap<VersionStore>(
   "sdkVersion:",
   {
-    items: supportedVersions,
+    items: [],
     currentVersion: { label: "v5", value: "v5", default: true },
   },
   {

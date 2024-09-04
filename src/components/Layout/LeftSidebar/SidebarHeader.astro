@@ -1,17 +1,23 @@
 ---
 import type { CollectionEntry } from "astro:content";
+import { uniqBy } from "lodash-es";
+
 import AudienceDropdown from "@components/AudienceDropdown.astro";
 import AdjustLogo from "@components/Icons/astro/AdjustLogo.astro";
 import SdkVersionSwitch from "@components/Version/SdkVersionSwitch";
-import { type Locales } from "@i18n/locales";
+import ApiVersionSwitch from "@components/Version/ApiVersionSwitch";
 import { useTranslations } from "@i18n/utils";
+import { type Locales } from "@i18n/locales";
+import type { NavigationData } from "@utils/helpers/navigation/types";
+
 interface Props {
   homeUrl: string;
   lang: string;
   redirects: CollectionEntry<"docs">["data"]["redirects"];
+  versions: NavigationData["versions"];
 }
 
-const { homeUrl, lang, redirects } = Astro.props;
+const { homeUrl, lang, redirects, versions } = Astro.props;
 const t = useTranslations(lang as keyof Locales);
 ---
 
@@ -26,13 +32,24 @@ const t = useTranslations(lang as keyof Locales);
   </div>
   <div>
     {
-      Astro.url.pathname.includes("sdk") && (
+      Astro.url.pathname.includes("sdk") && versions.sdk?.length ? (
         <SdkVersionSwitch
           client:only="react"
           lang={lang}
           redirects={redirects}
+          sdkVersions={uniqBy(versions.sdk, "value")}
         />
-      )
+      ) : undefined
+    }
+    {
+      Astro.url.pathname.includes("api") && versions.api?.length ? (
+        <ApiVersionSwitch
+          client:only="react"
+          lang={lang}
+          redirects={redirects}
+          apiVersions={uniqBy(versions.api, "value")}
+        />
+      ) : undefined
     }
   </div>
 </div>
