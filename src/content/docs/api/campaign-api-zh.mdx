@@ -2,98 +2,74 @@
 title: "推广活动 API"
 description: "使用推广活动 API 获得链接、子链接和合作伙伴信息。"
 category-title: "推广活动 API"
-slug: "zh/api/campaign-api"
+slug: "en/api/campaign-api"
 sidebar-position: 4
 ---
-
 使用推广活动 API 获得链接、子链接和合作伙伴信息。创建新链接和使用新的合作伙伴信息更新已有链接。
 
-## [工作原理](how-it-works)
+[认证](authentication)
+--------------------
 
-1. **认证您的调用**
+推广活动 API 使用 [Bearer 识别码](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication)进行认证。向推广活动 API 发出的每个请求的 `Authorization` 标头中必须包含 Adjust API 识别码。
 
-   要使用推广活动 API 终端，您首先需要获取 Adjust API 识别码。按照此[认证文档](#authentication)中的说明进行操作，了解如何在 API 中应用识别码。
+如果您的组织启用了单点登录 \(SSO\)，请联系您的 Adjust 代表，或发送电子邮件至 [support@adjust.com](mailto:support@adjust.com)，我们将帮您查找 API 识别码。
 
-2. **调取与应用关联的渠道链接列表。**
+非单点登录账户的 API 识别码位于用户 **个人档案** 中。要找到该识别码，请按照下列步骤操作。
 
-   使用 `trackers` 终端调取与应用相关的任意链接的详细信息。您可以调取[顶层链接](#get-links)列表或[子链接](#get-sublinks)列表。
-
-3. **创建新渠道链接**
-
-   您可以[向`trackers`终端发送 POST 请求](#create-links)来向应用添加新链接。该终端支持创建顶层链接和子链接。
-
-4. **调取合作伙伴列表。**
-
-   使用[`partners`终端](#get-partners)获取合作伙伴列表。您可以借此更新链接。
-
-5. **使用新合作伙伴更新链接**
-
-   向[`trackers`终端发送 PATCH 请求](#update-links)来使用新的合作伙伴和广告支出数据信息更新已有链接。
-
-## [认证](authentication)
-
-要使用推广活动 API，您需要持有 [bearer token](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication)。您可以按照本文中的步骤在 Adjust 控制面板中获取此信息。
-
-### [查找 Adjust API 识别码](find-your-adjust-api-token)
-
-开始进行 API 调用前，您首先需要找到 Adjust API 识别码。您可以在 Adjust 控制面板中找到 Adjust API 识别码。
-
-<Callout type="important">
-
-如果您配置了 SSO，那么就无法在 Adjust 控制面板中找到 API 识别码。请联系您的 Adjust 代表或发送邮件至[support@adjust.com](mailto:support@adjust.com)获取该信息。
-
-</Callout>
-
-您的 Adjust API 识别码位于个人 **档案** 中。要找到该信息，请按照下列步骤操作。
-
-1. 选择左下角的设置图标。
-2. 选择 **账户设置** 。这会打开账户设置页面。
-3. 选择 **我的档案** 标签页。
-4. 您的 **API 识别码** 会显示在 **用户详情** 中。选择复制按钮来将识别码复制到您的系统剪贴板。
+1. 选择账户 \(用户\) 图标。
+2. 选择 **账户设置** 。
+3. 选择 **个人档案** 标签页。
+4. 您的 **API 识别码** 会显示在 **用户详细信息** 中。选择复制按钮来将识别码复制到您的系统剪贴板。
 
 ### [重置 Adjust API 识别码](reset-your-adjust-api-token)
 
-您可以随时重置 Adjust API 识别码。重置后，旧的识别码将失效。也就是说，任何通过旧识别码发送的请求都将无效。如果您重置了 Adjust API 识别码，那么就需要在使用时对其进行更新。
+您可以随时重置 Adjust API 识别码。重置后，旧的识别码将失效。如果您重置了 Adjust API 识别码，请务必在所有使用识别码的位置进行替换。使用无效识别码发送的请求会被 Adjust 拒绝。
 
-1. 选择左下角的设置图标。
-2. 选择 **账户设置** 。这会打开账户设置页面。
-3. 选择 **我的档案** 标签页。
+重置 Adjust API 识别码：
+
+1. 选择账户 \(用户\) 图标。
+2. 选择 **账户设置** 。
+3. 选择 **个人档案** 标签页。
 4. 您的 **API 识别码** 会显示在 **用户详情** 中。
-5. 选择 **重置 API 识别码** 。此时会出现一个弹窗。
-6. 在窗口中输入账户密码并选择 **重置** 来重置您的 API 识别码。窗口关闭，屏幕右上角出现确认信息。
+5. 选择 **重置 API 识别码** 。
+6. 在窗口中输入账户密码并选择 **重置** 来重置您的 API 识别码。屏幕右上角会显示确认信息。
 7. 选择 **API 识别码** 旁的复制按钮来将识别码复制到您的系统剪贴板。
 
-## [调取合作伙伴](fetch-partners)
+[调取合作伙伴](fetch-partners)
+------------------------
 
-<CodeBlock title="终端" highlight="/partners">
+<codeblock title="终端" highlight="/partners"> 
 
 ```http
 GET https://api.adjust.com/public/v1/partners
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-使用此终端获取合作伙伴列表和关联数据。
+使用此终端获取合作伙伴列表和关联数据。 返回的数据为一个合作伙伴对象数组。
 
 ### [参数](fetch-partners-parameters)
 
-<Table>
+您可以将下列参数作为 **查询参数** 传递：
 
-| 参数     | 数据类型  | 位置 | 描述                                   |
-| -------- | --------- | ---- | -------------------------------------- |
-| `after`  | `String`  | 查询 | 从下一页获取元素的游标。               |
-| `before` | `String`  | 查询 | 从上一页获取元素的游标。               |
-| `limit`  | `Integer` | 查询 | 响应中包含的最大元素数，须为正整数值。 |
+`after` \(`String`\)
 
-</Table>
+: 请求起始[游标位置](#fetch-partners-pagination)。
+
+`before` \(`String`\)
+
+: 请求结束的[游标位置](#fetch-partners-pagination)。
+
+`limit` \(`Integer`\)
+
+: 响应中包含的最大结果数，该值必须为正整数。默认设置为 `50`。
 
 ### [分页](fetch-partners-pagination)
 
-来自此终端的结果会通过游标进行分页。每页返回前一页和后一页的位置。您可以将这些信息包含在调用中来返回指定页。您还可以限定每页包含的项目数量。默认上限为 `50`。
+来自此终端的结果会通过游标进行分页。每页返回`previous`和`next`的位置。您可以将这些信息包含在调用中来返回指定页。
 
-每个结果页都包含一个"paging"对象，其中包含游标位置。您可以使用这些游标位置来在不同页间程序化移动。例如，第一页可能包含如下结果：
-
-<CodeBlock title="分页示例">
+每个结果页都包含一个`paging`对象，其中包含游标位置。您可以使用这些游标位置来在不同页间程序化移动。例如，首页可能包含以下`paging`对象：
+<codeblock title="分页示例"> 
 
 ```json
 "paging": {
@@ -109,54 +85,58 @@ GET https://api.adjust.com/public/v1/partners
 }
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 要访问第二页，在下一个请求中的`after`参数中添加`after`值。例如：
-
-<CodeBlock title="cURL" highlight="after=g2wAAAACYhW1_gxkAANuaWxq">
+<codeblock title="cURL" highlight="after=g2wAAAACYhW1_gxkAANuaWxq"> 
 
 ```console
 $ curl "https://api.adjust.com/public/v1/apps/yxs12pfewq/trackers?after=g2wAAAACYhW1_gxkAANuaWxq"
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-### [响应参数](fetch-partners-response-format)
-
-<Table>
-
-| 字段                | 数据类型  | 描述                         | 示例       |
-| ------------------- | --------- | ---------------------------- | ---------- |
-| `id`                | `Integer` | 合作伙伴的 ID。              | `174`      |
-| `display_name`      | `String`  | 合作伙伴名称。               | `Adcolony` |
-| `support_cost_data` | `Boolean` | 该合作伙伴是否支持成本数据。 | `true`     |
-
-</Table>
-<CodeBlock title="响应格式">
+### [响应格式](fetch-partners-response-format)
 
 ```json
 {
-   "id": 1,
-   "display_name": "String",
-   "supports_cost_data": true
+   "data": {
+      "api_version": "string",
+      "request_id": "string",
+      "timestamp": "datetime",
+      "paging": {
+         "page_size": "string",
+         "collection_size": "string",
+         "total": "string",
+         "next": "string",
+         "previous": "string",
+         "cursors": {
+            "after": "string",
+            "before": "string"
+         }
+      },
+      "items": [
+         {
+            "id": 100,
+            "display_name": "string",
+            "supports_cost_data": true
+         }
+      ]
+   }
 }
 ```
 
-</CodeBlock>
-
 ### [示例](fetch-partners-example)
 
-<CodeBlock title="cURL">
+<codeblock title="cURL"> 
 
 ```console
 $ curl \
 --header 'Authorization: Token token={API_TOKEN}' \
 -L -X GET 'https://api.adjust.com/public/v1/partners?limit=1'
-
 ```
 
-</CodeBlock>
-<CodeBlock title="成功响应">
+</CodeBlock> <codeblock title="成功响应"> 
 
 ```json
 {
@@ -186,77 +166,75 @@ $ curl \
 }
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-## [获取链接](fetch-links)
+[获取链接](fetch-links)
+-------------------
 
-<Tabs>
-<Tab title="v2" sync="v2">
-
-<CodeBlock title="终端" highlight="v2/apps/{app_token}/trackers">
+<tabs> <tab title="v2" sync="v2"> <codeblock title="终端" highlight="v2/apps/{app_token}/trackers"> 
 
 ```http
 GET https://api.adjust.com/public/v2/apps/{app_token}/trackers
 ```
 
-</CodeBlock>
-
-</Tab>
-<Tab title="v1" sync="v1">
-
-<CodeBlock title="终端" highlight="v1/apps/{app_token}/trackers">
+</CodeBlock> </Tab> <tab title="v1" sync="v1"> <codeblock title="终端" highlight="v1/apps/{app_token}/trackers"> 
 
 ```http
 GET https://api.adjust.com/public/v1/apps/{app_token}/trackers
 ```
 
-</CodeBlock>
+</CodeBlock> </Tab> </Tabs> 
 
-</Tab>
-</Tabs>
+使用此终端调取与应用关联的渠道层级链接。
 
-使用此终端，为您指定的应用获得渠道层链接。
+### [参数](fetch-links-parameters)
 
-<Tabs>
-<Tab title="v2" sync="v2">
+<tabs> <tab title="v2" sync="v2"> 
 
-<Table>
+您必须在请求 **路径** 中传递以下参数：
 
-| 参数          | 数据类型  | 位置 | 描述                                   |
-| ------------- | --------- | ---- | -------------------------------------- |
-| `app_token`\* | `String`  | Path | 应用的 12 位数标识符。                 |
-| `cursor`      | `String`  | 查询 | 包含结果集合的唯一游标位置。           |
-| `limit`       | `Integer` | 查询 | 响应中包含的最大元素数，须为正整数值。 |
+`app_token` \(`String`\)
 
-</Table>
+: [用于标识应用的字母数字识别码](https://help.adjust.com/en/article/app-token-and-reporting-currency#view-your-app-details)。长度必须为 12 个字符。
 
-</Tab>
-<Tab title="v1" sync="v1">
+您可以将下列参数作为 **查询参数** 传递：
 
-<Table>
+`cursor` \(`String`\)
 
-| 参数          | 数据类型  | 位置 | 描述                                   |
-| ------------- | --------- | ---- | -------------------------------------- |
-| `app_token`\* | `String`  | Path | 应用的 12 位数标识符。                 |
-| `after`       | `String`  | 查询 | 从下一页获取元素的游标。               |
-| `before`      | `String`  | 查询 | 从上一页获取元素的游标。               |
-| `limit`       | `Integer` | 查询 | 响应中包含的最大元素数，须为正整数值。 |
+: 游标位置。
 
-</Table>
+`limit` \(`Integer`\)
 
-</Tab>
-</Tabs>
+: 响应中包含的最大结果数，该值必须为正整数。默认设置为 `50`。
+</Tab> <tab title="v1" sync="v1"> 
+
+您必须在请求 **路径** 中传递以下参数：
+
+`app_token` \(`String`\)
+
+: [用于标识应用的字母数字识别码](https://help.adjust.com/en/article/app-token-and-reporting-currency#view-your-app-details)。长度必须为 12 个字符。
+
+您可以将下列参数作为 **查询参数** 传递：
+
+`after` \(`String`\)
+
+: 请求起始[游标位置](#fetch-partners-pagination)。
+
+`before` \(`String`\)
+
+: 请求结束的[游标位置](#fetch-partners-pagination)。
+
+`limit` \(`Integer`\)
+
+: 响应中包含的最大结果数，该值必须为正整数。默认设置为 `50`。
+</Tab> </Tabs> 
 
 ### [分页](fetch-links-pagination)
 
-来自此终端的结果会通过游标进行分页。每页返回前一页和后一页的位置。您可以将这些信息包含在调用中来返回指定页。您还可以限定每页包含的项目数量。默认上限为 `50`。
+<tabs> <tab title="v2" sync="v2"> 
 
-每个结果页都包含一个"paging"对象，其中包含游标位置。您可以使用这些游标位置来在不同页间程序化移动。例如，第一页可能包含如下结果：
-
-<Tabs>
-<Tab title="v2" sync="v2">
-
-<CodeBlock title="分页示例">
+来自此终端的结果会通过游标进行分页。每个结果页面都包含一个`paging`对象，其中包含游标位置。您可以使用这些游标位置来在不同页间程序化移动。例如，第一页可能包含如下结果：
+<codeblock title="分页示例"> 
 
 ```json
 "paging": {
@@ -265,22 +243,24 @@ GET https://api.adjust.com/public/v1/apps/{app_token}/trackers
 }
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 要前往第二页，请使用`next`链接来返回来自下一个指定`cursor`位置的结果。
-
-<CodeBlock title="cURL" highlight="cursor=g2wAAAACYhW1_gxkAANuaWxq">
+<codeblock title="cURL" highlight="cursor=g2wAAAACYhW1_gxkAANuaWxq"> 
 
 ```console
 $ curl "https://api.adjust.com/public/v2/apps/yxs12pfewq/trackers?cursor=g2wAAAACYhW1_gxkAANuaWxq&limit=50"
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-</Tab>
-<Tab title="v1" sync="v1">
+要返回结果中的特定位置，请在请求 **查询参数** 中传递`cursor`值。
+</Tab> <tab title="v1" sync="v1"> 
 
-<CodeBlock title="分页示例">
+来自此终端的结果会通过游标进行分页。每页返回`previous`和`next`的位置。您可以将这些信息包含在调用中来返回指定页。
+
+每个结果页都包含一个`paging`对象，其中包含游标位置。您可以使用这些游标位置来在不同页间程序化移动。例如，首页可能包含以下`paging`对象：
+<codeblock title="分页示例"> 
 
 ```json
 "paging": {
@@ -296,40 +276,21 @@ $ curl "https://api.adjust.com/public/v2/apps/yxs12pfewq/trackers?cursor=g2wAAAA
 }
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-要访问第二页，在下一个请求中的`after`参数中添加`after`值。例如：
-
-<CodeBlock title="cURL" highlight="after=g2wAAAACYhW1_gxkAANuaWxq">
+要前往第二页，请使用`next`链接来返回来自下一个指定`cursor`位置的结果。
+<codeblock title="cURL" highlight="after=g2wAAAACYhW1_gxkAANuaWxq"> 
 
 ```console
 $ curl "https://api.adjust.com/public/v1/apps/yxs12pfewq/trackers?after=g2wAAAACYhW1_gxkAANuaWxq"
 ```
 
-</CodeBlock>
+</CodeBlock> </Tab> </Tabs> 
 
-</Tab>
-</Tabs>
+### [响应格式](fetch-links-response-format)
 
-### [响应参数](fetch-links-response-format)
-
-<Table search>
-
-| 字段                | 数据类型  | 描述                                                                                                         | 示例                                        |
-| ------------------- | --------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------- |
-| `name`              | `String`  | 链接的名称                                                                                                   | `Adroll`                                    |
-| `label`             | `String`  | 链接名称中的最后一个层级部分。                                                                               | `Adroll`                                    |
-| `level`             | `Integer` | 链接的层级。<br/><ul><li>渠道 = `1`</li><li>推广活动 = `2`</li><li>广告组 = `3`</li><li>素材 = `4`</li></ul> | `1`                                         |
-| `archived`          | `Boolean` | 链接是否已被归档。                                                                                           | `true`                                      |
-| `has_subtrackers`   | `Boolean` | 链接是否有子链接。                                                                                           | `true`                                      |
-| `partner_id`        | `Integer` | 附加在链接上的合作伙伴 ID。                                                                                  | `3`                                         |
-| `cost_data_enabled` | `Boolean` | 链接是否启用了 cost_data。                                                                                   | `false`                                     |
-| `impression_url`    | `String`  | 展示监测链接的 URL。                                                                                         | `https://view.adjust.com/impression/abc123` |
-| `url`               | `String`  | 监测链接的 URL。                                                                                             | `https://app.adjust.com/abc123`             |
-| `click_url`         | `String`  | 点击监测链接的 URL。                                                                                         | `https://app.adjust.com/abc123`             |
-
-</Table>
-<CodeBlock title="成功响应">
+所有链接均按以下格式作为项目返回：
+<codeblock title="成功响应"> 
 
 ```json
 {
@@ -347,14 +308,11 @@ $ curl "https://api.adjust.com/public/v1/apps/yxs12pfewq/trackers?after=g2wAAAAC
 }
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 ### [示例](fetch-links-example)
 
-<Tabs>
-<Tab title="v2" sync="v2">
-
-<CodeBlock title="cURL" highlight="gwzpeepw8uf8">
+<tabs> <tab title="v2" sync="v2"> <codeblock title="cURL" highlight="gwzpeepw8uf8"> 
 
 ```console
 $ curl \
@@ -362,8 +320,7 @@ $ curl \
 -L -X GET 'https://api.adjust.com/public/v2/apps/gwzpeepw8uf8/trackers?limit=1'
 ```
 
-</CodeBlock>
-<CodeBlock title="成功响应">
+</CodeBlock> <codeblock title="成功响应"> 
 
 ```json
 {
@@ -391,12 +348,7 @@ $ curl \
 }
 ```
 
-</CodeBlock>
-
-</Tab>
-<Tab title="v1" sync="v1">
-
-<CodeBlock title="cURL" highlight="gwzpeepw8uf8">
+</CodeBlock> </Tab> <tab title="v1" sync="v1"> <codeblock title="cURL" highlight="gwzpeepw8uf8"> 
 
 ```console
 $ curl \
@@ -404,8 +356,7 @@ $ curl \
 -L -X GET 'https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers?limit=1'
 ```
 
-</CodeBlock>
-<CodeBlock title="成功响应">
+</CodeBlock> <codeblock title="成功响应"> 
 
 ```json
 {
@@ -443,82 +394,83 @@ $ curl \
 }
 ```
 
-</CodeBlock>
+</CodeBlock> </Tab> </Tabs> 
 
-</Tab>
-</Tabs>
+[获取子链接](fetch-sublinks)
+-----------------------
 
-## [获取子链接](fetch-sublinks)
-
-<Tabs>
-<Tab title="v2" sync="v2">
-
-<CodeBlock title="终端" highlight="v2/apps/{app_token}/trackers/{link_token}/children">
+<tabs> <tab title="v2" sync="v2"> <codeblock title="终端" highlight="v2/apps/{app_token}/trackers/{link_token}/children"> 
 
 ```http
 GET https://api.adjust.com/public/v2/apps/{app_token}/trackers/{link_token}/children
 ```
 
-</CodeBlock>
-
-</Tab>
-<Tab title="v1" sync="v1">
-
-<CodeBlock title="终端" highlight="v1/apps/{app_token}/trackers/{link_token}/children">
+</CodeBlock> </Tab> <tab title="v1" sync="v1"> <codeblock title="终端" highlight="v1/apps/{app_token}/trackers/{link_token}/children"> 
 
 ```http
 GET https://api.adjust.com/public/v1/apps/{app_token}/trackers/{link_token}/children
 ```
 
-</CodeBlock>
-
-</Tab>
-</Tabs>
+</CodeBlock> </Tab> </Tabs> 
 
 使用此终端，为指定的应用获得子链接。
 
-<Tabs>
-<Tab title="v2" sync="v2">
+### [参数](fetch-sublinks-parameters)
 
-<Table>
+<tabs> <tab title="v2" sync="v2"> 
 
-| 参数              | 数据类型  | 位置 | 描述                                   |
-| ----------------- | --------- | ---- | -------------------------------------- |
-| `app_token`\*     | `String`  | Path | 应用的 12 位数标识符。                 |
-| `tracker_token`\* | `String`  | Path | 父级链接识别码。                       |
-| `cursor`          | `String`  | 查询 | 包含结果集合的唯一游标位置。           |
-| `limit`           | `Integer` | 查询 | 响应中包含的最大元素数，须为正整数值。 |
+您必须在请求 **路径** 中传递以下参数：
 
-</Table>
+`app_token` \(`String`\)
 
-</Tab>
-<Tab title="v1" sync="v1">
+: [用于标识应用的字母数字识别码](https://help.adjust.com/en/article/app-token-and-reporting-currency#view-your-app-details)。长度必须为 12 个字符。
 
-<Table>
+`tracker_token` \(`String`\)
 
-| 参数              | 数据类型  | 位置 | 描述                                   |
-| ----------------- | --------- | ---- | -------------------------------------- |
-| `app_token`\*     | `String`  | Path | 应用的 12 位数标识符。                 |
-| `tracker_token`\* | `String`  | Path | 父级链接识别码。                       |
-| `after`           | `String`  | 查询 | 从下一页获取元素的游标。               |
-| `before`          | `String`  | 查询 | 从上一页获取元素的游标。               |
-| `limit`           | `Integer` | 查询 | 响应中包含的最大元素数，须为正整数值。 |
+: 子链接所在 **父级链接** 的链接识别码。
 
-</Table>
+您可以在请求的 **查询参数** 中传递以下参数：
 
-</Tab>
-</Tabs>
+`cursor` \(`String`\)
+
+: 游标位置。
+
+`limit` \(`Integer`\)
+
+: 响应中包含的最大结果数，该值必须为正整数。默认设置为 `50`。
+</Tab> <tab title="v1" sync="v1"> 
+
+您必须在请求 **路径** 中传递以下参数：
+
+`app_token` \(`String`\)
+
+: [用于标识应用的字母数字识别码](https://help.adjust.com/en/article/app-token-and-reporting-currency#view-your-app-details)。长度必须为 12 个字符。
+
+`tracker_token` \(`String`\)
+
+: 子链接所在 **父级链接** 的链接识别码。
+
+您可以在请求的 **查询参数** 中传递以下参数：
+
+`after` \(`String`\)
+
+: 请求起始[游标位置](#fetch-sublinks-pagination)。
+
+`before` \(`String`\)
+
+: 请求结束的[游标位置](#fetch-sublinks-pagination)。
+
+`limit` \(`Integer`\)
+
+: 响应中包含的最大结果数，该值必须为正整数。默认设置为 `50`。
+</Tab> </Tabs> 
 
 ### [分页](fetch-sublinks-pagination)
 
-来自此终端的结果会通过游标进行分页。每页返回前一页和后一页的位置。您可以将这些信息包含在调用中来返回指定页。您还可以限定每页包含的项目数量。默认上限为 `50`。
+<tabs> <tab title="v2" sync="v2"> 
 
-每个结果页都包含一个"paging"对象，其中包含游标位置。您可以使用这些游标位置来在不同页间程序化移动。例如，第一页可能包含如下结果：
-
-<Tabs>
-<Tab title="v2" sync="v2">
-
-<CodeBlock title="分页示例">
+来自此终端的结果会通过游标进行分页。每个结果页面都包含一个`paging`对象，其中包含游标位置。您可以使用这些游标位置来在不同页间程序化移动。例如，第一页可能包含如下结果：
+<codeblock title="分页示例"> 
 
 ```json
 "paging": {
@@ -527,22 +479,24 @@ GET https://api.adjust.com/public/v1/apps/{app_token}/trackers/{link_token}/chil
 }
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 要前往第二页，请使用`next`链接来返回来自下一个指定`cursor`位置的结果。
-
-<CodeBlock title="cURL" highlight="cursor=g2wAAAACYhW1_gxkAANuaWxq">
+<codeblock title="cURL" highlight="cursor=g2wAAAACYhW1_gxkAANuaWxq"> 
 
 ```console
 $ curl "https://api.adjust.com/public/v2/apps/gwzpeepw8uf8/trackers/abc123/children?cursor=g2wAAAACYhW1_gxkAANuaWxq"
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-</Tab>
-<Tab title="v1" sync="v1">
+要返回结果中的特定位置，请在请求 **查询参数** 中传递`cursor`值。
+</Tab> <tab title="v1" sync="v1"> 
 
-<CodeBlock title="分页示例">
+来自此终端的结果会通过游标进行分页。每页返回`previous`和`next`的位置。您可以将这些信息包含在调用中来返回指定页。
+
+每个结果页都包含一个`paging`对象，其中包含游标位置。您可以使用这些游标位置来在不同页间程序化移动。例如，首页可能包含以下`paging`对象：
+<codeblock title="分页示例"> 
 
 ```json
 "paging": {
@@ -558,40 +512,18 @@ $ curl "https://api.adjust.com/public/v2/apps/gwzpeepw8uf8/trackers/abc123/child
 }
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-要访问第二页，在下一个请求中的`after`参数中添加`after`值。例如：
-
-<CodeBlock title="cURL" highlight="after=g2wAAAACYhW1_gxkAANuaWxq">
+要前往第二页，请使用`next`链接来返回来自下一个指定`cursor`位置的结果。
+<codeblock title="cURL" highlight="after=g2wAAAACYhW1_gxkAANuaWxq"> 
 
 ```console
 $ curl "https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers/abc123/children?after=g2wAAAACYhW1_gxkAANuaWxq"
 ```
 
-</CodeBlock>
+</CodeBlock> </Tab> </Tabs> 
 
-</Tab>
-</Tabs>
-
-### [响应参数](fetch-sublinks-response-format)
-
-<Table search>
-
-| 字段                | 数据类型  | 描述                                                                                                         | 示例                                        |
-| ------------------- | --------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------- |
-| `name`              | `String`  | 链接的名称                                                                                                   | `Adroll`                                    |
-| `label`             | `String`  | 链接名称中的最后一个层级部分。                                                                               | `Adroll`                                    |
-| `level`             | `Integer` | 链接的层级。<br/><ul><li>渠道 = `1`</li><li>推广活动 = `2`</li><li>广告组 = `3`</li><li>素材 = `4`</li></ul> | `1`                                         |
-| `archived`          | `Boolean` | 链接是否已被归档。                                                                                           | `true`                                      |
-| `has_subtrackers`   | `Boolean` | 链接是否有子链接。                                                                                           | `true`                                      |
-| `partner_id`        | `Integer` | 附加在链接上的合作伙伴 ID。                                                                                  | `3`                                         |
-| `cost_data_enabled` | `Boolean` | 链接是否启用了 cost_data。                                                                                   | `false`                                     |
-| `impression_url`    | `String`  | 展示监测链接的 URL。                                                                                         | `https://view.adjust.com/impression/abc123` |
-| `url`               | `String`  | 监测链接的 URL。                                                                                             | `https://app.adjust.com/abc123`             |
-| `click_url`         | `String`  | 点击监测链接的 URL。                                                                                         | `https://app.adjust.com/abc123`             |
-
-</Table>
-<CodeBlock title="响应格式">
+### [响应格式](fetch-sublinks-response-format)
 
 ```json
 {
@@ -609,14 +541,9 @@ $ curl "https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers/abc123/child
 }
 ```
 
-</CodeBlock>
-
 ### [示例](fetch-sublinks-example)
 
-<Tabs>
-<Tab sync="v2" title="v2">
-
-<CodeBlock title="cURL" highlight="gwzpeepw8uf8, abc123">
+<tabs> <tab title="v2" sync="v2"> <codeblock title="cURL" highlight="gwzpeepw8uf8, abc123"> 
 
 ```console
 $ curl \
@@ -624,8 +551,7 @@ $ curl \
 -L -X GET 'https://api.adjust.com/public/v2/apps/gwzpeepw8uf8/trackers/abc123/children?limit=1' \
 ```
 
-</CodeBlock>
-<CodeBlock title="成功响应">
+</CodeBlock> <codeblock title="成功响应"> 
 
 ```json
 {
@@ -653,12 +579,7 @@ $ curl \
 }
 ```
 
-</CodeBlock>
-
-</Tab>
-<Tab title="v1" sync="v1">
-
-<CodeBlock title="cURL" highlight="gwzpeepw8uf8, abc123">
+</CodeBlock> </Tab> <tab title="v1" sync="v1"> <codeblock title="cURL" highlight="gwzpeepw8uf8, abc123"> 
 
 ```console
 $ curl \
@@ -666,8 +587,7 @@ $ curl \
 -L -X GET 'https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers/abc123/children?limit=1' \
 ```
 
-</CodeBlock>
-<CodeBlock title="成功响应">
+</CodeBlock> <codeblock title="成功响应"> 
 
 ```json
 {
@@ -705,54 +625,42 @@ $ curl \
 }
 ```
 
-</CodeBlock>
+</CodeBlock> </Tab> </Tabs> 
 
-</Tab>
-</Tabs>
+[创建链接](create-links)
+--------------------
 
-## [创建链接](create-links)
-
-<CodeBlock title="终端" highlight="{app_token}/trackers">
+<codeblock title="终端" highlight="{app_token}/trackers"> 
 
 ```http
 POST https://api.adjust.com/public/v1/apps/{app_token}/trackers
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 使用此终端来为应用创建链接和子链接。
 
 ### [参数](create-links-parameters)
 
-<Table>
+您必须在请求 **路径** 中传递以下参数：
 
-| 参数           | 数据类型 | 位置          | 描述                                         |
-| -------------- | -------- | ------------- | -------------------------------------------- |
-| `app_token`\*  | `String` | Path          | 应用的 12 位数标识符。                       |
-| `name`\*       | `String` | 正文 \(Body\) | 新链接的名称                                 |
-| `parent_token` | `String` | 正文 \(Body\) | 父级链接的名称，只有在创建子跟踪链接时需要。 |
+`app_token` \(`String`\)
 
-</Table>
+: [用于标识应用的字母数字识别码](https://help.adjust.com/en/article/app-token-and-reporting-currency#view-your-app-details)。长度必须为 12 个字符。
 
-### [响应参数](create-links-response-format)
+您必须在请求 **数据** 中传递以下参数：
 
-<Table search>
+`name` \(`String`\)
 
-| 字段                | 数据类型  | 描述                                                                                                         | 示例                                        |
-| ------------------- | --------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------- |
-| `name`              | `String`  | 链接的名称                                                                                                   | `Adroll`                                    |
-| `label`             | `String`  | 链接名称中的最后一个层级部分。                                                                               | `Adroll`                                    |
-| `level`             | `Integer` | 链接的层级。<br/><ul><li>渠道 = `1`</li><li>推广活动 = `2`</li><li>广告组 = `3`</li><li>素材 = `4`</li></ul> | `1`                                         |
-| `archived`          | `Boolean` | 链接是否已被归档。                                                                                           | `true`                                      |
-| `has_subtrackers`   | `Boolean` | 链接是否有子链接。                                                                                           | `true`                                      |
-| `partner_id`        | `Integer` | 附加在链接上的合作伙伴 ID。                                                                                  | `3`                                         |
-| `cost_data_enabled` | `Boolean` | 链接是否启用了 cost_data。                                                                                   | `false`                                     |
-| `impression_url`    | `String`  | 展示监测链接的 URL。                                                                                         | `https://view.adjust.com/impression/abc123` |
-| `url`               | `String`  | 监测链接的 URL。                                                                                             | `https://app.adjust.com/abc123`             |
-| `click_url`         | `String`  | 点击监测链接的 URL。                                                                                         | `https://app.adjust.com/abc123`             |
+: 新链接的名称。
 
-</Table>
-<CodeBlock title="响应格式">
+您可以在请求 **数据** 中传递以下参数：
+
+`parent_token` \(`String`\)
+
+: 子链接所在 **父级链接** 的链接识别码。只有在创建子链接时需要。
+
+### [响应格式](create-links-response-format)
 
 ```json
 {
@@ -770,20 +678,20 @@ POST https://api.adjust.com/public/v1/apps/{app_token}/trackers
 }
 ```
 
-</CodeBlock>
+可用的`level`值如下：
 
-#### [链接层级](link-levels)
-
--  渠道 = `1`
--  推广活动 = `2`
--  广告组 = `3`
--  素材 = `4`
+* `1`: 渠道层级
+* `2`: 推广活动层级
+* `3`: 广告组层级
+* `4`: 素材层级
 
 ### [示例](create-links-example)
 
-<Tabs>
-<Tab title="链接" sync="link">
-<CodeBlock title="cURL">
+以下示例展示了如何创建 **链接** 和 **子链接** 。
+
+#### [创建链接](create-a-link-example)
+
+<codeblock title="cURL"> 
 
 ```console
 $ curl --location --request POST 'https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers' \
@@ -792,8 +700,7 @@ $ curl --location --request POST 'https://api.adjust.com/public/v1/apps/gwzpeepw
 --data-raw '{"name": "Adroll"}'
 ```
 
-</CodeBlock>
-<CodeBlock title="成功响应">
+</CodeBlock> <codeblock title="成功响应"> 
 
 ```json
 {
@@ -820,20 +727,20 @@ $ curl --location --request POST 'https://api.adjust.com/public/v1/apps/gwzpeepw
 }
 ```
 
-</CodeBlock>
-</Tab>
-<Tab title="子链接" sync="sublink">
-<CodeBlock title="cURL" highlight="parent_tracker">
+</CodeBlock> 
+
+#### [创建子链接](create-a-sublink-example)
+
+<codeblock title="cURL" highlight="parent_token"> 
 
 ```console
 $ curl --location --request POST 'https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers' \
 --header 'Authorization: Token token={API_TOKEN}' \
 --header 'Content-Type: application/json' \
---data-raw '{"parent_tracker": "Adroll", "name": "SpringCampaign"}'
+--data-raw '{"parent_token": "abc123", "name": "SpringCampaign"}'
 ```
 
-</CodeBlock>
-<CodeBlock title="成功响应">
+</CodeBlock> <codeblock title="成功响应"> 
 
 ```json
 {
@@ -860,62 +767,44 @@ $ curl --location --request POST 'https://api.adjust.com/public/v1/apps/gwzpeepw
 }
 ```
 
-</CodeBlock>
-</Tab>
-</Tabs>
+</CodeBlock> 
 
-## [更新链接](update-links)
+[更新链接](update-links)
+--------------------
 
-<CodeBlock title="终端" highlight="{app_token}/trackers/{link_token}">
+<codeblock title="终端" highlight="{app_token}/trackers/{link_token}"> 
 
 ```http
 PATCH https://api.adjust.com/public/v1/apps/{app_token}/trackers/{link_token}
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 使用此终端来更新应用的已有链接和子链接。您可以向跟踪链接添加新的合作伙伴或控制成本数据是否开启。
 
 ### [参数](update-links-parameters)
 
-<Table>
+您必须在请求 **路径** 中传递以下参数：
 
-| 参数                | 数据类型  | 位置          | 描述                                                                            |
-| ------------------- | --------- | ------------- | ------------------------------------------------------------------------------- |
-| `app_token`\*       | `String`  | Path          | 应用的 12 位数标识符。                                                          |
-| `tracker_token`\*   | `String`  | Path          | 要更新的链接的跟踪码。                                                          |
-| `partner_id`        | `Integer` | 正文 \(Body\) | 要附加至链接的合作伙伴的 ID。您可以使用合作伙伴终端来获取合作伙伴及其 ID 列表。 |
-| `cost_data_enabled` | `Boolean` | 正文 \(Body\) | 是否为跟踪链接开启成本数据。                                                    |
+`app_token` \(`String`\)
 
-</Table>
+: [用于标识应用的字母数字识别码](https://help.adjust.com/en/article/app-token-and-reporting-currency#view-your-app-details)。长度必须为 12 个字符。
 
-### [响应参数](update-links-response-format)
+`tracker_token` \(`String`\)
 
-<Table search>
+: 要更新的链接的跟踪码。
 
-| 字段                | 数据类型  | 描述                                               | 示例                                        |
-| ------------------- | --------- | -------------------------------------------------- | ------------------------------------------- |
-| `name`              | `String`  | 链接的名称                                         | `Adroll`                                    |
-| `label`             | `String`  | 链接名称中的最后一个层级部分。                     | `Adroll`                                    |
-| `level`             | `Integer` | 链接的层级。请参阅下方的[链接层级](#link-levels)。 | `1`                                         |
-| `archived`          | `Boolean` | 链接是否已被归档。                                 | `true`                                      |
-| `has_subtrackers`   | `Boolean` | 链接是否有子链接。                                 | `true`                                      |
-| `partner_id`        | `Integer` | 附加在链接上的合作伙伴 ID。                        | `3`                                         |
-| `cost_data_enabled` | `Boolean` | 链接是否启用了 cost_data。                         | `false`                                     |
-| `impression_url`    | `String`  | 展示监测链接的 URL。                               | `https://view.adjust.com/impression/abc123` |
-| `url`               | `String`  | 监测链接的 URL。                                   | `https://app.adjust.com/abc123`             |
-| `click_url`         | `String`  | 点击监测链接的 URL。                               | `https://app.adjust.com/abc123`             |
+您可以在请求 **数据** 中传递以下参数：
 
-</Table>
+`partner_id` \(`Integer`\)
 
-#### 链接层级
+: 要附加至链接的合作伙伴的 ID。请参阅上文的[调取合作伙伴](#fetch-partners)部分，查看合作伙伴及其 ID 的列表。
 
--  渠道 = `1`
--  推广活动 = `2`
--  广告组 = `3`
--  素材 = `4`
+`cost_data_enabled` \(`Boolean`\)
 
-<CodeBlock title="响应格式">
+: 是否为链接启用[广告支出数据](https://help.adjust.com/en/article/spendworks-adjust-ad-spend-solution)。
+
+### [响应参数](response-parameters)
 
 ```json
 {
@@ -933,11 +822,16 @@ PATCH https://api.adjust.com/public/v1/apps/{app_token}/trackers/{link_token}
 }
 ```
 
-</CodeBlock>
+可用的`level`值如下：
+
+* `1`: 渠道层级
+* `2`: 推广活动层级
+* `3`: 广告组层级
+* `4`: 素材层级
 
 ### [示例](update-links-example)
 
-<CodeBlock title="cURL" highlight="gwzpeepw8uf8, klm789">
+<codeblock title="cURL" highlight="gwzpeepw8uf8, klm789"> 
 
 ```console
 $ curl \
@@ -947,8 +841,7 @@ $ curl \
 --data-raw '{"partner_id": 174, "cost_data_enabled": false}'
 ```
 
-</CodeBlock>
-<CodeBlock title="成功响应">
+</CodeBlock> <codeblock title="成功响应"> 
 
 ```json
 {
@@ -976,3 +869,4 @@ $ curl \
 ```
 
 </CodeBlock>
+
