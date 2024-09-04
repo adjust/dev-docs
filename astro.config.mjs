@@ -46,18 +46,15 @@ export default defineConfig({
       imports: [
         {
           "@components/index": [
-            "ApiVersion",
             "Accordion",
             "Callout",
             "CodeBlock",
-            "FigmaEmbed",
             "ListColumns",
             "MinorVersion",
             "SdkVersion",
             "Tab",
             "Table",
             "Tabs",
-            "Tile",
           ],
         },
       ],
