@@ -335,6 +335,50 @@ This parameter has been removed in SDK v5 since it's no longer needed for purcha
 
 This section covers changes to features that send information to Adjust.
 
+#### [Session callback parameters](callback-params)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can add session parameters by passing a key-value pair to the `Adjust.addSessionCallbackParameter` method and remove individual parameters using the `Adjust.removeSessionCallbackParameter` method.
+
+</MinorVersion>
+
+```jsx
+Adjust.addSessionCallbackParameter("key", "value");
+Adjust.removeSessionCallbackParameter("key");
+Adjust.resetSessionCallbackParameters();
+```
+
+In SDK v5, session parameters are renamed to global parameters.
+
+```jsx
+Adjust.addGlobalCallbackParameter("key", "value");
+Adjust.removeGlobalCallbackParameter("key");
+Adjust.removeGlobalCallbackParameters();
+```
+
+#### [Session partner parameters](partner-params)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can add session partner parameters by passing a key-value pair to the `Adjust.addSessionPartnerParameter` method and remove individual parameters using the `Adjust.removeSessionPartnerParameter` method.
+
+</MinorVersion>
+
+```jsx
+Adjust.addSessionPartnerParameter("key", "value");
+Adjust.removeSessionPartnerParameter("key");
+Adjust.resetSessionPartnerParameters();
+```
+
+In SDK v5, session partner parameters are renamed to global partner parameters.
+
+```jsx
+Adjust.addGlobalPartnerParameter("key", "value");
+Adjust.removeGlobalPartnerParameter("key");
+Adjust.removeGlobalPartnerParameters();
+```
+
 #### [Deduplication](deduplication)
 
 <MinorVersion changed="v5">
@@ -357,4 +401,419 @@ Users can set a custom limit on the number of deduplicationId that can be added 
 
 ```jsx
 adjustConfig.setEventDeduplicationIdsMaxSize(20);
+```
+
+### [Send subscription information](send-subscriptions)
+
+This section covers changes to subscription sending in the Adjust SDK.
+
+#### [App Store Subscriptions](app-store-subscriptions)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can set a new subscription by configuring an `AdjustAppStoreSubscription` object. This object is initialized with four arguments: `price`, `currency`, `transactionId`, and `receipt`.
+
+</MinorVersion>
+
+```jsx
+var subscription = new AdjustAppStoreSubscription(
+   price,
+   currency,
+   transactionId,
+   receipt,
+);
+```
+
+In SDK v5, you don't need to pass the `receipt` argument as it's no longer needed for purchase verification.
+
+```jsx
+var subscription = new AdjustAppStoreSubscription(
+   price,
+   currency,
+   transactionId,
+);
+```
+
+### [Deep linking](deep-links)
+
+This section covers changes to deep linking in the Adjust SDK.
+
+#### [Reattribution using deep links](reattribution-using-deep-links)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can pass your deep link information to the `Adjust.appWillOpenUrl` method.
+
+</MinorVersion>
+
+```jsx
+Adjust.appWillOpenUrl("url");
+```
+
+In SDK v5, this has been renamed to `Adjust.processDeeplink` for clarity. A new `AdjustDeeplink` class has been added for constructing deep links. To process a deep link, instantiate an `AdjustDeeplink` object with your deep link URL and pass it to the `Adjust.processDeeplink` method.
+
+```jsx
+Adjust.processDeeplink(new AdjustDeeplink("url"));
+```
+
+#### [Launch deferred deep links](launch-deferred-deeplinks)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can call the `setShouldlaunchDeeplink` method on your `adjustConfig` instance with the value `true` to enable the SDK to open deep links.
+
+</MinorVersion>
+
+```jsx
+adjustConfig.setShouldLaunchDeeplink(true);
+```
+
+In SDK v5, you need to call the `isDeferredDeeplinkOpeningEnabled` method on your `adjustConfig` instance to enable the SDK to open deep links. The default state is `true`.
+
+```jsx
+adjustConfig.disableDeferredDeeplinkOpening();
+```
+
+#### [Deep link resolution](deeplink-resolution)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can resolve a shortened deep link by passing the `url` to the `processDeeplink` method.
+
+</MinorVersion>
+
+```jsx
+Adjust.processDeeplink("your-deeplink", function (resolvedLink) {
+   console.log("Resolved link: " + resolvedLink);
+});
+```
+
+In SDK v5, you need to send an `AdjustDeeplink` object initialized with the deep link `url`. This returns the original unshortened deep link.
+
+```jsx
+Adjust.processAndResolveDeeplink(new AdjustDeeplink('url'), function(resolvedLink) {
+ // resolvedLink is the unshortened link
+};
+```
+
+### [Privacy features](privacy-features)
+
+This section covers changes to privacy features in the Adjust SDK.
+
+#### [COPPA compliance](coppa-compliance)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can call the `coppaCompliantEnabled` method on your `adjustConfig` instance with the cvalue `true` to enable COPPA compliance.
+
+</MinorVersion>
+
+```jsx
+adjustConfig.setCoppaCompliantEnabled(true);
+```
+
+In SDK v5, you need to call the `isCoppaComplianceEnabled` method on your `adjustConfig` instance to enable COPPA compliance. The default state is `false`.
+
+```jsx
+adjustConfig.enableCoppaCompliance();
+```
+
+#### [Play Store Kids Apps](play-store-kids)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can mark an app as a [Play Store Kids app](/en/sdk/react-native/features/privacy#play-store-kids-apps-android-only) by calling the `setPlayStoreKidsAppEnabled` method on your `adjustConfig` instance with the value `true`. This is read during SDK initialization, which means that the value can't be updated once the SDK is initialized.
+
+</MinorVersion>
+
+```jsx
+adjustConfig.setPlayStoreKidsAppEnabled(true);
+```
+
+In SDK v5, you need to call the `enablePlayStoreKidsCompliance` method of your `adjustConfig` instance to enable compliance. The default state is `false`.
+
+```jsx
+adjustConfig.enablePlayStoreKidsCompliance();
+```
+
+#### [Set data residency and URL strategy](url-strategy)
+
+<MinorVersion changed="v5">
+
+In SDK v4, URL strategy and data residency domains are defined as constants in the `adjustConfig` class.
+
+</MinorVersion>
+
+```jsx
+adjustConfig.setUrlStrategy(AdjustConfig.DataResidencyEU);
+```
+
+In SDK v5, you need to pass your chosen domain or domains as an array. You need to also set the following:
+
+-  `useSubdomains` (`bool`): Whether the domain should be treated as an Adjust domain. If `true`, the SDK will prefix the domains with Adjust-specific subdomains. If `false`, the SDK will use the provided domain as-is, without adding any prefixes.
+-  `isDataResidency` (`bool`): Whether the domain should be used for data residency.
+
+```jsx
+adjustConfig.setUrlStrategy(["eu.adjust.com"], true, true);
+```
+
+Check the table below to see how to configure your URL strategy in SDK v5.
+
+<Table autoWidth="1,2">
+
+| v4                               | v5 - main and fallback domain     | v5 - use sub domains | v5 - is Data Residency |
+| -------------------------------- | --------------------------------- | -------------------- | ---------------------- |
+| `adjustConfig.DataResidencyEU`   | `'eu.adjust.com'`                 | `true`               | `true`                 |
+| `adjustConfig.DataResidencyTR`   | `'tr.adjust.com'`                 | `true`               | `true`                 |
+| `adjustConfig.DataResidencyUS`   | `'us.adjust.com'`                 | `true`               | `true`                 |
+| `adjustConfig.UrlStrategyChina`  | `'adjust.world'`, `'adjust.com'`  | `true`               | `false`                |
+| `adjustConfig.UrlStrategyCn`     | `'adjust.cn'`, `'adjust.com'`     | `true`               | `false`                |
+| `adjustConfig.UrlStrategyCnOnly` | `'adjust.cn'`                     | `true`               | `false`                |
+| `adjustConfig.UrlStrategyIndia`  | `'adjust.net.in'`, `'adjust.com'` | `true`               | `false`                |
+
+</Table>
+
+### [Third party sharing changes](third-party-sharing-changes)
+
+This section covers changes to third party sharing features in SDK v5.
+
+#### [Disable third party sharing globally](disable-sharing-globally)
+
+<MinorVersion removed="v5">
+
+In SDK v4, you can call the `Adjust.disableThirdPartySharing` method to globally disable sharing information with third parties globally.
+
+</MinorVersion>
+
+```jsx
+Adjust.disableThirdPartySharing();
+```
+
+This feature has been removed from SDK v5. In SDK v5, use the `Adjust.trackThirdPartySharing` method to enable or disable third party sharing.
+
+```jsx
+var thirdPartySharing = new AdjustThirdPartySharing(false);
+Adjust.trackThirdPartySharing(thirdPartySharing);
+```
+
+### [Ad revenue](ad-revenue)
+
+This section covers changes to ad revenue features in SDK v5.
+
+#### [Record ad revenue](record-ad-revenue)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can record ad revenue by calling the `trackAdRevenue` method, passing `source` and `payload` as arguments.
+
+```jsx
+Adjust.trackAdRevenue("source", "payload");
+```
+
+With an updated method in the SDK v4, you can create a new `AdjustAdRevenue` object with the `source` and record ad revenue by passing this object to the `trackAdRevenueNew` method.
+
+```jsx
+var adRevenue = new AdjustAdRevenue("source");
+adRevenue.setRevenue(6, "CAD");
+Adjust.trackAdRevenueNew(adRevenue);
+```
+
+</MinorVersion>
+
+In SDK v5, you need to create a new `AdjustAdRevenue` object with the `source` and record ad revenue by passing this object to the `trackAdRevenue` method.
+
+```jsx
+var adRevenue = new AdjustAdRevenue("source");
+adRevenue.setRevenue(6, "CAD");
+Adjust.trackAdRevenue(adRevenue);
+```
+
+#### [Send ad revenue from a specific source](send-ad-revenue)
+
+<MinorVersion changed="v5">
+
+In SDK v4, ad revenue sources are defined as constants in the `adjustConfig` class. In SDK v5, ad revenue sources need to be passed as a string.
+
+</MinorVersion>
+
+<CodeBlock useDiffSyntax>
+
+```jsx
+- var adRevenue = new AdjustAdRevenue(AdjustConfig.AdRevenueSourceAppLovinMAX);
++ var adRevenue = new AdjustAdRevenue("applovin_max_sdk");
+```
+
+</CodeBlock>
+
+<Table>
+
+| v4                                             | v5                        |
+| ---------------------------------------------- | ------------------------- |
+| `adjustConfig.AdRevenueAppLovinMAX`            | `"applovin_max_sdk"`      |
+| `adjustConfig.AdRevenueSourceAdMob`            | `"admob_sdk"`             |
+| `adjustConfig.AdRevenueSourceIronSource`       | `"ironsource_sdk"`        |
+| `adjustConfig.AdRevenueSourceAdMost`           | `"admost_sdk"`            |
+| `adjustConfig.AdRevenueSourceUnity`            | `"unity_sdk"`             |
+| `adjustConfig.AdRevenueSourceHeliumChartboost` | `"helium_chartboost_sdk"` |
+| `adjustConfig.AdRevenueSourceADX`              | `"adx_sdk"`               |
+| `adjustConfig.AdRevenueSourcePublisher`        | `"publisher_sdk"`         |
+| `adjustConfig.AdRevenueSourceTradplus`         | `"tradplus_sdk"`          |
+| `adjustConfig.AdRevenueSourceTopOn`            | `"topon_sdk"`             |
+| `adjustConfig.AdRevenueSourceMopub`            | No longer supported       |
+
+</Table>
+
+### [SKAdNetwork and ATT](skad-att)
+
+This section covers changes to SKAdNetwork and App Tracking Transparency (ATT) features in SDK v5.
+
+#### [Disable SKAdNetwork communication](disable-skan)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can prevent the SDK from communicating with SKAdNetwork by calling the `adjustConfig.deactivateSKAdNetworkHandling` method.
+
+</MinorVersion>
+
+```jsx
+adjustConfig.deactivateSKAdNetworkHandling();
+```
+
+In SDK v5, you need to call the `disableSkanAttribution` method on your `adjustConfig` instance to disable SKAdNetwork communication. The default state is `true`.
+
+```jsx
+adjustConfig.disableSkanAttribution();
+```
+
+#### [Listen for conversion value updates](listen-for-cv-updates)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can call the `setSkad4ConversionValueUpdatedCallbackListener` method on your `adjustConfig` to listen for conversion value updates. Before SKAN4, you could use the `setConversionValueUpdatedCallbackListener` method.
+
+</MinorVersion>
+
+```jsx
+// pre-SKAN4 callback
+adjustConfig.setConversionValueUpdatedCallbackListener(
+   function (conversionValue) {
+      console.log("Conversion value updated callback received");
+      console.log("Conversion value: " + conversionValue.conversionValue);
+   },
+);
+
+// SKAN4 callback
+adjustConfig.setSkad4ConversionValueUpdatedCallbackListener(
+   function (conversionValue) {
+      console.log("Conversion value updated callback received");
+      console.log("Conversion value: " + conversionValue.conversionValue);
+   },
+);
+```
+
+In SDK v5, you need to assign a callback function to the `setSkanUpdatedCallbackListener` method of your `adjustConfig` object.
+
+```jsx
+adjustConfig.setSkanUpdatedCallbackListener(function (conversionData) {
+   console.log("Conversion Data updated callback received");
+   console.log("Conversion Data: " + conversionData);
+});
+```
+
+#### [Update conversion values](update-cvs)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can use one of these methods to send updated conversion values to Adjust:
+
+</MinorVersion>
+
+```jsx
+Adjust.updateConversionValue(6);
+
+Adjust.updateConversionValueWithErrorCallback(6, function(error) {
+ // error is present in case it happened
+});
+
+Adjust.updateConversionValueWithSkad4ErrorCallback(6, 'coarse-value', ‘true’, function(error) {
+ // error is present in case it happened
+});
+```
+
+To update conversion values in SDK v5, use the `updateSkanConversionValue` method with the following arguments:
+
+-  `conversionValue` (`int`): The updated conversion value
+-  `coarseValue` (`string`): The updated [coarse conversion value](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
+-  `lockWindow` (`bool`): Whether to send the postback before the conversion window ends
+
+```jsx
+Adjust.updateSkanConversionValue(6, 'coarse-value', ‘true’, function(error) {
+ // error is present in case it happened
+});
+```
+
+#### [App Tracking Transparency authorization wrapper](att-wrapper)
+
+<MinorVersion changed="v5">
+
+In SDK v4, you can handle changes to a user's ATT authorization status using the `Adjust.requestTrackingAuthorizationWithCompletionHandler` method.
+
+</MinorVersion>
+
+```jsx
+Adjust.requestTrackingAuthorizationWithCompletionHandler(function (status) {
+   print("[Adjust]: Authorization status update!");
+   switch (status) {
+      case 0:
+         print(
+            "[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusNotDetermined",
+         );
+         break;
+      case 1:
+         print(
+            "[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusRestricted",
+         );
+         break;
+      case 2:
+         print(
+            "[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusDenied",
+         );
+         break;
+      case 3:
+         print(
+            "[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusAuthorized",
+         );
+         break;
+   }
+});
+```
+
+This has been renamed to `Adjust.requestAppTrackingAuthorization` in SDK v5 for clarity.
+
+```jsx
+Adjust.requestAppTrackingAuthorization(function (status) {
+   print("[Adjust]: Authorization status update!");
+   switch (status) {
+      case 0:
+         print(
+            "[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusNotDetermined",
+         );
+         break;
+      case 1:
+         print(
+            "[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusRestricted",
+         );
+         break;
+      case 2:
+         print(
+            "[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusDenied",
+         );
+         break;
+      case 3:
+         print(
+            "[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusAuthorized",
+         );
+         break;
+   }
+});
 ```
