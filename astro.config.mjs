@@ -44,19 +44,15 @@ export default defineConfig({
   integrations: [
     AutoImport({
       imports: [
-        {
-          "@components/index": [
-            "Accordion",
-            "Callout",
-            "CodeBlock",
-            "ListColumns",
-            "MinorVersion",
-            "SdkVersion",
-            "Tab",
-            "Table",
-            "Tabs",
-          ],
-        },
+        "@components/Accordion.astro",
+        "@components/Callout.astro",
+        "@components/CodeBlock.astro",
+        "@components/ListColumns.astro",
+        "@components/MinorVersion.astro",
+        "@components/SdkVersion.astro",
+        "@components/Tab.astro",
+        "@components/Table.astro",
+        "@components/Tabs.astro",
       ],
     }),
     // Enable React for the Algolia search component.
