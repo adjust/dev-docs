@@ -26,10 +26,22 @@ module.exports = {
     fontFamily: {
       body: ["ttnormspro, Helvetica, sans-serif"],
       sans: ["Droid Sans Mono, monospace"],
-      mono: ["IBM Plex Mono", "Consolas", "Andale Mono WT", "Andale Mono",
-        "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono",
-        "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", "Monaco",
-        "Courier New", "Courier", "monospace"]
+      mono: [
+        "IBM Plex Mono",
+        "Consolas",
+        "Andale Mono WT",
+        "Andale Mono",
+        "Lucida Console",
+        "Lucida Sans Typewriter",
+        "DejaVu Sans Mono",
+        "Bitstream Vera Sans Mono",
+        "Liberation Mono",
+        "Nimbus Mono L",
+        "Monaco",
+        "Courier New",
+        "Courier",
+        "monospace",
+      ],
     },
 
     extend: {
@@ -38,7 +50,7 @@ module.exports = {
         "open-toc": "calc(100vw - 19rem - (100vw - 100rem + 1rem)/2)",
         "closed-toc": "calc(100vw - 2rem - (100vw - 100rem + 1rem)/2)",
         "toc-closed-article": "calc(100% - 2rem)",
-        "toc-open-article": "calc(100% - 19rem)"
+        "toc-open-article": "calc(100% - 19rem)",
       },
       backgroundColor: {
         "body-main": "#f9fafb",
@@ -53,8 +65,12 @@ module.exports = {
         quote: "hsla(215, 14%, 95%, 1)",
         blue: {
           light: "#F4F7FD",
-          30: "hsla(220.65, 100%, 93.92%, 1)"
-        }
+          30: "hsla(220.65, 100%, 93.92%, 1)",
+        },
+        table: "#f4f6f9",
+      },
+      borderColor: {
+        table: "#eceef4",
       },
       colors: {
         "link-active": "#0B58FE",
@@ -72,7 +88,7 @@ module.exports = {
           70: "hsla(212, 100%, 70%, 1)",
           80: "hsla(212, 100%, 80%, 1)",
           90: "hsla(212, 100%, 90%, 1)",
-          95: "hsla(212, 100%, 95%, 1)"
+          95: "hsla(212, 100%, 95%, 1)",
         },
         gray: {
           DEFAULT: "hsla(215, 14%, 100, 1)",
@@ -86,7 +102,7 @@ module.exports = {
           70: "hsla(215, 14%, 70%, 1)",
           80: "hsla(215, 14%, 80%, 1)",
           90: "hsla(215, 14%, 90%, 1)",
-          95: "hsla(215, 14%, 95%, 1)"
+          95: "hsla(215, 14%, 95%, 1)",
         },
         green: {
           DEFAULT: "hsla(158, 79%, 100%, 1)",
@@ -100,7 +116,7 @@ module.exports = {
           70: "hsla(158, 79%, 70%, 1)",
           80: "hsla(158, 79%, 80%, 1)",
           90: "hsla(158, 79%, 90%, 1)",
-          95: "hsla(158, 79%, 95%, 1)"
+          95: "hsla(158, 79%, 95%, 1)",
         },
         orange: {
           DEFAULT: "hsla(22, 100%, 100%, 1)",
@@ -114,7 +130,7 @@ module.exports = {
           70: "hsla(22, 100%, 70%, 1)",
           80: "hsla(22, 100%, 80%, 1)",
           90: "hsla(22, 100%, 90%, 1)",
-          95: "hsla(22, 100%, 95%, 1)"
+          95: "hsla(22, 100%, 95%, 1)",
         },
         purple: {
           DEFAULT: "hsla(269, 79%, 100%, 1)",
@@ -128,7 +144,7 @@ module.exports = {
           70: "hsla(269, 79%, 70%, 1)",
           80: "hsla(269, 79%, 80%, 1)",
           90: "hsla(269, 79%, 90%, 1)",
-          95: "hsla(269, 79%, 95%, 1)"
+          95: "hsla(269, 79%, 95%, 1)",
         },
         red: {
           DEFAULT: "hsla(351, 100%, 100%, 1)",
@@ -142,7 +158,7 @@ module.exports = {
           70: "hsla(351, 100%, 70%, 1)",
           80: "hsla(351, 100%, 80%, 1)",
           90: "hsla(351, 100%, 90%, 1)",
-          95: "hsla(351, 100%, 95%, 1)"
+          95: "hsla(351, 100%, 95%, 1)",
         },
         yellow: {
           DEFAULT: "hsla(41, 100%, 100%, 1)",
@@ -156,7 +172,7 @@ module.exports = {
           70: "hsla(41, 100%, 70%, 1)",
           80: "hsla(41, 100%, 80%, 1)",
           90: "hsla(41, 100%, 90%, 1)",
-          95: "hsla(41, 100%, 95%, 1)"
+          95: "hsla(41, 100%, 95%, 1)",
         },
         "icon-neutral": "#6E7492",
         headers: {
@@ -174,8 +190,8 @@ module.exports = {
           warning: "rgb(193, 134, 47)",
         },
         neutral: {
-          30: "#e0e2ec"
-        }
+          30: "#e0e2ec",
+        },
       },
       fontSize: {
         "heading-1": ["45px", { lineHeight: "49px" }],
@@ -188,7 +204,7 @@ module.exports = {
         link: "450",
       },
       margin: {
-        code: "calc(0.2rem * -1) -0.125em"
+        code: "calc(0.2rem * -1) -0.125em",
       },
       textColor: {
         secondary: "#565C78",
@@ -199,13 +215,13 @@ module.exports = {
   },
   plugins: [
     function ({ addVariant }) {
-      addVariant("sidebar-open", ".mobile-sidebar-toggle &")
+      addVariant("sidebar-open", ".mobile-sidebar-toggle &");
     },
     function ({ addVariant }) {
-      addVariant("not-first", "&:not(:first-child)")
+      addVariant("not-first", "&:not(:first-child)");
     },
     function ({ addVariant }) {
-      addVariant("not-last", "&:not(:last-child)")
-    }
+      addVariant("not-last", "&:not(:last-child)");
+    },
   ],
 };
