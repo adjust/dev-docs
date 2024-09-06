@@ -75,6 +75,10 @@ module.exports = {
           important: "#f9ebd6",
           seealso: "#d4f8f2",
         },
+        table: "#f4f6f9",
+      },
+      borderColor: {
+        table: "#eceef4",
       },
       colors: {
         "link-active": "#0B58FE",
