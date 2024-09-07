@@ -27,15 +27,8 @@ const parseList = (columns: string): number[] => {
   return columns.split(",").map((value) => parseInt(value.trim(), 10));
 };
 
-const {
-  search = false,
-  resizable,
-  noborder = false,
-  striped = false,
-  height,
-  autoWidth,
-  width,
-} = Astro.props;
+const { search, resizable, noborder, striped, height, autoWidth, width } =
+  Astro.props;
 
 // Check to see if the height passed is a real number.
 // If it is, this needs to be passed as a number. If not, it should be passed as-is.
@@ -46,16 +39,21 @@ const parsedAutoWidth = autoWidth ? parseList(autoWidth) : undefined;
 const parsedResizable = resizable ? parseList(resizable) : undefined;
 ---
 
-<BuildTable
-  client:only="react"
-  resizable={parsedResizable}
-  bordered={!noborder}
-  search={search}
-  striped={striped}
-  height={heightNumber ? Number(height) : height}
-  lang={lang || "en"}
-  autoWidth={parsedAutoWidth}
-  width={parsedWidth}
->
-  <slot slot="content" />
-</BuildTable>
+{Object.keys(Astro.props).length < 1 && <slot />}
+{
+  Object.keys(Astro.props).length > 0 && (
+    <BuildTable
+      client:only="react"
+      resizable={parsedResizable}
+      bordered={!noborder}
+      search={search}
+      striped={striped}
+      height={heightNumber ? Number(height) : height}
+      lang={lang || "en"}
+      autoWidth={parsedAutoWidth}
+      width={parsedWidth}
+    >
+      <slot slot="content" />
+    </BuildTable>
+  )
+}
