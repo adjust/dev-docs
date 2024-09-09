@@ -701,7 +701,7 @@ In SDK v4, you can add session parameters by passing a key-value pair to the `[A
 ```swift
 Adjust.addSessionCallbackParameter("foo", value: "bar")
 Adjust.removeSessionCallbackParameter("foo")
-Adjust.resetSessionCallbackParameters
+Adjust.resetSessionCallbackParameters()
 ```
 
 </Tab>
@@ -816,8 +816,7 @@ let subscription = ADJSubscription(
 ```objc
 ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:price
                                                               currency:currency
-                                                        transactionId:transactionId
-                                                            andReceipt:receipt];
+                                                        transactionId:transactionId];
 ```
 
 </Tab>
@@ -832,8 +831,7 @@ This class has been renamed to `ADJAppStoreSubscription` in SDK v5 for clarity.
 let subscription = ADJAppStoreSubscription(
     price: price,
     currency: currency,
-    transactionId: transactionId,
-    andReceipt: receipt)
+    transactionId: transactionId)
 ```
 
 </Tab>
@@ -843,8 +841,7 @@ let subscription = ADJAppStoreSubscription(
 ADJAppStoreSubscription *subscription = [[ADJAppStoreSubscription alloc]
                                              initWithPrice:price
                                              currency:currency
-                                             transactionId:transactionId
-                                             andReceipt:receipt];
+                                             transactionId:transactionId];
 ```
 
 </Tab>
@@ -997,7 +994,7 @@ func application(
     // incomingURL object contains the deep link
 
     // call the below method to send deep link to Adjust's servers
-    Adjust.processDeeplink(incomingURL)
+    Adjust.processDeeplink(ADJDeeplink(deeplink: incomingURL))
 
     return true
 }
@@ -1016,7 +1013,7 @@ func application(
     // incomingURL object contains the deep link
 
     // call the below method to send deep link to Adjust's servers
-    [Adjust processDeeplink:incomingURL];
+    [Adjust processDeeplink:[[ADJDeeplink alloc] initWithDeeplink:incomingURL]];
 
     return YES;
 }
@@ -1214,13 +1211,13 @@ In SDK v4, URL strategy and data residency domains are defined as constants in t
 
 In SDK v5, you need to pass your chosen domain or domains as an array. You can also set the following:
 
--  `withSubdomains` (`BOOL`): Whether the source should prefix a subdomain.
--  `andDataResidency` (`BOOL`): Whether the domain should be used for data residency.
+-  `useSubdomains` (`BOOL`): Whether the domain should be treated as an Adjust domain. If `true`, the SDK will prefix the domains with Adjust-specific subdomains. If `false`, the SDK will use the provided domain as-is, without adding any prefixes.
+-  `isDataResidency` (`BOOL`): Whether the domain should be used for data residency.
 
 ```objc
 NSArray *domain = [];
-[adjustConfig setUrlStrategy:domain withSubdomains:YES
-                     andDataResidency:YES];
+[adjustConfig setUrlStrategy:domain useSubdomains:YES
+                     isDataResidency:YES];
 ```
 
 Check the table below to see how to configure your URL strategy in SDK v5.
@@ -1248,7 +1245,7 @@ Check the table below to see how to configure your URL strategy in SDK v5.
 
 ```swift
 let domain = ["adjust.net.in", "adjust.com"]
-adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: false)
+adjustConfig.setUrlStrategy(domain, useSubdomains: true, isDataResidency: false)
 ```
 
 </CodeBlock>
@@ -1257,7 +1254,7 @@ adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: fals
 
 ```swift
 let domain = ["adjust.world", "adjust.com"]
-adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: false)
+adjustConfig.setUrlStrategy(domain, useSubdomains: true, isDataResidency: false)
 ```
 
 </CodeBlock>
@@ -1266,7 +1263,7 @@ adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: fals
 
 ```swift
 let domain = ["adjust.cn"]
-adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: false)
+adjustConfig.setUrlStrategy(domain, useSubdomains: true, isDataResidency: false)
 ```
 
 </CodeBlock>
@@ -1275,7 +1272,7 @@ adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: fals
 
 ```swift
 let domain = ["eu.adjust.com"]
-adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: true)
+adjustConfig.setUrlStrategy(domain, useSubdomains: true, isDataResidency: true)
 ```
 
 </CodeBlock>
@@ -1284,7 +1281,7 @@ adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: true
 
 ```swift
 let domain = ["tr.adjust.com"]
-adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: true)
+adjustConfig.setUrlStrategy(domain, useSubdomains: true, isDataResidency: true)
 ```
 
 </CodeBlock>
@@ -1293,7 +1290,7 @@ adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: true
 
 ```swift
 let domain = ["us.adjust.com"]
-adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: true)
+adjustConfig.setUrlStrategy(domain, useSubdomains: true, isDataResidency: true)
 ```
 
 </CodeBlock>
@@ -1306,7 +1303,7 @@ adjustConfig.setUrlStrategy(domain, withSubdomains: true, andDataResidency: true
 ```objc
 NSArray *domain = [[NSArray alloc]
                        initWithObjects:@"adjust.net.in", @"adjust.com", nil];
-[adjustConfig setUrlStrategy:domain withSubdomains:YES andDataResidency:NO];
+[adjustConfig setUrlStrategy:domain useSubdomains:YES isDataResidency:NO];
 ```
 
 </CodeBlock>
@@ -1316,7 +1313,7 @@ NSArray *domain = [[NSArray alloc]
 ```objc
 NSArray *domain = [[NSArray alloc]
                        initWithObjects:@"adjust.world", @"adjust.com", nil];
-[adjustConfig setUrlStrategy:domain withSubdomains:YES andDataResidency:NO];
+[adjustConfig setUrlStrategy:domain useSubdomains:YES isDataResidency:NO];
 ```
 
 </CodeBlock>
@@ -1326,7 +1323,7 @@ NSArray *domain = [[NSArray alloc]
 ```objc
 NSArray *domain = [[NSArray alloc]
                        initWithObjects:@"adjust.cn", nil];
-[adjustConfig setUrlStrategy:domain withSubdomains:YES andDataResidency:NO];
+[adjustConfig setUrlStrategy:domain useSubdomains:YES isDataResidency:NO];
 ```
 
 </CodeBlock>
@@ -1336,7 +1333,7 @@ NSArray *domain = [[NSArray alloc]
 ```objc
 NSArray *domain = [[NSArray alloc]
                        initWithObjects:@"eu.adjust.com", nil];
-[adjustConfig setUrlStrategy:domain withSubdomains:YES andDataResidency:YES];
+[adjustConfig setUrlStrategy:domain useSubdomains:YES isDataResidency:YES];
 ```
 
 </CodeBlock>
@@ -1346,7 +1343,7 @@ NSArray *domain = [[NSArray alloc]
 ```objc
 NSArray *domain = [[NSArray alloc]
                        initWithObjects:@"tr.adjust.com", nil];
-[adjustConfig setUrlStrategy:domain withSubdomains:YES andDataResidency:YES];
+[adjustConfig setUrlStrategy:domain useSubdomains:YES isDataResidency:YES];
 ```
 
 </CodeBlock>
@@ -1356,7 +1353,7 @@ NSArray *domain = [[NSArray alloc]
 ```objc
 NSArray *domain = [[NSArray alloc]
                        initWithObjects:@"us.adjust.com", nil];
-[adjustConfig setUrlStrategy:domain withSubdomains:YES andDataResidency:YES];
+[adjustConfig setUrlStrategy:domain useSubdomains:YES isDataResidency:YES];
 ```
 
 </CodeBlock>
@@ -1689,7 +1686,7 @@ This has been renamed to `[Adjust requestAppTrackingAuthorizationWithCompletionH
 <Tab title="Swift" sync="swift">
 
 ```swift
-Adjust.requestAppTrackingAuthorization() { status in
+Adjust.requestAppTrackingAuthorization { status in
    switch status {
    case 0:
       // ATTrackingManagerAuthorizationStatusNotDetermined case
