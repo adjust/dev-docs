@@ -51,7 +51,7 @@ def process_file(file, locale):
 
     # Fix escaped headers
     content = re.sub(
-        r"^(#{1,6}\s.*?)(\\\{\\#.*?\\\})",
+        r"^(\s.*?)(\\\{\\#.*?\\\})",
         lambda m: m.group(1) + m.group(2).replace("\\", ""),
         content,
         flags=re.MULTILINE,
