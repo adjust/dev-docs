@@ -1,0 +1,134 @@
+---
+title: Retrieve Android certificate fingerprints
+description: Retrieve Android certificate fingerprints to configure Adjust features
+slug: en/sdk/android/integrations/retrieve-certificate-fingerprints
+---
+
+A certificate fingerprint is a cryptographic hash of the public information held within a certificate. Certificate fingerprints are public information, and are designed to be used by third-parties for Android app verification. Adjust never requests private app signing keys. For more information about certificate fingerprints, see [Google’s documentation](https://developer.android.com/studio/publish/app-signing#api-providers).
+
+Adjust uses certificate fingerprints for the following features:
+
+<Table>
+
+| Feature                                                                          | Hashing algorithm |
+| -------------------------------------------------------------------------------- | ----------------- |
+| [SDK Signature](https://help.adjust.com/en/article/sdk-signature)                | SHA-1             |
+| [Android App Links](https://help.adjust.com/en/article/set-up-android-app-links) | SHA-256           |
+
+</Table>
+
+The optimal method to retrieve certificate fingerprints depends on where the app is published. Use the information in the table below to identify the most suitable approach for each scenario that's applicable to your app. Obtain fingerprints for all relevant builds (for example, debug build, Google Play release build).
+
+<Table>
+
+| Hosting service                                                                                                                            | Recommended approach                                                                           |
+| ------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
+| Google Play                                                                                                                                | [Google Play Console](#from-google-play-console)                                               |
+| Google Play test track                                                                                                                     | [Google Play Console - Internal app sharing](#from-google-play-console---internal-app-sharing) |
+| Huawei AppGallery - App Signing Enabled                                                                                                    | [AppGallery Connect](#from-appgallery-connect)                                                 |
+| <br />Huawei AppGallery - App Signing Disabled <br /><br /> Other store, or direct APK download <br /><br /> Local debug build<br /><br /> | [Keystore](#from-a-keystore)                                                                   |
+
+</Table>
+
+#### From Google Play Console
+
+1. In [Google Play Console](https://play.google.com/console), go to your app.
+2. Under **Release**, go to **Setup > App signing**.
+3. If you're using Play App Signing, the **App signing key certificate** section will be present. In this section, copy the **SHA-1 certificate fingerprint** and/or **SHA-256 certificate fingerprint**.
+
+![Screenshot of the app signing key certificate page in Google Play Console](@images/sig-v3/google-play-app-signing.png)
+
+4. Under **Upload key certificate**, copy the **SHA-1 certificate fingerprint** and/or **SHA-256 certificate fingerprint**.
+
+![Screenshot of the upload key certificate page in Google Play Console](@images/sig-v3/google-play-upload.png)
+
+#### From Google Play Console - Internal app sharing
+
+1. In [Google Play Console](https://play.google.com/console), go to your app.
+2. Under **Release**, go to **Setup > Internal app sharing**.
+3. Under **Internal test certificate**, copy the **SHA-1 certificate fingerprint** and/or **SHA-256 certificate fingerprint**.
+
+![Screenshot of the internal app sharing key certificate page in Google Play Console](@images/sig-v3/google-play-internal-app-sharing.png)
+
+#### From AppGallery Connect
+
+<Callout type="note">
+
+If you use Huawei App Signing, follow the below instructions.
+
+If you don't use Huawei App Signing, follow the [instructions for retrieving your certificate fingerprint from a keystore](#from-a-keystore).
+
+</Callout>
+
+<Tabs>
+<Tab title="SHA-1" sync="sha-1">
+1. In [AppGallery Connect](https://developer.huawei.com/consumer/en/service/josp/agc/index.html), select **My Apps**.
+2. Select your app.
+3. Under **Services**, go to **App Signing**.
+4. Under **App Signature Certificate** and **Upload Certificate**, respectively, select **Download Certificate**.
+
+![Screenshot of the certificate page in Huawei AppGallery](@images/sig-v3/huawei-sha1.png)
+
+5. Run the following command on each certificate file (certificate.pem) to output the SHA-1 fingerprint of the certificate.
+
+```
+openssl x509 -fingerprint -in certificate.pem -noout -SHA1
+```
+
+The output looks like this:
+
+```
+SHA1 Fingerprint=C4:BD:07:91:BC:09:F8:B6:15:CD:BC:A3:3F:BC:68:8B:C2:EF:4F:F5
+```
+
+</Tab>
+<Tab title="SHA-256" sync="sha-256">
+1. In [AppGallery Connect](https://developer.huawei.com/consumer/en/service/josp/agc/index.html), select **My Apps**.
+2. Select your app.
+3. Under **Services**, go to **App Signing**.
+4. Under **App Signature Certificate** and **Upload Certificate**, respectively, copy each SHA-256 certificate fingerprint.
+
+![Screenshot of the certificate page in Huawei AppGallery](@images/sig-v3/huawei-sha256.png)
+
+</Tab>
+</Tabs>
+
+#### From a keystore
+
+To retrieve certificate fingerprints from your keystore (self-managed or Android Studio-generated), follow these steps:
+
+1. Find the keystore file (.jks) you used to sign the app.
+2. Run this command, replacing \<path/to/keystore.jks\> and \<your_key_alias\> with your specific information:
+
+```
+keytool -list -v -keystore <path/to/keystore.jks> -alias <your_key_alias>
+```
+
+3. When prompted, enter the keystore password you set during keystore generation.
+
+The output looks like this:
+
+```
+Alias name: Key0
+Creation date: May 15, 2018
+Entry type: PrivateKeyEntry
+Certificate chain length: 1
+Certificate[1]:
+Owner: CN=[Adjust, GmbH.]
+Issuer: CN=[Adjust, GmbH.]
+Serial number: 642f1b62
+Valid from: Tue May 15 09:46:06 CEST 2018 until: Sat May 09
+09:46:06 CEST 2043
+Certificate fingerprints:
+MD5: E7:88:9F:8C:9D:F4:14:C1:CF:E8:4C:97:F3:F2:3A:E3
+SHA1:
+C4:BD:07:91:BC:09:F8:B6:15:CD:BC:A3:3F:BC:68:8B:C2:EF:4F:F5
+SHA256:
+55:FB:97:0F:46:0F:94:EC:07:EA:01:69:50:5A:20:3F:A0:91:60:A4:F
+1:33:58:EA:76:DC:54:9E:A7:6A:B9:1A
+Signature algorithm name: SHA256withRSA
+Subject Public Key Algorithm: 2048-bit RSA key
+Version: 3
+```
+
+Retrieve the SHA1 and/or SHA256 values from the output.
