@@ -60,7 +60,9 @@ export default defineConfig({
       experimentalReactChildren: true,
     }),
     expressiveCode(),
-    mdx(),
+    mdx({
+      optimize: true,
+    }),
     tailwind(),
     sitemap(),
   ],
