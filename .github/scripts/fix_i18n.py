@@ -49,6 +49,14 @@ def process_file(file, locale):
         fixed_lines.append(line)
     content = "\n".join(fixed_lines)
 
+    # Fix escaped headers
+    content = re.sub(
+        r"^(\s.*?)(\\\{\\#.*?\\\})",
+        lambda m: m.group(1) + m.group(2).replace("\\", ""),
+        content,
+        flags=re.MULTILINE,
+    )
+
     # Update slugs
     content = re.sub(r"(slug: *)(\"?en\/?)", rf'\1"{locale}/', content)
 
