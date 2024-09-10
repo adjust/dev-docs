@@ -1,16 +1,11 @@
 import type { MDXInstance } from "astro";
 
 import { CONTENT_PATH } from "src/consts";
-import type { Locales } from "@i18n/locales";
 import { getNavigationTree } from "./getNavigationTree";
 import { getCategoriesUnderLanguage } from "./getCategoriesUnderLanguage";
-import {
-  $versions as $sdkVersions,
-  changeVersionValue,
-} from "@store/sdkVersionsStore";
 
+import type { Locales } from "@i18n/locales";
 import type { NavigationData, NavigationEntry } from "./types";
-import type { Option } from "@adjust/components";
 
 const getLastPath = (value: string) => {
   return value?.replace(/\/[\w\d\-\.]*$/, "");
@@ -29,17 +24,11 @@ const filterByVersion = (
   // need to extract value from the link and assign default version value depending on the current page
   const versionMatch = currentPage?.match(/v\d/gi);
   let currentVersion = versionMatch?.[0];
-  // need to set server-side store to be sure that we are displaying/filtering the version chosen by the user
-  if (currentVersion && !isCurrentPageApi) {
-    changeVersionValue({ label: currentVersion, value: currentVersion });
-  }
   if (!versionMatch) {
     if (isCurrentPageApi) {
       currentVersion = defaultApiVersion?.value;
     } else {
       currentVersion = defaultSdkVersion?.value;
-      // need to set server-side store to be sure that we are displaying/filtering the default version
-      changeVersionValue(defaultSdkVersion as Option);
     }
   }
 
@@ -47,9 +36,7 @@ const filterByVersion = (
   // for example if we are opened API docs we should see default version in the SDK section of the sidebar
   const getUsedVersion = (isApiPage?: boolean) => {
     if (isCurrentPageApi && !isApiPage) {
-      const sdkVersion = $sdkVersions.get();
-
-      return sdkVersion.currentVersion?.value || defaultSdkVersion?.value;
+      return defaultSdkVersion?.value;
     }
     if (!isCurrentPageApi && isApiPage) {
       return defaultApiVersion?.value;
