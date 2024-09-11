@@ -27,6 +27,7 @@ const formatByVersion = (
       ...page.frontmatter,
       updatedPath,
       path,
+      version,
       url: updatedPath ? getLastPath(updatedPath) : "",
     };
   });
