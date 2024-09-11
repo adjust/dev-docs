@@ -4,6 +4,7 @@ import { useStore } from "@nanostores/react";
 
 import type { Locales } from "@i18n/locales";
 import { useTranslations } from "@i18n/utils";
+import { getCurrentPage } from "@utils/helpers/navigation/getCurrentPage";
 import type { Option } from "@adjust/components/build/ComboBox/ComboBox";
 import {
   $versions,
@@ -61,19 +62,26 @@ const VersionSwitch: FC<VersionSwitchProps> = ({
   const handleUrlVersion = () => {
     const url = location.href;
     const urlVersion = url.match(/(\w*)v\d/gi);
-    // if we have a version in the URL and it`s not the current version we change current selected to this version
-    if (urlVersion?.length && versions.currentVersion.value !== urlVersion[0]) {
-      const version = apiVersions!.find((item) => item.value === urlVersion[0]);
-      if (version) {
-        return changeVersionValue(version);
+    if (!getCurrentPage(url).endsWith("/api")) {
+      // if we have a version in the URL and it`s not the current version we change current selected to this version
+      if (
+        urlVersion?.length &&
+        versions.currentVersion.value !== urlVersion[0]
+      ) {
+        const version = apiVersions!.find(
+          (item) => item.value === urlVersion[0],
+        );
+        if (version) {
+          return changeVersionValue(version);
+        }
       }
-    }
-    // we change the version to the default if we can`t update the version by the current URL
-    if (
-      !urlVersion?.length ||
-      !apiVersions!.find((item) => item.value === urlVersion[0])
-    ) {
-      return changeVersionValue(apiVersions!.find((item) => item.default)!);
+      // we change the version to the default if we can`t update the version by the current URL
+      if (
+        !urlVersion?.length ||
+        !apiVersions!.find((item) => item.value === urlVersion[0])
+      ) {
+        return changeVersionValue(apiVersions!.find((item) => item.default)!);
+      }
     }
   };
 

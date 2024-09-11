@@ -6,6 +6,7 @@ import type { Option } from "@adjust/components/build/ComboBox/ComboBox";
 
 import type { Locales } from "@i18n/locales";
 import { useTranslations } from "@i18n/utils";
+import { getCurrentPage } from "@utils/helpers/navigation/getCurrentPage";
 import {
   $versions,
   changeVersionValue,
@@ -62,23 +63,28 @@ const VersionSwitch: FC<SdkVersionSwitchProps> = ({
   const handleUrlVersion = () => {
     const url = location.href;
     const urlVersion = url.match(/(\w*)v\d/gi);
-    // if we have a version in the URL and it`s not the current version we change current selected to this version
-    if (urlVersion?.length && versions.currentVersion.value !== urlVersion[0]) {
-      const version = supportedVersions.find(
-        (item) => item.value === urlVersion[0],
-      );
-      if (version) {
-        return changeVersionValue(version);
+    if (!getCurrentPage(url).endsWith("/sdk")) {
+      // if we have a version in the URL and it`s not the current version we change current selected to this version
+      if (
+        urlVersion?.length &&
+        versions.currentVersion.value !== urlVersion[0]
+      ) {
+        const version = supportedVersions.find(
+          (item) => item.value === urlVersion[0],
+        );
+        if (version) {
+          return changeVersionValue(version);
+        }
       }
-    }
-    // we change the version to the default if we can`t update the version by the current URL
-    if (
-      !urlVersion?.length ||
-      !supportedVersions.find((item) => item.value === urlVersion[0])
-    ) {
-      return changeVersionValue(
-        supportedVersions.find((item) => item.default)!,
-      );
+      // we change the version to the default if we can`t update the version by the current URL
+      if (
+        !urlVersion?.length ||
+        !supportedVersions.find((item) => item.value === urlVersion[0])
+      ) {
+        return changeVersionValue(
+          supportedVersions.find((item) => item.default)!,
+        );
+      }
     }
   };
 
