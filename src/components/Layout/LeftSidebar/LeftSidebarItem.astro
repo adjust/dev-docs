@@ -13,14 +13,20 @@ const { currentPage, sidebarData, level } = Astro.props;
 const isChild = sidebarData?.children?.length > 0 && !sidebarData.topCategory;
 const initialOpen = sidebarData.collapsed;
 const slug = sidebarData.slug;
+const itemVersion = sidebarData?.path?.match(/v\d/gi)?.[0];
+const itemCategory = sidebarData?.path.includes("/sdk") ? "sdk" : "api";
 ---
 
 <ul
   id={`sidebar-item-${slug}`}
-  class={classNames("list-none flex flex-col items-start gap-y-[8px]", {
-    "pl-0": level === 2,
-    "ml-3": level > 2,
-  })}
+  class={classNames(
+    `${itemVersion ? `item-version-${itemCategory}-${itemVersion}` : "item-version-0"}`,
+    "list-none flex-col items-start gap-y-[8px] hidden",
+    {
+      "pl-0": level === 2,
+      "ml-3": level > 2,
+    },
+  )}
 >
   <li
     class={classNames("relative hover:text-link-active min-h-[31px] text-sm", {
@@ -70,6 +76,8 @@ const slug = sidebarData.slug;
 </ul>
 
 <script>
+  import { $versions as $sdkVersions } from "@store/sdkVersionsStore";
+  import { $versions as $apiVersions } from "@store/apiVersionsStore";
   import { toggleCollapse } from "./utils/toggleCollapse";
   document.addEventListener("DOMContentLoaded", () => {
     const items = document.querySelectorAll(".toggle-collapse");
@@ -82,5 +90,32 @@ const slug = sidebarData.slug;
         toggleCollapse(slug);
       });
     });
+
+    // versioning logic
+    const showItems = (items: NodeListOf<Element>) => {
+      items.forEach((item) => {
+        const classNameFixed = item.className.replace("hidden", "") + " flex";
+
+        return (item.className = classNameFixed);
+      });
+    };
+
+    const currentSDKVersion = $sdkVersions.get()?.currentVersion;
+    // need to show SDK items that match current version
+    const sidebarVersionedSdkItems = document.querySelectorAll(
+      `.item-version-sdk-${currentSDKVersion.value}`,
+    );
+    showItems(sidebarVersionedSdkItems);
+
+    // need to show API items that match current version
+    const currentApiVersion = $apiVersions.get()?.currentVersion;
+    const sidebarVersionedApiItems = document.querySelectorAll(
+      `.item-version-api-${currentApiVersion.value}`,
+    );
+    showItems(sidebarVersionedApiItems);
+
+    // need to show unversioned items
+    const sidebarVersionedItems = document.querySelectorAll(`.item-version-0`);
+    showItems(sidebarVersionedItems);
   });
 </script>
