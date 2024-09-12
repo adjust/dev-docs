@@ -303,12 +303,12 @@ In SDK v4, you can call the `setSessionTrackingFailedCallbackListener` to regist
 ```js
 adjustConfig.setSessionTrackingFailedCallbackListener(
    function (sessionFailure) {
-    console.log("Session recording failed!");
-    console.log(sessionFailure.message);
-    console.log(sessionFailure.timestamp);
-    console.log(sessionFailure.adid);
-    console.log(sessionFailure.willRetry);
-    console.log(sessionFailure.jsonResponse);
+      console.log("Session recording failed!");
+      console.log(sessionFailure.message);
+      console.log(sessionFailure.timestamp);
+      console.log(sessionFailure.adid);
+      console.log(sessionFailure.willRetry);
+      console.log(sessionFailure.jsonResponse);
    },
 );
 ```
@@ -317,12 +317,12 @@ In SDK v5, this has been renamed to `setSessionTrackingFailedCallback`.
 
 ```js
 adjustConfig.setSessionTrackingFailedCallback(function (sessionFailure) {
-    console.log("Session recording failed!");
-    console.log(sessionFailure.message);
-    console.log(sessionFailure.timestamp);
-    console.log(sessionFailure.adid);
-    console.log(sessionFailure.willRetry);
-    console.log(sessionFailure.jsonResponse);
+   console.log("Session recording failed!");
+   console.log(sessionFailure.message);
+   console.log(sessionFailure.timestamp);
+   console.log(sessionFailure.adid);
+   console.log(sessionFailure.willRetry);
+   console.log(sessionFailure.jsonResponse);
 });
 ```
 
@@ -401,7 +401,7 @@ var subscription = new AdjustAppStoreSubscription(
    price,
    currency,
    transactionId,
-   receipt
+   receipt,
 );
 ```
 
@@ -411,7 +411,7 @@ In SDK v5, you don't need to pass the `receipt` argument as it's no longer neede
 var subscription = new AdjustAppStoreSubscription(
    price,
    currency,
-   transactionId
+   transactionId,
 );
 ```
 
@@ -448,7 +448,7 @@ adjustConfig.disableDeferredDeeplinkOpening();
 In SDK v4, you can resolve a shortened deep link by passing the `url` to the `processDeeplink` method.
 
 ```js
-Adjust.processDeeplink("url", function(resolvedLink) {
+Adjust.processDeeplink("url", function (resolvedLink) {
    console.log("Resolved link: " + resolvedLink);
 });
 ```
@@ -456,9 +456,12 @@ Adjust.processDeeplink("url", function(resolvedLink) {
 In SDK v5, you need to send an `AdjustDeeplink` object initialized with the deep link `url`. This returns the original unshortened deep link.
 
 ```js
-Adjust.processAndResolveDeeplink(new AdjustDeeplink("url"), function(resolvedLink) {
-   console.log("Resolved link: " + resolvedLink);
-});
+Adjust.processAndResolveDeeplink(
+   new AdjustDeeplink("url"),
+   function (resolvedLink) {
+      console.log("Resolved link: " + resolvedLink);
+   },
+);
 ```
 
 ### Deep link callback listener {#deeplink-callback-listener}
@@ -466,16 +469,16 @@ Adjust.processAndResolveDeeplink(new AdjustDeeplink("url"), function(resolvedLin
 In SDK v4, you can configure a listener function that fires when a deep link is received by calling the `setDeferredDeeplinkCallbackListener` method on your `AdjustConfig` instance.
 
 ```js
-adjustConfig.setDeferredDeeplinkCallbackListener(function(deeplink) {
-    console.log("Deferred deep link = " + deeplink);
+adjustConfig.setDeferredDeeplinkCallbackListener(function (deeplink) {
+   console.log("Deferred deep link = " + deeplink);
 });
 ```
 
 In SDK v5, this method has been renamed to `setDeferredDeeplinkCallback`. All arguments remain the same.
 
 ```js
-adjustConfig.setDeferredDeeplinkCallback(function(deeplink) {
-    console.log("Deferred deep link = " + deeplink);
+adjustConfig.setDeferredDeeplinkCallback(function (deeplink) {
+   console.log("Deferred deep link = " + deeplink);
 });
 ```
 
@@ -648,13 +651,18 @@ In SDK v4, you can use one of these methods to send updated conversion values to
 ```js
 Adjust.updateConversionValue(6);
 
-Adjust.updateConversionValueWithErrorCallback(6, function(error) {
-    // error is present in case it happened
+Adjust.updateConversionValueWithErrorCallback(6, function (error) {
+   // error is present in case it happened
 });
 
-Adjust.updateConversionValueWithSkad4ErrorCallback(6, "low", true, function(error) {
-    // error is present in case it happened
-});
+Adjust.updateConversionValueWithSkad4ErrorCallback(
+   6,
+   "low",
+   true,
+   function (error) {
+      // error is present in case it happened
+   },
+);
 ```
 
 To update conversion values in SDK v5, use the `updateSkanConversionValue` method with the following arguments:
@@ -664,7 +672,7 @@ To update conversion values in SDK v5, use the `updateSkanConversionValue` metho
 -  `lockWindow` (`boolean`): Whether to send the postback before the conversion window ends
 
 ```js
-Adjust.updateSkanConversionValue(6, "low", true, function(error) {
+Adjust.updateSkanConversionValue(6, "low", true, function (error) {
    // error is present in case it happened
 });
 ```
@@ -674,7 +682,7 @@ Adjust.updateSkanConversionValue(6, "low", true, function(error) {
 In SDK v4, you can handle changes to a user's ATT authorization status using the `Adjust.requestTrackingAuthorizationWithCompletionHandler` method.
 
 ```js
-Adjust.requestTrackingAuthorizationWithCompletionHandler(function(status) {
+Adjust.requestTrackingAuthorizationWithCompletionHandler(function (status) {
    print("[Adjust]: Authorization status update!");
    switch (status) {
       case 0:
@@ -704,7 +712,7 @@ Adjust.requestTrackingAuthorizationWithCompletionHandler(function(status) {
 This has been renamed to `Adjust.requestAppTrackingAuthorization` in SDK v5 for clarity.
 
 ```js
-Adjust.requestAppTrackingAuthorization(function(status) {
+Adjust.requestAppTrackingAuthorization(function (status) {
    print("[Adjust]: Authorization status update!");
    switch (status) {
       case 0:
@@ -728,6 +736,26 @@ Adjust.requestAppTrackingAuthorization(function(status) {
          );
          break;
    }
+});
+```
+
+### Device ID getters {#device-id-getters}
+
+In SDK v4, if you call for a device ID that doesn't exist on the device platform, the getter returns an empty string (`""`).
+
+```js
+Adjust.getIdfa(function (idfa) {
+   // Returns IDFA on iOS
+   // Returns "" on Android
+});
+```
+
+In SDK v5, calling for a device ID that doesn't exist on the device platform has no effect. The callback function doesn't execute.
+
+```js
+Adjust.getIdfa(function (idfa) {
+   // Returns IDFA on iOS
+   // Does not execute on Android
 });
 ```
 
@@ -812,8 +840,8 @@ This method has been removed in SDK v5. Google has deprecated the `INSTALL_REFER
 In SDK v4, you can call the `convertUniversalLink` method.
 
 ```js
-Adjust.convertUniversalLink(url, scheme, function(convertedLink) {
-    console.log("Converted link = " + convertedLink);
+Adjust.convertUniversalLink(url, scheme, function (convertedLink) {
+   console.log("Converted link = " + convertedLink);
 });
 ```
 
@@ -837,7 +865,7 @@ In SDK v4, you must instantiate an `AdjustAppStorePurchase` object with a `recei
 var appStorePurchase = new AdjustAppStorePurchase(
    "receipt",
    "product-id",
-   "transaction-id"
+   "transaction-id",
 );
 ```
 
@@ -846,7 +874,7 @@ This property has been removed in SDK v5. If you're using the `AdjustAppStorePur
 ```js
 var appStorePurchase = new AdjustAppStorePurchase(
    "product-id",
-   "transaction-id"
+   "transaction-id",
 );
 ```
 
