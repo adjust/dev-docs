@@ -62,7 +62,10 @@ const VersionSwitch: FC<VersionSwitchProps> = ({
   const handleUrlVersion = () => {
     const url = location.href;
     const urlVersion = url.match(/(\w*)v\d/gi);
-    if (!getCurrentPage(url).endsWith("/api")) {
+    if (
+      !getCurrentPage(url).endsWith("/api") &&
+      !versions.currentVersion.value
+    ) {
       // if we have a version in the URL and it`s not the current version we change current selected to this version
       if (
         urlVersion?.length &&
