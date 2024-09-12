@@ -43,6 +43,7 @@ export interface ChildLink {
   title: string;
   description: string;
   position?: number;
+  version: string | null;
 }
 
 export interface NavigationData {
