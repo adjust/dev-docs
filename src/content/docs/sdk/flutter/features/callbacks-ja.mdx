@@ -2,7 +2,10 @@
 title: "コールバックの設定"
 description: "SDKがAdjustに情報を送信する時に関数をトリガーするコールバックを設定します。"
 slug: "ja/sdk/flutter/features/callbacks"
+multiVersion: true
 ---
+
+<SdkVersion version="v5">
 
 SDKがAdjustに情報を送信する時に関数をトリガーするコールバックを設定します。コールバックはセッションとイベントに対して設定できます。
 
@@ -12,7 +15,276 @@ SDKを初期化する **前** にコールバックパラメーターを登録�
 
 </Callout>
 
-## [セッションコールバック](session-callbacks)
+## セッションコールバック {#session-callbacks}
+
+SDKがセッション情報を送信した時に関数をトリガーする、セッションコールバックを設定します。 **Success** コールバックと **failure** コールバックが作成できます。 **Success** コールバックは、SDKが情報をAdjustのサーバーに送信する時にトリガーします。 **Failure** コールバックは、SDKが情報を送信している間に問題が発生した際にトリガーします。
+
+セッションコールバックは、レスポンス データ オブジェクトにアクセスできます。そのプロパティをコールバック関数内で使用することが可能です。
+
+<Table>
+
+| プロパティ     | データタイプ | 説明                                                 |
+| -------------- | ------------ | ---------------------------------------------------- |
+| `message`      | `String`     | サーバーからのメッセージまたはSDKのエラーログ        |
+| `timestamp`    | `String`     | Adjustのサーバーからのタイムスタンプ                 |
+| `jsonResponse` | `String`     | サーバーからのレスポンスを含むJSONオブジェクト       |
+| `willRetry`    | `bool`       | 失敗したパッケージの再送を試みるかどうかを示します。 |
+
+</Table>
+
+### Successコールバック {#success-callbacks}
+
+<CodeBlock title="プロパティ宣言">
+
+```dart
+typedef void SessionSuccessCallback(AdjustSessionSuccess successData);
+SessionSuccessCallback? sessionSuccessCallback;
+
+```
+
+</CodeBlock>
+
+SDKがセッションを記録した時に関数をトリガーする、successコールバックを設定します。
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
+
+config.sessionSuccessCallback = (AdjustSessionSuccess sessionSuccessData) {
+   print('[Adjust]: Session recording success!');
+
+   if (sessionSuccessData.message != null) {
+      print('[Adjust]: Message: ' + sessionSuccessData.message);
+   }
+   if (sessionSuccessData.timestamp != null) {
+      print('[Adjust]: Timestamp: ' + sessionSuccessData.timestamp);
+   }
+   if (sessionSuccessData.adid != null) {
+      print('[Adjust]: Adid: ' + sessionSuccessData.adid);
+   }
+   if (sessionSuccessData.jsonResponse != null) {
+      print('[Adjust]: JSON response: ' + sessionSuccessData.jsonResponse);
+   }
+};
+
+Adjust.initSdk(adjustConfig);
+```
+
+#### 例 {#example}
+
+この例では、SDKがAdjustにセッションデータを送信した時刻のタイムスタンプを表示する`sessionSuccessCallback`を登録する方法を示しています。
+
+```dart
+AdjustConfig myConfig = new AdjustConfig('{Your App Token}', AdjustEnvironment.sandbox);
+//...
+myConfig.sessionSuccessCallback = (AdjustSessionSuccess sessionSuccessData) {
+   print('Session measured at ' + sessionSuccessData.timestamp);
+}
+//...
+Adjust.initSdk(myConfig);
+```
+
+### Failureコールバック {#failure-callbacks}
+
+<CodeBlock title="プロパティ宣言">
+
+```dart
+typedef void SessionFailureCallback(AdjustSessionFailure failureData);
+SessionFailureCallback? sessionFailureCallback;
+
+```
+
+</CodeBlock>
+
+SDKがセッションの記録に失敗した時に関数をトリガーする、failureコールバックを設定します。
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
+
+config.sessionFailureCallback = (AdjustSessionFailure sessionFailureData) {
+   print('[Adjust]: Session recording failure!');
+
+   if (sessionFailureData.message != null) {
+      print('[Adjust]: Message: ' + sessionFailureData.message);
+   }
+   if (sessionFailureData.timestamp != null) {
+      print('[Adjust]: Timestamp: ' + sessionFailureData.timestamp);
+   }
+   if (sessionFailureData.adid != null) {
+      print('[Adjust]: Adid: ' + sessionFailureData.adid);
+   }
+   if (sessionFailureData.willRetry != null) {
+      print('[Adjust]: Will retry: ' + sessionFailureData.willRetry.toString());
+   }
+   if (sessionFailureData.jsonResponse != null) {
+      print('[Adjust]: JSON response: ' + sessionFailureData.jsonResponse);
+   }
+};
+
+Adjust.initSdk(adjustConfig);
+```
+
+#### 例 {#example-1}
+
+この例では、SDKがセッションデータの送信に失敗した理由を表示する`sessionFailureCallback`を登録する方法を示しています。
+
+```dart
+AdjustConfig myConfig = new AdjustConfig('{Your App Token}', AdjustEnvironment.sandbox);
+//...
+myConfig.sessionFailureCallback = (AdjustSessionFailure sessionFailureData) {
+   print('Session failure due to ' + sessionFailureData.message);
+}
+//...
+Adjust.initSdk(myConfig);
+```
+
+## イベントコールバック {#event-callbacks}
+
+SDKがイベント情報を送信した時に関数をトリガーする、イベントコールバックを設定します。 **Success** コールバックと **failure** コールバックが作成できます。 **Success** コールバックは、SDKが情報をAdjustのサーバーに送信する時にトリガーします。 **Failure** コールバックは、SDKが情報を送信している間に問題が発生した際にトリガーします。
+
+イベントコールバックは、レスポンス データ オブジェクトにアクセスできます。そのプロパティをコールバック関数内で使用することが可能です。
+
+<Table>
+
+| プロパティ     | データタイプ | 説明                                                   |
+| -------------- | ------------ | ------------------------------------------------------ |
+| `message`      | `String`     | サーバーからのメッセージまたはSDKのエラーログ          |
+| `timestamp`    | `String`     | Adjustのサーバーからのタイムスタンプ                   |
+| `jsonResponse` | `String`     | サーバーからのレスポンスを含むJSONオブジェクト         |
+| `eventToken`   | `String`     | イベントトークン                                       |
+| `callbackId`   | `String`     | イベントオブジェクトに設定されたカスタムコールバックID |
+| `willRetry`    | `bool`       | 失敗したパッケージの再送を試みるかどうかを示します。   |
+
+</Table>
+
+### Successコールバック {#success-callbacks-1}
+
+<CodeBlock title="プロパティ宣言">
+
+```dart
+typedef void EventSuccessCallback(AdjustEventSuccess successData);
+EventSuccessCallback? eventSuccessCallback;
+
+```
+
+</CodeBlock>
+
+SDKがイベントを記録した時に関数をトリガーする、successコールバックを設定します。
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
+
+config.eventSuccessCallback = (AdjustEventSuccess eventSuccessData) {
+   print('[Adjust]: Event recording success!');
+
+   if (eventSuccessData.eventToken != null) {
+      print('[Adjust]: Event token: ' + eventSuccessData.eventToken);
+   }
+   if (eventSuccessData.message != null) {
+      print('[Adjust]: Message: ' + eventSuccessData.message);
+   }
+   if (eventSuccessData.timestamp != null) {
+      print('[Adjust]: Timestamp: ' + eventSuccessData.timestamp);
+   }
+   if (eventSuccessData.adid != null) {
+      print('[Adjust]: Adid: ' + eventSuccessData.adid);
+   }
+   if (eventSuccessData.callbackId != null) {
+      print('[Adjust]: Callback ID: ' + eventSuccessData.callbackId);
+   }
+   if (eventSuccessData.jsonResponse != null) {
+      print('[Adjust]: JSON response: ' + eventSuccessData.jsonResponse);
+   }
+};
+
+Adjust.initSdk(adjustConfig);
+```
+
+#### 例 {#example-2}
+
+この例では、SDKがAdjustにセッションデータを送信した時刻のタイムスタンプを表示する`eventSuccessCallback`を登録する方法を示しています。
+
+```dart
+AdjustConfig myConfig = new AdjustConfig('{Your App Token}', AdjustEnvironment.sandbox);
+//...
+myConfig.eventSuccessCallback = (AdjustEventSuccess eventSuccessData) {
+   print('Session measured at ' + eventSuccessData.timestamp);
+}
+//...
+Adjust.initSdk(myConfig);
+```
+
+### Failureコールバック {#failure-callbacks-1}
+
+<CodeBlock title="プロパティ宣言">
+
+```dart
+typedef void EventFailureCallback(AdjustEventFailure failureData);
+EventFailureCallback? eventFailureCallback;
+
+```
+
+</CodeBlock>
+
+SDKがセッションの記録に失敗した時に関数をトリガーする、failureコールバックを設定します。
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
+
+config.eventFailureCallback = (AdjustEventFailure eventFailureData) {
+   print('[Adjust]: Event recording failure!');
+
+   if (eventFailureData.eventToken != null) {
+      print('[Adjust]: Event token: ' + eventFailureData.eventToken);
+   }
+   if (eventFailureData.message != null) {
+      print('[Adjust]: Message: ' + eventFailureData.message);
+   }
+   if (eventFailureData.timestamp != null) {
+      print('[Adjust]: Timestamp: ' + eventFailureData.timestamp);
+   }
+   if (eventFailureData.adid != null) {
+      print('[Adjust]: Adid: ' + eventFailureData.adid);
+   }
+   if (eventFailureData.callbackId != null) {
+      print('[Adjust]: Callback ID: ' + eventFailureData.callbackId);
+   }
+   if (eventFailureData.willRetry != null) {
+      print('[Adjust]: Will retry: ' + eventFailureData.willRetry.toString());
+   }
+   if (eventFailureData.jsonResponse != null) {
+      print('[Adjust]: JSON response: ' + eventFailureData.jsonResponse);
+   }
+};
+
+Adjust.initSdk(adjustConfig);
+```
+
+#### 例 {#example-3}
+
+この例では、SDKがセッションデータの送信に失敗した理由を表示する`eventFailureCallback`を登録する方法を示しています。
+
+```dart
+AdjustConfig myConfig = new AdjustConfig('{Your App Token}', AdjustEnvironment.sandbox);
+//...
+myConfig.eventFailureCallback = (AdjustEventFailure eventFailureData) {
+   print('Session failure due to ' + eventFailureData.message);
+}
+//...
+Adjust.initSdk(myConfig);
+```
+
+</SdkVersion>
+<SdkVersion version="v4">
+
+SDKがAdjustに情報を送信する時に関数をトリガーするコールバックを設定します。コールバックはセッションとイベントに対して設定できます。
+
+<Callout type="important">
+
+SDKを初期化する **前** にコールバックパラメーターを登録することが必要です。
+
+</Callout>
+
+## セッションコールバック {#session-callbacks}
 
 SDKがセッション情報を送信した時に関数をトリガーする、セッションコールバックを設定します。 **Success** コールバックと **failure** コールバックが作成できます。 **Success** コールバックは、SDKが情報をAdjustのサーバーに送信する時にトリガーします。 **Failure** コールバックは、SDKが情報を送信している間に問題が発生した際にトリガーします。
 
@@ -30,7 +302,7 @@ SDKがセッション情報を送信した時に関数をトリガーする、�
 
 </Table>
 
-### [Successコールバック](success-callbacks)
+### Successコールバック {#success-callbacks}
 
 <CodeBlock title="プロパティ宣言">
 
@@ -67,7 +339,7 @@ config.sessionSuccessCallback = (AdjustSessionSuccess sessionSuccessData) {
 Adjust.start(adjustConfig);
 ```
 
-#### [例](example)
+#### 例 {#example}
 
 この例では、SDKがAdjustにセッションデータを送信した時刻のタイムスタンプを表示する`sessionSuccessCallback`を登録する方法を示しています。
 
@@ -81,7 +353,7 @@ myConfig.sessionSuccessCallback = (AdjustSessionSuccess sessionSuccessData) {
 Adjust.start(myConfig);
 ```
 
-### [Failureコールバック](failure-callbacks)
+### Failureコールバック {#failure-callbacks}
 
 <CodeBlock title="プロパティ宣言">
 
@@ -121,7 +393,7 @@ config.sessionFailureCallback = (AdjustSessionFailure sessionFailureData) {
 Adjust.start(adjustConfig);
 ```
 
-#### [例](example-1)
+#### 例 {#example-1}
 
 この例では、SDKがセッションデータの送信に失敗した理由を表示する`sessionFailureCallback`を登録する方法を示しています。
 
@@ -135,7 +407,7 @@ myConfig.sessionFailureCallback = (AdjustSessionFailure sessionFailureData) {
 Adjust.start(myConfig);
 ```
 
-## [イベントコールバック](event-callbacks)
+## イベントコールバック {#event-callbacks}
 
 SDKがイベント情報を送信した時に関数をトリガーする、イベントコールバックを設定します。 **Success** コールバックと **failure** コールバックが作成できます。 **Success** コールバックは、SDKが情報をAdjustのサーバーに送信する時にトリガーします。 **Failure** コールバックは、SDKが情報を送信している間に問題が発生した際にトリガーします。
 
@@ -155,7 +427,7 @@ SDKがイベント情報を送信した時に関数をトリガーする、イ�
 
 </Table>
 
-### [Successコールバック](success-callbacks-1)
+### Successコールバック {#success-callbacks-1}
 
 <CodeBlock title="プロパティ宣言">
 
@@ -198,7 +470,7 @@ config.eventSuccessCallback = (AdjustEventSuccess eventSuccessData) {
 Adjust.start(adjustConfig);
 ```
 
-#### [例](example-2)
+#### 例 {#example-2}
 
 この例では、SDKがAdjustにセッションデータを送信した時刻のタイムスタンプを表示する`eventSuccessCallback`を登録する方法を示しています。
 
@@ -212,7 +484,7 @@ myConfig.eventSuccessCallback = (AdjustEventSuccess eventSuccessData) {
 Adjust.start(myConfig);
 ```
 
-### [Failureコールバック](failure-callbacks-1)
+### Failureコールバック {#failure-callbacks-1}
 
 <CodeBlock title="プロパティ宣言">
 
@@ -258,7 +530,7 @@ config.eventFailureCallback = (AdjustEventFailure eventFailureData) {
 Adjust.start(adjustConfig);
 ```
 
-#### [例](example-3)
+#### 例 {#example-3}
 
 この例では、SDKがセッションデータの送信に失敗した理由を表示する`eventFailureCallback`を登録する方法を示しています。
 
@@ -271,3 +543,5 @@ myConfig.eventFailureCallback = (AdjustEventFailure eventFailureData) {
 //...
 Adjust.start(myConfig);
 ```
+
+</SdkVersion>

@@ -8,62 +8,34 @@ sidebar-position: 4
 
 キャンペーンAPIを使用して、リンク、サブリンクおよびパートナー情報の取得や、リンクの新規作成や、既存のリンクを新しいパートナー情報に更新することができます。
 
-## [仕組み](how-it-works)
+## 認証 {#authentication}
 
-1. **コールを認証する**
+キャンペーンAPIは認証に[ベアラートークン](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication)を使用します。キャンペーンAPIにリクエストを行う全てのリクエストには、Adjust APIトークンを`Authorization`ヘッダーに含める必要があります。
 
-   キャンペーンAPIエンドポイントを使用するには、はじめにAdjustのAPIトークンが必要となります。このトークンをAPIに使用する方法については[認証ガイド](#authentication)をご覧ください。
+自社でシングルサインオン（SSO）を有効にしている場合は、 Adjustの担当者または[support@adjust.com](mailto:support@adjust.com)にお問い合わせください。APIトークンの取得方法についてサポートいたします。
 
-2. **アプリに関連するネットワークリンクの一覧を取得する**
+SSO以外のアカウントの場合、APIガイドはユーザーの **プロフィール** に表示されます。トークンを確認するには、以下の手順に従ってください。
 
-   `trackers`エンドポイントを使用して、アプリに関連するリンクの詳細を取得します。[トップレベルリンク](#fetch-links)のリストまたは[サブリンク](#fetch-sublinks)のリストを取得できます。
-
-3. **新しいネットワークリンクを作成する**
-
-   [`trackers`エンドポイント](#create-links)にPOSTリクエストを送信することで、アプリに新しいリンクを追加できます。このエンドポイントは、トップレベルのリンクとサブリンクの作成をサポートします。
-
-4. **パートナーの一覧を取得する**
-
-   [`partners`エンドポイント](#fetch-partners)を使用して、パートナーの一覧を取得します。リンクを更新する際に使用してください。
-
-5. **リンクを新規パートナーに更新する**
-
-   [`trackers`エンドポイント](#update-links)にPATCHリクエストを送信し、既存のリンクを新規パートナーとコストデータの情報に更新します。
-
-## [認証](authentication)
-
-キャンペーンAPIを使用するには、[ベアラートークン](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication)が必要となります。ベアラートークンの取得については、このガイドをご覧ください。
-
-### [Adjust APIトークンを見つける](find-your-adjust-api-token)
-
-Adjust APIコールを作成する前に、まずAdjustダッシュボードでAPIトークンを見つけます。AdjustダッシュボードからAdjustのAPIトークンを確認してください。
-
-<Callout type="important">
-
-SSO（シングルサインオン）を設定している場合、APIトークンはAdjustダッシュボードで確認することができません。APIトークン関して不明な点がございましたら、Adjustの担当者または[support@adjust.com](mailto:support@adjust.com)までお問い合わせください。
-
-</Callout>
-
-Adjust APIトークンは **profile** 内にあります。それを確認するには、以下の手順に従ってください。
-
-1. 左下隅にある設定アイコンを選択します。
-2. **アカウント設定（Account Settings）** を選択します。アカウント設定のページが開きます。
+1. アカウント（ユーザー）アイコンを選択します。
+2. **アカウント設定（Account Settings）** を選択します。
 3. **マイプロフィール（My Profile）** を選択します。
 4. **APIトークン** が **ユーザー情報（User details）** に表示されます。コピーボタンを選択して、トークンをクリップボードにコピーします。
 
-### [Adjust APIトークンをリセットする](reset-your-adjust-api-token)
+### Adjust APIトークンをリセットする {#reset-your-adjust-api-token}
 
-Adjust APIトークンはいつでもリセットできます。 トークンをリセットすると、古いトークンが無効になります。 つまり、古いトークンを使用して送信されたリクエストは機能しません。 Adjust APIトークンをリセットした場合、使用中のあらゆる場所でトークンを更新する必要があります。
+Adjust APIトークンはいつでもリセットできます。トークンをリセットすると、古いトークンは無効になります。Adjust APIトークンをリセットした場合、使用中の古いトークンを新しいトークンに置き換える必要があります。無効になったトークンを使用したリクエストは、Adjustによって拒否されます。
 
-1. 左下隅にある設定アイコンを選択します。
-2. **アカウント設定（Account Settings）** を選択します。アカウント設定のページが開きます。
+Adjust APIトークンをリセットする方法：
+
+1. アカウント（ユーザー）アイコンを選択します。
+2. **アカウント設定（Account Settings）** を選択します。
 3. **マイプロフィール（My Profile）** を選択します。
 4. **APIトークン** が **ユーザー情報（User details）** に表示されます。
-5. **APIトークンをリセットする（Reset API token）** を選択します。ポップアップモーダルが表示されます。
-6. モーダルでアカウントのパスワードを入力し、 **リセット（Reset）** を選択してAPIトークンをリセットします。モーダルが閉じ、画面右上に確認メッセージが表示されます。
+5. **APIトークンをリセットする（Reset API token）** を選択します。
+6. 表示されたモーダルにアカウントのパスワードを入力し、 **リセット** を選択してAPIトークンをリセットします。画面の右上に確認メッセージが表示されます。
 7. **APIトークン** の横にあるコピーボタンを選択して、トークンをクリップボードにコピーします。
 
-## [パートナーを取得する](fetch-partners)
+## パートナーを取得する {#fetch-partners}
 
 <CodeBlock title="エンドポイント" highlight="/partners">
 
@@ -75,23 +47,27 @@ GET https://api.adjust.com/public/v1/partners
 
 このエンドポイントを使用して、パートナーの一覧と関連データを取得します。データはパートナーオブジェクトの配列で返されます。
 
-### [パラメーター](fetch-partners-parameters)
+### パラメーター {#fetch-partners-parameters}
 
-<Table>
+次のパラメーターを **クエリパラメーター** としてパスすることができます。
 
-| パラメーター | データタイプ | 入力する値 | 説明                                                     |
-| ------------ | ------------ | ---------- | -------------------------------------------------------- |
-| `after`      | `String`     | クエリ     | 次のページから要素を取得するカーソル。                   |
-| `before`     | `String`     | クエリ     | 前のページから要素を取得するカーソル。                   |
-| `limit`      | `Integer`    | クエリ     | レスポンスに含まれる要素の最大数。正の整数値であること。 |
+`after` （`String`）
 
-</Table>
+: リクエストを開始する[カーソルの位置](#fetch-partners-pagination)。
 
-### [ページネーション](fetch-partners-pagination)
+`before` （`String`）
 
-このエンドポイントからの結果は、カーソルでページネーションされます。各ページには、前ページと次ページの位置が返されます。特定のページを返すには、これらを含めて呼び出してください。また、1 ページに含まれるアイテムの数を制限することも可能です。デフォルトの上限は`50`になります。
+: リクエストを終了する[カーソルの位置](#fetch-partners-pagination)。
 
-各結果のページには、カーソル位置を含むpagingオブジェクトが含まれます。このカーソル位置を使って、プログラム上でページ間を移動することができます。たとえば、最初のページには、次のような結果が含まれます。
+`limit` （`Integer`）
+
+: レスポンスに含む結果の最大数。この値は正の整数であることが必須です。デフォルトは`50`です。
+
+### ページネーション {#fetch-partners-pagination}
+
+このエンドポイントからの結果は、カーソルを使用してページ分割されています。各ページには、 `previous`と`next`ページの位置が返されます。特定のページを返すために、これらをコールに含めることができます。
+
+各結果のページには、カーソルの位置を含む`paging`オブジェクトが含まれています。これらのカーソルを使って、プログラムでページ間を移動することができます。例えば、最初のページには次のような`paging`オブジェクトが含まれます。
 
 <CodeBlock title="ページネーションの例">
 
@@ -121,30 +97,37 @@ $ curl "https://api.adjust.com/public/v1/apps/yxs12pfewq/trackers?after=g2wAAAAC
 
 </CodeBlock>
 
-### [レスポンスパラメーター](fetch-partners-response-format)
-
-<Table>
-
-| フィールド          | データタイプ | 説明                                                 | 例         |
-| ------------------- | ------------ | ---------------------------------------------------- | ---------- |
-| `id`                | `Integer`    | パートナーのID                                       | `174`      |
-| `display_name`      | `String`     | パートナーの名前                                     | `Adcolony` |
-| `support_cost_data` | `Boolean`    | パートナーがコストデータをサポートしているかどうか。 | `true`     |
-
-</Table>
-<CodeBlock title="レスポンスの形式">
+### レスポンスの形式 {#fetch-partners-response-format}
 
 ```json
 {
-   "id": 1,
-   "display_name": "String",
-   "supports_cost_data": true
+   "data": {
+      "api_version": "string",
+      "request_id": "string",
+      "timestamp": "datetime",
+      "paging": {
+         "page_size": "string",
+         "collection_size": "string",
+         "total": "string",
+         "next": "string",
+         "previous": "string",
+         "cursors": {
+            "after": "string",
+            "before": "string"
+         }
+      },
+      "items": [
+         {
+            "id": 100,
+            "display_name": "string",
+            "supports_cost_data": true
+         }
+      ]
+   }
 }
 ```
 
-</CodeBlock>
-
-### [例](fetch-partners-example)
+### 例 {#fetch-partners-example}
 
 <CodeBlock title="cURL">
 
@@ -152,7 +135,6 @@ $ curl "https://api.adjust.com/public/v1/apps/yxs12pfewq/trackers?after=g2wAAAAC
 $ curl \
 --header 'Authorization: Token token={API_TOKEN}' \
 -L -X GET 'https://api.adjust.com/public/v1/partners?limit=1'
-
 ```
 
 </CodeBlock>
@@ -188,11 +170,10 @@ $ curl \
 
 </CodeBlock>
 
-## [リンクの取得](fetch-links)
+## リンクを取得する {#fetch-links}
 
 <Tabs>
 <Tab title="v2" sync="v2">
-
 <CodeBlock title="エンドポイント" highlight="v2/apps/{app_token}/trackers">
 
 ```http
@@ -200,10 +181,8 @@ GET https://api.adjust.com/public/v2/apps/{app_token}/trackers
 ```
 
 </CodeBlock>
-
 </Tab>
 <Tab title="v1" sync="v1">
-
 <CodeBlock title="エンドポイント" highlight="v1/apps/{app_token}/trackers">
 
 ```http
@@ -211,50 +190,64 @@ GET https://api.adjust.com/public/v1/apps/{app_token}/trackers
 ```
 
 </CodeBlock>
-
 </Tab>
 </Tabs>
 
-このエンドポイントを使用して、指定したアプリのネットワークレベルのリンクを取得します。
+このエンドポイントを使用して、アプリに関連するネットワークレベルのリンクを取得します。
+
+### パラメーター {#fetch-links-parameters}
 
 <Tabs>
 <Tab title="v2" sync="v2">
 
-<Table>
+リクエストの **パス** に、以下のパラメーターを含める必要があります。
 
-| パラメーター  | データタイプ | 入力する値 | 説明                                                     |
-| ------------- | ------------ | ---------- | -------------------------------------------------------- |
-| `app_token`\* | `String`     | パス       | アプリの12桁の識別子。                                   |
-| `cursor`      | `String`     | クエリ     | 結果の収集を含む一意のカーソル位置。                     |
-| `limit`       | `Integer`    | クエリ     | レスポンスに含まれる要素の最大数。正の整数値であること。 |
+`app_token` （`String`）
 
-</Table>
+: [アプリを識別する英数字のトークン](https://help.adjust.com/ja/article/app-token-and-reporting-currency#view-your-app-details)。12文字で設定してください。
+
+次のパラメーターを **クエリパラメーター** としてパスすることができます。
+
+`cursor` （`String`）
+
+: カーソルの位置。
+
+`limit` （`Integer`）
+
+: レスポンスに含む結果の最大数。この値は正の整数であることが必須です。デフォルトは`50`です。
 
 </Tab>
 <Tab title="v1" sync="v1">
 
-<Table>
+リクエストの **パス** に、以下のパラメーターを含める必要があります。
 
-| パラメーター  | データタイプ | 入力する値 | 説明                                                     |
-| ------------- | ------------ | ---------- | -------------------------------------------------------- |
-| `app_token`\* | `String`     | パス       | アプリの12桁の識別子。                                   |
-| `after`       | `String`     | クエリ     | 次のページから要素を取得するカーソル。                   |
-| `before`      | `String`     | クエリ     | 前のページから要素を取得するカーソル。                   |
-| `limit`       | `Integer`    | クエリ     | レスポンスに含まれる要素の最大数。正の整数値であること。 |
+`app_token` （`String`）
 
-</Table>
+: [アプリを識別する英数字のトークン](https://help.adjust.com/ja/article/app-token-and-reporting-currency#view-your-app-details)。12文字で設定してください。
+
+次のパラメーターを **クエリパラメーター** としてパスすることができます。
+
+`after` （`String`）
+
+: リクエストを開始する[カーソルの位置](#fetch-partners-pagination)。
+
+`before` （`String`）
+
+: リクエストを終了する[カーソルの位置](#fetch-partners-pagination)。
+
+`limit` （`Integer`）
+
+: レスポンスに含む結果の最大数。この値は正の整数であることが必須です。デフォルトは`50`です。
 
 </Tab>
 </Tabs>
 
-### [ページネーション](fetch-links-pagination)
-
-このエンドポイントからの結果は、カーソルでページネーションされます。各ページには、前ページと次ページの位置が返されます。特定のページを返すには、これらを含めて呼び出してください。また、1 ページに含まれるアイテムの数を制限することも可能です。デフォルトの上限は`50`になります。
-
-各結果のページには、カーソル位置を含むpagingオブジェクトが含まれます。このカーソル位置を使って、プログラム上でページ間を移動することができます。たとえば、最初のページには、次のような結果が含まれます。
+### ページネーション {#fetch-links-pagination}
 
 <Tabs>
 <Tab title="v2" sync="v2">
+
+このエンドポイントからの結果は、カーソルを使用して表示されます。各結果ページには、カーソルの位置を含む`paging`オブジェクトが含まれています。これらのカーソルを使って、プログラムでページ間を移動することができます。例えば、1つ目のページには以下のような結果が含まれます。
 
 <CodeBlock title="ページネーションの例">
 
@@ -277,8 +270,14 @@ $ curl "https://api.adjust.com/public/v2/apps/yxs12pfewq/trackers?cursor=g2wAAAA
 
 </CodeBlock>
 
+結果の特定の場所に戻るには、リクエスト **クエリパラメーター** で`cursor`値をパスしてください。
+
 </Tab>
 <Tab title="v1" sync="v1">
+
+このエンドポイントからの結果は、カーソルを使用してページ分割されています。各ページには、 `previous`と`next`ページの位置が返されます。特定のページを返すために、これらをコールに含めることができます。
+
+各結果のページには、カーソルの位置を含む`paging`オブジェクトが含まれています。これらのカーソルを使って、プログラムでページ間を移動することができます。例えば、最初のページには次のような`paging`オブジェクトが含まれます。
 
 <CodeBlock title="ページネーションの例">
 
@@ -298,7 +297,7 @@ $ curl "https://api.adjust.com/public/v2/apps/yxs12pfewq/trackers?cursor=g2wAAAA
 
 </CodeBlock>
 
-2ページ目に移動するには、`after`値を`after`パラメーター内の次のリクエストに追加します。例：
+2ページ目に移動するには、`next`リンクをたどって、次に指定された`cursor`の位置から結果を返します。
 
 <CodeBlock title="cURL" highlight="after=g2wAAAACYhW1_gxkAANuaWxq">
 
@@ -307,28 +306,13 @@ $ curl "https://api.adjust.com/public/v1/apps/yxs12pfewq/trackers?after=g2wAAAAC
 ```
 
 </CodeBlock>
-
 </Tab>
 </Tabs>
 
-### [レスポンスパラメーター](fetch-links-response-format)
+### レスポンスの形式 {#fetch-links-response-format}
 
-<Table search>
+全てのリンクは、以下の形式でアイテムとして返されます。
 
-| フィールド          | データタイプ | 説明                                                                                                                                         | 例                                          |
-| ------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| `name`              | `String`     | リンク名。                                                                                                                                   | `Adroll`                                    |
-| `label`             | `String`     | リンク名の最後のラベルの部分。                                                                                                               | `Adroll`                                    |
-| `level`             | `Integer`    | リンクのレベル。<br/><ul><li>ネットワーク = `1`</li><li>キャンペーン = `2`</li><li>アドグループ = `3`</li><li>クリエイティブ = `4`</li></ul> | `1`                                         |
-| `archived`          | `Boolean`    | リンクがアーカイブされたかどうか。                                                                                                           | `true`                                      |
-| `has_subtrackers`   | `Boolean`    | リンクにサブリンクがあるかどうか。                                                                                                           | `true`                                      |
-| `partner_id`        | `Integer`    | リンクに付与されるパートナーのID。                                                                                                           | `3`                                         |
-| `cost_data_enabled` | `Boolean`    | リンクでcost_dataが有効になっているかどうか。                                                                                                | `false`                                     |
-| `impression_url`    | `String`     | インプレッション計測対象のリンクURL                                                                                                          | `https://view.adjust.com/impression/abc123` |
-| `url`               | `String`     | 計測対象のリンクURL                                                                                                                          | `https://app.adjust.com/abc123`             |
-| `click_url`         | `String`     | クリック計測対象のリンクURL                                                                                                                  | `https://app.adjust.com/abc123`             |
-
-</Table>
 <CodeBlock title="成功レスポンス">
 
 ```json
@@ -349,11 +333,10 @@ $ curl "https://api.adjust.com/public/v1/apps/yxs12pfewq/trackers?after=g2wAAAAC
 
 </CodeBlock>
 
-### [例](fetch-links-example)
+### 例 {#fetch-links-example}
 
 <Tabs>
 <Tab title="v2" sync="v2">
-
 <CodeBlock title="cURL" highlight="gwzpeepw8uf8">
 
 ```console
@@ -392,10 +375,8 @@ $ curl \
 ```
 
 </CodeBlock>
-
 </Tab>
 <Tab title="v1" sync="v1">
-
 <CodeBlock title="cURL" highlight="gwzpeepw8uf8">
 
 ```console
@@ -444,15 +425,13 @@ $ curl \
 ```
 
 </CodeBlock>
-
 </Tab>
 </Tabs>
 
-## [サブリンクの取得](fetch-sublinks)
+## サブリンクを取得する {#fetch-sublinks}
 
 <Tabs>
 <Tab title="v2" sync="v2">
-
 <CodeBlock title="エンドポイント" highlight="v2/apps/{app_token}/trackers/{link_token}/children">
 
 ```http
@@ -460,10 +439,8 @@ GET https://api.adjust.com/public/v2/apps/{app_token}/trackers/{link_token}/chil
 ```
 
 </CodeBlock>
-
 </Tab>
 <Tab title="v1" sync="v1">
-
 <CodeBlock title="エンドポイント" highlight="v1/apps/{app_token}/trackers/{link_token}/children">
 
 ```http
@@ -471,52 +448,72 @@ GET https://api.adjust.com/public/v1/apps/{app_token}/trackers/{link_token}/chil
 ```
 
 </CodeBlock>
-
 </Tab>
 </Tabs>
 
 このエンドポイントを使用して、指定したアプリのサブリンクを取得します。
 
+### パラメーター {#fetch-sublinks-parameters}
+
 <Tabs>
 <Tab title="v2" sync="v2">
 
-<Table>
+リクエストの **パス** に、以下のパラメーターをパスする必要があります。
 
-| パラメーター      | データタイプ | 入力する値 | 説明                                                     |
-| ----------------- | ------------ | ---------- | -------------------------------------------------------- |
-| `app_token`\*     | `String`     | パス       | アプリの12桁の識別子。                                   |
-| `tracker_token`\* | `String`     | パス       | 親リンクトークン。                                       |
-| `cursor`          | `String`     | クエリ     | 結果の収集を含む一意のカーソル位置。                     |
-| `limit`           | `Integer`    | クエリ     | レスポンスに含まれる要素の最大数。正の整数値であること。 |
+`app_token` （`String`）
 
-</Table>
+: [アプリを識別する英数字のトークン](https://help.adjust.com/ja/article/app-token-and-reporting-currency#view-your-app-details)。12文字で設定してください。
+
+`tracker_token` （`String`）
+
+: サブリンクがネストされている **親リンク** のリンクトークン。
+
+次のパラメーターをリクエストの **クエリパラメーター** としてパスすることができます。
+
+`cursor` （`String`）
+
+: カーソルの位置。
+
+`limit` （`Integer`）
+
+: レスポンスに含む結果の最大数。この値は正の整数であることが必須です。デフォルトは`50`です。
 
 </Tab>
 <Tab title="v1" sync="v1">
 
-<Table>
+リクエストの **パス** に、以下のパラメーターをパスする必要があります。
 
-| パラメーター      | データタイプ | 入力する値 | 説明                                                     |
-| ----------------- | ------------ | ---------- | -------------------------------------------------------- |
-| `app_token`\*     | `String`     | パス       | アプリの12桁の識別子。                                   |
-| `tracker_token`\* | `String`     | パス       | 親リンクトークン。                                       |
-| `after`           | `String`     | クエリ     | 次のページから要素を取得するカーソル。                   |
-| `before`          | `String`     | クエリ     | 前のページから要素を取得するカーソル。                   |
-| `limit`           | `Integer`    | クエリ     | レスポンスに含まれる要素の最大数。正の整数値であること。 |
+`app_token` （`String`）
 
-</Table>
+: [アプリを識別する英数字のトークン](https://help.adjust.com/ja/article/app-token-and-reporting-currency#view-your-app-details)。12文字で設定してください。
+
+`tracker_token` （`String`）
+
+: サブリンクがネストされている **親リンク** のリンクトークン。
+
+次のパラメーターをリクエストの **クエリパラメーター** としてパスすることができます。
+
+`after` （`String`）
+
+: リクエストを開始する[カーソルの位置](#fetch-sublinks-pagination)。
+
+`before` （`String`）
+
+: リクエストを終了する[カーソルの位置](#fetch-sublinks-pagination)。
+
+`limit` （`Integer`）
+
+: レスポンスに含む結果の最大数。この値は正の整数であることが必須です。デフォルトは`50`です。
 
 </Tab>
 </Tabs>
 
-### [ページネーション](fetch-sublinks-pagination)
-
-このエンドポイントからの結果は、カーソルでページネーションされます。各ページには、前ページと次ページの位置が返されます。特定のページを返すには、これらを含めて呼び出してください。また、1 ページに含まれるアイテムの数を制限することも可能です。デフォルトの上限は`50`になります。
-
-各結果のページには、カーソル位置を含むpagingオブジェクトが含まれます。このカーソル位置を使って、プログラム上でページ間を移動することができます。たとえば、最初のページには、次のような結果が含まれます。
+### ページネーション {#fetch-sublinks-pagination}
 
 <Tabs>
 <Tab title="v2" sync="v2">
+
+このエンドポイントからの結果は、カーソルを使用して表示されます。各結果ページには、カーソルの位置を含む`paging`オブジェクトが含まれています。これらのカーソルを使って、プログラムでページ間を移動することができます。例えば、1つ目のページには以下のような結果が含まれます。
 
 <CodeBlock title="ページネーションの例">
 
@@ -539,8 +536,14 @@ $ curl "https://api.adjust.com/public/v2/apps/gwzpeepw8uf8/trackers/abc123/child
 
 </CodeBlock>
 
+結果の特定の場所に戻るには、リクエスト **クエリパラメーター** で`cursor`値をパスしてください。
+
 </Tab>
 <Tab title="v1" sync="v1">
+
+このエンドポイントからの結果は、カーソルを使用してページ分割されています。各ページには、 `previous`と`next`ページの位置が返されます。特定のページを返すために、これらをコールに含めることができます。
+
+各結果のページには、カーソルの位置を含む`paging`オブジェクトが含まれています。これらのカーソルを使って、プログラムでページ間を移動することができます。例えば、最初のページには次のような`paging`オブジェクトが含まれます。
 
 <CodeBlock title="ページネーションの例">
 
@@ -560,7 +563,7 @@ $ curl "https://api.adjust.com/public/v2/apps/gwzpeepw8uf8/trackers/abc123/child
 
 </CodeBlock>
 
-2ページ目に移動するには、`after`値を`after`パラメーター内の次のリクエストに追加します。例：
+2ページ目に移動するには、`next`リンクをたどって、次に指定された`cursor`の位置から結果を返します。
 
 <CodeBlock title="cURL" highlight="after=g2wAAAACYhW1_gxkAANuaWxq">
 
@@ -569,30 +572,10 @@ $ curl "https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers/abc123/child
 ```
 
 </CodeBlock>
-
 </Tab>
 </Tabs>
 
-### [レスポンスパラメーター](fetch-sublinks-response-format)
-
-<Table search>
-
-| フィールド          | データタイプ | 説明                                                                                                                                         | 例                                          |
-| ------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| `name`              | `String`     | リンク名。                                                                                                                                   | `Adroll`                                    |
-| `label`             | `String`     | リンク名の最後のラベルの部分。                                                                                                               | `Adroll`                                    |
-| `level`             | `Integer`    | リンクのレベル。<br/><ul><li>ネットワーク = `1`</li><li>キャンペーン = `2`</li><li>アドグループ = `3`</li><li>クリエイティブ = `4`</li></ul> | `1`                                         |
-| `archived`          | `Boolean`    | リンクがアーカイブされたかどうか。                                                                                                           | `true`                                      |
-| `has_subtrackers`   | `Boolean`    | リンクにサブリンクがあるかどうか。                                                                                                           | `true`                                      |
-| `partner_id`        | `Integer`    | リンクに付与されるパートナーのID。                                                                                                           | `3`                                         |
-| `cost_data_enabled` | `Boolean`    | リンクでcost_dataが有効になっているかどうか。                                                                                                | `false`                                     |
-| `impression_url`    | `String`     | インプレッション計測対象のリンクURL                                                                                                          | `https://view.adjust.com/impression/abc123` |
-| `url`               | `String`     | 計測対象のリンクURL                                                                                                                          | `https://app.adjust.com/abc123`             |
-| `click_url`         | `String`     | クリック計測対象のリンクURL                                                                                                                  | `https://app.adjust.com/abc123`             |
-
-</Table>
-
-<CodeBlock title="レスポンスの形式">
+### レスポンスの形式 {#fetch-sublinks-response-format}
 
 ```json
 {
@@ -610,13 +593,10 @@ $ curl "https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers/abc123/child
 }
 ```
 
-</CodeBlock>
-
-### [例](fetch-sublinks-example)
+### 例 {#fetch-sublinks-example}
 
 <Tabs>
 <Tab title="v2" sync="v2">
-
 <CodeBlock title="cURL" highlight="gwzpeepw8uf8, abc123">
 
 ```console
@@ -655,10 +635,8 @@ $ curl \
 ```
 
 </CodeBlock>
-
 </Tab>
 <Tab title="v1" sync="v1">
-
 <CodeBlock title="cURL" highlight="gwzpeepw8uf8, abc123">
 
 ```console
@@ -707,11 +685,10 @@ $ curl \
 ```
 
 </CodeBlock>
-
 </Tab>
 </Tabs>
 
-## [リンクを作成する](create-link)
+## リンクを作成する {#create-links}
 
 <CodeBlock title="エンドポイント" highlight="{app_token}/trackers">
 
@@ -723,37 +700,27 @@ POST https://api.adjust.com/public/v1/apps/{app_token}/trackers
 
 このエンドポイントを使用して、アプリに新規リンクまたはサブリンクを作成します。
 
-### [パラメータ](create-link-parameters)
+### パラメーター {#create-links-parameters}
 
-<Table>
+リクエストの **パス** に、以下のパラメーターを含める必要があります。
 
-| パラメーター   | データタイプ | 入力する値 | 説明                                       |
-| -------------- | ------------ | ---------- | ------------------------------------------ |
-| `app_token`\*  | `String`     | パス       | アプリの12桁の識別子。                     |
-| `name`\*       | `String`     | ボディ     | 新しいリンク名。                           |
-| `parent_token` | `String`     | ボディ     | 親リンク名。サブリンクの作成時にのみ必要。 |
+`app_token` （`String`）
 
-</Table>
+: [アプリを識別する英数字のトークン](https://help.adjust.com/ja/article/app-token-and-reporting-currency#view-your-app-details)。12文字で設定してください。
 
-### [レスポンスパラメーター](create-link-response-parameters)
+リクエストの **データ** に以下のパラメーターをパスする必要があります。
 
-<Table search>
+`name` （`String`）
 
-| フィールド          | データタイプ | 説明                                                                                                                                         | 例                                          |
-| ------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| `name`              | `String`     | リンク名。                                                                                                                                   | `Adroll`                                    |
-| `label`             | `String`     | リンク名の最後のラベルの部分。                                                                                                               | `Adroll`                                    |
-| `level`             | `Integer`    | リンクのレベル。<br/><ul><li>ネットワーク = `1`</li><li>キャンペーン = `2`</li><li>アドグループ = `3`</li><li>クリエイティブ = `4`</li></ul> | `1`                                         |
-| `archived`          | `Boolean`    | リンクがアーカイブされたかどうか。                                                                                                           | `true`                                      |
-| `has_subtrackers`   | `Boolean`    | リンクにサブリンクがあるかどうか。                                                                                                           | `true`                                      |
-| `partner_id`        | `Integer`    | リンクに付与されるパートナーのID。                                                                                                           | `3`                                         |
-| `cost_data_enabled` | `Boolean`    | リンクでcost_dataが有効になっているかどうか。                                                                                                | `false`                                     |
-| `impression_url`    | `String`     | インプレッション計測対象のリンクURL                                                                                                          | `https://view.adjust.com/impression/abc123` |
-| `url`               | `String`     | 計測対象のリンクURL                                                                                                                          | `https://app.adjust.com/abc123`             |
-| `click_url`         | `String`     | クリック計測対象のリンクURL                                                                                                                  | `https://app.adjust.com/abc123`             |
+: 新しいリンクの名前。
 
-</Table>
-<CodeBlock title="レスポンスの形式">
+リクエストの **データ** に、以下のトークンをパスことができます。
+
+`parent_token` （`String`）
+
+: サブリンクがネストされている **親リンク** のリンクトークン。サブリンクを作成する場合にのみ必要です。
+
+### レスポンスの形式 {#create-links-response-format}
 
 ```json
 {
@@ -771,19 +738,19 @@ POST https://api.adjust.com/public/v1/apps/{app_token}/trackers
 }
 ```
 
-</CodeBlock>
+以下の`level`値が利用可能です：
 
-#### [リンクレベル](link-levels)
+-  `1`: ネットワークレベル
+-  `2`: キャンペーンレベル
+-  `3`: アドグループレベル
+-  `4`: クリエイティブレベル
 
--  ネットワーク = `1`
--  キャンペーン = `2`
--  アドグループ = `3`
--  クリエイティブ = `4`
+### 例 {#create-links-example}
 
-### [例](create-links-example)
+以下の例は、 **リンク** と **サブリンク** の作成方法を示します。
 
-<Tabs>
-<Tab title="リンクトークン" sync="link">
+#### リンクを作成する {#create-a-link-example}
+
 <CodeBlock title="cURL">
 
 ```console
@@ -822,15 +789,16 @@ $ curl --location --request POST 'https://api.adjust.com/public/v1/apps/gwzpeepw
 ```
 
 </CodeBlock>
-</Tab>
-<Tab title="サブリンク" sync="sublink">
-<CodeBlock title="cURL" highlight="parent_tracker">
+
+#### サブリンクを作成する {#create-a-sublink-example}
+
+<CodeBlock title="cURL" highlight="parent_token">
 
 ```console
 $ curl --location --request POST 'https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers' \
 --header 'Authorization: Token token={API_TOKEN}' \
 --header 'Content-Type: application/json' \
---data-raw '{"parent_tracker": "Adroll", "name": "SpringCampaign"}'
+--data-raw '{"parent_token": "abc123", "name": "SpringCampaign"}'
 ```
 
 </CodeBlock>
@@ -862,12 +830,8 @@ $ curl --location --request POST 'https://api.adjust.com/public/v1/apps/gwzpeepw
 ```
 
 </CodeBlock>
-</Tab>
-</Tabs>
 
-## [リンクの更新](update-links)
-
-このエンドポイントを使用して、アプリの既存のリンクまたはサブリンクを更新します。リンクに新規パートナーを追加したり、コストデータを有効にするかどうかを管理することができます。
+## リンクを更新する {#update-links}
 
 <CodeBlock title="エンドポイント" highlight="{app_token}/trackers/{link_token}">
 
@@ -877,46 +841,31 @@ PATCH https://api.adjust.com/public/v1/apps/{app_token}/trackers/{link_token}
 
 </CodeBlock>
 
-### [パラメータ](update-links-parameters)
+このエンドポイントを使用して、アプリの既存のリンクまたはサブリンクを更新します。リンクに新規パートナーを追加したり、コストデータを有効にするかどうかを管理することができます。
 
-<Table>
+### パラメーター {#update-links-parameters}
 
-| パラメーター        | データタイプ | 入力する値 | 説明                                                                                                                 |
-| ------------------- | ------------ | ---------- | -------------------------------------------------------------------------------------------------------------------- |
-| `app_token`\*       | `String`     | パス       | アプリの12桁の識別子。                                                                                               |
-| `tracker_token`\*   | `String`     | パス       | 更新したいリンクのトークン。                                                                                         |
-| `partner_id`        | `Integer`    | ボディ     | リンクに付与したいパートナーのID。パートナーのエンドポイントを使用して、パートナーとパートナーIDの一覧を取得します。 |
-| `cost_data_enabled` | `Boolean`    | ボディ     | リンクのコストデータを有効化するかどうか。                                                                           |
+リクエストの **パス** に、以下のパラメーターをパスする必要があります。
 
-</Table>
+`app_token` （`String`）
 
-### [レスポンスパラメーター](update-links-response-format)
+: [アプリを識別する英数字のトークン](https://help.adjust.com/ja/article/app-token-and-reporting-currency#view-your-app-details)。12文字で設定してください。
 
-<Table search>
+`tracker_token` （`String`）
 
-| フィールド          | データタイプ | 説明                                                                   | 例                                          |
-| ------------------- | ------------ | ---------------------------------------------------------------------- | ------------------------------------------- |
-| `name`              | `String`     | リンク名。                                                             | `Adroll`                                    |
-| `label`             | `String`     | リンク名の最後のラベルの部分。                                         | `Adroll`                                    |
-| `level`             | `Integer`    | リンクのレベル。以下の[リンクレベル](#link-levels)を参照してください。 | `1`                                         |
-| `archived`          | `Boolean`    | リンクがアーカイブされたかどうか。                                     | `true`                                      |
-| `has_subtrackers`   | `Boolean`    | リンクにサブリンクがあるかどうか。                                     | `true`                                      |
-| `partner_id`        | `Integer`    | リンクに付与されるパートナーのID。                                     | `3`                                         |
-| `cost_data_enabled` | `Boolean`    | リンクでcost_dataが有効になっているかどうか。                          | `false`                                     |
-| `impression_url`    | `String`     | インプレッション計測対象のリンクURL                                    | `https://view.adjust.com/impression/abc123` |
-| `url`               | `String`     | 計測対象のリンクURL                                                    | `https://app.adjust.com/abc123`             |
-| `click_url`         | `String`     | クリック計測対象のリンクURL                                            | `https://app.adjust.com/abc123`             |
+: 更新したいリンクのトークン。
 
-</Table>
+リクエストの **データ** に、以下のパラメーターをパスすることができます
 
-#### リンクレベル
+`partner_id` （`Integer`）
 
--  ネットワーク = `1`
--  キャンペーン = `2`
--  アドグループ = `3`
--  クリエイティブ = `4`
+: リンクに付与したいパートナーのID。パートナーとパートナーIDの一覧を取得するには、上記の[パートナーを取得する](#fetch-partners)を参照してください。
 
-<CodeBlock title="レスポンスの形式">
+`cost_data_enabled` （`Boolean`）
+
+: リンクに対し、[広告費用データ](https://help.adjust.com/ja/article/spendworks-adjust-ad-spend-solution)を有効化するかどうか。
+
+### レスポンスパラメーター {#response-parameters}
 
 ```json
 {
@@ -934,9 +883,14 @@ PATCH https://api.adjust.com/public/v1/apps/{app_token}/trackers/{link_token}
 }
 ```
 
-</CodeBlock>
+以下の`level`値が利用可能です：
 
-### [例](update-links-example)
+-  `1`: ネットワークレベル
+-  `2`: キャンペーンレベル
+-  `3`: アドグループレベル
+-  `4`: クリエイティブレベル
+
+### 例 {#update-links-example}
 
 <CodeBlock title="cURL" highlight="gwzpeepw8uf8, klm789">
 

@@ -2,8 +2,10 @@
 title: "设置 SKAdNetwork 和转化值"
 description: "为 iOS 应用配置 SKAdNetwork 功能。"
 slug: "zh/sdk/flutter/features/skan"
+multiVersion: true
 ---
 
+<SdkVersion version="v5">
 <Callout type="important">
 
 此功能只可用于 iOS 14 及更高版本设备。
@@ -16,7 +18,199 @@ StoreKit Ad Network \(SKAdNetwork\) 是 Apple 的归因框架，可针对应用�
 2. 然后，广告渠道会通过回调将这些信息传输给 Adjust。
 3. Adjust 在 [Datascape](https://help.adjust.com/zh/suite/article/datascape) 中展示 SKAdNetwork 数据。
 
-## [关闭 SKAdNetwork 通讯](disable-skadnetwork-communication)
+## 关闭 SKAdNetwork 通讯 {#disable-skadnetwork-communication}
+
+<CodeBlock title="属性声明">
+
+```dart
+bool? isSkanAttributionEnabled;
+```
+
+</CodeBlock>
+
+Adjust SDK 默认与 SKAdNetwork 通讯。SDK 在初始化时会注册 SKAdNetwork 归因。
+
+您可以通过将`AdjustConfig`实例的`isSkanAttributionEnabled`属性设置为`bool`值来控制此行为。
+
+<Callout type="important">
+
+您必须在初始化 Adjust SDK _前_ 设置该属性。
+
+</Callout>
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox, true);
+//...
+adjustConfig.isSkanAttributionEnabled = false;
+//...
+Adjust.initSdk(adjustConfig);
+```
+
+## 更新转化值 {#update-conversion-values}
+
+<CodeBlock title="方法签名">
+
+```dart
+static Future<String?> updateSkanConversionValue(int conversionValue, String coarseValue, bool lockWindow)
+```
+
+</CodeBlock>
+
+转化值是用来在 SKAdNetwork 中监测用户行为的机制。您可以将 64 个条件映射至 `0`\-`63` 的转化值，并在用户安装时将此整数值发送至 SKAdNetwork。该信息可帮助您进一步了解用户在安装后的最初几日内是如何与应用交互的。
+
+如果您通过 Adjust 管理转化值，那么服务器会在 SDK 中更新该值。您也可以通过 `updateSkanConversionValue` 方法更新转化值。该方法会包装 [Apple 的 `updateConversionValue` 方法](https://developer.apple.com/documentation/storekit/skadnetwork/3566697-updateconversionvalue)。该方法接受以下参数：
+
+<Table>
+
+| 参数              | 数据类型                                                                                                                               | 描述                                                                                                                                                                                                                                                                                     |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `conversionValue` | int                                                                                                                                    | 您的转化值。必须在 `0` 至 `63` 之间。                                                                                                                                                                                                                                                    |
+| `coarseValue`     | 字符串 \([`SKAdNetwork.CoarseConversionValue`](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)\) | 粗粒度转化值。如果应用安装量不足，未能达到隐私阈值，就会启用粗粒度转化值。<ul><li>`'low'` \(针对 `SKAdNetworkCoarseConversionValueLow`\)</li><li>`'medium'` \(针对 `SKAdNetworkCoarseConversionValueMedium`\)</li><li>`'high'` \(针对 `SKAdNetworkCoarseConversionValueHigh`\)</li></ul> |
+| `lockWindow`      | 布尔                                                                                                                                   | 是否在转化值窗口结束前发送回调。将这一项设置为 `true`，系统就会在转化值窗口结束前发送回调。默认设置为 `false`。                                                                                                                                                                          |
+
+</Table>
+
+```dart
+Adjust.updateSkanConversionValue(6, 'coarse-value', true).then((error) {
+    // error is present in case it happens
+});
+```
+
+## 监听转化值变更 {#listen-for-changes-to-conversion-values}
+
+<CodeBlock title="属性声明">
+
+```dart
+typedef void SkanUpdatedCallback(Map<String, String> skanUpdateData);
+SkanUpdatedCallback? skanUpdatedCallback;
+```
+
+</CodeBlock>
+
+如果您使用 Adjust 管理转化值，那么 Adjust 服务器就会将转化值更新发送到 SDK。您可以设置委托函数，使用 `skanUpdatedCallback` 方法监听更新。请以参数形式传送您的函数。
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
+adjustConfig.skanUpdatedCallback = (Map<String, String> data) {
+    print(Skan Callback: $data');
+};
+   print('[Adjust]: Received conversion value update: ' + conversionValue!.toString());
+};
+Adjust.initSdk(adjustConfig);
+```
+
+### 示例 {#example}
+
+该示例展示了如何在转化值更新时记录下列内容：
+
+-  确认转化值发生更新的消息
+-  新的转化值
+
+<CodeBlock title="main.dart">
+
+```dart
+import 'package:adjust_sdk/adjust.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+initPlatformState() async {
+   AdjustConfig config =
+      new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox);
+   config.logLevel = AdjustLogLevel.verbose;
+
+config.conversionValueUpdatedCallback = (num? conversionValue) {
+      print('[Adjust]: Received conversion value update: ' +
+         conversionValue!.toString());
+   };
+
+Adjust.initSdk(config);
+
+}
+```
+
+</CodeBlock>
+
+## SKAdNetwork 4\.0 回传 {#skadnetwork-4-0-callbacks}
+
+SKAdNetwork 4\.0 回调中包含额外信息，帮助广告主更好地了解用户。Adjust 服务器更新转化值时，这些额外信息就会通过负载发送。您可以使用 `skanUpdatedCallback` 回传方法访问这些信息。
+
+<Table>
+
+| 参数              | 数据类型 | 描述                                                                                                                                                                                                           |
+| ----------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `conversionValue` | `String` | Adjsut 服务器发送的转化值                                                                                                                                                                                      |
+| `coarseValue`     | `String` | 粗粒度转化值。如果应用安装量不足，未能达到隐私阈值，就会启用粗粒度转化值。<ul><li>`none`</li><li>`low`</li><li>`medium`</li><li>`high`</li></ul><br/>如果低、中、高三个值的条件都不满足，Apple 就会发送 none。 |
+| `lockWindow`      | `bool`   | 是否在转化值窗口结束前发送回调。`1` 表示回调会在转化窗口结束前发送。在 SKAdNetwork 4\.0 回调中默认为 `0`；在更旧的 SKAdNetwork 版本中默认为 `nil`。                                                            |
+
+</Table>
+
+### 示例 {#example-3}
+
+该示例展示了如何记录了细粒度转化值和粗粒度转化值，以及 SKAdNetwork 回调是否在转化值窗口结束前发送。
+
+```dart
+import 'package:adjust_sdk/adjust.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+initPlatformState() async {
+   AdjustConfig config =
+      new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox);
+   config.logLevel = AdjustLogLevel.verbose;
+
+   config.skanUpdatedCallback = (Map<String, String> skanUpdateData) {
+      // process skanUpdateData map
+      // example: {conversion_value: 0, lock_window: false, coarse_value: low}
+         print('[Adjust]: Conversion value updated. Callback received');
+         print('[Adjust]: Conversion value: ' + conversionValue!.toString());
+         print('[Adjust]: Coarse conversion value: ' + coarseValue!);
+         print('[Adjust]: Will send before conversion value window ends: ' lockWindow!.toString());
+   };
+
+   Adjust.initSdk(config);
+}
+```
+
+## 设置直接安装回调 {#set-up-direct-install-postbacks}
+
+<Callout type="note">
+
+直接安装回调只包含 SKAdNetwork 信息，不含推广活动数据等信息。
+
+</Callout>
+
+您可以进行应用配置，将赢得归因的 SKAdNetwork 回调副本发送给 Adjust。借此在数据分析中使用 SKAdNetwork 信息。
+
+要设置直接安装回调，您需要将 Adjust 回传 URL 添加至 `Info.plist` 文件：
+
+1. 在 Xcode Project navigator 中选择 **Info.plist** 。
+2. 在属性列表编辑器中点击 key 旁边的添加按钮，点击 `Return`。
+3. 输入 key 名称： _`NSAdvertisingAttributionReportEndpoint`_ 。
+4. 在弹出菜单中将 **Type \(类型\)** 设置为 **String \(字符串\)** 。
+5. 输入地址： _`https://adjust-skadnetwork.com`_ 。
+
+<Callout type="seealso">
+
+要了解更多信息，请查阅 Apple 的 [Configuring an Advertised App](https://developer.apple.com/documentation/storekit/skadnetwork/configuring_an_advertised_app) 指南。
+
+</Callout>
+</SdkVersion>
+<SdkVersion version="v4">
+<Callout type="important">
+
+此功能只可用于 iOS 14 及更高版本设备。
+
+</Callout>
+
+StoreKit Ad Network \(SKAdNetwork\) 是 Apple 的归因框架，可针对应用安装和重装进行归因。SKAdNetwork 的工作流程如下：
+
+1. Apple 会收集归因信息，并通知相关广告渠道。
+2. 然后，广告渠道会通过回调将这些信息传输给 Adjust。
+3. Adjust 在 [Datascape](https://help.adjust.com/zh/suite/article/datascape) 中展示 SKAdNetwork 数据。
+
+## 关闭 SKAdNetwork 通讯 {#disable-skadnetwork-communication}
 
 <CodeBlock title="方法签名">
 
@@ -47,7 +241,7 @@ adjustConfig.deactivateSKAdNetworkHandling();
 Adjust.start(adjustConfig);
 ```
 
-## [更新转化值](update-conversion-values)
+## 更新转化值 {#update-conversion-values}
 
 <CodeBlock title="方法签名">
 
@@ -65,7 +259,7 @@ static void updateConversionValue(int conversionValue)
 Adjust.updateConversionValue(6);
 ```
 
-## [监听转化值变更](listen-for-changes-to-conversion-values)
+## 监听转化值变更 {#listen-for-changes-to-conversion-values}
 
 <CodeBlock title="属性声明">
 
@@ -85,7 +279,7 @@ config.conversionValueUpdatedCallback = (num? conversionValue) {
 Adjust.start(adjustConfig);
 ```
 
-### [示例](example)
+### 示例 {#example}
 
 该示例展示了如何在转化值更新时记录下列内容：
 
@@ -117,7 +311,7 @@ Adjust.start(config);
 
 </CodeBlock>
 
-## [SKAdNetwork 4\.0 回传](skadnetwork-4-0-callbacks)
+## SKAdNetwork 4\.0 回传 {#skadnetwork-4-0-callbacks}
 
 <MinorVersion added="v4.33.0">
 
@@ -134,7 +328,7 @@ SKAdNetwork 4\.0 回调中包含额外信息，帮助广告主更好地了解用
 
 </Table>
 
-### [示例](example-3)
+### 示例 {#example-3}
 
 该示例展示了如何记录了细粒度转化值和粗粒度转化值，以及 SKAdNetwork 回调是否在转化值窗口结束前发送。
 
@@ -160,7 +354,7 @@ Adjust.start(config);
 }
 ```
 
-## [设置直接安装回调](set-up-direct-install-postbacks)
+## 设置直接安装回调 {#set-up-direct-install-postbacks}
 
 <Callout type="note">
 
@@ -183,3 +377,4 @@ Adjust.start(config);
 要了解更多信息，请查阅 Apple 的 [Configuring an Advertised App](https://developer.apple.com/documentation/storekit/skadnetwork/configuring_an_advertised_app) 指南。
 
 </Callout>
+</SdkVersion>

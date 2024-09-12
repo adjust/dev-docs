@@ -3,11 +3,300 @@ title: "配置"
 description: "请按照本节中的说明配置 Adjust SDK。"
 slug: "zh/sdk/flutter/configuration"
 sidebar-position: 1
+multiVersion: true
 ---
+
+<SdkVersion version="v5">
 
 请使用该文档中的方法配置 Adjust SDK 行为。
 
-## [实例化 config 对象](instantiate-your-config-object)
+## 实例化 config 对象 {#instantiate-your-config-object}
+
+<CodeBlock title="方法签名">
+
+```dart
+AdjustConfig(String appToken, AdjustEnvironment environment)
+```
+
+</CodeBlock>
+
+要配置 Adjust SDK，您需要实例化一个 `AdjustConfig` 对象。该对象包含 **只读** 配置选项。请将这些配置选项发送给 Adjust SDK。
+
+要实例化您的 config 对象，请创建新的 `AdjustConfig` 实例，并传送下列参数：
+
+-  `appToken` \(`String`\)：您的 [Adjust 应用识别码](https://help.adjust.com/zh/article/app-token-and-reporting-currency#view-your-app-details)。
+-  `environment` \(`AdjustEnvironment`\)：SDK 运行的环境。传送 `AdjustEnvironment.sandbox`，可在 sandbox 模式下运行 SDK，方便进行测试；传送 `AdjustEnvironment.production`，可在生产模式下运行 SDK，方便发布。
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox);
+//...
+Adjust.initSdk(adjustConfig);
+```
+
+## 只读配置 {#read-only-configuration}
+
+**只读** 配置选项需要在 SDK 初始化 **之前** 在 `AdjustConfig` 实例中设定。这些配置选项无法在 SDK 运行过程中变更。请务必在运行 `Adjust.initSdk` 之前配置要使用的所有设置。
+
+### 设置日志级别 {#set-your-logging-level}
+
+<CodeBlock title="属性声明">
+
+```dart
+AdjustLogLevel? logLevel;
+```
+
+</CodeBlock>
+
+通过 Adjust SDK，您可以配置不同日志级别，返回不同数量的信息。可用的日志级别包括：
+
+<Table>
+
+| logLevel                  | 描述                            |
+| ------------------------- | ------------------------------- |
+| `AdjustLogLevel.verbose`  | 启用完整日志                    |
+| `AdjustLogLevel.debug`    | 启用调试记录                    |
+| `AdjustLogLevel.info`     | 仅显示信息级别日志 \(默认选项\) |
+| `AdjustLogLevel.warn`     | 禁用信息日志                    |
+| `AdjustLogLevel.error`    | 禁用警告及更低级别日志          |
+| `AdjustLogLevel.assert`   | 禁用错误及更低级别日志          |
+| `AdjustLogLevel.suppress` | 禁止所有日志                    |
+
+</Table>
+
+您可以为 config 实例 `logLevel` 属性指定 `AdjustLogLevel` 值，以设置日志级别。
+
+-  `logLevel` \(`AdjustLogLevel`\)：要使用的日志级别。
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox);
+//...
+adjustConfig.logLevel = AdjustLogLevel.verbose;
+//...
+Adjust.initSdk(adjustConfig);
+```
+
+### 设置外部设备标识符 {#set-external-device-identifier}
+
+<CodeBlock title="属性声明">
+
+```dart
+String? externalDeviceId;
+```
+
+</CodeBlock>
+
+外部设备标识符是您为设备或用户自定义的一个值。您可以通过这个值在不同的会话和平台中识别用户。您也可以通过该值基于用户对安装进行去重，这样同一位用户就不会被记录为多次新安装了。请联系您的 Adjust 代表来开始使用外部设备 ID。
+
+您还可以使用外部设备 ID 作为设备的自定义标识符。这可以确保您的数据与其他系统中的数据保持一致性。在 config 实例上将您的外部设备 ID 指定至`externalDeviceId`属性。
+
+-  `externalDeviceId` \(`String`\)：您的外部设备标识符。需要 **区分大小写** 。如果您导入了外部设备 ID，则需要确保发送的值与已导入的值相匹配。
+
+<Callout type="seealso">
+
+要了解更多信息，请参考 Adjust 帮助中心的[外部设备标识符文档](https://help.adjust.com/zh/article/external-device-identifiers)。
+
+</Callout>
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox);
+//...
+adjustConfig.externalDeviceId = '{Your-External-Device-Id}';
+//...
+Adjust.initSdk(adjustConfig);
+```
+
+如果您想在商业分析中使用外部设备 ID，则可以将其作为[会话回传参数](/zh/sdk/flutter/features/session-parameters)发送。
+
+您可以将已有外部设备 ID 导入到 Adjust。这能保证 Adjust 服务器将未来的数据与已有设备记录相匹配。请联系您的 Adjust 代表，了解更多信息。
+
+### 设置默认链接识别码 {#set-default-link-token}
+
+<CodeBlock title="属性声明">
+
+```dart
+String? defaultTracker;
+```
+
+</CodeBlock>
+
+如果您的应用已预安装在设备上，那么则可以配置一个默认链接识别码。当用户首次打开预安装应用时，安装就会被归因给默认链接识别码。请将默认链接识别码指定给 config 实例的 `defaultTracker` 属性。
+
+-  `defaultTracker` \(`String`\)：用于记录预安装应用安装的 [Adjust 链接识别码](https://help.adjust.com/zh/article/links#adjust-link-token)。
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox);
+//...
+adjustConfig.defaultTracker = '{TrackerToken}';
+//...
+Adjust.initSdk(adjustConfig);
+```
+
+### 启用成本数据发送 {#enable-cost-data-sending}
+
+<CodeBlock title="属性声明">
+
+```dart
+bool? isCostDataInAttributionEnabled;
+```
+
+</CodeBlock>
+
+默认情况下，Adjust 不会在用户归因信息中发送成本数据。您可以启用成本数据发送，使 SDK 发送成本数据。要启用成本数据发送，请为 config 实例 `isCostDataInAttributionEnabled` 属性指定 `bool` 值。
+
+-  `isCostDataInAttributionEnabled` \(`bool`\): 设为 `true` 来启用成本数据发送。
+
+您可以在用户的[归因信息](/zh/sdk/flutter/features/attribution)中访问成本数据。
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox);
+//...
+adjustConfig.isCostDataInAttributionEnabled = true;
+//...
+Adjust.initSdk(adjustConfig);
+```
+
+### 启用后台记录 {#enable-background-recording}
+
+<CodeBlock title="属性声明">
+
+```dart
+bool? isSendingInBackgroundEnabled;
+```
+
+</CodeBlock>
+
+默认情况下，应用在后台运行时，Adjust SDK 会暂停发送请求。您可以通过启用后台记录功能来使 SDK 在应用位于后台时发送请求。要启用后台记录，请为 config 实例 `isSendingInBackgroundEnabled` 属性指定 `bool` 值
+
+-  `isSendingInBackgroundEnabled` \(`bool`\): 设为 `true` 来启用后台发送。
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox);
+//...
+adjustConfig.isSendingInBackgroundEnabled = true;
+//...
+Adjust.initSdk(adjustConfig);
+```
+
+## 动态配置 {#dynamic-configuration}
+
+为响应事件或用户进行的操作， **动态** 配置选项可能在 SDK 的生命周期中发生变化。
+
+### 激活离线模式 {#activate-offline-mode}
+
+<CodeBlock title="方法签名">
+
+```dart
+static void switchToOfflineMode()
+```
+
+</CodeBlock>
+<Callout type="important">
+
+离线模式设置在会话之间不被保存。离线模式在每次新会话开始时会被关闭。
+
+</Callout>
+
+Adjust SDK 会实时向 Adjust 后端发送事件和会话数据。您可以通过将 SDK 设为离线状态来暂停信息的发送。在离线状态中，SDK 会在设备本地文件中存储所有数据。离线模式关闭后，SDK 会将此信息发送至 Adjust 服务器。
+
+要启用离线模式，请调用`Adjust.switchToOfflineMode`方法。
+
+```dart
+Adjust.switchToOfflineMode();
+```
+
+### 禁用离线模式 {#deactivate-offline-mode}
+
+<CodeBlock title="方法签名">
+
+```dart
+static void switchBackToOnlineMode()
+```
+
+</CodeBlock>
+
+您可以通过调用`Adjust.switchBackToOnlineMode`方法来重新启用 SDK。这会提示 SDK 恢复发送信息。
+
+```dart
+Adjust.switchBackToOnlineMode();
+```
+
+### 设置推送标签 \(Push token\) {#set-push-tokens}
+
+<CodeBlock title="方法签名">
+
+```dart
+static void setPushToken(String token)
+```
+
+</CodeBlock>
+
+推送标签 \(Push token\) 用于[受众](https://help.adjust.com/zh/article/audiences)和客户回传。在[卸载和重装监测](https://help.adjust.com/zh/article/uninstalls-reinstalls)中，推送标签也是必要的。
+
+您的 config 对象包含一个`pushToken`字符串属性，您可以通过该属性存储推送标签。您可以随时调用`setPushToken`方法，并发送下列参数，以更新该属性：
+
+-  `token` \(`String`\)：您的推送标签 \(Push token\)。
+
+```dart
+Adjust.setPushToken('{PushNotificationsToken}');
+```
+
+### 禁用 SDK {#disable-the-sdk}
+
+<CodeBlock title="方法签名">
+
+```dart
+static void disable()
+```
+
+</CodeBlock>
+
+应用打开时 Adjust SDK 会默认运行。您可以通过调用`Adjust.disable`方法禁用 Adjust SDK，暂停向 Adjust 发送信息。禁用 Adjust SDK 后，Adjust 不会收到任何数据，SDK 也不会记录任何信息。也就是说，SDK 禁用时调用的任何 Adjust 方法都不会记录任何内容。
+
+```dart
+Adjust.disable();
+```
+
+### 启用 SDK {#enable-the-sdk}
+
+<CodeBlock title="方法签名">
+
+```dart
+static void enable()
+```
+
+</CodeBlock>
+
+如果您已经禁用了 SDK 并希望重新启用，请调用`Adjust.enable`方法。启用后，SDK 会向 Adjust 服务器发送信息。
+
+```dart
+Adjust.enable();
+```
+
+#### 查看启用状态 {#check-enabled-status}
+
+<CodeBlock title="方法签名">
+
+```dart
+static Future<bool> isEnabled() async
+```
+
+</CodeBlock>
+
+您可以随时调用 `isEnabled` 方法，查看 Adjust SDK 是否已启用。该方法会返回 `bool` 来指示 SDK 是处于 **启用** \(`true`\) 还是 **禁用** \(`false`\) 状态。
+
+```dart
+Adjust.isEnabled().then((isEnabled) {
+    // if isEnabled == true, SDK is enabled
+    // if isEnabled == false, SDK is disabled
+});
+```
+
+</SdkVersion>
+<SdkVersion version="v4">
+
+请使用该文档中的方法配置 Adjust SDK 行为。
+
+## 实例化 config 对象 {#instantiate-your-config-object}
 
 <CodeBlock title="方法签名">
 
@@ -29,16 +318,16 @@ AdjustConfig(this._appToken, this._environment) {
 -  `environment` \(`String`\)：SDK 运行的环境。传送 `AdjustEnvironment.sandbox`，可在 sandbox 模式下运行 SDK，方便进行测试；传送 `AdjustEnvironment.production`，可在生产模式下运行 SDK，方便发布。
 
 ```dart
-AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox);
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox);
 //...
 Adjust.start(adjustConfig);
 ```
 
-## [只读配置](read-only-configuration)
+## 只读配置 {#read-only-configuration}
 
 **只读** 配置选项需要在 SDK 初始化 **之前** 在 `AdjustConfig` 实例中设定。这些配置选项无法在 SDK 运行过程中变更。请务必在运行 `Adjust.start()` 之前配置要使用的所有设置。
 
-### [设置日志级别](set-your-logging-level)
+### 设置日志级别 {#set-your-logging-level}
 
 <CodeBlock title="属性声明">
 
@@ -76,7 +365,7 @@ adjustConfig.logLevel = AdjustLogLevel.verbose;
 Adjust.start(adjustConfig);
 ```
 
-### [设置外部设备标识符](set-external-device-identifier)
+### 设置外部设备标识符 {#set-external-device-identifier}
 
 <CodeBlock title="属性声明">
 
@@ -110,7 +399,7 @@ Adjust.start(adjustConfig);
 
 您可以将已有外部设备 ID 导入到 Adjust。这能保证 Adjust 服务器将未来的数据与已有设备记录相匹配。请联系您的 Adjust 代表，了解更多信息。
 
-### [设置默认链接识别码](set-default-link-token)
+### 设置默认链接识别码 {#set-default-link-token}
 
 <CodeBlock title="属性声明">
 
@@ -132,7 +421,7 @@ adjustConfig.defaultTracker = '{TrackerToken}';
 Adjust.start(adjustConfig);
 ```
 
-### [启用成本数据发送](enable-cost-data-sending)
+### 启用成本数据发送 {#enable-cost-data-sending}
 
 <CodeBlock title="属性声明">
 
@@ -156,7 +445,7 @@ adjustConfig.needsCost = true;
 Adjust.start(adjustConfig);
 ```
 
-### [启用后台记录](enable-background-recording)
+### 启用后台记录 {#enable-background-recording}
 
 <CodeBlock title="属性声明">
 
@@ -178,7 +467,7 @@ adjustConfig.sendInBackground = true;
 Adjust.start(adjustConfig);
 ```
 
-### [启用事件缓冲](enable-event-buffering)
+### 启用事件缓冲 {#enable-event-buffering}
 
 <CodeBlock title="属性声明">
 
@@ -202,7 +491,7 @@ adjustConfig.eventBufferingEnabled = true;
 Adjust.start(adjustConfig);
 ```
 
-### [延迟 SDK 启动](delay-the-start-of-the-sdk)
+### 延迟 SDK 启动 {#delay-the-start-of-the-sdk}
 
 <CodeBlock title="属性声明">
 
@@ -226,11 +515,11 @@ adjustConfig.delayStart(5.5);
 Adjust.start(adjustConfig);
 ```
 
-## [动态配置](dynamic-configuration)
+## 动态配置 {#dynamic-configuration}
 
 为响应事件或用户进行的操作， **动态** 配置选项可能在 SDK 的生命周期中发生变化。
 
-### [开启和关闭离线模式](toggle-offline-mode)
+### 开启和关闭离线模式 {#toggle-offline-mode}
 
 <CodeBlock title="方法签名">
 
@@ -255,7 +544,7 @@ Adjust SDK 会实时向 Adjust 后端发送事件和会话数据。您可以通�
 Adjust.setOfflineMode(true);
 ```
 
-### [设置推送标签 \(Push token\)](set-push-tokens)
+### 设置推送标签 \(Push token\) {#set-push-tokens}
 
 <CodeBlock title="方法签名">
 
@@ -281,7 +570,7 @@ static void setPushToken(String token)
 Adjust.setPushToken('{PushNotificationsToken}');
 ```
 
-### [禁用或启用 SDK](disable-or-enable-the-sdk)
+### 禁用或启用 SDK {#disable-or-enable-the-sdk}
 
 <Callout type="important">
 
@@ -306,7 +595,7 @@ static void setEnabled(bool isEnabled)
 Adjust.setEnabled(false);
 ```
 
-#### [查看启用状态](check-enabled-status)
+#### 查看启用状态 {#check-enabled-status}
 
 <CodeBlock title="方法签名">
 
@@ -321,3 +610,5 @@ static Future<bool> isEnabled() async
 ```dart
 Adjust.isEnabled();
 ```
+
+</SdkVersion>

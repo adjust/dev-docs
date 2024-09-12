@@ -3,7 +3,10 @@ title: "ディープリンク"
 description: "ディープリンクを設定するには、このセクションのガイドに従ってください。"
 category-title: "ディープリンク"
 slug: "ja/sdk/flutter/features/deep-links"
+multiVersion: true
 ---
+
+<SdkVersion version="v5">
 
 ディープリンクを作成して、ユーザーをアプリ内の特定の場所に誘導します。Adjust SDKは、ユーザーがデバイスにアプリをインストール済みかどうかによって、異なるロジックを使用します。
 
@@ -12,7 +15,7 @@ slug: "ja/sdk/flutter/features/deep-links"
 
 SDKは、ユーザーがリンクからアプリを起動した後にディープリンクの情報を読み取ることができます。
 
-## [ディープリンクの設定](set-up-deep-linking)
+## ディープリンクの設定 {#set-up-deep-linking}
 
 ユーザーがアプリをインストールしている場合、ユーザーがディープリンクの情報を含むリンクをクリックするとアプリが起動します。Adjust SDKには、アプリ全体にディープリンクの情報を解析するツールが含まれます。
 
@@ -21,7 +24,278 @@ SDKは、ユーザーがリンクからアプリを起動した後にディー�
 -  [iOS](/ja/sdk/ios/features/deep-links)
 -  [Android](/ja/sdk/android/features/deep-links)
 
-## [ディープリンクを使用したリアトリビューション](reattribution-using-deep-links)
+## ディープリンクを使用したリアトリビューション {#reattribution-using-deep-links}
+
+<Callout type="seealso">
+
+Adjustはディープリンクを使ったリエンゲージメントキャンペーンをサポートしています。詳しくは、[アトリビューションデータをディープリンクに追加する方法](https://help.adjust.com/ja/article/manage-reattributions#track-reattributions-via-deep-link-clicks)をご覧ください。
+
+</Callout>
+
+ユーザーをリアトリビュートするには、ディープリンクURLで`ADJDeeplink` / `AdjustDeeplink`オブジェクトをインスタンス化し、 `Adjust.processDeeplink`メソッドにパスする必要があります。 Adjust SDKは次に、ディープリンク内の新しいアトリビューションデータを検索します。SDKが新しい情報を見つけた場合、その情報をAdjustのサーバーに転送し、リアトリビューションを行います。
+
+<Tabs>
+<Tab title="iOS" sync="ios" icon="PlatformIos">
+<CodeBlock title="メソッドシグネチャー">
+
+```objc
++ (void)processDeeplink:(ADJDeeplink *)deeplink
+```
+
+</CodeBlock>
+
+ディープリンクによるAdjustのリアトリビューションを有効にするには、アプリデリゲートコールバックの1つでディープリンクを取得したら、必ず`Adjust.processDeeplink`メソッドを呼び出してください。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+import Adjust
+
+class AppDelegate {
+
+   func application(application:UIApplication!, didFinishLaunchingWithOptions launchOptions:NSDictionary!) -> Bool {
+      GeneratedPluginRegistrant.registerWithRegistry(self)
+      // Override point for customization after application launch.
+      return super.application(application, didFinishLaunchingWithOptions:launchOptions)
+   }
+
+   func application(application:UIApplication!, openURL url:NSURL!, sourceApplication:String!, annotation:AnyObject!) -> Bool {
+     let deeplink = ADJDeeplink(deeplink: url)!
+     Adjust.processDeeplink(deeplink)
+      return true
+   }
+
+   func application(application:UIApplication!, continueUserActivity userActivity:NSUserActivity!, restorationHandler:([AnyObject]!)->Void) -> Bool {
+         if (userActivity.activityType() == NSUserActivityTypeBrowsingWeb) {
+            let deeplink = ADJDeeplink(deeplink: userActivity.webpageURL())!
+            Adjust.processDeeplink(deeplink)
+         }
+         return true
+   }
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "Adjust.h"
+
+@implementation AppDelegate
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+   [GeneratedPluginRegistrant registerWithRegistry:self];
+   // Override point for customization after application launch.
+   return [super application:application didFinishLaunchingWithOptions:launchOptions];
+}
+
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+   [Adjust processDeeplink:[ADJDeeplink alloc] initWithDeeplink:url]];
+   return YES;
+}
+
+- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray<id<uiuseractivityrestoring>> *restorableObjects))restorationHandler {
+   if ([[userActivity activityType] isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+      [Adjust processDeeplink:[ADJDeeplink alloc] initWithDeeplink:[userActivity webpageURL]]];
+   }
+   return YES;
+}
+
+@end
+```
+
+</Tab>
+</Tabs>
+</Tab>
+<Tab title="Android" sync="android" icon="PlatformAndroid">
+<CodeBlock title="メソッドシグネチャー">
+
+```java
+public static void processDeeplink(AdjustDeeplink deeplink)
+```
+
+</CodeBlock>
+
+ディープリンクによるAdjustのリアトリビューションを有効にするには、アクティビティでディープリンクを取得したら、必ず`Adjust.processDeeplink`メソッドを呼び出してください。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+import com.adjust.sdk.flutter.AdjustSdk
+import io.flutter.embedding.android.FlutterActivity
+// Used for post flutter 1.12 Android projects
+//import io.flutter.app.FlutterActivity
+
+class MainActivity : FlutterActivity() {
+   // Either call make the call in onCreate.
+   override fun onCreate(savedInstanceState: Bundle?) {
+      super.onCreate(savedInstanceState)
+      // GeneratedPluginRegistrant.registerWith(this)
+      // Used only for pre flutter 1.12 Android projects
+      Intent intent = getIntent()
+      Uri data = intent.getData()
+      Adjust.processDeeplink(new AdjustDeeplink(data), this)
+   }
+
+   // Or make the call in onNewIntent.
+   override fun onNewIntent(intent: Intent?) {
+      super.onNewIntent(intent)
+      Uri data = intent.getData()
+      Adjust.processDeeplink(new AdjustDeeplink(data), this)
+   }
+}
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+import com.adjust.sdk.flutter.AdjustSdk;
+import io.flutter.embedding.android.FlutterActivity; // Used for post flutter 1.12 Android projects
+//import io.flutter.app.FlutterActivity; // Used for pre flutter 1.12 Android projects
+
+public class MainActivity extends FlutterActivity {
+   // Either call make the call in onCreate.
+   @Override
+   protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      // GeneratedPluginRegistrant.registerWith(this); Used only for pre flutter 1.12 Android projects
+
+      Intent intent = getIntent();
+      Uri data = intent.getData();
+      Adjust.processDeeplink(new AdjustDeeplink(data), this);
+   }
+
+   // Or make the cakll in onNewIntent.
+   @Override
+   protected void onNewIntent(Intent intent) {
+      super.onNewIntent(intent);
+      Uri data = intent.getData();
+      Adjust.processDeeplink(new AdjustDeeplink(data), this);
+   }
+}
+```
+
+</Tab>
+</Tabs>
+</Tab>
+</Tabs>
+
+## ディファードディープリンク {#deferred-deep-linking}
+
+<CodeBlock title="プロパティ宣言">
+
+```dart
+bool? isDeferredDeeplinkOpeningEnabled;
+```
+
+</CodeBlock>
+
+SDKはデフォルトでディファードディープリンクを開きます。追加設定はありません。Configインスタンスの`isDeferredDeeplinkOpeningEnabled`プロパティを **false** に設定することで非有効化にすることができます。
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox);
+//...
+adjustConfig.isDeferredDeeplinkOpeningEnabled = false;
+//...
+Adjust.initSdk(adjustConfig);
+```
+
+### ディファードディープリンクのコールバックを設定する {#set-up-a-deferred-deep-link-callback}
+
+<CodeBlock title="プロパティ宣言">
+
+```dart
+typedef void DeferredDeeplinkCallback(String? deeplink);
+DeferredDeeplinkCallback? deferredDeeplinkCallback;
+
+```
+
+</CodeBlock>
+
+関数をconfigインスタンスの`deferredDeeplinkCallback`プロパティに追加することで、Adjust SDKがディファードディープリンクを受け取った際に、関数を呼び出すように設定することができます。この関数は、ディープリンクを`String`引数で受け取ります。
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox);
+adjustConfig.deferredDeeplinkCallback = (String? deeplink) {
+   print('[Adjust]: Received deferred deeplink: ' + deeplink);
+};
+Adjust.initSdk(adjustConfig);
+```
+
+### 例 {#example}
+
+この例では、ユーザーがディファードディープリンクを開いたときに、ディープリンクのアドレスをログに記録する方法を示しています。
+
+```dart
+import 'package:adjust_sdk/adjust.dart';
+import 'package:adjust_sdk/adjust_config.dart';
+
+initPlatformState() async {
+   AdjustConfig config =
+      new AdjustConfig('2fm9gkqubvpc', AdjustEnvironment.sandbox);
+   config.logLevel = AdjustLogLevel.verbose;
+
+   config.deferredDeeplinkCallback = (String? uri) {
+      print('[Adjust]: Received deferred deeplink: ' + uri!);
+   };
+
+   Adjust.initSdk(config);
+}
+```
+
+### LinkMeを有効にする {#enable-linkme}
+
+<CodeBlock title="プロパティ宣言">
+
+```dart
+bool? isLinkMeEnabled;
+```
+
+</CodeBlock>
+
+Adjust SDKでは、デバイスのペーストボードからディープリンクの情報をコピーすることが可能です。AdjustのLinkMeソリューションを組み合わせることで、iOS 15以降のデバイスでディファードディープリンクを有効化することができます。
+
+<Callout type="important">
+
+Adjust SDKは、ユーザーがアプリを初回起動した際にペーストボードを確認します。デバイスは、ユーザーのアプリに、ペーストボードの読み取りを許可するかどうかを尋ねるダイアログを表示します。
+
+</Callout>
+
+ユーザーがLinkMeのURLをクリックすると、そのリンク情報をシステムのペーストボードにコピーするオプションがあります。Adjust SDKを使用してシステムのペーストボードを読み、ディープリンクの情報を確認することができます。ディープリンクがある場合、SDKはユーザーをアプリ内の正しいページに転送します。
+
+アプリ内でペーストボードの確認を有効化するには、Configオブジェクトの`isLinkMeEnabled`プロパティを`true`に設定します。
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox);
+//...
+adjustConfig.isLinkMeEnabled = true;
+//...
+Adjust.initSdk(adjustConfig);
+```
+
+</SdkVersion>
+<SdkVersion version="v4">
+
+ディープリンクを作成して、ユーザーをアプリ内の特定の場所に誘導します。Adjust SDKは、ユーザーがデバイスにアプリをインストール済みかどうかによって、異なるロジックを使用します。
+
+-  ダイレクトディープリンクは、ユーザーがアプリをすでにデバイスにインストールしている場合に使用されます。そのリンクは、リンクで指定されたページにユーザーをリダイレクトします。
+-  ディファードディープリンクは、ユーザーがアプリをデバイスにインストールしていない場合に使用されます。そのリンクは、ユーザーをアプリストアに送り、アプリを先にインストールしてもらいます。ユーザーがアプリをインストールすると、リンクで指定されたページが開きます。
+
+SDKは、ユーザーがリンクからアプリを起動した後にディープリンクの情報を読み取ることができます。
+
+## ディープリンクの設定 {#set-up-deep-linking}
+
+ユーザーがアプリをインストールしている場合、ユーザーがディープリンクの情報を含むリンクをクリックするとアプリが起動します。Adjust SDKには、アプリ全体にディープリンクの情報を解析するツールが含まれます。
+
+ディープリンクは、アプリレベルで設定する必要があります。使用するプラットフォームに合わせて、以下のリンク先のディープリンク設定手順に従ってください。
+
+-  [iOS](/ja/sdk/ios/features/deep-links)
+-  [Android](/ja/sdk/android/features/deep-links)
+
+## ディープリンクを使用したリアトリビューション {#reattribution-using-deep-links}
 
 <Callout type="seealso">
 
@@ -178,7 +452,7 @@ public class MainActivity extends FlutterActivity {
 </Tab>
 </Tabs>
 
-## [ディファードディープリンク](deferred-deep-linking)
+## ディファードディープリンク {#deferred-deep-linking}
 
 <CodeBlock title="プロパティ宣言">
 
@@ -198,7 +472,7 @@ adjustConfig.launchDeferredDeeplink = false;
 Adjust.start(adjustConfig);
 ```
 
-### [ディファードディープリンクのコールバックを設定する](set-up-a-deferred-deep-link-callback)
+### ディファードディープリンクのコールバックを設定する {#set-up-a-deferred-deep-link-callback}
 
 <CodeBlock title="プロパティ宣言">
 
@@ -220,7 +494,7 @@ adjustConfig.deferredDeeplinkCallback = (String uri) {
 Adjust.start(adjustConfig);
 ```
 
-### [例](example)
+### 例 {#example}
 
 この例では、ユーザーがディファードディープリンクを開いたときに、ディープリンクのアドレスをログに記録する方法を示しています。
 
@@ -241,7 +515,7 @@ initPlatformState() async {
 }
 ```
 
-### [LinkMeを有効にする](enable-linkme)
+### LinkMeを有効にする {#enable-linkme}
 
 <CodeBlock title="プロパティ宣言">
 
@@ -270,3 +544,5 @@ adjustConfig.linkMeEnabled = true;
 //...
 Adjust.start(adjustConfig);
 ```
+
+</SdkVersion>

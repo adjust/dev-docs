@@ -3,7 +3,10 @@ title: "深度链接"
 description: "按照本节中的说明操作，设置深度链接。"
 category-title: "深度链接"
 slug: "zh/sdk/flutter/features/deep-links"
+multiVersion: true
 ---
+
+<SdkVersion version="v5">
 
 您可以创建深度链接来将用户转到应用中的特定页面。针对用户是否已在设备上安装您的应用，Adjust SDK 会使用不同的逻辑：
 
@@ -12,7 +15,7 @@ slug: "zh/sdk/flutter/features/deep-links"
 
 用户通过链接打开应用后，SDK 就可以读取深度链接数据了。
 
-## [设置深度链接](set-up-deep-linking)
+## 设置深度链接 {#set-up-deep-linking}
 
 如果用户已经安装了您的应用，那么在与包含深度链接信息的链接互动时，应用就会打开。Adjust SDK 中包含的工具能够解析深度链接信息，在应用中使用。
 
@@ -21,7 +24,278 @@ slug: "zh/sdk/flutter/features/deep-links"
 -  [iOS](/zh/sdk/ios/features/deep-links)
 -  [安卓](/zh/sdk/android/features/deep-links)
 
-## [通过深度链接进行再归因](reattribution-using-deep-links)
+## 通过深度链接进行再归因 {#reattribution-using-deep-links}
+
+<Callout type="seealso">
+
+Adjust 支持使用深度链接进行再交互推广活动。要了解更多信息，请参阅[如何在深度链接中附加归因数据](https://help.adjust.com/zh/article/manage-reattributions#track-reattributions-via-deep-link-clicks)。
+
+</Callout>
+
+要对用户进行再归因，您需要使用深度链接 URL 实例化一个`ADJDeeplink`/`AdjustDeeplink`对象并将其传递至`Adjust.processDeeplink`方法。这样，Adjust SDK 就会在深度链接中寻找新的归因信息。如果 SDK 找到新信息，就会将其转发至 Adjust 服务器进行再归因。
+
+<Tabs>
+<Tab title="iOS" sync="ios" icon="PlatformIos">
+<CodeBlock title="方法签名">
+
+```objc
++ (void)processDeeplink:(ADJDeeplink *)deeplink
+```
+
+</CodeBlock>
+
+要通过深度链接启用 Adjust 再归因，请确保在应用代理回传中获得深度链接后调用`Adjust.processDeeplink`方法。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+import Adjust
+
+class AppDelegate {
+
+   func application(application:UIApplication!, didFinishLaunchingWithOptions launchOptions:NSDictionary!) -> Bool {
+      GeneratedPluginRegistrant.registerWithRegistry(self)
+      // Override point for customization after application launch.
+      return super.application(application, didFinishLaunchingWithOptions:launchOptions)
+   }
+
+   func application(application:UIApplication!, openURL url:NSURL!, sourceApplication:String!, annotation:AnyObject!) -> Bool {
+     let deeplink = ADJDeeplink(deeplink: url)!
+     Adjust.processDeeplink(deeplink)
+      return true
+   }
+
+   func application(application:UIApplication!, continueUserActivity userActivity:NSUserActivity!, restorationHandler:([AnyObject]!)->Void) -> Bool {
+         if (userActivity.activityType() == NSUserActivityTypeBrowsingWeb) {
+            let deeplink = ADJDeeplink(deeplink: userActivity.webpageURL())!
+            Adjust.processDeeplink(deeplink)
+         }
+         return true
+   }
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "Adjust.h"
+
+@implementation AppDelegate
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+   [GeneratedPluginRegistrant registerWithRegistry:self];
+   // Override point for customization after application launch.
+   return [super application:application didFinishLaunchingWithOptions:launchOptions];
+}
+
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+   [Adjust processDeeplink:[ADJDeeplink alloc] initWithDeeplink:url]];
+   return YES;
+}
+
+- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray<id<uiuseractivityrestoring>> *restorableObjects))restorationHandler {
+   if ([[userActivity activityType] isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+      [Adjust processDeeplink:[ADJDeeplink alloc] initWithDeeplink:[userActivity webpageURL]]];
+   }
+   return YES;
+}
+
+@end
+```
+
+</Tab>
+</Tabs>
+</Tab>
+<Tab title="安卓" sync="android" icon="PlatformAndroid">
+<CodeBlock title="方法签名">
+
+```java
+public static void processDeeplink(AdjustDeeplink deeplink)
+```
+
+</CodeBlock>
+
+要通过深度链接启用 Adjust 再归因，请确保在应用代理回传中获得深度链接后调用`Adjust.processDeeplink`方法。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+import com.adjust.sdk.flutter.AdjustSdk
+import io.flutter.embedding.android.FlutterActivity
+// Used for post flutter 1.12 Android projects
+//import io.flutter.app.FlutterActivity
+
+class MainActivity : FlutterActivity() {
+   // Either call make the call in onCreate.
+   override fun onCreate(savedInstanceState: Bundle?) {
+      super.onCreate(savedInstanceState)
+      // GeneratedPluginRegistrant.registerWith(this)
+      // Used only for pre flutter 1.12 Android projects
+      Intent intent = getIntent()
+      Uri data = intent.getData()
+      Adjust.processDeeplink(new AdjustDeeplink(data), this)
+   }
+
+   // Or make the call in onNewIntent.
+   override fun onNewIntent(intent: Intent?) {
+      super.onNewIntent(intent)
+      Uri data = intent.getData()
+      Adjust.processDeeplink(new AdjustDeeplink(data), this)
+   }
+}
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+import com.adjust.sdk.flutter.AdjustSdk;
+import io.flutter.embedding.android.FlutterActivity; // Used for post flutter 1.12 Android projects
+//import io.flutter.app.FlutterActivity; // Used for pre flutter 1.12 Android projects
+
+public class MainActivity extends FlutterActivity {
+   // Either call make the call in onCreate.
+   @Override
+   protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      // GeneratedPluginRegistrant.registerWith(this); Used only for pre flutter 1.12 Android projects
+
+      Intent intent = getIntent();
+      Uri data = intent.getData();
+      Adjust.processDeeplink(new AdjustDeeplink(data), this);
+   }
+
+   // Or make the cakll in onNewIntent.
+   @Override
+   protected void onNewIntent(Intent intent) {
+      super.onNewIntent(intent);
+      Uri data = intent.getData();
+      Adjust.processDeeplink(new AdjustDeeplink(data), this);
+   }
+}
+```
+
+</Tab>
+</Tabs>
+</Tab>
+</Tabs>
+
+## 延迟深度链接 {#deferred-deep-linking}
+
+<CodeBlock title="属性声明">
+
+```dart
+bool? isDeferredDeeplinkOpeningEnabled;
+```
+
+</CodeBlock>
+
+SDK 默认自动打开延迟深度链接。无需额外设置。将 config 示例上的 `isDeferredDeeplinkOpeningEnabled` 属性设为 **false** ，即可禁用该设置。
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox);
+//...
+adjustConfig.isDeferredDeeplinkOpeningEnabled = false;
+//...
+Adjust.initSdk(adjustConfig);
+```
+
+### 设置延迟深度链接回传 {#set-up-a-deferred-deep-link-callback}
+
+<CodeBlock title="属性声明">
+
+```dart
+typedef void DeferredDeeplinkCallback(String? deeplink);
+DeferredDeeplinkCallback? deferredDeeplinkCallback;
+
+```
+
+</CodeBlock>
+
+您可以向 config 实例 `deferredDeeplinkCallback` 属性添加一个函数，以此配置 Adjust SDK，使其在收到延迟深度链接时调用一个函数。该函数会以 `String` 参数的形式接收深度链接。
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox);
+adjustConfig.deferredDeeplinkCallback = (String? deeplink) {
+   print('[Adjust]: Received deferred deeplink: ' + deeplink);
+};
+Adjust.initSdk(adjustConfig);
+```
+
+### 示例 {#example}
+
+该示例展示了如何在用户打开延迟深度链接时记录深度链接地址。
+
+```dart
+import 'package:adjust_sdk/adjust.dart';
+import 'package:adjust_sdk/adjust_config.dart';
+
+initPlatformState() async {
+   AdjustConfig config =
+      new AdjustConfig('2fm9gkqubvpc', AdjustEnvironment.sandbox);
+   config.logLevel = AdjustLogLevel.verbose;
+
+   config.deferredDeeplinkCallback = (String? uri) {
+      print('[Adjust]: Received deferred deeplink: ' + uri!);
+   };
+
+   Adjust.initSdk(config);
+}
+```
+
+### 启用 LinkMe {#enable-linkme}
+
+<CodeBlock title="属性声明">
+
+```dart
+bool? isLinkMeEnabled;
+```
+
+</CodeBlock>
+
+通过 Adjust SDK，您可以从设备剪贴板复制深度链接信息。配合Adjust LinkMe 解决方案使用时，该功能可在 iOS 15 及更高版本操作系统中设置延迟深度链接。
+
+<Callout type="important">
+
+用户第一次打开应用时，Adjust SDK 会检查剪贴板。设备会显示对话框，询问用户是否允许应用读取剪贴板。
+
+</Callout>
+
+当用户点击 LinkMe URL 时，可以选择将链接信息复制到剪贴板。您可以使用 Adjust SDK 读取系统剪贴板，获取深度链接信息。如果含有深度链接信息，SDK 就会将用户转到应用中的正确页面。
+
+要在您的应用中开启剪贴板查看，请将 config 对象的 `isLinkMeEnabled` 属性值设置为 `true`：
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox);
+//...
+adjustConfig.isLinkMeEnabled = true;
+//...
+Adjust.initSdk(adjustConfig);
+```
+
+</SdkVersion>
+<SdkVersion version="v4">
+
+您可以创建深度链接来将用户转到应用中的特定页面。针对用户是否已在设备上安装您的应用，Adjust SDK 会使用不同的逻辑：
+
+-  直接深度链接：用于用户已经安装应用的情况。用户会被转向链接中指定的页面。
+-  如果用户尚未安装应用，那么就会发生延迟深度链接。链接首先会将用户转向应用商店页面来安装应用。用户安装后，就会被带到链接中指定的页面。
+
+用户通过链接打开应用后，SDK 就可以读取深度链接数据了。
+
+## 设置深度链接 {#set-up-deep-linking}
+
+如果用户已经安装了您的应用，那么在与包含深度链接信息的链接互动时，应用就会打开。Adjust SDK 中包含的工具能够解析深度链接信息，在应用中使用。
+
+您需要在应用层级上设置深度链接。请按照下方链接中的说明，在您的目标平台上设置深度链接：
+
+-  [iOS](/zh/sdk/ios/features/deep-links)
+-  [安卓](/zh/sdk/android/features/deep-links)
+
+## 通过深度链接进行再归因 {#reattribution-using-deep-links}
 
 <Callout type="seealso">
 
@@ -112,7 +386,7 @@ public static void appWillOpenUrl(Uri url, Context context)
 
 </CodeBlock>
 
-要针对 安卓 启用深度链接，请在主要活动中使用 `true` 值调用 `appWillOpenUrl`。
+要针对安卓启用深度链接，请在主要活动中使用 `true` 值调用 `appWillOpenUrl`。
 
 <Tabs>
 <Tab title="Kotlin" sync="kotlin">
@@ -178,7 +452,7 @@ public class MainActivity extends FlutterActivity {
 </Tab>
 </Tabs>
 
-## [延迟深度链接](deferred-deep-linking)
+## 延迟深度链接 {#deferred-deep-linking}
 
 <CodeBlock title="属性声明">
 
@@ -198,7 +472,7 @@ adjustConfig.launchDeferredDeeplink = false;
 Adjust.start(adjustConfig);
 ```
 
-### [设置延迟深度链接回传](set-up-a-deferred-deep-link-callback)
+### 设置延迟深度链接回传 {#set-up-a-deferred-deep-link-callback}
 
 <CodeBlock title="属性声明">
 
@@ -220,7 +494,7 @@ adjustConfig.deferredDeeplinkCallback = (String uri) {
 Adjust.start(adjustConfig);
 ```
 
-### [示例](example)
+### 示例 {#example}
 
 该示例展示了如何在用户打开延迟深度链接时记录深度链接地址。
 
@@ -241,7 +515,7 @@ initPlatformState() async {
 }
 ```
 
-### [启用 LinkMe](enable-linkme)
+### 启用 LinkMe {#enable-linkme}
 
 <CodeBlock title="属性声明">
 
@@ -270,3 +544,5 @@ adjustConfig.linkMeEnabled = true;
 //...
 Adjust.start(adjustConfig);
 ```
+
+</SdkVersion>

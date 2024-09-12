@@ -8,7 +8,7 @@ import expressiveCode from "astro-expressive-code";
 import remarkReplaceVersions from "./src/integrations/remarkReplaceVersions";
 import { fetchVersions } from "./src/integrations/fetchSdkVersions";
 import rehypeExternalLinks from "rehype-external-links";
-import remarkHeaderLinkToId from "./src/integrations/remarkHeaderLinkToId";
+import remarkCustomHeadingId from "remark-custom-heading-id";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import redirectList from "./src/redirects.json";
 import {
@@ -44,22 +44,15 @@ export default defineConfig({
   integrations: [
     AutoImport({
       imports: [
-        {
-          "@components/index": [
-            "ApiVersion",
-            "Accordion",
-            "Callout",
-            "CodeBlock",
-            "FigmaEmbed",
-            "ListColumns",
-            "MinorVersion",
-            "SdkVersion",
-            "Tab",
-            "Table",
-            "Tabs",
-            "Tile",
-          ],
-        },
+        "@components/Accordion.astro",
+        "@components/Callout.astro",
+        "@components/CodeBlock.astro",
+        "@components/ListColumns.astro",
+        "@components/MinorVersion.astro",
+        "@components/SdkVersion.astro",
+        "@components/Tab.astro",
+        "@components/Table.astro",
+        "@components/Tabs.astro",
       ],
     }),
     // Enable React for the Algolia search component.
@@ -67,7 +60,9 @@ export default defineConfig({
       experimentalReactChildren: true,
     }),
     expressiveCode(),
-    mdx(),
+    mdx({
+      optimize: true,
+    }),
     tailwind(),
     sitemap(),
   ],
@@ -75,7 +70,7 @@ export default defineConfig({
   markdown: {
     remarkPlugins: [
       [remarkReplaceVersions, versions],
-      remarkHeaderLinkToId,
+      remarkCustomHeadingId,
       remarkDefinitionList,
     ],
     remarkRehype: {
