@@ -1,42 +1,38 @@
 ---
 title: "SKAdNetwork 및 전환값 설정"
 description: "iOS 앱의 SKAdNetwork 기능을 구성합니다."
-slug: "ko/sdk/flutter/features/skan"
+slug: "en/sdk/flutter/features/skan"
 multiVersion: true
 ---
-
-<SdkVersion version="v5">
-<Callout type="important">
+<sdkversion version="v5"> <callout type="important"> 
 
 이 기능은 iOS 14 이상 버전의 기기에서만 사용할 수 있습니다.
-
-</Callout>
+</Callout> 
 
 SKAdNetwork\(StoreKit Ad Network\)는 앱 설치와 재설치를 어트리뷰션하는 Apple의 자체 어트리뷰션 프레임워크입니다. SKAdNetwork 워크플로우는 다음과 같습니다.
 
 1. Apple은 어트리뷰션 정보를 수집하고, 관련 광고 네트워크에게 이를 알립니다.
 2. 네트워크는 Adjust에 해당 정보와 함께 포스트백을 전송합니다.
-3. Adjust는 [Datascape](https://help.adjust.com/ko/suite/article/datascape) 에 SKAdNetwork 데이터를 표시합니다.
+3. Adjust는 [Datascape](https://help.adjust.com/en/suite/article/datascape) 에 SKAdNetwork 데이터를 표시합니다.
 
-## SKAdNetwork 커뮤니케이션 비활성화 {#disable-skadnetwork-communication}
+Disable SKAdNetwork communication \{\#disable\-skadnetwork\-communication\}
+--------------------------------------------------------------------------------
 
-<CodeBlock title="속성 선언">
+<codeblock title="속성 선언"> 
 
 ```dart
 bool? isSkanAttributionEnabled;
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 Adjust SDK는 기본값에 따라 SKAdNetwork와 정보를 주고 받습니다. SDK는 초기화 시 SKAdNetwork의 어트리뷰션을 기록합니다.
 
 `AdjustConfig` 인스턴스의 `isSkanAttributionEnabled` 속성을 `bool` 값으로 설정하여 이 동작을 제어할 수 있습니다.
+<callout type="important"> 
 
-<Callout type="important">
-
-이 속성은 Adjust SDK 초기화 _전에_ 설정해야 합니다.
-
-</Callout>
+이 속성은 Adjust SDK 초기화 *전에* 설정해야 합니다.
+</Callout> 
 
 ```dart
 AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox, true);
@@ -46,29 +42,29 @@ adjustConfig.isSkanAttributionEnabled = false;
 Adjust.initSdk(adjustConfig);
 ```
 
-## 전환값 업데이트 {#update-conversion-values}
+Update conversion values \{\#update\-conversion\-values\}
+--------------------------------------------------------------
 
-<CodeBlock title="메서드 서명">
+<codeblock title="메서드 서명"> 
 
 ```dart
 static Future<String?> updateSkanConversionValue(int conversionValue, String coarseValue, bool lockWindow)
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 전환값은 SKAdNetwork에서 사용자 행동 측정에 사용되는 메커니즘입니다. 64가지 조건을 `0`에서 `63` 사이의 값에 매핑하여 사용자 설치에 대해 이 정수 값을 SKAdNetwork로 전송할 수 있습니다. 이를 통해 처음 며칠간 사용자의 앱 이용에 관한 통찰력을 얻을 수 있습니다.
 
-Adjust에서 전환값을 관리하는 경우 서버는 SDK에서 이 값을 업데이트합니다. `updateSkanConversionValue` 메서드를 사용하여 이 값을 업데이트할 수도 있습니다. 이 메서드는 [Apple의 `updateConversionValue` 메서드](https://developer.apple.com/documentation/storekit/skadnetwork/3566697-updateconversionvalue)를 래핑하고 다음 인수를 허용합니다.
+Adjust에서 전환값을 관리하는 경우 서버는 SDK에서 이 값을 업데이트합니다. `updateSkanConversionValue` 메서드를 사용하여 이 값을 업데이트할 수도 있습니다. 다음 인수를 허용합니다.
+<table> 
 
-<Table>
-
-| 인수 \(Arguments\) | 데이터 유형                                                                                                                                         | 설명                                                                                                                                                                                                                                                                                                                       |
-| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `conversionValue`  | int                                                                                                                                                 | 전환값. `0` 및 `63` 사이의 값이어야 함.                                                                                                                                                                                                                                                                                    |
+| 인수 \(Arguments\) |                                                                       데이터 유형                                                                       |                                                                                                                                              설명                                                                                                                                              |
+|--------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `conversionValue`  | int                                                                                                                                                | 전환값. `0` 및 `63` 사이의 값이어야 함.                                                                                                                                                                                                                                                                  |
 | `coarseValue`      | 부울\(bool\) 문자열 \([`SKAdNetwork.CoarseConversionValue`](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)\) | coarse\-grained 전환값. 앱의 설치 수가 Privacy Threshold를 충족하지 못하는 경우에 사용됩니다.<ul><li>`'low'` \(`SKAdNetworkCoarseConversionValueLow`에 대한 것\)</li><li>`'medium'` \(`SKAdNetworkCoarseConversionValueMedium`에 대한 것\)</li><li>`'high'` \(`SKAdNetworkCoarseConversionValueHigh`에 대한 것\)</li></ul> |
-| `lockWindow`       | 인가요?                                                                                                                                             | 전환값 윈도우가 종료되기 전에 포스트백을 전송할지 여부.전환값 윈도우가 종료될 때까지 기다리지 않고 시스템이 포스트백을 전송하도록 하려면 `true` 값을 사용하시기 바랍니다. 기본: `false`.                                                                                                                                   |
+| `lockWindow`       | 인가요?                                                                                                                                               | 전환값 윈도우가 종료되기 전에 포스트백을 전송할지 여부.전환값 윈도우가 종료될 때까지 기다리지 않고 시스템이 포스트백을 전송하도록 하려면 `true` 값을 사용하시기 바랍니다. 기본: `false`.                                                                                                                                                                              |
 
-</Table>
+</Table> 
 
 ```dart
 Adjust.updateSkanConversionValue(6, 'coarse-value', true).then((error) {
@@ -76,16 +72,17 @@ Adjust.updateSkanConversionValue(6, 'coarse-value', true).then((error) {
 });
 ```
 
-## 전환값 변경 사항 수신 {#listen-for-changes-to-conversion-values}
+Listen for changes to conversion values \{\#listen\-for\-changes\-to\-conversion\-values\}
+--------------------------------------------------------------------------------------------------
 
-<CodeBlock title="속성 선언">
+<codeblock title="속성 선언"> 
 
 ```dart
 typedef void SkanUpdatedCallback(Map<String, String> skanUpdateData);
 SkanUpdatedCallback? skanUpdatedCallback;
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 전환값 관리에 Adjust 솔루션을 사용하는 경우, Adjust 서버는 전환값 업데이트를 SDK에 전송합니다. `skanUpdatedCallback` 메서드를 사용하면 델리게이트 함수를 설정하여 이러한 업데이트를 수신할 수 있습니다. 함수를 인수로 전달합니다.
 
@@ -99,14 +96,14 @@ adjustConfig.skanUpdatedCallback = (Map<String, String> data) {
 Adjust.initSdk(adjustConfig);
 ```
 
-### 예시 {#example}
+### Example \{\#example\}
 
 이 예시에서는 전환값이 업데이트될 때 다음 항목을 로깅하는 방법을 보여줍니다.
 
--  전환값 업데이트 확인 메세지
--  새로운 전환값
+* 전환값 업데이트 확인 메세지
+* 새로운 전환값
 
-<CodeBlock title="main.dart">
+<codeblock title="main.dart"> 
 
 ```dart
 import 'package:adjust_sdk/adjust.dart';
@@ -129,23 +126,23 @@ Adjust.initSdk(config);
 }
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-## SKAdNetwork 4\.0 콜백 {#skadnetwork-4-0-callbacks}
+SKAdNetwork 4\.0 callbacks \{\#skadnetwork\-4\-0\-callbacks\}
+--------------------------------------------------------------------
 
 SKAdNetwork 4\.0 포스트백은 광고주들에게 사용자 관련 인사이트를 더 많이 제공하기 위해 추가적인 정보를 포함하고 있습니다. Adjust 서버가 전환값을 업데이트할 때 이 추가 정보가 페이로드에 전송됩니다. `skanUpdatedCallback` 콜백 메서드로 이 정보에 액세스하실 수 있습니다.
+<table> 
 
-<Table>
+| 인수 \(Arguments\) |  데이터 유형  |                                                                                                          설명                                                                                                          |
+|--------------------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `conversionValue`  | `String` | Adjust의 서버가 전송하는 전환값                                                                                                                                                                                                 |
+| `coarseValue`      | `String` | coarse\-grained 전환값. 앱의 설치 수가 Privacy Threshold를 충족하지 못하는 경우에 사용됩니다.<ul><li>`none`</li><li>`low`</li><li>`medium`</li><li>`high`</li></ul><br/>Apple은 low, medium, high로 설정된 조건 중 어느 것도 충족되지 않는 경우 아무 것도 전송하지 않습니다. |
+| `lockWindow`       | `bool`   | 전환값 윈도우가 종료되기 전에 포스트백을 전송할지 여부. `1`은 전환값 윈도우 종료 전에 포스트백이 전송됨을 의미합니다.<br/>SKAdNetwork 4\.0 포스트백에서는 `0`, 그 이전 SKAdNetwork 버전에서는 `nil`로 기본 설정되어 있습니다.                                                                  |
 
-| 인수 \(Arguments\) | 데이터 유형 | 설명                                                                                                                                                                                                                                                                         |
-| ------------------ | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `conversionValue`  | `String`    | Adjust의 서버가 전송하는 전환값                                                                                                                                                                                                                                              |
-| `coarseValue`      | `String`    | coarse\-grained 전환값. 앱의 설치 수가 Privacy Threshold를 충족하지 못하는 경우에 사용됩니다.<ul><li>`none`</li><li>`low`</li><li>`medium`</li><li>`high`</li></ul><br/>Apple은 low, medium, high로 설정된 조건 중 어느 것도 충족되지 않는 경우 아무 것도 전송하지 않습니다. |
-| `lockWindow`       | `bool`      | 전환값 윈도우가 종료되기 전에 포스트백을 전송할지 여부. `1`은 전환값 윈도우 종료 전에 포스트백이 전송됨을 의미합니다.<br/>SKAdNetwork 4\.0 포스트백에서는 `0`, 그 이전 SKAdNetwork 버전에서는 `nil`로 기본 설정되어 있습니다.                                                |
+</Table> 
 
-</Table>
-
-### 예시 {#example-3}
+### Example \{\#example\-3\}
 
 본 예시에서 Adjust는 fine\-grained 전환값, coarse\-grained 전환값, SKAdNetwork 포스트백이 전환값 종료 전에 전송되도록 설정되었는지 여부를 로그합니다.
 
@@ -173,13 +170,13 @@ initPlatformState() async {
 }
 ```
 
-## 다이렉트 설치 포스트백\(direct install postback\) 설정하기 {#set-up-direct-install-postbacks}
+Set up direct install postbacks \{\#set\-up\-direct\-install\-postbacks\}
+--------------------------------------------------------------------------------
 
-<Callout type="note">
+<callout type="note"> 
 
 다이렉트 설치 포스트백은 SKAdNetwork 정보만 포함합니다. 캠페인 데이터와 같은 정보는 다이렉트 설치 포스트백에 포함되지 않습니다.
-
-</Callout>
+</Callout> 
 
 Adjust에 SKAdNetwork 콜백의 사본을 전송하도록 앱을 구성하면, 고객님의 애널리틱스에서 SKAdNetwork 정보를 사용하실 수 있습니다.
 
@@ -187,51 +184,43 @@ Adjust에 SKAdNetwork 콜백의 사본을 전송하도록 앱을 구성하면, �
 
 1. Xcode의 프로젝트 네비게이터\(Project navigator\)에서 **Info.plist** 를 선택하세요.
 2. 속성 리스트 에디터의 키 옆에 있는 추가 버튼\(\+\)을 선택한 후, `Return`을 누르세요.
-3. _`NSAdvertisingAttributionReportEndpoint`_ 를 키 이름으로 입력하세요.
+3. *`NSAdvertisingAttributionReportEndpoint`* 를 키 이름으로 입력하세요.
 4. 팝업 메뉴의 **Type** 을 **String** 으로 설정하세요.
-5. _`https://adjust-skadnetwork.com`_ 주소를 입력하세요.
+5. *`https://adjust-skadnetwork.com`* 주소를 입력하세요.
 
-<Callout type="seealso">
+<callout type="seealso"> 
 
 자세한 정보는 Apple의 [Configuring an Advertised App 설명서](https://developer.apple.com/documentation/storekit/skadnetwork/configuring_an_advertised_app)를 참조하시기 바랍니다.
-
-</Callout>
-</SdkVersion>
-<SdkVersion version="v4">
-<Callout type="important">
+</Callout> </SdkVersion> <sdkversion version="v4"> <callout type="important"> 
 
 이 기능은 iOS 14 이상 버전의 기기에서만 사용할 수 있습니다.
-
-</Callout>
+</Callout> 
 
 SKAdNetwork\(StoreKit Ad Network\)는 앱 설치와 재설치를 어트리뷰션하는 Apple의 자체 어트리뷰션 프레임워크입니다. SKAdNetwork 워크플로우는 다음과 같습니다.
 
 1. Apple은 어트리뷰션 정보를 수집하고, 관련 광고 네트워크에게 이를 알립니다.
 2. 네트워크는 Adjust에 해당 정보와 함께 포스트백을 전송합니다.
-3. Adjust는 [Datascape](https://help.adjust.com/ko/suite/article/datascape) 에 SKAdNetwork 데이터를 표시합니다.
+3. Adjust는 [Datascape](https://help.adjust.com/en/suite/article/datascape) 에 SKAdNetwork 데이터를 표시합니다.
 
-## SKAdNetwork 커뮤니케이션 비활성화 {#disable-skadnetwork-communication}
+Disable SKAdNetwork communication \{\#disable\-skadnetwork\-communication\}
+--------------------------------------------------------------------------------
 
-<CodeBlock title="메서드 서명">
+<codeblock title="메서드 서명"> 
 
 ```dart
 void deactivateSKAdNetworkHandling()
 ```
 
-</CodeBlock>
-<MinorVersion added="v4.23.0">
+</CodeBlock> <minorversion added="v4.23.0"> 
 
 Adjust SDK v4\.23\.0 및 이상 버전에서는 기본값에 따라 SKAdNetwork와 정보를 주고 받습니다.SDK는 초기화 시 SKAdNetwork의 어트리뷰션을 기록합니다.
-
-</MinorVersion>
+</MinorVersion> 
 
 config 객체에는 해당 동작을 제어하는 boolean `isSKAdNetworkHandlingActive` 속성이 포함되어 있습니다. 인수 없이 `deactivateSKAdNetworkHandling` 메서드를 호출하여 SKAdNetwork 커뮤니케이션을 비활성화할 수 있습니다.
-
-<Callout type="important">
+<callout type="important"> 
 
 `deactivateSKAdNetworkHandling` 메서드는 Adjust SDK를 초기화하기 **이전** 에 호출해야 합니다.
-
-</Callout>
+</Callout> 
 
 ```dart
 AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.Sandbox, true);
@@ -241,15 +230,16 @@ adjustConfig.deactivateSKAdNetworkHandling();
 Adjust.start(adjustConfig);
 ```
 
-## 전환값 업데이트 {#update-conversion-values}
+Update conversion values \{\#update\-conversion\-values\}
+--------------------------------------------------------------
 
-<CodeBlock title="메서드 서명">
+<codeblock title="메서드 서명"> 
 
 ```dart
 static void updateConversionValue(int conversionValue)
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 전환값은 SKAdNetwork에서 사용자 행동 측정에 사용되는 메커니즘입니다. 64가지 조건을 `0`에서 `63` 사이의 값에 매핑하여 사용자 설치에 대해 이 정수 값을 SKAdNetwork로 전송할 수 있습니다. 이를 통해 처음 며칠간 사용자의 앱 이용에 관한 통찰력을 얻을 수 있습니다.
 
@@ -259,15 +249,16 @@ Adjust에서 전환값을 관리하는 경우 서버는 SDK에서 이 값을 업
 Adjust.updateConversionValue(6);
 ```
 
-## 전환값 변경 사항 수신 {#listen-for-changes-to-conversion-values}
+Listen for changes to conversion values \{\#listen\-for\-changes\-to\-conversion\-values\}
+--------------------------------------------------------------------------------------------------
 
-<CodeBlock title="속성 선언">
+<codeblock title="속성 선언"> 
 
 ```dart
 typedef void ConversionValueUpdatedCallback(num? conversionValue);
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 전환값 관리에 Adjust 솔루션을 사용하는 경우, Adjust 서버는 전환값 업데이트를 SDK에 전송합니다. `conversionValueUpdatedCallback` 메서드를 사용하면 델리게이트 함수를 설정하여 이러한 업데이트를 수신할 수 있습니다. 함수를 인수로 전달합니다.
 
@@ -279,14 +270,14 @@ config.conversionValueUpdatedCallback = (num? conversionValue) {
 Adjust.start(adjustConfig);
 ```
 
-### 예시 {#example}
+### Example \{\#example\}
 
 이 예시에서는 전환값이 업데이트될 때 다음 항목을 로깅하는 방법을 보여줍니다.
 
--  전환값 업데이트 확인 메세지
--  새로운 전환값
+* 전환값 업데이트 확인 메세지
+* 새로운 전환값
 
-<CodeBlock title="main.dart">
+<codeblock title="main.dart"> 
 
 ```dart
 import 'package:adjust_sdk/adjust.dart';
@@ -309,26 +300,25 @@ Adjust.start(config);
 }
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-## SKAdNetwork 4\.0 콜백 {#skadnetwork-4-0-callbacks}
+SKAdNetwork 4\.0 callbacks \{\#skadnetwork\-4\-0\-callbacks\}
+--------------------------------------------------------------------
 
-<MinorVersion added="v4.33.0">
+<minorversion added="v4.33.0"> 
 
 SKAdNetwork 4\.0 포스트백은 광고주들에게 사용자 관련 인사이트를 더 많이 제공하기 위해 추가적인 정보를 포함하고 있습니다. Adjust 서버가 전환값을 업데이트할 때 이 추가 정보가 페이로드에 전송됩니다. `Skad4ConversionValueUpdatedCallback` 콜백 메서드로 이 정보에 액세스하실 수 있습니다.
+</MinorVersion> <table> 
 
-</MinorVersion>
-<Table>
+| 인수 \(Arguments\) |   데이터 유형   |                                                                                                          설명                                                                                                          |
+|--------------------|------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `fineValue`        | `NSNumber` | Adjust의 서버가 전송하는 전환값                                                                                                                                                                                                 |
+| `coarseValue`      | `NSString` | coarse\-grained 전환값. 앱의 설치 수가 Privacy Threshold를 충족하지 못하는 경우에 사용됩니다.<ul><li>`none`</li><li>`low`</li><li>`medium`</li><li>`high`</li></ul><br/>Apple은 low, medium, high로 설정된 조건 중 어느 것도 충족되지 않는 경우 아무 것도 전송하지 않습니다. |
+| `lockWindow`       | `NSNumber` | 전환값 윈도우가 종료되기 전에 포스트백을 전송할지 여부. `1`은 전환값 윈도우 종료 전에 포스트백이 전송됨을 의미합니다.<br/>SKAdNetwork 4\.0 포스트백에서는 `0`, 그 이전 SKAdNetwork 버전에서는 `nil`로 기본 설정되어 있습니다.                                                                  |
 
-| 인수 \(Arguments\) | 데이터 유형 | 설명                                                                                                                                                                                                                                                                         |
-| ------------------ | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `fineValue`        | `NSNumber`  | Adjust의 서버가 전송하는 전환값                                                                                                                                                                                                                                              |
-| `coarseValue`      | `NSString`  | coarse\-grained 전환값. 앱의 설치 수가 Privacy Threshold를 충족하지 못하는 경우에 사용됩니다.<ul><li>`none`</li><li>`low`</li><li>`medium`</li><li>`high`</li></ul><br/>Apple은 low, medium, high로 설정된 조건 중 어느 것도 충족되지 않는 경우 아무 것도 전송하지 않습니다. |
-| `lockWindow`       | `NSNumber`  | 전환값 윈도우가 종료되기 전에 포스트백을 전송할지 여부. `1`은 전환값 윈도우 종료 전에 포스트백이 전송됨을 의미합니다.<br/>SKAdNetwork 4\.0 포스트백에서는 `0`, 그 이전 SKAdNetwork 버전에서는 `nil`로 기본 설정되어 있습니다.                                                |
+</Table> 
 
-</Table>
-
-### 예시 {#example-3}
+### Example \{\#example\-3\}
 
 본 예시에서 Adjust는 fine\-grained 전환값, coarse\-grained 전환값, SKAdNetwork 포스트백이 전환값 종료 전에 전송되도록 설정되었는지 여부를 로그합니다.
 
@@ -354,13 +344,13 @@ Adjust.start(config);
 }
 ```
 
-## 다이렉트 설치 포스트백\(direct install postback\) 설정하기 {#set-up-direct-install-postbacks}
+Set up direct install postbacks \{\#set\-up\-direct\-install\-postbacks\}
+--------------------------------------------------------------------------------
 
-<Callout type="note">
+<callout type="note"> 
 
 다이렉트 설치 포스트백은 SKAdNetwork 정보만 포함합니다. 캠페인 데이터와 같은 정보는 다이렉트 설치 포스트백에 포함되지 않습니다.
-
-</Callout>
+</Callout> 
 
 Adjust에 SKAdNetwork 콜백의 사본을 전송하도록 앱을 구성하면, 고객님의 애널리틱스에서 SKAdNetwork 정보를 사용하실 수 있습니다.
 
@@ -368,13 +358,12 @@ Adjust에 SKAdNetwork 콜백의 사본을 전송하도록 앱을 구성하면, �
 
 1. Xcode의 프로젝트 네비게이터\(Project navigator\)에서 **Info.plist** 를 선택하세요.
 2. 속성 리스트 에디터의 키 옆에 있는 추가 버튼\(\+\)을 선택한 후, `Return`을 누르세요.
-3. _`NSAdvertisingAttributionReportEndpoint`_ 를 키 이름으로 입력하세요.
+3. *`NSAdvertisingAttributionReportEndpoint`* 를 키 이름으로 입력하세요.
 4. 팝업 메뉴의 **Type** 을 **String** 으로 설정하세요.
-5. _`https://adjust-skadnetwork.com`_ 주소를 입력하세요.
+5. *`https://adjust-skadnetwork.com`* 주소를 입력하세요.
 
-<Callout type="seealso">
+<callout type="seealso"> 
 
 자세한 정보는 Apple의 [Configuring an Advertised App 설명서](https://developer.apple.com/documentation/storekit/skadnetwork/configuring_an_advertised_app)를 참조하시기 바랍니다.
+</Callout> </SdkVersion>
 
-</Callout>
-</SdkVersion>
