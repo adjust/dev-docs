@@ -68,6 +68,10 @@ def process_file(file, locale):
     # Update internal links
     content = re.sub(r"\(/en/(.*?)\)", rf"(/{locale}/\1)", content)
 
+    # Remove unnecessary IDs
+    content = re.sub(r' id="sl-md0000000"', "", content)
+    content = re.sub(r"\s?md0000000\s?", "", content)
+
     # Write back the modified content
     with open(file, "w", encoding="utf-8") as f:
         f.write(content)
