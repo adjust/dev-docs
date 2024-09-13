@@ -54,16 +54,24 @@ export const getCategoryChildrens = ({
       const splittedChildPage = ("/" + child.slug)?.split("/");
 
       // category logic if the file has `type: category` then we need to populate children's to display
+      const isChildLinkVersioned = child.slug.includes(child.version!);
+
+      const checkWithVersion =
+        isChildLinkVersioned &&
+        splittedCurrentPage.length + 2 === splittedChildPage.length;
+
       if (
         currentPageType === "category" &&
-        splittedCurrentPage.length + 1 === splittedChildPage.length &&
-        child.slug?.includes(currentPage.slice(1))
+        child.slug?.includes(currentPage.slice(1)) &&
+        (checkWithVersion ||
+          splittedCurrentPage.length + 1 === splittedChildPage.length)
       ) {
         childLinks.push({
           title: child.title,
           slug: child.slug,
           description: child.description,
           position: child.position,
+          version: child.version,
         });
       }
     });

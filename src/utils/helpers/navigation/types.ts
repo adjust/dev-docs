@@ -17,6 +17,7 @@ export interface CategoryEntry {
   topCategory: boolean;
   description: string;
   type: NavItemTypes;
+  version: string | null;
 }
 
 export interface NavigationEntry {
@@ -30,6 +31,7 @@ export interface NavigationEntry {
   path: string;
   description: string;
   type: NavItemTypes;
+  version: string | null;
 }
 
 export interface GroupedNavigationItems {
@@ -41,6 +43,7 @@ export interface ChildLink {
   title: string;
   description: string;
   position?: number;
+  version: string | null;
 }
 
 export interface NavigationData {

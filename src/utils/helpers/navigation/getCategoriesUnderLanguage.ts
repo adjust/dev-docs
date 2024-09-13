@@ -80,6 +80,7 @@ export const getCategoriesUnderLanguage = (
         path: `${CONTENT_PATH}`,
         parentId: null,
         collapsed: true,
+        version: null,
         topCategory: true,
         level: 1,
       };
