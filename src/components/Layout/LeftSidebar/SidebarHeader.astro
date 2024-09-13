@@ -9,6 +9,7 @@ import ApiVersionSwitch from "@components/Version/ApiVersionSwitch";
 import { useTranslations } from "@i18n/utils";
 import { type Locales } from "@i18n/locales";
 import type { NavigationData } from "@utils/helpers/navigation/types";
+import classNames from "classnames";
 
 interface Props {
   homeUrl: string;
@@ -19,13 +20,20 @@ interface Props {
 
 const { homeUrl, lang, redirects, versions } = Astro.props;
 const pathName = Astro.url.pathname;
+const isSdkSwitch = pathName.includes("sdk") && versions.sdk?.length;
+const isApiSwitch = pathName.includes("api") && versions.api?.length;
 const t = useTranslations(lang as keyof Locales);
 ---
 
 <div
-  class="flex flex-col items-center pt-7 pl-[27px] sidebar-open:justify-center sidebar-open:mb-5 sidebar-open:pt-[6px] sidebar-open:pl-0"
+  class={classNames(
+    "flex flex-col items-center pt-7 pl-[27px] sidebar-open:justify-center sidebar-open:mb-5 sidebar-open:pt-[6px] sidebar-open:pl-0",
+    {
+      "mb-[74px]": !isApiSwitch && !isSdkSwitch,
+    },
+  )}
 >
-  <div class="flex flex-row items-center">
+  <div class="flex flex-row items-center w-full">
     <a href={homeUrl} title={t("header.adjust-logo-link-label")}>
       <AdjustLogo />
     </a>
@@ -33,7 +41,7 @@ const t = useTranslations(lang as keyof Locales);
   </div>
   <div>
     {
-      pathName.includes("sdk") && versions.sdk?.length ? (
+      isSdkSwitch ? (
         <SdkVersionSwitch
           client:only="react"
           lang={lang}
@@ -43,7 +51,7 @@ const t = useTranslations(lang as keyof Locales);
       ) : undefined
     }
     {
-      pathName.includes("api") && versions.api?.length ? (
+      isApiSwitch ? (
         <ApiVersionSwitch
           client:only="react"
           lang={lang}
