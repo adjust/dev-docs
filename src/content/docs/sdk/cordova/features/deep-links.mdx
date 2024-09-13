@@ -97,25 +97,43 @@ processDeeplink(adjustDeeplink: AdjustDeeplink): void
 
 Adjust enables you to run re-engagement campaigns using deep links. For more information, check out how to set up [Deep links in Campaign Lab](https://help.adjust.com/en/article/deep-links).
 
-To reattribute your user, you need to call the `Adjust.processDeeplink` method when the app receives deep link content. The Adjust SDK then looks for new attribution data within the deep link. If the SDK finds new information, it forwards the information to Adjust's servers for reattribution.
+To reattribute your user, you need to call the `processDeeplink` method when the app receives deep link content. The Adjust SDK then looks for new attribution data within the deep link. If the SDK finds new information, it forwards the information to Adjust's servers for reattribution.
 
 ```js
-componentDidMount() {
-    Linking.addEventListener('url', this.handleDeepLink);
-    Linking.getInitialURL().then((url) => {
-        if (url) {
-            this.handleDeepLink({ url });
-        }
-    })
+function handleOpenURL(url) {
+   setTimeout(function () {
+      // Check content of the url object and get information about the URL.
+      Adjust.appWillOpenUrl(url);
+   }, 300);
 }
+```
 
-componentWillUnmount() {
-    Linking.removeEventListener('url', this.handleDeepLink);
-}
+You can call the `Adjust.processDeeplink` function inside your `didLaunchAppFromLink` method to open universal links.
 
-handleDeepLink(deeplink) {
-    Adjust.processDeeplink(new AdjustDeeplink(deeplink.url));
-}
+```js
+var app = {
+   initialize: function () {
+      this.bindEvents();
+   },
+
+   bindEvents: function () {
+      document.addEventListener("deviceready", this.onDeviceReady, false);
+   },
+
+   onDeviceReady: function () {
+      if (device.platform == "iOS") {
+         universalLinks.subscribe(
+            "adjustDeepLinking",
+            app.didLaunchAppFromLink,
+         );
+      }
+   },
+
+   didLaunchAppFromLink: function (eventData) {
+      // Check content of the url object and get information about the URL.
+      Adjust.appWillOpenUrl(eventData.url);
+   },
+};
 ```
 
 ## Enable LinkMe {#enable-linkme}
