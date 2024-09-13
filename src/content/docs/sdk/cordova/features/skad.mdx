@@ -2,7 +2,135 @@
 title: Set up SKAdNetwork and conversion values
 description: Configure SKAdNetwork features for your iOS apps.
 slug: en/sdk/cordova/features/skan
+multiVersion: true
 ---
+
+<SdkVersion version="v5">
+
+<Callout type="important">
+
+This feature is only available on devices running iOS 14 and above.
+
+</Callout>
+
+StoreKit Ad Network (SKAdNetwork) is Apple's attribution framework for
+app install and reinstall attribution. The SKAdNetwork workflow goes like this:
+
+1. Apple gathers attribution information and notifies the relevant ad network.
+2. The network sends a postback with this information to Adjust.
+3. Adjust displays SKAdNetwork data in [Datascape](https://help.adjust.com/en/suite/article/datascape).
+
+## Disable SKAdNetwork communication {#disable-skadnetwork-communication}
+
+<CodeBlock title="Method signature">
+
+```ts
+disableSkanAttribution(): void
+```
+
+</CodeBlock>
+
+Your config object contains a `boolean` `isSkanAttributionEnabled` property that controls this behavior. You can disable SKAdNetwork communication by calling the `disableSkanAttribution` method.
+
+<Callout type="important">
+
+You must call the `disableSkanAttribution` method _before_ initializing the Adjust SDK.
+
+</Callout>
+
+```js
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox,
+);
+
+adjustConfig.disableSkanAttribution();
+
+Adjust.initSdk(adjustConfig);
+```
+
+## Update conversion values {#update-conversion-values}
+
+<CodeBlock title="Method signature">
+
+```ts
+updateSkanConversionValue(conversionValue: number, coarseValue: string, lockWindow: boolean): Promise<string>
+```
+
+</CodeBlock>
+
+Conversion values are a mechanism used to measure user behavior in SKAdNetwork. You can map 64 conditions to values from `0` through `63` and send this integer value to SKAdNetwork on user install. This gives you insight into how your users interact with your app in the first few days.
+
+If you manage your conversion values with Adjust, the servers update this value in the SDK. You can also update this value by using the `updateSkanConversionValue` method. It accepts the following arguments:
+
+<Table>
+
+| Argument          | Data type                                                                                                                            | Description                                                                                                                                                                                                                                                                                                                       |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `conversionValue` | number                                                                                                                               | Your conversion value. Must be between `0` and `63`.                                                                                                                                                                                                                                                                              |
+| `coarseValue`     | string ([`SKAdNetwork.CoarseConversionValue`](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)) | The coarse conversion value. This value is used if your app doesn't have sufficient installs to reach the privacy threshold.<ul><li>`'low'` (for `SKAdNetworkCoarseConversionValueLow`)</li><li>`'medium'` (for `SKAdNetworkCoarseConversionValueMedium`)</li><li>`'high'` (for `SKAdNetworkCoarseConversionValueHigh`)</li></ul> |
+| `lockWindow`      | boolean                                                                                                                              | Whether to send the postback before the conversion window ends.<br/>Use `true` to tell the system to send the postback without waiting for the end of the conversion window. Defaults to `false`.                                                                                                                                 |
+
+</Table>
+
+```js
+Adjust.updateSkanConversionValue(6, "low", true, function (error) {
+   // error is present in case it happened
+});
+```
+
+## Listen for changes to conversion values {#listen-for-changes-to-conversion-values}
+
+<CodeBlock title="Method signature">
+
+```ts
+setSkanUpdatedCallback(skanUpdatedCallback: (skanData: AdjustSkanData) => void): void
+```
+
+</CodeBlock>
+
+If you use Adjust to manage conversion values, the Adjust's servers send conversion value updates to the SDK. You can set up a delegate function to listen for these changes using the `setSkanUpdatedCallback` method. Pass your function as an argument.
+
+```js
+const adjustConfig = new AdjustConfig(appToken, environment);
+
+adjustConfig.setSkanUpdatedCallback(function (skanData) {
+   console.log("Conversion value: " + skanData.conversionValue);
+   console.log("Coarse value: " + skanData.coarseValue);
+   console.log("Lock window: " + skanData.lockWindow);
+   console.log("Error: " + skanData.error);
+});
+
+Adjust.initSdk(adjustConfig);
+```
+
+## Set up direct install postbacks {#set-up-direct-install-postbacks}
+
+<Callout type="note">
+
+Direct install postbacks contain only SKAdNetwork information. Information such as campaign data isn't included in these postbacks.
+
+</Callout>
+
+You can configure your app to send a copy of winning SKAdNetwork callbacks to Adjust. This enables you to use SKAdNetwork information in your analytics.
+
+To set up direct install postbacks, you need to add the Adjust callback URL to your `Info.plist` file:
+
+1. Select **Info.plist** in the Project navigator in Xcode.
+2. Select the Add button beside a key in the property list editor and press `Return`.
+3. Enter _`NSAdvertisingAttributionReportEndpoint`_ as the key name.
+4. Set the **Type** to **String** in the pop up menu.
+5. Enter the address _`https://adjust-skadnetwork.com`_.
+
+<Callout type="seealso">
+
+See Apple's guide on [Configuring an Advertised App](https://developer.apple.com/documentation/storekit/skadnetwork/configuring_an_advertised_app) for more information.
+
+</Callout>
+
+</SdkVersion>
+
+<SdkVersion version="v4">
 
 <Callout type="important">
 
@@ -33,3 +161,5 @@ If you manage your conversion values with Adjust, the servers update this value 
 ```js
 Adjust.updateConversionValue(6);
 ```
+
+</SdkVersion>
