@@ -15,7 +15,7 @@ Adjust 대시보드에서 딥링크가 설정되면 앱에서 딥링크를 구�
 -  [ ] 앱의 Associated Domains 활성화
 -  [ ] Xcode에서 딥링크 구성
 
-## [Associated Domains 활성화](enable-associated-domains)
+## Enable Associated Domains {#enable-associated-domains}
 
 Apple 개발자 계정에서 Associated Domains를 활성화해야, 앱에서 유니버설 링크 도메인을 설정할 수 있습니다. 이를 위해 다음의 단계를 수행하시기 바랍니다.
 
@@ -26,11 +26,11 @@ Apple 개발자 계정에서 Associated Domains를 활성화해야, 앱에서 �
 5. **Associated Domains** 가 **Capabilities** 아래에 체크 표시되어있는지 확인합니다.
 6. **Save** 를 선택하여 변경 내용을 저장합니다.
 
-## [Xcode에서 딥링크 구성](configure-deep-links-in-xcode)
+## Configure deep links in Xcode {#configure-deep-links-in-xcode}
 
 다음의 단계를 수행하여 Xcode 프로젝트에 딥링크 구성을 추가하시기 바랍니다.
 
-### [Adjust 유니버설 링크 도메인](adjust-universal-links-domain)
+### Adjust universal links domain {#adjust-universal-links-domain}
 
 1. Xcode에서 앱 프로젝트를 실행합니다.
 2. 왼쪽 메뉴에서 프로젝트를 선택합니다.
@@ -42,7 +42,7 @@ Apple 개발자 계정에서 Associated Domains를 활성화해야, 앱에서 �
 8. 접두어와 함께 Adjust 유니버설 링크 도메인을 입력합니다. `applinks:`
    -  다음은 `example.adj.st` 도메인을 사용한 예시입니다. `applinks:example.adj.st`
 
-### [커스텀 URL 스킴](custom-url-scheme)
+### Custom URL scheme {#custom-url-scheme}
 
 <Callout type="tip">
 
@@ -63,19 +63,19 @@ Apple 개발자 계정에서 Associated Domains를 활성화해야, 앱에서 �
 
 이 스킴은 프로덕션과 디버그 빌드 **모두** 에 작동합니다.
 
-## [iOS 앱 변경](modify-your-ios-app)
+## Modify your iOS app {#modify-your-ios-app}
 
 다양한 딥링크 시나리오를 설정하려면 iOS 앱을 업데이트해야 합니다. 앱을 업데이트 하는 방식은 앱이 [scene](https://developer.apple.com/documentation/uikit/app_and_environment/scenes)을 사용하는지 여부에 따라 달라집니다.
 
-### [앱이 scene을 사용하지 않는 경우](app-doesn-t-use-scenes)
+### App doesn't use scenes {#app-doesn-t-use-scenes}
 
 앱이 scene을 사용하지 않는 경우, 앱 델리게이트에서 메서드를 업데이트해야 합니다.
 
-#### [유니버설 링크](universal-links)
+#### Universal links {#universal-links}
 
 Adjust SDK에서 다음의 메서드를 호출하기 위해 앱 델리게이트에서 `application(_:continue:restorationHandler:)` 메서드를 업데이트합니다.
 
--  `ADJLinkResolution.resolveLink`: 마케팅팀이 Adjust의 링크 해석\(link resolution\) 솔루션이 필요한 경우에만 이 메서드를 호출합니다. 딥링크가 `resolveUrlSuffixArray`의 요소와 일치하는 도메인을 사용하는 경우, 이 메서드는 딥링크를 해석하려고 시도하여 해석된 링크를 반환합니다. 딥링크가 이 배열의 요소와 일치하지 않는 경우, 이 메서드는 원래의 딥링크를 전달하므로 모든 딥링크를 이 메서드로 전달할 수 있습니다.
+-  `ADJLinkResolution.resolveLink`: Call this method only if your marketing team requires the use of Adjust's Link Resolution solution. If the deep link uses a domain that matches an element in the `resolveUrlSuffixArray`, then the method attempts to resolve the deep link, and returns the resolved link. If the deep link doesn't match an element in this array, then the method passes through the original deep link, so you can pass all deep links to this method.
 -  `Adjust.processDeeplink` \- 이 메서드를 호출하여 정보 기록을 위해 딥링크를 Adjust 서버로 전송합니다. Adjust 딥링크와 비 Adjust 딥링크 모두 이 메서드를 통해 전달할 수 있습니다. Adjust 서버는 Adjust 파라미터가 없는 딥링크를 모두 무시합니다.
 
 사용자가 유니버설 링크를 클릭하면 iOS가 앱을 실행하고 딥링크를 `application(_:continue:restorationHandler:)`으로 전달합니다. 이는 사용자가 앱을 종료한 상태거나 앱이 백그라운드에서 실행 중인지와 관계없이 작동합니다.
@@ -104,7 +104,8 @@ func application(
 
 
             // call the below method to send deep link to Adjust's servers
-            Adjust.processDeeplink(resolvedURL)
+            let deeplink = ADJDeeplink(deeplink: resolvedURL)!
+            Adjust.processDeeplink(deeplink)
         })
       } else {
           return false
@@ -140,7 +141,8 @@ func application(
 
 
             // call the below method to send deep link to Adjust's servers
-            [Adjust processDeeplink:resolvedURL];
+            ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:resolvedURL];
+            [Adjust processDeeplink:deeplink];
         }];
     } else {
         return NO;
@@ -153,7 +155,7 @@ func application(
 </Tab>
 </Tabs>
 
-#### [커스텀 URL 스킴](custom-url-scheme-1)
+#### Custom URL scheme {#custom-url-scheme-1}
 
 마케팅팀이 맞춤 URL 스킴 딥링크 설정을 원하는 경우, 앱 델리게이트에서 `application(_:open:options:)` 메서드를 업데이트하고 Adjust SDK에서 `Adjust.processDeeplink` 메서드를 호출합니다. 이 메서드는 딥링크를 Adjust 서버로 전송하여 이를 기록합니다. Adjust 딥링크와 비 Adjust 딥링크 모두 이 메서드를 통해 전달할 수 있습니다. Adjust 서버는 Adjust 파라미터가 없는 딥링크를 모두 무시합니다.
 
@@ -175,7 +177,7 @@ func application(
 
 
     // call the below method to send deep link to Adjust's servers
-    Adjust.processDeeplink(incomingURL)
+    Adjust.processDeeplink(ADJDeeplink(deeplink: incomingURL))
 
     return true
 }
@@ -195,7 +197,7 @@ func application(
 
 
     // call the below method to send deep link to Adjust's servers
-    [Adjust processDeeplink:incomingURL];
+    [Adjust processDeeplink:[[ADJDeeplink alloc] initWithDeeplink:incomingURL]];
 
     return YES;
 }
@@ -204,18 +206,18 @@ func application(
 </Tab>
 </Tabs>
 
-### [앱이 scene을 사용하는 경우](app-uses-scenes)
+### App uses scenes {#app-uses-scenes}
 
 앱이 scene을 사용하는 경우, scene 델리게이트에서 메서드를 업데이트해야 합니다.
 
-#### [유니버설 링크](universal-links-1)
+#### Universal links {#universal-links-1}
 
 1. scene 델리게이트에서 `scene(_:willConnectTo:options:)` 메서드를 업데이트합니다. 사용자가 유니버설 링크를 클릭하고 앱은 종료된 상태인 경우, iOS는 앱을 실행하고 딥링크를 이 메서드에 전달합니다.
 2. scene 델리게이트에서 `scene(_:continue:)` 메서드를 업데이트합니다. 사용자가 유니버설 링크를 클릭하고 앱이 백그라운드에서 실행 중인 경우, iOS는 앱을 실행하고 딥링크를 이 메서드에 전달합니다.
 
 위 메서드는 Adjust SDK에서 다음의 메서드를 호출합니다.
 
--  `ADJLinkResolution.resolveLink`: 마케팅팀이 Adjust의 링크 해석\(link resolution\) 솔루션이 필요한 경우에만 이 메서드를 호출합니다. 딥링크가 `resolveUrlSuffixArray`의 요소와 일치하는 도메인을 사용하는 경우, 이 메서드는 딥링크를 해석하려고 시도하여 해석된 링크를 반환합니다. 딥링크가 이 배열의 요소와 일치하지 않는 경우, 이 메서드는 원래의 딥링크를 전달하므로 모든 딥링크를 이 메서드로 전달할 수 있습니다.
+-  `ADJLinkResolution.resolveLink`: Call this method only if your marketing team requires the use of Adjust's Link Resolution solution. If the deep link uses a domain that matches an element in the `resolveUrlSuffixArray`, then the method attempts to resolve the deep link, and returns the resolved link. If the deep link doesn't match an element in this array, then the method passes through the original deep link, so you can pass all deep links to this method.
 -  `Adjust.processDeeplink` \- 이 메서드를 호출하여 기록을 위해 딥링크를 Adjust 서버로 전송합니다. Adjust 딥링크와 비 Adjust 딥링크 모두 이 메서드를 통해 전달할 수 있습니다. Adjust 서버는 Adjust 파라미터가 없는 딥링크를 모두 무시합니다.
 
 <Tabs>
@@ -244,7 +246,8 @@ func scene(
 
 
         // call the below method to send deep link to Adjust's servers
-        Adjust.processDeeplink(resolvedURL)
+        let deeplink = ADJDeeplink(deeplink: resolvedURL)!
+         Adjust.processDeeplink(deeplink)
       })
 }
 
@@ -266,7 +269,8 @@ func scene(
 
 
             // call the below method to send deep link to Adjust's servers
-            Adjust.processDeeplink(resolvedURL)
+            let deeplink = ADJDeeplink(deeplink: resolvedURL)!
+            Adjust.processDeeplink(deeplink)
         })
     }
 }
@@ -299,7 +303,8 @@ func scene(
 
 
             // call the below method to send deep link to Adjust's servers
-            [Adjust processDeeplink:resolvedURL];
+            ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:resolvedURL];
+            [Adjust processDeeplink:deeplink];
         }];
     }
 }
@@ -322,7 +327,8 @@ func scene(
 
 
             // call the below method to send deep link to Adjust's servers
-            [Adjust processDeeplink:resolvedURL];
+            ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:resolvedURL];
+            [Adjust processDeeplink:deeplink];
         }];
     }
 }
@@ -331,7 +337,7 @@ func scene(
 </Tab>
 </Tabs>
 
-#### [커스텀 URL 스킴](custom-url-scheme-2)
+#### Custom URL scheme {#custom-url-scheme-2}
 
 1. scene 델리게이트에서 `scene(_:willConnectTo:options:)` 메서드를 업데이트합니다. 사용자가 맞춤 URL 스킴 딥링크를 클릭하고 앱은 종료된 상태인 경우, iOS는 앱을 실행하고 딥링크를 이 메서드에 전달합니다.
 2. scene 델리게이트에서 `scene(_:openURLContexts:)` 메서드를 업데이트합니다. 사용자가 맞춤 URL 스킴 딥링크를 클릭하고 앱이 백그라운드에서 실행 중인 경우, iOS는 앱을 실행하고 딥링크를 이 메서드에 전달합니다.
@@ -394,7 +400,7 @@ Adjust 대시보드에서 딥링크가 설정되면 앱에서 딥링크를 구�
 -  [ ] 앱의 Associated Domains 활성화
 -  [ ] Xcode에서 딥링크 구성
 
-## [Associated Domains 활성화](enable-associated-domains)
+## Enable Associated Domains {#enable-associated-domains}
 
 Apple 개발자 계정에서 Associated Domains를 활성화해야, 앱에서 유니버설 링크 도메인을 설정할 수 있습니다. 이를 위해 다음의 단계를 수행하시기 바랍니다.
 
@@ -405,11 +411,11 @@ Apple 개발자 계정에서 Associated Domains를 활성화해야, 앱에서 �
 5. **Associated Domains** 가 **Capabilities** 아래에 체크 표시되어있는지 확인합니다.
 6. **Save** 를 선택하여 변경 내용을 저장합니다.
 
-## [Xcode에서 딥링크 구성](configure-deep-links-in-xcode)
+## Configure deep links in Xcode {#configure-deep-links-in-xcode}
 
 다음의 단계를 수행하여 Xcode 프로젝트에 딥링크 구성을 추가하시기 바랍니다.
 
-### [Adjust 유니버설 링크 도메인](adjust-universal-links-domain)
+### Adjust universal links domain {#adjust-universal-links-domain}
 
 1. Xcode에서 앱 프로젝트를 실행합니다.
 2. 왼쪽 메뉴에서 프로젝트를 선택합니다.
@@ -421,7 +427,7 @@ Apple 개발자 계정에서 Associated Domains를 활성화해야, 앱에서 �
 8. 접두어와 함께 Adjust 유니버설 링크 도메인을 입력합니다. `applinks:`
    -  다음은 `example.adj.st` 도메인을 사용한 예시입니다. `applinks:example.adj.st`
 
-### [커스텀 URL 스킴](custom-url-scheme)
+### Custom URL scheme {#custom-url-scheme}
 
 <Callout type="tip">
 
@@ -442,19 +448,19 @@ Apple 개발자 계정에서 Associated Domains를 활성화해야, 앱에서 �
 
 이 스킴은 프로덕션과 디버그 빌드 **모두** 에 작동합니다.
 
-## [iOS 앱 변경](modify-your-ios-app)
+## Modify your iOS app {#modify-your-ios-app}
 
 다양한 딥링크 시나리오를 설정하려면 iOS 앱을 업데이트해야 합니다. 앱을 업데이트 하는 방식은 앱이 [scene](https://developer.apple.com/documentation/uikit/app_and_environment/scenes)을 사용하는지 여부에 따라 달라집니다.
 
-### [앱이 scene을 사용하지 않는 경우](app-doesn-t-use-scenes)
+### App doesn't use scenes {#app-doesn-t-use-scenes}
 
 앱이 scene을 사용하지 않는 경우, 앱 델리게이트에서 메서드를 업데이트해야 합니다.
 
-#### [유니버설 링크](universal-links)
+#### Universal links {#universal-links}
 
 Adjust SDK에서 다음의 메서드를 호출하기 위해 앱 델리게이트에서 `application(_:continue:restorationHandler:)` 메서드를 업데이트합니다.
 
--  `ADJLinkResolution.resolveLink`: 마케팅팀이 Adjust의 링크 해석\(link resolution\) 솔루션이 필요한 경우에만 이 메서드를 호출합니다. 딥링크가 `resolveUrlSuffixArray`의 요소와 일치하는 도메인을 사용하는 경우, 이 메서드는 딥링크를 해석하려고 시도하여 해석된 링크를 반환합니다. 딥링크가 이 배열의 요소와 일치하지 않는 경우, 이 메서드는 원래의 딥링크를 전달하므로 모든 딥링크를 이 메서드로 전달할 수 있습니다.
+-  `ADJLinkResolution.resolveLink`: Call this method only if your marketing team requires the use of Adjust's Link Resolution solution. If the deep link uses a domain that matches an element in the `resolveUrlSuffixArray`, then the method attempts to resolve the deep link, and returns the resolved link. If the deep link doesn't match an element in this array, then the method passes through the original deep link, so you can pass all deep links to this method.
 -  `Adjust.appWillOpen` \- 이 메서드를 호출하여 정보 기록을 위해 딥링크를 Adjust 서버로 전송합니다. Adjust 딥링크와 비 Adjust 딥링크 모두 이 메서드를 통해 전달할 수 있습니다. Adjust 서버는 Adjust 파라미터가 없는 딥링크를 모두 무시합니다.
 
 사용자가 유니버설 링크를 클릭하면 iOS가 앱을 실행하고 딥링크를 `application(_:continue:restorationHandler:)`으로 전달합니다. 이는 사용자가 앱을 종료한 상태거나 앱이 백그라운드에서 실행 중인지와 관계없이 작동합니다.
@@ -532,7 +538,7 @@ func application(
 </Tab>
 </Tabs>
 
-#### [커스텀 URL 스킴](custom-url-scheme-1)
+#### Custom URL scheme {#custom-url-scheme-1}
 
 마케팅팀이 맞춤 URL 스킴 딥링크 설정을 원하는 경우, 앱 델리게이트에서 `application(_:open:options:)` 메서드를 업데이트하고 Adjust SDK에서 `Adjust.appWillOpen` 메서드를 호출합니다. 이 메서드는 딥링크를 Adjust 서버로 전송하여 이를 기록합니다. Adjust 딥링크와 비 Adjust 딥링크 모두 이 메서드를 통해 전달할 수 있습니다. Adjust 서버는 Adjust 파라미터가 없는 딥링크를 모두 무시합니다.
 
@@ -583,18 +589,18 @@ func application(
 </Tab>
 </Tabs>
 
-### [앱이 scene을 사용하는 경우](app-uses-scenes)
+### App uses scenes {#app-uses-scenes}
 
 앱이 scene을 사용하는 경우, scene 델리게이트에서 메서드를 업데이트해야 합니다.
 
-#### [유니버설 링크](universal-links-1)
+#### Universal links {#universal-links-1}
 
 1. scene 델리게이트에서 `scene(_:willConnectTo:options:)` 메서드를 업데이트합니다. 사용자가 유니버설 링크를 클릭하고 앱은 종료된 상태인 경우, iOS는 앱을 실행하고 딥링크를 이 메서드에 전달합니다.
 2. scene 델리게이트에서 `scene(_:continue:)` 메서드를 업데이트합니다. 사용자가 유니버설 링크를 클릭하고 앱이 백그라운드에서 실행 중인 경우, iOS는 앱을 실행하고 딥링크를 이 메서드에 전달합니다.
 
 위 메서드는 Adjust SDK에서 다음의 메서드를 호출합니다.
 
--  `ADJLinkResolution.resolveLink`: 마케팅팀이 Adjust의 링크 해석\(link resolution\) 솔루션이 필요한 경우에만 이 메서드를 호출합니다. 딥링크가 `resolveUrlSuffixArray`의 요소와 일치하는 도메인을 사용하는 경우, 이 메서드는 딥링크를 해석하려고 시도하여 해석된 링크를 반환합니다. 딥링크가 이 배열의 요소와 일치하지 않는 경우, 이 메서드는 원래의 딥링크를 전달하므로 모든 딥링크를 이 메서드로 전달할 수 있습니다.
+-  `ADJLinkResolution.resolveLink`: Call this method only if your marketing team requires the use of Adjust's Link Resolution solution. If the deep link uses a domain that matches an element in the `resolveUrlSuffixArray`, then the method attempts to resolve the deep link, and returns the resolved link. If the deep link doesn't match an element in this array, then the method passes through the original deep link, so you can pass all deep links to this method.
 -  `Adjust.appWillOpen` \- 이 메서드를 호출하여 기록을 위해 딥링크를 Adjust 서버로 전송합니다. Adjust 딥링크와 비 Adjust 딥링크 모두 이 메서드를 통해 전달할 수 있습니다. Adjust 서버는 Adjust 파라미터가 없는 딥링크를 모두 무시합니다.
 
 <Tabs>
@@ -710,7 +716,7 @@ func scene(
 </Tab>
 </Tabs>
 
-#### [커스텀 URL 스킴](custom-url-scheme-2)
+#### Custom URL scheme {#custom-url-scheme-2}
 
 1. scene 델리게이트에서 `scene(_:willConnectTo:options:)` 메서드를 업데이트합니다. 사용자가 맞춤 URL 스킴 딥링크를 클릭하고 앱은 종료된 상태인 경우, iOS는 앱을 실행하고 딥링크를 이 메서드에 전달합니다.
 2. scene 델리게이트에서 `scene(_:openURLContexts:)` 메서드를 업데이트합니다. 사용자가 맞춤 URL 스킴 딥링크를 클릭하고 앱이 백그라운드에서 실행 중인 경우, iOS는 앱을 실행하고 딥링크를 이 메서드에 전달합니다.
