@@ -1,0 +1,87 @@
+---
+title: "IMEIプラグイン"
+description: "IMEIプラグインを使用して、デバイスのIMEIを読み取ります。"
+slug: "ja/sdk/unity/v4/plugins/imei"
+---
+
+<Callout type="important">
+
+このプラグインは、Google Play ストアをターゲティングしていないアプリのみを対象としています。
+
+</Callout>
+
+モバイルデバイスには、IMEI（国際移動体加入者識別番号）とMEID（移動機識別子）があります。特定の市場において、AndroidデバイスのIMEIとMEIDをアトリビューション計測に使用することが可能です。この機能を使用するには、初めにAdjustダッシュボードで必要な手順を踏む必要があります。この手順が完了したら、このプラグインを使用できるようになります。
+
+IMEIプラグインは、IMEIとMEIDにデバイスの値を提供します。SDKは、IMEIとMEIDに加えて、他の識別子も引き続き使用します。
+
+このプラグインを使用する前に、[開始ガイド](/ja/sdk/unity)に従ってAdjust SDKをアプリに実装してください。
+
+## プラグインをアプリに追加する {#add-the-plugin-to-your-app}
+
+IMEIプラグインを使用するには、これをプロジェクトに追加する必要があります。プラグインを追加する方法は2つあります。
+
+-  [AdjustのGitHubリリースページからJARをダウンロードする](https://github.com/adjust/android_sdk/releases)
+-  Dependencyを`build.gradle`ファイルに追加する
+
+<CodeBlock title="build.gradle">
+
+```groovy
+dependencies {
+   implementation 'com.adjust.sdk:adjust-android:$UNITY_V4_VERSION'
+   implementation 'com.adjust.sdk:adjust-android-imei:$UNITY_V4_VERSION'
+}
+
+```
+
+</CodeBlock>
+
+## パーミッションを追加 {#add-permissions}
+
+`AndroidManifest.xml`ファイルに以下のパーミッションが存在することを確認してください。存在しない場合は追加してください。
+
+<CodeBlock title="AndroidManifest.xml">
+
+```xml
+<uses-permission android:name="android.permission.READ_PHONE_STATE" />
+```
+
+</CodeBlock>
+<Callout type="note">
+
+Android 6\.0では、[アプリの権限をリクエスト](https://developer.android.com/training/permissions/requesting)しなければならない場合があります。OSがアプリのパーミッションを必要としないように設定されている場合、これは該当しません。
+
+</Callout>
+
+## Proguardの設定を更新する {#update-proguard-settings}
+
+アプリがGoogle Play ストアを対象としていない場合は、開始ガイドに記載されている全てのルールを追加する必要はありません。Google Play開発者サービスとインストール リファラー ライブラリに関連するルールは、削除することができます。維持する必要があるのは、Adjust SDKに適用されるルールのみです。
+
+<CodeBlock title="Proguard.pro">
+
+```java
+-keep public class com.adjust.sdk.** { *; }
+```
+
+</CodeBlock>
+
+## プラグインを使用する {#use-the-plugin}
+
+<Callout type="important">
+
+IMEIとMEIDは、永続的な識別子です。お客様が識別子を使用する場合、このデータの収集と処理が合法的であることを確認する責任があります。
+
+</Callout>
+
+プラグインを設定したら、デバイスのIMEIとMEIDを収集できます。これを行うには、`AdjustImei.readImei`メソッドをAdjust SDKの開始前に呼び出します。
+
+```cs
+AdjustImei.ReadImei();
+// ...
+Adjust.start(config);
+```
+
+SDKが IMEIとMEIDを読み取らないようにするには、`AdjustImei.doNotReadImei`メソッドを呼び出します。
+
+```cs
+AdjustImei.doNotReadImei();
+```

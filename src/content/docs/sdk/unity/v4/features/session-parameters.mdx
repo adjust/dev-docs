@@ -1,0 +1,149 @@
+---
+title: Configure callback parameters
+description: Send information to your callback URL with each session.
+slug: en/sdk/unity/v4/features/session-parameters
+---
+
+If you [register a callback URL](https://help.adjust.com/en/article/recommended-placeholders-callbacks) in the Adjust dashboard, Adjust sends a GET request to your callback URL when the SDK measures a session.
+
+## Session callback parameters {#session-callback-parameters}
+
+<Callout type="note">
+
+The Adjust SDK merges session callback parameters with event callback parameters. Event callback parameters take priority over session callback parameters. This means that if you add a parameter key to both an event and a session, the SDK sends the event parameter.
+
+</Callout>
+
+You can configure callback parameters to your servers. Once you configure parameters on an event, the SDK appends them to your callback URL. You can use this information to analyze your users' in-app behavior with your BI system.
+
+### Add session callback parameters {#add-session-callback-parameters}
+
+<CodeBlock title="Method signature">
+
+```cs
+public static void addSessionCallbackParameter(string key, string value);
+```
+
+</CodeBlock>
+
+Add callback parameters to your event by calling the `addSessionCallbackParameter` method with `string` key-value arguments. You can add multiple parameters by calling this method multiple times.
+
+```cs
+Adjust.addSessionCallbackParameter("key", "value");
+```
+
+### Remove session callback parameters {#remove-session-callback-parameters}
+
+<CodeBlock title="Method signature">
+
+```cs
+public static void removeSessionCallbackParameter(string key);
+```
+
+</CodeBlock>
+
+You can remove specific session callback parameters if they're no longer required. To do this, pass the parameter `key` to the `removeSessionCallbackParameter` method.
+
+```cs
+Adjust.removeSessionCallbackParameter("key");
+```
+
+### Reset session callback parameters {#reset-session-callback-parameters}
+
+<CodeBlock title="Method signature">
+
+```cs
+public static void resetSessionCallbackParameters();
+```
+
+</CodeBlock>
+
+You can remove all session parameters if they're no longer required. To do this, call the `resetSessionCallbackParameters` method.
+
+```cs
+Adjust.resetSessionCallbackParameters();
+```
+
+## Session partner parameters {#session-partner-parameters}
+
+You can send extra information to your network partners by adding [partner parameters](https://help.adjust.com/en/article/data-sharing-ad-network#map-parameters).
+
+Adjust sends partner parameters to [external partners](https://help.adjust.com/en/article/integrated-partners) you've set up. This information is useful for more granular analysis and retargeting purposes. Adjust's servers forward these parameters once you've set them up and enabled them for a partner.
+
+<Callout type="note">
+
+Partner parameters don't appear in raw data by default. You can add the `{partner_parameters}` placeholder to receive them as a single string.
+
+</Callout>
+
+### Add session partner parameters {#add-session-partner-parameters}
+
+<CodeBlock title="Method signature">
+
+```cs
+public static void addSessionPartnerParameter(string key, string value);
+```
+
+</CodeBlock>
+
+Send partner parameters with your session by calling the `addSessionPartnerParameter` method with `string` key-value arguments. You can add multiple parameters by calling this method multiple times.
+
+```cs
+Adjust.addSessionPartnerParameter("key", "value");
+```
+
+### Remove session partner parameters {#remove-session-partner-parameters}
+
+<CodeBlock title="Method signature">
+
+```cs
+public static void removeSessionPartnerParameter(string key);
+```
+
+</CodeBlock>
+
+You can remove specific session partner parameters if they're no longer required. To do this, pass the parameter key to the `removeSessionPartnerParameter` method.
+
+```cs
+Adjust.removeSessionPartnerParameter("key");
+```
+
+### Reset session partner parameters {#reset-session-partner-parameters}
+
+<CodeBlock title="Method signature">
+
+```cs
+public static void resetSessionPartnerParameters();
+```
+
+</CodeBlock>
+
+You can remove all session partner parameters if they're no longer required. To do this, call the `resetSessionPartnerParameters` method.
+
+```cs
+Adjust.resetSessionPartnerParameters();
+```
+
+## Delay start {#delay-start}
+
+<Callout type="note">
+
+You can delay the startup of the SDK by up to **10 seconds**.
+
+</Callout>
+
+The Adjust SDK starts as soon as your app opens. If you want to send data that's not available at launch in session parameters, you can delay the start of the SDK. To do this, pass the delay time in seconds to the [`setDelayStart` method](/en/sdk/unity/configuration#delay-the-start-of-the-sdk) on your config object.
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+//...
+adjustConfig.setDelayStart(5.5);
+//...
+Adjust.start(adjustConfig);
+```
+
+After this time has elapsed, the SDK sends the information to Adjust's servers. You can send the information before the timeout by calling the `sendFirstPackages` method.
+
+```cs
+Adjust.sendFirstPackages();
+```

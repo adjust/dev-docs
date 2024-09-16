@@ -1,0 +1,300 @@
+---
+title: "Cordova SDK 連携ガイド"
+description: "Cordova SDKを使用して、CordovaアプリでAdjustの機能にアクセスしましょう。"
+category-title: "Cordova SDK"
+slug: "ja/sdk/cordova/v4"
+sidebar-position: 6
+---
+
+Adjust Cordova SDKを実装することで、アトリビューションやイベントなどのさまざまなデータをCordovaアプリで計測できます。以下の手順に従って、Adjust SDKをアプリに実装してください。また、[GitHub](https://github.com/adjust/cordova_sdk/tree/master/example-cordova)のサンプルアプリもご覧ください。
+
+## 1\. プロジェクトにSDKを追加する {#1-add-the-sdk-to-your-project}
+
+Adjust Cordova SDKは、npmのプラグインとして提供されています。これをプロジェクトに追加するには、
+
+### Cordovaプラグイン {#cordova-plugin}
+
+Adjust Cordova SDKをCordovaプラグインに追加するには、以下のコマンドを実行します。
+
+```console
+> cordova plugin add com.adjust.sdk
+Fetching plugin "com.adjust.sdk" via npm
+Installing "com.adjust.sdk" for android
+Installing "com.adjust.sdk" for ios
+```
+
+### Ionic {#ionic}
+
+Ionicを使用してアプリを構築する場合は、次のコマンドを実行して[`awesome-cordova-plugins`リポジトリ](https://github.com/danielsogl/awesome-cordova-plugins)からSDKを追加します。
+
+```console
+> npm install @awesome-cordova-plugins/adjust --save
+> ionic cordova plugin add com.adjust.sdk
+```
+
+## 2\. Androidデバイスを設定する {#2-set-up-android-devices}
+
+### Google Play 開発者サービスを追加する {#add-google-play-services}
+
+Google Playストアを対象とするアプリは、[Google広告ID](https://support.google.com/googleplay/android-developer/answer/6048248?hl=en)（`gps_adid`）を使用してデバイスを識別する必要があります。これを行うには、以下を`plugin.xml`ファイルに追加してください。
+
+<CodeBlock title="plugin.xml">
+
+```xml
+<framework src="com.google.android.gms:play-services-ads-identifier:18.0.1"  />
+```
+
+</CodeBlock>
+<Callout type="note">
+
+Adjust SDKは、`play-services-ads-identifier`dependencyのどのバージョンとも関連付けられていません。Google Play 開発者サービスのライブラリの任意のバージョンを使用できます。
+
+</Callout>
+
+### パーミッションを追加 {#add-permissions}
+
+Adjust SDKには以下のパーミッションが必要です。まだ存在しない場合は、`plugin.xml`ファイルに追加してください。
+
+<CodeBlock title="plugin.xml">
+
+```xml
+<config-file target="AndroidManifest.xml" parent="/manifest/application" >
+    <receiver         android:name="com.adjust.sdk.AdjustReferrerReceiver"         android:exported="true" >
+        <intent-filter >
+            <action android:name="com.android.vending.INSTALL_REFERRER"  />
+        </intent-filter>
+    </receiver>
+</config-file>
+```
+
+</CodeBlock>
+
+Adjust SDKには、バージョン4\.32\.0以降、デフォルトで`com.google.android.gms.AD_ID`パーミッションが含まれています。アプリをCOPPAに準拠させる必要がある場合や、Google Playストアをターゲットにしていない場合は、`remove`ディレクティブを追加することでこれを削除することができます。
+
+<CodeBlock title="plugin.xml">
+
+```xml
+<config-file target="AndroidManifest.xml" parent="/manifest" >
+  <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"  />
+</config>
+```
+
+</CodeBlock>
+<Callout type="seealso">
+
+このパーミッションに関する詳細は、Googleの[`AdvertisingIdClient.Info documentation`](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid)をご参照ください。
+
+</Callout>
+
+### ProGuardを設定する {#set-up-proguard}
+
+ProGuardを使用している場合は、以下のルールをカスタムのProGuardファイルに追加してください：
+
+<CodeBlock title="Proguard.pro">
+
+```java
+-keep public class com.adjust.sdk.** { *; }
+-keep class com.google.android.gms.common.ConnectionResult {
+   int SUCCESS;
+}
+-keep class com.google.android.gms.ads.identifier.AdvertisingIdClient {
+   com.google.android.gms.ads.identifier.AdvertisingIdClient$Info getAdvertisingIdInfo(android.content.Context);
+}
+-keep class com.google.android.gms.ads.identifier.AdvertisingIdClient$Info {
+   java.lang.String getId();
+   boolean isLimitAdTrackingEnabled();
+}
+-keep public class com.android.installreferrer.** { *; }
+```
+
+</CodeBlock>
+
+Google Play ストアでアプリを公開していない場合は、以下のルールをProGuardファイルに追加してください。
+
+<CodeBlock title="Proguard.pro">
+
+```java
+-keep public class com.adjust.sdk.** { *; }
+```
+
+</CodeBlock>
+
+### インストールリファラーを設定する {#set-up-install-referrer}
+
+インストールリファラーはアプリインストールをソースにアトリビュートするのに使用できる、ユニークな識別子です。Adjust SDKは、アトリビューションにこの情報を必要とします。この情報を収集する方法は3つあります。
+
+-  [Google Play Referrer API](https://developer.android.com/google/play/installreferrer)を使用する
+-  Huawei Referrer APIを使用する（Huaweiデバイスのみ）
+
+<Callout type="important">
+
+[Googleは、Google Play 開発者サービスのリファラー情報を提供する `INSTALL_REFERRER`インテントメソッド](https://android-developers.googleblog.com/2019/11/still-using-installbroadcast-switch-to.html)を廃止しました 。現在このメソッドを使用している場合は、Google Play Referrer APIに移行してください。
+
+</Callout>
+
+#### Google Play Referrer API {#google-play-referrer-api}
+
+<MinorVersion added="v4.12.0">
+
+Google Play Referrer APIをサポートする：
+
+</MinorVersion>
+
+1. `build.gradle`ファイルでGoogle Mavenリポジトリを設定します。
+
+   <CodeBlock title="build.gradle">
+
+   ```groovy
+   allprojects {
+      repositories {
+         jcenter()
+         maven {
+               url "https://maven.google.com"
+         }
+      }
+   }
+   ```
+
+   </CodeBlock>
+
+2. 以下を`plugin.xml`ファイルに追加します：
+
+   <CodeBlock title="plugin.xml">
+
+   ```xml
+   <framework src="com.android.installreferrer:installreferrer:2.2"  />
+   ```
+
+   </CodeBlock>
+
+3. Proguardを使用している場合は、Proguardファイルに以下の設定が含まれていることを確認してください。
+
+   <CodeBlock title="Proguard.pro">
+
+   ```java
+   -keep public class com.android.installreferrer.** { *; }
+   ```
+
+   </CodeBlock>
+
+#### Huawei Referrer API {#huawei-referrer-api}
+
+<MinorVersion added="v4.21.1">
+
+バージョン4\.21\.1以降より、Adjust SDKはHuawei App Galleryバージョン10\.4以降のHuaweiデバイスへのインストール計測をサポートしています。Huawei Referrer APIの使用を開始するために行う設定変更はありません。
+
+</MinorVersion>
+
+#### Metaとのリファラー連携 {#meta-referrer-integration}
+
+<Callout type="note">
+
+[Metaの要件](https://developers.facebook.com/docs/app-ads/meta-install-referrer#step-1--add-the-meta-apps)により、Adjust SDKは`<queries >`エレメントをバンドルしています。これらを`AndroidManifest.xml`に追加する必要はありません。
+
+</Callout>
+<MinorVersion added="v4.37.1">
+
+Adjust SDKはv4\.37\.1以降で[Metaインストールリファラー](https://developers.facebook.com/docs/app-ads/meta-install-referrer)をサポートしています。この機能を有効にする方法：
+
+</MinorVersion>
+
+1. [App Dashboard](https://developers.facebook.com/apps)でMetaアプリIDを検索します。詳しくはMetaの[アプリダッシュボードのドキュメント](https://developers.facebook.com/docs/development/create-an-app/app-dashboard)をご覧ください。
+
+2. `AdjustConfig`インスタンスの`fbAppId`プロパティにアプリIDを割り当てます。
+
+   <CodeBlock title="index.js" highlight="{range: 5}">
+
+   ```js
+   var adjustConfig = new AdjustConfig(
+      "{YourAppToken}",
+      AdjustConfig.EnvironmentSandbox,
+   );
+   adjustConfig.fbAppId = "<fb_app_id_string >";
+   Adjust.create(adjustConfig);
+   ```
+
+   </CodeBlock>
+
+## 3\. iOS frameworksを追加する {#3-add-ios-frameworks}
+
+特定のiOS frameworksをアプリに実装すると、Adjust SDKは追加の情報を取得できます。これらのframeworksによって特定のSDK機能を有効にできますが、SDKが正常に動作するために必須というわけではありません。
+
+<Table>
+
+| Framework                           | 説明                                                                                                                                       | 注意                                                                                                 |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
+| `AdSupport.framework`               | デバイスのIDFAにアクセスできるようにします。また、iOS 14以前のデバイスでLAT情報にアクセスできるようになります。                            | アプリが「子供向け」カテゴリーをターゲットにしている場合、このフレームワークは追加しないでください。 |
+| `AdServices.framework`              | Apple Search Adsのアトリビューションを処理します。                                                                                         |                                                                                                      |
+| `StoreKit.framework`                | SKAdNetworkフレームワークにアクセスできるようにします。                                                                                    | iOS14以降のデバイスでAdjust SDKがSKAdNetworkとのコミュニケーションを行うために必要です。             |
+| `AppTrackingTransparency.framework` | Adjust SDKがユーザーのトラッキング同意ダイアログをラップし、iOS 14以降のデバイスで同意レスポンスにアクセスできるようにするために必要です。 | アプリが「子供向け」カテゴリーをターゲットにしている場合、このフレームワークは追加しないでください。 |
+
+</Table>
+
+希望のフレームワークを`plugin.xml`ファイルに追加して有効化します。
+
+<CodeBlock title="plugin.xml">
+
+```xml
+<framework src="AdSupport.framework" weak="true"  />
+<framework src="StoreKit.framework" weak="true"  />
+<framework src="AdServices.framework" weak="true"  />
+<framework src="AppTrackingTransparency.framework" weak="true"  />
+```
+
+</CodeBlock>
+
+## 4\. Adjust SDKを初期化する {#4-initialize-the-adjust-sdk}
+
+Cordovaアプリ内で、即座にAdjust SDKを初期化するようにしてください。これを行うには、次の情報を使って`AdjustConfig`オブジェクトをインスタンス化します。
+
+-  `appToken`：お客様の[Adjustアプリトークン](https://help.adjust.com/ja/article/app-settings#view-your-app-token)
+-  `environment`：アプリの実行環境。アプリをローカルでテストするには、これを`AdjustConfig.ENVIRONMENT_SANDBOX`に設定します。
+
+<Callout type="important">
+
+テストを実行する際は、環境が`AdjustConfig.EnvironmentSandbox`に設定されていることを確認してください。アプリをApp Storeに提出する前に、これを`AdjustConfig.EnvironmentProduction`に変更してください。
+
+</Callout>
+<CodeBlock title="index.js" highlight="{range: 1-4}">
+
+```js
+var adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox,
+);
+Adjust.create(adjustConfig);
+```
+
+</CodeBlock>
+
+## 5\. アプリをビルドする {#5-build-your-app}
+
+これで、Cordovaアプリをビルドして実行できるようになります。ログを有効化して、問題がないか確認してください。また、ログの`Install tracked`メッセージもご覧ください。
+
+Adjust SDKを使用してユーザーをアトリビューションできるようになりました。
+
+## 6\. Adjust SDKシグネチャーを追加する {#6-add-the-adjust-sdk-signature}
+
+Adjust SDKシグネチャーを使用して、Adjust SDKによって送信される全ての通信に署名できます。これによりAdjustのサーバーは、シグネチャーがない不正インストールを検出し、拒否することができます。
+
+Adjust SDKシグネチャーの使用を開始するには、担当のテクニカルアカウントマネージャーまたは[support@adjust.com](mailto:support@adjust.com)までお問い合わせください。
+
+## 7\. 実装をテストする {#7-test-your-integration}
+
+Adjust SDKは、実装をテストとトラブルシューティングのためのツールを提供します。以下の手順に従って、実装をテストしてください。
+
+-  環境を **サンドボックス** に設定します。
+-  Adjustダッシュボードにサンドボックスフィルターを追加します。
+-  ログレベルを **verbose** に設定します。
+
+<Callout type="tip">
+
+問題が発生した場合は、全ての詳細情報とログを添付し、[support@adjust.com](mailto:support@adjust.com)までメールをお送りください。
+
+</Callout>
+
+### Google Play 開発者サービスの連携をテストする {#test-google-play-services-integration}
+
+Adjust SDKがデバイスのGoogle広告IDを受信できるかどうかテストするには、ログレベルを **verbose** に、環境を **Sandbox** に設定します。アプリを起動してセッションまたはイベントを計測します。SDKが広告IDを読み取った場合、SDKは`gps_adid`（Google Play開発者サービス広告ID\)パラメーターをログに記録します。
+
+Google広告IDを取得する際に問題が発生した場合は、SDK [Githubリポジトリ](https://github.com/adjust/cordova_sdk)で質問を投稿するか、[support@adjust.com](mailto:support@adjust.com)までお問い合わせください。

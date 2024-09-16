@@ -1,0 +1,140 @@
+---
+title: Set up App Tracking Transparency
+description: Configure your app to use Apple's App Tracking Transparency framework
+slug: en/sdk/unity/features/att
+---
+
+If you want to record the device's ID for Advertisers (IDFA), you must display a prompt to get your user's authorization. To do this, you need to include Apple's App Tracking Transparency (ATT) framework in your app. The Adjust SDK stores the user's authorization status and sends it to Adjust's servers with each request.
+
+## Authorization statuses {#authorization-statuses}
+
+<Table>
+
+| Status                                              | Code | Description                                                             |
+| --------------------------------------------------- | ---- | ----------------------------------------------------------------------- |
+| `ATTrackingManagerAuthorizationStatusNotDetermined` | `0`  | The user hasn't responded to the access prompt yet                      |
+| `ATTrackingManagerAuthorizationStatusRestricted`    | `1`  | Access to app-related data is blocked at the device level               |
+| `ATTrackingManagerAuthorizationStatusDenied`        | `2`  | The user has denied access to app-related data for device measurement   |
+| `ATTrackingManagerAuthorizationStatusAuthorized`    | `3`  | The user has approved access to app-related data for device measurement |
+
+</Table>
+
+<Callout type="note">
+
+You might receive a status code of `-1` if the SDK is unable to retrieve the ATT (App Tracking Transparency) status.
+
+</Callout>
+
+## ATT authorization wrapper {#att-authorization-wrapper}
+
+<CodeBlock title="Method signature">
+
+```cs
+public static void RequestAppTrackingAuthorization(Action<int> callback)
+```
+
+</CodeBlock>
+
+The Adjust SDK contains a wrapper around [Apple's `requestTrackingAuthorizationWithCompletionHandler` method](https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager/3547037-requesttrackingauthorizationwith). You can use this wrapper if you don't want to customize the ATT prompt.
+
+The callback method triggers when your user responds to the consent dialog. This method sends the user's consent status code to Adjust's servers. You can define responses to each status code within the callback function.
+
+You must specify text content for the ATT. To do this, add your text to the `NSUserTrackingUsageDescription` key in your `Info.plist` file.
+
+<Callout type="tip">
+
+The Adjust SDK also records the consent status if you use a custom prompt. If you show your prompt before initialization, the SDK sends the status either:
+
+1. As soon as the [custom prompt timer](#custom-prompt-timing) ends or
+2. The next time the Adjust SDK sends information to Adjust.
+
+</Callout>
+
+```cs
+Adjust.RequestAppTrackingAuthorization((status) =>
+{
+    switch (status)
+    {
+        case 0:
+            // ATTrackingManagerAuthorizationStatusNotDetermined case
+            break;
+        case 1:
+            // ATTrackingManagerAuthorizationStatusRestricted case
+            break;
+        case 2:
+            // ATTrackingManagerAuthorizationStatusDenied case
+            break;
+        case 3:
+            // ATTrackingManagerAuthorizationStatusAuthorized case
+            break;
+    }
+});
+```
+
+### Example {#example}
+
+This example shows how to log a human-readable description of the user's authorization status when they interact with a prompt.
+
+```cs
+Adjust.RequestAppTrackingAuthorization((status) =>
+{
+
+    switch (status)
+    {
+        case 0:
+            Debug.Log("The user hasn't responded to the access prompt yet.");
+            break;
+        case 1:
+            Debug.Log("Access to app-related data is blocked at the device level.");
+            break;
+        case 2:
+            Debug.Log("The user has denied access to app-related data for device measurement.");
+            break;
+        case 3:
+            Debug.Log("The user has approved access to app-related data for device measurement.");
+            break;
+    }
+});
+```
+
+## Get current authorization status {#get-current-authorization-status}
+
+<CodeBlock title="Method signature">
+
+```cs
+public static int GetAppTrackingAuthorizationStatus()
+```
+
+</CodeBlock>
+
+You can retrieve a user's current authorization status at any time. Call the `GetAppTrackingAuthorizationStatus` method to return the authorization status code as an `int`.
+
+```cs
+Adjust.GetAppTrackingAuthorizationStatus();
+```
+
+## Custom prompt timing {#custom-prompt-timing}
+
+<CodeBlock title="Property declaration">
+
+```cs
+public int? AttConsentWaitingInterval { get; set; }
+```
+
+</CodeBlock>
+
+If your app includes an onboarding process or a tutorial, you may want to delay sending your user's ATT consent status until after the user has completed this process. To do this, you can set the `AttConsentWaitingInterval` property to delay the sending of data for **up to 360 seconds** to give the user time to complete the initial onboarding. After the timeout ends or the user sets their consent status, the SDK sends all information it has recorded during the delay to Adjust's servers along with the user's consent status.
+
+<Callout type="note">
+
+If the user closes the app before the timeout ends, or before they select their consent status, the timeout restarts when they reopen the app.
+
+</Callout>
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+//...
+adjustConfig.AttConsentWaitingInterval = 30;
+//...
+Adjust.InitSdk(adjustConfig);
+```

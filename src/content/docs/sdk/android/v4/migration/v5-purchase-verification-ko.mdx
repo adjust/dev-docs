@@ -1,0 +1,177 @@
+---
+title: "Android 구매 검증 마이그레이션 가이드"
+description: "이 가이드를 참조하여 구매 검증 SDK에서  SDK v5에 내장된 구매 검증 기능으로 마이그레이션하시기 바랍니다."
+sidebar-label: "v5 구매 검증"
+sidebar-position: 3
+slug: "ko/sdk/android/v4/migration/v5-purchase-verification"
+---
+
+본 가이드에서는 Adjust의 SDK 에서 SDK v5의 내장된 기능으로 마이그레이션하는 방법을 확인하실 수 있습니다. SDK v5 구매 검증 워크플로우는 간소화된 구매 검증 방식입니다.
+
+구매 검증 SDK의 검증은 다음의 3단계로 나뉩니다.
+
+1. 구매 검증 SDK를 초기화합니다.
+
+```java
+String yourAppToken = "{YourAppToken}";
+String environment = ADJPConstants.ENVIRONMENT_SANDBOX;
+
+ADJPConfig config = new ADJPConfig(yourAppToken, environment);
+
+AdjustPurchase.init(config);
+```
+
+2. 구매를 인증합니다.
+
+```java
+AdjustPurchase.verifyPurchase(purchase.getSku(),
+                              purchase.getToken(),
+                              purchase.getDeveloperPayload(),
+                              new OnADJPVerificationFinished() {
+    @Override
+    public void onVerificationFinished(ADJPVerificationInfo info) {
+        // process ADJPVerificationInfo
+    }
+});
+```
+
+3. 인증 결과에 따라 `AdjustEvent` 객체를 구성하고 Adjust에 전송합니다.
+
+```java
+AdjustEvent adjustEvent = new AdjustEvent("abc123");
+adjustEvent.setRevenue(6.0, "EUR");
+adjustEvent.setProductId("product-id");
+adjustEvent.setPurchaseToken("purchase-token");
+Adjust.trackEvent(adjustEvent);
+```
+
+SDK v5에서는 이 워크플로우가 간소화되었습니다. `Adjust.verifyAndTrackPlayStorePurchase()` 메서드를 사용하면 이벤트를 Adjust 서버로 보내고, 검증 상태를 콜백으로 받을 수 있습니다. Adjust는 이벤트와 검증 상태를 자동으로 기록합니다.
+
+## 가이드 {#guide}
+
+이 가이드에 나온 단계를 수행하여 지정한 SDK 에서 SDK v5 내장된 버전으로 마이그레이션하시기 바랍니다.
+
+### 1\. 구매 검증 SDK 삭제 {#uninstall-the-pv-sdk}
+
+시작을 위해 Adjust 구매 검증 SDK를 삭제하시기 바랍니다.
+
+### 2\. 구매 검증 SDK 코드 삭제 {#remove-pv-sdk-code}
+
+Adjust 구매 검증 SDK 삭제가 완료되면, 프로젝트에서 모든 구매 검증 코드를 삭제해야 합니다.
+
+### 3\. SDK v5 구매 검증 사용을 위한 마이그레이션 {#migrate-to-sdk-v5-pv}
+
+기존의 구매 검증 코드를 삭제한 후에는 이를 SDK v5에 내장된 구매 검증 메서드로 교체할 수 있습니다. Adjust SDK로 구매를 검증하는 방법에는 두 가지가 있습니다.
+
+1. 구매를 나타내는 `AdjustEvent` 객체를 생성하고 다음 속성을 추가합니다.
+
+   -  `productId` \(`String`\): 성공적으로 구매된 아이템의 제품 ID.
+   -  `purchaseToken` \(`String`\): 성공적으로 완료된 인앱 구매에 대해 생성된 구매 토큰.
+
+2. 제품 ID와 구매 토큰으로 `AdjustPlayStorePurchase` 객체를 생성합니다.
+
+<Callout type="tip">
+
+Adjust에서 구매를 측정하기 위해 매출 이벤트를 사용하는 경우, `AdjustEvent` 클래스를 사용합니다. 구매를 검증하기만 하고 이벤트와의 연결은 원하지 않는 경우, `AdjustPlayStorePurchase` 클래스를 사용합니다.
+
+</Callout>
+
+#### 이벤트 기록 및 구매 검증 {#record-event-and-verify-purchase}
+
+검증을 위해 매출 이벤트를 전송하고 승인 상태를 수신하려면 다음의 단계를 수행하시기 바랍니다.
+
+1. 이벤트 토큰으로 `AdjustEvent` 객체를 인스턴스화하고 다음 파라미터를 설정합니다.
+
+   -  `productId` \(`String`\): 구매된 제품의 ID.
+   -  `purchaseToken` \(`String`\): 구매와 관련된 구매 토큰.
+
+2. 다음 인수와 함께 `Adjust.verifyAndTrackPlayStorePurchase` 메서드를 호출합니다.
+   -  `event` \(`AdjustEvent`\): 인스턴스화된 이벤트 객체.
+   -  `callback` \(`OnPurchaseVerificationFinishedListener`\): `AdjustPurchaseVerificationResult` 객체를 인수로 수신하는 델리게이트 콜백 함수.
+
+이 예시에서, 구매 검증 응답은 logging daemon으로 출력됩니다.
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val adjustEvent = AdjustEvent("abc123")
+adjustEvent.setRevenue(6.0, "EUR")
+adjustEvent.productId = "product-id"
+adjustEvent.purchaseToken = "purchase-token"
+Adjust.trackEvent(adjustEvent)
+
+Adjust.verifyAndTrackPlayStorePurchase(adjustEvent) {
+    result -> Log.d("Verification status: ", result.verificationStatus)
+    Log.d("Code: ", result.code)
+    Log.d("Message: ", result.message)
+}
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustEvent adjustEvent = new AdjustEvent("abc123");
+adjustEvent.setRevenue(6.0, "EUR");
+adjustEvent.setProductId("product-id");
+adjustEvent.setPurchaseToken("purchase-token");
+Adjust.trackEvent(adjustEvent);
+
+Adjust.verifyAndTrackPlayStorePurchase(adjustEvent, new OnPurchaseVerificationFinishedListener() {
+    @Override
+    public void onFinished(AdjustPurchaseVerificationResult result) {
+       Log.d("Verification status: ", result.verificationStatus);
+       Log.d("Code: ", result.code);
+       Log.d("Message: ", result.message);
+    }
+});
+```
+
+</Tab>
+</Tabs>
+
+#### 구매만 검증 {#only-verify-purchase}
+
+독립형 구매를 전송하고 구매 검증 상태 정보를 수신하려면 다음의 단계를 수행하시기 바랍니다.
+
+1. 다음 인수를 사용하여 `AdjustPlayStorePurchase` 를 인스턴스화합니다.
+
+   -  `productId` \(`String`\): 구매된 제품의 ID.
+   -  `purchaseToken` \(`String`\): 구매와 관련된 구매 토큰.
+
+2. 다음 인수와 함께 `Adjust.verifyPlayStorePurchase` 메서드를 호출합니다.
+   -  `purchase` \(`AdjustPlayStorePurchase`\): 인스턴스화된 구매 객체.
+   -  `callback` \(`OnPurchaseVerificationFinishedListener`\): `AdjustPurchaseVerificationResult` 객체를 인수로 수신하는 델리게이트 콜백 함수.
+
+이 예시에서, 구매 검증 응답은 logging daemon으로 출력됩니다.
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val purchase = AdjustPlayStorePurchase("product-id", "purchase-token")
+Adjust.verifyPlayStorePurchase(purchase) {
+    result -> Log.d("Verification status: ", result.verificationStatus)
+    Log.d("Code: ", result.code)
+    Log.d("Message: ", result.message)
+}
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustPlayStorePurchase purchase = new AdjustPlayStorePurchase("product-id", "purchase-token");
+Adjust.verifyPlayStorePurchase(purchase, new OnPurchaseVerificationFinishedListener() {
+    @Override
+    public void onFinished(AdjustPurchaseVerificationResult result) {
+       Log.d("Verification status: ", result.verificationStatus);
+       Log.d("Code: ", result.code);
+       Log.d("Message: ", result.message);
+    }
+});
+```
+
+</Tab>
+</Tabs>

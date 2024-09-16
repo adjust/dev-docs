@@ -1,0 +1,58 @@
+---
+title: "Unity SDK連携"
+description: "Unityとの連携を使用して、Unityの情報をAdjustサーバーにパスします。"
+slug: "ja/sdk/ios/integrations/unity"
+---
+
+Unity SDKで広告収益を計測したい場合は、SDK間連携の機能を使用することで、Adjustサーバーにこの情報をパスすることができます。
+
+<Callout type="note">
+
+Unityとの連携による広告収益計測についてご質問がございましたら、担当のテクニカルアカウントマネージャーもしくは[support@adjust.com](mailto:support@adjust.com)までお問い合わせください。
+
+</Callout>
+
+## 事前準備 {#before-you-begin}
+
+この機能を利用するには、まずAdjust iOS SDKをダウンロードしてアプリ向けに設定してください。
+
+詳細については、ご利用のUnity [Mediation API](https://docs.unity.com/mediation/APIReferenceIOS.html)と[インプレッションイベント](https://docs.unity.com/mediation/SDKIntegrationIOSImpressionEvents.html)に関するドキュメントを参照してください。
+
+## 例 {#example}
+
+```objc
+
+@interface ViewController()
+
+@property(nonatomic, strong) UMSImpressionListenerWithBlocks * listener;
+
+@end
+
+@implementation ViewController
+
+- (void) viewDidLoad {
+    [super viewDidLoad];
+
+    self.listener = [[UMSImpressionListenerWithBlocks alloc] init];
+    self.listener.onImpressionBlock = ^ (NSString *adUnitId, UMSImpressionData *impressionData) {
+        if (impressionData) {
+            NSLog(@ "impressionData: %@", [impressionData getJsonRepresentation]);
+            // send impression data to Adjust
+            ADJAdRevenue *adRevenue = [[ADJAdRevenue alloc]
+                              initWithSource:@"unity_sdk"];
+            adjustAdRevenue.setRevenue([impressionData.revenue doubleValue], impressionData.currency);
+            // optional fields
+            adjustAdRevenue.setAdRevenueNetwork(impressionData.adSourceName);
+            adjustAdRevenue.setAdRevenueUnit(impressionData.adUnitId);
+            adjustAdRevenue.setAdRevenuePlacement(impressionData.adSourceInstance);
+            // Send Adjust ad revenue
+            Adjust.trackAdRevenue(adjustAdRevenue);
+        } else {
+            NSLog(@ "Data does not exist due to not enabling User-Level Reporting");
+        }
+    };
+    [UMSImpressionEventPublisher subscribe: self.listener];
+}
+
+@end
+```

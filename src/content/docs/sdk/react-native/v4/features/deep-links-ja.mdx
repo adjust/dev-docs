@@ -1,0 +1,131 @@
+---
+title: "ディープリンク"
+description: "ディープリンクを設定するには、このセクションのガイドに従ってください。"
+category-title: "ディープリンク"
+slug: "ja/sdk/react-native/v4/features/deep-links"
+---
+
+ディープリンクを作成して、ユーザーをアプリ内の特定の場所に誘導します。Adjust SDKは、ユーザーがデバイスにアプリをインストール済みかどうかによって、異なるロジックを使用します。
+
+-  ダイレクトディープリンクは、ユーザーがアプリをすでにデバイスにインストールしている場合に使用されます。そのリンクは、リンクで指定されたページにユーザーをリダイレクトします。
+-  ディファードディープリンクは、ユーザーがアプリをデバイスにインストールしていない場合に使用されます。そのリンクは、ユーザーをアプリストアに送り、アプリを先にインストールしてもらいます。ユーザーがアプリをインストールすると、リンクで指定されたページが開きます。
+
+SDKは、ユーザーがリンクからアプリを起動した後にディープリンクの情報を読み取ることができます。
+
+## ディープリンクの設定 {#set-up-deep-linking}
+
+ユーザーがアプリをインストールしている場合、ユーザーがディープリンクの情報を含むリンクをクリックするとアプリが起動します。Adjust SDKには、アプリ全体にディープリンクの情報を解析するツールが含まれます。
+
+v4\.30以降、SDKは、必要な設定をAndroidとiOSのプロジェクトに注入します。ディープリンクを設定するには、Unityエディター（Unity Editor）のInspectorウィンドウでURLスキームを追加してください。
+
+React Nativeアプリでディープリンクを設定するには、以下の手順に従ってください。
+
+1. ディープリンクは、アプリレベルで設定します。使用するプラットフォームに合わせて、以下のリンク先のディープリンク設定手順に従ってください。
+
+   -  [iOS](/ja/sdk/ios/features/deep-links)
+   -  [Android](/ja/sdk/android/features/deep-links)
+
+2. [React Nativeのドキュメント](https://reactnative.dev/docs/linking.html)を参照し、指示に従って、両方のプラットフォームをサポートする方法を確認します。
+
+3. 取得したディープリンクURLをJavaScriptコードで使用します。
+
+## ディファードディープリンク {#deferred-deep-linking}
+
+### ディファードディープリンクを無効にする {#disable-deferred-deep-linking}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```ts
+public setShouldLaunchDeeplink(shouldLaunchDeeplink: boolean): void
+```
+
+</CodeBlock>
+
+SDKはデフォルトでディファードディープリンクを開きます。これは、`boolean`引数を`setShouldLaunchDeeplink`メソッドにパスすることで設定できます。
+
+```js
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox,
+);
+//...
+adjustConfig.setShouldLaunchDeeplink(true);
+//...
+Adjust.create(adjustConfig);
+```
+
+### ディファードディープリンクのデリゲートを設定する {#set-up-a-deferred-deep-link-delegate}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```ts
+public setDeferredDeeplinkCallbackListener(callback: (uri: AdjustUri) => void): void
+```
+
+</CodeBlock>
+
+Adjust SDKがディファードディープリンクを受け取った際に、デリゲート関数を呼び出すように設定することができます。このデリゲート関数は、ディープリンクを`string`引数で受け取ります。
+
+```js
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox,
+);
+//...
+adjustConfig.setDeferredDeeplinkCallbackListener(function (deeplink) {
+   console.log("Deferred deep link URL content: " + deeplink);
+});
+//...
+Adjust.create(adjustConfig);
+```
+
+### 例 {#example}
+
+この例では、ユーザーがディファードディープリンクを開いたときに、ディープリンクのアドレスをログに記録する方法を示しています。
+
+```js
+var LogDeepLink = function (deeplinkURL) {
+   console.log("Deeplink URL: " + deeplinkURL);
+};
+//...
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox,
+);
+adjustConfig.setDeferredDeeplinkCallbackListener(LogDeepLink);
+//...
+Adjust.create(adjustConfig);
+```
+
+### LinkMeを有効化する {#enable-linkme}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```js
+public setLinkMeEnabled(linkMeEnabled: boolean): void
+```
+
+</CodeBlock>
+
+Adjust SDKでは、デバイスのペーストボードからディープリンクの情報をコピーすることが可能です。AdjustのLinkMeソリューションを組み合わせることで、iOS 15以降のデバイスでディファードディープリンクを有効化することができます。
+
+<Callout type="important">
+
+Adjust SDKは、ユーザーがアプリを初回起動した際にペーストボードを確認します。デバイスは、ユーザーのアプリに、ペーストボードの読み取りを許可するかどうかを尋ねるダイアログを表示します。
+
+</Callout>
+
+ユーザーがLinkMeのURLをクリックすると、そのリンク情報をシステムのペーストボードにコピーするオプションがあります。Adjust SDKを使用してシステムのペーストボードを読み、ディープリンクの情報を確認することができます。ディープリンクがある場合、SDKはユーザーをアプリ内の正しいページに転送します。
+
+アプリ内でペーストボードの確認を有効化するには、configオブジェクトの`setLinkMeEnabled`メソッドに`true`値をパスしてください。
+
+```js
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox,
+);
+//...
+adjustConfig.setLinkMeEnabled(true);
+//...
+Adjust.create(adjustConfig);
+```

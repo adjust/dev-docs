@@ -1,0 +1,39 @@
+---
+title: "AD(X) SDK 集成"
+description: "使用 Ad(X) 集成，向 Adjust 服务器传送 Ad(X) 信息。"
+slug: "zh/sdk/unity/v4/integrations/adx"
+---
+
+<MinorVersion added="v4.36.0">
+
+您可以通过 Adjust SDK 将 AD\(X\) 数据以 `AdjustAdRevenue` 实例形式发送至 Adjust。为此请进行下列操作：
+
+</MinorVersion>
+
+1. 创建一个 AD\(X\) SDK 中 `rewardedAd.OnPaidEvent` 方法被调用时触发的新函数。该函数须以参数形式接收 eCPM \(每千次展示有效成本\)金额。
+2. 使用 `AdjustConfig.AdjustAdRevenueSourceAdx` 来源实例化一个 [`AdjustAdRevenue` 对象](/zh/sdk/unity/features/ad-revenue)。
+3. 添加 `AdjustAdRevenue` 对象详情。用 `ecpm` 值除以 1000 来返回广告预估收入。
+4. 通过调用`trackAdRevenue`方法向 Adjust 发送广告收入信息。
+
+<Callout type="seealso">
+
+要进一步了解 `rewardedAd.OnPaidEvent` 方法，请查看 [AD\(X\) 的激励广告相关文档](https://docs.adxcorp.kr/unity/sdk-integration/ad-formats/rewarded-ad/ad-x#id-4.-a-d-revenue-onpaidevent)。
+
+</Callout>
+
+## 示例 {#example}
+
+```cs
+rewardedAd.OnPaidEvent += RewardedAd_OnPaidEvent;
+
+void RewardedAd_OnPaidEvent(double ecpm)
+{
+  double revenue = ecpm / 1000f;
+
+  AdjustAdRevenue adRevenue = new AdjustAdRevenue(AdjustConfig.AdjustAdRevenueSourceAdx);
+  adRevenue.setRevenue(revenue, "USD");
+  adRevenue.setAdRevenueUnit("ADX Rewarded Ad");
+
+  Adjust.trackAdRevenue(adRevenue);
+}
+```

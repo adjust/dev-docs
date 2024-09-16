@@ -1,0 +1,192 @@
+---
+title: Get attribution information
+description: Listen for attribution changes using the Adjust SDK
+slug: en/sdk/android/v4/features/attribution
+---
+
+When a user interacts with an Adjust link, their attribution information updates. This can happen if the user interacts with a [deep link](https://help.adjust.com/en/article/deep-links). Information about a user's attribution is represented in the `AdjustAttribution` class.
+
+## AdjustAttribution class properties {#adjustattribution-class-properties}
+
+The `AdjustAttribution` class contains details about the current attribution status of the device. Any values that aren't populated for the user are returned as a `null` value.
+
+<Callout type="note">
+
+The following values can only be accessed if the [`needsCost` property on your `AdjustConfig` instance](/en/sdk/android/configuration#enable-cost-data-sending) is `true`:
+
+-  `costType`
+-  `costAmount`
+-  `costCurrency`
+
+</Callout>
+
+<Table>
+
+| Values              | Data type | Description                                                                                                    |
+| ------------------- | --------- | -------------------------------------------------------------------------------------------------------------- |
+| `trackerToken`      | `String`  | The token of the link to which the device is currently attributed                                              |
+| `trackerName`       | `String`  | The name of the link to which the device is currently attributed                                               |
+| `network`           | `String`  | The name of the network to which the device is currently attributed                                            |
+| `campaign`          | `String`  | The name of the campaign to which the device is currently attributed                                           |
+| `adgroup`           | `String`  | The name of the adgroup to which the device is currently attributed                                            |
+| `creative`          | `String`  | The name of the creative to which the device is currently attributed                                           |
+| `clickLabel`        | `String`  | The [click label](https://help.adjust.com/en/article/user-rewards) that the install is tagged with             |
+| `adid`              | `String`  | The unique Adjust ID assigned to the device                                                                    |
+| `costType`          | `String`  | The campaign pricing model (for example cpi)                                                                   |
+| `costAmount`        | `Double`  | The cost of the install.                                                                                       |
+| `costCurrency`      | `String`  | The [3 character ISO 4217 code](https://www.iban.com/currency-codes) of the currency associated with the cost. |
+| `fbInstallReferrer` | `String`  | The [Facebook install referrer](https://developers.facebook.com/docs/app-ads/install-referrer/).               |
+
+</Table>
+
+## Trigger a function when attribution changes {#trigger-a-function-when-attribution-changes}
+
+<CodeBlock title="Method signature">
+
+```java
+public void setOnAttributionChangedListener(OnAttributionChangedListener onAttributionChangedListener)
+```
+
+</CodeBlock>
+
+The SDK can listen for attribution changes and call a function when it detects an update. To configure your callback function, call the `setOnAttributionChangedListener` method with your function name as an argument.
+
+<Callout type="important">
+
+You must call the `setOnAttributionChangedListener` method **before** initializing the Adjust SDK in your app.
+
+</Callout>
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val config = AdjustConfig(this, appToken, environment)
+//...
+config.setOnAttributionChangedListener {
+   override fun onAttributionChanged(attribution: AdjustAttribution) {}
+   }
+//...
+Adjust.onCreate(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+//...
+config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
+   @Override
+   public void onAttributionChanged(AdjustAttribution attribution) {}
+});
+//...
+Adjust.onCreate(config);
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+function attributionCallback(attribution) {}
+//...
+let adjustConfig = new AdjustConfig(yourAppToken, environment);
+adjustConfig.setAttributionCallback(attributionCallback);
+Adjust.onCreate(adjustConfig);
+```
+
+</Tab>
+</Tabs>
+
+### Facebook install referrer {#facebook-install-referrer}
+
+The Adjust SDK receives Facebook install referrer information as a `String` property in the [`AdjustAttribution` object](#adjustattribution-class-properties). You can access this information by serializing the content as a JSON object.
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val config = AdjustConfig(this, appToken, environment)
+//...
+config.setOnAttributionChangedListener {
+   val fbInstallReferrerJSONObject = extractFBInstallReferrerJSON(it)
+}
+
+fun extractFBInstallReferrerJSON(adjustAttribution: AdjustAttribution): JSONObject? {
+   try {
+      return JSONObject(adjustAttribution.fbInstallReferrer)
+   } catch (e: JSONException) {
+      Log.d("example", e.message!!)
+   }
+   return null
+}
+//...
+Adjust.onCreate(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+//...
+config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
+   @Override
+   public void onAttributionChanged(AdjustAttribution adjustAttribution) {
+   JSONObject fbInstallReferrerJSONObject = extractFBInstallReferrerJSON(adjustAttribution);
+   }
+});
+
+@Nullable
+JSONObject extractFBInstallReferrerJSON(AdjustAttribution adjustAttribution) {
+   try {
+      return new JSONObject(adjustAttribution.fbInstallReferrer);
+   } catch (JSONException e) {
+      Log.d("example", e.getMessage());
+   }
+   return null;
+}
+//...
+Adjust.onCreate(config);
+```
+
+</Tab>
+</Tabs>
+
+## Get current attribution information {#get-current-attribution-information}
+
+<CodeBlock title="Method signature">
+
+```java
+public static AdjustAttribution getAttribution()
+```
+
+</CodeBlock>
+
+When a user installs your app, Adjust attributes the install to a campaign. The Adjust SDK gives you access to campaign attribution details for your install. To return this information, call the `getAttribution` method to return the attribution information as an `AdjustAttribution` object.
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val attribution = Adjust.getAttribution()
+```
+
+</Tab>
+
+<Tab title="Java" sync="java" >
+
+```java
+AdjustAttribution attribution = Adjust.getAttribution();
+```
+
+</Tab>
+
+<Tab title="Javascript" sync="js" >
+
+```js
+let attribution = Adjust.getAttribution();
+```
+
+</Tab>
+</Tabs>

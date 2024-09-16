@@ -1,0 +1,95 @@
+---
+title: "アトリビューション情報の取得"
+description: "Adjust SDKを使ってアトリビューションの変更を受信します。"
+slug: "ja/sdk/flutter/features/attribution"
+---
+
+ユーザーがAdjustリンクをクリックすると、そのアトリビューション情報が更新されます。これは、ユーザーが[ディープリンク](https://help.adjust.com/ja/article/deep-links)をクリックした場合に発生します。ユーザーのアトリビューションについての情報は、`AdjustAttribution`クラスに表示されます。
+
+## AdjustAttributionクラスのプロパティ {#adjustattribution-class-properties}
+
+`AdjustAttribution`クラスには、デバイスの現在のアトリビューションステータスに関する詳細が含まれています。ユーザーの入力されていない値は全て`null`値として返されます。
+
+<Callout type="note">
+
+以下の値は、[`AdjustConfig`インスタンスの`isCostDataInAttributionEnabled`プロパティ](/ja/sdk/flutter/configuration#enable-cost-data-sending)が`true`になっている場合にのみアクセスできます：
+
+-  `costType`
+-  `costAmount`
+-  `costCurrency`
+
+</Callout>
+<Table>
+
+\|値 \|データタイプ \|説明 \| \| \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\- \-\-\-\-\-\-\-\-\- \| \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\- \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\- \-\-\-\-\-\-\-\-\-\- \| \-\-\- \| \| `trackerToken` \| `String` \|デバイスが現在アトリビュートされているリンクのトークン \| \| `trackerName` \| `String` \|デバイスが現在アトリビュートされているリンクの名前 \| \| `network` \| `String` \|デバイスが現在アトリビュートされているネットワークの名前 \| \| `campaign` \| `String` \|デバイスが現在アトリビュートされているキャンペーンの名前 \| \| `adgroup` \| `String` \|デバイスが現在アトリビュートされているアドグループの名前 \| \| `creative` \| `String` \|現在デバイスがアトリビュートされているクリエイティブの名前 \| \| `clickLabel` \| `String` \|インストールがタグされている[クリックラベル](https://help.adjust.com/ja/article/user-rewards)\| \| \| `costType` \| `String` \|キャンペーン課金モデル（CPIなど） \| \| `costAmount` \| `num` \|インストールのコスト。 \|
+\| `costCurrency` \| `String` \| コストに関連する通貨の[ISO 4217の3文字コード](https://www.iban.com/currency-codes) \| \| `fbInstallReferrer` \| `String` \| [Facebookインストールリファラー](https://developers.facebook.com/docs/app-ads/install-referrer/) \|
+
+</Table>
+
+## アトリビューションが変更されたときに関数をトリガーする {#trigger-a-function-when-attribution-changes}
+
+<CodeBlock title="プロパティ宣言">
+
+```dart
+typedef void AttributionCallback(AdjustAttribution attributionData);
+AttributionCallback? attributionCallback;
+
+```
+
+</CodeBlock>
+
+SDKはアトリビューションの変更を受信し、更新を検出したときに関数を呼び出すことができます。コールバック関数を設定するには、configインスタンスの`attributionCallback`プロパティに関数を割り当てます。
+
+<Callout type="important">
+
+アプリ内でAdjust SDKを初期化する **前** に、`attributionCallback`メソッドを呼び出す必要があります。
+
+</Callout>
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
+config.attributionCallback = (AdjustAttribution attributionChangedData) {
+   print('[Adjust]: Attribution changed!');
+
+   if (attributionChangedData.trackerToken != null) {
+      print('[Adjust]: Tracker token: ' + attributionChangedData.trackerToken);
+   }
+   if (attributionChangedData.trackerName != null) {
+      print('[Adjust]: Tracker name: ' + attributionChangedData.trackerName);
+   }
+   if (attributionChangedData.campaign != null) {
+      print('[Adjust]: Campaign: ' + attributionChangedData.campaign);
+   }
+   if (attributionChangedData.network != null) {
+      print('[Adjust]: Network: ' + attributionChangedData.network);
+   }
+   if (attributionChangedData.creative != null) {
+      print('[Adjust]: Creative: ' + attributionChangedData.creative);
+   }
+   if (attributionChangedData.adgroup != null) {
+      print('[Adjust]: Adgroup: ' + attributionChangedData.adgroup);
+   }
+   if (attributionChangedData.clickLabel != null) {
+      print('[Adjust]: Click label: ' + attributionChangedData.clickLabel);
+   }
+};
+Adjust.initSdk(adjustConfig);
+```
+
+## 現在のアトリビューション情報を取得 {#get-current-attribution-information}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```dart
+static Future<adjustattribution> getAttribution() async
+```
+
+</CodeBlock>
+
+ユーザーがアプリをインストールすると、Adjustはそのインストールをキャンペーンにアトリビュートします。Adjust SDKでは、インストールのキャンペーンアトリビューションの詳細にアクセスすることができます。この情報を返すには、`getAttribution`メソッドを呼び出して、アトリビューション情報を`AdjustAttribution`オブジェクトとして返します。
+
+```dart
+Adjust.getAttribution().then((attribution) {
+  // process attribution
+});
+```

@@ -1,0 +1,197 @@
+---
+title: "App Tracking Transparencyの設定"
+description: "AppleのApp Tracking Transparencyフレームワークを使用するようにアプリを設定する"
+slug: "ja/sdk/ios/features/att"
+---
+
+広告識別子（IDFA）を記録したい場合は、ユーザーの許諾を得るためのプロンプトを表示する必要があります。これを行うには、アプリにAppleのApp Tracking Transparency（ATT）frameworkを組み込む必要があります。Adjust SDKはユーザーの許諾状況を保存し、リクエストごとにAdjustサーバーに送信します。
+
+## 承認ステータス {#authorization-statuses}
+
+<Table autoWidth="1,2" width="3: 350">
+
+| ステータス（Status）                                | コード | 説明                                                             |
+| --------------------------------------------------- | ------ | ---------------------------------------------------------------- |
+| `ATTrackingManagerAuthorizationStatusNotDetermined` | `0`    | ユーザーがアクセスプロンプトに応答していない。                   |
+| `ATTrackingManagerAuthorizationStatusRestricted`    | `1`    | アプリ関連データへのアクセスがデバイスレベルでブロックされている |
+| `ATTrackingManagerAuthorizationStatusDenied`        | `2`    | ユーザーがデバイス計測によるアプリ関連データへのアクセスを拒否   |
+| `ATTrackingManagerAuthorizationStatusAuthorized`    | `3`    | ユーザーがデバイス計測によるアプリ関連データへのアクセスを承認   |
+
+</Table>
+<Callout type="note">
+
+SDKがATTステータスを取得できない場合、`-1`のステータスコードを受け取る可能性があります。
+
+</Callout>
+
+## ATT承認ラッパー {#att-authorization-wrapper}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```objc
++ (void)requestAppTrackingAuthorizationWithCompletionHandler:(void (^_Nullable)(NSUInteger status))completion;
+```
+
+</CodeBlock>
+
+Adjust SDKには、[Appleの`requestTrackingAuthorizationWithCompletionHandler`メソッドのラッパーが含まれています](https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager/3547037-requesttrackingauthorizationwith)。ATTプロンプトをカスタマイズしない場合は、このラッパーを使用することができます。
+
+コールバックメソッドは、ユーザーが同意ダイアログに応答した時にトリガーされ、ユーザーの同意ステータスコードをAdjustサーバーに送信します。コールバック関数内で各ステータスコードに対するレスポンスを定義することができます。
+
+ATTのテキスト内容を指定する必要があります。これを行うには、`Info.plist`ファイルで`NSUserTrackingUsageDescription`キーにテキストを追加してください。
+
+<Callout type="tip">
+
+Adjust SDKは、カスタムプロンプトを使用した場合、同意ステータスも記録します。初期化前にプロンプトを表示した場合、SDKはインストールイベントと共にステータスを送信します。プロンプトを初期化後に表示した場合は、SDKはユーザーが更新した後に、即時にAdjustサーバーにステータスを送信します。
+
+</Callout>
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+Adjust.requestAppTrackingAuthorization { status in
+   switch status {
+   case 0:
+      // ATTrackingManagerAuthorizationStatusNotDetermined case
+      break
+   case 1:
+      // ATTrackingManagerAuthorizationStatusRestricted case
+      break
+   case 2:
+      // ATTrackingManagerAuthorizationStatusDenied case
+      break
+   case 3:
+      // ATTrackingManagerAuthorizationStatusAuthorized case
+      break
+   default:
+      break
+   }
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[Adjust requestAppTrackingAuthorizationWithCompletionHandler:^(NSUInteger status) {
+   switch (status) {
+      case 0:
+         // ATTrackingManagerAuthorizationStatusNotDetermined case
+         break;
+      case 1:
+         // ATTrackingManagerAuthorizationStatusRestricted case
+         break;
+      case 2:
+         // ATTrackingManagerAuthorizationStatusDenied case
+         break;
+      case 3:
+         // ATTrackingManagerAuthorizationStatusAuthorized case
+         break;
+   }
+}];
+```
+
+</Tab>
+</Tabs>
+
+## 現在の承認ステータスを取得 {#get-current-authorization-status}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```objc
++ (int)appTrackingAuthorizationStatus;
+```
+
+</CodeBlock>
+
+ユーザーの現在の認証ステータスはいつでも取得することができます。`getAppTrackingAuthorizationStatus`メソッドを呼び出し、 **整数** で認証ステータスコードを返してください。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let authorizationStatus = Adjust.appTrackingAuthorizationStatus();
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+int authorizationStatus = [Adjust appTrackingAuthorizationStatus];
+```
+
+</Tab>
+</Tabs>
+
+## プロンプトのタイミングをカスタム設定 {#custom-prompt-timing}
+
+<CodeBlock title="プロパティ宣言">
+
+```objc
+@property (nonatomic, assign) NSUInteger attConsentWaitingInterval;
+```
+
+</CodeBlock>
+
+アプリにオンボーディングプロセスまたはチュートリアルが含まれる場合、ユーザーがこのプロセスを完了するまで、ユーザーのATT同意ステータスの送信を遅らせたい場合があります。これを行うには、`attConsentWaitingInterval`プロパティを設定して、データの送信を **最大120秒** 遅延させ、ユーザーに最初のオンボーディングを完了する時間を与えることができます。タイムアウトが終了した後、またはユーザーが同意ステータスを設定した後に、SDKはユーザーの同意ステータスと共に遅延中に記録した全ての情報をAdjustのサーバーに送信します。
+
+<Callout type="note">
+
+タイムアウトが終了する前、または同意ステータスを選択する前にユーザーがアプリを閉じた場合、アプリを再度開いたときにタイムアウトが再開されます。
+
+</Callout>
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox
+let adjustConfig = ADJConfig(
+    appToken: yourAppToken,
+    environment: environment)
+//...
+adjustConfig?.attConsentWaitingInterval = 30
+//...
+Adjust.initSdk(adjustConfig)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+ ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:@"{YourAppToken}"
+                                                        environment:environment];
+//...
+[adjustConfig setAttConsentWaitingInterval:30];
+//...
+[Adjust initSdk:adjustConfig];
+```
+
+</Tab>
+</Tabs>
+
+## iOS 17の同意への対応 {#ios-17-consent-handling}
+
+iOS 17のリリースに伴い、Appleは開発者がサードパーティに送信するデータに関する新しいルールを導入しました。開発者がAppleのプライバシーガイドラインに準拠していることを証明できるようにするために、Adjust SDKは **同意する** ユーザーと **同意しない** ユーザーに対して2つの個別のエンドポイントを使用します。
+
+デフォルトでは、Adjust SDKは`analytics.adjust.com`エンドポイントを使用して、 **確率的モデリング** 向けに限られたデータセットをAdjustのサーバーに送信します。このエンドポイントは次の情報を受け取り **ません** 。
+
+-  `idfa`: The device ID For Advertisers \(IDFA\).
+-  `started_at`: The device startup time.
+
+ユーザーが[ATTに同意](#app-tracking-authorization-wrapper)した場合にのみ、Adjust SDKは **確定的アトリビューション** のためのidfaとstart_atの両方のプロパティにアクセスできるようになり、 `consent.adjust.com`に完全なペイロードを送信します。
+
+これらのエンドポイントはいずれも、全ての[URL戦略](/ja/sdk/ios/features/privacy#data-residency)で利用可能です。
+
+<Table>
+
+| urlStrategy               | 非同意のエンドポイント    | 同意したエンドポイント  |
+| ------------------------- | ------------------------- | ----------------------- |
+| EU データレジデンシー     | `analytics.eu.adjust.com` | `consent.eu.adjust.com` |
+| トルコ データレジデンシー | `analytics.tr.adjust.com` | `consent.tr.adjust.com` |
+| 米国 データレジデンシー   | `analytics.us.adjust.com` | `consent.us.adjust.com` |
+| 中国 URL戦略              | `analytics.adjust.world`  | `consent.adjust.world`  |
+| 中国限定 URL設定          | `analytics.adjust.cn`     | `consent.adjust.cn`     |
+| インド URL戦略            | `analytics.adjust.net.in` | `consent.adjust.net.in` |
+
+</Table>

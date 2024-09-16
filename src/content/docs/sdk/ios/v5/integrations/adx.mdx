@@ -1,0 +1,48 @@
+---
+title: AD(X) SDK integration
+description: Use the Ad(X) integration to pass AD(X) information to Adjust's servers.
+slug: en/sdk/ios/integrations/adx
+---
+
+You can use the Adjust SDK to send AD(X) data to Adjust as an `AdjustAdRevenue` instance. To do this:
+
+1. Create a new function that triggers when the `rewardedAd.OnPaidEvent` method is called in the AD(X) SDK. This function should receive the eCPM (Effective Cost Per Mille) amount as an argument.
+2. Instantiate an [`ADJAdRevenue` object](/en/sdk/ios/features/ad-revenue) with the source `"adx_sdk"`.
+3. Fill in the details of your `AdjustAdRevenue` object. Divide the `ecpm` value by 1000 to return the estimated revenue for the ad.
+4. Send the ad revenue information to Adjust by calling the `trackAdRevenue` method.
+
+## Example {#example}
+
+<Tabs>
+<Tab title="Swift">
+
+```swift
+func rewardedAd.paidEventHandler(ecpm: double) {
+   let revenue: double = ecpm / 1000
+
+   let adRevenue = ADJAdRevenue(source: "adx_sdk")
+   adjustAdRevenue.setRevenue(revenue, currency: "USD")
+   adjustAdRevenue.setAdRevenueUnit("ADX Rewarded Ad")
+
+   Adjust.trackAdRevenue(adjustAdRevenue)
+}
+```
+
+</Tab>
+<Tab title="Objective-C">
+
+```objc
+rewardedAd.paidEventHandler = ^(double ecpm) {
+   double revenue = ecpm / 1000;
+
+   ADJAdRevenue *adRevenue = [[ADJAdRevenue alloc]
+                              initWithSource:@"adx_sdk"];
+   [adjustAdRevenue setRevenue:revenue currency:@"USD"];
+   [adjustAdRevenue setAdRevenueUnit:@"ADX Rewarded Ad"];
+
+   [Adjust trackAdRevenue: adjustAdRevenue];
+};
+```
+
+</Tab>
+</Tabs>

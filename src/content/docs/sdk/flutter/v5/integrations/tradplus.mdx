@@ -1,0 +1,52 @@
+---
+title: TradPlus SDK integration
+description: Use the TradPlus integration to pass TradPlus information to Adjust's servers.
+slug: en/sdk/flutter/integrations/tradplus
+---
+
+If you want to record your ad revenue with the TradPlus SDK, you can use the SDK-to-SDK integration to pass this information to Adjust's servers.
+
+<Callout type="note">
+
+If you have any questions about ad revenue measurement with TradPlus, contact your dedicated Technical Account Manager or send an email to support@adjust.com.
+
+</Callout>
+
+## Before you begin {#before-you-begin}
+
+Follow the [integration guide](/en/sdk/flutter) to integrate the Adjust SDK in your app.
+
+## Example {#example}
+
+To record ad revenue information with Adjust, create an `AdjustAdRevenue` instance inside your `TPGlobalAdImpressionListener` function. See the [Send ad revenue information guide](/en/sdk/flutter/features/ad-revenue) for more information.
+
+```dart
+static TPGlobalAdImpressionListener? globalAdImpressionListener;
+
+globalAdImpressionListener = TPGlobalAdImpressionListener(onGlobalAdImpression: (adInfo) {
+      AdjustAdRevenue revenue = AdjustAdRevenue('tradplus_sdk');
+      String adUnitId;
+      String networkName;
+      String adType;
+      if (defaultTargetPlatform == TargetPlatform.iOS) {
+        adUnitId = adInfo['adunit_id'].toString();
+        networkName = adInfo['adNetworkName'].toString();
+        adType = adInfo['adType'].toString();
+      }
+      else {
+        adUnitId = adInfo['tpAdUnitId'].toString();
+        networkName = adInfo['adSourceName'].toString();
+        adType = adInfo['format'].toString();
+      }
+      String ecpmStr = adInfo['ecpm'].toString();
+      num revenueNum = num.parse(ecpmStr)/1000.0;
+      revenue.setRevenue(revenueNum, 'USD');
+      revenue.adRevenueNetwork = networkName;
+      revenue.adRevenuePlacement = adType;
+      revenue.adRevenueUnit = adUnitId;
+
+      Adjust.trackAdRevenue(revenue);
+});
+
+TPSDKManager.setGlobalAdImpressionListener(globalAdImpressionListener!);
+```

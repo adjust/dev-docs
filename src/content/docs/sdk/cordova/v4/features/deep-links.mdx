@@ -1,0 +1,137 @@
+---
+title: Deep linking
+description: Follow the guides in this section to set up deep linking.
+category-title: Deep linking
+slug: en/sdk/cordova/v4/features/deep-links
+---
+
+You can create deep links to take users to specific pages in your app. The Adjust SDK uses different logic depending on if the user already has your app installed on their device:
+
+-  Direct deep linking: occurs if the user already has your app installed. The link takes the user to the page specified in the link.
+-  Deferred deep linking: occurs if the user doesn't have your app installed. The link takes the user to a storefront to install your app first. After the user installs the app, it opens to the page specified in the link.
+
+The SDK can read deep link data after a user opens your app from a link.
+
+## Set up deep linking {#set-up-deep-linking}
+
+If a user has your app installed, it opens when they interact with a link containing deep link information. The Adjust SDK contains tools to parse deep link information for use throughout your app.
+
+You need to set up deep linking on an app level. Follow the instructions linked below to set up deep linking on your target platform:
+
+-  [iOS](/en/sdk/ios/features/deep-links)
+-  [Android](/en/sdk/android/features/deep-links)
+
+## Reattribution using deep links {#reattribution-using-deep-links}
+
+<Callout type="seealso">
+
+Adjust enables you to run re-engagement campaigns with usage of deep links. For more information, see the [guide to appending attribution data to a deep link](https://help.adjust.com/en/article/manage-reattributions#track-reattributions-via-deeplink-clicks).
+
+</Callout>
+
+To reattribute your user, you need to call the `appWillOpenUrl` method when the app receives deep link content. The Adjust SDK then looks for new attribution data within the deep link. If the SDK finds new information, it forwards the information to Adjust's servers for reattribution.
+
+To enable deep linking for iOS, call the `appWillOpenUrl` method with a `true` value inside your `Adjust` instance.
+
+```js
+function handleOpenURL(url) {
+   setTimeout(function () {
+      // Check content of the url object and get information about the URL.
+      Adjust.appWillOpenUrl(url);
+   }, 300);
+}
+```
+
+You can call the `Adjust.appWillOpenUrl` function inside your `didLaunchAppFromLink` method to open universal links.
+
+```js
+var app = {
+   initialize: function () {
+      this.bindEvents();
+   },
+
+   bindEvents: function () {
+      document.addEventListener("deviceready", this.onDeviceReady, false);
+   },
+
+   onDeviceReady: function () {
+      if (device.platform == "iOS") {
+         universalLinks.subscribe(
+            "adjustDeepLinking",
+            app.didLaunchAppFromLink,
+         );
+      }
+   },
+
+   didLaunchAppFromLink: function (eventData) {
+      // Check content of the url object and get information about the URL.
+      Adjust.appWillOpenUrl(eventData.url);
+   },
+};
+```
+
+## Deferred deep linking {#deferred-deep-linking}
+
+### Set up a deferred deep link callback {#set-up-a-deferred-deep-link-callback}
+
+<CodeBlock title="Property declaration">
+
+```js
+setDeferredDeeplinkCallbackListener(deferredDeeplinkCallback: (uri: string) => void)
+```
+
+</CodeBlock>
+
+You can configure the Adjust SDK to call a function when it receives a deferred deep link by adding a function to the `setDeferredDeeplinkCallbackListener` property on your `AdjustConfig` instance. This function receives the deep link as a `string` argument.
+
+```js
+var adjustConfig = new AdjustConfig(appToken, environment);
+
+adjustConfig.setDeferredDeeplinkCallbackListener(function (deeplink) {
+   // Your callback function
+});
+
+Adjust.create(adjustConfig);
+```
+
+### Example {#example}
+
+This example shows how to log a deep link address when the user opens a deferred deep link.
+
+```js
+var adjustConfig = new AdjustConfig(appToken, environment);
+
+adjustConfig.setDeferredDeeplinkCallbackListener(function (deeplink) {
+   console.log("Received deferred deeplink: " + deeplink);
+});
+
+Adjust.create(adjustConfig);
+```
+
+### Enable LinkMe {#enable-linkme}
+
+<CodeBlock title="Method signature">
+
+```js
+setLinkMeEnabled(linkMeEnabled: boolean)
+```
+
+</CodeBlock>
+
+The Adjust SDK lets you copy deep link information from the device pasteboard. When combined with Adjust’s LinkMe solution, this feature enables deferred deep linking on devices running iOS 15 and above.
+
+<Callout type="important">
+
+The Adjust SDK checks the pasteboard when a user opens the app for the first time. The device displays a dialog asking if the user wants to allow the app to read the pasteboard.
+
+</Callout>
+
+When a user clicks on a LinkMe URL they have the option to copy the link information to their system pasteboard. You can use the Adjust SDK to read the system pasteboard for deep link information. If deep link information is present, the SDK forwards the user to the correct page in your app.
+
+To enable pasteboard checking in your app, set the `linkMeEnabled` property to `true` on your config object:
+
+```js
+var adjustConfig = new AdjustConfig(appToken, environment);
+adjustConfig.setLinkMeEnabled(true);
+Adjust.create(adjustConfig);
+```
