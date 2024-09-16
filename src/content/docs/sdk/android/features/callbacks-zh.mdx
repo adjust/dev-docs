@@ -1,0 +1,898 @@
+---
+title: "发送回传信息"
+description: "使用这些方法向 Adjust 发送回传信息。"
+slug: "zh/sdk/android/features/callbacks"
+multiVersion: true
+---
+
+<SdkVersion version="v5">
+
+设置回传来在 SDK 向 Adjust 发送信息时触发函数。您可以针对 **会话** 和 **事件** 设置回传。
+
+<Callout type="important">
+
+您必须在初始化 SDK **之前** 注册回传。
+
+</Callout>
+
+## 会话回传 {#session-callbacks}
+
+设置会话回传来在 SDK 向 Adjust 发送会话信息时触发函数。您可以创建 **success** 回传和 **failure** 回传。SDK 向 Adjust 服务器发送信息时会触发 **success** 回传。SDK 向 Adjust 发送信息时出现问题会触发 **failure** 回传。
+
+会话回传可访问响应数据对象。您可以在回传函数中使用其属性。
+
+<Table>
+
+| 属性           | 数据类型                      | 描述                                |
+| -------------- | ----------------------------- | ----------------------------------- |
+| `Message`      | `String`                      | 服务器信息或者 SDK 记录的错误信息。 |
+| `Timestamp`    | `String`                      | 来自 Adjust 服务器的时间戳。        |
+| `Adid`         | `String`                      | 由 Adjust 提供的设备唯一标识符。    |
+| `JsonResponse` | `Dictionary <String, Object>` | 带服务器响应的 JSON 对象。          |
+| `WillRetry`    | `Boolean`                     | 指示包发送失败后是否再次尝试发送。  |
+
+</Table>
+
+### success 回传 {#success-callbacks}
+
+<CodeBlock title="方法签名">
+
+```java
+public void setOnSessionTrackingSucceededListener(OnSessionTrackingSucceededListener onSessionTrackingSucceededListener)
+```
+
+</CodeBlock>
+
+设置 success 回传来在 SDK 记录到会话时触发函数。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val config = AdjustConfig(this, appToken, environment)
+//...
+config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
+   override fun onSessionTrackingSucceeded(sessionSuccessResponseData: AdjustSessionSuccess) {
+      //...
+   }
+})
+//...
+Adjust.initSdk(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+//...
+config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
+   @Override
+   public void onSessionTrackingSucceeded(AdjustSessionSuccess sessionSuccessResponseData) {
+      //...
+   }
+});
+//...
+Adjust.initSdk(config)
+```
+
+</Tab>
+</Tabs>
+
+#### 示例 {#example}
+
+This example shows how to create a callback function `sessionSuccess` and register it as a **success** callback. The function logs the timestamp at which the SDK recorded the session.
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val config = AdjustConfig(this, appToken, environment)
+
+config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
+   override fun sessionSuccess(sessionSuccessResponseData: AdjustSessionSuccess) {
+      Log.v("Session recorded at " + sessionSuccessResponseData.Timestamp)
+   }
+})
+
+Adjust.initSdk(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+
+config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
+   @Override
+   public void sessionSuccess(AdjustSessionSuccess sessionSuccessResponseData) {
+      Log.v("Session recorded at " + sessionSuccessResponseData.Timestamp)
+   }
+});
+
+Adjust.initSdk(config)
+```
+
+</Tab>
+</Tabs>
+
+### failure 回传 {#failure-callbacks}
+
+<CodeBlock title="方法签名">
+
+```java
+public void setOnSessionTrackingFailedListener(OnSessionTrackingFailedListener onSessionTrackingFailedListener)
+```
+
+</CodeBlock>
+
+设置 failure 回传来在 SDK 未能记录到会话时触发函数。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val config = AdjustConfig(this, appToken, environment)
+//...
+config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
+   override fun onSessionTrackingFailed(sessionFailureResponseData: AdjustSessionFailure) {
+      //...
+   }
+})
+//...
+Adjust.initSdk(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+//...
+config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
+   @Override
+   public void onSessionTrackingFailed(AdjustSessionFailure sessionFailureResponseData) {
+      //...
+   }
+});
+//...
+Adjust.initSdk(config)
+```
+
+</Tab>
+</Tabs>
+
+#### 示例 {#example-1}
+
+This example shows how to create a callback function `sessionFailure` and register it as a **failure** callback. The function logs the session failure message.
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val config = AdjustConfig(this, appToken, environment)
+
+config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
+   override fun sessionFailure(sessionFailureResponseData: AdjustSessionFailure) {
+      Log.v("Session recording failed. Response: " + sessionFailureResponseData.Message)
+   }
+})
+
+Adjust.initSdk(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+
+config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
+   @Override
+   public void sessionFailure(AdjustSessionFailure sessionFailureResponseData) {
+      Log.v("Session recording failed. Response: " + sessionFailureResponseData.Message)
+   }
+});
+
+Adjust.initSdk(config)
+```
+
+</Tab>
+</Tabs>
+
+## 事件回传 {#event-callbacks}
+
+设置事件回传来在 SDK 向 Adjust 发送事件信息时触发函数。您可以创建 **success** 回传和 **failure** 回传。SDK 向 Adjust 服务器发送信息时会触发 **success** 回传。SDK 向 Adjust 发送信息时出现问题会触发 **failure** 回传。
+
+事件回传可访问响应数据对象。您可以在回传函数中使用其属性。
+
+<Table>
+
+| 属性           | 数据类型                      | 描述                                |
+| -------------- | ----------------------------- | ----------------------------------- |
+| `Message`      | `String`                      | 服务器信息或者 SDK 记录的错误信息。 |
+| `Timestamp`    | `String`                      | 来自 Adjust 服务器的时间戳。        |
+| `Adid`         | `String`                      | 由 Adjust 提供的设备唯一标识符。    |
+| `EventToken`   | `String`                      | 事件识别码                          |
+| `CallbackId`   | `String`                      | 事件对象上设置的自定义回传 ID       |
+| `JsonResponse` | `Dictionary <String, Object>` | 带服务器响应的 JSON 对象。          |
+| `WillRetry`    | `Boolean`                     | 指示包发送失败后是否再次尝试发送。  |
+
+</Table>
+
+### success 回传 {#success-callbacks-1}
+
+<CodeBlock title="方法签名">
+
+```java
+public void setOnEventTrackingSucceededListener(OnEventTrackingSucceededListener onEventTrackingSucceededListener)
+```
+
+</CodeBlock>
+
+设置 success 回传来在 SDK 记录到事件时触发函数。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val config = AdjustConfig(this, appToken, environment)
+//...
+config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
+   override fun onEventTrackingSucceeded(eventSuccessResponseData: AdjustEventSuccess) {
+      //...
+   }
+})
+//...
+Adjust.initSdk(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+//...
+config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
+   @Override
+   public void onEventTrackingSucceeded(AdjustEventSuccess eventSuccessResponseData) {
+      //...
+   }
+});
+//...
+Adjust.initSdk(config)
+```
+
+</Tab>
+</Tabs>
+
+#### 示例 {#example-2}
+
+This example shows how to create a callback function `eventSuccess` and register it as a **success** callback. The function logs the timestamp at which the SDK recorded the event.
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val config = AdjustConfig(this, appToken, environment)
+
+config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
+   override fun eventSuccess(eventSuccessResponseData: AdjustEventSuccess) {
+      Log.v("Event recorded at " + eventSuccessResponseData.Timestamp)
+   }
+})
+
+Adjust.initSdk(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+
+config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
+   @Override
+   public void eventSuccess(AdjustEventSuccess eventSuccessResponseData) {
+      Log.v("Event recorded at " + eventSuccessResponseData.Timestamp)
+   }
+});
+
+Adjust.initSdk(config)
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+function eventSuccess(eventSuccessResponseData) {
+   console.log("Event recorded at " + eventSuccessResponseData.Timestamp);
+}
+
+let adjustConfig = new AdjustConfig(appToken, environment);
+adjustConfig.setEventSuccessCallback(eventSuccess);
+
+Adjust.initSdk(adjustConfig);
+```
+
+</Tab>
+</Tabs>
+
+### failure 回传 {#failure-callbacks-1}
+
+<CodeBlock title="方法签名">
+
+```java
+public void setOnEventTrackingFailedListener(OnEventTrackingFailedListener onEventTrackingFailedListener)
+```
+
+</CodeBlock>
+
+设置 failure 回传来在 SDK 未能记录到事件时触发函数。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val config = AdjustConfig(this, appToken, environment)
+//...
+config.setOnEventTrackingFailedListener (OnEventTrackingFailedListener() {
+   override fun onEventTrackingFailed(eventFailureResponseData: AdjustEventFailure) {
+      //...
+   }
+})
+//...
+Adjust.initSdk(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+//...
+config.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
+   @Override
+   public void onEventTrackingFailed(AdjustEventFailure eventFailureResponseData) {
+      //...
+   }
+});
+//...
+Adjust.initSdk(config)
+```
+
+</Tab>
+</Tabs>
+
+#### 示例 {#example-3}
+
+This example shows how to create a callback function `eventFailure` and register it as a **failure** callback. The function logs the event failure message.
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val config = AdjustConfig(this, appToken, environment)
+
+config.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
+   override fun eventFailure(eventFailureResponseData: AdjustEventFailure) {
+      Log.v("Event recording failed. Response: " + eventFailureResponseData.Message)
+   }
+})
+
+Adjust.initSdk(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+
+config.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
+   @Override
+   public void eventFailure(AdjustEventFailure eventFailureResponseData) {
+      Log.v("Event recording failed. Response: " + eventFailureResponseData.Message)
+   }
+});
+
+Adjust.initSdk(config)
+```
+
+</Tab>
+</Tabs>
+</SdkVersion>
+<SdkVersion version="v4">
+
+设置回传来在 SDK 向 Adjust 发送信息时触发函数。您可以针对 **会话** 和 **事件** 设置回传。
+
+<Callout type="important">
+
+您必须在初始化 SDK **之前** 注册回传。
+
+</Callout>
+
+## 会话回传 {#session-callbacks}
+
+设置会话回传来在 SDK 向 Adjust 发送会话信息时触发函数。您可以创建 **success** 回传和 **failure** 回传。SDK 向 Adjust 服务器发送信息时会触发 **success** 回传。SDK 向 Adjust 发送信息时出现问题会触发 **failure** 回传。
+
+会话回传可访问响应数据对象。您可以在回传函数中使用其属性。
+
+<Table>
+
+| 属性           | 数据类型                      | 描述                                |
+| -------------- | ----------------------------- | ----------------------------------- |
+| `Message`      | `String`                      | 服务器信息或者 SDK 记录的错误信息。 |
+| `Timestamp`    | `String`                      | 来自 Adjust 服务器的时间戳。        |
+| `Adid`         | `String`                      | 由 Adjust 提供的设备唯一标识符。    |
+| `JsonResponse` | `Dictionary <String, Object>` | 带服务器响应的 JSON 对象。          |
+| `WillRetry`    | `Boolean`                     | 指示包发送失败后是否再次尝试发送。  |
+
+</Table>
+
+### success 回传 {#success-callbacks}
+
+<CodeBlock title="方法签名">
+
+```java
+public void setOnSessionTrackingSucceededListener(OnSessionTrackingSucceededListener onSessionTrackingSucceededListener)
+```
+
+</CodeBlock>
+
+设置 success 回传来在 SDK 记录到会话时触发函数。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val config = AdjustConfig(this, appToken, environment)
+//...
+config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
+   override fun onFinishedSessionTrackingSucceeded(sessionSuccessResponseData: AdjustSessionSuccess) {
+      //...
+   }
+})
+//...
+Adjust.onCreate(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+//...
+config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
+   @Override
+   public void onFinishedSessionTrackingSucceeded(AdjustSessionSuccess sessionSuccessResponseData) {
+      //...
+   }
+});
+//...
+Adjust.onCreate(config)
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+function sessionSuccessCallback(sessionSuccessResponseData) {}
+//...
+let adjustConfig = new AdjustConfig(appToken, environment);
+adjustConfig.setSessionSuccessCallback(sessionSuccessCallback);
+//...
+Adjust.onCreate(adjustConfig);
+```
+
+</Tab>
+</Tabs>
+
+#### 示例 {#example}
+
+This example shows how to create a callback function `sessionSuccess` and register it as a **success** callback. The function logs the timestamp at which the SDK recorded the session.
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val config = AdjustConfig(this, appToken, environment)
+
+config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
+   override fun sessionSuccess(sessionSuccessResponseData: AdjustSessionSuccess) {
+      Log.v("Session recorded at " + sessionSuccessResponseData.Timestamp)
+   }
+})
+
+Adjust.onCreate(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+
+config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
+   @Override
+   public void sessionSuccess(AdjustSessionSuccess sessionSuccessResponseData) {
+      Log.v("Session recorded at " + sessionSuccessResponseData.Timestamp)
+   }
+});
+
+Adjust.onCreate(config)
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+function sessionSuccess(sessionSuccessResponseData) {
+   console.log("Session recorded at " + sessionSuccessResponseData.Timestamp);
+}
+
+let adjustConfig = new AdjustConfig(appToken, environment);
+adjustConfig.setSessionSuccessCallback(sessionSuccess);
+
+Adjust.onCreate(adjustConfig);
+```
+
+</Tab>
+</Tabs>
+
+### failure 回传 {#failure-callbacks}
+
+<CodeBlock title="方法签名">
+
+```java
+public void setOnSessionTrackingFailedListener(OnSessionTrackingFailedListener onSessionTrackingFailedListener)
+```
+
+</CodeBlock>
+
+设置 failure 回传来在 SDK 未能记录到会话时触发函数。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val config = AdjustConfig(this, appToken, environment)
+//...
+config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
+   override fun onFinishedSessionTrackingFailed(sessionFailureResponseData: AdjustSessionFailure) {
+      //...
+   }
+})
+//...
+Adjust.onCreate(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+//...
+config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
+   @Override
+   public void onFinishedSessionTrackingFailed(AdjustSessionFailure sessionFailureResponseData) {
+      //...
+   }
+});
+//...
+Adjust.onCreate(config)
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+function sessionFailureCallback(sessionFailureResponseData) {}
+//...
+let adjustConfig = new AdjustConfig(appToken, environment);
+adjustConfig.setSessionFailureCallback(sessionFailureCallback);
+//...
+Adjust.onCreate(adjustConfig);
+```
+
+</Tab>
+</Tabs>
+
+#### 示例 {#example-1}
+
+This example shows how to create a callback function `sessionFailure` and register it as a **failure** callback. The function logs the session failure message.
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val config = AdjustConfig(this, appToken, environment)
+
+config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
+   override fun sessionFailure(sessionFailureResponseData: AdjustSessionFailure) {
+      Log.v("Session recording failed. Response: " + sessionFailureResponseData.Message)
+   }
+})
+
+Adjust.onCreate(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+
+config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
+   @Override
+   public void sessionFailure(AdjustSessionFailure sessionFailureResponseData) {
+      Log.v("Session recording failed. Response: " + sessionFailureResponseData.Message)
+   }
+});
+
+Adjust.onCreate(config)
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+function sessionFailure(sessionFailureResponseData) {
+   console.log(
+      "Session recording failed. Response: " +
+         sessionFailureResponseData.Message,
+   );
+}
+
+let adjustConfig = new AdjustConfig(appToken, environment);
+adjustConfig.setSessionFailureCallback(sessionFailure);
+
+Adjust.onCreate(adjustConfig);
+```
+
+</Tab>
+</Tabs>
+
+## 事件回传 {#event-callbacks}
+
+设置事件回传来在 SDK 向 Adjust 发送事件信息时触发函数。您可以创建 **success** 回传和 **failure** 回传。SDK 向 Adjust 服务器发送信息时会触发 **success** 回传。SDK 向 Adjust 发送信息时出现问题会触发 **failure** 回传。
+
+事件回传可访问响应数据对象。您可以在回传函数中使用其属性。
+
+<Table>
+
+| 属性           | 数据类型                      | 描述                                |
+| -------------- | ----------------------------- | ----------------------------------- |
+| `Message`      | `String`                      | 服务器信息或者 SDK 记录的错误信息。 |
+| `Timestamp`    | `String`                      | 来自 Adjust 服务器的时间戳。        |
+| `Adid`         | `String`                      | 由 Adjust 提供的设备唯一标识符。    |
+| `EventToken`   | `String`                      | 事件识别码                          |
+| `CallbackId`   | `String`                      | 事件对象上设置的自定义回传 ID       |
+| `JsonResponse` | `Dictionary <String, Object>` | 带服务器响应的 JSON 对象。          |
+| `WillRetry`    | `Boolean`                     | 指示包发送失败后是否再次尝试发送。  |
+
+</Table>
+
+### success 回传 {#success-callbacks-1}
+
+<CodeBlock title="方法签名">
+
+```java
+public void setOnEventTrackingSucceededListener(OnEventTrackingSucceededListener onEventTrackingSucceededListener)
+```
+
+</CodeBlock>
+
+设置 success 回传来在 SDK 记录到事件时触发函数。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val config = AdjustConfig(this, appToken, environment)
+//...
+config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
+   override fun onFinishedEventTrackingSucceeded(eventSuccessResponseData: AdjustEventSuccess) {
+      //...
+   }
+})
+//...
+Adjust.onCreate(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+//...
+config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
+   @Override
+   public void onFinishedEventTrackingSucceeded(AdjustEventSuccess eventSuccessResponseData) {
+      //...
+   }
+});
+//...
+Adjust.onCreate(config)
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+function eventSuccessCallback(eventSuccessResponseData) {}
+//...
+let adjustConfig = new AdjustConfig(appToken, environment);
+adjustConfig.setEventSuccessCallback(eventSuccessCallback);
+//...
+Adjust.onCreate(adjustConfig);
+```
+
+</Tab>
+</Tabs>
+
+#### 示例 {#example-2}
+
+This example shows how to create a callback function `eventSuccess` and register it as a **success** callback. The function logs the timestamp at which the SDK recorded the event.
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val config = AdjustConfig(this, appToken, environment)
+
+config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
+   override fun eventSuccess(eventSuccessResponseData: AdjustEventSuccess) {
+      Log.v("Event recorded at " + eventSuccessResponseData.Timestamp)
+   }
+})
+
+Adjust.onCreate(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+
+config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
+   @Override
+   public void eventSuccess(AdjustEventSuccess eventSuccessResponseData) {
+      Log.v("Event recorded at " + eventSuccessResponseData.Timestamp)
+   }
+});
+
+Adjust.onCreate(config)
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+function eventSuccess(eventSuccessResponseData) {
+   console.log("Event recorded at " + eventSuccessResponseData.Timestamp);
+}
+
+let adjustConfig = new AdjustConfig(appToken, environment);
+adjustConfig.setEventSuccessCallback(eventSuccess);
+
+Adjust.onCreate(adjustConfig);
+```
+
+</Tab>
+</Tabs>
+
+### failure 回传 {#failure-callbacks-1}
+
+<CodeBlock title="方法签名">
+
+```java
+public void setOnEventTrackingFailedListener(OnEventTrackingFailedListener onEventTrackingFailedListener)
+```
+
+</CodeBlock>
+
+设置 failure 回传来在 SDK 未能记录到事件时触发函数。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val config = AdjustConfig(this, appToken, environment)
+//...
+config.setOnEventTrackingFailedListener (OnEventTrackingFailedListener() {
+   override fun onFinishedEventTrackingFailed(eventFailureResponseData: AdjustEventFailure) {
+      //...
+   }
+})
+//...
+Adjust.onCreate(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+//...
+config.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
+   @Override
+   public void onFinishedEventTrackingFailed(AdjustEventFailure eventFailureResponseData) {
+      //...
+   }
+});
+//...
+Adjust.onCreate(config)
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+function eventFailureCallback(eventFailureResponseData) {}
+//...
+let adjustConfig = new AdjustConfig(appToken, environment);
+adjustConfig.setEventFailureCallback(eventFailureCallback);
+//...
+Adjust.onCreate(adjustConfig);
+```
+
+</Tab>
+</Tabs>
+
+#### 示例 {#example-3}
+
+This example shows how to create a callback function `eventFailure` and register it as a **failure** callback. The function logs the event failure message.
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val config = AdjustConfig(this, appToken, environment)
+
+config.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
+   override fun eventFailure(eventFailureResponseData: AdjustEventFailure) {
+      Log.v("Event recording failed. Response: " + eventFailureResponseData.Message)
+   }
+})
+
+Adjust.onCreate(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+
+config.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
+   @Override
+   public void eventFailure(AdjustEventFailure eventFailureResponseData) {
+      Log.v("Event recording failed. Response: " + eventFailureResponseData.Message)
+   }
+});
+
+Adjust.onCreate(config)
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+function eventFailure(eventFailureResponseData) {
+   console.log(
+      "Event recording failed. Response: " + eventFailureResponseData.Message,
+   );
+}
+
+let adjustConfig = new AdjustConfig(appToken, environment);
+adjustConfig.setEventFailureCallback(sessionFailure);
+
+Adjust.onCreate(adjustConfig);
+```
+
+</Tab>
+</Tabs>
+</SdkVersion>

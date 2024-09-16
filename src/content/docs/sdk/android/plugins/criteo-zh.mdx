@@ -1,0 +1,221 @@
+---
+title: "Criteo"
+description: "使用 Criteo 插件，向 Adjust 传送 Criteo 信息。"
+slug: "zh/sdk/android/plugins/criteo"
+multiVersion: true
+---
+
+<SdkVersion version="v5">
+
+Criteo 插件已被弃用且不适用于 SDK v5。
+
+</SdkVersion>
+<SdkVersion version="v4">
+
+您可以使用 Adjust Criteo 插件，集成 Adjust安卓SDK 与 Criteo 事件。
+
+## 设置环境 {#set-up-your-environment}
+
+### Maven {#maven}
+
+如果您使用的是 Maven，请将以下依赖添加至您的 `build.gradle` 文件：
+
+<CodeBlock title="build.gradle">
+
+```groovy
+dependencies {
+   implementation 'com.adjust.sdk:adjust-android:$ANDROID_V4_VERSION'
+   implementation 'com.adjust.sdk:adjust-android-criteo:$ANDROID_V4_VERSION'
+}
+
+```
+
+</CodeBlock>
+
+### 作为 JAR 添加 {#add-as-jar}
+
+您也可以访问我们的[发布页面](https://github.com/adjust/android_sdk/releases)，将插件作为 JAR 文件添加。
+
+## 处理 Criteo 事件 {#work-with-criteo-events}
+
+设置好环境后，您就可以开始通过 Adjust SDK 记录 Criteo 事件了。
+
+### 查看产品页面 {#view-listing}
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustEvent event = new AdjustEvent("{viewListingEventToken}");
+List<string> productIds = Arrays.asList("productId1", "productId2", "productId3");
+AdjustCriteo.injectViewListingIntoEvent(event, productIds);
+Adjust.trackEvent(event);
+```
+
+### 浏览产品 {#view-product}
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustEvent event = new AdjustEvent("{viewProductEventToken}");
+AdjustCriteo.injectViewProductIntoEvent(event, "productId1");
+Adjust.trackEvent(event);
+```
+
+### 购物车 {#cart}
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustEvent event = new AdjustEvent("{cartEventToken}");
+CriteoProduct product1 = new CriteoProduct(100, 1, "productId1");
+CriteoProduct product2 = new CriteoProduct(77.7f, 3, "productId2");
+CriteoProduct product3 = new CriteoProduct(50, 2, "productId3");
+
+List<criteoproduct> products = Arrays.asList(product1, product2, product3);
+AdjustCriteo.injectCartIntoEvent(event, products);
+Adjust.trackEvent(event);
+```
+
+### 交易已确认 {#transaction-confirmed}
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustEvent event = new AdjustEvent("{transactionConfirmedEventToken}");
+CriteoProduct product1 = new CriteoProduct(100, 1, "productId1");
+CriteoProduct product2 = new CriteoProduct(77.7f, 3, "productId2");
+CriteoProduct product3 = new CriteoProduct(50, 2, "productId3");
+
+List<criteoproduct> products = Arrays.asList(product1, product2, product3);
+AdjustCriteo.injectTransactionConfirmedIntoEvent(event, products, "transactionId", "newCustomerId");
+Adjust.trackEvent(event);
+```
+
+### 用户级别 {#user-level}
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustEvent event = new AdjustEvent("{userLevelEventToken}");
+AdjustCriteo.injectUserLevelIntoEvent(event, 1);
+Adjust.trackEvent(event);
+```
+
+### 用户状态 {#user-status}
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustEvent event = new AdjustEvent("{userStatusEventToken}");
+AdjustCriteo.injectUserStatusIntoEvent(event, "uiStatusValue");
+Adjust.trackEvent(event);
+```
+
+### 成就解锁 {#achievement-unlocked}
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustEvent event = new AdjustEvent("{achievementUnlockedEventToken}");
+AdjustCriteo.injectAchievementUnlockedIntoEvent(event, "AchievementUnlocked");
+Adjust.trackEvent(event);
+```
+
+### 自定义事件 {#custom-event}
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustEvent event = new AdjustEvent("{customEventEventToken}");
+AdjustCriteo.injectCustomEventIntoEvent(event, "uiDataValue");
+Adjust.trackEvent(event);
+```
+
+### 自定义事件 2 {#custom-event-2}
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustEvent event = new AdjustEvent("{customEvent2EventToken}");
+AdjustCriteo.injectCustomEvent2IntoEvent(event, "uiData2Value", 3);
+Adjust.trackEvent(event);
+```
+
+### 经哈希处理的电子邮件 {#hashed-email}
+
+您也可以向每个 Criteo 事件附加一个经过哈希处理的电子邮件。为此，请调用`injectHashedEmailIntoCriteoEvents`方法。这样，在整个应用生命周期中，SDK 就会针对每个 Criteo 事件发送一封经过哈希处理的电子邮件。应用重新启动时，您需要再次进行该设置。您可以将`injectHashedEmailIntoCriteoEvents`值设置为`nil`，移除哈希电子邮件发送。
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustCriteo.injectHashedEmailIntoCriteoEvents("8455938a1db5c475a87d76edacb6284e");
+```
+
+### 搜索日期 {#search-dates}
+
+您可以向每个 Criteo 事件附加 check\-in \(如酒店的入住时间\) 和 check\-out \(如酒店的退房时间\) 日期。为此，请调用`injectViewSearchDatesIntoCriteoEvent`方法。这样，在整个应用生命周期中，SDK 就会针对每个 Criteo 事件发送日期信息。应用重新启动时，您需要再次进行该设置。
+
+您可以将 `injectViewSearchDatesIntoCriteoEvent` 值设置为 `nil`，移除搜索日期发送。
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustCriteo.injectViewSearchDatesIntoCriteoEvents("2015-01-01", "2015-01-07");
+```
+
+### 合作伙伴 ID {#partner-id}
+
+您也可以向每个 Criteo 事件附加一个合作伙伴 ID。为此，请调用`injectPartnerIdIntoCriteoEvents`方法。这样，在整个应用生命周期中，SDK 就会针对每个 Criteo 事件发送合作伙伴 ID 信息。应用重新启动时，您需要再次进行该设置。
+
+您可以将 `injectPartnerIdIntoCriteoEvents` 值设置为 null，移除合作伙伴 ID 发送。
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustCriteo.injectPartnerIdIntoCriteoEvents("{CriteoPartnerId}");
+```
+
+### 发送深度链接 {#send-deep-link}
+
+您可以添加深度链接信息至 Criteo 事件。为此，请使用事件和 URL 调用 `injectDeeplinkIntoEvent` 方法。
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+
+    Intent intent = getIntent();
+    Uri data = intent.getData();
+
+    AdjustEvent event = new AdjustEvent("{deeplinkEventToken}");
+    AdjustCriteo.injectDeeplinkIntoEvent(event, data);
+    Adjust.trackEvent(event);
+}
+```
+
+### 客户 ID {#customer-id}
+
+您也可以向每个 Criteo 事件附加一个客户 ID。为此，请调用`injectCustomerIdIntoCriteoEvents`方法。这样，在整个应用生命周期中，SDK 就会针对每个 Criteo 事件发送客户 ID 信息。应用重新启动时，您需要再次进行该设置。
+
+您可以将 `injectCustomerIdIntoCriteoEvents` 值设置为 nil，移除客户 ID 发送。
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustCriteo.injectCustomerIdIntoCriteoEvents("{CriteoCustomerId}");
+```
+
+### 用户分群 {#user-segment}
+
+您也可以向每个 Criteo 事件附加用户分群。为此，请调用`injectUserSegmentIntoCriteoEvents`方法。这样，在整个应用生命周期中，SDK 就会针对每个 Criteo 事件发送用户分群信息。应用重新启动时，您需要再次进行该设置。
+
+您可以将 `injectUserSegmentIntoCriteoEvents` 值设置为 nil，移除用户分群发送。
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustCriteo.injectUserSegmentIntoCriteoEvents("{CriteoUserSegment}");
+```
+
+</SdkVersion>

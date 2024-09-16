@@ -1,0 +1,102 @@
+---
+title: "Unity SDK 연동"
+description: "Unity 연동을 사용하여 Unity 정보를 Adjust 서버로 전달합니다."
+slug: "ko/sdk/android/integrations/unity"
+multiVersion: true
+---
+
+<SdkVersion version="v5">
+
+Unity SDK의 광고 매출을 측정하고 싶다면, SDK간 연동을 사용하여 Adjust 서버로 광고 매출 정보를 전달할 수 있습니다.
+
+<Callout type="note">
+
+Unity와의 광고 매출 측정에 관한 문의는 담당 계정 매니저나 [support@adjust.com](mailto:support@adjust.com)으로 연락주시기 바랍니다.
+
+</Callout>
+
+## 시작에 앞서 {#before-you-begin}
+
+본 기능을 사용하려면 우선 앱에 대한 Adjust Android SDK를 다운로드하고 설정해야 합니다.
+
+자세한 정보는 Unity [Mediation API](https://docs.unity.com/mediation/APIReferenceAndroid.html)와 [노출 이벤트](https://docs.unity.com/mediation/SDKIntegrationAndroidImpressionEvents.html) 문서를 참고하시기 바랍니다.
+
+## 예시 {#example}
+
+```java
+// implement an impression listener
+final IImpressionListener impressionListener = new IImpressionListener() {
+    @Override
+    public void onImpression(@NonNull String adUnitId, @Nullable ImpressionData impressionData) {
+        // send impression data to Adjust
+        AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue("unity_sdk");
+        adjustAdRevenue.setRevenue(impressionData.getPublisherRevenuePerImpression(), impressionData.getCurrency());
+        // optional fields
+        adjustAdRevenue.setAdRevenueNetwork(impressionData.getAdSourceName());
+        adjustAdRevenue.setAdRevenueUnit(impressionData.getAdUnitId());
+        adjustAdRevenue.setAdRevenuePlacement(impressionData.getAdSourceInstance());
+        // Send Adjust ad revenue
+        Adjust.trackAdRevenue(adjustAdRevenue);
+    }
+};
+
+// subscribe the impression listener to the impression event publisher
+ImpressionEventPublisher.subscribe(impressionListener);
+
+// unsubscribe the impression listener from the impression event publisher
+ImpressionEventPublisher.unsubscribe(impressionListener);
+```
+
+</SdkVersion>
+<SdkVersion version="v4">
+
+Unity SDK의 광고 매출을 측정하고 싶다면, SDK간 연동을 사용하여 Adjust 서버로 광고 매출 정보를 전달할 수 있습니다.
+
+<Callout type="note">
+
+Unity와의 광고 매출 측정에 관한 문의는 담당 계정 매니저나 [support@adjust.com](mailto:support@adjust.com)으로 연락주시기 바랍니다.
+
+</Callout>
+
+## 시작에 앞서 {#before-you-begin}
+
+본 기능을 사용하려면 우선 앱에 대한 Adjust Android SDK를 다운로드하고 설정해야 합니다.
+
+### 요구 사항 {#requirements}
+
+-  Android SDK v4\.29\.1 이상
+
+자세한 정보는 Unity [Mediation API](https://docs.unity.com/mediation/APIReferenceAndroid.html)와 [노출 이벤트](https://docs.unity.com/mediation/SDKIntegrationAndroidImpressionEvents.html) 문서를 참고하시기 바랍니다.
+
+## 예시 {#examples}
+
+<Tabs>
+<Tab title="Java">
+
+```java
+// implement an impression listener
+final IImpressionListener impressionListener = new IImpressionListener() {
+    @Override
+    public void onImpression(@NonNull String adUnitId, @Nullable ImpressionData impressionData) {
+        // send impression data to Adjust
+        AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue(AdjustConfig.AD_REVENUE_UNITY);
+        adjustAdRevenue.setRevenue(impressionData.getPublisherRevenuePerImpression(), impressionData.getCurrency());
+        // optional fields
+        adjustAdRevenue.setAdRevenueNetwork(impressionData.getAdSourceName());
+        adjustAdRevenue.setAdRevenueUnit(impressionData.getAdUnitId());
+        adjustAdRevenue.setAdRevenuePlacement(impressionData.getAdSourceInstance());
+        // Send Adjust ad revenue
+        Adjust.trackAdRevenue(adjustAdRevenue);
+    }
+};
+
+// subscribe the impression listener to the impression event publisher
+ImpressionEventPublisher.subscribe(impressionListener);
+
+// unsubscribe the impression listener from the impression event publisher
+ImpressionEventPublisher.unsubscribe(impressionListener);
+```
+
+</Tab>
+</Tabs>
+</SdkVersion>
