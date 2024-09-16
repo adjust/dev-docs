@@ -1,0 +1,168 @@
+---
+title: iOS Purchase verification migration guide
+description: Follow this guide to migrate from the Purchase verification SDK to SDK v5's built-in purchase verification features.
+sidebar-label: v5 purchase verification
+sidebar-position: 3
+slug: en/sdk/migration/ios/v5-purchase-verification
+---
+
+This guide shows you how to migrate from Adjust's Purchase verification SDK to SDK v5's built-in purchase verification features. The SDK v5 purchase verification workflow is a streamlined approach to purchase verification.
+
+With the Purchase Verification SDK, verification is split into three steps:
+
+1. Initialize the Purchase Verification SDK.
+
+```objc
+#import "AdjustPurchase.h"
+// or #import <AdjustPurchaseSdk/AdjustPurchase.h>
+
+NSString *yourAppToken = @"{YourAppToken}";
+NSString *environment = ADJPEnvironmentSandbox;
+
+ADJPConfig *config = [[ADJPConfig alloc] initWithAppToken:yourAppToken andEnvironment:environment];
+[AdjustPurchase init:config];
+```
+
+2. Verify your purchase.
+
+```objc
+[AdjustPurchase verifyPurchase:receipt
+                forTransaction:transaction
+                     productId:@"product-id"
+             withResponseBlock:^(ADJPVerificationInfo *info) {
+    // process ADJPVerificationInfo object
+}];
+```
+
+3. Depending on the outcome of the verification, configure an `AdjustEvent` object and send it to Adjust.
+
+```objc
+NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
+NSData *receipt = [NSData dataWithContentsOfURL:receiptURL];
+ADJEvent *event = [ADJEvent eventWithEventToken::@"your-event-token"];
+[event setRevenue:6.0 currency:@"EUR"];
+[event setTransactionId:@"transaction-id"];
+[event setProductId:@"product-id"];
+[event setReceipt:receipt];
+[Adjust trackEvent:event];
+```
+
+In SDK v5, this workflow is simplified. The `[Adjust verifyAndTrackAppStorePurchase]` method allows you to send an event to Adjust's servers and receive the verification status as a callback. Adjust records the event and the verification status automatically.
+
+## Guide {#guide}
+
+Follow the steps in this guide to migrate from the Purchase Verification SDK to SDK v5 built-in purchase verification.
+
+### 1. Uninstall the Purchase Verification SDK {#uninstall-the-pv-sdk}
+
+To get started, uninstall the Adjust Purchase Verification SDK.
+
+### 2. Remove Purchase Verification SDK code {#remove-pv-sdk-code}
+
+Once you've uninstalled the Adjust Purchase Verification SDK, you must remove all Purchase Verification code from your project.
+
+### 3. Migrate to SDK v5 purchase verification {#migrate-to-sdk-v5-pv}
+
+Once you've removed the existing purchase verification code, you can replace it with SDK v5's built-in purchase verification methods. There are two ways to verify purchases with the Adjust SDK:
+
+1. Create an `ADJEvent` object that represents your purchase and add the following properties:
+   -  `productId` (`NSString`): The product identifier of the item that was successfully purchased.
+   -  `transactionId` (`NSString`): The ID of the transaction you want to verify.
+2. Create an `ADJAppStorePurchase` object with your product ID, transaction ID, and receipt.
+
+<Callout type="tip">
+
+If you use revenue events to measure your purchases in Adjust, you should use the `ADJEvent` class. If you only want to verify a purchase but don't want to associate it with an event, use the `ADJAppStorePurchase` class.
+
+</Callout>
+
+#### Record event and verify purchase {#record-event-and-verify-purchase}
+
+To send a revenue event for verification and listen for the purchase verification status, follow these steps:
+
+1. Instantiate an `ADJEvent` object with the your event token and set the following parameters:
+   -  `productId` (`NSString`): The product identifier of the item that was successfully purchased.
+   -  `transactionId` (`NSString`): The ID of the transaction you want to verify.
+2. Call the `Adjust.verifyAndTrackPlayStorePurchase` method with the following arguments:
+   -  `event` (`ADJEvent`): Your instantiated event object.
+   -  `callback` (`ADJVerificationResultBlock`): A delegate callback function that receives an `ADJPurchaseVerificationResult` object as an argument.
+
+In this example, the purchase verification response is output to the logging daemon.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: "g3mfiw")!
+event.setProductId("product-id")
+event.setTransactionId("transaction-id")
+
+Adjust.verifyAndTrackAppStorePurchase(event) { verificationResult in
+   print("Verification status: \(verificationResult.verificationStatus)")
+   print("Code: \(verificationResult.code)")
+   print("Message: \(verificationResult.message)")
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+ADJEvent *event = [[ADJEvent alloc] initWithEventToken:yourEventToken];
+[event setProductId:@"product-id"];
+[event setTransactionId:@"transaction-id"];
+
+[Adjust verifyAndTrackAppStorePurchase:event withCompletionHandler:^(ADJPurchaseVerificationResult * _Nonnull verificationResult) {
+      NSLog(@"Verification status: %@", verificationResult.verificationStatus);
+      NSLog(@"Code: %d", verificationResult.code);
+      NSLog(@"Message: %@", verificationResult.message);
+}];
+```
+
+</Tab>
+</Tabs>
+
+#### Only verify purchase {#only-verify-purchase}
+
+To send a standalone purchase and listen for the purchase verification status, follow these steps:
+
+1. Instantiate an `ADJAppStorePurchase` with the following arguments:
+   -  `productId` (`NSString`): The product identifier of the item that was successfully purchased.
+   -  `transactionId` (`NSString`): The ID of the transaction you want to verify.
+2. Call the `Adjust.verifyAppStorePurchase` method with the following arguments:
+   -  `purchase` (`ADJAppStorePurchase`): Your instantiated purchase object.
+   -  `callback` (`ADJVerificationResultBlock`): A delegate callback function that receives an `ADJPurchaseVerificationResult` object as an argument.
+
+In this example, the purchase verification response is output to the logging daemon.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let appStorePurchase = ADJAppStorePurchase(transactionId: yourTransactionId,
+                           productId: yourProductId)!
+
+Adjust.verifyAppStorePurchase(appStorePurchase) { verificationResult in
+   print("Verification status: \(verificationResult.verificationStatus)")
+   print("Code: \(verificationResult.code)")
+   print("Message: \(verificationResult.message)")
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+ADJAppStorePurchase *appStorePurchase = [[ADJAppStorePurchase alloc]
+                                             initWithTransactionId:yourTranscationId
+                                             productId:yourProductId];
+
+[Adjust verifyAppStorePurchase:appStorePurchase withCompletionHandler:^(ADJPurchaseVerificationResult * _Nonnull verificationResult) {
+     NSLog(@"Verification status: %@", verificationResult.verificationStatus);
+     NSLog(@"Code: %d", verificationResult.code);
+     NSLog(@"Message: %@", verificationResult.message);
+}];
+```
+
+</Tab>
+</Tabs>
