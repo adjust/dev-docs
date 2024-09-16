@@ -1,45 +1,30 @@
 ---
 title: "パートナー広告費用 Push API"
-description: "パートナー広告費用APIを使用して、キャンペーンに関連する広告費用の情報を送信できます。"
+description: "パートナー広告費用APIを使用して、キャンペーンに関連する広告費用情報をAdjustに送信します。"
 category-title: "パートナー広告費用API"
 slug: "ja/api/ad-spend-api"
 sidebar-position: 2
 ---
 
-パートナー広告費用APIを使用して、キャンペーンに関連する広告費用の情報を送信できます。APIには、計測するキャンペーンに関連するコストIDが必須です。
+パートナー広告費用APIを使用して、キャンペーンに関連する広告費用情報をAdjustに送信します。Adjustは、エンゲージメントの発生から **最大7日間** の間、広告費用データを受信します。
 
-広告費用APIの設定方法：
+## コストIDの設定 {#cost-id}
 
-1. コストIDを設定する
+**コストID**
 
-   **コストID** は、一意のコストエンゲージメント識別子です。AdjustはコストIDを使用して、コストデータをクリックまたはインプレッションとマッチングします。コストIDの設定方法については、[コストIDの設定](/ja/api/ad-spend-api/cost-id)をご覧ください。
+: **12〜256字** の長さの一意のコストエンゲージメント識別子の値。
 
-2. API連携を設定する
+パートナー広告費用APIを呼び出す全てのコールには、キャンペーンに関連付けられた一意の **コストID** を含める必要があります。AdjustはコストIDを使用して、送信された広告費用データをクリックまたはインプレッションとマッチングします。
 
-   Adjustは`/cost`エンドポイントを介して広告費用データを受け取ります。POSTリクエストの設定方法については、[広告費用のコストエンドポイント](/ja/api/ad-spend-api/cost-endpoint)に記載された手順をご参照ください。
+コストIDは一意である必要があります。UUID（Universally Unique Identifier / 汎用一意識別子）を使用するか、IDの前に会社名を付与することをお勧めします。例： `network_name_848dsf4939fgwjn028erg4`
 
-3. Adjustとの連携をテストして、設定を完了させる
+既存の`click_id`または`impression_id`を使用できます。クリックIDやインプレッションIDを作成しない場合は、2つ以上のプレースホルダーを組み合わせてIDを作成することができます。たとえば、インプレッション単価 \(CPI\) の場合、ユーザーのIDFA（広告ID）とアプリIDを組み合わせることが可能です。
 
-   必須パラメーターを送信するようサーバーを設定したら、[wizards@adjust.com](mailto:wizards@adjust.com)までご連絡ください。Adjustが連携のテストを実施します。
+### Adjustを使用してCPMを計測 {#measure-cpm-with-adjust}
 
-   Adjustでは、お客様に一連のテストを提供しています。連携を有効化する前に、異なるコストタイプに乖離が生じていないか、他に問題がないかどうかを確認できます。Adjustはまた、API連携が期待通りに機能していることを確認するため、Adjust APIのテストも実施しています。
+CPM（1000回表示あたりの広告費用）データをAdjustに送信するには、パートナー広告費用APIコールで送信する`cost_id`と同じ値を持つ`cost_id`をインプレッションURLに追加してください。CPMを計測する際は、インプレッション **ごと** にCPMを送信する必要があります。
 
-   テスト完了後、Adjust広告費用APIの公式連携パートナーとして広告費用パートナーのリストに掲載されます。
-
-## [コストI](cost-id)
-
-**コストID** は、12〜256字の一意のコストエンゲージメント識別子の値です。Adjustは、`cost_id`を使用して、受信したコストデータをクリックまたはインプレッションとマッチングすることができます。
-
-`cost_id`を広告費用APIと使用する際に考慮すべきポイントは以下のとおりです：
-
--  他のAdjustのネットワークパートナーの値がマッチングされるのを防ぐため、`cost_id`は一意の値に設定する必要があります。UUID（Universally Unique Identifier / 汎用一意識別子）を使用するか、IDの前に会社名を付与することをお勧めします。例：`network_name_848dsf4939fgwjn028erg4`。
--  既存の`click_id`または`impression_id`を使用できます。クリックIDやインプレッションIDを作成しない場合は、2つ以上のプレースホルダーを組み合わせてIDを作成してください。たとえばCPIには、ユーザーのIDFA（広告識別子\)とアプリIDを組み合わせることが可能です。
-
-### Adjustを使用してCPMを計測
-
-AdjustにCPM（1000回表示あたりの広告費用）データを送信するには、インプレッションURLで`cost_id`を送信し、広告費用APIコールで参照します。インプレッションごとにCPMを送信してください。
-
-## [エンドポイント](endpoint)
+## 広告費用データを送信 {#send-ad-spend-data}
 
 <CodeBlock title="エンドポイント" highlight="/cost">
 
@@ -49,36 +34,30 @@ POST https://app.adjust.com/cost
 
 </CodeBlock>
 
-### [POSTリクエスト](post-request)
+Adjustに広告費用情報を送信するには、 `/cost`エンドポイントにPOSTリクエストを送信します。
 
-POSTメソッドは、キャンペーンのコスト情報を`cost_id`を通じて送信します。
+### パラメータ {#parameters}
 
-<Callout type="important">
+各リクエストごとに以下のパラメーターを送信する必要があります。全てのパラメーターは、小文字の **クエリパラメーター** である必要があります。
 
-広告費用APIは、大文字を処理することができません。パラメーターは全て小文字で入力してください。
+`cost_type` （`String`）
 
-</Callout>
+: 課金モデル。例：`cpc`、`cpi`、`cpe`。
 
-#### [パラメーター](parameters)
+`cost_currency` （`String`）
 
-<Table search>
+: 広告費用情報の通貨コード。[ISO 4217](https://www.iban.com/currency-codes)の通貨コードでフォーマットされなければなりません。Adjustがサポートしている[全ての通貨のリスト](https://help.adjust.com/ja/article/supported-currencies)をご覧ください。
 
-| パラメーター      | データタイプ | 入力する値 | 説明                                                                                                                                                                               |
-| ----------------- | ------------ | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `cost_type`\*     | `String`     | クエリ     | コストモデル。`cpc` \| `cpi` \| `cpe` \| `cpm`                                                                                                                                     |
-| `cost_currency`\* | `String`     | クエリ     | [ISO 4217](https://www.iban.com/currency-codes)の通貨コード。Adjustがサポートしている[全ての通貨のリスト](https://help.adjust.com/ja/article/supported-currencies)をご覧ください。 |
-| `cost_id`\*       | `String`     | クエリ     | コスト情報をエンゲージメントと一致させるためのユニークな値。12～256字であることが必須です。                                                                                        |
-| `tag`\*           | `String`     | クエリ     | ログの記録とやデバッグに使用するラベル。最大128字。                                                                                                                                |
+`cost_id` （`String`）
 
-</Table>
+: 一意のコストID。詳細については、[上記のコストIDのセクション](#cost-id)を参照してください。
 
-## [例](example)
+`tag` （`String`）
 
-<Callout type="tip">
+: ログの記録やデバッグに使用するラベル。この値は最大128文字で設定可能です。
 
-リクエストを正しくフォーマットする方法がご不明な場合は、Adjust連携チーム[（wizards@adjust.com）](mailto:wizards@adjust.com)までお問い合わせください。
+### 例 {#example}
 
-</Callout>
 <CodeBlock title="cURL" highlight="cost_type, cost_currency, cost_amount, cost_id, tag">
 
 ```console
@@ -88,17 +67,26 @@ $ curl -X POST https://app.adjust.com/cost \
 
 </CodeBlock>
 
-## [レスポンス](responses)
+## レスポンス {#responses}
 
-可能なサーバーレスポンスの一覧です。
+`200 Success`
 
-<Table>
+: 広告費用情報がAdjustに送信されました。
 
-| コード | レスポンス                            |
-| ------ | ------------------------------------- |
-| `200`  | 成功レスポンス（Successful response） |
-| `400`  | 不正なリクエスト（Bad request）       |
-| `401`  | 無許可（Unauthorized）                |
-| `403`  | 禁止（Forbidden）                     |
+`400 Bad request`
 
-</Table>
+: リクエストが正しくフォーマットされていません。[全ての必須パラメーター](#parameters)を含めるようにしてください。
+
+`401 Unauthorized`
+
+: 必要な認証情報が提供されなかったため、リクエストを処理できませんでした。パートナー認証情報の設定については、[wizards@adjust.com](mailto:wizards@adjust.com)までお問い合わせください。
+
+`403 Forbidden`
+
+: 指定された認証情報には、送信された情報を投稿する権限がありません。問題を解決するには、[wizards@adjust.com](mailto:wizards@adjust.com)にお問い合わせください。
+
+## 実装をテスト {#test-your-integration}
+
+必要なパラメーターを送信するようサーバーを設定したら、[wizards@adjust.com](mailto:wizards@adjust.com)までご連絡ください。Adjustでは、お客様に一連のテストを提供しています。連携を有効化する前に、異なるコストタイプに乖離が生じていないか、他に問題がないかどうかを確認できます。Adjustはまた、API連携が期待通りに機能していることを確認するため、Adjust APIのテストも実施しています。
+
+テストが完了すると、Adjustは連携された[広告費用パートナーのリスト](https://help.adjust.com/ja/article/ad-spend-api-integrations#supported-partners)にお客様を追加します。

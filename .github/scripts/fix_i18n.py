@@ -49,6 +49,14 @@ def process_file(file, locale):
         fixed_lines.append(line)
     content = "\n".join(fixed_lines)
 
+    # Fix escaped headers
+    content = re.sub(
+        r"^(\s.*?)(\\\{\\#.*?\\\})",
+        lambda m: m.group(1) + m.group(2).replace("\\", ""),
+        content,
+        flags=re.MULTILINE,
+    )
+
     # Update slugs
     content = re.sub(r"(slug: *)(\"?en\/?)", rf'\1"{locale}/', content)
 
@@ -59,6 +67,10 @@ def process_file(file, locale):
 
     # Update internal links
     content = re.sub(r"\(/en/(.*?)\)", rf"(/{locale}/\1)", content)
+
+    # Remove unnecessary IDs
+    content = re.sub(r' id="sl-md0000000"', "", content)
+    content = re.sub(r"\s?md0000000\s?", "", content)
 
     # Write back the modified content
     with open(file, "w", encoding="utf-8") as f:

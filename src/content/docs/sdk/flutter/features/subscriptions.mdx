@@ -2,7 +2,10 @@
 title: Send subscription information
 description: Use these methods send subscription information to Adjust.
 slug: en/sdk/flutter/features/subscriptions
+multiVersion: true
 ---
+
+<SdkVersion version="v5">
 
 <Callout type="important">
 
@@ -12,7 +15,339 @@ The following steps only set up subscription measurement within the Adjust SDK. 
 
 You can record App Store and Play Store subscriptions and verify their validity with the Adjust SDK. After the user purchases a subscription, create an `AdjustAppStoreSubscription` or `AdjustPlayStoreSubscription` instance containing the details.
 
-## [1. Instantiate a subscription object](1-instantiate-a-subscription-object)
+## 1. Instantiate a subscription object {#1-instantiate-a-subscription-object}
+
+To get started, you need to create a subscription object containing details of the subscription purchase.
+
+<Tabs>
+<Tab title="App Store" sync="appstore" icon="PlatformIos">
+
+<CodeBlock title="Method signature">
+
+```dart
+AdjustAppStoreSubscription(String _price, String _currency, String _transactionId)
+```
+
+</CodeBlock>
+
+Create an `AdjustAppStoreSubscription` object with the following properties:
+
+<Table>
+
+| Parameter       | Data type | Description                                                                                                                                                                                                                                                                                         |
+| --------------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- |
+| `price`         | `String`  | The price of the subscription                                                                                                                                                                                                                                                                       |
+| `currency`      | `String`  | The currency of the subscription. Formatted as the [`currencyCode`](https://developer.apple.com/documentation/foundation/nslocale/1642836-currencycode?language=objc) of the [`priceLocale`](https://developer.apple.com/documentation/storekit/skproduct/1506145-pricelocale?language=objc) object |
+| `transactionId` | `String`  | Your ID for the transaction                                                                                                                                                                                                                                                                         |     |
+
+</Table>
+
+```dart
+AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
+   price,
+   currency,
+   transactionId);
+```
+
+</Tab>
+<Tab title="Play Store" sync="playstore" icon="PlatformGooglePlay">
+
+<CodeBlock title="Method signature">
+
+```dart
+AdjustPlayStoreSubscription(String _price, String _currency, String _sku, String _orderId, String _signature, String _purchaseToken)
+```
+
+</CodeBlock>
+
+Create an `AdjustPlayStoreSubscription` object with the following properties:
+
+<Table>
+
+| Parameter       | Data type | Description                                                                                                                                                                                 |
+| --------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `price`         | `String`  | The price of the subscription                                                                                                                                                               |
+| `currency`      | `String`  | The currency of the subscription                                                                                                                                                            |
+| `sku`           | `String`  | The ID of the product                                                                                                                                                                       |
+| `orderId`       | `String`  | Your ID for the transaction                                                                                                                                                                 |
+| `signature`     | `String`  | The signature of the purchase data                                                                                                                                                          |
+| `purchaseToken` | `String`  | The unique token of the transaction. See [Google's documentation](<https://developer.android.com/reference/com/android/billingclient/api/Purchase#getPurchaseToken()>) for more information |
+
+</Table>
+
+```dart
+AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
+   price,
+   currency,
+   sku,
+   orderId,
+   signature,
+   purchaseToken);
+```
+
+</Tab>
+</Tabs>
+
+### Record the purchase date {#record-the-purchase-date}
+
+You can record the date on which the user purchased a subscription. The SDK returns this data for you to report on.
+
+<Tabs>
+<Tab title="App Store" sync="appstore" icon="PlatformIos">
+
+Add the `transactionDate` property in the `AdjustAppStoreSubscription` class.
+
+<CodeBlock title="Property declaration">
+
+```dart
+String? transactionDate
+```
+
+</CodeBlock>
+
+Set a timestamp to the `transactionDate` property of your `subscription` instance to record the date on which the user purchased a subscription.
+
+```dart
+AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
+   price,
+   currency,
+   transactionId);
+//...
+subscription.transactionDate = 'transactionDate';
+```
+
+</Tab>
+<Tab title="Play Store" sync="playstore" icon="PlatformGooglePlay">
+
+Add the `purchaseTime` property in the `AdjustPlayStoreSubscription` class.
+
+<CodeBlock title="Property declaration">
+
+```dart
+String? purchaseTime;
+```
+
+</CodeBlock>
+
+Set a timestamp to the `purchaseTime` property of your `subscription` instance to record the date on which the user purchased a subscription.
+
+```dart
+AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
+   price,
+   currency,
+   sku,
+   orderId,
+   signature,
+   purchaseToken);
+subscription.purchaseTime = 'purchase-time';
+```
+
+</Tab>
+</Tabs>
+
+### Record the purchase region (iOS only) {#record-the-purchase-region-ios-only}
+
+<CodeBlock title="Method signature">
+
+```dart
+String? salesRegion
+```
+
+</CodeBlock>
+
+You can record the region in which the user purchased a subscription. To do this, call the `setSalesRegion` method on your subscription object and pass the country code as a `String`. This needs to be formatted as the [`countryCode`](https://developer.apple.com/documentation/storekit/storefront/3792000-countrycode) of the [`Storefront`](https://developer.apple.com/documentation/storekit/storefront) object.
+
+```dart
+AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
+   price,
+   currency,
+   transactionId);
+//...
+subscription.salesRegion = 'sales-region';
+```
+
+### Add callback parameters {#add-callback-parameters}
+
+You can add callback parameters to your subscription object. The SDK appends these parameters to your callback URL. To add callback parameters, call the `addCallbackParameter` method on your subscription object. You can add multiple callback parameters by calling this method multiple times.
+
+<Tabs>
+<Tab title="App Store" sync="appstore" icon="PlatformIos">
+
+<CodeBlock title="Method signature">
+
+```dart
+void addCallbackParameter(String key, String value)
+```
+
+</CodeBlock>
+
+```dart
+AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
+   price,
+   currency,
+   transactionId);
+//...
+subscription.addCallbackParameter('key1', 'value1');
+subscription.addCallbackParameter('key2', 'value2');
+```
+
+</Tab>
+<Tab title="Play Store" sync="playstore" icon="PlatformGooglePlay">
+
+<CodeBlock title="Method signature">
+
+```dart
+void addCallbackParameter(String key, String value)
+```
+
+</CodeBlock>
+
+```dart
+AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
+   price,
+   currency,
+   sku,
+   orderId,
+   signature,
+   purchaseToken);
+//...
+subscription.addCallbackParameter('key1', 'value1');
+subscription.addCallbackParameter('key2', 'value2');
+```
+
+</Tab>
+</Tabs>
+
+### Add partner parameters {#add-partner-parameters}
+
+You can add partner parameters to your subscription object. The SDK sends these to Adjust's servers when the user purchases a subscription. Adjust's servers forward the information on to your network partner. To add partner parameters, call the `addPartnerParameter` method on your subscription object. You can add multiple partner parameters by calling this method multiple times.
+
+<Tabs>
+<Tab title="App Store" sync="appstore" icon="PlatformIos">
+
+<CodeBlock title="Method signature">
+
+```dart
+void addPartnerParameter(String key, String value)
+```
+
+</CodeBlock>
+
+```dart
+AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
+   price,
+   currency,
+   transactionId);
+//...
+subscription.addPartnerParameter('key1', 'value1');
+subscription.addPartnerParameter('key2', 'value2');
+```
+
+</Tab>
+<Tab title="Play Store" sync="playstore" icon="PlatformGooglePlay">
+
+<CodeBlock title="Method signature">
+
+```dart
+void addPartnerParameter(String key, String value)
+```
+
+</CodeBlock>
+
+```dart
+AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
+   price,
+   currency,
+   sku,
+   orderId,
+   signature,
+   purchaseToken);
+//...
+subscription.addPartnerParameter('key1', 'value1');
+subscription.addPartnerParameter('key2', 'value2');
+```
+
+</Tab>
+</Tabs>
+
+## 2. Record subscription information {#2-record-subscription-information}
+
+Once you have set up your subscription object, you can record it using the Adjust SDK.
+
+<Tabs>
+<Tab title="App Store" sync="appstore" icon="PlatformIos">
+
+<CodeBlock title="Method signature">
+
+```dart
+static void trackAppStoreSubscription(AdjustAppStoreSubscription subscription)
+```
+
+</CodeBlock>
+
+Pass your subscription object to the `trackAppStoreSubscription` method to record the user's subscription purchase.
+
+```dart
+AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
+   price,
+   currency,
+   transactionId);
+subscription.transactionDate = 'transactionDate';
+subscription.salesRegion = 'salesRegion';
+subscription.addCallbackParameter('key1', 'value1');
+subscription.addCallbackParameter('key2', 'value2');
+subscription.addPartnerParameter('key1', 'value1');
+subscription.addPartnerParameter('key2', 'value2');
+
+Adjust.trackAppStoreSubscription(subscription);
+```
+
+</Tab>
+<Tab title="Play Store" sync="playstore" icon="PlatformGooglePlay">
+
+<CodeBlock title="Method signature">
+
+```dart
+static void trackPlayStoreSubscription(AdjustPlayStoreSubscription subscription)
+```
+
+</CodeBlock>
+
+Pass your subscription object to the `trackPlayStoreSubscription` method to record the user's subscription purchase.
+
+```dart
+AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
+   price,
+   currency,
+   sku,
+   orderId,
+   signature,
+   purchaseToken);
+subscription.purchaseTime = 'purchase-time';
+subscription.addCallbackParameter('key1', 'value1');
+subscription.addCallbackParameter('key2', 'value2');
+subscription.addPartnerParameter('key1', 'value1');
+subscription.addPartnerParameter('key2', 'value2');
+
+Adjust.trackPlayStoreSubscription(subscription);
+```
+
+</Tab>
+</Tabs>
+
+</SdkVersion>
+
+<SdkVersion version="v4">
+
+<Callout type="important">
+
+The following steps only set up subscription measurement within the Adjust SDK. To enable the feature, Adjust need to set up app-specific information. Contact support@adjust.com or talk to your Technical Account manager to set this up.
+
+</Callout>
+
+You can record App Store and Play Store subscriptions and verify their validity with the Adjust SDK. After the user purchases a subscription, create an `AdjustAppStoreSubscription` or `AdjustPlayStoreSubscription` instance containing the details.
+
+## 1. Instantiate a subscription object {#1-instantiate-a-subscription-object}
 
 To get started, you need to create a subscription object containing details of the subscription purchase.
 
@@ -87,7 +422,7 @@ AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
 </Tab>
 </Tabs>
 
-### [Record the purchase date](record-the-purchase-date)
+### Record the purchase date {#record-the-purchase-date}
 
 You can record the date on which the user purchased a subscription. The SDK returns this data for you to report on.
 
@@ -141,7 +476,7 @@ subscription.setPurchaseTime(purchaseTime);
 </Tab>
 </Tabs>
 
-### [Record the purchase region (iOS only)](record-the-purchase-region-ios-only)
+### Record the purchase region (iOS only) {#record-the-purchase-region-ios-only}
 
 <CodeBlock title="Method signature">
 
@@ -163,7 +498,7 @@ AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
 subscription.setSalesRegion(salesRegion);
 ```
 
-### [Add callback parameters](add-callback-parameters)
+### Add callback parameters {#add-callback-parameters}
 
 You can add callback parameters to your subscription object. The SDK appends these parameters to your callback URL. To add callback parameters, call the `addCallbackParameter` method on your subscription object. You can add multiple callback parameters by calling this method multiple times.
 
@@ -216,7 +551,7 @@ subscription.addCallbackParameter('key2', 'value2');
 </Tab>
 </Tabs>
 
-### [Add partner parameters](add-partner-parameters)
+### Add partner parameters {#add-partner-parameters}
 
 You can add partner parameters to your subscription object. The SDK sends these to Adjust's servers when the user purchases a subscription. Adjust's servers forward the information on to your network partner. To add partner parameters, call the `addPartnerParameter` method on your subscription object. You can add multiple partner parameters by calling this method multiple times.
 
@@ -269,7 +604,7 @@ subscription.addPartnerParameter('key2', 'value2');
 </Tab>
 </Tabs>
 
-## [2. Record subscription information](2-record-subscription-information)
+## 2. Record subscription information {#2-record-subscription-information}
 
 Once you have set up your subscription object, you can record it using the Adjust SDK.
 
@@ -334,3 +669,5 @@ Adjust.trackPlayStoreSubscription(subscription);
 
 </Tab>
 </Tabs>
+
+</SdkVersion>

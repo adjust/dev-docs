@@ -15,7 +15,7 @@ To enable deep linking, you need to do the following:
 -  [ ] Enable Associated Domains for your app
 -  [ ] Configure your deep links in Xcode
 
-## [Enable Associated Domains](enable-associated-domains)
+## Enable Associated Domains {#enable-associated-domains}
 
 To get started, you need to enable Associated Domains in your Apple Developer account. This allows you to set universal link domains in your app. To do this, follow these steps:
 
@@ -26,11 +26,11 @@ To get started, you need to enable Associated Domains in your Apple Developer ac
 5. Ensure that **Associated Domains** is checked under **Capabilities**.
 6. Select **Save** to save your changes.
 
-## [Configure deep links in Xcode](configure-deep-links-in-xcode)
+## Configure deep links in Xcode {#configure-deep-links-in-xcode}
 
 Follow these steps to add your deep link configuration to your Xcode project.
 
-### [Adjust universal links domain](adjust-universal-links-domain)
+### Adjust universal links domain {#adjust-universal-links-domain}
 
 1. Open your app project in Xcode.
 2. Select your project from the left-hand menu.
@@ -42,7 +42,7 @@ Follow these steps to add your deep link configuration to your Xcode project.
 8. Enter the Adjust Universal Link domain with the prefix `applinks:`
    -  Here is an example using the `example.adj.st` domain: `applinks:example.adj.st`.
 
-### [Custom URL scheme](custom-url-scheme)
+### Custom URL scheme {#custom-url-scheme}
 
 <Callout type="tip">
 
@@ -64,15 +64,15 @@ Check with your marketing team to see if a custom URL scheme is needed for the a
 
 This scheme will work for your production **and** debug builds.
 
-## [Modify your iOS app](modify-your-ios-app)
+## Modify your iOS app {#modify-your-ios-app}
 
 You need to update your iOS app to set up different deep linking scenarios. How you update your app depends on whether your app uses [scenes](https://developer.apple.com/documentation/uikit/app_and_environment/scenes).
 
-### [App doesn't use scenes](app-doesn-t-use-scenes)
+### App doesn't use scenes {#app-doesn-t-use-scenes}
 
 If your app doesn't uses scenes, you need to update methods in your app delegate.
 
-#### [Universal links](universal-links)
+#### Universal links {#universal-links}
 
 Update the `application(_:continue:restorationHandler:)` method in your app delegate to call the following methods in the Adjust SDK:
 
@@ -105,7 +105,8 @@ func application(
 
 
             // call the below method to send deep link to Adjust's servers
-            Adjust.processDeeplink(resolvedURL)
+            let deeplink = ADJDeeplink(deeplink: resolvedURL)!
+            Adjust.processDeeplink(deeplink)
         })
       } else {
           return false
@@ -141,7 +142,8 @@ func application(
 
 
             // call the below method to send deep link to Adjust's servers
-            [Adjust processDeeplink:resolvedURL];
+            ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:resolvedURL];
+            [Adjust processDeeplink:deeplink];
         }];
     } else {
         return NO;
@@ -154,7 +156,7 @@ func application(
 </Tab>
 </Tabs>
 
-#### [Custom URL scheme](custom-url-scheme-1)
+#### Custom URL scheme {#custom-url-scheme-1}
 
 If your marketing team requires you to set up custom URL scheme deep links, update the `application(_:open:options:)` method in your app delegate to call the `Adjust.processDeeplink` method in the Adjust SDK. This method sends deep links to Adjust's servers to record them. You can pass both Adjust and non-Adjust deep links to this method. Adjust's servers ignore any deep links that don’t have Adjust parameters.
 
@@ -176,7 +178,7 @@ func application(
 
 
     // call the below method to send deep link to Adjust's servers
-    Adjust.processDeeplink(incomingURL)
+    Adjust.processDeeplink(ADJDeeplink(deeplink: incomingURL))
 
     return true
 }
@@ -196,7 +198,7 @@ func application(
 
 
     // call the below method to send deep link to Adjust's servers
-    [Adjust processDeeplink:incomingURL];
+    [Adjust processDeeplink:[[ADJDeeplink alloc] initWithDeeplink:incomingURL]];
 
     return YES;
 }
@@ -205,11 +207,11 @@ func application(
 </Tab>
 </Tabs>
 
-### [App uses scenes](app-uses-scenes)
+### App uses scenes {#app-uses-scenes}
 
 If your app uses scenes, you need to update methods in your scene delegate.
 
-#### [Universal links](universal-links-1)
+#### Universal links {#universal-links-1}
 
 1. Update the `scene(_:willConnectTo:options:)` method in your scene delegate. When a user clicks on your universal links and the user has your app closed, iOS opens your app and delivers the deep link to this method.
 2. Update the `scene(_:continue:)` method in your scene delegate. When a user clicks on your universal links, and the user has your app running in the background, iOS opens your app and delivers the deep link to this method.
@@ -245,7 +247,8 @@ func scene(
 
 
         // call the below method to send deep link to Adjust's servers
-        Adjust.processDeeplink(resolvedURL)
+        let deeplink = ADJDeeplink(deeplink: resolvedURL)!
+         Adjust.processDeeplink(deeplink)
       })
 }
 
@@ -267,7 +270,8 @@ func scene(
 
 
             // call the below method to send deep link to Adjust's servers
-            Adjust.processDeeplink(resolvedURL)
+            let deeplink = ADJDeeplink(deeplink: resolvedURL)!
+            Adjust.processDeeplink(deeplink)
         })
     }
 }
@@ -300,7 +304,8 @@ func scene(
 
 
             // call the below method to send deep link to Adjust's servers
-            [Adjust processDeeplink:resolvedURL];
+            ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:resolvedURL];
+            [Adjust processDeeplink:deeplink];
         }];
     }
 }
@@ -323,7 +328,8 @@ func scene(
 
 
             // call the below method to send deep link to Adjust's servers
-            [Adjust processDeeplink:resolvedURL];
+            ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:resolvedURL];
+            [Adjust processDeeplink:deeplink];
         }];
     }
 }
@@ -332,7 +338,7 @@ func scene(
 </Tab>
 </Tabs>
 
-#### [Custom URL scheme](custom-url-scheme-2)
+#### Custom URL scheme {#custom-url-scheme-2}
 
 1. Update the `scene(_:willConnectTo:options:)` method in your scene delegate. When a user clicks on your custom URL scheme deep link and the user has your app closed, iOS opens your app and delivers the deep link to this method.
 2. Update the `scene(_:openURLContexts:)` method in your scene delegate. When a user clicks on your custom URL scheme deep link, and the user has your app running in the background, iOS opens your app and delivers the deep link to this method.
@@ -397,7 +403,7 @@ To enable deep linking, you need to do the following:
 -  [ ] Enable Associated Domains for your app
 -  [ ] Configure your deep links in Xcode
 
-## [Enable Associated Domains](enable-associated-domains)
+## Enable Associated Domains {#enable-associated-domains}
 
 To get started, you need to enable Associated Domains in your Apple Developer account. This allows you to set universal link domains in your app. To do this, follow these steps:
 
@@ -408,11 +414,11 @@ To get started, you need to enable Associated Domains in your Apple Developer ac
 5. Ensure that **Associated Domains** is checked under **Capabilities**.
 6. Select **Save** to save your changes.
 
-## [Configure deep links in Xcode](configure-deep-links-in-xcode)
+## Configure deep links in Xcode {#configure-deep-links-in-xcode}
 
 Follow these steps to add your deep link configuration to your Xcode project.
 
-### [Adjust universal links domain](adjust-universal-links-domain)
+### Adjust universal links domain {#adjust-universal-links-domain}
 
 1. Open your app project in Xcode.
 2. Select your project from the left-hand menu.
@@ -424,7 +430,7 @@ Follow these steps to add your deep link configuration to your Xcode project.
 8. Enter the Adjust Universal Link domain with the prefix `applinks:`
    -  Here is an example using the `example.adj.st` domain: `applinks:example.adj.st`.
 
-### [Custom URL scheme](custom-url-scheme)
+### Custom URL scheme {#custom-url-scheme}
 
 <Callout type="tip">
 
@@ -446,15 +452,15 @@ Check with your marketing team to see if a custom URL scheme is needed for the a
 
 This scheme will work for your production **and** debug builds.
 
-## [Modify your iOS app](modify-your-ios-app)
+## Modify your iOS app {#modify-your-ios-app}
 
 You need to update your iOS app to set up different deep linking scenarios. How you update your app depends on whether your app uses [scenes](https://developer.apple.com/documentation/uikit/app_and_environment/scenes).
 
-### [App doesn't use scenes](app-doesn-t-use-scenes)
+### App doesn't use scenes {#app-doesn-t-use-scenes}
 
 If your app doesn't uses scenes, you need to update methods in your app delegate.
 
-#### [Universal links](universal-links)
+#### Universal links {#universal-links}
 
 Update the `application(_:continue:restorationHandler:)` method in your app delegate to call the following methods in the Adjust SDK:
 
@@ -536,7 +542,7 @@ func application(
 </Tab>
 </Tabs>
 
-#### [Custom URL scheme](custom-url-scheme-1)
+#### Custom URL scheme {#custom-url-scheme-1}
 
 If your marketing team requires you to set up custom URL scheme deep links, update the `application(_:open:options:)` method in your app delegate to call the `Adjust.appWillOpen` method in the Adjust SDK. This method sends deep links to Adjust's servers to record them. You can pass both Adjust and non-Adjust deep links to this method. Adjust's servers ignore any deep links that don’t have Adjust parameters.
 
@@ -587,11 +593,11 @@ func application(
 </Tab>
 </Tabs>
 
-### [App uses scenes](app-uses-scenes)
+### App uses scenes {#app-uses-scenes}
 
 If your app uses scenes, you need to update methods in your scene delegate.
 
-#### [Universal links](universal-links-1)
+#### Universal links {#universal-links-1}
 
 1. Update the `scene(_:willConnectTo:options:)` method in your scene delegate. When a user clicks on your universal links and the user has your app closed, iOS opens your app and delivers the deep link to this method.
 2. Update the `scene(_:continue:)` method in your scene delegate. When a user clicks on your universal links, and the user has your app running in the background, iOS opens your app and delivers the deep link to this method.
@@ -714,7 +720,7 @@ func scene(
 </Tab>
 </Tabs>
 
-#### [Custom URL scheme](custom-url-scheme-2)
+#### Custom URL scheme {#custom-url-scheme-2}
 
 1. Update the `scene(_:willConnectTo:options:)` method in your scene delegate. When a user clicks on your custom URL scheme deep link and the user has your app closed, iOS opens your app and delivers the deep link to this method.
 2. Update the `scene(_:openURLContexts:)` method in your scene delegate. When a user clicks on your custom URL scheme deep link, and the user has your app running in the background, iOS opens your app and delivers the deep link to this method.

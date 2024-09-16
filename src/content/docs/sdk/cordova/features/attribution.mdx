@@ -2,11 +2,102 @@
 title: Get attribution information
 description: Listen for attribution changes using the Adjust SDK
 slug: en/sdk/cordova/features/attribution
+multiVersion: true
 ---
+
+<SdkVersion version="v5">
 
 When a user interacts with an Adjust link, their attribution information updates. This can happen if the user interacts with a [deep link](https://help.adjust.com/en/article/deep-links). Information about a user's attribution is represented in the `AdjustAttribution` class.
 
-## [AdjustAttribution class properties](adjustattribution-class-properties)
+## AdjustAttribution class properties {#adjustattribution-class-properties}
+
+The `AdjustAttribution` class contains details about the current attribution status of the device. Any values that aren't populated for the user are returned as a `null` value.
+
+<Callout type="note">
+
+The following values can only be accessed if you have called the [`enableCostDataInAttribution` method](/en/sdk/react-native/configuration#enable-cost-data-sending) on your `AdjustConfig` class:
+
+-  `costType`
+-  `costAmount`
+-  `costCurrency`
+
+</Callout>
+
+## Trigger a function when attribution changes {#trigger-a-function-when-attribution-changes}
+
+<CodeBlock title="Property declaration">
+
+```ts
+setAttributionCallback(attributionCallback: (attribution: AdjustAttribution) => void): void
+```
+
+</CodeBlock>
+
+The SDK can listen for attribution changes and call a function when it detects an update. To configure your callback function, call the `setAttributionCallback` method with your function as an argument.
+
+<Callout type="important">
+
+You must call the `setAttributionCallback` method **before** initializing the Adjust SDK in your app.
+
+</Callout>
+
+<CodeBlock highlight="{range: 3-18}">
+
+```js
+const adjustConfig = new AdjustConfig(appToken, environment);
+
+adjustConfig.setAttributionCallback(function (attribution) {
+   // Printing all attribution properties.
+   console.log("Attribution changed!");
+   console.log(attribution.trackerToken);
+   console.log(attribution.trackerName);
+   console.log(attribution.network);
+   console.log(attribution.campaign);
+   console.log(attribution.adgroup);
+   console.log(attribution.creative);
+   console.log(attribution.clickLabel);
+   console.log(attribution.costType);
+   console.log(attribution.costAmount);
+   console.log(attribution.costCurrency);
+   console.log(attribution.fbInstallReferrer);
+});
+
+Adjust.initSdk(adjustConfig);
+```
+
+</CodeBlock>
+
+## Get current attribution information {#get-current-attribution-information}
+
+<CodeBlock title="Method signature">
+
+```ts
+getAttribution(): Promise<AdjustAttribution>
+```
+
+</CodeBlock>
+
+When a user installs your app, Adjust attributes the install to a campaign. The Adjust SDK gives you access to campaign attribution details for your install. To return this information, call the `getAttribution` method to return the attribution information as an `AdjustAttribution` object.
+
+```js
+Adjust.getAttribution(function (attribution) {
+   console.log("Tracker token = " + attribution.trackerToken);
+   console.log("Tracker name = " + attribution.trackerName);
+   console.log("Network = " + attribution.network);
+   console.log("Campaign = " + attribution.campaign);
+   console.log("Adgroup = " + attribution.adgroup);
+   console.log("Creative = " + attribution.creative);
+   console.log("Click label = " + attribution.clickLabel);
+});
+```
+
+</SdkVersion>
+
+<SdkVersion version="v4">
+
+When a user interacts with an Adjust link, their attribution information updates. This can happen if the user interacts with a [deep link](https://help.adjust.com/en/article/deep-links). Information about a user's attribution is represented in the `AdjustAttribution` class.
+
+## AdjustAttribution class properties {#adjustattribution-class-properties}
 
 The `AdjustAttribution` class contains details about the current attribution status of the device. Any values that aren't populated for the user are returned as a `null` value.
 
@@ -39,7 +130,7 @@ The following values can only be accessed if the [`needsCost` property on your `
 
 </Table>
 
-## [Trigger a function when attribution changes](trigger-a-function-when-attribution-changes)
+## Trigger a function when attribution changes {#trigger-a-function-when-attribution-changes}
 
 <CodeBlock title="Method signature">
 
@@ -78,7 +169,7 @@ adjustConfig.setAttributionCallbackListener(function (attribution) {
 Adjust.create(adjustConfig);
 ```
 
-## [Get current attribution information](get-current-attribution-information)
+## Get current attribution information {#get-current-attribution-information}
 
 <CodeBlock title="Method signature">
 
@@ -95,3 +186,5 @@ Adjust.getAttribution(function (attribution) {
    // Access attribution properties within this function
 });
 ```
+
+</SdkVersion>

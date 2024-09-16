@@ -2,8 +2,10 @@
 title: "SKAdNetworkとconversion valueの設定"
 description: "iOSアプリのSKAdNetwork機能を設定します。"
 slug: "ja/sdk/react-native/features/skad"
+multiVersion: true
 ---
 
+<SdkVersion version="v5">
 <Callout type="important">
 
 この機能は、iOS 14以降のiOSデバイスのみにおいて利用可能です。
@@ -16,7 +18,165 @@ StoreKit AdNetwork（SKAdNetwork）は、アプリのインストールおよび
 2. ネットワークがこの情報をAdjustにポストバックで送信します。
 3. Adjustが[Datascape](https://help.adjust.com/ja/suite/article/datascape)上にSKAdNetworkデータを表示します。
 
-## [SKAdNetworkの通信を無効化する](disable-skadnetwork-communication)
+## Disable SKAdNetwork communication {#disable-skadnetwork-communication}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```ts
+public disableSkanAttribution(): void
+```
+
+</CodeBlock>
+
+Configオブジェクトには`boolean` `isSKAdNetworkHandlingActive`プロパティが含まれており、それが動作を制御します。SKAdNetworkとの通信を非有効化するには、`disableSkanAttribution`メソッドを呼び出してください。
+
+<Callout type="important">
+
+Adjust SDKを初期化する _前_ に、`disableSkanAttribution`メソッドを呼び出す必要があります。
+
+</Callout>
+
+```jsx
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox,
+);
+
+adjustConfig.disableSkanAttribution();
+
+Adjust.initSdk(adjustConfig);
+```
+
+## Update conversion values {#update-conversion-values}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```ts
+updateSkanConversionValue: (conversionValue: number, coarseValue: string, lockWindow: boolean, callback: (error: string) => void) => void
+```
+
+</CodeBlock>
+
+Conversion valueは、SKAdNetworkでアプリ内のユーザー行動を計測するためのメカニズムです。64の条件を`0`～`63`の値に対応させ、ユーザーのインストール時にこの整数値をSKAdNetworkに送信することができます。これによって、はじめの3日間のユーザー行動に関するインサイトを取得することが可能です。これによって、はじめの3日間のユーザー行動に関するインサイトを取得することが可能です。
+
+Adjustでconversion valueを管理している場合、AdjustのサーバーはSDKでこの値を更新します。また、`updateSkanConversionValue`メソッドを使用して、この値を更新することが可能です。以下の引数を受け入れます。
+
+<Table>
+
+| 引数              | データタイプ                                                                                                                             | 説明                                                                                                                                                                                                                                                                                                                      |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `conversionValue` | 数値                                                                                                                                     | Conversion value。`0`～`63`の値であることが必須です。                                                                                                                                                                                                                                                                     |
+| `coarseValue`     | 文字列 \( [`SKAdNetwork.CoarseConversionValue`](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue) \) | 粒度が粗いconversion value。この値は、プライバシーのしきい値に到達するだけのアプリインストール数でない場合に使用されます。<ul><li>`'low'` `SKAdNetworkCoarseConversionValueLow`対象</li><li>`'medium'` `SKAdNetworkCoarseConversionValueMedium`対象</li><li>`'high'` `SKAdNetworkCoarseConversionValueHigh`対象</li></ul> |
+| `lockWindow`      | ブーリアン                                                                                                                               | Conversion期間の終了前にポストバックを送信するかどうか。<br/>`true`を指定した場合、conversion期間の終了を待たずにポストバックを送信するようにシステムに指示します。デフォルトの設定は`false`となっています。                                                                                                              |
+
+</Table>
+
+```jsx
+Adjust.updateSkanConversionValue(6, 'coarse-value', ‘true’, function(error) {
+    // error is present in case it happened
+});
+
+```
+
+## Listen for changes to conversion values {#listen-for-changes-to-conversion-values}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```ts
+public setSkanUpdatedCallback(
+      callback: (skanData: AdjustSkanData) => void
+    ): void
+
+```
+
+</CodeBlock>
+
+Adjustを使用してconversion valueを管理している場合、Adjustのサーバーはconversion valueのアップデートをSDKに送信します。`setSkanUpdatedCallback`メソッドを使用して、こうした変更を受信するデリゲート関数を設定できます。関数を引数としてパスしてください。
+
+```jsx
+const adjustConfig = new AdjustConfig(appToken, environment);
+
+adjustConfig.setSkanUpdatedCallback(function (skanData) {
+   console.log("Conversion value: " + skanData.conversionValue);
+   console.log("Coarse value: " + skanData.coarseValue);
+   console.log("Lock window: " + skanData.lockWindow);
+   console.log("Error: " + skanData.error);
+});
+
+Adjust.initSdk(adjustConfig);
+```
+
+### Example {#example-1}
+
+この例では、conversion valueが更新されたときに以下を記録する方法を示しています：
+
+-  conversion valueのアップデートを確認するメッセージ
+-  新しいconversion value
+
+```jsx
+import { Adjust, AdjustEvent, AdjustConfig } from "react-native-adjust";
+
+const App: () => React$Node = () => {
+   Adjust.getSdkVersion(function (sdkVersion) {
+      console.log("Adjust SDK version: " + sdkVersion);
+   });
+
+   const adjustConfig = new AdjustConfig(
+      "{YourAppToken}",
+      AdjustConfig.EnvironmentSandbox
+   );
+
+  adjustConfig.setSkanUpdatedCallback(function (skanData) {
+   console.log("Conversion value: " + skanData.conversionValue);
+   console.log("Coarse value: " + skanData.coarseValue);
+   console.log("Lock window: " + skanData.lockWindow);
+   console.log("Error: " + skanData.error);
+});
+
+   Adjust.initSdk(adjustConfig);
+};
+
+export default App;
+```
+
+## Set up direct install postbacks {#set-up-direct-install-postbacks}
+
+<Callout type="note">
+
+ダイレクトインストールポストバックには、SKAdNetworkの情報のみが含まれます。キャンペーンデータなどの情報は含まれません。
+
+</Callout>
+
+獲得したSKAdNetworkコールバックのコピーをAdjustに送信するようにアプリを設定できます。これにより、SKAdNetworkの情報をアナリティクスで使用できるようになります。
+
+ダイレクトインストールポストバックを設定するには、`Info.plist`ファイルにAdjustのコールバックURLを追加してください：
+
+1. Xcodeのプロジェクトナビゲーターで **Info.plist** を選択します。
+2. プロパティリストエディタでキーの横にある追加ボタンを選択し、`Return`キーを押します。
+3. キーの名前として _`NSAdvertisingAttributionReportEndpoint`_ を入力します。
+4. ポップアップ画面で **Type** から **String** までを設定します。
+5. アドレス _`https://adjust-skadnetwork.com`_ を入力します。
+
+<Callout type="seealso">
+
+詳しくはAppleのガイド[Configuring an Advertised App](https://developer.apple.com/documentation/storekit/skadnetwork/configuring_an_advertised_app)をご覧ください。
+
+</Callout>
+</SdkVersion>
+<SdkVersion version="v4">
+<Callout type="important">
+
+この機能は、iOS 14以降のiOSデバイスのみにおいて利用可能です。
+
+</Callout>
+
+StoreKit AdNetwork（SKAdNetwork）は、アプリのインストールおよび再インストールアトリビューションのための、Appleのフレームワークです。SKAdNetworkのワークフローは以下のようになります：
+
+1. Appleがアトリビューション情報を収集し、関連するアドネットワークに通知します。
+2. ネットワークがこの情報をAdjustにポストバックで送信します。
+3. Adjustが[Datascape](https://help.adjust.com/ja/suite/article/datascape)上にSKAdNetworkデータを表示します。
+
+## Disable SKAdNetwork communication {#disable-skadnetwork-communication}
 
 <CodeBlock title="メソッドシグネチャー">
 
@@ -44,13 +204,13 @@ const adjustConfig = new AdjustConfig(
    "{YourAppToken}",
    AdjustConfig.EnvironmentSandbox,
 );
-//...
+
 adjustConfig.deactivateSKAdNetworkHandling();
-//...
+
 Adjust.create(adjustConfig);
 ```
 
-## [Conversion valueを更新する](update-conversion-values)
+## Update conversion values {#update-conversion-values}
 
 <CodeBlock title="メソッドシグネチャー">
 
@@ -68,7 +228,7 @@ Adjustでconversion valueを管理している場合、AdjustのサーバーはS
 Adjust.updateConversionValue(6);
 ```
 
-### [例](example)
+### Example {#example}
 
 この例では、ユーザーがイベントをトリガーしたことに応じて、conversion valueを`10`に更新する方法を示しています。
 
@@ -78,7 +238,7 @@ function _onPress_trackSimpleEvent() {
 }
 ```
 
-## [Conversion valueの変更を受信する](listen-for-changes-to-conversion-values)
+## Listen for changes to conversion values {#listen-for-changes-to-conversion-values}
 
 <CodeBlock title="メソッドシグネチャー">
 
@@ -106,7 +266,7 @@ adjustConfig.setConversionValueUpdatedCallbackListener(
 Adjust.create(adjustConfig);
 ```
 
-### [例](example-1)
+### Example {#example-1}
 
 この例では、conversion valueが更新されたときに以下を記録する方法を示しています：
 
@@ -140,7 +300,7 @@ const App: () => React$Node = () => {
 export default App;
 ```
 
-## [SKAdNetwork 4\.0コールバック](skadnetwork-4-0-callbacks)
+## SKAdNetwork 4\.0 callbacks {#skadnetwork-4-0-callbacks}
 
 <MinorVersion added="v4.33.0">
 
@@ -157,7 +317,7 @@ SKAdNetwork 4\.0のポストバックにはいくつかの追加情報が含ま�
 
 </Table>
 
-### [例](example-3)
+### Example {#example-3}
 
 この例では、粒度が細かいconversion value、粒度が粗いconversion value、SKAdNetworkポストバックがconversion期間の終了前に送信されるよう設定されているかどうかをログに記録する方法を示しています。
 
@@ -190,7 +350,7 @@ const App: () => React$Node = () => {
 export default App;
 ```
 
-## [ダイレクトインストールポストバックの設定](set-up-direct-install-postbacks)
+## Set up direct install postbacks {#set-up-direct-install-postbacks}
 
 <Callout type="note">
 
@@ -213,3 +373,4 @@ export default App;
 詳しくはAppleのガイド[Configuring an Advertised App](https://developer.apple.com/documentation/storekit/skadnetwork/configuring_an_advertised_app)をご覧ください。
 
 </Callout>
+</SdkVersion>
