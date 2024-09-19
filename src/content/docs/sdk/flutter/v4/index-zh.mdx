@@ -1,0 +1,317 @@
+---
+title: Flutter SDK 集成指南
+description: 使用 Flutter SDK 在您的 Flutter 应用中使用 Adjust 功能
+category-title: Flutter SDK
+slug: zh/sdk/flutter/v4
+sidebar-position: 5
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v5: /zh/sdk/flutter
+---
+
+通过 Adjust Flutter SDK，您可以在 Flutter 应用中监测归因、事件以及更多信息。请按照本指南中说明的步骤操作，在应用内设置 Adjust SDK。您还可以在 [GitHub](https://github.com/adjust/flutter_sdk/tree/master/example) 上查看示例应用。
+
+<Callout type="important">
+
+Adjust SDK 支持 iOS 9 或更新版本，以及安卓 API 级别 9 \(Gingerbread\) 或更新版本。
+
+</Callout>
+
+## 1\. 添加 SDK 至您的项目 {#1-add-the-sdk-to-your-project}
+
+要在您的 Flutter 应用中使用 [Adjust Flutter SDK](https://github.com/adjust/flutter_sdk/releases)，请先将 SDK 加入项目。
+
+如需将 Adjust SDK 集成到您的 Flutter 项目中，请按照以下步骤操作：
+
+1. 添加下列行至您的 `pubspec.yaml` 文件:
+
+<CodeBlock title="pubspec.yaml">
+
+```yaml
+dependencies:
+   adjust_sdk: ^$FLUTTER_VERSION
+```
+
+</CodeBlock>
+
+2. 找到您的项目并运行以下指令。编辑 `pubspec.yaml` 文件后，Visual Studio 会自动运行该命令。
+
+```console
+$ flutter packages get
+```
+
+## 2\. 设置安卓设备 {#2-set-up-android-devices}
+
+### 添加 Google Play 服务 {#add-google-play-services}
+
+针对 Google Play 商店的应用必须使用 [Google 广告 ID](https://support.google.com/googleplay/android-developer/answer/6048248?hl=en) \(`gps_adid`\) 来识别设备。为此，请将以下依赖加入`build.gradle` 文件的 `dependencies` 部分。
+
+<CodeBlock title="build.gradle">
+
+```groovy
+implementation 'com.google.android.gms:play-services-ads-identifier:18.0.1'
+```
+
+</CodeBlock>
+<Callout type="note">
+
+Adjust SDK 并不与任何版本的 `play-services-ads-identifier`依赖绑定。您可以使用任意版本的 Google Play 服务库。
+
+</Callout>
+
+### 添加权限 {#add-permissions}
+
+Adjust SDK 需要下列权限。\(如尚未添加\) 请将其添加至您的 `AndroidManifest.xml` 文件中：
+
+<CodeBlock title="AndroidManifest.xml">
+
+```xml
+<uses-permission android:name="android.permission.INTERNET"/>
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
+```
+
+</CodeBlock>
+<MinorVersion changed="v4.32.0">
+
+从 Adjust SDK 4\.32\.0 及以上版本默认包含 `com.google.android.gms.AD_ID` 权限。如果您的应用需要符合 COPPA 的要求或不针对 Google Play 商店，则可以通过添加 `remove` 指令将其删除。
+
+</MinorVersion>
+<CodeBlock title="AndroidManifest.xml">
+
+```xml
+<uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
+```
+
+</CodeBlock>
+<Callout type="seealso">
+
+请查看 [Google 的 `AdvertisingIdClient.Info documentation` 文档](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid)，了解更多与该许可相关的信息。
+
+</Callout>
+
+### 设置 Proguard {#set-up-proguard}
+
+如果您使用的是 Proguard，请将这些规则添加至您的[自定义 Proguard 文件](https://docs.unity3d.com/Manual/class-PlayerSettingsAndroid.html#build)。
+
+<CodeBlock title="proguard.pro">
+
+```java
+-keep public class com.adjust.sdk.** { *; }
+-keep class com.google.android.gms.common.ConnectionResult {
+   int SUCCESS;
+}
+-keep class com.google.android.gms.ads.identifier.AdvertisingIdClient {
+   com.google.android.gms.ads.identifier.AdvertisingIdClient$Info getAdvertisingIdInfo(android.content.Context);
+}
+-keep class com.google.android.gms.ads.identifier.AdvertisingIdClient$Info {
+   java.lang.String getId();
+   boolean isLimitAdTrackingEnabled();
+}
+-keep public class com.android.installreferrer.** { *; }
+
+```
+
+</CodeBlock>
+
+如果您的发布目标非 Google Play 商店，请向 Proguard 文件添加下列规则：
+
+<CodeBlock title="proguard.pro">
+
+```java
+-keep public class com.adjust.sdk.** { *; }
+```
+
+</CodeBlock>
+
+### 设置 Install Referrer {#set-up-install-referrer}
+
+Install Referrer 是一种唯一标识符，可用来将应用安装归因至来源。Adjust SDK 需要该信息进行归因。您可以用下列 3 种方法收集 install referrer：
+
+-  使用 [Google Play Referrer API](https://developer.android.com/google/play/installreferrer)。
+-  使用华为 Referrer API \(仅限华为设备\)。
+
+<Callout type="important">
+
+[Google 已不再针对 Google Play 服务使用`INSTALL_REFERRER` intent 方法](https://android-developers.googleblog.com/2019/11/still-using-installbroadcast-switch-to.html)传递 referrer 信息。如果您当前在使用这种方法，请迁移至 Google Play Referrer API。
+
+</Callout>
+
+#### Google Play Referrer API {#google-play-referrer-api}
+
+要支持 Google Play Referrer API，请将下列行添加进您的 `build.gradle` 文件
+
+<CodeBlock title="build.gradle">
+
+```groovy
+implementation 'com.android.installreferrer:installreferrer:2.2'
+```
+
+</CodeBlock>
+
+如果您使用的是 Proguard，请务必将下列设置加入您的 Proguard 文件：
+
+<CodeBlock title="proguard.pro">
+
+```java
+-keep public class com.android.installreferrer.** { *; }
+```
+
+</CodeBlock>
+
+#### 华为 Referrer API {#huawei-referrer-api}
+
+<MinorVersion added="v4.22.0">
+
+从版本 v4\.22\.0 开始，Adjust SDK 将支持对装有华为 App Gallery 10\.4 或更新版本的设备进行安装记录。您无需其他调整和变更，就可以开始使用华为 Referrer API。
+
+</MinorVersion>
+
+#### Meta referrer 集成 {#meta-referrer-integration}
+
+<Callout type="note">
+
+Adjust SDK 会捆绑[Meta 要求](https://developers.facebook.com/docs/app-ads/meta-install-referrer#step-1--add-the-meta-apps)的`<queries>`元素。您无需将这些元素添加至`AndroidManifest.xml`。
+
+</Callout>
+<MinorVersion added="v4.36.0">
+
+Adjust SDK v4\.36\.0 及更高版本支持[Meta Install Referrer](https://developers.facebook.com/docs/app-ads/meta-install-referrer)。要启用该功能：
+
+</MinorVersion>
+
+1. 在[应用控制面板](https://developers.facebook.com/apps)中找到您的 Meta app ID。更多信息，请参考 Meta 的[应用控制面板文档](https://developers.facebook.com/docs/development/create-an-app/app-dashboard)。
+
+2. 在`AdjustConfig`实例上将您的 App ID 指定至`fbAppId`属性。
+
+   ```dart
+   AdjustConfig config = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox);
+   config.fbAppId = "<fb_app_id_string>";
+   ```
+
+## 3\. 添加 iOS 框架 {#3-add-ios-frameworks}
+
+在应用中添加特定 iOS 框架后，Adjust SDK 就能获取额外信息。这些框架可以支持特定 SDK 功能，但即便没有这些框架，SDK 也能正常工作。您可以添加这些框架，然后在 **Project Settings \-> Build Phases \-> Link Binary With Libraries** 下将其设置为可选。
+
+<Table>
+
+| 框架                                | 描述                                                                                                        | 注意事项                                                                                    |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `AdSupport.framework`               | 允许读取设备 IDFA。对于操作系统为 iOS 14 及更早版本的设备，添加该框架也会允许读取 LAT 信息。                | 如果您的应用属于 "儿童" 类别，那么请勿添加该框架                                            |
+| `AdServices.framework`              | 处理 Apple Search Ads 归因                                                                                  |                                                                                             |
+| `StoreKit.framework`                | 允许访问 SKAdNetwork 框架                                                                                   | 若要允许 Adjust 处理 iOS 14 或更新操作版本设备上与 SKAdNetwork 的通讯，那么必须添加该框架。 |
+| `AppTrackingTransparency.framework` | 若要允许 Adjust SDK 包装用户 ATT 许可对话，并读取 iOS 14 或更新操作版本设备的许可响应，那么必须添加该框架。 | 如果您的应用属于 "儿童" 类别，那么请勿添加该框架                                            |
+
+</Table>
+
+## 4\. 初始化 Adjust SDK {#4-initialize-the-adjust-sdk}
+
+请确保在 Flutter 应用中尽快初始化 Adjust SDK。要进行 SDK 初始化，请使用应用识别码及您希望应用运行的环境来初始化 config 对象。
+
+<Callout type="important">
+
+在进行测试时，应当确保将环境设置为 `AdjustEnvironment.sandbox` 。请在向 App Store 提交应用前将此设为 `AdjustEnvironment.production` 。
+
+</Callout>
+
+```dart
+AdjustConfig config = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox);
+Adjust.start(config);
+```
+
+## 5\. 设置会话记录 {#5-set-up-session-recording}
+
+您需要设置会话记录，SDK 才能向 Adjust 服务器传送会话信息。
+
+<Callout type="note">
+
+默认支持 iOS 设备的会话记录。
+
+</Callout>
+
+如需设置安卓设备的会话记录，请在应用于前台运行时调用 `Adjust.onResume()` 方法，当应用不在前台运行时，请调用 `Adjust.onPause()` 方法。您可以对此进行全局设置或按照每个小组件进行设置。
+
+```dart
+class AdjustExampleApp extends StatelessWidget {
+   @override
+   Widget build(BuildContext context) {
+      return new MaterialApp(
+         title: 'Adjust Flutter Example App',
+         home: new MainScreen(),
+      );
+   }
+}
+
+class MainScreen extends StatefulWidget {
+   @override
+   State createState() => new MainScreenState();
+}
+
+class MainScreenState extends State<mainscreen> with WidgetsBindingObserver {
+   @override
+   initState() {
+      super.initState();
+      WidgetsBinding.instance.addObserver(this);
+      initPlatformState(); // <-- Initialise SDK in here.
+   }
+
+   @override
+   void dispose() {
+      WidgetsBinding.instance.removeObserver(this);
+      super.dispose();
+   }
+
+   @override
+   void didChangeAppLifecycleState(AppLifecycleState state) {
+      switch (state) {
+         case AppLifecycleState.inactive:
+            break;
+         case AppLifecycleState.resumed:
+            Adjust.onResume();
+               break;
+         case AppLifecycleState.paused:
+            Adjust.onPause();
+               break;
+         case AppLifecycleState.suspending:
+            break;
+   }
+   }
+}
+```
+
+## 6\. 创建您的应用 {#6-build-your-app}
+
+很棒！您现在可以创建并运行 Flutter 应用了。请启用日志，检查可能存在的问题。请查看日志中的 `Install tracked` 信息。
+
+您现在已经准备就绪，可以使用 Adjust SDK 进行用户归因了。
+
+## 7\. 添加 Adjust SDK 签名 {#7-add-the-adjust-sdk-signature}
+
+Adjust SDK 签名可以用来签署 Adjust SDK 发送的所有通讯。这样，Adjust 的服务器就能轻松甄别、拒绝任何非法安装活动。
+
+要开始使用 Adjust SDK 签名，请联系您的技术客户经理，或发送邮件至 [support@adjust.com](mailto:support@adjust.com)。
+
+## 8\. 测试集成 {#8-test-your-integration}
+
+采用 Adjust SDK 提供的工具，您可以测试并排除集成出现的问题。要测试集成，请按照下列步骤操作：
+
+-  将您的环境设为 `AdjustEnvironment.sandbox`
+-  在 Adjust 控制面板结果中添加 sandbox 过滤器。
+-  将日志级别设为 `AdjustLogLevel.verbose`。
+
+<Callout type="tip">
+
+如果遇到任何问题，请发送邮件至 [support@adjust.com](mailto:support@adjust.com)，并在邮件中说明所有详情和日志。
+
+</Callout>
+
+### 测试 Google Play 服务集成 {#test-google-play-services-integration}
+
+要测试 Adjust SDK 能否接收设备的 Google 广告 ID，请将日志级别设为 `AdjustLogLevel.verbose`，环境设为 `AdjustEnvironment.sandbox`。启动应用，监测一次会话或事件。如果 SDK 记录了 `gps_adid` \(Google Play 服务广告主 ID\) 参数，就说明已经成功读取广告 ID。
+
+如果您在获取 Google 广告 ID 时遇到任何问题，请在我们的 SDK [GitHub 库](https://github.com/adjust/flutter_sdk)中提问，或联系 [support@adjust.com](mailto:support@adjust.com)。

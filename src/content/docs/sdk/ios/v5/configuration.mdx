@@ -1,0 +1,596 @@
+---
+title: Configuration
+description: Follow the guides in this section to configure the Adjust SDK.
+category-title: Configuration
+slug: en/sdk/ios/configuration
+sidebar-position: 1
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v4: /en/sdk/ios/v4/configuration
+---
+
+Use the methods in this document to configure the behavior of the Adjust SDK.
+
+## Instantiate your config object {#instantiate-your-config-object}
+
+<CodeBlock title="Method signature">
+
+```objc
+- (nullable ADJConfig *)initWithAppToken:(nonnull NSString *)appToken
+                             environment:(nonnull NSString *)environment
+                             suppressLogLevel:(BOOL)allowSuppressLogLevel;
+```
+
+</CodeBlock>
+
+To configure the Adjust SDK, you need to instantiate an `ADJConfig` object. This object contains the **read-only** configuration options that you need to pass to the Adjust SDK.
+
+To instantiate your config object, create a new `ADJConfig` instance and pass the following parameters:
+
+-  `appToken` (`NSString`): Your [Adjust app token](https://help.adjust.com/en/article/app-token-and-reporting-currency#view-your-app-details).
+-  `environment` (`NSString`): The environment you want to run the SDK in. Pass `ADJEnvironmentSandbox` to run the SDK in sandbox mode for testing. Pass `ADJEnvironmentProduction` to run the SDK in production mode for release.
+-  `allowSuppressLogLevel` (`BOOL`): Whether to suppress all logging. Set to `true` to suppress logging or `false` to enable logging.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+<CodeBlock highlight="{range: 3-5}">
+
+```swift
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox
+let adjustConfig = ADJConfig(
+    appToken: yourAppToken,
+    environment: environment)
+```
+
+</CodeBlock>
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+<CodeBlock highlight="{range: 3-4}">
+
+```objc
+NSString *yourAppToken = @"{YourAppToken}";
+ ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:yourAppToken
+                                                    environment:environment];
+```
+
+</CodeBlock>
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+<CodeBlock highlight="{range: 4}">
+
+```js
+setupWebViewJavascriptBridge(function (bridge) {
+   var yourAppToken = yourAppToken;
+   var environment = AdjustConfig.EnvironmentSandbox;
+   var adjustConfig = new AdjustConfig(yourAppToken, environment);
+});
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
+
+## Read-only configuration {#read-only-configuration}
+
+**Read-only** configuration options are set in your `ADJConfig` instance **before** the initialization of the SDK. They can't be changed while the SDK is running. You MUST configure any options you want to use before running `Adjust.initSdk()`.
+
+### Set your logging level {#set-your-logging-level}
+
+<CodeBlock title="Property declaration">
+
+```objc
+@property (nonatomic, assign) ADJLogLevel logLevel;
+```
+
+</CodeBlock>
+
+The Adjust SDK provides configurable log levels to return different amounts of information. The following log levels are available:
+
+<Table>
+
+| ADJLogLevel           | Description                                |
+| --------------------- | ------------------------------------------ |
+| `ADJLogLevelVerbose`  | Enable all logging                         |
+| `ADJLogLevelDebug`    | Enable debug logging                       |
+| `ADJLogLevelInfo`     | Only show info level logs (default option) |
+| `ADJLogLevelWarn`     | Disable info logging                       |
+| `ADJLogLevelError`    | Disable warning level logging and below    |
+| `ADJLogLevelAssert`   | Disable error level logging and below      |
+| `ADJLogLevelSuppress` | Suppress all logging                       |
+
+</Table>
+
+You can set your log level by assigning an `ADJLogLevel` value to the `logLevel` property of your config instance.
+
+-  `logLevel` (`ADJLogLevel`): The log level you want to use.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+<CodeBlock highlight="{range: 7}">
+
+```swift
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox
+let adjustConfig = ADJConfig(
+    appToken: yourAppToken,
+    environment: environment)
+// ...
+adjustConfig?.logLevel = ADJLogLevel.verbose
+```
+
+</CodeBlock>
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+<CodeBlock highlight="{range: 6}">
+
+```objc
+NSString *yourAppToken = @"{YourAppToken}";
+NSString *environment = ADJEnvironmentSandbox;
+ ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:yourAppToken
+                                                    environment:environment];
+// ...
+[adjustConfig setLogLevel:ADJLogLevelVerbose];
+```
+
+</CodeBlock>
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+<CodeBlock highlight="{range: 6}">
+
+```js
+setupWebViewJavascriptBridge(function (bridge) {
+   // ...
+   var yourAppToken = yourAppToken;
+   var environment = AdjustConfig.EnvironmentSandbox;
+   var adjustConfig = new AdjustConfig(yourAppToken, environment);
+   adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
+});
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
+
+### Set external device identifier {#set-external-device-identifier}
+
+<CodeBlock title="Property declaration">
+
+```objc
+@property (nonatomic, copy, nullable) NSString *externalDeviceId;
+```
+
+</CodeBlock>
+
+An external device identifier is a custom value that you can assign to a device or user. They help you recognize users across sessions and platforms. They can also help you deduplicate installs by user so that a user isn't counted as duplicate new installs. Contact your Adjust representative to get started with external device IDs.
+
+You can use an external device ID as a custom identifier for a device. This helps you keep continuity with your other systems. Assign your external device ID to the `externalDeviceId` property on your config instance.
+
+-  `externalDeviceId` (`NSString`): Your external device identifier. This value is **case sensitive**. If you have imported external device IDs, make sure the value you pass matches the imported value.
+
+<Callout type="seealso">
+
+See the [External device identifiers article](https://help.adjust.com/en/article/external-device-identifiers) in the Adjust help center for more information.
+
+</Callout>
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+<CodeBlock highlight="{range: 7}">
+
+```swift
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox
+let adjustConfig = ADJConfig(
+   appToken: yourAppToken,
+   environment: environment)
+// ...
+adjustConfig?.externalDeviceId = "yourExternalDeviceId"
+```
+
+</CodeBlock>
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+<CodeBlock highlight="{range: 6}">
+
+```objc
+NSString *yourAppToken = @"{YourAppToken}";
+NSString *environment = ADJEnvironmentSandbox;
+ ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:yourAppToken
+                                                    environment:environment];
+// ...
+[adjustConfig setExternalDeviceId:@"yourExternalDeviceId"];
+```
+
+</CodeBlock>
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+<CodeBlock highlight="{range: 5}">
+
+```js
+setupWebViewJavascriptBridge(function (bridge) {
+   var yourAppToken = yourAppToken;
+   var environment = AdjustConfig.EnvironmentSandbox;
+   var adjustConfig = new AdjustConfig(yourAppToken, environment);
+   adjustConfig.setExternalDeviceId("yourExternalDeviceId");
+});
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
+
+If you want to use the external device ID in your business analytics, you can pass it as a [session callback parameter](/en/sdk/ios/features/session-parameters).
+
+You can import existing external device IDs into Adjust. This ensures that the Adjust servers match future data to your existing device records. Contact your Adjust representative for more information.
+
+### Set default link token {#set-default-link-token}
+
+<CodeBlock title="Property declaration">
+
+```objc
+@property (nonatomic, copy, nullable) NSString *defaultTracker;
+```
+
+</CodeBlock>
+
+You can configure a default link token if your app is preinstalled on a device. When a user opens the preinstalled app for the first time, the install is attributed to the default link token. Assign your default link token to the `defaultTracker` property of your config instance.
+
+-  `defaultTracker` (`NSString`): The [Adjust link token](https://help.adjust.com/en/article/links#adjust-link-token) you want to record preinstalled installs against.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+<CodeBlock highlight="{range: 6}">
+
+```swift
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox
+let adjustConfig = ADJConfig(
+   appToken: yourAppToken,
+   environment: environment)
+adjustConfig?.defaultTracker = "{Token}"
+Adjust.initSdk(adjustConfig)
+```
+
+</CodeBlock>
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+<CodeBlock highlight="{range: 3}">
+
+```objc
+ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:appToken
+                                              environment:environment];
+[adjustConfig setDefaultTracker:@"{Token}"];
+[Adjust initSdk:adjustConfig];
+```
+
+</CodeBlock>
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+<CodeBlock highlight="{range: 5}">
+
+```js
+setupWebViewJavascriptBridge(function (bridge) {
+   var yourAppToken = yourAppToken;
+   var environment = AdjustConfig.EnvironmentSandbox;
+   var adjustConfig = new AdjustConfig(yourAppToken, environment);
+   adjustConfig.setDefaultTracker("{Token}");
+});
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
+
+### Enable cost data sending {#enable-cost-data-sending}
+
+<CodeBlock title="Method signature">
+
+```objc
+- (void)enableCostDataInAttribution;
+```
+
+</CodeBlock>
+
+By default, the Adjust SDK doesn't send cost data as part of a user's attribution. You can configure the SDK to send this data by enabling cost data sending. To enable cost data sending, call the `[ADJConfig enableCostDataInAttribution]` method.
+
+Cost data is accessible in the user's [attribution information](/en/sdk/ios/features/attribution).
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+<CodeBlock highlight="{range: 7}">
+
+```swift
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox
+let adjustConfig = ADJConfig(
+   appToken: yourAppToken,
+   environment: environment)
+// ...
+adjustConfig.enableCostDataInAttribution()
+```
+
+</CodeBlock>
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+<CodeBlock highlight="{range: 6}">
+
+```objc
+NSString *yourAppToken = @"{YourAppToken}";
+NSString *environment = ADJEnvironmentSandbox;
+ ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:appToken
+                                                environment:environment];
+// ...
+[adjustConfig enableCostDataInAttribution];
+```
+
+</CodeBlock>
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+<CodeBlock highlight="{range: 5}">
+
+```js
+setupWebViewJavascriptBridge(function (bridge) {
+   var yourAppToken = yourAppToken;
+   var environment = AdjustConfig.EnvironmentSandbox;
+   var adjustConfig = new AdjustConfig(yourAppToken, environment);
+   adjustConfig.enableCostDataInAttribution();
+});
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
+
+### Enable background sending {#enable-background-recording}
+
+<CodeBlock title="Method signature">
+
+```objc
+- (void)enableSendingInBackground;
+```
+
+</CodeBlock>
+
+By default, the Adjust SDK pauses the sending of requests when your app is running in the background. You can configure the SDK to send requests in the background by enabling the background recording. To enable background recording, call the `[Adjust enableSendingInBackground]` method.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+Adjust.enableSendingInBackground()
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[Adjust enableSendingInBackground];
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+Adjust.enableSendingInBackground();
+```
+
+</Tab>
+</Tabs>
+
+## Dynamic configuration {#dynamic-configuration}
+
+**Dynamic** configuration options may be changed during the SDK's lifecycle in response to events or actions taken by the user.
+
+### Activate offline mode {#activate-offline-mode}
+
+The Adjust SDK sends event and session data to Adjust’s servers in real time. You can pause the sending of information by putting the SDK in offline mode. In offline mode the SDK stores all data in a local file on the device. The SDK sends this information to Adjust’s servers when you disable offline mode.
+
+You can toggle offline mode at any time by calling the `[Adjust switchToOfflineMode]` method.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+Adjust.switchToOfflineMode()
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[Adjust switchToOfflineMode]
+```
+
+</Tab>
+</Tabs>
+
+### Deactivate offline mode {#deactivate-offline-mode}
+
+You can re-enable the SDK by calling the `[Adjust switchBackToOnlineMode]` method. This prompts the SDK to resume sending information.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+Adjust.switchBackToOnlineMode()
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[Adjust switchBackToOnlineMode]
+```
+
+</Tab>
+</Tabs>
+
+### Set push tokens {#set-push-tokens}
+
+<CodeBlock title="Method signature">
+
+```objc
++ (void)setPushToken:(nonnull NSData *)pushToken;
+```
+
+</CodeBlock>
+
+Push tokens are used for [Audiences](https://help.adjust.com/en/article/audiences) and client callbacks. They're also required for [Uninstall and reinstall measurement](https://help.adjust.com/en/article/uninstalls-reinstalls).
+
+You can update your push token at any time by calling the `[Adjust setPushToken]` method and passing the following arguments:
+
+-  `pushToken` (`NSData`): Your push token.
+
+<Callout type="note">
+
+If you have access to the push token from the web view, you can call the `setPushToken` method in Javascript.
+
+</Callout>
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+func application(_ app: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken pushToken: Data) {
+    Adjust.setPushToken(pushToken)
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+- (void)application:(UIApplication *)app didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)pushToken {
+    [Adjust setPushToken:pushToken];
+}
+```
+
+</Tab>
+</Tabs>
+
+### Disable the SDK {#disable-the-sdk}
+
+<CodeBlock title="Method signature">
+
+```objc
++ (void)disable;
+```
+
+</CodeBlock>
+
+The Adjust SDK runs by default when your app is open. You can disable the Adjust SDK to pause sending information to Adjust by calling the `[Adjust disable]` method. When you disable the Adjust SDK, it doesn’t send any data to Adjust’s servers.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+Adjust.disable()
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[Adjust disable];
+```
+
+</Tab>
+</Tabs>
+
+### Enable the SDK {#enable-the-sdk}
+
+<CodeBlock title="Method signature">
+
+```objc
++ (void)enable;
+```
+
+</CodeBlock>
+
+If you’ve disabled the SDK and want to re-enable it, call the `[Adjust enable]` method. When the SDK is enabled, it will send information to Adjust’s servers.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+Adjust.enable()
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[Adjust enable];
+```
+
+</Tab>
+</Tabs>
+
+#### Check enabled status {#check-enabled-status}
+
+<CodeBlock title="Method signature">
+
+```objc
++ (void)isEnabledWithCompletionHandler:(nonnull ADJIsEnabledGetterBlock)completion;
+```
+
+</CodeBlock>
+
+You can check if the Adjust SDK is enabled at any time by calling the `[Adjust isEnabledWithCompletionHandler]` method with a completion handler. The status is return asynchronously and passed to your completion handler as a `BOOL` value.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+Adjust.isEnabled() { isEnabled in
+   // Your completion handler
+};
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[Adjust isEnabledWithCompletionHandler:^(BOOL isEnabled) {
+   // Your completion handler
+}]
+```
+
+</Tab>
+</Tabs>

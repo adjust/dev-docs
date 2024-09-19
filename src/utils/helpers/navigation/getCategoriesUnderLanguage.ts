@@ -35,7 +35,7 @@ export const getCategoriesUnderLanguage = (
   data: NavigationEntry[],
   currentPage: string,
   currentLang: keyof Locales,
-  currentPageType?: NavigationEntry["type"]
+  currentPageType?: NavigationEntry["type"],
 ) => {
   const categories: { [key in keyof Partial<Locales>]: CategoryEntry } = {};
   const breadcrumbs: NavigationData["breadcrumbs"] = [];
@@ -58,12 +58,12 @@ export const getCategoriesUnderLanguage = (
       "sidebar-position": position,
       "category-title": categoryTitle,
       url,
-      path,
+      updatedPath,
       description,
       type,
     } = item;
 
-    const parentId = getParentId(path, currentLang);
+    const parentId = getParentId(updatedPath, currentLang);
 
     const usedTitle = sidebarLabel || categoryTitle || title;
 
@@ -76,9 +76,11 @@ export const getCategoriesUnderLanguage = (
         position,
         title: "Introduction",
         slug: "",
+        updatedPath: `${CONTENT_PATH}`,
         path: `${CONTENT_PATH}`,
         parentId: null,
         collapsed: true,
+        version: null,
         topCategory: true,
         level: 1,
       };
@@ -98,7 +100,7 @@ export const getCategoriesUnderLanguage = (
         parentId,
         topCategory: false,
         collapsed: false,
-        level: getLevel(path, currentLang),
+        level: getLevel(updatedPath, currentLang),
       });
     }
   });
@@ -114,18 +116,18 @@ export const getCategoriesUnderLanguage = (
 
   // need to sort breadcrumbs by level to make sure that the hierarchy is correct
   const sortedBreadcrumbs = breadcrumbs.sort((a, b) =>
-    a.level > b.level ? 1 : -1
+    a.level > b.level ? 1 : -1,
   );
   // need to filter breadcrumbs from clones
   const breadcrumbsUnique = sortedBreadcrumbs.filter(
     (breadcrumb, index, arr) =>
-      arr.findIndex((element) => element.url === breadcrumb.url) === index
+      arr.findIndex((element) => element.url === breadcrumb.url) === index,
   );
-
+  // category logic if the file has `type: category` then we need to populate children's to display
   const filteredChilds = childLinks.filter(
     (childLink, index, childLinksArr) =>
       childLinksArr.findIndex((element) => element.slug === childLink.slug) ===
-      index
+      index,
   );
 
   return {
