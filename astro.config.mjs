@@ -51,7 +51,6 @@ export default defineConfig({
         "@components/MinorVersion.astro",
         "@components/SdkVersion.astro",
         "@components/Tab.astro",
-        "@components/Table.astro",
         "@components/Tabs.astro",
       ],
     }),
