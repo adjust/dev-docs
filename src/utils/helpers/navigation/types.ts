@@ -1,4 +1,5 @@
 import type { Locales } from "@i18n/locales";
+import type { CollectionEntry } from "astro:content";
 
 export type NavItemTypes = "category";
 
@@ -11,10 +12,12 @@ export interface CategoryEntry {
   collapsed: boolean;
   level: number;
   path: string;
+  updatedPath: string;
   url?: string;
   topCategory: boolean;
   description: string;
   type: NavItemTypes;
+  version: string | null;
 }
 
 export interface NavigationEntry {
@@ -23,10 +26,12 @@ export interface NavigationEntry {
   "sidebar-label"?: string;
   "category-title"?: string;
   slug: string;
+  updatedPath: string;
   url: string;
   path: string;
   description: string;
   type: NavItemTypes;
+  version: string | null;
 }
 
 export interface GroupedNavigationItems {
@@ -38,6 +43,7 @@ export interface ChildLink {
   title: string;
   description: string;
   position?: number;
+  version: string | null;
 }
 
 export interface NavigationData {
@@ -48,4 +54,8 @@ export interface NavigationData {
     level: number;
   }[];
   childLinks: ChildLink[];
+  versions: {
+    sdk: CollectionEntry<"docs">["data"]["versions"];
+    api: CollectionEntry<"docs">["data"]["versions"];
+  };
 }

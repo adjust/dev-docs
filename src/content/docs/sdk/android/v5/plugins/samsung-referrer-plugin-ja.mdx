@@ -1,0 +1,139 @@
+---
+title: Samsung リファラー
+description: Samsungのリファラープラグインを使用して、Samsung の情報をAdjustに送信します。
+slug: ja/sdk/android/plugins/samsung-referrer-plugin
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v4: /ja/sdk/android/v4/plugins/samsung-referrer-plugin
+---
+
+Samsungリファラープラグインは、Adjust SDKがデバイス上のSamsung Galaxyストアのインストールリファラー値を読み取ることを可能にします。SDKはこの情報をインストールペイロードの一部として、Adjustサーバーに送信します。
+
+Samsungインストールリファラーは、Samsungインストールリファラーライブラリをサポートしている全てのデバイスで利用が可能です。
+
+## 事前準備 {#before-you-begin}
+
+[開始ガイド](/ja/sdk/android)に従ってAdjust SDKをアプリに実装してください。
+
+## Samsungリファラープラグインのインストール {#install-the-samsung-referrer-plugin}
+
+Samsungリファラープラグインをインストールする方法は2つあります。
+
+### Maven {#maven}
+
+Adjust SDK宣言にある`build.gradle`ファイルに以下のdependencyを追加してください。
+
+```groovy
+implementation 'com.adjust.sdk:adjust-android:$ANDROID_V4_VERSION'
+implementation 'com.adjust.sdk:adjust-android-samsung-referrer:$ANDROID_V4_VERSION'
+```
+
+### JAR {#jar}
+
+Samsungリファラープラグインについては[GitHubリリースページ](https://github.com/adjust/android_sdk/releases/latest)をご覧ください。
+
+## Samsungインストールリファラーライブラリを追加 {#add-the-samsung-install-referrer-library}
+
+アプリがリファラー値を読み取るには、Samsungインストールリファラーを追加する必要があります。詳細は、Samsungの担当者または[support@samsungdevelopers.com](mailto:support@samsungdevelopers.com)までお問い合わせください。
+
+<Accordion title="Adjust SDK v4.33.4以降">
+<Callout type="important">
+
+Marven経由でSamsungインストールリファラーライブラリを追加する場合、Adjust SDK v4\.33\.4以降でのみ利用可能です。
+
+</Callout>
+
+Samsung インストールリファラーライブラリをインストールするには、Adjust SDK宣言の下にある`build.gradle`ファイルに以下のdependencyを追加する必要があります。
+
+<CodeBlock title="build.gradle">
+
+```groovy
+implementation  'store.galaxy.samsung.installreferrer:samsung_galaxystore_install_referrer:3.0.1'
+```
+
+</CodeBlock>
+</Accordion>
+<Accordion title="Adjust SDK v4.33.3以前">
+
+Samsungリファラーライブラリをバージョン4\.33\.3以前のAdjust SDKにインストールする方法は、Samsungの担当者または[support@samsungdevelopers.com](mailto:support@samsungdevelopers.com)までお問い合わせください。
+
+</Accordion>
+
+## Proguardの設定 {#proguard-settings}
+
+Proguardを使用している場合は、ビルド時に重要なクラスが削除されないようにするためにルールを追加してください。
+
+全てのAdjustクラスを保存するため、以下のルールを追加してください。
+
+<CodeBlock title="Proguard.pro">
+
+```java
+-keep public class com.adjust.sdk.** { *; }
+```
+
+</CodeBlock>
+
+Samsungインストールリファラーライブラリを保存するため、以下のルールを追加してください。
+
+<CodeBlock title="Proguard.pro">
+
+```java
+-keep class com.sec.android.app.samsungapps.installreferrer.** { *; }
+```
+
+</CodeBlock>
+
+## プラグインを使用する {#use-the-plugin}
+
+Samsungリファラープラグインは、デフォルトで **有効** になっています。`AdjustSamsungReferrer`クラスメソッドを使用して、Samsungインストールのリファラー情報の読み取りをONまたはOFFにすることができます。
+
+インストールリファラーの読み取りを **無効化** するには、SDKを初期化する **前** に`AdjustSamsungReferrer.doNotReadSamsungReferrer()`を呼び出します。
+
+<Tabs>
+<Tab title="Java" sync="java">
+
+```java
+AdjustSamsungReferrer.doNotReadSamsungReferrer();
+//...
+Adjust.onCreate(config);
+```
+
+</Tab>
+<Tab title="Kotlin" sync="kotlin" >
+
+```kotlin
+AdjustSamsungReferrer.doNotReadSamsungReferrer()
+//...
+Adjust.onCreate(config)
+```
+
+</Tab>
+</Tabs>
+
+インストールリファラーの読み取りを **無効化** するには、SDKを初期化する **前** に`AdjustSamsungReferrer.readSamsungReferrer(applicationContext)`を呼び出します。
+
+<Tabs>
+<Tab title="Java" sync="java">
+
+```java
+AdjustSamsungReferrer.readSamsungReferrer(applicationContext);
+//...
+Adjust.onCreate(config);
+```
+
+</Tab>
+<Tab title="Kotlin" sync="kotlin" >
+
+```kotlin
+AdjustSamsungReferrer.readSamsungReferrer(applicationContext)
+//...
+Adjust.onCreate(config)
+```
+
+</Tab>
+</Tabs>

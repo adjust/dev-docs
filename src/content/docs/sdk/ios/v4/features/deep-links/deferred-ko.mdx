@@ -1,0 +1,206 @@
+---
+title: 디퍼드 딥링크 설정
+description: 앱의 디퍼드 딥링킹을 구성합니다.
+slug: ko/sdk/ios/v4/features/deep-links/deferred
+sidebar-position: 4
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v5: /ko/sdk/ios/features/deep-links/deferred
+---
+
+디퍼드 딥링크는 사용자가 앱을 설치할 수 있도록 먼저 해당 앱 스토어로 사용자를 라우팅한 뒤에, 앱의 특정 목적지로 이동시키는 링크입니다.
+
+## 작동 방식 {#how-it-works}
+
+디퍼드 딥링크는 다음과 같이 작동합니다.
+
+1. 사용자가 Adjust 딥링크를 클릭합니다.
+2. Adjust 서버가 사용자를 앱 스토어로 리다이렉트합니다.
+3. 사용자가 앱을 설치하고, 실행합니다.
+4. Adjust 서버가 어트리뷰션을 수행하고 딥링크를 Adjust SDK로 전송합니다.
+5. 앱은 온보딩 화면이나 사용자 로그인과 같은 예비 콘텐츠를 표시합니다. \(해당되는 경우\)
+6. 앱은 Adjust SDK로부터 딥링크를 조회하고, 딥링크를 처리합니다.
+
+## 설정 {#setup}
+
+<Callout type="important">
+
+Adjust 디퍼드 딥링크를 설정하면, 앱의 다른 SDK에서 구성된 디퍼드 딥링크를 비활성화해야 합니다. 또한 다른 MMP에서 설정된 딥링크를 비활성화해야 합니다.
+
+</Callout>
+<Callout type="seealso">
+
+[Facebook 디퍼드 딥링크 페이지](https://developers.facebook.com/docs/ios/deep-linking#deferred-deep-linking)에서 Facebook 캠페인에서 딥링크를 구성하는 방법을 확인하시기 바랍니다.
+
+</Callout>
+
+앱에서 디퍼드 딥링크를 설정하는 방법에는 2가지가 있습니다.
+
+1. Adjust의 서버는 디퍼드 딥링크를 Adjust SDK에 자동으로 전달합니다. 사용자가 앱을 실행하면, Adjust SDK는 자동으로 딥링크와 함께 `open(_:options:completionHandler:)` 메서드를 호출합니다. 앱에 예비 콘텐츠\(예: 온보딩 화면 및 사용자 로그인\)가 없거나 앱에서 딥링크를 열기 전에 이미 이러한 콘텐츠를 처리하는 경우 추가 구성이 필요하지 않으며 이 섹션의 나머지 부분을 건너뛸 수 있습니다.
+2. 앱에 사용 전 컨텐츠\(예: 온보딩 화면 및 사용자 로그인\)가 있고 이들이 딥링크 보다 먼저 처리되지 않는 경우, 디퍼드 딥링크 리스너를 추가할 수 있습니다.
+
+### 디퍼드 딥링크 리스너 설정 {#set-up-a-deferred-deep-link-listener}
+
+1. 디퍼드 딥링킹에 대한 델리게이트 콜백을 설정해야 합니다. 어트리뷰션 콜백을 이미 구성한 경우, 이 단계를 건너뛰시기 바랍니다.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+<CodeBlock title="AppDelegate.swift">
+
+```swift
+class AppDelegate: UIResponder, UIApplicationDelegate, AdjustDelegate {
+}
+```
+
+</CodeBlock>
+</Tab>
+<Tab title="Objective-C" sync="objc">
+<CodeBlock title="AppDelegate.h">
+
+```objc
+@interface AppDelegate : UIResponder <UIApplicationDelegate, AdjustDelegate>
+```
+
+</CodeBlock>
+</Tab>
+</Tabs>
+
+2. `ADJConfig` 클래스의 인스턴스를 생성하고 앱 델리게이트의 `ADJConfig` 객체에 델리게이트를 설정합니다. SDK를 초기화하기 전에 `ADJConfig`에서 델리게이트를 설정해야 합니다.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+   appToken: yourAppToken,
+   environment: environment)
+adjustConfig?.delegate = self
+
+// ...
+
+Adjust.appDidLaunch(adjustConfig)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+*adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
+                                 environment:ADJEnvironmentSandbox];
+[adjustConfig setDelegate:self];
+
+// ...
+
+[Adjust appDidLaunch:adjustConfig];
+```
+
+</Tab>
+</Tabs>
+
+3. 델리게이트에 `adjustDeeplinkResponse` 디퍼드 딥링크 콜백 메서드를 추가합니다. Adjust SDK는 디퍼드 딥링크를 수신한 이후 이 메서드를 호출합니다.
+   1. 딥링크 처리 코드를 설정합니다.
+   2. `adjustDeeplinkResponse` 메서드의 반환값을 true 또는 false로 설정합니다. 이는 딥링크 처리 코드가 실행된 이후 Adjust SDK가 딥링크를 실행하도록 `open(_:options:completionHandler:)` 메서드를 호출할지 여부를 나타냅니다.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+func adjustDeeplinkResponse(_ deeplink: URL?) -> Bool {
+   // add your code below to handle deep link
+   // (for example, show onboarding screens, then open deep link content)
+   // deeplink object contains the deep link
+
+   return false
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+- (BOOL)adjustDeeplinkResponse:(NSURL *)deeplink {
+      // add your code below to handle deep link
+      // (for example, show onboarding screens, then open deep link content)
+      // deeplink object contains the deep link
+
+      return NO;
+}
+```
+
+</Tab>
+</Tabs>
+
+## Adjust LinkMe 설정 {#set-up-adjust-linkme}
+
+<CodeBlock title="속성 선언">
+
+```objc
+@property (nonatomic, assign) BOOL linkMeEnabled;
+```
+
+</CodeBlock>
+<Callout type="note">
+
+앱에 LinkMe를 구현해야 하는지 여부를 마케팅 팀과 논의하시기 바랍니다.
+
+</Callout>
+
+[Adjust LinkMe 솔루션](https://help.adjust.com/ko/article/linkme)은 앱이 기기의 페이스트보드에서 딥링크 정보를 읽을 수 있도록 하여 디퍼드 딥링크를 강화할 수 있는 선택적 기능입니다.
+
+<Callout type="important">
+
+Adjust SDK는 사용자의 첫 앱 실행 시 페이스트보드를 확인합니다. 기기는 사용자가 앱이 페이스트보드를 읽는 것을 허용할지 묻는 대화 상자를 표시합니다.
+
+</Callout>
+
+사용자가 LinkMe URL을 클릭하면 링크 정보를 시스템 페이스트보드에 복사할 수 있는 옵션이 주어집니다. Adjust SDK는 딥링크 정보에 대한 시스템 페이스트보드를 읽고 딥링크 정보가 존재하는 경우 Adjust SDK는 사용자를 앱의 올바른 페이지로 보냅니다.
+
+앱에서의 페이스트보드 확인을 활성화하려면 `ADJConfig` 객체의 `setLinkMeEnabled` 메서드에 `true` 값을 전달합니다.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+   appToken: yourAppToken,
+   environment: environment)
+// ...
+adjustConfig?.linkMeEnabled = true
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+NSString *yourAppToken = @"{YourAppToken}";
+NSString *environment = ADJEnvironmentSandbox;
+*adjustConfig = [ADJConfig configWithAppToken:yourAppToken
+                                 environment:environment];
+/// ...
+[adjustConfig setLinkMeEnabled:YES];
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+setupWebViewJavascriptBridge(function (bridge) {
+   // ...
+   var yourAppToken = yourAppToken;
+   var environment = AdjustConfig.EnvironmentSandbox;
+   var adjustConfig = new AdjustConfig(yourAppToken, environment);
+   adjustConfig.setLinkMeEnabled(true);
+});
+```
+
+</Tab>
+</Tabs>

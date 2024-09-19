@@ -9,31 +9,38 @@ export const getNavigationTree = (
   items: CategoryEntry[],
   parentId = "",
   // we start from the second level to skip the index page in the docs path: https://adjustcom.atlassian.net/browse/THC-865
-  level = 2
+  level = 2,
 ) => {
   const hierarchy: CategoryEntry[] = [];
 
-  const currentLevelItems = items.filter((item) => {
+  // filtering objects depends on the level and length of the parent
+  // path for the child - 1 should be equal to the parent as we have index files
+  const currentLevelItems: CategoryEntry[] = [];
+  for (let index = 0; index < items.length; index++) {
+    const element = items[index];
     const parentCheck =
-      (item.path?.startsWith(parentId) &&
-        item.path.split("/").length - 1 === parentId.split("/").length) ||
-      item.parentId === parentId;
+      (element.path?.startsWith(parentId) &&
+        element.path.split("/").length - 1 === parentId.split("/").length) ||
+      element.parentId === parentId;
 
-    if (item.level === level && parentCheck) {
-      return true;
+    if (element.level === level && parentCheck) {
+      currentLevelItems.push(element);
     }
-  });
+  }
 
-  currentLevelItems.forEach((item) => {
-    const children = getNavigationTree(items, item.url, item.level + 1);
-    const newItem = { ...item };
+  // building a hierarchy array for every element on the current level
+  // sorting children depends on the position if this value exists in the frontmatter of the MDX file
+  for (let index = 0; index < currentLevelItems.length; index++) {
+    const element = currentLevelItems[index];
+    const children = getNavigationTree(items, element.url, element.level + 1);
+    const newItem = { ...element };
 
     if (children.length > 0) {
       children.sort((a, b) => {
         // if we try to sort pages from the different folders we do nothing
         // if we see that page doesn`t have a position we do nothing
 
-        if (item.level > 3 && (a.url !== b.url)) {
+        if (element.level > 3 && a.url !== b.url) {
           return 0;
         }
 
@@ -50,7 +57,7 @@ export const getNavigationTree = (
     }
 
     hierarchy.push(newItem);
-  });
+  }
 
   return hierarchy;
 };

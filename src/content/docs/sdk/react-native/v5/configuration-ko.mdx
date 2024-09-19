@@ -1,0 +1,346 @@
+---
+title: 구성
+description: 이 섹션의 가이드를 참조하여 Adjust SDK를 설정합니다.
+slug: ko/sdk/react-native/configuration
+sidebar-position: 1
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v4: /ko/sdk/react-native/v4/configuration
+---
+
+Adjust SDK의 동작을 설정하는 방법에 관한 본 문서의 메서드를 참조하시기 바랍니다.
+
+## config 객체 인스턴스화 {#instantiate-your-config-object}
+
+<CodeBlock title="메서드 서명">
+
+```ts
+constructor(appToken: string, environment: Environment)
+```
+
+</CodeBlock>
+
+Adjust SDK를 설정하려면 `AdjustConfig` 객체를 인스턴스화해야 합니다. 이 객체에는 Adjust SDK로 전달하기 위해 필요한 **읽기 전용** 구성 옵션이 포함되어 있습니다.
+
+config 객체를 인스턴스화하려면 새로운 `AdjustConfig` 인스턴스를 생성하고 다음 파라미터를 전달합니다.
+
+-  `appToken` `string`: [Adjust 앱 토큰](https://help.adjust.com/ko/article/app-token-and-reporting-currency#view-your-app-details)입니다.
+-  `environment` \(`Environment`\): SDK를 실행할 환경입니다. 테스트를 위해 샌드박스 모드에서 SDK를 실행하려면 `AdjustConfig.EnvironmentSandbox`를 전달합니다. 릴리즈를 위해 프로덕션 모드에서 SDK를 실행하려면 `AdjustConfig.EnvironmentProduction`을 전달합니다.
+
+```jsx
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox,
+);
+//...
+Adjust.create(adjustConfig);
+```
+
+## 읽기 전용 구성 {#read-only-configuration}
+
+**읽기 전용** 구성 옵션은 SDK를 초기화하기 **전** 에 `AdjustConfig` 인스턴스에 설정되어 있습니다. SDK 실행 중에는 이 옵션을 변경할 수 없습니다. 사용할 옵션은 `Adjust.start()`를 실행하기 전에 설정해야 합니다.
+
+### 로깅 수준 설정 {#set-your-logging-level}
+
+<CodeBlock title="메서드 서명">
+
+```ts
+public setLogLevel(level: LogLevel): void
+```
+
+</CodeBlock>
+
+Adjust SDK는 다양한 양의 정보를 반환하기 위해 구성 가능한 로그 레벨을 제공합니다. 이용 가능한 로그 레벨은 다음과 같습니다.
+
+<Table>
+
+| logLevel                        | 설명                               |
+| ------------------------------- | ---------------------------------- |
+| `AdjustConfig.LogLevelVerbose`  | 모든 로깅 활성화                   |
+| `AdjustConfig.LogLevelDebug`    | 디버그 로깅 활성화                 |
+| `AdjustConfig.LogLevelInfo`     | 정보 수준 로그만 표시\(기본 설정\) |
+| `AdjustConfig.LogLevelWarn`     | 정보 로깅 비활성화                 |
+| `AdjustConfig.LogLevelError`    | 경고 수준 로깅 이하 비활성화       |
+| `AdjustConfig.LogLevelAssert`   | 오류 수준 로깅 이하 비활성화       |
+| `AdjustConfig.LogLevelSuppress` | 모든 로깅 비활성화                 |
+
+</Table>
+
+다음 파라미터와 함께 `AdjustConfig` 인스턴스에서 `setLogLevel` 메서드를 호출하여 로그 수준을 설정할 수 있습니다.
+
+-  `logLevel` \(`LogLevel`\): 사용할 로그 수준
+
+```jsx
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox,
+);
+//...
+adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
+//...
+Adjust.create(adjustConfig);
+```
+
+### 외부 디바이스 ID 설정 {#set-external-device-identifier}
+
+<CodeBlock title="메서드 서명">
+
+```ts
+public setExternalDeviceId(externalDeviceId: string): void
+```
+
+</CodeBlock>
+
+외부 디바이스 ID는 기기 또는 사용자에 할당할 수 있는 커스텀 값입니다. 이를 통해 세션과 플랫폼에 걸쳐 사용자를 식별할 수 있습니다. 또한 사용자별 설치 중복 제거에 도움이 되어, 동일한 사용자가 여러 번의 신규 설치로 집계되지 않습니다. 시작하려면 Adjust 담당자에게 문의하시기 바랍니다.
+
+외부 디바이스 ID를 기기에 대한 커스텀 ID로서 사용할 수도 있습니다. 이는 기타 시스템과 통일성을 유지하고 싶은 경우 유용합니다. 다음 파라미터와 함께 `setExternalDeviceId` 메서드를 호출하여 속성을 설정할 수 있습니다.
+
+-  `externalDeviceId` \(`string`\): 외부 기기 ID. 이 값은 **대소문자를 구분** 합니다. 외부 기기 ID를 불러오기한 경우, 전달한 값이 불러온 값과 일치하는지 확인하시기 바랍니다.
+
+<Callout type="seealso">
+
+자세한 내용은 Adjust 헬프 센터의 [외부 디바이스 ID 문서](https://help.adjust.com/ko/article/external-device-identifiers)를 참조하시기 바랍니다.
+
+</Callout>
+
+```jsx
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox,
+);
+//...
+adjustConfig.setExternalDeviceId("{Your-External-Device-Id}");
+//...
+Adjust.create(adjustConfig);
+```
+
+비즈니스 애널리틱스에서 외부 디바이스 ID를 사용하려면 이를 [세션 콜백 파라미터](/ko/sdk/flutter/features/session-parameters)로 전송해야 합니다.
+
+Adjust로 이미 존재하는 외부 디바이스 ID를 불러오기 하는것도 가능합니다. 이를 통해 Adjust 서버는 미래 데이터를 기존의 기기 기록과 매칭할 수 있습니다. 세부 정보는 Adjust 담당자에게 문의하시기 바랍니다.
+
+### 디폴트 링크 토큰 설정 {#set-default-link-token}
+
+<CodeBlock title="메서드 서명">
+
+```ts
+public setDefaultTracker(defaultTracker: string): void
+```
+
+</CodeBlock>
+
+앱이 기기에 사전 설치된 경우 디폴트 링크 토큰을 설정할 수 있습니다. 사용자가 사전 설치된 앱을 처음으로 실행할 때 해당 설치가 디폴트 링크 토큰으로 어트리뷰션됩니다. 디폴트 링크 토큰을 설정하려면 다음 인수로 `setDefaultTracker` 메서드를 호출합니다.
+
+-  `defaultTracker` \(`string`\): 사전 설치된 설치 내용을 기록할 [Adjust 링크 토큰](https://help.adjust.com/ko/article/links#adjust-link-token)
+
+```jsx
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox,
+);
+//...
+adjustConfig.setDefaultTracker("{TrackerToken}");
+//...
+Adjust.create(adjustConfig);
+```
+
+### 비용 데이터 전송 활성화 {#enable-cost-data-sending}
+
+<CodeBlock title="메서드 서명">
+
+```ts
+public setNeedsCost(needsCost: boolean): void
+```
+
+</CodeBlock>
+
+기본 설정에 따라 Adjust SDK는 사용자의 어트리뷰션에서 비용 데이터를 전송하지 않습니다. 비용 데이터 전송을 활성화하여 SDK가 이 데이터를 전송하도록 설정할 수 있습니다. 비용 데이터 전송을 활성화하려면 다음 파라미터와 함께 config 인스턴스에서 `setNeedsCost` 메서드를 호출합니다.
+
+-  `needsCost` \(`boolean`\): 비용 데이터 전송을 활성화하거나 `true`, 비용 데이터 전송을 비활성화하려면 `false`로 설정합니다.
+
+비용 데이터는 사용자의 [어트리뷰션 정보](/ko/sdk/react-native/features/attribution)에서 액세스할 수 있습니다.
+
+```jsx
+const adjustConfig = new AdjustConfig(
+   "{Your App Token}",
+   AdjustConfig.EnvironmentSandbox,
+);
+adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
+adjustConfig.setNeedsCost(true);
+```
+
+### 백그라운드 기록 활성화 {#enable-background-recording}
+
+<CodeBlock title="메서드 서명">
+
+```ts
+public setSendInBackground(sendInBackground: boolean): void
+```
+
+</CodeBlock>
+
+기본값에 따라 Adjust SDK는 앱이 백그라운드에서 실행 중일 때 요청 전송을 일시 중지합니다. 백그라운드 기록을 활성화하여 백그라운드에서 요청을 보내도록 SDK를 구성할 수 있습니다. 백그라운드 기록을 활성화하려면 다음 파라미터와 함께 config 인스턴스에서 `setSendInBackground` 메서드를 호출합니다.
+
+-  `sendInBackground` \(`boolean`\): 백그라운드 전송을 활성화하거나 `true`, 백그라운드 전송을 비활성화하려면 `false`로 설정합니다.
+
+```jsx
+const adjustConfig = new AdjustConfig(appToken, environment);
+//...
+adjustConfig.setSendInBackground(true);
+//...
+Adjust.create(adjustConfig);
+```
+
+### 이벤트 버퍼링 활성화 {#enable-event-buffering}
+
+<CodeBlock title="메서드 서명">
+
+```ts
+public setEventBufferingEnabled(eventBufferingEnabled: boolean): void
+```
+
+</CodeBlock>
+
+Adjust SDK는 사용자가 앱에서 이벤트를 트리거하면 즉시 이벤트 정보를 전송합니다. 이벤트 버퍼링을 사용하면 이벤트 정보 전송을 스케줄할 수 있습니다. 이벤트 버퍼링은 기기의 로컬 버퍼에 이벤트를 저장하고 분당 한 번 모든 요청을 보냅니다.
+
+config 객체에는 해당 동작을 제어하는 boolean `eventBufferingEnabled` 속성이 포함되어 있습니다. 다음 파라미터와 함께 config 객체에서 `setEventBufferingEnabled` 메서드를 호출하여 속성을 설정할 수 있습니다.
+
+-  `eventBufferingEnabled` \(`boolean`\): 이벤트 버퍼링을 활성화하거나 `true`, 이벤트 버퍼링을 비활성화하려면 `false`로 설정합니다.
+
+```jsx
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox,
+);
+//...
+adjustConfig.setEventBufferingEnabled(true);
+//...
+Adjust.create(adjustConfig);
+```
+
+### SDK 시작 지연 {#delay-the-start-of-the-sdk}
+
+<CodeBlock title="메서드 서명">
+
+```ts
+public setDelayStart(delayStart: number): void
+```
+
+</CodeBlock>
+
+기본 설정에 따라 Adjust SDK는 앱이 실행되자마자 시작됩니다. 시작할 때 사용할 수 없는 데이터를 [세션 파라미터](/ko/sdk/android/features/session-parameters)로 전송하려면 SDK의 시작을 지연시킬 수 있습니다. 이는 고유 ID와 같은 정보를 전송할 때 유용합니다.
+
+시작 지연을 설정하려면 다음 인수로 `setDelayStart` 메서드를 호출합니다.
+
+-  `delayStart` \(`number`\): SDK 시작이 지연된 시간\(초\)입니다. SDK 작동 시작은 최대 **10초** 간 지연시킬 수 있습니다.
+
+```jsx
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox,
+);
+//...
+adjustConfig.setDelayStart(5.5);
+//...
+Adjust.create(adjustConfig);
+```
+
+## 동적 구성 {#dynamic-configuration}
+
+**동적** 구성 옵션은 이벤트 또는 사용자 행동에 대한 응답으로 SDK의 라이프사이클 중에 변경될 수 있습니다.
+
+### 오프라인 모드 토글 {#toggle-offline-mode}
+
+<CodeBlock title="메서드 서명">
+
+```ts
+setOfflineMode: (enabled: boolean) => void
+```
+
+</CodeBlock>
+<Callout type="important">
+
+오프라인 모드 설정은 세션간에 유지되지 않습니다. 오프라인 모드는 새 세션이 시작될 때 비활성화됩니다.
+
+</Callout>
+
+Adjust SDK는 실시간으로 이벤트와 세션 데이터를 Adjust 서버로 전송합니다. SDK를 오프라인 모드로 설정하면 정보 전송이 일시 중단됩니다. 오프라인 모드에서 SDK는 모든 데이터를 기기의 로컬 파일에 저장합니다. 이후 SDK의 오프라인 모드가 해제되면 Adjust 서버로 해당 정보가 전송됩니다.
+
+다음 인수로 `setOfflineMode` 메서드를 호출하여 언제든지 오프라인 모드를 토글할 수 있습니다.
+
+-  `enabled` \(`boolean`\): 오프라인 모드를 활성화하거나 `true`, 오프라인 모드를 비활성화하려면 `false`로 설정합니다.
+
+```jsx
+Adjust.setOfflineMode(true);
+```
+
+### 푸시 토큰 설정 {#set-push-tokens}
+
+<CodeBlock title="메서드 서명">
+
+```ts
+setPushToken: (token: string) => void
+```
+
+</CodeBlock>
+
+푸시 토큰은 [Audiences](https://help.adjust.com/ko/article/audiences)와 클라이언트 콜백에 사용되고 [삭제 및 재설치 측정](https://help.adjust.com/ko/article/uninstalls-reinstalls)에도 필요합니다.
+
+config 객체에는 푸시 토큰을 저장할 수 있는 `pushToken` 속성이 포함되어 있습니다. `setPushToken` 메서드를 호출하고 다음 인수를 전달하여 언제든지 이 속성을 업데이트할 수 있습니다.
+
+-  `token` \(`string`\): 푸시 토큰
+
+<Callout type="note">
+
+웹뷰에서 푸시 토큰에 액세스할 수 있는 경우, 자바스크립트에서 `setPushToken` 메서드를 호출할 수 있습니다.
+
+</Callout>
+
+```jsx
+Adjust.setPushToken("YourPushNotificationToken");
+```
+
+### SDK 비활성화 또는 활성화 {#disable-or-enable-the-sdk}
+
+<Callout type="important">
+
+본 메서드는 첫 세션 이후에만 호출이 가능하며, 설정은 세션간에 지속됩니다.
+
+</Callout>
+<CodeBlock title="메서드 서명">
+
+```ts
+setEnabled: (enabled: boolean) => void
+```
+
+</CodeBlock>
+
+Adjust SDK는 기본 설정에 따라 앱이 열려 있을 때 실행됩니다. Adjust SDK를 비활성화하거나 재활성화하여 기록을 일시 중지하거나 재개할 수 있습니다. Adjust SDK를 비활성화하면 Adjust 서버로 데이터가 전송되지 않습니다.
+
+다음 인수로 `setEnabled` 메서드를 호출하여 Adjust SDK를 언제든지 활성화 또는 비활성화할 수 있습니다.
+
+-  `enabled` \(`boolean`\): SDK를 활성화하거나 `true`, SDK를 비활성화하려면 `false`로 설정합니다.
+
+```jsx
+Adjust.setEnabled(false);
+```
+
+#### 활성화 상태 조회 {#check-enabled-status}
+
+<CodeBlock title="메서드 서명">
+
+```ts
+isEnabled: (callback: (enabled: boolean) => void) => void
+```
+
+</CodeBlock>
+
+언제든지 `isEnabled` 메서드를 호출하여 Adjust SDK가 활성화되어 있는지 확인할 수 있습니다. 이 메서드는 SDK의 **활성화** \(`true`\) 또는 **비활성화** \(`false`\) 여부를 나타내는 `boolean` 값을 반환합니다.
+
+```jsx
+Adjust.isEnabled();
+```

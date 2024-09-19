@@ -1,0 +1,300 @@
+---
+title: Record ad revenue information
+description:
+   Record ad revenue information for supported network partners using the
+   Adjust SDK.
+slug: en/sdk/flutter/v4/features/ad-revenue
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v5: /en/sdk/flutter/features/ad-revenue
+---
+
+You can record ad revenue for [supported network partners](https://help.adjust.com/en/article/ad-revenue) using the Adjust SDK.
+
+<Callout type="important">
+
+You need to perform some extra setup steps in your Adjust dashboard to measure ad revenue. Contact your Technical Account Manager or support@adjust.com to get started.
+
+</Callout>
+
+## Instantiate an AdjustAdRevenue object {#instantiate-an-adjustadrevenue-object}
+
+<CodeBlock title="Method signature">
+
+```dart
+AdjustAdRevenue(this._source) {
+   _callbackParameters = new Map<String, String>();
+   _partnerParameters = new Map<String, String>();
+}
+
+```
+
+</CodeBlock>
+
+To send ad revenue information with the Adjust SDK, you need to instantiate an `AdjustAdRevenue` object. This object contains variables that are sent to Adjust when ad revenue is recorded in your app.
+
+To instantiate an ad revenue object, create a new `AdjustAdRevenue` instance and pass the following parameters:
+
+-  `source` (`String`): The source of the ad revenue. See the table below for available sources
+
+<Table>
+
+| Parameter                                      | Source            |
+| ---------------------------------------------- | ----------------- |
+| `AdjustConfig.AdRevenueSourceAppLovinMAX`      | AppLovin MAX      |
+| `AdjustConfig.AdRevenueSourceMopub`            | Mopub             |
+| `AdjustConfig.AdRevenueSourceAdMob`            | AdMob             |
+| `AdjustConfig.AdRevenueSourceIronSource`       | ironSource        |
+| `AdjustConfig.AdRevenueSourceAdmost`           | AdMost            |
+| `AdjustConfig.AdRevenueSourceUnity`            | Unity             |
+| `AdjustConfig.AdRevenueSourceHeliumChartboost` | Helium Chartboost |
+| `AdjustConfig.AdRevenueSourceTradPlus`         | TradPlus          |
+| `AdjustConfig.AdRevenueSourceTopOn`            | TopOn             |
+| `AdjustConfig.AdRevenueSourcePublisher`        | Generic source    |
+
+</Table>
+
+```dart
+AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue('source');
+Adjust.trackAdRevenueNew(adjustAdRevenue);
+```
+
+## Send ad revenue {#send-ad-revenue}
+
+<CodeBlock title="Method signature">
+
+```dart
+static void trackAdRevenue(String source, String payload) {
+   _channel
+      .invokeMethod('trackAdRevenue', {'source': source, 'payload': payload});
+}
+
+```
+
+</CodeBlock>
+
+To send ad revenue to Adjust, call the `trackAdRevenue` method with your ad revenue instance as an argument.
+
+```dart
+AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue('source');
+Adjust.trackAdRevenueNew(adjustAdRevenue);
+```
+
+## Record ad revenue amount {#record-ad-revenue-amount}
+
+<CodeBlock title="Method signature">
+
+```dart
+void setRevenue(num revenue, String currency) {
+   _revenue = revenue;
+   _currency = currency;
+}
+
+```
+
+</CodeBlock>
+
+To send the ad revenue amount, call the `setRevenue` method and pass the following arguments:
+
+-  `revenue` (`num`): The amount of revenue
+-  `currency` (`String`): The 3 character [ISO 4217 code](https://www.iban.com/currency-codes) of your reporting currency
+
+<Callout type="seealso">
+
+Check the [guide to recording purchases in different currencies](https://help.adjust.com/en/article/currency-conversion) for more information.
+
+</Callout>
+
+```dart
+AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue('source');
+adjustAdRevenue.setRevenue(1.00, 'EUR');
+Adjust.trackAdRevenueNew(adjustAdRevenue);
+```
+
+## Record ad campaign details {#record-ad-campaign-details}
+
+The `AdjustAdRevenue` class contains properties you can use to report on your ad campaigns.
+
+### Ad impressions {#ad-impressions}
+
+<CodeBlock title="Property declaration">
+
+```dart
+num? adImpressionsCount
+```
+
+</CodeBlock>
+
+To send the number of recorded ad impressions, assign a `num` value to the `adImpressionsCount` property of your ad revenue instance.
+
+```dart
+AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue('source');
+adjustAdRevenue.adImpressionsCount = 10;
+Adjust.trackAdRevenueNew(adjustAdRevenue);
+```
+
+### Ad revenue network {#ad-revenue-network}
+
+<CodeBlock title="Property declaration">
+
+```dart
+String? adRevenueNetwork
+```
+
+</CodeBlock>
+
+To send the ad revenue network, assign the network name as a `String` value to the `adRevenueNetwork` property of your ad revenue instance.
+
+```dart
+AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue('source');
+adjustAdRevenue.adRevenueNetwork = 'network1';
+Adjust.trackAdRevenueNew(adjustAdRevenue);
+```
+
+### Ad revenue unit {#ad-revenue-unit}
+
+<CodeBlock title="Property declaration">
+
+```dart
+String? adRevenueUnit
+```
+
+</CodeBlock>
+
+To send the ad revenue unit, assign the unit as a `String` value to the `adRevenueUnit` property of your ad revenue instance.
+
+```dart
+AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue('source');
+adjustAdRevenue.adRevenueUnit = 'unit1';
+Adjust.trackAdRevenueNew(adjustAdRevenue);
+```
+
+### Ad revenue placement {#ad-revenue-placement}
+
+<CodeBlock title="Property declaration">
+
+```dart
+String? adRevenuePlacement
+```
+
+</CodeBlock>
+
+To send the ad revenue placement, assign the placement as a `String` value to the `adRevenuePlacement` property of your ad revenue instance.
+
+```dart
+AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue('source');
+adjustAdRevenue.adRevenuePlacement = 'banner';
+Adjust.trackAdRevenueNew(adjustAdRevenue);
+```
+
+## Add callback parameters {#add-callback-parameters}
+
+<CodeBlock title="Method signature">
+
+```dart
+void addCallbackParameter(String key, String value) {
+   _callbackParameters![key] = value;
+}
+
+```
+
+</CodeBlock>
+
+If you [register a callback URL](https://help.adjust.com/en/article/recommended-placeholders-callbacks) in the Adjust dashboard, the SDK sends a GET request to your callback URL when it records an event.
+
+You can configure callback parameters to your servers. Once you configure parameters on an event, the SDK appends them to your [callback URL](https://help.adjust.com/en/article/raw-data-exports). You can use this information to analyze your users' in-app behavior with your BI system.
+
+Add callback parameters to your event by calling the `addCallbackParameter` method with `String` key-value arguments. You can add multiple parameters by calling this method multiple times.
+
+The Adjust SDK measures the event and sends a request to your URL with the callback parameters. For example, if you register the URL `https://www.mydomain.com/callback`, your callback looks like this:
+
+<CodeBlock highlight="key=value, foo=bar">
+
+```http
+https://www.mydomain.com/callback?key=value&foo=bar
+```
+
+</CodeBlock>
+
+<Callout type="note">
+
+Adjust doesn't store your custom callback parameters. Custom parameters are only appended to your callback URL.
+
+</Callout>
+
+If you are using CSV uploads, make sure to add the parameters to your CSV definition.
+
+Adjust supports many placeholders which you can use to pass information from the SDK to your URL. For example, the `{idfa}` placeholder for iOS and the `{gps_adid}` placeholder for Android. The `{publisher_parameter}` placeholder presents all callback parameters in a single string.
+
+<Callout type="seealso">
+
+You can read more about using URL callbacks, including a full list of available values, in the [callbacks guide](https://help.adjust.com/en/article/callbacks).
+
+</Callout>
+
+```dart
+AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue('source');
+adjustAdRevenue.addCallbackParameter('key', 'value')
+Adjust.trackAdRevenueNew(adjustAdRevenue);
+```
+
+## Add partner parameters {#add-partner-parameters}
+
+<CodeBlock title="Method signature">
+
+```dart
+void addPartnerParameter(String key, String value) {
+   _partnerParameters![key] = value;
+}
+
+```
+
+</CodeBlock>
+
+You can send extra information to your network partners by adding [partner parameters](https://help.adjust.com/en/article/data-sharing-ad-network#map-parameters).
+
+Adjust sends partner parameters to [external partners](https://help.adjust.com/en/article/integrated-partners) you have set up. This information is useful for more granular analysis and retargeting purposes. Adjust's servers forward these parameters once you have set them up and enabled them for a partner.
+
+<Callout type="note">
+
+Partner parameters don't appear in raw data by default. You can add the `{partner_parameters}` placeholder to receive them as a single string.
+
+</Callout>
+
+Add partner parameters to your event by calling the `addPartnerParameter` method with `String` key-value arguments. You can add multiple parameters by calling this method multiple times.
+
+```dart
+AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue('source');
+adjustAdRevenue.addPartnerParameter('key', 'value');
+Adjust.trackAdRevenueNew(adjustAdRevenue);
+```
+
+## Example {#example}
+
+This example shows how to set up and record an ad revenue object with the following properties:
+
+-  AppLovin MAX as the revenue source
+-  1 Euro as the revenue amount
+-  10 ad impressions
+-  _`'network1'`_ as the ad revenue network
+-  _`'unit1'`_ as the ad revenue unit
+-  _`'banner'`_ as the ad revenue placement
+-  A callback parameter: `'key1' = 'value1'`
+-  A partner parameter: `'key2' = 'value2'`
+
+```dart
+AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue(AdjustConfig.AdRevenueSourceAppLovinMAX);
+adjustAdRevenue.setRevenue(1.00, 'EUR');
+adjustAdRevenue.adImpressionsCount = 10;
+adjustAdRevenue.adRevenueNetwork = 'network1';
+adjustAdRevenue.adRevenueUnit = 'unit1';
+adjustAdRevenue.adRevenuePlacement = 'banner';
+adjustAdRevenue.addCallbackParameter('key1', 'value1');
+adjustAdRevenue.addPartnerParameter('key2', 'value2');
+Adjust.trackAdRevenueNew(adjustAdRevenue);
+```

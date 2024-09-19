@@ -1,0 +1,140 @@
+---
+title: マルチプロセスアプリ
+description: マルチプロセスアプリ用にAndroid Adjust SDKを設定します。
+slug: ja/sdk/android/setup/multi-process
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v4: /ja/sdk/android/v4/setup/multi-process
+---
+
+<Callout type="important">
+
+プロセス名を設定せずに複数のプロセスでSDKを呼び出すと、SDKの複数のインスタンスが初期化されます。これは、Androidではプロセスがメモリースペースを共有しないためです。必ずメインのプロセス名を設定するか、 **あるいは** Adjust SDKを1つのプロセスのみで使用してください。
+
+</Callout>
+
+Androidアプリは、1つ以上のプロセスで構成できます。メインのプロセス以外のプロセスでサービスやアクティビティを実行するには、アクティビティやサービスにプロセス名を追加する必要があります。これを行うには、`AndroidManifest.xml`で`activity`または`service`ノードに`android:process`プロパティを追加します。
+
+<CodeBlock title="AndroidManifest.xml">
+
+```xml
+<activity     android:name=".YourActivity"     android:process=":YourProcessName">
+</activity>
+
+<service     android:name=".YourService"     android:process=":YourProcessName">
+</service>
+```
+
+</CodeBlock>
+
+プロセス名を定義すると、アクティビティやサービスはメインプロセス以外のプロセスで実行されます。
+
+デフォルトでは、メインプロセス名はアプリのパッケージ名と同じです。例えば、アプリのパッケージ名が`com.example.myapp`の場合、メインプロセスの名前も`com.example.myapp`になります。上記の例は、`com.example.myapp:YourProcessName`という名前のメインプロセス下のプロセスで実行されています。
+
+現在Adjust SDKは、1つのアプリで複数のプロセスの計測をサポートしていません。アプリがマルチプロセスを使用している場合、[`AdjustConfig`オブジェクト](/ja/sdk/android/configuration)でメインのプロセス名を設定してください。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val appToken = "{YourAppToken}"
+val environment = AdjustConfig.ENVIRONMENT_SANDBOX
+
+val config = AdjustConfig(this, appToken, environment)
+config.setProcessName("com.example.myapp")
+
+Adjust.initSdk(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+String appToken = "{YourAppToken}";
+String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
+
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+config.setProcessName("com.example.myapp");
+
+Adjust.initSdk(config);
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+let appToken = "{YourAppToken}";
+let environment = AdjustConfig.EnvironmentSandbox;
+let adjustConfig = new AdjustConfig(appToken, environment);
+adjustConfig.setProcessName("com.example.myapp");
+
+Adjust.initSdk(adjustConfig);
+```
+
+</Tab>
+</Tabs>
+
+メインのプロセス名を変更するには、`AndroidManifest.xml`ファイル内の`application`ノードの`android:process`プロパティを変更してください。
+
+<CodeBlock title="AndroidManifest.xml">
+
+```xml
+<application   android:name=".YourApp"   android:icon="@drawable/ic_launcher"   android:label="@string/app_name"   android:theme="@style/AppTheme"   android:process=":YourMainProcessName">
+</application>
+```
+
+</CodeBlock>
+
+次に、`AdjustConfig`オブジェクトでプロセス名を設定します。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val appToken = "{YourAppToken}"
+val environment = AdjustConfig.ENVIRONMENT_SANDBOX
+
+val config = AdjustConfig(this, appToken, environment)
+config.setProcessName("com.example.myapp:YourMainProcessName")
+
+Adjust.initSdk(config)
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+String appToken = "{YourAppToken}";
+String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
+
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+config.setProcessName("com.example.myapp:YourMainProcessName");
+
+Adjust.initSdk(config);
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+let appToken = "{YourAppToken}";
+let environment = AdjustConfig.EnvironmentSandbox;
+let adjustConfig = new AdjustConfig(appToken, environment);
+adjustConfig.setProcessName("com.example.myapp:YourMainProcessName");
+
+Adjust.initSdk(adjustConfig);
+```
+
+</Tab>
+</Tabs>
+
+これにより、Adjust SDKにメインプロセス名が通知されます。SDKは **メイン** プロセスのみを初期化します。別のプロセスでSDKを使用しようとすると、出力ログに次のように表示されます：
+
+```text
+05-06 17:15:06.885    8743-8743/com.example.myapp:YourProcessName I/Adjust﹕ Skipping initialization in background process (com.example.myapp:YourProcessName)
+```

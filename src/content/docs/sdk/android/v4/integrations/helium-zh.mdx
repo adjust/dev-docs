@@ -1,0 +1,58 @@
+---
+title: Helium by Chartboost SDK 集成
+description: 使用 Helium 集成，向 Adjust 服务器传送 Helium 信息。
+slug: zh/sdk/android/v4/integrations/helium
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v5: /zh/sdk/android/integrations/helium
+---
+
+<Callout type="note">
+
+如果您对 Helium by Chartboost 广告收入监测有任何疑问，请联系您的专属技术客户经理，或发送邮件至 [support@adjust.com](mailto:support@adjust.com)。
+
+</Callout>
+
+如果您想使用 Helium by Chartboost SDK 监测广告收入，可以借助 SDK 到 SDK 集成，将数据发送到 Adjust 服务器。
+
+## 要求 {#requirements}
+
+-  在您的应用中集成 Adjust 安卓 SDK v4\.29\.0 或更新版本。
+
+## 示例 {#example}
+
+<Tabs>
+<Tab title="Java">
+
+```java
+public void ilrdObserver (final HeliumImpressionData impData) {
+    final AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue(AdjustConfig.AD_REVENUE_HELIUM_CHARTBOOST);
+    // extract the ILRD payload
+    final JSONObject json = impData.getIlrdInfo();
+    try {
+        final double adRevenue = json.getDouble("ad_revenue");
+        final String currencyType = json.getString("currency_type");
+        adjustAdRevenue.setRevenue(adRevenue, currencyType);
+    } catch (JSONException e) {
+        // error handling as either revenue or currency was not present
+        return;
+    }
+    // optional fields
+    final String networkName = json.optString("network_name");     // Helium demand network name
+    final String placementName = json.optString("placement_name"); // Helium placement name
+    final String lineItemName = json.optString("line_item_name");  // Helium line item name
+    adjustAdRevenue.setAdRevenueNetwork(networkName);
+    adjustAdRevenue.setAdRevenueUnit(placementName);
+    adjustAdRevenue.setAdRevenuePlacement(lineItemName);
+    // Send Adjust ad revenue
+    Adjust.trackAdRevenue(adjustAdRevenue);
+}
+```
+
+</Tab>
+</Tabs>

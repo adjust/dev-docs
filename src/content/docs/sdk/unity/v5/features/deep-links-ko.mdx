@@ -1,0 +1,153 @@
+---
+title: 딥링킹
+description: 이 섹션의 가이드를 참조하여 딥링킹을 설정합니다.
+category-title: 딥링킹
+slug: ko/sdk/unity/features/deep-links
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v4: /ko/sdk/unity/v4/features/deep-links
+---
+
+사용자를 앱의 특정 페이지로 이동시키기 위해 딥링크를 생성할 수 있습니다. Adjust SDK는 사용자 기기에 앱이 이미 설치되어 있는지 여부에 따라 다른 로직을 적용합니다.
+
+-  다이렉트 딥링킹: 사용자 기기에 앱이 이미 설치되어 있는 경우에 사용됩니다. 사용자는 링크가 의도한 페이지로 이동됩니다.
+-  디퍼드 딥링킹: 사용자가 아직 앱을 설치하지 않은 경우에 사용됩니다. 링크는 먼저 사용자를 앱을 설치할 수 있는 스토어 페이지로 이동시킵니다. 사용자가 앱을 설치한 이후에 링크는 의도한 페이지를 엽니다.
+
+SDK는 사용자가 링크를 통해 앱을 실행한 이후에 딥링크 데이터를 읽을 수 있습니다.
+
+## 딥링크 설정 {#set-up-deep-linking}
+
+사용자가 앱을 설치한 경우, 사용자가 딥링크 정보가 포함된 링크를 클릭하면 딥링크가 실행됩니다. Adjust SDK는 앱에서 사용하기 위해 딥링크 정보를 파싱할 수 있는 툴을 포함하고 있습니다.
+
+SDK는 필요한 설정을 Android 및 iOS 프로젝트에 주입합니다. 딥링크를 구성하려면 Unity Editor 인스펙터 윈도우에서 URL 스킴을 추가하시기 바랍니다.
+
+![Unity 에디터 스크린샷](@images/unity/deep-links/1-editor.png)
+
+## iOS에서의 딥링크 {#deep-linking-on-ios}
+
+iOS 9 이후 버전을 사용하는 기기는 딥링크 실행을 위해[유니버설 링크](https://developer.apple.com/library/ios/documentation/General/Conceptual/AppSearch/UniversalLinks.html)를 사용합니다. 앱에 유니버설 링크 스킴을 추가해야 앱에서 딥링크를 열 수 있습니다. 이를 위해 다음을 설정하시기 바랍니다:
+
+1. Adjust 대시보드에서 유니버설 링크를 설정합니다.
+2. 앱에 대한 **Associated Domains** 를 Apple Developer Portal에서 구성합니다.
+3. Unity Editor를 실행합니다.
+4. Adjust prefab의 **DEEP LINKING** 섹션으로 이동합니다.
+5. **iOS 유니버셜 링크 도메인** 필드에 유니버설 링크 또는 링크를 입력합니다. 링크의 시작 부분에서 프로토콜을 삭제하시기 바랍니다\(예: `https://` 또는 `applinks:`\).
+
+## Android에서의 딥링크 {#deep-linking-on-android}
+
+Android 기기는 딥링크를 처리하기 위해 고유한 URI 스킴을 사용합니다. 딥링크를 설정하려면 Adjust prefab의 **Android URI Schemes** 섹션에 스킴을 추가해야 합니다. SDK는 필수 XML 태그를 `AndroidManifest.xml`에 추가합니다.
+
+![Unity prefab 메뉴의 Android URI 스킴 섹션 스크린샷](@images/unity/deep-links/2-uri-schemes.png)
+
+## 디퍼드 딥링크 {#deferred-deep-linking}
+
+### 디퍼드 딥링크 열기 비활성화 {#disable-opening-deferred-deep-links}
+
+<CodeBlock title="속성 선언">
+
+```cs
+public bool? IsDeferredDeeplinkOpeningEnabled { get; set; }
+```
+
+</CodeBlock>
+
+Adjust SDK는 기본 설정에 따라 디퍼드 딥링크를 실행합니다. `AdjustConfig` 인스턴스의 `IsDeferredDeeplinkOpeningEnabled` 속성에 `false` 값을 할당하여 이를 비활성화할 수 있습니다.
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+//...
+adjustConfig.IsDeferredDeeplinkOpeningEnabled = false;
+//...
+Adjust.InitSdk(adjustConfig);
+```
+
+### 디퍼드 딥링크 델리게이트 설정 {#set-up-a-deferred-deep-link-delegate}
+
+<CodeBlock title="속성 선언">
+
+```cs
+public Action<string> DeferredDeeplinkDelegate { get; set; }
+```
+
+</CodeBlock>
+
+디퍼드 딥링크 수신 시 델리게이트 함수를 호출하도록 Adjust SDK를 구성할 수 있습니다. 이 델리게이트 함수는 딥링크를 `string` 인수로 수신합니다.
+
+```cs
+private void DeferredDeeplinkCallback(string deeplinkURL) {
+   //...
+}
+
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+adjustConfig.DeferredDeeplinkDelegate = DeferredDeeplinkCallback;
+Adjust.InitSdk(adjustConfig);
+```
+
+### 예시 {#example}
+
+이 예시에서는 사용자가 디퍼드 딥링크를 열 때 Adjust가 딥링크 주소를 기록하는 방법을 보여줍니다.
+
+```cs
+private void LogDeepLink(string deepLinkURL) {
+ Debug.Log("Deeplink URL: " + deeplinkURL);
+}
+//...
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+adjustConfig.DeferredDeeplinkDelegate = LogDeepLink;
+//...
+Adjust.InitSdk(adjustConfig);
+```
+
+## 딥링크를 통한 리어트리뷰션 {#reattribution-via-deep-links}
+
+<CodeBlock title="메서드 서명">
+
+```cs
+public static void ProcessDeeplink(AdjustDeeplink deeplink);
+```
+
+</CodeBlock>
+
+Adjust를 사용하면 딥링크를 사용하여 리타겟팅 캠페인을 실행할 수 있습니다. 자세한 내용은 [Campaign Lab에서 딥링크를 설정하는 방법](https://help.adjust.com/ko/article/deep-links)을 확인하시기 바랍니다.
+
+사용자를 리어트리뷰션하려면 딥링크 URL과 함께 `AdjustDeeplink` 객체를 인스턴스화하고 `Adjust.ProcessDeeplink` 메서드에 전달해야 합니다. 이후 Adjust SDK는 딥링크 내에서 새로운 어트리뷰션 데이터를 찾습니다. SDK가 새로운 정보를 찾으면 이는 리어트리뷰션을 위해 Adjust 서버로 전달됩니다.
+
+```cs
+AdjustDeeplink adjustDeeplink = new AdjustDeeplink("url");
+Adjust.ProcessDeeplink(adjustDeeplink);
+```
+
+## LinkMe 활성화 {#enable-linkme}
+
+<CodeBlock title="메서드 서명">
+
+```cs
+public bool? IsLinkMeEnabled { get; set; }
+```
+
+</CodeBlock>
+
+Adjust SDK를 사용하면 디바이스 페이스트보드에서 딥링크 정보를 복사할 수 있습니다. Adjust LinkMe 솔루션과 함께 사용 시 Adjust SDK는 iOS 15 이후 버전이 지원되는 기기에서 디퍼드 딥링킹을 활성화합니다.
+
+<Callout type="important">
+
+Adjust SDK는 사용자의 첫 앱 실행 시 페이스트보드를 확인합니다. 기기는 사용자가 앱이 페이스트보드를 읽는 것을 허용할지 묻는 대화 상자를 표시합니다.
+
+</Callout>
+
+사용자가 LinkMe URL을 클릭하면 링크 정보를 시스템 페이스트보드에 복사할 수 있는 옵션이 주어집니다. Adjust SDK는 딥링크 정보에 대한 시스템 페이스트보드를 읽고 딥링크 정보가 있는 경우 사용자를 의도한 페이지로 이동시킬 수 있습니다.
+
+앱에서의 페이스트보드 확인을 활성화하려면 `AdjustConfig` 객체의 `IsLinkMeEnabled` 메서드에 `true` 값을 전달합니다.
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
+//...
+adjustConfig.IsLinkMeEnabled = true;
+//...
+Adjust.InitSdk(adjustConfig);
+```
