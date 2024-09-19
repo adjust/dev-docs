@@ -1,0 +1,104 @@
+---
+title: SDKシグネチャーライブラリの実装
+description: Adjust SDKとAdjustサーバー間の通信を保護するために、iOSアプリにシグネチャーライブラリを追加します。
+slug: ja/sdk/ios/integrations/signature-library
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v4: /ja/sdk/ios/v4/integrations/signature-library
+---
+
+AdjustのSDKシグネチャーライブラリは、Adjust SDKのスタンドアローンプラグインとして設計されています。つまり、コードを変更したり、アプリでAdjust SDKを使用する方法を変更したりする必要はありません。プラグインをインストールすると、Adjust SDKによって作成された全てのリクエストが引き続き正常に機能します。
+
+## Before you begin {#before-you-begin}
+
+AdjustシグネチャーライブラリをiOSアプリに実装する前に、以下を確認してください。
+
+-  お使いのAdjust SDKバージョンが **4\.35\.2以降** であること。この要件は、Adjust SDKが間接的に使用されている場合でも適用されます。
+-  iOSまたはtvOSのバージョン **12以降** に対応していること。
+
+<Callout type="important">
+
+Adjust SDKまたはシグネチャーライブラリで外部の暗号化ツールを使用すると、シグネチャーライブラリの機能に影響を与える可能性があります。 外部ツールを使用するかどうか不明な場合は、Adjustの担当者または[support@adjust.comまで](mailto:support@adjust.com)お問い合わせいただき、機能に影響がないか確認してください。
+
+</Callout>
+
+### Migrating from Signature v1 or v2 library {#migrating-from-signature-v1-or-v2-library}
+
+以前にシグネチャーv1またはシグネチャーv2を使用していた場合は、シグネチャーライブラリを連携する前に以前のバージョンを削除する必要があります。これを行うには、以下の手順に従ってください。
+
+-  以前シグネチャーv1を実装したことがある場合は、プロジェクト内のシグネチャー機能を呼び出すコードを削除してください。
+-  以前シグネチャーv2を実施したことがある場合は、シグネチャーv2のライブラリをプロジェクトから削除してください。
+
+### Updating the Signature Library {#updating-the-signature-library}
+
+Adjustシグネチャーライブラリを更新するには、既存のシグネチャーライブラリを新しいバージョンに置き換え、テストを再度実行してください。Adjustでアプリのロジックや設定をすぐに変更する必要はありません。[シークレットIDが以下の基準を満たす場合は、必ず無効化してください](https://help.adjust.com/ja/article/sdk-signature#manage-your-secret-ids)。
+
+-  インストールレポートに役立たなくなった。
+-  アプリの新バージョンを（全てのアプリのプラットフォームとストアで）リリースした。
+
+## Integrate the signature library \(SDK v4 only\) {#integrate-the-signature-library}
+
+<Callout type="note">
+
+Adjust SDK v5は、 SDKシグネチャーの検証をネイティブでサポートしています。以前にSDKシグネチャーライブラリを連携した場合は、アンインストールし、関連するコードを全て削除する必要があります。
+
+</Callout>
+
+iOSプロジェクトにシグネチャーライブラリを実装するには、以下の手順に従ってください。
+
+1. [GitHubから](https://github.com/adjust/adjust_signature_sdk/releases/latest)`AdjustSigSdk-iOS-tvOS-Dynamic.xcframework.zip`アーカイブをダウンロードします。
+2. アーカイブを解凍し、 `AdjustSigSdk.xcframework`をプロジェクトのディレクトリにコピーします。
+3. Xcodeの **プロジェクトナビゲーター** でプロジェクトを選択します。
+4. 左側のターゲットを選択します。
+5. **General** タブを選択し、 **Frameworks, Libraries and Embedded Content** グループを開きます。
+6. グループの下部にある **\+** ボタンを選択します。
+
+![XcodeのFrameworksページのスクリーンショット](@images/sig-v3/xcode-frameworks.png)
+
+7. **Add Other \-\-> Add Files** を選択し、プロジェクトディレクトリから`AdjustSigSdk.xcframework`ファイルを選択します。
+
+![Xcodeのフレームワークセレクターのスクリーンショット](@images/sig-v3/xcode-select-framework.png)
+
+8. `AdjustSigSdk.xcframework`の **Embed & Sign** オプションを選択します。
+
+![XcodeのEmbed & Signオプションのスクリーンショット](@images/sig-v3/xcode-embed-sign.png)
+
+これで、シグネチャーライブラリがプロジェクトに実装されました。
+
+## Test your app {#test-your-app}
+
+[Adjustテストコンソール](https://help.adjust.com/ja/article/testing-console)を使用して、アプリにシグネチャーライブラリが実装されていることを確認できます。
+
+<Callout type="important">
+
+Adjust SDKが **サンドボックス** モードで実行されていることを確認してください。
+
+</Callout>
+
+シグネチャーライブラリの実装をテストするには、以下の手順に従ってください。
+
+1. インストール情報が送信されるようにするには、テストデバイスからアプリを完全に削除します。
+
+2. デバイスに関する全ての情報を消去するには、テストコンソールを使用してデバイスに関する情報を削除します。[Adjust Insightsアプリ](https://apps.apple.com/us/app/adjust-insights/id1125517808)で取得したアプリのアルゴリズムと広告IDをパスすることで、forget_deviceエンドポイントを使用することも可能です。次の広告IDはいずれも使用できます：`adid`、`idfa`、`idfv`、`imei`、`oaid`。
+
+   コールは以下のようになります。
+
+   ```console
+   $ curl -X POST 'https://app.adjust.com/forget_device?app_token={yourAppToken}&id={adid}'
+   ```
+
+3. テストコンソールからデバイスのデータを削除したら、テストデバイスにアプリをインストールして起動し、インストール情報をAdjustに送信します。
+
+4. テストデバイスの広告IDをテストコンソールに入力し、インストールイベント情報を取得します。以下の点を確認してください。
+
+   1. `SignatureVerificationResult`フィールドに次の値が表示されている： `Valid Signature`
+   2. `SignatureVersion`フィールドに次の値が表示されている： `3`
+
+これらのフィールドが存在し、正しい情報が含まれている場合、シグネチャーライブラリは正常に実装されています。これらのフィールドに他の値が表示されている場合は、実装手順を再度確認するか、[support@adjust.com](mailto:support@adjust.com)までお問い合わせください。
+
+これで、シグネチャーライブラリがアプリに連携されました。 [2回のアトリビューション期間が経過](https://help.adjust.com/ja/article/attribution-windows)したら、 [SDKシグネチャーの検証](https://help.adjust.com/ja/article/sdk-signature#enforce-signature-validation)を有効化して、署名されたリクエストのみがAdjustで受理されるようにしてください。

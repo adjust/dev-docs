@@ -1,0 +1,52 @@
+---
+title: TradPlus SDK 集成
+description: 使用 TradPlus 集成，向 Adjust 服务器传送 TradPlus 信息。
+slug: zh/sdk/ios/v4/integrations/tradplus
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v5: /zh/sdk/ios/integrations/tradplus
+---
+
+<MinorVersion added="v4.37.1">
+
+如果您想使用 TradPlus SDK 监测广告收入，可以借助 SDK 到 SDK 集成，将数据发送到 Adjust 服务器。
+
+</MinorVersion>
+<Callout type="note">
+
+如果您对 TradPlus 广告收入监测有任何疑问，请联系您的专属技术客户经理，或发送邮件至 [support@adjust.com](mailto:support@adjust.com)。
+
+</Callout>
+
+## 操作前须知 {#before-you-begin}
+
+要将 Adjust SDK 集成进应用，请按[集成指南](/zh/sdk/ios)中的说明操作。
+
+## 示例 {#example}
+
+如需通过 Adjust 记录广告收入信息，请在`impressionDelegate`函数中创建一个`ADJAdRevenue`实例。请参阅[发送广告收入信息指南](/zh/sdk/ios/features/ad-revenue)了解更多信息。
+
+```objc
+// Listen for global display callbacks
+[TradPlus sharedInstance].impressionDelegate = self;
+
+- (void)tradPlusAdImpression:(NSDictionary *)adInfo
+{
+    ADJAdRevenue *adRevenue =  [[ADJAdRevenue alloc] initWithSource:ADJAdRevenueSourceTradPlus];
+    CGFloat revenue = [adInfo[@"ecpm"] floatValue]/1000.0;
+    NSString *adUnitId = adInfo[@"adunit_id"];
+    NSString *networkName = adInfo[@"adNetworkName"];
+    NSString *adType = adInfo[@"adType"];
+    [adRevenue setRevenue:revenue currency:@"USD"];
+    [adRevenue setAdRevenueNetwork: networkName];
+    [adRevenue setAdRevenueUnit: adUnitId];
+    [adRevenue setAdRevenuePlacement: adType];
+
+    [Adjust trackAdRevenue:adRevenue];
+}
+```

@@ -1,0 +1,298 @@
+---
+title: Configuration
+description: Follow the guides in this section to configure the Adjust SDK.
+slug: en/sdk/flutter/configuration
+sidebar-position: 1
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v4: /en/sdk/flutter/v4/configuration
+---
+
+Use the methods in this document to configure the behavior of the Adjust SDK.
+
+## Instantiate your config object {#instantiate-your-config-object}
+
+<CodeBlock title="Method signature">
+
+```dart
+AdjustConfig(String appToken, AdjustEnvironment environment)
+```
+
+</CodeBlock>
+
+To configure the Adjust SDK, you need to instantiate an `AdjustConfig` object. This object contains the **read-only** configuration options that you need to pass to the Adjust SDK.
+
+To instantiate your config object, create a new `AdjustConfig` instance and pass the following parameters:
+
+-  `appToken` (`String`): Your [Adjust app token](https://help.adjust.com/en/article/app-token-and-reporting-currency#view-your-app-details).
+-  `environment` (`AdjustEnvironment`): The environment you want to run the SDK in. Pass `AdjustEnvironment.sandbox` to run the SDK in sandbox mode for testing. Pass `AdjustEnvironment.production` to run the SDK in production mode for release.
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox);
+//...
+Adjust.initSdk(adjustConfig);
+```
+
+## Read-only configuration {#read-only-configuration}
+
+**Read-only** configuration options are set in your `AdjustConfig` instance **before** the initialization of the SDK. They can't be changed while the SDK is running. You MUST configure any options you want to use before running `Adjust.initSdk`.
+
+### Set your logging level {#set-your-logging-level}
+
+<CodeBlock title="Property declaration">
+
+```dart
+AdjustLogLevel? logLevel;
+```
+
+</CodeBlock>
+
+The Adjust SDK provides configurable log levels to return different amounts of information. The following log levels are available:
+
+<Table>
+
+| Log level                 | Description                                |
+| ------------------------- | ------------------------------------------ |
+| `AdjustLogLevel.verbose`  | Enable all logging                         |
+| `AdjustLogLevel.debug`    | Enable debug logging                       |
+| `AdjustLogLevel.info`     | Only show info level logs (default option) |
+| `AdjustLogLevel.warn`     | Disable info logging                       |
+| `AdjustLogLevel.error`    | Disable warning level logging and below    |
+| `AdjustLogLevel.assert`   | Disable error level logging and below      |
+| `AdjustLogLevel.suppress` | Suppress all logging                       |
+
+</Table>
+
+You can set your log level by assigning an `AdjustLogLevel` value to the `logLevel` property of your config instance.
+
+-  `logLevel` (`AdjustLogLevel`): The log level you want to use.
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox);
+//...
+adjustConfig.logLevel = AdjustLogLevel.verbose;
+//...
+Adjust.initSdk(adjustConfig);
+```
+
+### Set external device identifier {#set-external-device-identifier}
+
+<CodeBlock title="Property declaration">
+
+```dart
+String? externalDeviceId;
+```
+
+</CodeBlock>
+
+An external device identifier is a custom value that you can assign to a device or user. They help you recognize users across sessions and platforms. They can also help you deduplicate installs by user so that a user isn't counted as duplicate new installs. Contact your Adjust representative to get started with external device IDs.
+
+You can use an external device ID as a custom identifier for a device. This helps you keep continuity with your other systems. Assign your external device ID to the `externalDeviceId` property on your config instance.
+
+-  `externalDeviceId` (`String`): Your external device identifier. This value is **case sensitive**. If you have imported external device IDs, make sure the value you pass matches the imported value.
+
+<Callout type="seealso">
+
+See the [External device identifiers article](https://help.adjust.com/en/article/external-device-identifiers) in the Adjust help center for more information.
+
+</Callout>
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox);
+//...
+adjustConfig.externalDeviceId = '{Your-External-Device-Id}';
+//...
+Adjust.initSdk(adjustConfig);
+```
+
+If you want to use the external device ID in your business analytics, you can pass it as a [session callback parameter](/en/sdk/flutter/features/session-parameters).
+
+You can import existing external device IDs into Adjust. This ensures that the Adjust servers match future data to your existing device records. Contact your Adjust representative for more information.
+
+### Set default link token {#set-default-link-token}
+
+<CodeBlock title="Property declaration">
+
+```dart
+String? defaultTracker;
+```
+
+</CodeBlock>
+
+You can configure a default link token if your app is preinstalled on a device. When a user opens the preinstalled app for the first time, the install is attributed to the default link token. Assign your default link token to the `defaultTracker` property of your config instance.
+
+-  `defaultTracker` (`String`): The [Adjust link token](https://help.adjust.com/en/article/links#adjust-link-token) you want to record preinstalled installs against.
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox);
+//...
+adjustConfig.defaultTracker = '{TrackerToken}';
+//...
+Adjust.initSdk(adjustConfig);
+```
+
+### Enable cost data sending {#enable-cost-data-sending}
+
+<CodeBlock title="Property declaration">
+
+```dart
+bool? isCostDataInAttributionEnabled;
+```
+
+</CodeBlock>
+
+By default, the Adjust SDK doesn't send cost data as part of a user's attribution. You can configure the SDK to send this data by enabling cost data sending. To enable cost data sending, assign a `bool` value to the `isCostDataInAttributionEnabled` property of your config instance.
+
+-  `isCostDataInAttributionEnabled` (`bool`): set to `true` to enable cost data sending.
+
+Cost data is accessible in the user's [attribution information](/en/sdk/flutter/features/attribution).
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox);
+//...
+adjustConfig.isCostDataInAttributionEnabled = true;
+//...
+Adjust.initSdk(adjustConfig);
+```
+
+### Enable background recording {#enable-background-recording}
+
+<CodeBlock title="Property declaration">
+
+```dart
+bool? isSendingInBackgroundEnabled;
+```
+
+</CodeBlock>
+
+By default, the Adjust SDK pauses the sending of requests when your app is running in the background. You can configure the SDK to send requests in the background by enabling the background recording. To enable background recording, assign a `bool` value to the `isSendingInBackgroundEnabled` property of your config instance.
+
+-  `isSendingInBackgroundEnabled` (`bool`): Set to `true` to enable background sending.
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox);
+//...
+adjustConfig.isSendingInBackgroundEnabled = true;
+//...
+Adjust.initSdk(adjustConfig);
+```
+
+## Dynamic configuration {#dynamic-configuration}
+
+**Dynamic** configuration options may be changed during the SDK's lifecycle in response to events or actions taken by the user.
+
+### Activate offline mode {#activate-offline-mode}
+
+<CodeBlock title="Method signature">
+
+```dart
+static void switchToOfflineMode()
+```
+
+</CodeBlock>
+
+<Callout type="important">
+
+The offline mode setting isn't remembered between sessions. Offline mode is disabled at the start of each new session.
+
+</Callout>
+
+The Adjust SDK sends event and session data to Adjust's servers in real time. You can pause the sending of information by putting the SDK in offline mode. In offline mode the SDK stores all data in a local file on the device. The SDK sends this information to Adjust's servers when you disable offline mode.
+
+To enable offline mode, call the `Adjust.switchToOfflineMode` method.
+
+```dart
+Adjust.switchToOfflineMode();
+```
+
+### Deactivate offline mode {#deactivate-offline-mode}
+
+<CodeBlock title="Method signature">
+
+```dart
+static void switchBackToOnlineMode()
+```
+
+</CodeBlock>
+
+You can re-enable the SDK by calling the `Adjust.switchBackToOnlineMode` method. This prompts the SDK to resume sending information.
+
+```dart
+Adjust.switchBackToOnlineMode();
+```
+
+### Set push tokens {#set-push-tokens}
+
+<CodeBlock title="Method signature">
+
+```dart
+static void setPushToken(String token)
+```
+
+</CodeBlock>
+
+Push tokens are used for [Audiences](https://help.adjust.com/en/article/audiences) and client callbacks. They're also required for [Uninstall and reinstall measurement](https://help.adjust.com/en/article/uninstalls-reinstalls).
+
+Your config object contains a string `pushToken` property that you can use to store your push token. You can update this property at any time by calling the `setPushToken` method and passing the following arguments:
+
+-  `token` (`String`): Your push token.
+
+```dart
+Adjust.setPushToken('{PushNotificationsToken}');
+```
+
+### Disable the SDK {#disable-the-sdk}
+
+<CodeBlock title="Method signature">
+
+```dart
+static void disable()
+```
+
+</CodeBlock>
+
+The Adjust SDK runs by default when your app is open. You can disable the Adjust SDK to stop sending information to Adjust by calling the `Adjust.disable` method. When you disable the Adjust SDK, no data is sent to Adjust and no information is recorded by the SDK. This means that any Adjust method called when the SDK is disabled won't record anything.
+
+```dart
+Adjust.disable();
+```
+
+### Enable the SDK {#enable-the-sdk}
+
+<CodeBlock title="Method signature">
+
+```dart
+static void enable()
+```
+
+</CodeBlock>
+
+If you've disable the SDK and want to re-enable it, call the `Adjust.enable` method. When the SDK is enabled, it will send information to Adjust's servers.
+
+```dart
+Adjust.enable();
+```
+
+#### Check enabled status {#check-enabled-status}
+
+<CodeBlock title="Method signature">
+
+```dart
+static Future<bool> isEnabled() async
+```
+
+</CodeBlock>
+
+You can check if the Adjust SDK is enabled at any time by calling the `isEnabled` method. This method returns a `bool` value indicating if the SDK is **enabled** (`true`) or **disabled** (`false`).
+
+```dart
+Adjust.isEnabled().then((isEnabled) {
+    // if isEnabled == true, SDK is enabled
+    // if isEnabled == false, SDK is disabled
+});
+```

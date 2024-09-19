@@ -1,0 +1,191 @@
+---
+title: OAID
+description: 使用 OAID 插件，向 Adjust 传送 OAID 信息。
+slug: zh/sdk/android/plugins/oaid-plugin
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v4: /zh/sdk/android/v4/plugins/oaid-plugin
+---
+
+匿名设备标识符 \(OAID\) 是针对安卓设备的一种唯一标识符。中国移动安全联盟 \(MSA\) 推荐所有中国生产的设备提供 OAID。在 Google Play 服务不适用的市场中，您可以使用 OAID 对安卓设备进行归因和监测。
+
+OAID 插件提供设备的 OAID。SDK 会继续使用 OAID 和其他标识符。对于所有使用 MSA SDK 的设备或使用华为移动服务 \(HMS\) Core SDK 的华为设备，OAID 均可读取。
+
+## 将插件添加至您的应用 {#add-the-plugin-to-your-app}
+
+### Maven {#maven}
+
+如果您使用的是 Maven，请将以下 dependency 添加至您的 `build.gradle` 文件：
+
+<CodeBlock title="build.gradle">
+
+```groovy
+dependencies {
+   implementation 'com.adjust.sdk:adjust-android:$ANDROID_V4_VERSION'
+   implementation 'com.adjust.sdk:adjust-android-oaid:$ANDROID_V4_VERSION'
+}
+
+```
+
+</CodeBlock>
+
+针对华为 OAID 监测，您必须添加一个开发者库和附加依赖。
+
+<Callout type="important">
+
+华为设备所需的最低 SDK 版本为 4\.28\.2，最低 OAID 插件版本为 4\.33\.0。
+
+</Callout>
+
+1. 将下列行加入项目的 `build.gradle` 文件：
+
+<CodeBlock title="build.gradle">
+
+```groovy
+allprojects {
+    repositories {
+        maven {
+            url 'https://developer.huawei.com/repo/'
+        }
+    mavenCentral()
+    }
+
+```
+
+</CodeBlock>
+
+2. 在您的应用层级 `build.gradle` 文件中加入下列行：
+
+<CodeBlock title="build.gradle">
+
+```groovy
+dependencies {
+   implementation 'com.adjust.sdk:adjust-android:4.33.4'
+   implementation 'com.adjust.sdk:adjust-android-oaid:4.33.4'
+   implementation 'com.huawei.hms:ads-identifier:3.4.62.300'
+}
+
+```
+
+</CodeBlock>
+
+### 安装独立二进制文件 {#install-standalone-binary}
+
+您也可以访问我们的[发布页面](https://github.com/adjust/android_sdk/releases)，将插件作为独立二进制文件进行添加。
+
+## 将 MSA SDK 添加至您的应用 {#add-the-msa-sdk-to-your-app}
+
+<Callout type="note">
+
+对于华为设备，您无需通过添加 MSA SDK 来读取 OAID 值。OAID 插件能够使用HMS Core SDK来读取该值。
+
+</Callout>
+
+### 要求 {#requirements}
+
+| MSA SDK 版本 | Adjust OAID 插件版本 |
+| ------------ | -------------------- |
+| v1\.0\.10\+  | v4\.19\.0\+          |
+| v1\.0\.12\+  | v4\.22\.0\+          |
+| v1\.0\.13\+  | v4\.23\.0\+          |
+| v1\.0\.23\+  | v4\.24\.1\+          |
+| v1\.0\.25\+  | v4\.27\.0\+          |
+| v1\.0\.26\+  | v4\.28\.4\+          |
+| v1\.1\.0\+   | v4\.28\.9\+          |
+| v2\.0\.0\+   | v4\.33\.0\+          |
+
+要启用 OAID 插件从 MSA SDK 读取 OAID，您需要将其加入项目中。为此，请进行下列操作：
+
+1. 复制 MSA SDK \(AAR 文件\) 到项目的 `libs` 目录并设置 dependency。
+2. 将 `supplierconfig.json` 文件复制到项目的 `assets` 目录中。
+3. 您可以在[MSA 官网](http://www.msa-alliance.cn/col.jsp?id=120)找到 MSA SDK 和相关详细说明。
+
+## 将 HMS Core SDK 添加至您的应用 {#add-the-hms-core-sdk-to-your-app}
+
+您可以使用 HMS Core SDK 来访问华为设备的 OAID。要启用 Adjust OAID 插件并从 HMS Core SDK读取值，请按如下方式更新您的 `build.gradle`：
+
+1. 添加华为 maven 库。
+
+<CodeBlock title="build.gradle">
+
+```groovy
+repositories {
+  maven {
+      url "https://developer.huawei.com/repo/"
+  }
+}
+
+```
+
+</CodeBlock>
+
+2. 添加 HMS Core SDK。
+
+<CodeBlock title="build.gradle">
+
+```groovy
+dependencies {
+   implementation 'com.huawei.hms:ads-identifier:3.4.56.300'
+}
+
+```
+
+</CodeBlock>
+
+## ProGuard 设置 {#proguard-settings}
+
+如果您的应用不是针对 Google Play 商店，则无需添加安卓入门指南中的所有规则。您可以移除与 Google Play 服务相关的规则和 install referrer 库，只需保留适用于 Adjust SDK 的规则。
+
+<CodeBlock title="proguard.pro">
+
+```java
+-keep public class com.adjust.sdk.** { *; }
+```
+
+</CodeBlock>
+
+如需添加 MSA SDK AAR 作为依赖，请添加以下规则：
+
+<CodeBlock title="proguard.pro">
+
+```java
+-keep class com.bun.miitmdid.core.** { *; }
+```
+
+</CodeBlock>
+
+## 使用插件 {#use-the-plugin}
+
+设置好插件后就可以收集设备的 OAID 了。为此，请在启用 Adjust SDK 前调用 `AdjustOaid.readOaid(applicationContext)` 方法。
+
+<Tabs>
+<Tab title="Java">
+
+```java
+AdjustOaid.readOaid(applicationContext);
+
+// ...
+
+Adjust.onCreate(config);
+```
+
+</Tab>
+</Tabs>
+
+如果您想阻止 SDK 读取 OAID，请调用 `AdjustOaid.doNotReadOaid()` 方法。
+
+<Tabs>
+<Tab title="Java">
+
+```java
+AdjustOaid.doNotReadOaid();
+
+```
+
+</Tab>
+</Tabs>

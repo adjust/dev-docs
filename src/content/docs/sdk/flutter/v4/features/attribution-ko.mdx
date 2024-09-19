@@ -1,0 +1,116 @@
+---
+title: 어트리뷰션 정보 확인
+description: Adjust SDK를 사용하여 어트리뷰션 변경 사항 수신
+slug: ko/sdk/flutter/v4/features/attribution
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v5: /ko/sdk/flutter/features/attribution
+---
+
+사용자가 Adjust 링크와 상호작용하면 어트리뷰션 정보가 업데이트됩니다. 이는 사용자가 [딥링크](https://help.adjust.com/ko/article/deep-links)와 상호작용하는 경우에 발생할 수 있습니다. 사용자의 어트리뷰션 관련 정보는 `AdjustAttribution` 클래스에 나타납니다.
+
+## AdjustAttribution 클래스 속성 {#adjustattribution-class-properties}
+
+`AdjustAttribution` 클래스는 기기의 현재 어트리뷰션 상태에 관한 세부 내용을 포함합니다. 해당 사용자에 대해 입력되지 않은 모든 값은 `null` 값으로 반환됩니다.
+
+<Callout type="note">
+
+다음 값은 [`AdjustConfig` 인스턴스의 `needsCost` 속성](/ko/sdk/flutter/configuration#enable-cost-data-sending)이 `true`인 경우에만 액세스할 수 있습니다.
+
+-  `costType`
+-  `costAmount`
+-  `costCurrency`
+
+</Callout>
+<Table>
+
+| 값                  | 데이터 유형 | 설명                                                                                         |
+| ------------------- | ----------- | -------------------------------------------------------------------------------------------- |
+| `trackerToken`      | `String`    | 디바이스가 현재 어트리뷰션된 링크의 토큰                                                     |
+| `trackerName`       | `String`    | 디바이스가 현재 어트리뷰션된 링크의 이름                                                     |
+| `network`           | `String`    | 디바이스가 현재 어트리뷰션된 네트워크의 이름                                                 |
+| `campaign`          | `String`    | 디바이스가 현재 어트리뷰션된 캠페인의 이름                                                   |
+| `adgroup`           | `String`    | 디바이스가 현재 어트리뷰션된 광고그룹의 이름                                                 |
+| `creative`          | `String`    | 디바이스가 현재 어트리뷰션된 크리에이티브의 이름                                             |
+| `clickLabel`        | `String`    | 설치가 태그된 [click label](https://help.adjust.com/ko/article/user-rewards)                 |
+| `adid`              | `String`    | 디바이스에 할당된 고유한 Adjust ID                                                           |
+| `costType`          | `String`    | 캠페인 가격 모델\(예: CPI\)                                                                  |
+| `costAmount`        | `num`       | 설치 비용                                                                                    |
+| `costCurrency`      | `String`    | 비용 관련 [3자 ISO 4217 통화 코드](https://www.iban.com/currency-codes)                      |
+| `fbInstallReferrer` | `String`    | [Facebook install referrer](https://developers.facebook.com/docs/app-ads/install-referrer/). |
+
+</Table>
+
+## 어트리뷰션 변경 시 함수 트리거 {#trigger-a-function-when-attribution-changes}
+
+<CodeBlock title="속성 선언">
+
+```dart
+typedef void AttributionCallback(AdjustAttribution attributionData);
+AttributionCallback? attributionCallback;
+
+```
+
+</CodeBlock>
+
+SDK는 어트리뷰션 변경 사항을 받고 업데이트가 감지되면 함수를 호출합니다. 콜백 함수를 구성하려면 함수를 config 인스턴스의 `attributionCallback` 속성에 할당합니다.
+
+<Callout type="important">
+
+`attributionCallback` 메서드는 앱에서 Adjust SDK를 초기화하기 **이전** 에 호출해야 합니다.
+
+</Callout>
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
+config.attributionCallback = (AdjustAttribution attributionChangedData) {
+   print('[Adjust]: Attribution changed!');
+
+   if (attributionChangedData.trackerToken != null) {
+      print('[Adjust]: Tracker token: ' + attributionChangedData.trackerToken);
+   }
+   if (attributionChangedData.trackerName != null) {
+      print('[Adjust]: Tracker name: ' + attributionChangedData.trackerName);
+   }
+   if (attributionChangedData.campaign != null) {
+      print('[Adjust]: Campaign: ' + attributionChangedData.campaign);
+   }
+   if (attributionChangedData.network != null) {
+      print('[Adjust]: Network: ' + attributionChangedData.network);
+   }
+   if (attributionChangedData.creative != null) {
+      print('[Adjust]: Creative: ' + attributionChangedData.creative);
+   }
+   if (attributionChangedData.adgroup != null) {
+      print('[Adjust]: Adgroup: ' + attributionChangedData.adgroup);
+   }
+   if (attributionChangedData.clickLabel != null) {
+      print('[Adjust]: Click label: ' + attributionChangedData.clickLabel);
+   }
+   if (attributionChangedData.adid != null) {
+      print('[Adjust]: Adid: ' + attributionChangedData.adid);
+   }
+};
+Adjust.start(adjustConfig);
+```
+
+## 현재 어트리뷰션 정보 확인 {#get-current-attribution-information}
+
+<CodeBlock title="메서드 서명">
+
+```dart
+static Future<adjustattribution> getAttribution() async
+```
+
+</CodeBlock>
+
+사용자가 앱을 설치하면 Adjust는 해당 설치를 캠페인에 어트리뷰션합니다. Adjust SDK를 사용하면 설치 캠페인 어트리뷰션 정보에 액세스할 수 있습니다. 이 정보를 반환하려면 `getAttribution` 메서를 호출하여 어트리뷰션 정보를 `AdjustAttribution` 객체로 반환합니다.
+
+```dart
+AdjustAttribution attribution = Adjust.getAttribution();
+```
