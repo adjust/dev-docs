@@ -17,7 +17,11 @@ const formatByVersion = (
   // getting formatted data for the pages
   const pagesData = filteredPagesByLang.map((page) => {
     const path = page.url?.replace(".mdx", "");
-    const versionMatch = path?.match(/v\d/gi);
+    const splitPath = path?.split("/");
+    let versionMatch = null
+    if (splitPath && splitPath.length && splitPath.length > 5) {
+      versionMatch = splitPath[5].match(/v\d/gi);
+    }
     const version = versionMatch ? versionMatch[0] : null;
     const updatedPath = path?.includes(`/${version}/`)
       ? path.replace(`/${version}/`, "/")
