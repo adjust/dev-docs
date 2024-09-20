@@ -1,0 +1,846 @@
+---
+title: "SDK v5移行ガイド"
+description: "SDK v4からSDK v5にアップグレードするには、このガイドをご覧ください"
+slug: "en/sdk/react-native/migration/v4-to-v5"
+sidebar-position: 1
+---
+事前準備 \{\#before\-you\-begin\}
+----------------------------------
+
+SDK v5にアップデートする前に、以下を行ってください。
+
+1. Adjust SDK v5は、 [SDKシグネチャーの検証](https://help.adjust.com/en/article/sdk-signature)をネイティブでサポートしています。現在、SDKシグネチャーライブラリを使用している場合は、まずシグネチャーライブラリをアプリから削除する必要があります。
+
+2. SDK v5の最小サポート対象APIバージョンが更新されました。以前のバージョンをターゲットにしている場合は、まずアプリをアップデートする必要があります。
+
+   * iOS： **12\.0** 
+   * Android: **21** 
+
+SDKをインストールする \{\#install\-the\-sdk\}
+-----------------------------------------
+
+SDK v5の使用を開始するには、プロジェクトにdependencyとしてSDK v5を追加する必要があります。これを行うには、以下の手順に従ってください。
+
+1. 次のオプションのいずれか1つを使用して、React Nativeライブラリをダウンロードします。
+
+ターミナルで以下のコマンドを実行します：
+
+```console
+$ npm install react-native-adjust@$REACT_NATIVE_V5_VERSION --save
+```
+
+2. ターミナルで以下のコマンドを実行し、iOSアプリのCocoaPodsのdependencyをインストールします：
+
+```console
+$ cd ios && pod install
+```
+
+初期化メソッドを更新 \{\#init\-method\}
+---------------------------------
+
+<minorversion changed="v5" size="large" /> 
+
+SDK v4では、初期化メソッドは`Adjust.create`です。SDK v5では`Adjust.initSdk`に変更されています。
+<codeblock useDiffSyntax> 
+
+```jsx
+-Adjust.create(adjustConfig); // v4
++Adjust.initSdk(adjustConfig); // v5
+```
+
+</CodeBlock> 
+
+変更されたAPI \{\#changed\-apis\}
+--------------------------------
+
+<minorversion changed="v5" size="large" /> 
+
+SDK v5では、以下のAPIが変更されました。
+
+### SDKを無効化および有効化する \{\#disable\-enable\-sdk\}
+
+SDK v4では、`bool`値で`Adjust.setEnabled`を呼び出すことで、SDKを有効化・無効化することができます。
+
+```jsx
+Adjust.setEnabled(false); // disable SDK
+Adjust.setEnabled(true); // enable SDK
+```
+
+より明確にするため、SDK v5では、この機能は別々のコマンドに分割されています。
+
+* SDKを無効化するには、`Adjust.disable`を呼び出します。
+* SDKを有効化するには、`Adjust.enable`を呼び出します。
+
+```jsx
+Adjust.disable();
+Adjust.enable();
+```
+
+### バックグラウンドで情報を送信する \{\#send\-in\-background\}
+
+SDK v4では、`adjustConfig`インスタンスの`setSendInBackground`メソッドを`bool`値で呼び出し、アプリがバックグラウンドで動作している間にSDKがAdjustに情報を送信できるようにする必要があります。
+
+```jsx
+adjustConfig.setSendInBackground(true);
+```
+
+SDK v5では、`adjustConfig`インスタンスの`enableSendingInBackground`メソッドを呼び出し、アプリがバックグラウンドで動作している間にSDKがAdjustに情報を送信できるようにする必要があります。デフォルトの状態は`false`です。
+
+```jsx
+adjustConfig.enableSendingInBackground();
+```
+
+### プリインストールアプリ計測 \{\#preinstalled\-app\}
+
+SDK v4では、 `adjustConfig`インスタンスの`setPreinstallTrackingEnabled`メソッドを`true`値で呼び出し、プリインストールアプリの計測を有効化することができます。
+
+```jsx
+adjustConfig.setPreinstallTrackingEnabled(true);
+```
+
+SDK v5でプリインストールアプリの計測を有効化するには、 `adjustConfig`インスタンスの`enablePreinstallTracking`メソッドを呼び出す必要があります。デフォルトの状態は`false`です。
+
+```jsx
+adjustConfig.enablePreinstallTracking();
+```
+
+### AdServices情報の読み取りを無効化する \{\#disable\-adservices\}
+
+SDK v4では、`adjustConfig`の`setAllowAdServicesInfoReading`メソッドを`false`で呼び出すことで、Adjust SDKがAdServices情報を読み取らないようにすることができます。
+
+```jsx
+adjustConfig.setAllowAdServicesInfoReading(false);
+```
+
+SDK v5でAdjust SDKがAdServices情報を読み取らないようにするには、 `adjustConfig`インスタンスの`disableAdServices`メソッドを呼び出す必要があります。デフォルトの状態は`true`です。
+
+```jsx
+adjustConfig.disableAdServices();
+```
+
+### IDFAの読み取りを無効化する \{\#disable\-idfa\}
+
+SDK v4では、`adjustConfig`の`setAllowIdfaReading`メソッドを`false`値で呼び出すことで、Adjust SDKがデバイスのIDFAを読み取らないようにすることができます。
+
+```jsx
+adjustConfig.setAllowIdfaReading(false);
+```
+
+SDK v5でAdjust SDKがデバイスのIDFAを読み取らないようにするには、 `adjustConfig`インスタンスの`disableIdfaReading`メソッドを呼び出す必要があります。デフォルトの状態は`true`です。
+
+```jsx
+adjustConfig.disableIdfaReading();
+```
+
+### アトリビューションにコストデータを有効化する \{\#enable\-cost\-data\}
+
+SDK v4でデバイスのアトリビューション情報のコストデータを有効化するには、 `adjustConfig`インスタンスの`setNeedsCost`メソッドを`true`値で呼び出す必要があります。
+
+```jsx
+adjustConfig.setNeedsCost(true);
+```
+
+SDK v5でデバイスのアトリビューション情報のコストデータを有効化するには、`adjustConfig`インスタンスの`enableCostDataInAttribution`メソッドを呼び出す必要があります。デフォルトの状態は`false`です。
+
+```jsx
+adjustConfig.enableCostDataInAttribution();
+```
+
+### アトリビューションコールバックを設定する \{\#attribution\-callback\}
+
+SDK v4では、`AdjustConfig`インスタンスの`setAttributionCallbackListener`メソッドを呼び出すことで、ユーザーのアトリビューションデータが変更されたときにトリガーするデリゲートコールバック関数を設定できます。
+
+```jsx
+adjustConfig.setAttributionCallbackListener(function (attribution) {});
+```
+
+SDK v5では、このメソッドの名前は`setAttributionCallback`に変更されました。全ての引数は同じままです。
+
+```jsx
+adjustConfig.setAttributionCallback(function (attribution) {});
+```
+
+### LinkMeを有効化する \{\#enable\-linkme\}
+
+SDK v4では、 `adjustConfig`インスタンスの`setLinkMeEnabled`メソッドを`true`値で呼び出し、[Adjust LinkMe](https://help.adjust.com/en/article/linkme)を有効化することができます。
+
+```jsx
+adjustConfig.setLinkMeEnabled(true);
+```
+
+SDK v5で[Adjust LinkMe](https://help.adjust.com/en/article/linkme)を有効化するには、 `adjustConfig`インスタンスの`enableLinkMe`メソッドを呼び出す必要があります。デフォルトの状態は`false`です。
+
+```jsx
+adjustConfig.enableLinkMe();
+```
+
+### デバイスIDを1回だけ読み取る \{\#read\-device\-id\-once\}
+
+SDK v4では、`adjustConfig`の`setReadDeviceInfoOnceEnabled`メソッドを`true`値で呼び出し、SDKがデバイスIDを1回だけ読み取るように指示することができます。
+
+```jsx
+adjustConfig.setReadDeviceInfoOnceEnabled(true);
+```
+
+SDK v5では、`adjustConfig`の`enableDeviceIdsReadingOnce`メソッドを呼び出し、SDKがデバイスIDを1回だけ読み取るように指示することができます。デフォルトの状態は`false`です。
+
+```jsx
+adjustConfig.enableDeviceIdsReadingOnce();
+```
+
+### オフラインモード \{\#offline\-mode\}
+
+SDK v4では、`bool`引数で`Adjust.setOfflineMode`を呼び出すことで、SDKでオフラインモードを有効化・無効化することができます。
+
+```jsx
+Adjust.setOfflineMode(true);
+Adjust.setOfflineMode(false);
+```
+
+より明確にするため、SDK v5では、この機能は別々のコマンドに分割されています。
+
+* SDKをオフラインモードに設定するには、`Adjust.switchToOfflineMode`を呼び出します。
+* SDKをオンラインモードに戻すには、`Adjust.switchBackToOnlineMode`を呼び出します。
+
+```jsx
+Adjust.switchToOfflineMode(); // Put the SDK in offline mode
+Adjust.switchBackToOnlineMode(); // Put the SDK back in online mode
+```
+
+### セッションコールバックパラメーター \{\#callback\-params\}
+
+SDK v4では、`Adjust.addSessionCallbackParameter`メソッドにキーと値のペアをパスすることでセッションパラメーターを追加し、`Adjust.removeSessionCallbackParameter`メソッドを使用して個々のパラメーターを削除することができます。
+
+```jsx
+Adjust.addSessionCallbackParameter("key", "value");
+Adjust.removeSessionCallbackParameter("key");
+Adjust.resetSessionCallbackParameters();
+```
+
+SDK v5では、セッションパラメーターはグローバルパラメーターに改名されています。
+
+```jsx
+Adjust.addGlobalCallbackParameter("key", "value");
+Adjust.removeGlobalCallbackParameter("key");
+Adjust.removeGlobalCallbackParameters();
+```
+
+### セッションパートナーパラメーター \{\#partner\-params\}
+
+SDK v4では、`Adjust.addSessionPartnerParameter`メソッドにキーと値のペアをパスすることでセッション パートナー パラメーターを追加し、`Adjust.removeSessionPartnerParameter`メソッドを使用して個々のパラメーターを削除することができます。
+
+```jsx
+Adjust.addSessionPartnerParameter("key", "value");
+Adjust.removeSessionPartnerParameter("key");
+Adjust.resetSessionPartnerParameters();
+```
+
+SDK v5では、セッション パートナー パラメーターはグローバル パートナー パラメーターに改名されました。
+
+```jsx
+Adjust.addGlobalPartnerParameter("key", "value");
+Adjust.removeGlobalPartnerParameter("key");
+Adjust.removeGlobalPartnerParameters();
+```
+
+### 重複排除 \{\#deduplication\}
+
+SDK v4では、イベント重複排除はイベント`transaction ID`と組み合わされ、最大10個のユニークIDに制限されています。
+
+```jsx
+adjustEvent.setTransactionId(orderId);
+```
+
+SDK v5では、この機能は`transaction ID`から分離されています。イベント重複排除のため、 `deduplicationId`と呼ばれる新しいIDフィールドが追加されました。
+
+```jsx
+adjustEvent.setDeduplicationId(deduplicationId);
+```
+
+重複したイベントを識別するために、ユーザーはリストに追加できる重複IDの数をカスタム制限することができます。デフォルトでは、制限は10に設定されています。
+
+```jsx
+adjustConfig.setEventDeduplicationIdsMaxSize(20);
+```
+
+### セッションのsuccessコールバック \{\#session\-success\}
+
+SDK v4では、`setSessionTrackingSucceededCallbackListener`を呼び出すことで、SDKにより正常に記録されたセッションを登録することができます。
+
+```jsx
+adjustConfig.setSessionTrackingSucceededCallbackListener(
+   function (sessionSuccess) {
+      // Printing all session success properties.
+      console.log("Session recording succeeded!");
+      console.log(sessionSuccess.message);
+      console.log(sessionSuccess.timestamp);
+      console.log(sessionSuccess.adid);
+      console.log(sessionSuccess.jsonResponse);
+   },
+);
+```
+
+SDK v5では、この名前は`setSessionTrackingSucceededCallback`に変更されました。
+
+```jsx
+adjustConfig.setSessionTrackingSucceededCallback(function (sessionSuccess) {
+   // Printing all session success properties.
+   console.log("Session recording succeeded!");
+   console.log(sessionSuccess.message);
+   console.log(sessionSuccess.timestamp);
+   console.log(sessionSuccess.adid);
+   console.log(sessionSuccess.jsonResponse);
+});
+```
+
+### セッションのfailureコールバック \{\#session\-failure\}
+
+SDK v4では、`setSessionTrackingFailedCallbackListener`を呼び出すことで、SDKが記録に失敗したセッションを登録することができます。
+
+```jsx
+adjustConfig.setSessionTrackingFailedCallbackListener(
+   function (sessionFailure) {
+      console.log(sessionFailure.message);
+   },
+);
+```
+
+SDK v5では、この名前は`setSessionTrackingFailedCallback`に変更されました。
+
+```jsx
+adjustConfig.setSessionTrackingFailedCallback(function (sessionFailure) {
+   console.log(sessionFailure.message);
+});
+```
+
+### イベントのsuccessコールバック \{\#event\-success\}
+
+SDK v4では、`setEventTrackingSucceededCallbackListener`を呼び出すことで、SDKにより正常に記録されたイベントを登録することができます。
+
+```jsx
+adjustConfig.setEventTrackingSucceededCallbackListener(function (eventSuccess) {
+   // Printing all event success properties.
+   console.log("Event recording succeeded!");
+   console.log(eventSuccess.message);
+   console.log(eventSuccess.timestamp);
+   console.log(eventSuccess.eventToken);
+   console.log(eventSuccess.callbackId);
+   console.log(eventSuccess.adid);
+   console.log(eventSuccess.jsonResponse);
+});
+```
+
+SDK v5では、この名前は`setEventTrackingSucceededCallback`に変更されました。
+
+```jsx
+adjustConfig.setEventTrackingSucceededCallback(function (eventSuccess) {
+   // Printing all event success properties.
+   console.log("Event recording succeeded!");
+   console.log(eventSuccess.message);
+   console.log(eventSuccess.timestamp);
+   console.log(eventSuccess.eventToken);
+   console.log(eventSuccess.callbackId);
+   console.log(eventSuccess.adid);
+   console.log(eventSuccess.jsonResponse);
+});
+```
+
+### イベントのfailureコールバック \{\#event\-failure\}
+
+SDK v4では、`setEventTrackingFailedCallbackListener`を呼び出すことで、SDKにより正常に記録されたイベントを登録することができます。
+
+```jsx
+adjustConfig.setEventTrackingFailedCallbackListener(function (eventFailure) {
+   // Printing all event failure properties.
+   console.log("Event recording failed!");
+   console.log(eventFailure.message);
+   console.log(eventFailure.timestamp);
+   console.log(eventFailure.eventToken);
+   console.log(eventFailure.callbackId);
+   console.log(eventFailure.adid);
+   console.log(eventFailure.willRetry);
+   console.log(eventFailure.jsonResponse);
+});
+```
+
+SDK v5では、この名前は`setEventTrackingFailedCallback`に変更されました。
+
+```jsx
+adjustConfig.setEventTrackingFailedCallback(function (eventFailure) {
+   // Printing all event failure properties.
+   console.log("Event recording failed!");
+   console.log(eventFailure.message);
+   console.log(eventFailure.timestamp);
+   console.log(eventFailure.eventToken);
+   console.log(eventFailure.callbackId);
+   console.log(eventFailure.adid);
+   console.log(eventFailure.willRetry);
+   console.log(eventFailure.jsonResponse);
+});
+```
+
+### App Storeのサブスクリプション \{\#app\-store\-subscriptions\}
+
+SDK v4では、 `AdjustAppStoreSubscription`オブジェクトを設定することで新しいサブスクリプションを設定できます。このオブジェクトは、 `price` 、 `currency` 、 `transactionId` 、 `receipt`の4つの引数で初期化されます。
+
+```jsx
+var subscription = new AdjustAppStoreSubscription(
+   price,
+   currency,
+   transactionId,
+   receipt,
+);
+```
+
+SDK v5では、購入認証に `receipt` 引数が不要になったため、引数をパスする必要はありません。
+
+```jsx
+var subscription = new AdjustAppStoreSubscription(
+   price,
+   currency,
+   transactionId,
+);
+```
+
+### ディープリンクを使用したリアトリビューション \{\#reattribution\-using\-deep\-links\}
+
+SDK v4では、`Adjust.appWillOpenUrl`メソッドにディープリンク情報をパスすることができます。
+
+```jsx
+Adjust.appWillOpenUrl("url");
+```
+
+SDK v5では、`Adjust.processDeeplink`に改名されています。ディープリンクを作成するための新しい`AdjustDeeplink`クラスが追加されました。ディープリンクを処理するには、ディープリンクURLで`AdjustDeeplink`オブジェクトをインスタンス化し、 `Adjust.processDeeplink`メソッドにパスしてください。
+
+```jsx
+Adjust.processDeeplink(new AdjustDeeplink("url"));
+```
+
+### ディファードディープリンクをローンチする \{\#launch\-deferred\-deeplinks\}
+
+SDK v4では、`adjustConfig`インスタンスの`setShouldlaunchDeeplink`メソッドを`true`値で呼び出すことで、SDKがディープリンクを開けるようにできます。また、`false`値で呼び出すことで、ディープリンクを開かないようにすることができます。
+
+```jsx
+adjustConfig.setShouldLaunchDeeplink(true);
+```
+
+SDK v5では、ディープリンクはデフォルトで開かれます。SDKがディープリンクを開けるようにするには、`adjustConfig`インスタンスで`isDeferredDeeplinkOpeningEnabled`メソッドを呼び出す必要があります。
+
+```jsx
+adjustConfig.disableDeferredDeeplinkOpening();
+```
+
+### ディープリンクの解決 \{\#deeplink\-resolution\}
+
+SDK v4では、 `url`を`processDeeplink`メソッドにパスすることで、短縮されたディープリンクを解決できます。
+
+```jsx
+Adjust.processDeeplink("url", function (resolvedLink) {
+   console.log("Resolved link: " + resolvedLink);
+});
+```
+
+SDK v5では、ディープリンク`url`で初期化された`AdjustDeeplink`オブジェクトを送信する必要があります。これが、短縮されていない元のディープリンクを返します。
+
+```jsx
+Adjust.processAndResolveDeeplink(new AdjustDeeplink("url"), function(resolvedLink) {
+   console.log("Resolved link: " + resolvedLink);
+};
+```
+
+### ディープリンクコールバックリスナー \{\#deeplink\-callback\-listener\}
+
+SDK v4では、`AdjustConfig`インスタンスで`setDeferredDeeplinkCallbackListener`メソッドを呼び出すことで、ディープリンクを受信したときに発動するリスナー関数を設定できます。
+
+```jsx
+adjustConfig.setDeferredDeeplinkCallbackListener(function (deeplink) {});
+```
+
+SDK v5では、このメソッドの名前は`setDeferredDeeplinkCallback`に変更されました。全ての引数は同じままです。
+
+```jsx
+adjustConfig.setDeferredDeeplinkCallback(function (deeplink) {});
+```
+
+### 児童オンラインプライバシー保護法（COPPA）コンプライアンス \{\#coppa\-compliance\}
+
+SDK v4では、 `true`値で`adjustConfig`インスタンスの`coppaCompliantEnabled`メソッドをコールして、COPPAへの準拠を有効化できます。
+
+```jsx
+adjustConfig.setCoppaCompliantEnabled(true);
+```
+
+SDK v5でCOPPAコンプライアンスを有効化するには、 `adjustConfig`インスタンスの`isCoppaComplianceEnabled`メソッドを呼び出す必要があります。デフォルトの状態は`false`です。
+
+```jsx
+adjustConfig.enableCoppaCompliance();
+```
+
+### Playストアの子供向けアプリ \{\#play\-store\-kids\}
+
+SDK v4では、`true`値で`adjustConfig`インスタンスの`setPlayStoreKidsAppEnabled`メソッドを呼び出すことで、アプリを[Playストアの子供向けアプリ](/en/sdk/react-native/features/privacy#play-store-kids-apps-android-only)としてマークできます。これはSDKの初期化中に読み込まれるため、SDKを初期化したら値を更新することはできません。
+
+```jsx
+adjustConfig.setPlayStoreKidsAppEnabled(true);
+```
+
+SDK v5でコンプライアンスを有効化するには、 `adjustConfig`インスタンスの`enablePlayStoreKidsCompliance`メソッドを呼び出す必要があります。デフォルトの状態は`false`です。
+
+```jsx
+adjustConfig.enablePlayStoreKidsCompliance();
+```
+
+### データレジデンシーとURL戦略を設定する \{\#url\-strategy\}
+
+SDK v4では、URL戦略とデータレジデンシーのドメインは`adjustConfig`クラスの定数として定義されています。
+
+```jsx
+adjustConfig.setUrlStrategy(AdjustConfig.DataResidencyEU);
+```
+
+SDK v5では、選択したドメインまたはドメインを配列としてパスする必要があります。以下も設定してください。
+
+* `useSubdomains` （`bool`）：ドメインをAdjustドメインとして扱うかどうか。`true`の場合、SDKはAdjust固有のサブドメインをドメインにプレフィックスとします。`false`の場合、SDKはプレフィックスを追加せずに、指定されたドメインをそのまま使用します。
+* `isDataResidency` （`bool`）：ドメインをデータレジデンシーに使用するかどうか。
+
+```jsx
+adjustConfig.setUrlStrategy(["eu.adjust.com"], true, true);
+```
+
+SDK v5でURL戦略を設定する方法については、以下の表をご確認ください。
+<table autoWidth="1,2"> 
+
+|                v4                |     v5 \- メインおよびフォールバックドメイン      | v5 \- サブドメインの使用 | v5 \- データレジデンシー |
+|----------------------------------|-----------------------------------|------------------|------------------|
+| `adjustConfig.DataResidencyEU`   | `"eu.adjust.com"`                 | `true`           | `true`           |
+| `adjustConfig.DataResidencyTR`   | `"tr.adjust.com"`                 | `true`           | `true`           |
+| `adjustConfig.DataResidencyUS`   | `"us.adjust.com"`                 | `true`           | `true`           |
+| `adjustConfig.UrlStrategyChina`  | `"adjust.world"`。 `"adjust.com"`  | `true`           | `false`          |
+| `adjustConfig.UrlStrategyCn`     | `"adjust.cn"`。 `"adjust.com"`     | `true`           | `false`          |
+| `adjustConfig.UrlStrategyCnOnly` | `"adjust.cn"`                     | `true`           | `false`          |
+| `adjustConfig.UrlStrategyIndia`  | `"adjust.net.in"`。 `"adjust.com"` | `true`           | `false`          |
+
+</Table> 
+
+### 広告収益を記録する \{\#record\-ad\-revenue\}
+
+SDK v4では、 `source`と`payload`を引数としてパスし、 `trackAdRevenue`メソッドを呼び出すことで広告収益を記録できます。
+
+```jsx
+Adjust.trackAdRevenue("source", "payload");
+```
+
+SDK v4の更新されたメソッドを使用すると、 `source`で新しい`AdjustAdRevenue`オブジェクトを作成し、このオブジェクトを`trackAdRevenueNew`メソッドにパスすることで広告収益を記録できます。
+
+```jsx
+var adRevenue = new AdjustAdRevenue("source");
+adRevenue.setRevenue(6, "CAD");
+Adjust.trackAdRevenueNew(adRevenue);
+```
+
+SDK v5では、 `source`で新しい`AdjustAdRevenue`オブジェクトを作成し、このオブジェクトを`trackAdRevenue`メソッドにパスすることで広告収益を記録する必要があります。
+
+```jsx
+var adRevenue = new AdjustAdRevenue("source");
+adRevenue.setRevenue(6, "CAD");
+Adjust.trackAdRevenue(adRevenue);
+```
+
+### 特定のソースの広告収益を送信する \{\#send\-ad\-revenue\}
+
+SDK v4では、広告収益ソースは`adjustConfig`クラスの定数として定義されています。SDK v5では、広告収益ソースは文字列としてパスされる必要があります。
+<codeblock useDiffSyntax> 
+
+```jsx
+- var adRevenue = new AdjustAdRevenue(AdjustConfig.AdRevenueSourceAppLovinMAX);
++ var adRevenue = new AdjustAdRevenue("applovin_max_sdk");
+```
+
+</CodeBlock> <table> 
+
+|                       v4                       |            v5             |
+|------------------------------------------------|---------------------------|
+| `adjustConfig.AdRevenueAppLovinMAX`            | `"applovin_max_sdk"`      |
+| `adjustConfig.AdRevenueSourceAdMob`            | `"admob_sdk"`             |
+| `adjustConfig.AdRevenueSourceIronSource`       | `"ironsource_sdk"`        |
+| `adjustConfig.AdRevenueSourceAdMost`           | `"admost_sdk"`            |
+| `adjustConfig.AdRevenueSourceUnity`            | `"unity_sdk"`             |
+| `adjustConfig.AdRevenueSourceHeliumChartboost` | `"helium_chartboost_sdk"` |
+| `adjustConfig.AdRevenueSourceADX`              | `"adx_sdk"`               |
+| `adjustConfig.AdRevenueSourcePublisher`        | `"publisher_sdk"`         |
+| `adjustConfig.AdRevenueSourceTradplus`         | `"tradplus_sdk"`          |
+| `adjustConfig.AdRevenueSourceTopOn`            | `"topon_sdk"`             |
+| `adjustConfig.AdRevenueSourceMopub`            | サポート終了                    |
+
+</Table> 
+
+### SKAdNetworkの通信を無効化する \{\#disable\-skan\}
+
+SDK v4では、`adjustConfig.deactivateSKAdNetworkHandling`メソッドを呼び出すことで、SDKがSKAdNetworkと通信しないようにすることができます。
+
+```jsx
+adjustConfig.deactivateSKAdNetworkHandling();
+```
+
+SDK v5では、SKAdNetworkとの通信を無効にするには、`adjustConfig`インスタンスの`disableSkanAttribution`メソッドを呼び出す必要があります。デフォルトの状態は`true`です。
+
+```jsx
+adjustConfig.disableSkanAttribution();
+```
+
+### Conversion valueのアップデートを受信する \{\#listen\-for\-cv\-updates\}
+
+SDK v4では、 `adjustConfig`で`setSkad4ConversionValueUpdatedCallbackListener`メソッドを呼び出してconversion valueの更新を受信できます。SKAN4より前は、 `setConversionValueUpdatedCallbackListener`メソッドを使用できました。
+
+```jsx
+// pre-SKAN4 callback
+adjustConfig.setConversionValueUpdatedCallbackListener(
+   function (conversionValue) {
+      console.log("Conversion value updated callback received");
+      console.log("Conversion value: " + conversionValue.conversionValue);
+   },
+);
+
+// SKAN4 callback
+adjustConfig.setSkad4ConversionValueUpdatedCallbackListener(
+   function (conversionValue) {
+      console.log("Conversion value updated callback received");
+      console.log("Conversion value: " + conversionValue.conversionValue);
+   },
+);
+```
+
+SDK v5では、 `adjustConfig`オブジェクトの`setSkanUpdatedCallback`メソッドにコールバック関数を割り当てる必要があります。
+
+```jsx
+adjustConfig.setSkanUpdatedCallback(function (skanData) {
+   console.log("Conversion value: " + skanData.conversionValue);
+   console.log("Coarse value: " + skanData.coarseValue);
+   console.log("Lock window: " + skanData.lockWindow);
+   console.log("Error: " + skanData.error);
+});
+```
+
+### Conversion valueを更新する \{\#update\-cvs\}
+
+SDK v4では、以下のいずれかのメソッドを使用して、更新されたconversion valueをAdjustに送信できます：
+
+```jsx
+Adjust.updateConversionValue(6);
+
+Adjust.updateConversionValueWithErrorCallback(6, function(error) {
+ // error is present in case it happened
+});
+
+Adjust.updateConversionValueWithSkad4ErrorCallback(6, 'coarse-value', ‘true’, function(error) {
+ // error is present in case it happened
+});
+```
+
+SDK v5でconversion valueを更新するには、以下の引数で`updateSkanConversionValue`メソッドを使用します：
+
+* `conversionValue` （`int`）：更新されたconversion value
+* `coarseValue` （`string`）：更新された[粗いconversion value](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
+* `lockWindow` （`bool`）：コンバージョン期間が終了する前にポストバックを送信するかどうか
+
+```jsx
+Adjust.updateSkanConversionValue(6, "coarse-value", true, function (error) {
+   // error is present in case it happened
+});
+```
+
+### App Tracking Transparency認証ラッパー \{\#att\-wrapper\}
+
+SDK v4では、`Adjust.requestTrackingAuthorizationWithCompletionHandler`メソッドを使用して、ユーザーのATT認証ステータスの変更を処理することができます。
+
+```jsx
+Adjust.requestTrackingAuthorizationWithCompletionHandler(function (status) {
+   print("[Adjust]: Authorization status update!");
+   switch (status) {
+      case 0:
+         print(
+            "[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusNotDetermined",
+         );
+         break;
+      case 1:
+         print(
+            "[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusRestricted",
+         );
+         break;
+      case 2:
+         print(
+            "[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusDenied",
+         );
+         break;
+      case 3:
+         print(
+            "[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusAuthorized",
+         );
+         break;
+   }
+});
+```
+
+より明確にするため、SDK v5では`Adjust.requestAppTrackingAuthorization`に改名されました。
+
+```jsx
+Adjust.requestAppTrackingAuthorization(function (status) {
+   print("[Adjust]: Authorization status update!");
+   switch (status) {
+      case 0:
+         print(
+            "[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusNotDetermined",
+         );
+         break;
+      case 1:
+         print(
+            "[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusRestricted",
+         );
+         break;
+      case 2:
+         print(
+            "[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusDenied",
+         );
+         break;
+      case 3:
+         print(
+            "[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusAuthorized",
+         );
+         break;
+   }
+});
+```
+
+削除されたAPI \{\#removed\-apis\}
+--------------------------------
+
+<minorversion removed="v5" size="large" /> 
+
+SDK v5では、以下のAPIが削除されました。
+
+### イベントバッファリング \{\#event\-buffering\}
+
+SDK v4はイベントのバッファリングをサポートしています。この機能は、リクエストイベント、広告収益、Pushトークン、その他の情報をローカルバッファに保存し、後日送信します。
+
+```jsx
+adjustConfig.setEventBufferingEnabled(true);
+```
+
+このメソッドはSDK v5では廃止されています。
+
+### カスタムユーザーエージェント文字列 \{\#custom\-user\-agent\}
+
+SDK v4は、`adjustConfig`インスタンスの`setUserAgent`メソッドにユーザーエージェント文字列をパスすることで、カスタムユーザーエージェントの設定をサポートしています。
+
+```jsx
+adjustConfig.setUserAgent("custom-user-agent");
+```
+
+このメソッドはSDK v5では廃止されています。
+
+### 既知のデバイスかどうかを通知する設定 \{\#set\-device\-known\}
+
+SDK v4では、`adjustConfig`インスタンスの`setDeviceKnown`メソッドを呼び出して、既知のデバイスかどうかをSDKに手動で通知することができます。
+
+```jsx
+adjustConfig.setDeviceKnown(true);
+```
+
+このメソッドはSDK v5では廃止されています。
+
+### SDKの起動開始を遅延させる \{\#delay\-sdk\-start\}
+
+SDK v4では、 `adjustConfig`インスタンスの`setDelayStart`メソッドを遅延するように呼び出すことで、SDKの起動を遅らせることができます。最大 **10秒** の遅延を設定できます。
+
+```jsx
+adjustConfig.setDelayStart(10);
+```
+
+このメソッドはSDK v5では廃止されています。この遅延を中断させる`Adjust.sendFirstPackages`メソッドも削除されました。
+
+### 新しいATTステータスを確認する \{\#check\-new\-att\-status\}
+
+SDK v4は`Adjust.checkForNewAttStatus`メソッドをサポートしています。このメソッドを呼び出すと、SDKは遅延を解除し、機能を継続します。
+
+```jsx
+Adjust.checkForNewAttStatus();
+```
+
+このメソッドはSDK v5では廃止されています。
+
+### Android最終アトリビューション \{\#final\-android\-attribution\}
+
+SDK v4では、`adjustConfig`インスタンスの`setFinalAndroidAttributionEnabled`メソッドを`true`値で呼び出し、最終的なAndroidでのアトリビューションを送信することができます。
+
+```jsx
+adjustConfig.setFinalAndroidAttributionEnabled(true);
+```
+
+この設定はSDK v5では削除されました。現在では、Androidプラットフォームでは最終的なアトリビューションのみがアトリビューションコールバックを通じて提供されるようになっています。
+
+### リファラーを設定する \{\#set\-referrer\}
+
+SDK v4では、SDKの開始時にカスタムクリックIDでSDKクリックのトリガーとなる`setReferrer`メソッドを呼び出すことができます。
+
+```jsx
+Adjust.setReferrer("referrer");
+```
+
+このメソッドはSDK v5では廃止されています。Googleは、Google Play 開発者サービスのリファラー情報を提供する `INSTALL_REFERRER`インテントメソッドを廃止しました。現在このメソッドを使用している場合は、Google Play Referrer APIに移行してください。
+
+### ユニバーサルリンクをコンバートする \{\#convert\-universal\-link\}
+
+SDK v4では、`convertUniversalLink`メソッドを呼び出すことができます。
+
+```jsx
+Adjust.convertUniversalLink(function (url, scheme, callback) {});
+```
+
+このメソッドはSDK v5では廃止されています。
+
+### AdjustEventの変更 \{\#adjustevent\-changes\}
+
+SDK v4では、サブスクリプションと購入のために`receipt`を`adjustEvent`の`adjustEvent.setReceipt`メソッドに送信できます。
+
+```jsx
+adjustEvent.setReceipt("receipt");
+```
+
+購入認証に必要がなくなったため、このパラメーターはSDK v5で削除されました。
+
+### 購入認証 \{\#purchase\-verification\}
+
+SDK v4では、`receipt`プロパティを持つ`AdjustAppStorePurchase`オブジェクトをインスタンス化する必要があります。このプロパティは購入認証に使用されます。
+
+```jsx
+var appStorePurchase = new AdjustAppStorePurchase(
+   "receipt",
+   "product-id",
+   "transaction-id",
+);
+```
+
+このプロパティはSDK v5では廃止されています。購入認証に`AdjustAppStorePurchase`クラスを使用する場合は、この引数をコンストラクションコールから削除する必要があります。
+
+```jsx
+var appStorePurchase = new AdjustAppStorePurchase(
+   "product-id",
+   "transaction-id",
+);
+```
+
+### サードパーティとの共有をグローバルに無効化する \{\#disable\-sharing\-globally\}
+
+SDK v4では、`Adjust.disableThirdPartySharing`メソッドを呼び出すことで、サードパーティとの情報共有をグローバルに無効化することができます。
+
+```jsx
+Adjust.disableThirdPartySharing();
+```
+
+この機能はSDK v5では削除されました。SDK v5では、`Adjust.trackThirdPartySharing`メソッドを使用してサードパーティとのデータ共有を有効化または無効化できます。
+
+```jsx
+var thirdPartySharing = new AdjustThirdPartySharing(false);
+Adjust.trackThirdPartySharing(thirdPartySharing);
+```
+
