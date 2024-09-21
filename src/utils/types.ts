@@ -43,17 +43,17 @@ export interface Breadcrumb {
 }
 
 export interface SidebarItem {
+   id: string,
    title: string,
+   description: string,
    slug: string,
    parent?: string,
    categoryTitle?: string,
    label?: string,
    position?: number,
    children?: SidebarItem[],
-   versionedChildren?: {
-      [key: string]: SidebarItem[]
-   },
    type?: "category"
+   version?: string;
 }
 
 export interface LanguageTree {
