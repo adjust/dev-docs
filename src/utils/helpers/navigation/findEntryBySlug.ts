@@ -1,5 +1,5 @@
-import { languageTree } from "@utils/buildLanguageTree";
-import type { LanguageTrees, SidebarItem } from "@utils/types";
+import { languageTree } from "@utils/helpers/navigation/buildLanguageTree";
+import type { LanguageTrees, SidebarItem } from "@utils/helpers/navigation/types";
 
 let slugMap: Map<string, SidebarItem> | undefined;
 

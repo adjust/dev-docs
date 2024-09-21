@@ -2,8 +2,8 @@
  * Fetches breadcrumbs from the sidebar hierarchy for the given page and language.
  */
 
-import type { Breadcrumb } from "@utils/types";
-import { findEntryBySlug } from "@utils/findEntryBySlug";
+import type { Breadcrumb } from "@utils/helpers/navigation/types";
+import { findEntryBySlug } from "@utils/helpers/navigation/findEntryBySlug";
 
 /**
  * Fetches an array of BreadCrumb items for the current page

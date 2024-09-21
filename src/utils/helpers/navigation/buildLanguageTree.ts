@@ -3,9 +3,9 @@
  * sidebar as well as for helper functions that query the collection.
  */
 
-import { buildSidebarHierarchy } from "@utils/buildSidebarHierarchy";
-import { localizedDocs } from "@utils/getLocalizedDocs";
-import { Languages, type ContentCollectionEntry, type LanguageTrees } from "@utils/types";
+import { buildSidebarHierarchy } from "@utils/helpers/navigation/buildSidebarHierarchy";
+import { localizedDocs } from "@utils/helpers/navigation/getLocalizedDocs";
+import { Languages, type ContentCollectionEntry, type LanguageTrees } from "@utils/helpers/navigation/types";
 
 /**
  *
