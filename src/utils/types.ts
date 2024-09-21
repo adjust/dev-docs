@@ -54,6 +54,7 @@ export interface SidebarItem {
    children?: SidebarItem[],
    type?: "category"
    version?: string;
+   level: number;
 }
 
 export interface LanguageTree {

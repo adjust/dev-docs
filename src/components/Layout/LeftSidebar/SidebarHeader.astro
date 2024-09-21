@@ -8,24 +8,29 @@ import SdkVersionSwitch from "@components/Version/SdkVersionSwitch";
 import ApiVersionSwitch from "@components/Version/ApiVersionSwitch";
 import { useTranslations } from "@i18n/utils";
 import { type Locales } from "@i18n/locales";
-import type { NavigationData } from "@utils/helpers/navigation/types";
 import classNames from "classnames";
+import { uniqueSdkVersions } from "@utils/getUniqueVersions";
 
 interface Props {
   homeUrl: string;
   lang: string;
   redirects: CollectionEntry<"docs">["data"]["redirects"];
-  versions: NavigationData["versions"];
+  versions: CollectionEntry<"docs">["data"]["versions"];
 }
 
 const { homeUrl, lang, redirects, versions } = Astro.props;
 const pathName = Astro.url.pathname;
 const isSdkSwitch =
   pathName.includes("sdk") &&
-  versions.sdk?.length &&
+  uniqueSdkVersions &&
+  uniqueSdkVersions.length &&
   (redirects || pathName.trim().split("/").length === 3);
 const isApiSwitch =
-  pathName.includes("api") && versions.api?.length && redirects;
+  pathName.includes("api") &&
+  versions &&
+  versions["api"] &&
+  versions["api"].length &&
+  redirects;
 const t = useTranslations(lang as keyof Locales);
 ---
 
@@ -52,7 +57,7 @@ const t = useTranslations(lang as keyof Locales);
           client:only="react"
           lang={lang}
           redirects={redirects}
-          sdkVersions={uniqBy(versions.sdk, "value")}
+          sdkVersions={uniqueSdkVersions}
         />
       ) : undefined
     }
@@ -62,7 +67,7 @@ const t = useTranslations(lang as keyof Locales);
           client:only="react"
           lang={lang}
           redirects={redirects}
-          apiVersions={uniqBy(versions.api, "value")}
+          versions={uniqBy(versions["api"], "value")}
         />
       ) : undefined
     }

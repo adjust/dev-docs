@@ -1,31 +1,21 @@
 ---
-import type { CategoryEntry } from "@utils/helpers/navigation/types";
 import classNames from "classnames";
 import ChevronToggle from "./ChevronToggle.astro";
+import type { SidebarItem } from "@utils/types";
 
 interface Props {
-  currentPage: string;
-  sidebarData: CategoryEntry;
-  level: number;
+  currentSlug: string;
+  sidebarData: SidebarItem;
 }
 
-const { currentPage, sidebarData, level } = Astro.props;
-const isChild = sidebarData?.children?.length > 0 && !sidebarData.topCategory;
-const initialOpen = sidebarData.collapsed;
-const slug = sidebarData.slug;
-// update only for the children to prevent duplicates
-const sidebarDataChanged = {
-  ...sidebarData,
-  children: sidebarData.children?.filter((item) => {
-    if (sidebarData.version) {
-      return item.version === sidebarData.version;
-    }
-    return true;
-  }),
-};
-
-const itemVersion = sidebarData?.version;
-const itemCategory = sidebarData?.path?.includes("/sdk") ? "sdk" : "api";
+const { currentSlug, sidebarData } = Astro.props;
+const { children, id, slug, version, label, categoryTitle, title, level } =
+  sidebarData;
+const hasChildren = children && children.length > 0 && id.split("/").length > 1;
+const initialOpen = currentSlug.startsWith(sidebarData.slug);
+const itemVersion = version;
+const itemCategory = slug?.includes("/sdk") ? "sdk" : "api";
+const itemName = label ? label : categoryTitle ? categoryTitle : title;
 ---
 
 <ul
@@ -35,51 +25,46 @@ const itemCategory = sidebarData?.path?.includes("/sdk") ? "sdk" : "api";
     "list-none flex-col items-start gap-y-[8px] flex",
     {
       hidden: !!itemVersion,
-      "pl-0": level === 2,
-      "ml-3": level > 2,
+      "pl-0": level === 0,
+      "ml-3": level > 0,
     },
   )}
 >
   <li
     class={classNames("relative hover:text-link-active min-h-[31px] text-sm", {
-      "text-link-active": currentPage === slug,
-      "pl-2": level > 2,
-      active: currentPage === slug,
+      "text-link-active": currentSlug === slug,
+      "pl-2": level > 0,
+      active: currentSlug === slug,
     })}
   >
     <div class="flex flex-row items-center cursor-pointer gap-x-[5px]">
-      {isChild && <ChevronToggle slug={slug} initialOpen={initialOpen} />}
+      {hasChildren && <ChevronToggle slug={slug} initialOpen={initialOpen} />}
       <a
-        id={level > 1 ? `link-${slug}` : ""}
+        id={level > 0 ? `link-${slug}` : ""}
         href={`/${slug}`}
         class={classNames(
           "inline-block w-full text-sm hover:no-underline text-inherit",
           {
-            "text-link-active": currentPage?.slice(1) === slug,
-            "font-bold": level === 1,
-            "font-medium": initialOpen,
-            "font-normal": level > 1 && !initialOpen,
-            "ml-[21px]": level > 2 && !isChild,
+            "text-link-active": currentSlug?.slice(1) === slug,
+            "font-medium": initialOpen || level === 0,
+            "font-normal": level > 0 && !initialOpen,
+            "ml-[21px]": level > 0 && !hasChildren,
           },
         )}
       >
-        {sidebarData.title}
+        {itemName}
       </a>
     </div>
   </li>
   {
-    sidebarDataChanged?.children && (
+    children && (
       <li>
         <ul
           id={`children-${slug}`}
           class={classNames({ hidden: !initialOpen })}
         >
-          {sidebarDataChanged.children.map((child) => (
-            <Astro.self
-              currentPage={currentPage}
-              sidebarData={child}
-              level={child.level}
-            />
+          {children.map((child) => (
+            <Astro.self currentSlug={currentSlug} sidebarData={child} />
           ))}
         </ul>
       </li>
@@ -89,7 +74,7 @@ const itemCategory = sidebarData?.path?.includes("/sdk") ? "sdk" : "api";
 
 <script>
   import { $versions as $sdkVersions } from "@store/sdkVersionsStore";
-  import { $versions as $apiVersions } from "@store/apiVersionsStore";
+  import { $versions as $versions } from "@store/apiVersionsStore";
   import { toggleCollapse } from "./utils/toggleCollapse";
 
   document.addEventListener("DOMContentLoaded", () => {
@@ -101,7 +86,7 @@ const itemCategory = sidebarData?.path?.includes("/sdk") ? "sdk" : "api";
     };
 
     const currentSdkVersion = $sdkVersions.get()?.currentVersion;
-    const currentApiVersion = $apiVersions.get()?.currentVersion;
+    const currentApiVersion = $versions.get()?.currentVersion;
     // need to unhide SDK/API items that match the current version, also need to unhide unversioned items
     const sidebarItems = document.querySelectorAll(
       `.item-version-sdk-${currentSdkVersion.value}, .item-version-api-${currentApiVersion.value}`,
