@@ -6,6 +6,11 @@ the language code from the beginning of the slug.
 import { KNOWN_LANGUAGE_CODES } from "@i18n/locales";
 import { getCollection } from "astro:content";
 
+/**
+ * Fetches all docs from our content collection and polyfills any missing localized content with
+ * English content
+ * @returns An array of ContentCollection items
+ */
 const getLocalizedDocs = async () => {
    const docs = await getCollection("docs")
 
