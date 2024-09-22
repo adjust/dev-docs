@@ -1,6 +1,8 @@
 /**
- * we should remove the last slash for the Production/Preview deployment(thing related to the SSR)
+ * Updates a given page slug to a standard format for both production and dev server builds
+ * @param slug
+ * @returns The altered string (with preceding and trailing slashes removed).
  */
-export const getCurrentPage = (currentPage: string) => {
-  return currentPage?.replace(/\/$/g, "").slice(1);
+export const getCurrentPage = (slug: string) => {
+  return slug?.replace(/^\/|\/$/g, "");
 };
