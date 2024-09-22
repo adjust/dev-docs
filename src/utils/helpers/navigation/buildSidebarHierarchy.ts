@@ -1,4 +1,4 @@
-import type { ContentCollectionEntry, LanguageTree, SidebarItem } from "@utils/types";
+import type { ContentCollectionEntry, LanguageTree, SidebarItem } from "@utils/helpers/navigation/types";
 
 const versionRegex = /v\d/i;
 
