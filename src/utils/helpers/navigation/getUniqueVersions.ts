@@ -1,7 +1,3 @@
-/**
- * Used to filter out all unique versions from our SDK documentation.
- */
-
 import { localizedDocs } from "./getLocalizedDocs";
 import type { ContentCollectionEntry } from "./types";
 

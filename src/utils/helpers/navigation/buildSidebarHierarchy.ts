@@ -6,6 +6,7 @@ const versionRegex = /v\d/i;
  * Builds a JSON object that represents the content collection as a sidebar.
  * @param entries
  * @returns A LanguageTree containing SidebarItem entries for API and SDK content.
+ * @returns A hashmap of all entries provided for easier querying.
  */
 export const buildSidebarHierarchy = (entries: ContentCollectionEntry[]): [LanguageTree, Map<string, SidebarItem>] => {
    // Initialize arrays for sdk and api
