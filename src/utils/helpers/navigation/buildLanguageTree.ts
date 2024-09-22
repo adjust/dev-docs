@@ -47,9 +47,7 @@ const buildLanguageTree = async (localizedDocs: ContentCollectionEntry[]): Promi
       const [hierarchy, slugMap] = buildSidebarHierarchy(content);
       languageTree[language] = hierarchy;
 
-      slugMap.forEach((value, key) => {
-         fullSlugMap.set(key, value);
-      });
+      fullSlugMap = new Map([...fullSlugMap, ...slugMap]);
    });
 
    return [languageTree, fullSlugMap];
