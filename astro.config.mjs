@@ -16,6 +16,8 @@ import {
   defListHastHandlers,
 } from "remark-definition-list";
 
+import markdoc from "@astrojs/markdoc";
+
 console.log(
   `${import.meta.env.VITE_GITHUB_TOKEN ? "Token found" : "No token found"}`,
 );
@@ -41,31 +43,24 @@ const updatedRedirectList = prependLocaleToJSON(redirectList, locales);
 // https://astro.build/config
 export default defineConfig({
   redirects: updatedRedirectList,
-  integrations: [
-    AutoImport({
-      imports: [
-        "@components/Accordion.astro",
-        "@components/Callout.astro",
-        "@components/CodeBlock.astro",
-        "@components/ListColumns.astro",
-        "@components/MinorVersion.astro",
-        "@components/SdkVersion.astro",
-        "@components/Tab.astro",
-        "@components/Table.astro",
-        "@components/Tabs.astro",
-      ],
-    }),
-    // Enable React for the Algolia search component.
-    react({
-      experimentalReactChildren: true,
-    }),
-    expressiveCode(),
-    mdx({
-      optimize: true,
-    }),
-    tailwind(),
-    sitemap(),
-  ],
+  integrations: [AutoImport({
+    imports: [
+      "@components/Accordion.astro",
+      "@components/Callout.astro",
+      "@components/CodeBlock.astro",
+      "@components/ListColumns.astro",
+      "@components/MinorVersion.astro",
+      "@components/SdkVersion.astro",
+      "@components/Tab.astro",
+      "@components/Table.astro",
+      "@components/Tabs.astro",
+    ],
+  }), // Enable React for the Algolia search component.
+  react({
+    experimentalReactChildren: true,
+  }), expressiveCode(), mdx({
+    optimize: true,
+  }), tailwind(), sitemap(), markdoc()],
   site: "https://dev.adjust.com/",
   experimental: {
     contentCollectionCache: true,

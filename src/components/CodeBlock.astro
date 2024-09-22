@@ -1,6 +1,6 @@
 ---
 import { Code as ExpressiveCode } from "astro-expressive-code/components";
-import { extractCodeFromHTML } from "@components/utils/extractCode";
+import { decode } from "tiny-decode";
 import type { MarkerDefinition } from "astro-expressive-code";
 
 interface Props {
@@ -20,13 +20,6 @@ const {
   collapse,
   useDiffSyntax = false,
 } = Astro.props as Props;
-
-let content = "";
-
-if (Astro.slots.has("default")) {
-  // Get the raw content of the slot without transformations
-  content = await Astro.slots.render("default");
-}
 
 const parseHighlight = (
   highlight: string,
@@ -63,7 +56,11 @@ const parseCollapse = (collapse?: string | string[]): string[] => {
   return Array.isArray(collapse) ? collapse : [];
 };
 
-const { code, lang } = await extractCodeFromHTML(content);
+const langRegex = /data-language="(.*?)"/g;
+
+const content = decode(await Astro.slots.render("default"));
+const lang = langRegex.exec(content)![1];
+const code = content.replace(/<\/?pre.*?>/g, "");
 const parsedHighlight = highlight ? parseHighlight(highlight) : undefined;
 const parsedIns = ins ? parseHighlight(ins) : undefined;
 const parsedDel = del ? parseHighlight(del) : undefined;
