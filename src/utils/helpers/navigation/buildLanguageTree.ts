@@ -5,7 +5,7 @@
 
 import { buildSidebarHierarchy } from "@utils/helpers/navigation/buildSidebarHierarchy";
 import { localizedDocs } from "@utils/helpers/navigation/getLocalizedDocs";
-import { Languages, type ContentCollectionEntry, type LanguageTrees } from "@utils/helpers/navigation/types";
+import { Languages, type ContentCollectionEntry, type LanguageTrees, type SidebarItem } from "@utils/helpers/navigation/types";
 
 /**
  *
@@ -13,7 +13,7 @@ import { Languages, type ContentCollectionEntry, type LanguageTrees } from "@uti
  * @returns A language tree for all languages containing the polyfilled content arrays from the fetch step
  */
 
-const buildLanguageTree = async (localizedDocs: ContentCollectionEntry[]) => {
+const buildLanguageTree = async (localizedDocs: ContentCollectionEntry[]): Promise<[LanguageTrees, Map<string, SidebarItem>]> => {
    // Initialize a language tree
    let languageTree: LanguageTrees = {
       "en": {
@@ -35,6 +35,7 @@ const buildLanguageTree = async (localizedDocs: ContentCollectionEntry[]) => {
    };
 
    const languages = Object.values(Languages);
+   let fullSlugMap = new Map<string, SidebarItem>();
 
    languages.forEach((language) => {
       // Filter the localizedDocs by language
@@ -43,11 +44,15 @@ const buildLanguageTree = async (localizedDocs: ContentCollectionEntry[]) => {
       );
 
       // Build the sidebar hierarchy and add each part to the relevant type
-      const { sdk, api } = buildSidebarHierarchy(content);
-      languageTree[language] = { sdk, api };
+      const [hierarchy, slugMap] = buildSidebarHierarchy(content);
+      languageTree[language] = hierarchy;
+
+      slugMap.forEach((value, key) => {
+         fullSlugMap.set(key, value);
+      });
    });
 
-   return languageTree;
+   return [languageTree, fullSlugMap];
 };
 
-export const languageTree = await buildLanguageTree(localizedDocs);
+export const [languageTree, slugMap] = await buildLanguageTree(localizedDocs);

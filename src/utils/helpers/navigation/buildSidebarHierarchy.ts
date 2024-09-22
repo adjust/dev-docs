@@ -7,7 +7,7 @@ const versionRegex = /v\d/i;
  * @param entries
  * @returns A LanguageTree containing SidebarItem entries for API and SDK content.
  */
-export const buildSidebarHierarchy = (entries: ContentCollectionEntry[]): LanguageTree => {
+export const buildSidebarHierarchy = (entries: ContentCollectionEntry[]): [LanguageTree, Map<string, SidebarItem>] => {
    // Initialize arrays for sdk and api
    const hierarchy = {
       sdk: [] as SidebarItem[],
@@ -126,5 +126,5 @@ export const buildSidebarHierarchy = (entries: ContentCollectionEntry[]): Langua
       setChildLevels(structuredEntry, structuredEntry.level);
    });
 
-   return hierarchy; // Return sdk and api arrays inside the hierarchy object
+   return [hierarchy, slugMap]; // Return sdk and api arrays inside the hierarchy object
 };
