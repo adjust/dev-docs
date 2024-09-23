@@ -1,61 +1,65 @@
-import type { Locales } from "@i18n/locales";
-import type { CollectionEntry } from "astro:content";
-
-export type NavItemTypes = "category";
-
-export interface CategoryEntry {
-  children: CategoryEntry[];
-  title: string;
-  slug: string;
-  position?: number;
-  parentId: string | undefined | null;
-  collapsed: boolean;
-  level: number;
-  path: string;
-  updatedPath: string;
-  url?: string;
-  topCategory: boolean;
-  description: string;
-  type: NavItemTypes;
-  version: string | null;
+export enum Languages {
+   EN = "en",
+   JA = "ja",
+   KO = "ko",
+   ZH = "zh",
 }
 
-export interface NavigationEntry {
-  title: string;
-  "sidebar-position"?: number;
-  "sidebar-label"?: string;
-  "category-title"?: string;
-  slug: string;
-  updatedPath: string;
-  url: string;
-  path: string;
-  description: string;
-  type: NavItemTypes;
-  version: string | null;
+export interface ContentCollectionEntry {
+   id: string;
+   slug: string;
+   body: string;
+   collection: string;
+   data: {
+      title: string;
+      description: string;
+      "sidebar-label"?: string;
+      "sidebar-position"?: number;
+      "category-title"?: string | undefined;
+      navPath?: string;
+      lang: string;
+      redirects?: Record<string, string>;
+      dir: "ltr" | "rtl";
+      image?: {
+         src: string;
+         alt: string;
+      }
+      ogLocale?: string;
+      type?: "category"
+      multiVersion: boolean;
+      versions?: {
+         value: string;
+         label: string;
+         default?: boolean;
+      }[]
+   },
+   render: Function;
 }
 
-export interface GroupedNavigationItems {
-  [langKey: string]: { [categoryKey: string]: CategoryEntry };
+export interface Breadcrumb {
+   title: string;
+   url: string;
+   level: number;
 }
 
-export interface ChildLink {
-  slug: string;
-  title: string;
-  description: string;
-  position?: number;
-  version: string | null;
+export interface SidebarItem {
+   id: string,
+   title: string,
+   description: string,
+   slug: string,
+   parent?: string,
+   categoryTitle?: string,
+   label?: string,
+   position?: number,
+   children?: SidebarItem[],
+   type?: "category"
+   version?: string;
+   level: number;
 }
 
-export interface NavigationData {
-  languageTree: { [key in keyof Partial<Locales>]: CategoryEntry };
-  breadcrumbs: {
-    title: string;
-    url: string;
-    level: number;
-  }[];
-  childLinks: ChildLink[];
-  versions: {
-    sdk: CollectionEntry<"docs">["data"]["versions"];
-    api: CollectionEntry<"docs">["data"]["versions"];
-  };
+export interface LanguageTree {
+   api: SidebarItem[];
+   sdk: SidebarItem[];
 }
+
+export type LanguageTrees = Record<Languages, LanguageTree>
