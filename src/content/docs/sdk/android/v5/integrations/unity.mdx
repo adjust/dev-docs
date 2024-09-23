@@ -1,0 +1,53 @@
+---
+title: Unity SDK integration
+description: Use the Unity integration to pass Unity information to Adjust's servers.
+slug: en/sdk/android/integrations/unity
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v4: /en/sdk/android/v4/integrations/unity
+---
+
+If you want to measure ad revenue with the Unity SDK, you can use the SDK-to-SDK integration to pass this information to Adjust's servers.
+
+<Callout type="note">
+
+If you have any questions about ad revenue measurement with Unity, please contact your dedicated account manager or send an email to support@adjust.com.
+
+</Callout>
+
+## Before you begin {#before-you-begin}
+
+To use this feature, you first need to download and set up the Adjust Android SDK for your app.
+
+For more information, see the Unity [Mediation API](https://docs.unity.com/mediation/APIReferenceAndroid.html) and [impression events](https://docs.unity.com/mediation/SDKIntegrationAndroidImpressionEvents.html) documentation.
+
+## Example {#example}
+
+```java
+// implement an impression listener
+final IImpressionListener impressionListener = new IImpressionListener() {
+    @Override
+    public void onImpression(@NonNull String adUnitId, @Nullable ImpressionData impressionData) {
+        // send impression data to Adjust
+        AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue("unity_sdk");
+        adjustAdRevenue.setRevenue(impressionData.getPublisherRevenuePerImpression(), impressionData.getCurrency());
+        // optional fields
+        adjustAdRevenue.setAdRevenueNetwork(impressionData.getAdSourceName());
+        adjustAdRevenue.setAdRevenueUnit(impressionData.getAdUnitId());
+        adjustAdRevenue.setAdRevenuePlacement(impressionData.getAdSourceInstance());
+        // Send Adjust ad revenue
+        Adjust.trackAdRevenue(adjustAdRevenue);
+    }
+};
+
+// subscribe the impression listener to the impression event publisher
+ImpressionEventPublisher.subscribe(impressionListener);
+
+// unsubscribe the impression listener from the impression event publisher
+ImpressionEventPublisher.unsubscribe(impressionListener);
+```

@@ -1,18 +1,24 @@
 ---
-import SidebarHeader from "./SidebarHeader.astro";
-import SidebarSearch from "./SidebarSearch.astro";
-import Navigation from "./Navigation.astro";
+import type { CollectionEntry } from "astro:content";
+import SidebarHeader from "@components/Layout/LeftSidebar/SidebarHeader.astro";
+import SidebarSearch from "@components/Layout/LeftSidebar/SidebarSearch.astro";
 import LanguageSwitch from "@components/LanguageSwitch.astro";
 import { LOCALE_NAMES } from "@i18n/locales";
-import type { NavigationData } from "@utils/helpers/navigation/types";
+import type { Languages, LanguageTrees } from "@utils/helpers/navigation/types";
+import NavigationTree from "./Navigation.astro";
 
 interface Props {
   homeUrl: string;
   lang: string;
-  navigationEntries: NavigationData["languageTree"];
+  redirects: CollectionEntry<"docs">["data"]["redirects"];
+  currentSlug: string;
+  languageTree: LanguageTrees;
+  versions: CollectionEntry<"docs">["data"]["versions"];
 }
 
-const { homeUrl, lang, navigationEntries } = Astro.props;
+const { homeUrl, lang, redirects, currentSlug, languageTree, versions } =
+  Astro.props;
+const sidebar = languageTree[lang as Languages];
 ---
 
 <aside
@@ -20,15 +26,21 @@ const { homeUrl, lang, navigationEntries } = Astro.props;
   title="Site Navigation"
 >
   {/* Header with audience switch */}
-  <SidebarHeader homeUrl={homeUrl} lang={lang} />
+  <SidebarHeader
+    homeUrl={homeUrl}
+    lang={lang}
+    redirects={redirects}
+    versions={versions}
+  />
   {/* Search input */}
   <SidebarSearch />
-  <Navigation navigationEntries={navigationEntries} />
+  <NavigationTree sidebar={sidebar} currentSlug={currentSlug} />
+  {/* Language switcher */}
   <div class="h-[63px] border-t-[1px] border-[#CDD0E0]">
     <LanguageSwitch
       lang={lang}
       locales={LOCALE_NAMES}
-      currentUrl={Astro.url.pathname}
+      currentUrl={`/${currentSlug}`}
     />
   </div>
 </aside>

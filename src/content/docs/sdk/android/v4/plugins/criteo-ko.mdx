@@ -1,0 +1,219 @@
+---
+title: Criteo
+description: Criteo 플러그인을 사용하여 Criteo 정보를 Adjust로 전달합니다.
+slug: ko/sdk/android/v4/plugins/criteo
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v5: /ko/sdk/android/plugins/criteo
+---
+
+Adjust Criteo 플러그인을 사용하여 Adjust Android SDK와 Criteo를 연동할 수 있습니다.
+
+## 환경 설정 {#set-up-your-environment}
+
+### Maven {#maven}
+
+Maven을 사용하는 경우, `build.gradle` 파일에 다음의 디펜던시를 추가하시기 바랍니다.
+
+<CodeBlock title="build.gradle">
+
+```groovy
+dependencies {
+   implementation 'com.adjust.sdk:adjust-android:$ANDROID_V4_VERSION'
+   implementation 'com.adjust.sdk:adjust-android-criteo:$ANDROID_V4_VERSION'
+}
+
+```
+
+</CodeBlock>
+
+### JAR로 추가 {#add-as-jar}
+
+[배포 페이지](https://github.com/adjust/android_sdk/releases)에서 플러그인을 JAR 파일로 추가하는 것도 가능합니다.
+
+## Criteo 이벤트 사용하기 {#work-with-criteo-events}
+
+환경 설정이 완료되면 Adjust SDK와 Criteo 이벤트 기록을 시작할 수 있습니다.
+
+### 목록 보기 {#view-listing}
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustEvent event = new AdjustEvent("{viewListingEventToken}");
+List<string> productIds = Arrays.asList("productId1", "productId2", "productId3");
+AdjustCriteo.injectViewListingIntoEvent(event, productIds);
+Adjust.trackEvent(event);
+```
+
+### 상품 보기 {#view-product}
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustEvent event = new AdjustEvent("{viewProductEventToken}");
+AdjustCriteo.injectViewProductIntoEvent(event, "productId1");
+Adjust.trackEvent(event);
+```
+
+### Cart {#cart}
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustEvent event = new AdjustEvent("{cartEventToken}");
+CriteoProduct product1 = new CriteoProduct(100, 1, "productId1");
+CriteoProduct product2 = new CriteoProduct(77.7f, 3, "productId2");
+CriteoProduct product3 = new CriteoProduct(50, 2, "productId3");
+
+List<criteoproduct> products = Arrays.asList(product1, product2, product3);
+AdjustCriteo.injectCartIntoEvent(event, products);
+Adjust.trackEvent(event);
+```
+
+### 거래 확인 {#transaction-confirmed}
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustEvent event = new AdjustEvent("{transactionConfirmedEventToken}");
+CriteoProduct product1 = new CriteoProduct(100, 1, "productId1");
+CriteoProduct product2 = new CriteoProduct(77.7f, 3, "productId2");
+CriteoProduct product3 = new CriteoProduct(50, 2, "productId3");
+
+List<criteoproduct> products = Arrays.asList(product1, product2, product3);
+AdjustCriteo.injectTransactionConfirmedIntoEvent(event, products, "transactionId", "newCustomerId");
+Adjust.trackEvent(event);
+```
+
+### 사용자 수준 {#user-level}
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustEvent event = new AdjustEvent("{userLevelEventToken}");
+AdjustCriteo.injectUserLevelIntoEvent(event, 1);
+Adjust.trackEvent(event);
+```
+
+### 사용자 상태 {#user-status}
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustEvent event = new AdjustEvent("{userStatusEventToken}");
+AdjustCriteo.injectUserStatusIntoEvent(event, "uiStatusValue");
+Adjust.trackEvent(event);
+```
+
+### 목적 달성 {#achievement-unlocked}
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustEvent event = new AdjustEvent("{achievementUnlockedEventToken}");
+AdjustCriteo.injectAchievementUnlockedIntoEvent(event, "AchievementUnlocked");
+Adjust.trackEvent(event);
+```
+
+### 커스텀 이벤트 {#custom-event}
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustEvent event = new AdjustEvent("{customEventEventToken}");
+AdjustCriteo.injectCustomEventIntoEvent(event, "uiDataValue");
+Adjust.trackEvent(event);
+```
+
+### Custom event 2 {#custom-event-2}
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustEvent event = new AdjustEvent("{customEvent2EventToken}");
+AdjustCriteo.injectCustomEvent2IntoEvent(event, "uiData2Value", 3);
+Adjust.trackEvent(event);
+```
+
+### 해시\(Hashed\)된 이메일 {#hashed-email}
+
+모든 Criteo 이벤트에 해시된 이메일을 추가할 수 있습니다. 해당 기능 사용을 원하는 경우 `injectHashedEmailIntoCriteoEvents` 메서드를 호출합니다. SDK는 앱의 라이프사이클 동안 모든 Criteo 이벤트에 해시된 이메일을 전송합니다. 즉, 앱이 다시 시작될 경우 재설정되어야 합니다. 해시된 이메일은 `injectHashedEmailIntoCriteoEvents` 값을 `nil`로 설정하여 삭제할 수 있습니다.
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustCriteo.injectHashedEmailIntoCriteoEvents("8455938a1db5c475a87d76edacb6284e");
+```
+
+### 날짜 검색 {#search-dates}
+
+모든 Criteo 이벤트에 대해 체크인 및 체크아웃 날짜를 추가할 수 있습니다. 해당 기능 사용을 원하는 경우 `injectViewSearchDatesIntoCriteoEvent` 메서드를 호출합니다. SDK는 앱의 라이프사이클 동안 모든 Criteo 이벤트 관련 날짜를 전송합니다. 즉, 앱이 다시 시작될 경우 재설정되어야 합니다.
+
+검색 날짜는 `injectViewSearchDatesIntoCriteoEvent` 값을 `nil`로 설정하여 삭제할 수 있습니다.
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustCriteo.injectViewSearchDatesIntoCriteoEvents("2015-01-01", "2015-01-07");
+```
+
+### 파트너 ID {#partner-id}
+
+모든 Criteo 이벤트에 파트너 ID를 추가할 수 있습니다. 해당 기능 사용을 원하는 경우 `injectPartnerIdIntoCriteoEvents` 메서드를 호출합니다. SDK는 앱의 라이프사이클 동안 모든 Criteo 관련 파트너 ID를 전송합니다. 즉, 앱이 다시 시작될 경우 재설정되어야 합니다.
+
+파트너 ID는 `injectPartnerIdIntoCriteoEvents` 값을 null로 설정하여 삭제할 수 있습니다.
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustCriteo.injectPartnerIdIntoCriteoEvents("{CriteoPartnerId}");
+```
+
+### 딥링크 전송 {#send-deep-link}
+
+Criteo 이벤트에 딥링크 정보를 추가할 수 있습니다. 해당 기능 사용을 원하는 경우 이벤트 및 URL과 함께 `injectDeeplinkIntoEvent` 메서드를 호출합니다.
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+
+    Intent intent = getIntent();
+    Uri data = intent.getData();
+
+    AdjustEvent event = new AdjustEvent("{deeplinkEventToken}");
+    AdjustCriteo.injectDeeplinkIntoEvent(event, data);
+    Adjust.trackEvent(event);
+}
+```
+
+### 고객 ID {#customer-id}
+
+모든 Criteo 이벤트에 고객 ID를 추가할 수 있습니다. 해당 기능 사용을 원하는 경우 `injectCustomerIdIntoCriteoEvents` 메서드를 호출합니다. SDK는 앱의 라이프사이클 동안 모든 Criteo 이벤트 관련 고객 ID를 전송합니다. 즉, 앱이 다시 시작될 경우 재설정되어야 합니다.
+
+고객 ID는 `injectCustomerIdIntoCriteoEvents` 값을 nil로 설정하여 삭제할 수 있습니다.
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustCriteo.injectCustomerIdIntoCriteoEvents("{CriteoCustomerId}");
+```
+
+### 사용자 세그먼트 {#user-segment}
+
+모든 Criteo 이벤트에 사용자 세그먼트를 추가할 수 있습니다. 해당 기능 사용을 원하는 경우 `injectUserSegmentIntoCriteoEvents` 메서드를 호출합니다. SDK는 앱의 라이프사이클 동안 모든 Criteo 이벤트 관련 사용자 세그먼트를 전송합니다. 즉, 앱이 다시 시작될 경우 재설정되어야 합니다.
+
+사용자 세그먼트는 `injectUserSegmentIntoCriteoEvents` 값을 nil로 설정하여 삭제할 수 있습니다.
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustCriteo.injectUserSegmentIntoCriteoEvents("{CriteoUserSegment}");
+```

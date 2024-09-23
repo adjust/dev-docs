@@ -19,8 +19,14 @@ let versionReplacements: VersionMap = {
     v4: "vx.x.x",
     v5: "vx.x.x",
   },
-  cordova: "vx.x.x",
-  flutter: "vx.x.x",
+  cordova: {
+    v4: "vx.x.x",
+    v5: "vx.x.x",
+  },
+  flutter: {
+    v4: "vx.x.x",
+    v5: "vx.x.x",
+  },
   web: "vx.x.x",
   windows: "vx.x.x",
 };

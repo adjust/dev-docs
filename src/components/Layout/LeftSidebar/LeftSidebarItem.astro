@@ -1,67 +1,70 @@
 ---
-import type { CategoryEntry } from "@utils/helpers/navigation/types";
 import classNames from "classnames";
 import ChevronToggle from "./ChevronToggle.astro";
+import type { SidebarItem } from "@utils/helpers/navigation/types";
 
 interface Props {
-  currentPage: string;
-  sidebarData: CategoryEntry;
-  level: number;
+  currentSlug: string;
+  sidebarData: SidebarItem;
 }
 
-const { currentPage, sidebarData, level } = Astro.props;
-const isChild = sidebarData?.children?.length > 0 && !sidebarData.topCategory;
-const initialOpen = sidebarData.collapsed;
-const slug = sidebarData.slug;
+const { currentSlug, sidebarData } = Astro.props;
+const { children, id, slug, version, label, categoryTitle, title, level } =
+  sidebarData;
+const hasChildren = children && children.length > 0 && id.split("/").length > 1;
+const initialOpen = currentSlug.startsWith(sidebarData.slug);
+const itemVersion = version;
+const itemCategory = slug?.includes("/sdk") ? "sdk" : "api";
+const itemName = label ? label : categoryTitle ? categoryTitle : title;
 ---
 
 <ul
   id={`sidebar-item-${slug}`}
-  class={classNames("list-none flex flex-col items-start gap-y-[8px]", {
-    "pl-0": level === 2,
-    "ml-3": level > 2,
-  })}
+  class={classNames(
+    `${itemVersion ? `item-version-${itemCategory}-${itemVersion}` : "item-version-0"}`,
+    "list-none flex-col items-start gap-y-[8px] flex",
+    {
+      hidden: !!itemVersion,
+      "pl-0": level === 0,
+      "ml-3": level > 0,
+    },
+  )}
 >
   <li
     class={classNames("relative hover:text-link-active min-h-[31px] text-sm", {
-      "text-link-active": currentPage === slug,
-      "pl-2": level > 2,
-      active: currentPage === slug,
+      "text-link-active": currentSlug === slug,
+      "pl-2": level > 0,
+      active: currentSlug === slug,
     })}
   >
     <div class="flex flex-row items-center cursor-pointer gap-x-[5px]">
-      {isChild && <ChevronToggle slug={slug} initialOpen={initialOpen} />}
+      {hasChildren && <ChevronToggle slug={slug} initialOpen={initialOpen} />}
       <a
-        id={level > 1 ? `link-${slug}` : ""}
+        id={level > 0 ? `link-${slug}` : ""}
         href={`/${slug}`}
         class={classNames(
           "inline-block w-full text-sm hover:no-underline text-inherit",
           {
-            "text-link-active": currentPage?.slice(1) === slug,
-            "font-bold": level === 1,
-            "font-medium": initialOpen,
-            "font-normal": level > 1 && !initialOpen,
-            "ml-[21px]": level > 2 && !isChild,
+            "text-link-active": currentSlug?.slice(1) === slug,
+            "font-medium": initialOpen || level === 0,
+            "font-normal": level > 0 && !initialOpen,
+            "ml-[21px]": level > 0 && !hasChildren,
           },
         )}
       >
-        {sidebarData.title}
+        {itemName}
       </a>
     </div>
   </li>
   {
-    sidebarData?.children && (
+    children && (
       <li>
         <ul
           id={`children-${slug}`}
           class={classNames({ hidden: !initialOpen })}
         >
-          {sidebarData.children.map((child) => (
-            <Astro.self
-              currentPage={currentPage}
-              sidebarData={child}
-              level={child.level}
-            />
+          {children.map((child) => (
+            <Astro.self currentSlug={currentSlug} sidebarData={child} />
           ))}
         </ul>
       </li>
@@ -70,15 +73,36 @@ const slug = sidebarData.slug;
 </ul>
 
 <script>
+  import { $versions as $sdkVersions } from "@store/sdkVersionsStore";
+  import { $versions as $apiVersions } from "@store/apiVersionsStore";
   import { toggleCollapse } from "./utils/toggleCollapse";
+
   document.addEventListener("DOMContentLoaded", () => {
+    // versioning logic
+    const showItems = (items: NodeListOf<Element>) => {
+      items.forEach((item) => {
+        item.className = item.className.replace("hidden", "");
+      });
+    };
+
+    const currentSdkVersion = $sdkVersions.get()?.currentVersion;
+    const currentApiVersion = $apiVersions.get()?.currentVersion;
+    // need to unhide SDK/API items that match the current version, also need to unhide unversioned items
+    const sidebarItems = document.querySelectorAll(
+      `.item-version-sdk-${currentSdkVersion.value}, .item-version-api-${currentApiVersion.value}`,
+    );
+
+    showItems(sidebarItems);
+
     const items = document.querySelectorAll(".toggle-collapse");
+
     items.forEach((item) => {
       item.addEventListener("click", () => {
         const slug = item!
           .parentElement!.parentElement!.querySelector("a")!
           .getAttribute("href")!
           .slice(1);
+
         toggleCollapse(slug);
       });
     });

@@ -1,0 +1,1736 @@
+---
+title: SDK v5 migration guide
+description: Follow this guide to upgrade from SDK v4 to SDK v5
+slug: en/sdk/migration/ios/v4-to-v5
+sidebar-position: 1
+---
+
+## Before you begin {#before-you-begin}
+
+Here's what you need to do before updating to SDK v5:
+
+1. SDK v5 supports [SDK signature verification](https://help.adjust.com/en/article/sdk-signature) natively. If you currently use the SDK signature library, you need to uninstall this first.
+2. If your app targets API versions lower than the following, you need to update your app before you can use SDK v5:
+   -  iOS: **12.0**
+   -  tvOS: **12.0**
+
+## Install the beta SDK {#install-the-sdk}
+
+To start using SDK v5, you need to add it as a dependency in your XCode project. To do this:
+
+1. Remove any older versions of the SDK you currently have in your `Podfile`.
+2. Add the following line to your `Podfile`:
+
+   <CodeBlock title="Podfile">
+
+   ```rb
+   pod 'Adjust', :git => 'https://github.com/adjust/ios_sdk.git', :branch => 'v5'
+   ```
+
+   </CodeBlock>
+
+3. Run `pod install` to install the dependencies.
+
+## Update the initialization method {#init-method}
+
+<MinorVersion changed="v5" size="large" />
+
+In SDK v4, the SDK is initialized by configuring an `ADJConfig` object and passing it to the `[Adjust appDidLaunch]` method.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+      appToken: yourAppToken,
+      environment: environment)
+
+Adjust.appDidLaunch(adjustConfig)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "Adjust.h"
+
+NSString *yourAppToken = @"{YourAppToken}";
+NSString *environment = ADJEnvironmentSandbox;
+*adjustConfig = [ADJConfig configWithAppToken:yourAppToken;
+                                  environment:environment];
+
+[Adjust appDidLaunch:adjustConfig];
+```
+
+</Tab>
+</Tabs>
+
+In SDK v5, this method has been renamed to `[Adjust initSdk]`.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+      appToken: yourAppToken,
+      environment: environment)
+
+Adjust.initSdk(adjustConfig)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "Adjust.h"
+
+NSString *yourAppToken = @"{YourAppToken}";
+NSString *environment = ADJEnvironmentSandbox;
+ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:yourAppToken
+                                                  environment:environment];
+
+[Adjust initSdk:adjustConfig];
+```
+
+</Tab>
+</Tabs>
+
+### Configure the SDK Signature library {#signature-setup}
+
+SDK v5 includes the [SDK signature library](https://help.adjust.com/en/article/sdk-signature). You can test this by following the testing steps in the [Signature library integration guide](/en/sdk/ios/integrations/signature-library).
+
+Signature protection is inactive by default. To enable it, you need to [enforce signature validation](https://help.adjust.com/en/article/sdk-signature#enforce-signature-validation).
+
+## Changed APIs {#changed-apis}
+
+<MinorVersion changed="v5" size="large" />
+
+The following APIs have been changed in SDK v5.
+
+### Disable and enable the SDK {#disable-enable-sdk}
+
+In SDK v4, you can enable and disable the SDK by calling `[Adjust setEnabled]` with a `BOOL` value.
+
+-  Call `[Adjust setEnabled:NO]` to disable the SDK.
+-  Call `[Adjust setEnabled:YES]` to enable the SDK
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+Adjust.setEnabled(false) //disable SDK
+Adjust.setEnabled(true) //enable SDK
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[Adjust setEnabled:NO]; // disable SDK
+[Adjust setEnabled:YES]; // enable SDK
+```
+
+</Tab>
+</Tabs>
+
+In SDK v5, this feature is split into separate commands for clarity.
+
+-  Call `[Adjust disable]` to disable the SDK.
+-  Call `[Adjust enable]` to enable the SDK.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+Adjust.disable() //disable SDK
+Adjust.enable() //enable SDK
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[Adjust disable]; // disable SDK
+[Adjust enable]; // enable SDK
+```
+
+</Tab>
+</Tabs>
+
+### Send information in background {#send-in-background}
+
+In SDK v4, you can call the `[ADJConfig setSendInBackground]` method with a `true` argument to enable the SDK to send information to Adjust while your app is running in the background.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+adjustConfig.setSendInBackground(true)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[adjustConfig setSendInBackground:YES];
+```
+
+</Tab>
+</Tabs>
+
+In SDK v5, you need to call the `[ADJConfig enableSendingInBackground]` method with no arguments to enable the SDK to send information to Adjust while your app is running in the background.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+adjustConfig.enableSendingInBackground()
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[adjustConfig enableSendingInBackground];
+```
+
+</Tab>
+</Tabs>
+
+### Disable AdServices information reading {#disable-adservices}
+
+In SDK v4, you can call the `[ADJConfig setAllowAdServicesInfoReading]` method with a `false` argument to prevent the Adjust SDK from reading AdServices information.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+adjustConfig.setAllowAdServicesInfoReading(false)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[adjustConfig setAllowAdServicesInfoReading:NO];
+```
+
+</Tab>
+</Tabs>
+
+In SDK v5, you need to call the `disableAdServices` method with no arguments to prevent the Adjust SDK from reading AdServices information.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+adjustConfig.disableAdServices()
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[adjustConfig disableAdServices];
+```
+
+</Tab>
+</Tabs>
+
+### Disable IDFA reading {#disable-idfa}
+
+In SDK v4, you can call the `[ADJConfig setAllowIdfaReading]` method with a `false` argument to prevent the Adjust SDK from reading the device's IDFA.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+adjustConfig.setAllowIdfaReading(false)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[adjustConfig setAllowIdfaReading:NO];
+```
+
+</Tab>
+</Tabs>
+
+In SDK v5, you need to call the `disableIdfaReading` method with no arguments to prevent the Adjust SDK from reading the device's IDFA.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+adjustConfig.disableIdfaReading()
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[adjustConfig disableIdfaReading];
+```
+
+</Tab>
+</Tabs>
+
+### Enable cost data in attribution {#enable-cost-data}
+
+In SDK v4, you can enable cost data in the device's attribution information by calling the `[ADJConfig setNeedsCost]` method with a `true` argument.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+adjustConfig.setNeedsCost(true)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[adjustConfig setNeedsCost:YES];
+```
+
+</Tab>
+</Tabs>
+
+In SDK v5, you need to call the `[ADJConfig enableCostDataInAttribution]` method with no arguments.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+adjustConfig.enableCostDataInAttribution()
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[adjustConfig enableCostDataInAttribution];
+```
+
+</Tab>
+</Tabs>
+
+#### Enable LinkMe {#enable-linkme}
+
+In SDK v4, you can enable [Adjust LinkMe](https://help.adjust.com/en/article/linkme) by calling the `[ADJConfig setLinkMeEnabled]` method with a `true` argument.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+adjustConfig.setLinkMeEnabled(true)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[adjustConfig setLinkMeEnabled:YES];
+```
+
+</Tab>
+</Tabs>
+
+In SDK v5, you need to call the `[ADJConfig enableLinkMe]` method with no arguments.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+adjustConfig.enableLinkMe()
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[adjustConfig enableLinkMe];
+```
+
+</Tab>
+</Tabs>
+
+### Only read device IDs once {#read-device-id-once}
+
+In SDK v4, you can instruct the SDK to only read device identifiers one time upon startup by calling the `[ADJConfig setReadDeviceInfoOnceEnabled]` method with a `true` argument.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+adjustConfig.setReadDeviceInfoOnceEnabled(true)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[adjustConfig setReadDeviceInfoOnceEnabled:YES];
+```
+
+</Tab>
+</Tabs>
+
+In SDK v5, you need to call the `[ADJConfig enableDeviceIdsReadingOnce]` method with no arguments.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+adjustConfig.enableDeviceIdsReadingOnce()
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[adjustConfig enableDeviceIdsReadingOnce];
+```
+
+</Tab>
+</Tabs>
+
+### Offline mode {#offline-mode}
+
+In SDK v4, you can enable and disable offline mode the SDK by calling `[Adjust setOfflineMode]` with a `BOOL` argument.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+Adjust.setOfflineMode(true) // put the SDK in offline mode
+Adjust.setOfflineMode(false) // put the SDK back in online mode
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[Adjust setOfflineMode:YES]; // put the SDK in offline mode
+[Adjust setOfflineMode:NO]; // put the SDK back in online mode
+```
+
+</Tab>
+</Tabs>
+
+In SDK v5, this feature is split into separate commands for clarity.
+
+-  Call `[Adjust switchToOfflineMode]` to set the SDK to offline mode.
+-  Call `[Adjust switchBackToOnlineMode]` to set the SDK back to online mode.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+Adjust.switchToOfflineMode() // put the SDK in offline mode
+Adjust.switchBackToOnlineMode() // put the SDK back in online mode
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[Adjust switchToOfflineMode]; // put the SDK in offline mode
+[Adjust switchBackToOnlineMode]; // put the SDK back in online mode
+```
+
+</Tab>
+</Tabs>
+
+### Push tokens {#push-tokens}
+
+In SDK v4, you can set your push tokens using the `[Adjust setDeviceToken]` method.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+func application(_ app: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+    Adjust.setDeviceToken(deviceToken)
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+- (void)application:(UIApplication *)app didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+    [Adjust setDeviceToken:deviceToken];
+}
+```
+
+</Tab>
+</Tabs>
+
+This method has been renamed to `[Adjust setPushToken]` in SDK v5.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+func application(_ app: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken pushToken: Data) {
+    Adjust.setPushToken(pushToken)
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+- (void)application:(UIApplication *)app didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)pushToken {
+    [Adjust setPushToken:pushToken];
+}
+```
+
+</Tab>
+</Tabs>
+
+<Callout type="note">
+
+SDK v4 contains a method named `setPushToken` that takes an `NSString` value. The `setPushToken` method in SDK v5 accepts an `NSData` value
+
+</Callout>
+
+### Session callback parameters {#callback-params}
+
+In SDK v4, you can add session parameters by passing a key-value pair to the `[Adjust addSessionCallbackParameter]` method and remove individual parameters using the `[Adjust removeSessionCallbackParameter]` method.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+Adjust.addSessionCallbackParameter("foo", value: "bar")
+Adjust.removeSessionCallbackParameter("foo")
+Adjust.resetSessionCallbackParameters()
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[Adjust addSessionCallbackParameter:@"foo" value:@"bar"];
+[Adjust removeSessionCallbackParameter:@"foo"];
+[Adjust resetSessionCallbackParameters];
+```
+
+</Tab>
+</Tabs>
+
+In SDK v5, session parameters are renamed to global parameters. Instead of assigning the key and value as positional arguments, SDK v5 uses the `forKey` instance method to assign values to keys.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+Adjust.addGlobalCallbackParameter("bar", forKey: "foo")
+Adjust.removeGlobalCallbackParameter(forKey: "foo")
+Adjust.removeGlobalCallbackParameters()
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[Adjust addGlobalCallbackParameter:@"bar" forKey:@"foo"];
+[Adjust removeGlobalCallbackParameterForKey:@"foo"];
+[Adjust removeGlobalCallbackParameters];
+```
+
+</Tab>
+</Tabs>
+
+### Session partner parameters {#partner-params}
+
+In SDK v4, you can add session partner parameters by passing a key-value pair to the `[Adjust addSessionPartnerParameter]` method and remove individual parameters using the `[Adjust removeSessionPartnerParameter]` method.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+Adjust.addSessionPartnerParameter("foo", value: "bar")
+Adjust.removeSessionPartnerParameter("foo")
+Adjust.resetSessionPartnerParameters()
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[Adjust addSessionPartnerParameter:@"foo" value:@"bar"];
+[Adjust removeSessionPartnerParameter:@"foo"];
+[Adjust resetSessionPartnerParameters];
+```
+
+</Tab>
+</Tabs>
+
+In SDK v5, session partner parameters are renamed to global partner parameters. Instead of assigning the key and value as positional arguments, SDK v5 uses the `forKey` instance method to assign values to keys.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+Adjust.addGlobalPartnerParameter("bar", forKey: "foo")
+Adjust.removeGlobalPartnerParameter(forKey: "foo")
+Adjust.removeGlobalPartnerParameters()
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[Adjust addGlobalPartnerParameter:@"bar" forKey:@"foo"];
+[Adjust removeGlobalPartnerParameterForKey:@"foo"];
+[Adjust removeGlobalPartnerParameters];
+```
+
+</Tab>
+</Tabs>
+
+### Send subscription information {#send-subscriptions}
+
+In SDK v4, you can use the `ADJSubscription` class to create a payload of subscription information to send to Adjust.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let subscription = ADJSubscription(
+    price: price,
+    currency: currency,
+    transactionId: transactionId,
+    andReceipt: receipt)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:price
+                                                              currency:currency
+                                                        transactionId:transactionId];
+```
+
+</Tab>
+</Tabs>
+
+This class has been renamed to `ADJAppStoreSubscription` in SDK v5 for clarity.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let subscription = ADJAppStoreSubscription(
+    price: price,
+    currency: currency,
+    transactionId: transactionId)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+ADJAppStoreSubscription *subscription = [[ADJAppStoreSubscription alloc]
+                                             initWithPrice:price
+                                             currency:currency
+                                             transactionId:transactionId];
+```
+
+</Tab>
+</Tabs>
+
+### Event deduplication {#event-deduplication}
+
+In SDK v4, event deduplication is coupled with the event `transaction ID` and is limited to a maximum of 10 unique IDs.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: "eventToken")
+event.setTransactionId("deduplication_id")
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+ADJEvent *event = [ADJEvent eventWithEventToken:@"event_token"];
+[event setTransactionId:@"deduplication_id"];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+</Tabs>
+
+In SDK v5, the feature is decoupled from `transaction ID`. A new ID field called `deduplicationId` has been added for event deduplication. Users can set a custom limit on the number of `deduplicationId` that can be added to the list for identifying duplicate events. By default, the limit is set to **10**.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+      appToken: yourAppToken,
+      environment: environment)
+
+adjustConfig.setEventDeduplicationIdsMaxSize(20)
+Adjust.initSdk(adjustConfig)
+
+let event = ADJEvent(eventToken: "event_token")
+event.setDeduplicationId("deduplication_id")
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+NSString *yourAppToken = @"{YourAppToken}";
+NSString *environment = ADJEnvironmentSandbox;
+ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:yourAppToken
+                                                  environment:environment];
+
+[adjustConfig setEventDeduplicationIdsMaxSize:20];
+[Adjust initSdk:adjustConfig];
+
+ADJEvent *event = [[ADJEvent alloc] initWithEventToken:kEventToken3];
+[event setDeduplicationId:@"deduplication_id"];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+</Tabs>
+
+### AdjustAttribution class {#attribution-class}
+
+In SDK v4, the `AdjustAttribution` calls has a property called `adid`. In SDK v5, the `adid` property has been removed from the `AdjustAttribution` class. You can retrieve the device's ADID using the [`[Adjust adidWithCompletionHandler]` getter method](#device-id-getters).
+
+### Reattribution using deep links {#reattribution-using-deep-links}
+
+In SDK v4, you can pass your deep link information to the `[Adjust appWillOpenUrl]` method.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+func application(
+    _ app: UIApplication,
+    open incomingURL: URL,
+    options: [UIApplication.OpenURLOptionsKey: Any] = [:]
+    ) -> Bool {
+
+    // add your code below to handle deep link
+    // (for example, open deep link content)
+    // incomingURL object contains the deep link
+
+    // call the below method to send deep link to Adjust's servers
+    Adjust.appWillOpen(incomingURL)
+
+    return true
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+- (BOOL)application:(UIApplication *)app
+    openURL:(NSURL *)incomingURL
+    options:(NSDictionary *)options {
+
+    // add your code below to handle deep link
+    // (for example, open deep link content)
+    // incomingURL object contains the deep link
+
+    // call the below method to send deep link to Adjust's servers
+    [Adjust appWillOpenUrl:incomingURL];
+
+    return YES;
+}
+```
+
+</Tab>
+</Tabs>
+
+In SDK v5, this has been renamed to `[Adjust processDeeplink]` for clarity.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+func application(
+    _ app: UIApplication,
+    open incomingURL: URL,
+    options: [UIApplication.OpenURLOptionsKey: Any] = [:]
+    ) -> Bool {
+
+    // add your code below to handle deep link
+    // (for example, open deep link content)
+    // incomingURL object contains the deep link
+
+    // call the below method to send deep link to Adjust's servers
+    Adjust.processDeeplink(ADJDeeplink(deeplink: incomingURL))
+
+    return true
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+- (BOOL)application:(UIApplication *)app
+    openURL:(NSURL *)incomingURL
+    options:(NSDictionary *)options {
+
+    // add your code below to handle deep link
+    // (for example, open deep link content)
+    // incomingURL object contains the deep link
+
+    // call the below method to send deep link to Adjust's servers
+    [Adjust processDeeplink:[[ADJDeeplink alloc] initWithDeeplink:incomingURL]];
+
+    return YES;
+}
+```
+
+</Tab>
+</Tabs>
+
+### Deferred deep linking callback {#deferred-callback}
+
+In SDK v4, you can call the `adjustDeepLinkResponse` method to handle deferred deep link callbacks.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+func adjustDeeplinkResponse(_ deeplink: URL?) -> Bool {
+   print("Deferred deep link callback called!")
+   print(String(format: "Deferred deep link URL: %@", deeplink.absoluteString))
+
+   // Allow Adjust SDK to open received deferred deep link.
+   // If you don't want it to open it, return false instead.
+   return true
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+- (BOOL)adjustDeeplinkResponse:(NSURL *)deeplink {
+    NSLog(@"Deferred deep link callback called!");
+    NSLog(@"Deferred deep link URL: %@", [deeplink absoluteString]);
+
+    // Allow Adjust SDK to open received deferred deep link.
+    // If you don't want it to open it, return NO; instead.
+    return YES;
+}
+```
+
+</Tab>
+</Tabs>
+
+In SDK v5, this method is has been renamed to `adjustDeferredDeeplinkReceived` for clarity. All arguments are the same.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+func adjustDeferredDeeplinkReceived(_ deeplink: URL?) -> Bool {
+   print("Deferred deep link callback called!")
+   print(String(format: "Deferred deep link URL: %@", deeplink.absoluteString))
+
+   // Allow Adjust SDK to open received deferred deep link.
+   // If you don't want it to open it, return false instead.
+   return true
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+- (BOOL)adjustDeferredDeeplinkReceived:(NSURL *)deeplink {
+    NSLog(@"Deferred deep link callback called!");
+    NSLog(@"Deferred deep link URL: %@", [deeplink absoluteString]);
+
+    // Allow Adjust SDK to open received deferred deep link.
+    // If you don't want it to open it, return NO; instead.
+    return YES;
+}
+```
+
+</Tab>
+</Tabs>
+
+### COPPA compliance {#coppa-compliance}
+
+In SDK v4, you can mark your app as COPPA compliant by calling the `setCoppaCompliantEnabled` method on your `ADJConfig` instance with a boolean value.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+adjustConfig.setCoppaCompliantEnabled(true)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[adjustConfig setCoppaCompliantEnabled:YES];
+```
+
+</Tab>
+</Tabs>
+
+In SDK v5, this method has been renamed to `enableCoppaCompliance` for clarity. This method takes no arguments.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+adjustConfig?.enableCoppaCompliance()
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[adjustConfig enableCoppaCompliance];
+```
+
+</Tab>
+</Tabs>
+
+### Send ad revenue from a specific source {#send-ad-revenue}
+
+In SDK v4, ad revenue sources are defined as constants in the `ADJConfig` class. In SDK v5, ad revenue sources need to be passed as a string.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+<CodeBlock useDiffSyntax>
+
+```swift
+- let adRevenue = ADJAdRevenue(source: ADJAdRevenueSourceAppLovinMAX); //v4
++ let adRevenue = ADJAdRevenue(source: "applovin_max_sdk") //v5
+```
+
+</CodeBlock>
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+<CodeBlock useDiffSyntax>
+
+```objc
+- ADJAdRevenue *revenue = [[ADJAdRevenue alloc]
+-                             initWithSource:ADJAdRevenueSourceAppLovinMAX]; // v4
++ ADJAdRevenue *adRevenue = [[ADJAdRevenue alloc]
++                               initWithSource:@"applovin_max_sdk"]; // v5
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
+
+<Table>
+
+| v4                                   | v5                        |
+| ------------------------------------ | ------------------------- |
+| `ADJAdRevenueSourceAppLovinMAX`      | `"applovin_max_sdk"`      |
+| `ADJAdRevenueSourceAdMob`            | `"admob_sdk"`             |
+| `ADJAdRevenueSourceIronSource`       | `"ironsource_sdk"`        |
+| `ADJAdRevenueSourceAdMost`           | `"admost_sdk"`            |
+| `ADJAdRevenueSourceUnity`            | `"unity_sdk"`             |
+| `ADJAdRevenueSourceHeliumChartboost` | `"helium_chartboost_sdk"` |
+| `ADJAdRevenueSourceADX`              | `"adx_sdk"`               |
+| `ADJAdRevenueSourcePublisher`        | `"publisher_sdk"`         |
+| `ADJAdRevenueSourceTradplus`         | `"tradplus_sdk"`          |
+| `ADJAdRevenueSourceTopOn`            | `"topon_sdk"`             |
+| `ADJAdRevenueSourceMopub`            | `"mopub"`                 |
+
+</Table>
+
+### Set data residency and URL strategy {#url-strategy}
+
+In SDK v4, URL strategy and data residency domains are defined as constants in the `ADJConfig` class.
+
+```objc
+[adjustConfig setUrlStrategy:ADJDataResidencyEU];
+```
+
+In SDK v5, you need to pass your chosen domain or domains as an array. You can also set the following:
+
+-  `useSubdomains` (`BOOL`): Whether the domain should be treated as an Adjust domain. If `true`, the SDK will prefix the domains with Adjust-specific subdomains. If `false`, the SDK will use the provided domain as-is, without adding any prefixes.
+-  `isDataResidency` (`BOOL`): Whether the domain should be used for data residency.
+
+```objc
+NSArray *domain = [];
+[adjustConfig setUrlStrategy:domain useSubdomains:YES
+                     isDataResidency:YES];
+```
+
+Check the table below to see how to configure your URL strategy in SDK v5.
+
+<Table autoWidth="1,2">
+
+| v4                     | v5 - main and fallback domain     | v5 - use sub domains | v5 - is Data Residency |
+| ---------------------- | --------------------------------- | -------------------- | ---------------------- |
+| `ADJDataResidencyEU`   | `"eu.adjust.com"`                 | `true`               | `true`                 |
+| `ADJDataResidencyTR`   | `"tr.adjust.com"`                 | `true`               | `true`                 |
+| `ADJDataResidencyUS`   | `"us.adjust.com"`                 | `true`               | `true`                 |
+| `ADJUrlStrategyChina`  | `"adjust.world"`, `"adjust.com"`  | `true`               | `false`                |
+| `ADJUrlStrategyCn`     | `"adjust.cn"`, `"adjust.com"`     | `true`               | `false`                |
+| `ADJUrlStrategyCnOnly` | `"adjust.cn"`                     | `true`               | `false`                |
+| `ADJUrlStrategyIndia`  | `"adjust.net.in"`, `"adjust.com"` | `true`               | `false`                |
+
+</Table>
+
+#### Examples {#examples}
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+<CodeBlock title="India URL strategy">
+
+```swift
+let domain = ["adjust.net.in", "adjust.com"]
+adjustConfig.setUrlStrategy(domain, useSubdomains: true, isDataResidency: false)
+```
+
+</CodeBlock>
+
+<CodeBlock title="China URL strategy">
+
+```swift
+let domain = ["adjust.world", "adjust.com"]
+adjustConfig.setUrlStrategy(domain, useSubdomains: true, isDataResidency: false)
+```
+
+</CodeBlock>
+
+<CodeBlock title="China only URL strategy">
+
+```swift
+let domain = ["adjust.cn"]
+adjustConfig.setUrlStrategy(domain, useSubdomains: true, isDataResidency: false)
+```
+
+</CodeBlock>
+
+<CodeBlock title="EU data residency">
+
+```swift
+let domain = ["eu.adjust.com"]
+adjustConfig.setUrlStrategy(domain, useSubdomains: true, isDataResidency: true)
+```
+
+</CodeBlock>
+
+<CodeBlock title="Turkey data residency">
+
+```swift
+let domain = ["tr.adjust.com"]
+adjustConfig.setUrlStrategy(domain, useSubdomains: true, isDataResidency: true)
+```
+
+</CodeBlock>
+
+<CodeBlock title="US data residency">
+
+```swift
+let domain = ["us.adjust.com"]
+adjustConfig.setUrlStrategy(domain, useSubdomains: true, isDataResidency: true)
+```
+
+</CodeBlock>
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+<CodeBlock title="India URL strategy">
+
+```objc
+NSArray *domain = [[NSArray alloc]
+                       initWithObjects:@"adjust.net.in", @"adjust.com", nil];
+[adjustConfig setUrlStrategy:domain useSubdomains:YES isDataResidency:NO];
+```
+
+</CodeBlock>
+
+<CodeBlock title="China URL strategy">
+
+```objc
+NSArray *domain = [[NSArray alloc]
+                       initWithObjects:@"adjust.world", @"adjust.com", nil];
+[adjustConfig setUrlStrategy:domain useSubdomains:YES isDataResidency:NO];
+```
+
+</CodeBlock>
+
+<CodeBlock title="China only URL strategy">
+
+```objc
+NSArray *domain = [[NSArray alloc]
+                       initWithObjects:@"adjust.cn", nil];
+[adjustConfig setUrlStrategy:domain useSubdomains:YES isDataResidency:NO];
+```
+
+</CodeBlock>
+
+<CodeBlock title="EU data residency">
+
+```objc
+NSArray *domain = [[NSArray alloc]
+                       initWithObjects:@"eu.adjust.com", nil];
+[adjustConfig setUrlStrategy:domain useSubdomains:YES isDataResidency:YES];
+```
+
+</CodeBlock>
+
+<CodeBlock title="Turkey data residency">
+
+```objc
+NSArray *domain = [[NSArray alloc]
+                       initWithObjects:@"tr.adjust.com", nil];
+[adjustConfig setUrlStrategy:domain useSubdomains:YES isDataResidency:YES];
+```
+
+</CodeBlock>
+
+<CodeBlock title="US data residency">
+
+```objc
+NSArray *domain = [[NSArray alloc]
+                       initWithObjects:@"us.adjust.com", nil];
+[adjustConfig setUrlStrategy:domain useSubdomains:YES isDataResidency:YES];
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
+
+### Disable SKAdNetwork communication {#disable-skan}
+
+In SDK v4, you can prevent the SDK from communicating with SKAdNetwork by calling the `[ADJConfig deactivateSKAdNetworkHandling]` method.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+      appToken: yourAppToken,
+      environment: environment)
+
+adjustConfig.deactivateSKAdNetworkHandling()
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+ADJConfig *adjustConfig = [[ADJConfig alloc]
+                               initWithAppToken:@"{YourAppToken}"
+                               environment:ADJEnvironmentSandbox];
+
+[adjustConfig deactivateSKAdNetworkHandling];
+```
+
+</Tab>
+</Tabs>
+
+In SDK v5, this method has been renamed to `[ADJConfig disableSkanAttribution]` for clarity.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+      appToken: yourAppToken,
+      environment: environment)
+
+adjustConfig.disableSkanAttribution()
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+ADJConfig *adjustConfig = [[ADJConfig alloc]
+                               initWithAppToken:@"{YourAppToken}"
+                               environment:ADJEnvironmentSandbox];
+
+[adjustConfig disableSkanAttribution];
+```
+
+</Tab>
+</Tabs>
+
+### Update conversion values {#update-cvs}
+
+In SDK v4, you can use the `updateConversionValue` method to send updated conversion values to Adjust. This method wraps Apple's deprecated [`updateConversionValue` method](https://developer.apple.com/documentation/storekit/skadnetwork/3566697-updateconversionvalue) and has been removed in SDK v5.
+
+To update conversion values in SDK v5, use the `[Adjust updateSkanConversionValue]` method with the following arguments:
+
+-  `conversionValue` (`NSInteger`): The updated conversion value
+-  `coarseValue` (`NSString`): The updated [coarse conversion value](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
+-  `lockWindow` (`BOOL`): Whether to send the postback before the conversion window ends
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+Adjust.updateSkanConversionValue(
+    1,
+    coarseValue: SKAdNetwork.CoarseConversionValue.low,
+    lockWindow: false) { error in
+    if let error {
+        print(String(format: "An error occurred during completion: %@", error))
+    }
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[Adjust updateSkanConversionValue:1
+                        coarseValue:SKAdNetworkCoarseConversionValueLow
+                        lockWindow:NO
+               withCompletionHandler:^(NSError *_Nullable error) {
+      NSLog(@"An error occurred during completion: %@", error);
+}];
+```
+
+</Tab>
+</Tabs>
+
+### App Tracking Transparency authorization wrapper {#att-wrapper}
+
+In SDK v4, you can handle changes to a user's ATT authorization status using the `[Adjust requestTrackingAuthorizationWithCompletionHandler]` method.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+Adjust.requestTrackingAuthorization() { status in
+   switch status {
+   case 0:
+      // ATTrackingManagerAuthorizationStatusNotDetermined case
+      break
+   case 1:
+      // ATTrackingManagerAuthorizationStatusRestricted case
+      break
+   case 2:
+      // ATTrackingManagerAuthorizationStatusDenied case
+      break
+   case 3:
+      // ATTrackingManagerAuthorizationStatusAuthorized case
+      break
+   default:
+      break
+   }
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[Adjust requestTrackingAuthorizationWithCompletionHandler:^(NSUInteger status) {
+   switch (status) {
+      case 0:
+         // ATTrackingManagerAuthorizationStatusNotDetermined case
+         break;
+      case 1:
+         // ATTrackingManagerAuthorizationStatusRestricted case
+         break;
+      case 2:
+         // ATTrackingManagerAuthorizationStatusDenied case
+         break;
+      case 3:
+         // ATTrackingManagerAuthorizationStatusAuthorized case
+         break;
+   }
+}];
+```
+
+</Tab>
+</Tabs>
+
+This has been renamed to `[Adjust requestAppTrackingAuthorizationWithCompletionHandler]` in SDK v5 for clarity.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+Adjust.requestAppTrackingAuthorization { status in
+   switch status {
+   case 0:
+      // ATTrackingManagerAuthorizationStatusNotDetermined case
+      break
+   case 1:
+      // ATTrackingManagerAuthorizationStatusRestricted case
+      break
+   case 2:
+      // ATTrackingManagerAuthorizationStatusDenied case
+      break
+   case 3:
+      // ATTrackingManagerAuthorizationStatusAuthorized case
+      break
+   default:
+      break
+   }
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[Adjust requestAppTrackingAuthorizationWithCompletionHandler:^(NSUInteger status) {
+   switch (status) {
+      case 0:
+         // ATTrackingManagerAuthorizationStatusNotDetermined case
+         break;
+      case 1:
+         // ATTrackingManagerAuthorizationStatusRestricted case
+         break;
+      case 2:
+         // ATTrackingManagerAuthorizationStatusDenied case
+         break;
+      case 3:
+         // ATTrackingManagerAuthorizationStatusAuthorized case
+         break;
+   }
+}];
+```
+
+</Tab>
+</Tabs>
+
+### Get device information {#device-info}
+
+In SDK v4, all device information getter methods run synchronously. In SDK v5, these methods have been changed to run asynchronously. You can add a callback function to handle the information when the asynchronous process completes
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+<CodeBlock title="ADID getter">
+
+```swift
+Adjust.adid() { adid in
+      // add your completion handler
+};
+```
+
+</CodeBlock>
+
+<CodeBlock title="IDFA getter">
+
+```swift
+Adjust.idfa() { idfa in
+      // add your completion handler
+};
+```
+
+</CodeBlock>
+
+<CodeBlock title="IDFV getter">
+
+```swift
+Adjust.idfv() { idfv in
+      // add your completion handler
+};
+```
+
+</CodeBlock>
+
+<CodeBlock title="SDK version getter">
+
+```swift
+Adjust.sdkVersion() { sdkVersion in
+      // add your completion handler
+};
+```
+
+</CodeBlock>
+
+<CodeBlock title="Enabled status getter">
+
+```swift
+Adjust.isEnabled() { isEnabled in
+      // add your completion handler
+};
+```
+
+</CodeBlock>
+
+<CodeBlock title="Attribution getter">
+
+```swift
+Adjust.attribution() { attribution in
+      // add your completion handler
+}
+```
+
+</CodeBlock>
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+<CodeBlock title="ADID getter">
+
+```objc
+[Adjust adidWithCompletionHandler:^(NSString * _Nullable adid) {
+      // add your completion handler
+}];
+```
+
+</CodeBlock>
+
+<CodeBlock title="IDFA getter">
+
+```objc
+[Adjust idfaWithCompletionHandler:^(NSString * _Nullable idfa) {
+      // add your completion handler
+}];
+```
+
+</CodeBlock>
+
+<CodeBlock title="IDFV getter">
+
+```objc
+[Adjust idfvWithCompletionHandler:^(NSString * _Nullable idfv) {
+      // add your completion handler
+}];
+```
+
+</CodeBlock>
+
+<CodeBlock title="SDK version getter">
+
+```objc
+[Adjust sdkVersionWithCompletionHandler:^(NSString * _Nullable sdkVersion) {
+      // add your completion handler
+}];
+```
+
+</CodeBlock>
+
+<CodeBlock title="Enabled status getter">
+
+```objc
+[Adjust isEnabledWithCompletionHandler:^(BOOL isEnabled) {
+      // add your completion handler
+}];
+```
+
+</CodeBlock>
+
+<CodeBlock title="Attribution getter">
+
+```objc
+[Adjust attributionWithCompletionHandler:^(ADJAttribution * _Nullable attribution) {
+      // add your completion handler
+}
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
+   
+## Removed APIs {#removed-apis}
+
+<MinorVersion removed="v5" size="large" />
+
+The following APIs have been removed in SDK v5.
+
+### Event buffering {#event-buffering}
+
+SDK v4 supports event buffering. This feature stores requests event, ad revenue, push tokens, and other information on a local buffer to send at a later date.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+Adjust.setEventBufferingEnabled(true)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[adjustConfig setEventBufferingEnabled:YES];
+```
+
+</Tab>
+</Tabs>
+
+This setting has been removed in SDK v5.
+
+### Custom user agent string {#custom-user-agent}
+
+SDK v4 supports setting a custom User Agent by calling `[AdjustConfig setUserAgent]` with a user agent string.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+adjustConfig.setUserAgent("user_agent_value")
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[adjustConfig setUserAgent:@"user_agent_value"];
+```
+
+</Tab>
+</Tabs>
+
+This setting has been removed in SDK v5.
+
+### Set whether a device is known {#set-device-known}
+
+In SDK v4, you can call the `[AdjustConfig setIsDeviceKnown];` method to manually inform the SDK whether a device is known.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+adjustConfig.setIsDeviceKnown(true)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[adjustConfig setIsDeviceKnown:YES];
+```
+
+</Tab>
+</Tabs>
+
+This setting has been removed in SDK v5.
+
+### Delay SDK start {#delay-sdk-start}
+
+SDK v4 supports delaying the start of the SDK by calling `[AdjustConfig setDelayStart];` with up to **10 seconds** of delay.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+adjustConfig.setDelayStart(10)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[adjustConfig setDelayStart:10];
+```
+
+</Tab>
+</Tabs>
+
+This setting has been removed in SDK v5.
+
+### Disable third party sharing globally {#disable-sharing-globally}
+
+In SDK v4, you can call the `Adjust.disableThirdPartySharing()` method to globally disable sharing information with third parties globally.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+Adjust.disableThirdPartySharing()
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[Adjust disableThirdPartySharing];
+```
+
+</Tab>
+</Tabs>
+
+This feature has been removed from SDK v5. In SDK v5, use the `[Adjust trackThirdPartySharing]` method to enable or disable third party sharing.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let adjustThirdPartySharing = ADJThirdPartySharing.initWithIsEnabled(false)
+Adjust.trackThirdPartySharing(adjustThirdPartySharing)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc] initWithIsEnabled:@NO];
+[Adjust trackThirdPartySharing:adjustThirdPartySharing];
+```
+
+</Tab>
+</Tabs>
+
+### Check for authorization status change {#check-att-status-change}
+
+In SDK v4, you can use the `[Adjust checkForNewAttStatus]` method to prompt the SDK to read a user's ATT status and forward the information to Adjust's servers.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+Adjust.checkForNewAttStatus()
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[Adjust checkForNewAttStatus];
+```
+
+</Tab>
+</Tabs>
+
+This method has been removed in SDK v5.
+
+### Listen for conversion value updates {#listen-for-cv-updates}
+
+In SDK v4, you can use the `adjustConversionValueUpdated` method to listen for SKAdNetwork updates.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+func adjustConversionValueUpdated(_ conversionValue: NSNumber) {
+    print("Conversion value updated callback called!")
+    print(String(format: "Conversion value: %@", conversionValue))
+}
+
+func adjustConversionValueUpdated(_ fineValue: NSNumber, coarseValue: String, lockWindow: NSNumber) {
+    print("Conversion value updated callback called!")
+    print(String(format: "Conversion value: %@", fineValue))
+    print(String(format: "Coarse value: %@", coarseValue))
+    print(String(format: "Lock window: %@", lockWindow))
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+- (void)adjustConversionValueUpdated:(NSNumber *)conversionValue {
+    NSLog(@"Conversion value updated callback called!");
+    NSLog(@"Conversion value: %@", conversionValue);
+}
+
+- (void)adjustConversionValueUpdated:(NSNumber *)fineValue
+                         coarseValue:(NSString *)coarseValue
+                          lockWindow:(NSNumber *)lockWindow {
+    NSLog(@"Conversion value updated callback called!");
+    NSLog(@"Conversion value: %@", conversionValue);
+    NSLog(@"Coarse value: %@", coarseValue);
+    NSLog(@"Lock window: %@", lockWindow);
+}
+```
+
+</Tab>
+</Tabs>
+
+In SDK v5, these two methods have been replaced by a single `adjustSkanUpdatedWithConversionData` method which returns an untyped dictionary. The following keys are currently supported:
+
+-  `conversion_value`: The updated conversion value.
+-  `coarse_value`: The updated [coarse conversion value](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
+-  `lock_window`: Whether to send the postback before the conversion window ends
+-  `error`: Any error message returned by the update.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+func adjustSkanUpdated(withConversionData data: [String: String]) {
+    print("Conversion value updated callback called!")
+    print(String(format: "Conversion value dictionary: \n%@", data.description))
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+- (void)adjustSkanUpdatedWithConversionData:(NSDictionary<NSString *, NSString *> *)data {
+    NSLog(@"Conversion value updated callback called!");
+    NSLog(@"Conversion value dictionary: \n%@", data.description);
+}
+```
+
+</Tab>
+</Tabs>
+
+### Set an app secret {#set-an-app-secret}
+
+SDK v4 supports setting an App Secret by calling `setAppSecret` method on your `ADJConfig` instance to sign the SDK traffic with.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+adjustConfig.setAppSecret(secretId, info1: info1, info2: info2, info3: info3, info4: info4)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[adjustConfig setAppSecret:secretId info1:info1 info2:info2 info3:info3 info4:info4];
+```
+
+</Tab>
+</Tabs>
+
+This setting has been removed in SDK v5.
+
+## Removed plugins {#removed-plugins}
+
+<MinorVersion removed="v5" size="large" />
+
+The following plugins have been removed in SDK v5:
+
+-  Criteo
+-  Trademob
+-  Sociomantic

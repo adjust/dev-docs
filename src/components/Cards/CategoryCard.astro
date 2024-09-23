@@ -1,22 +1,55 @@
 ---
-import type { ChildLink } from "@utils/helpers/navigation/types";
+import type { SidebarItem } from "@utils/helpers/navigation/types";
+import classNames from "classnames";
 
 interface Props {
-  child: ChildLink;
+  child: SidebarItem;
 }
 
 const { child } = Astro.props;
+const childVersion = child?.version ?? "0";
+const childCategory = child?.slug?.includes("/sdk") ? "sdk" : "api";
+const categoryId = `category-${childCategory}-${childVersion}`;
 ---
 
-<div class="xs:w-full lg:w-[calc(33.3%-8px)] h-auto min-h-[144px] group">
+<div
+  id={categoryId}
+  class={classNames(
+    "xs:w-full lg:w-[calc(33.3%-8px)] h-auto min-h-[144px] group",
+    {
+      hidden: !!child.version,
+    },
+  )}
+>
   <a class="!no-underline !text-black" href={`/${child.slug}`}>
     <div
       class="h-full px-4 pt-4 pb-6 justify-center relative rounded-lg border border-card hover:shadow-lg"
     >
-      <span class="block font-semibold mb-2 group-hover:text-link-active"
-        >{child.title}</span
-      >
-      <div class="font-normal">{child.description}</div>
+      <span class="block font-semibold mb-2 group-hover:text-link-active">
+        {child.categoryTitle ? child.categoryTitle : child.title}
+      </span>
+      <div class="font-normal">
+        {child.description}
+      </div>
     </div>
   </a>
 </div>
+
+<script>
+  import { $versions as $sdkVersions } from "@store/sdkVersionsStore";
+  import { $versions as $apiVersions } from "@store/apiVersionsStore";
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const currentSdkVersion = $sdkVersions.get()?.currentVersion?.value || "0";
+    const currentApiVersion = $apiVersions.get()?.currentVersion?.value || "0";
+
+    const categories = document.querySelectorAll(
+      `#category-sdk-${currentSdkVersion}, #category-api-${currentApiVersion}, #category-version-0`,
+    );
+
+    categories.forEach((item) => {
+      item.classList.remove("hidden");
+      item.classList.add("block");
+    });
+  });
+</script>
