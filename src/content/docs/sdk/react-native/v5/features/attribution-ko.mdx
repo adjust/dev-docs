@@ -14,13 +14,13 @@ redirects:
 
 사용자가 Adjust 링크와 상호작용하면 어트리뷰션 정보가 업데이트됩니다. 이는 사용자가 [딥 링크](https://help.adjust.com/ko/article/deep-links)와 상호작용하는 경우에 발생할 수 있습니다. 사용자의 어트리뷰션 관련 정보는 `AdjustAttribution` 클래스에 나타납니다.
 
-## AdjustAttribution 클래스 속성 {#adjustattribution-class-properties}
+## AdjustAttribution class properties {#adjustattribution-class-properties}
 
 `AdjustAttribution` 클래스는 기기의 현재 어트리뷰션 상태에 관한 세부 내용을 포함합니다. 해당 사용자에 대해 입력되지 않은 모든 값은 `null` 값으로 반환됩니다.
 
 <Callout type="note">
 
-다음 값은 [`AdjustConfig` 인스턴스의 `needsCost` 속성](/ko/sdk/react-native/configuration#enable-cost-data-sending)이 `true`인 경우에만 액세스할 수 있습니다.
+다음 값은 [`AdjustConfig` 클래스의 `enableCostDataInAttribution` 메서드](/ko/sdk/react-native/configuration#enable-cost-data-sending) 를 호출한 경우에만 액세스할 수 있습니다.
 
 -  `costType`
 -  `costAmount`
@@ -28,37 +28,21 @@ redirects:
 
 </Callout>
 
-| 값                  | 데이터 유형 | 설명                                                                                         |
-| ------------------- | ----------- | -------------------------------------------------------------------------------------------- |
-| `trackerToken`      | `string`    | 디바이스가 현재 어트리뷰션된 링크의 토큰                                                     |
-| `trackerName`       | `string`    | 디바이스가 현재 어트리뷰션된 링크의 이름                                                     |
-| `network`           | `string`    | 디바이스가 현재 어트리뷰션된 네트워크의 이름                                                 |
-| `campaign`          | `string`    | 디바이스가 현재 어트리뷰션된 캠페인의 이름                                                   |
-| `adgroup`           | `string`    | 디바이스가 현재 어트리뷰션된 광고그룹의 이름                                                 |
-| `creative`          | `string`    | 디바이스가 현재 어트리뷰션된 크리에이티브의 이름                                             |
-| `clickLabel`        | `string`    | 설치가 태그된 [click label](https://help.adjust.com/ko/article/user-rewards)                 |
-| `adid`              | `string`    | 디바이스에 할당된 고유한 Adjust ID                                                           |
-| `costType`          | `string`    | 캠페인 가격 모델\(예: CPI\)                                                                  |
-| `costAmount`        | `number`    | 설치 비용                                                                                    |
-| `costCurrency`      | `string`    | 비용 관련 [3자 ISO 4217 통화 코드](https://www.iban.com/currency-codes).                     |
-| `fbInstallReferrer` | `string`    | [Facebook install referrer](https://developers.facebook.com/docs/app-ads/install-referrer/). |
-
-## 어트리뷰션 변경 시 함수 트리거 {#trigger-a-function-when-attribution-changes}
+## Trigger a function when attribution changes {#trigger-a-function-when-attribution-changes}
 
 <CodeBlock title="속성 선언">
 
-```dart
-typedef void AttributionCallback(AdjustAttribution attributionData);
-AttributionCallback? attributionCallback;
+```ts
+public setAttributionCallback(callback: (attribution: AdjustAttribution) => void): void
 ```
 
 </CodeBlock>
 
-SDK는 어트리뷰션 변경 사항을 받고 업데이트가 감지되면 함수를 호출합니다. 콜백 함수를 구성하려면 함수를 인수로 사용하여 `setAttributionCallbackListener` 메서드를 호출합니다.
+SDK는 어트리뷰션 변경 사항을 받고 업데이트가 감지되면 함수를 호출합니다. 콜백 함수를 구성하려면 함수를 인수로 사용하여 `setAttributionCallback` 메서드를 호출합니다.
 
 <Callout type="important">
 
-`setAttributionCallbackListener` 메서드는 앱에서 Adjust SDK를 초기화하기 **이전** 에 호출해야 합니다.
+`setAttributionCallback` 메서드는 앱에서 Adjust SDK를 초기화하기 **이전** 에 호출해야 합니다.
 
 </Callout>
 <CodeBlock highlight="{range: 3-18}">
@@ -66,7 +50,7 @@ SDK는 어트리뷰션 변경 사항을 받고 업데이트가 감지되면 함�
 ```jsx
 const adjustConfig = new AdjustConfig(appToken, environment);
 
-adjustConfig.setAttributionCallbackListener(function (attribution) {
+adjustConfig.setAttributionCallback(function (attribution) {
    // Printing all attribution properties.
    console.log("Attribution changed!");
    console.log(attribution.trackerToken);
@@ -76,19 +60,18 @@ adjustConfig.setAttributionCallbackListener(function (attribution) {
    console.log(attribution.adgroup);
    console.log(attribution.creative);
    console.log(attribution.clickLabel);
-   console.log(attribution.adid);
    console.log(attribution.costType);
    console.log(attribution.costAmount);
    console.log(attribution.costCurrency);
    console.log(attribution.fbInstallReferrer);
 });
 
-Adjust.create(adjustConfig);
+Adjust.initSdk(adjustConfig);
 ```
 
 </CodeBlock>
 
-## 현재 어트리뷰션 정보 확인 {#get-current-attribution-information}
+## Get current attribution information {#get-current-attribution-information}
 
 <CodeBlock title="메서드 서명">
 
@@ -109,6 +92,5 @@ Adjust.getAttribution((attribution) => {
    console.log("Adgroup = " + attribution.adgroup);
    console.log("Creative = " + attribution.creative);
    console.log("Click label = " + attribution.clickLabel);
-   console.log("Adid = " + attribution.adid);
 });
 ```

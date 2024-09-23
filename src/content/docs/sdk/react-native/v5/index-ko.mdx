@@ -18,32 +18,19 @@ Adjust React Native SDK를 통해 React Native 앱의 어트리뷰션, 이벤트
 
 <Callout type="important">
 
-Adjust SDK는 iOS 9 이상 버전과 Android API level 9 \(Gingerbread\) 이상을 지원합니다.
+Adjust SDK는 iOS 12 이상 버전과 Android API level 21 \(Lollipop\) 이상을 지원합니다.
 
 </Callout>
 
-## 1\. 프로젝트에 SDK 추가 {#1-add-the-sdk-to-your-project}
+## 1\. Add the SDK to your project {#1-add-the-sdk-to-your-project}
 
 React Native 앱에서 Adjust SDK를 시작하려면 우선 프로젝트에 Adjust SDK를 추가해야 합니다. Adjust SDK를 추가를 위해 다음 단계를 따르시기 바랍니다.
 
 1. 다음 방법 중 한 가지를 사용하여 React Native 라이브러리를 다운로드합니다.
 
-<Tabs>
-<Tab title="GitHub">
-
-Adjust의 React Native SDK [GitHub releases 페이지](https://github.com/adjust/react_native_sdk/releases/latest)에서 최신 버전을 다운로드하시기 바랍니다.
-
-</Tab>
-<Tab title="npm">
-
-터미널에서 다음 명령어를 실행합니다.
-
 ```console
-$ npm install react-native-adjust --save
+$ npm install react-native-adjust@$REACT_NATIVE_V5_VERSION --save
 ```
-
-</Tab>
-</Tabs>
 
 2. 터미널에서 다음 명령어를 실행하여 iOS 앱용 CocoaPods 디펜던시를 설치합니다.
 
@@ -51,17 +38,17 @@ $ npm install react-native-adjust --save
 $ cd ios && pod install
 ```
 
-## 2\. SDK 연동 {#2-integrate-the-sdk}
+## 2\. Integrate the SDK {#2-integrate-the-sdk}
 
 SDK를 프로젝트에 연동하려면 Adjust의 SDK 구성을 메인 앱 Javascript 파일로 가져와야 합니다.
 
 앱의 `.js` 파일 시작 부분에 다음 라인을 추가합니다.
 
 ```js
-import { Adjust, AdjustEvent, AdjustConfig } from "react-native-adjust";
+import { Adjust, AdjustConfig } from "react-native-adjust";
 ```
 
-## 3\. Adjust SDK 초기화 {#3-initialize-the-adjust-sdk}
+## 3\. Initialize the Adjust SDK {#3-initialize-the-adjust-sdk}
 
 React Native 앱에서 최대한 빨리 Adjust SDK를 초기화하시기 바랍니다. 이를 위해 앱 토큰 및 앱을 실행하고자 하는 환경과 함께 config 객체를 초기화하시기 바랍니다. 앱의 `.js` 파일 시작 부분에 다음 코드 라인을 추가합니다.
 
@@ -69,7 +56,7 @@ React Native 앱에서 최대한 빨리 Adjust SDK를 초기화하시기 바랍�
 constructor(props) {
    super(props);
    const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
-   Adjust.create(adjustConfig);
+   Adjust.initSdk(adjustConfig);
 }
 
 componentWillUnmount() {
@@ -90,11 +77,17 @@ componentWillUnmount() {
 
 </Callout>
 
-## 4\. Android 기기 설정 {#4-set-up-android-devices}
+## 4\. Set up Android devices {#4-set-up-android-devices}
 
-### 권한 추가 {#add-permissions}
+### Add permissions {#add-permissions}
 
-Adjust SDK는 정보 액세스를 위한 특정 권한이 필요합니다. `AndroidManifest.xml` 파일이 아직 존재하지 않는다면 추가하시기 바랍니다.
+Adjust SDK는 정보 액세스를 위한 특정 권한이 필요합니다.
+
+-  `INTERNET`: Adjust Android SDK에 자동으로 추가됨. 수동으로 추가할 필요는 없습니다.
+
+추가 정보에 대한 액세스를 허용하는 선택적 권한을 추가할 수도 있습니다.
+
+-  `ACCESS_NETWORK_STATE` \(선택\): 이를 `AndroidManifest.xml` 파일에 추가하여 유용한 특정 파라미터를 읽을 수 있습니다.
 
 <CodeBlock title="<code>AndroidManifest.xml</code>을 실행합니다.">
 
@@ -105,11 +98,6 @@ Adjust SDK는 정보 액세스를 위한 특정 권한이 필요합니다. `Andr
 ```
 
 </CodeBlock>
-<Callout type="note">
-
-**Google 플레이 스토어** 를 타겟팅하고 **Google 플레이 서비스** 를 사용하는 경우 Adjust SDK는 `ACCESS_WIFI_STATE` 권한을 요구하지 않습니다. 앱의 다른 곳에서 필요하지 않은 경우 이를 제거할 수 있습니다.
-
-</Callout>
 
 Adjust SDK 4\.32\.0 및 이상 버전에는 `com.google.android.gms.AD_ID` 권한이 기본값으로 포함됩니다. 앱이 COPPA 준수 대상이거나 Google 플레이 스토어를 타겟으로 하지 않는 경우, `remove`를 추가하여 이 권한을 제거할 수 있습니다.
 
@@ -126,14 +114,14 @@ Adjust SDK 4\.32\.0 및 이상 버전에는 `com.google.android.gms.AD_ID` 권�
 
 </Callout>
 
-### Google Play Services 추가 {#add-google-play-services}
+### Add Google Play Services {#add-google-play-services}
 
 Google Play Store를 타겟팅하는 앱은 기기를 식별하기 위해 반드시 [Google Advertising ID](https://support.google.com/googleplay/android-developer/answer/6048248?hl=en) \(`gps_adid`\)를 사용해야 합니다. 이를 위해 `build.gradle` 파일의 `dependencies` 섹션에 다음의 디펜던시를 추가합니다.
 
 <CodeBlock title="build.gradle">
 
 ```groovy
-implementation 'com.google.android.gms:play-services-ads-identifier:18.0.1'
+implementation 'com.google.android.gms:play-services-ads-identifier:18.1.0'
 ```
 
 </CodeBlock>
@@ -143,31 +131,7 @@ Adjust SDK는 `play-services-ads-identifier` 디펜던시의 버전과 연결되
 
 </Callout>
 
-### Proguard 설정 {#set-up-proguard}
-
-Proguard를 사용하는 경우, 다음의 규칙을 Proguard 파일에 추가하시기 바랍니다.
-
-<CodeBlock title="proguard.pro">
-
-```java
--keep class com.adjust.sdk.** { *; }
--keep class com.google.android.gms.common.ConnectionResult {
-   int SUCCESS;
-}
--keep class com.google.android.gms.ads.identifier.AdvertisingIdClient {
-   com.google.android.gms.ads.identifier.AdvertisingIdClient$Info getAdvertisingIdInfo(android.content.Context);
-}
--keep class com.google.android.gms.ads.identifier.AdvertisingIdClient$Info {
-   java.lang.String getId();
-   boolean isLimitAdTrackingEnabled();
-}
--keep public class com.android.installreferrer.** { *; }
-
-```
-
-</CodeBlock>
-
-### 설치 리퍼러 설정 {#set-up-install-referrer}
+### Set up install referrer {#set-up-install-referrer}
 
 설치 리퍼러는 앱 설치를 소스에 어트리뷰션하는 데 사용할 수 있는 어트리뷰션 메커니즘입니다. 이는 두 개의 부분으로 구성됩니다.
 
@@ -223,51 +187,13 @@ allprojects {
 
 </CodeBlock>
 
-3. Proguard를 사용하는 경우, Proguard 파일에 다음의 세팅을 추가합니다:
+#### Meta referrer integration {#meta-referrer-integration}
 
-<CodeBlock title="proguard.pro">
+Adjust SDK는 Adjust Meta 설치 리퍼러 플러그인을 사용하는 [Meta 설치 리퍼러](https://developers.facebook.com/docs/app-ads/meta-install-referrer)를 지원합니다. [연동에 대한 자세한 내용은 React Native Meta 설치 리퍼러 플러그인을 참조하시기 바랍니다](/ko/sdk/react-native/plugins/meta-referrer-plugin).
 
-```java
--keep public class com.android.installreferrer.** { *; }
-```
+## 5\. Add iOS frameworks {#5-add-ios-frameworks}
 
-</CodeBlock>
-
-#### Huawei 리퍼러 API {#huawei-referrer-api}
-
-Adjust SDK는 v4\.22\.0부터 Huawei App Gallery v10\.4 이상을 사용하는 Huawei 기기에서의 설치 측정을 지원합니다. Huawei Referrer API를 사용하기 위해 추가적인 변경을 수행하지 않아도 됩니다.
-
-#### Meta 리퍼러 연동 {#meta-referrer-integration}
-
-<Callout type="note">
-
-Adjust SDK는 [Meta가 요구하는](https://developers.facebook.com/docs/app-ads/meta-install-referrer#step-1--add-the-meta-apps) `<queries>` 요소를 번들로 제공합니다. 이를 `AndroidManifest.xml` 에 추가할 필요는 없습니다.
-
-</Callout>
-<MinorVersion added="v4.37.0">
-
-Adjust SDK 는 v4\.37\.0 이상 버전에서 [Meta 설치 리퍼러](https://developers.facebook.com/docs/app-ads/meta-install-referrer) 를 지원합니다. 이 기능을 활성화하려면 다음을 수행하시기 바랍니다.
-
-</MinorVersion>
-
-1. [앱 대시보드](https://developers.facebook.com/apps) 에서 Meta 앱 ID를 찾습니다. 자세한 정보는 Meta의 [앱 대시보드 문서](https://developers.facebook.com/docs/development/create-an-app/app-dashboard) 를 참고하시기 바랍니다.
-
-2. 앱 ID를 `string` 인수로 `AdjustConfig.setFbAppId` 메서드에 전달합니다.
-
-   ```jsx
-   const adjustConfig = new AdjustConfig(
-      "{YourAppToken}",
-      AdjustConfig.EnvironmentSandbox,
-   );
-   //...
-   adjustConfig.setFbAppId("<fb_app_id_string>");
-   //...
-   Adjust.create(adjustConfig);
-   ```
-
-## 5\. iOS 프레임워크 추가 {#5-add-ios-frameworks}
-
-Adjust SDK는 특정 iOS 프레임워크가 앱에 포함된 경우 추가적인 정보를 얻을 수 있습니다. 이러한 프레임워크는 특정 SDK 기능을 활성화하지만, SDK가 일반적으로 작동하기 위해 반드시 필요한 것은 아닙니다. **Project Settings \-\-> Build Phases \-\-> Link Binary With Libraries** 에서 프레임워크를 추가한 뒤 이를 'optional'로 지정할 수 있습니다.
+Adjust SDK는 특정 iOS 프레임워크가 앱에 포함된 경우 추가적인 정보를 얻을 수 있습니다. 이러한 프레임워크는 특정 SDK 기능을 활성화하지만, SDK가 일반적으로 작동하기 위해 반드시 필요한 것은 아닙니다. Project Settings \-\-> Build Phases \-\-> Link Binary With Libraries에서 프레임워크를 추가한 뒤 이를 **Optional** 로 지정할 수 있습니다.
 
 | 프레임워크                            | 설명                                                                                                          | 참고 사항                                                                    |
 | ------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
@@ -276,13 +202,7 @@ Adjust SDK는 특정 iOS 프레임워크가 앱에 포함된 경우 추가적인
 | **StoreKit.framework**                | SKAdNetwork 프레임워크에 액세스하고, Adjust SDK가 iOS 14 및 이후 버전에서 통신을 자동으로 처리하기 위해 필요. |                                                                              |
 | **AppTrackingTransparency.framework** | iOS 14 및 이후 버전에서 SDK가 사용자의 ATT 동의를 래핑하고 사용자의 동의 응답에 액세스하기 위해 필요.         | 앱이 "아동" 카테고리를 타겟팅하는 경우에는 이 프레임워크를 실행할 필요 없음. |
 
-## 6\. Adjust SDK 서명 추가 {#6-add-the-adjust-sdk-signature}
-
-Adjust SDK 서명을 사용해 Adjust SDK가 전송한 모든 커뮤니케이션에 서명을 추가할 수 있습니다. Adjust 서버는 이를 기반으로 유효하지 않은 설치 활동을 감지 및 차단할 수 있습니다.
-
-Adjust SDK 서명을 사용하려면 담당 테크니컬 어카운트 매니저 또는 [support@adjust.com](mailto:support@adjust.com)에 문의하시기 바랍니다.
-
-## 7\. 연동 테스트 {#7-test-your-integration}
+## 7\. Test your integration {#7-test-your-integration}
 
 Adjust SDK는 연동 테스트와 문제 해결 툴을 제공합니다. 다음과 같이 설정을 테스트하시기 바랍니다.
 
@@ -296,7 +216,7 @@ Adjust SDK는 연동 테스트와 문제 해결 툴을 제공합니다. 다음�
 
 </Callout>
 
-### Google Play Services 연동 테스트 {#test-google-play-services-integration}
+### Test Google Play Services integration {#test-google-play-services-integration}
 
 Adjust SDK가 기기의 Google 광고 ID를 수신할 수 있는지 테스트하려면 로그 수준을 `AdjustConfig.LogLevelVerbose`로 설정하고, 환경을 `AdjustConfig.EnvironmentSandbox`로 설정합니다. 앱을 시작하고 세션이나 이벤트를 기록합니다. SDK가 광고 ID를 읽으면 `gps_adid` 파라미터를 로그합니다.
 

@@ -14,7 +14,7 @@ redirects:
 
 Adjust SDK가 제공하는 `AdjustEvent` 객체는 이벤트 정보를 구성하고 이러한 정보를 앱에서 Adjust 서버로 전송하는 데 사용할 수 있습니다.
 
-## AdjustEvent 객체 인스턴스화 {#instantiate-an-adjustevent-object}
+## Instantiate an AdjustEvent object {#instantiate-an-adjustevent-object}
 
 <CodeBlock title="메서드 서명">
 
@@ -32,11 +32,11 @@ Adjust SDK를 사용하여 이벤트 정보를 전송하려면 `AdjustEvent` 객
 
 ```jsx
 var adjustEvent = new AdjustEvent("abc123");
-//...
+
 Adjust.trackEvent(adjustEvent);
 ```
 
-## 이벤트 전송 {#send-an-event}
+## Send an event {#send-an-event}
 
 <CodeBlock title="메서드 서명">
 
@@ -56,7 +56,7 @@ var adjustEvent = new AdjustEvent("abc123");
 Adjust.trackEvent(adjustEvent);
 ```
 
-### 예시 {#example}
+### Example {#example}
 
 본 예시에서는 사용자가 버튼을 조작할 때마다 `g3mfiw`라는 토큰으로 이벤트를 기록하는 방법을 보여줍니다.
 
@@ -65,7 +65,7 @@ function _onPress_trackSimpleEvent() {
    var adjustEvent = new AdjustEvent("g3mfiw");
    Adjust.trackEvent(adjustEvent);
 }
-//...
+
 <>
    <View style={styles.container}>
       <TouchableHighlight
@@ -132,7 +132,7 @@ Parameters:
 
 </CodeBlock>
 
-## 매출 이벤트 기록 {#record-event-revenue}
+## Record event revenue {#record-event-revenue}
 
 <CodeBlock title="메서드 서명">
 
@@ -157,13 +157,13 @@ public setRevenue(revenue: number, currency: string): void
 
 ```jsx
 var adjustEvent = new AdjustEvent("abc123");
-//...
+
 adjustEvent.setRevenue(0.01, "EUR");
-//...
+
 Adjust.trackEvent(adjustEvent);
 ```
 
-### 예시 {#example-1}
+### Example {#example-1}
 
 본 예시에서는 사용자가 버튼을 조작할 때마다 `g3mfiw`라는 토큰으로 이벤트를 기록하는 방법을 보여줍니다. 이 함수는 이벤트의 `revenue` 속성을 _`0.25`_ , `currency` 속성을 _`EUR`_ 로 설정합니다.
 
@@ -173,7 +173,7 @@ function _onPress_trackRevenueEvent() {
    adjustEvent.setRevenue(0.25, "EUR");
    Adjust.trackEvent(adjustEvent);
 }
-//...
+
 <>
    <View style={styles.container}>
       <TouchableHighlight
@@ -240,29 +240,29 @@ Parameters:
 
 </CodeBlock>
 
-## 매출 이벤트 중복 제거 {#deduplicate-revenue-events}
+## Deduplicate revenue events {#deduplicate-revenue-events}
 
 <CodeBlock title="메서드 서명">
 
 ```ts
-public setTransactionId(transactionId: string): void
+public setDeduplicationId(deduplicationId: string): void
 ```
 
 </CodeBlock>
 
 중복 이벤트 기록을 방지하기 위해 선택적 식별자를 전달할 수 있습니다. SDK는 최근순으로 10개의 ID를 저장하고, 중복된 트랜잭션 ID가 있는 매출 이벤트를 건너뜁니다.
 
-ID를 설정하려면 `setTransactionId` 메서드를 호출하고 트랜잭션 ID를 `string` 인수로 전달합니다.
+ID를 설정하려면 `setDeduplicationId` 메서드를 호출하고 트랜잭션 ID를 `string` 인수로 전달합니다.
 
 ```jsx
 var adjustEvent = new AdjustEvent("abc123");
-//...
-adjustEvent.setTransactionId("{transactionId}");
-//...
+
+adjustEvent.setDeduplicationId(deduplicationId);
+
 Adjust.trackEvent(adjustEvent);
 ```
 
-### 예시 {#example-2}
+### Example {#example-2}
 
 본 예시에서는 사용자가 버튼을 조작할 때마다 `g3mfiw`라는 토큰으로 이벤트를 기록하는 방법을 보여줍니다. 이 함수는 `setTransactionId` 메서드를 사용하여 `uniqueId`를 `5e85484b-1ebc-4141-aab7-25b869e54c49`로 설정합니다.
 
@@ -270,10 +270,10 @@ Adjust.trackEvent(adjustEvent);
 function _onPress_trackRevenueEvent() {
    var adjustEvent = new AdjustEvent("g3mfiw");
    var uniqueId = "5e85484b-1ebc-4141-aab7-25b869e54c49";
-   adjustEvent.setTransactionId(uniqueId);
+   adjustEvent.setDeduplicationId(uniqueId);
    Adjust.trackEvent(adjustEvent);
 }
-//...
+
 <>
    <View style={styles.container}>
       <TouchableHighlight
@@ -295,12 +295,34 @@ Parameters:
   environment      sandbox
   event_count      3
   event_token      abc123
-  transaction_id   5e85484b-1ebc-4141-aab7-25b869e54c49
+  deduplication_id   5e85484b-1ebc-4141-aab7-25b869e54c49
 ```
 
 </CodeBlock>
 
-## 콜백 파라미터 추가 {#add-callback-parameters}
+### Set a deduplication limit {#set-a-deduplication-limit}
+
+<CodeBlock title="메서드 서명">
+
+```ts
+public setEventDeduplicationIdsMaxSize(eventDeduplicationIdsMaxSize: number): void
+```
+
+</CodeBlock>
+
+식별된 중복 이벤트에 대해 목록에 추가할 수 있는 중복 제거 ID의 수에 맞춤 제한을 설정할 수 있습니다. 기본값은 10으로 설정되어 있습니다.
+
+맞춤 제한을 설정하려면 `setEventDeduplicationIdsMaxSize` 메서드를 호출하고 새로운 제한을 `number` 인수로 전달합니다.
+
+```jsx
+var adjustEvent = new AdjustEvent("abc123");
+
+adjustConfig.setEventDeduplicationIdsMaxSize(20);
+
+Adjust.trackEvent(adjustEvent);
+```
+
+## Add callback parameters {#add-callback-parameters}
 
 <CodeBlock title="메서드 서명">
 
@@ -318,9 +340,9 @@ Adjust 대시보드에 [콜백 URL](https://help.adjust.com/ko/article/set-up-ca
 
 ```jsx
 var adjustEvent = new AdjustEvent("abc123");
-//...
+
 adjustEvent.addCallbackParameter("key", "value");
-//...
+
 Adjust.trackEvent(adjustEvent);
 ```
 
@@ -346,7 +368,7 @@ Adjust [콜백 가이드](https://help.adjust.com/ko/article/callbacks)에서 �
 
 </Callout>
 
-### 예시 {#example-3}
+### Example {#example-3}
 
 본 예시에서는 사용자가 버튼을 조작할 때마다 `g3mfiw`라는 토큰으로 이벤트를 기록하는 방법을 보여줍니다. 다음 콜백 파라미터가 추가됩니다.
 
@@ -370,7 +392,7 @@ function _onPress_trackCallbackEvent() {
    adjustEvent.addCallbackParameter("revenue_amount", "0.05");
    Adjust.trackEvent(adjustEvent);
 }
-//...
+
 <>
    <View style={styles.container}>
       <TouchableHighlight
@@ -398,7 +420,7 @@ Parameters:
 
 </CodeBlock>
 
-## 파트너 파라미터 추가 {#add-partner-parameters}
+## Add partner parameters {#add-partner-parameters}
 
 <CodeBlock title="메서드 서명">
 
@@ -422,13 +444,13 @@ Adjust는 설정한 [외부 파트너](https://help.adjust.com/ko/article/integr
 
 ```jsx
 var adjustEvent = new AdjustEvent("abc123");
-//...
+
 adjustEvent.addPartnerParameter("key", "value");
-//...
+
 Adjust.trackEvent(adjustEvent);
 ```
 
-### 예시 {#example-4}
+### Example {#example-4}
 
 본 예시에서는 사용자가 버튼을 조작할 때마다 `g3mfiw`라는 토큰으로 이벤트를 기록하는 방법을 보여줍니다. 다음 파트너 파라미터가 추가됩니다.
 
@@ -442,7 +464,7 @@ function _onPress_trackPartnerEvent() {
    adjustEvent.addPartnerParameter("user_id", "835");
    Adjust.trackEvent(adjustEvent);
 }
-//...
+
 <>
    <View style={styles.container}>
       <TouchableHighlight
@@ -469,7 +491,7 @@ Parameters:
 
 </CodeBlock>
 
-## 콜백 ID 추가 {#add-a-callback-identifier}
+## Add a callback identifier {#add-a-callback-identifier}
 
 <CodeBlock title="메서드 서명">
 
@@ -485,13 +507,13 @@ ID를 `string` 인수로 한 `setCallbackId` 메서드를 호출하여 이 ID를
 
 ```jsx
 var adjustEvent = new AdjustEvent("abc123");
-//...
+
 adjustEvent.setCallbackId("your_callback_id");
-//...
+
 Adjust.trackEvent(adjustEvent);
 ```
 
-### 예시 {#example-5}
+### Example {#example-5}
 
 본 예시에서는 사용자가 버튼을 조작할 때마다 `g3mfiw`라는 토큰으로 이벤트를 기록하는 방법을 보여줍니다. `callbackId`가 `f2e728d8-271b-49ab-80ea-27830a215147`로 설정되었습니다.
 
@@ -499,12 +521,12 @@ Adjust.trackEvent(adjustEvent);
 function _onPress_trackUniqueCallbackEvent() {
    var adjustEvent = new AdjustEvent("g3mfiw");
    var callbackId = "f2e728d8-271b-49ab-80ea-27830a215147";
-   //...
+
    adjustEvent.setCallbackId(callbackId);
-   //...
+
    Adjust.trackEvent(adjustEvent);
 }
-//...
+
 <>
    <View style={styles.container}>
       <TouchableHighlight

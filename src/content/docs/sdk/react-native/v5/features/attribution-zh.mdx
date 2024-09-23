@@ -14,13 +14,13 @@ redirects:
 
 用户与 Adjust 链接交互时，其归因信息会发生更新。用户与[深度链接](https://help.adjust.com/zh/article/deep-links)交互时可能会发生这种情况。用户归因相关信息会在 `AdjustAttribution` 类中展现。
 
-## AdjustAttribution 类属性 {#adjustattribution-class-properties}
+## AdjustAttribution class properties {#adjustattribution-class-properties}
 
 `AdjustAttribution` 类包含设备当前归因状态的细节。任何未针对用户填充的值都会返回 `null` 值。
 
 <Callout type="note">
 
-只有在[您的 `AdjustConfig` 实例 `needsCost` 属性](/zh/sdk/react-native/configuration#enable-cost-data-sending)为 `true` 的情况下，才能访问下列值：
+只有在[`AdjustConfig`类上调用`enableCostDataInAttribution`方法后](/zh/sdk/react-native/configuration#enable-cost-data-sending)才能访问以下值：
 
 -  `costType`
 -  `costAmount`
@@ -28,37 +28,21 @@ redirects:
 
 </Callout>
 
-| 值                  | 数据类型 | 描述                                                                                          |
-| ------------------- | -------- | --------------------------------------------------------------------------------------------- |
-| `trackerToken`      | `string` | 设备当前归因链接的识别码                                                                      |
-| `trackerName`       | `string` | 设备当前归因链接的名称                                                                        |
-| `network`           | `string` | 设备当前归因渠道的名称                                                                        |
-| `campaign`          | `string` | 设备当前归因推广活动的名称                                                                    |
-| `adgroup`           | `string` | 设备当前归因广告组的名称                                                                      |
-| `creative`          | `string` | 设备当前归因素材的名称                                                                        |
-| `clickLabel`        | `string` | 用于标记安装的[点击标签](https://help.adjust.com/zh/article/user-rewards)                     |
-| `adid`              | `string` | 设备的唯一 Adjust ID                                                                          |
-| `costType`          | `string` | 推广活动定价模型 \(如 cpi\)                                                                   |
-| `costAmount`        | `number` | 安装成本                                                                                      |
-| `costCurrency`      | `string` | 与成本关联的货币的 [3 字符 ISO 4217 代码](https://www.iban.com/currency-codes)。              |
-| `fbInstallReferrer` | `string` | [Facebook install referrer](https://developers.facebook.com/docs/app-ads/install-referrer/)， |
-
-## 发生归因变化时触发函数 {#trigger-a-function-when-attribution-changes}
+## Trigger a function when attribution changes {#trigger-a-function-when-attribution-changes}
 
 <CodeBlock title="属性声明">
 
-```dart
-typedef void AttributionCallback(AdjustAttribution attributionData);
-AttributionCallback? attributionCallback;
+```ts
+public setAttributionCallback(callback: (attribution: AdjustAttribution) => void): void
 ```
 
 </CodeBlock>
 
-SDK 可监听归因变更并在发现更新时调用一个函数。要配置您的回传函数，请使用函数作为参数调用 `setAttributionCallbackListener` 方法。
+SDK 可监听归因变更并在发现更新时调用一个函数。要配置您的回传函数，请使用函数作为参数调用 `setAttributionCallback` 方法。
 
 <Callout type="important">
 
-您必须在应用中初始化 Adjust SDK **之前** 调用`setAttributionCallbackListener`方法。
+您必须在应用中初始化 Adjust SDK **之前** 调用`setAttributionCallback`方法。
 
 </Callout>
 <CodeBlock highlight="{range: 3-18}">
@@ -66,7 +50,7 @@ SDK 可监听归因变更并在发现更新时调用一个函数。要配置您�
 ```jsx
 const adjustConfig = new AdjustConfig(appToken, environment);
 
-adjustConfig.setAttributionCallbackListener(function (attribution) {
+adjustConfig.setAttributionCallback(function (attribution) {
    // Printing all attribution properties.
    console.log("Attribution changed!");
    console.log(attribution.trackerToken);
@@ -76,19 +60,18 @@ adjustConfig.setAttributionCallbackListener(function (attribution) {
    console.log(attribution.adgroup);
    console.log(attribution.creative);
    console.log(attribution.clickLabel);
-   console.log(attribution.adid);
    console.log(attribution.costType);
    console.log(attribution.costAmount);
    console.log(attribution.costCurrency);
    console.log(attribution.fbInstallReferrer);
 });
 
-Adjust.create(adjustConfig);
+Adjust.initSdk(adjustConfig);
 ```
 
 </CodeBlock>
 
-## 获取当前归因信息 {#get-current-attribution-information}
+## Get current attribution information {#get-current-attribution-information}
 
 <CodeBlock title="方法签名">
 
@@ -109,6 +92,5 @@ Adjust.getAttribution((attribution) => {
    console.log("Adgroup = " + attribution.adgroup);
    console.log("Creative = " + attribution.creative);
    console.log("Click label = " + attribution.clickLabel);
-   console.log("Adid = " + attribution.adid);
 });
 ```

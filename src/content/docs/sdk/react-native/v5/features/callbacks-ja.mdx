@@ -26,20 +26,19 @@ SDKがセッション情報を送信した時に関数をトリガーする、�
 
 セッションコールバックは、レスポンス データ オブジェクトにアクセスできます。そのプロパティをコールバック関数内で使用することが可能です。
 
-| プロパティ     | データタイプ             | 説明                                                 |
-| -------------- | ------------------------ | ---------------------------------------------------- |
-| `Message`      | `string`                 | サーバーからのメッセージまたはSDKのエラーログ        |
-| `Timestamp`    | `string`                 | Adjustのサーバーからのタイムスタンプ                 |
-| `Adid`         | `string`                 | Adjustから提供されるユニークデバイスID               |
-| `JsonResponse` | `object<string, object>` | サーバーからのレスポンスを含むJSONオブジェクト       |
-| `WillRetry`    | `boolean`                | 失敗したパッケージの再送を試みるかどうかを示します。 |
+| プロパティ     | データタイプ | 説明                                                 |
+| -------------- | ------------ | ---------------------------------------------------- |
+| `message`      | `string`     | サーバーからのメッセージまたはSDKのエラーログ        |
+| `timestamp`    | `string`     | Adjustのサーバーからのタイムスタンプ                 |
+| `jsonResponse` | `string`     | サーバーからのレスポンスを含むJSONオブジェクト       |
+| `willRetry`    | `boolean`    | 失敗したパッケージの再送を試みるかどうかを示します。 |
 
 ### Successコールバック {#success-callbacks}
 
 <CodeBlock title="メソッドシグネチャー">
 
 ```ts
-public setSessionTrackingSucceededCallbackListener(
+public setSessionTrackingSucceededCallback(
    callback: (sessionSuccess: AdjustSessionTrackingSuccess) => void
 ): void
 
@@ -54,19 +53,16 @@ const adjustConfig = new AdjustConfig(
    "{YourAppToken}",
    AdjustConfig.EnvironmentSandbox,
 );
-//...
-adjustConfig.setSessionTrackingSucceededCallbackListener(
-   function (sessionSuccess) {
-      // Printing all session success properties.
-      console.log("Session recording succeeded!");
-      console.log(sessionSuccess.message);
-      console.log(sessionSuccess.timestamp);
-      console.log(sessionSuccess.adid);
-      console.log(sessionSuccess.jsonResponse);
-   },
-);
-//...
-Adjust.create(adjustConfig);
+
+adjustConfig.setSessionTrackingSucceededCallback(function (sessionSuccess) {
+   // Printing all session success properties.
+   console.log("Session recording succeeded!");
+   console.log(sessionSuccess.message);
+   console.log(sessionSuccess.timestamp);
+   console.log(sessionSuccess.jsonResponse);
+});
+
+Adjust.initSdk(adjustConfig);
 ```
 
 #### 例 {#example}
@@ -78,14 +74,12 @@ const adjustConfig = new AdjustConfig(
    "{YourAppToken}",
    AdjustConfig.EnvironmentSandbox,
 );
-//...
-adjustConfig.setSessionTrackingSucceededCallbackListener(
-   function (sessionSuccess) {
-      console.log(sessionSuccess.timestamp);
-   },
-);
-//...
-Adjust.create(adjustConfig);
+
+adjustConfig.setSessionTrackingSucceededCallback(function (sessionSuccess) {
+   console.log(sessionSuccess.timestamp);
+});
+
+Adjust.initSdk(adjustConfig);
 ```
 
 ### Failureコールバック {#failure-callbacks}
@@ -93,7 +87,7 @@ Adjust.create(adjustConfig);
 <CodeBlock title="メソッドシグネチャー">
 
 ```ts
-public setSessionTrackingFailedCallbackListener(
+public setSessionTrackingFailedCallback(
    callback: (sessionFailed: AdjustSessionTrackingFailure) => void
 ): void
 
@@ -108,20 +102,17 @@ const adjustConfig = new AdjustConfig(
    "{YourAppToken}",
    AdjustConfig.EnvironmentSandbox,
 );
-//...
-adjustConfig.setSessionTrackingFailedCallbackListener(
-   function (sessionFailure) {
-      // Printing all session failure properties.
-      console.log("Session recording failed!");
-      console.log(sessionFailure.message);
-      console.log(sessionFailure.timestamp);
-      console.log(sessionFailure.adid);
-      console.log(sessionFailure.willRetry);
-      console.log(sessionFailure.jsonResponse);
-   },
-);
-//...
-Adjust.create(adjustConfig);
+
+adjustConfig.setSessionTrackingFailedCallback(function (sessionFailure) {
+   // Printing all session failure properties.
+   console.log("Session recording failed!");
+   console.log(sessionFailure.message);
+   console.log(sessionFailure.timestamp);
+   console.log(sessionFailure.willRetry);
+   console.log(sessionFailure.jsonResponse);
+});
+
+Adjust.initSdk(adjustConfig);
 ```
 
 #### 例 {#example-1}
@@ -133,14 +124,12 @@ const adjustConfig = new AdjustConfig(
    "{YourAppToken}",
    AdjustConfig.EnvironmentSandbox,
 );
-//...
-adjustConfig.setSessionTrackingFailedCallbackListener(
-   function (sessionFailure) {
-      console.log(sessionFailure.message);
-   },
-);
-//...
-Adjust.create(adjustConfig);
+
+adjustConfig.setSessionTrackingFailedCallback(function (sessionFailure) {
+   console.log(sessionFailure.message);
+});
+
+Adjust.initSdk(adjustConfig);
 ```
 
 ## イベントコールバック {#event-callbacks}
@@ -149,15 +138,14 @@ SDKがイベント情報を送信した時に関数をトリガーする、イ�
 
 イベントコールバックは、レスポンス データ オブジェクトにアクセスできます。そのプロパティをコールバック関数内で使用することが可能です。
 
-| プロパティ     | データタイプ             | 説明                                                   |
-| -------------- | ------------------------ | ------------------------------------------------------ |
-| `Message`      | `string`                 | サーバーからのメッセージまたはSDKのエラーログ          |
-| `Timestamp`    | `string`                 | Adjustのサーバーからのタイムスタンプ                   |
-| `Adid`         | `string`                 | Adjustから提供されるユニークデバイスID                 |
-| `EventToken`   | `string`                 | イベントトークン                                       |
-| `CallbackId`   | `string`                 | イベントオブジェクトに設定されたカスタムコールバックID |
-| `JsonResponse` | `object<string, object>` | サーバーからのレスポンスを含むJSONオブジェクト         |
-| `WillRetry`    | `boolean`                | 失敗したパッケージの再送を試みるかどうかを示します。   |
+| プロパティ     | データタイプ | 説明                                                   |
+| -------------- | ------------ | ------------------------------------------------------ |
+| `message`      | `string`     | サーバーからのメッセージまたはSDKのエラーログ          |
+| `timestamp`    | `string`     | Adjustのサーバーからのタイムスタンプ                   |
+| `eventToken`   | `string`     | イベントトークン                                       |
+| `callbackId`   | `string`     | イベントオブジェクトに設定されたカスタムコールバックID |
+| `jsonResponse` | `string`     | サーバーからのレスポンスを含むJSONオブジェクト         |
+| `willRetry`    | `boolean`    | 失敗したパッケージの再送を試みるかどうかを示します。   |
 
 ### Successコールバック {#success-callbacks-1}
 
@@ -179,7 +167,7 @@ const adjustConfig = new AdjustConfig(
    "{YourAppToken}",
    AdjustConfig.EnvironmentSandbox,
 );
-//...
+
 adjustConfig.setEventTrackingSucceededCallbackListener(function (eventSuccess) {
    // Printing all event success properties.
    console.log("Event recording succeeded!");
@@ -187,11 +175,10 @@ adjustConfig.setEventTrackingSucceededCallbackListener(function (eventSuccess) {
    console.log(eventSuccess.timestamp);
    console.log(eventSuccess.eventToken);
    console.log(eventSuccess.callbackId);
-   console.log(eventSuccess.adid);
    console.log(eventSuccess.jsonResponse);
 });
-//...
-Adjust.create(adjustConfig);
+
+Adjust.initSdk(adjustConfig);
 ```
 
 #### 例 {#example-2}
@@ -203,12 +190,12 @@ const adjustConfig = new AdjustConfig(
    "{YourAppToken}",
    AdjustConfig.EnvironmentSandbox,
 );
-//...
+
 adjustConfig.setEventTrackingSucceededCallbackListener(function (eventSuccess) {
    console.log(eventSuccess.timestamp);
 });
-//...
-Adjust.create(adjustConfig);
+
+Adjust.initSdk(adjustConfig);
 ```
 
 ### Failureコールバック {#failure-callbacks-1}
@@ -216,7 +203,7 @@ Adjust.create(adjustConfig);
 <CodeBlock title="メソッドシグネチャー">
 
 ```ts
-public setEventTrackingFailedCallbackListener(
+public setEventTrackingFailedCallback(
    callback: (eventFailed: AdjustEventTrackingFailure) => void
 ): void
 
@@ -232,19 +219,18 @@ const adjustConfig = new AdjustConfig(
    AdjustConfig.EnvironmentSandbox,
 );
 adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
-adjustConfig.setEventTrackingFailedCallbackListener(function (eventFailure) {
+adjustConfig.setEventTrackingFailedCallback(function (eventFailure) {
    // Printing all event failure properties.
    console.log("Event recording failed!");
    console.log(eventFailure.message);
    console.log(eventFailure.timestamp);
    console.log(eventFailure.eventToken);
    console.log(eventFailure.callbackId);
-   console.log(eventFailure.adid);
    console.log(eventFailure.willRetry);
    console.log(eventFailure.jsonResponse);
 });
-//...
-Adjust.create(adjustConfig);
+
+Adjust.initSdk(adjustConfig);
 ```
 
 #### 例 {#example-3}
@@ -256,10 +242,10 @@ const adjustConfig = new AdjustConfig(
    "{YourAppToken}",
    AdjustConfig.EnvironmentSandbox,
 );
-//...
-adjustConfig.setEventTrackingFailedCallbackListener(function (eventFailure) {
+
+adjustConfig.setEventTrackingFailedCallback(function (eventFailure) {
    console.log(eventFailure.message);
 });
-//...
-Adjust.create(adjustConfig);
+
+Adjust.initSdk(adjustConfig);
 ```
