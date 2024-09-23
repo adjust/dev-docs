@@ -14,7 +14,7 @@ redirects:
 
 IDFA\(ID for Advertisers\)를 기록하려면 사용자의 허가를 받기 위한 메시지를 표시해야 합니다. 이렇게 하려면 앱에 Apple의 ATT\(App Tracking Transparency\) 프레임워크를 포함해야 합니다. Adjust SDK는 사용자의 허가 여부를 저장하고 각 요청과 함께 Adjust 서버로 전송합니다.
 
-## 승인 상태 {#authorization-statuses}
+## Authorization statuses {#authorization-statuses}
 
 <Table>
 
@@ -32,17 +32,17 @@ SDK가 ATT\(App Tracking Transparency\) 상태를 조회할 수 없는 경우, `
 
 </Callout>
 
-## ATT 승인 래퍼 {#att-authorization-wrapper}
+## ATT authorization wrapper {#att-authorization-wrapper}
 
 <CodeBlock title="메서드 서명">
 
 ```ts
-requestTrackingAuthorizationWithCompletionHandler: (handler: (status: number) => void) => void
+requestAppTrackingAuthorization: (handler: (status: number) => void) => void
 ```
 
 </CodeBlock>
 
-Adjust SDK에는 [Apple `requestTrackingAuthorizationWithCompletionHandler` 메서드](https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager/3547037-requesttrackingauthorizationwith)의 래퍼가 포함되어 있습니다. ATT 프롬프트를 커스텀하지 않으려면 이 래퍼를 사용할 수 있습니다.
+Adjust SDK에는 [Apple `requestAppTrackingAuthorization` 메서드](https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager/3547037-requesttrackingauthorizationwith)의 래퍼가 포함되어 있습니다. ATT 프롬프트를 커스텀하지 않으려면 이 래퍼를 사용할 수 있습니다.
 
 콜백 메서드는 사용자가 동의 팝업창에 응답할 때 트리거되고 사용자의 동의 상태 코드를 Adjust 서버로 전송합니다. 콜백 함수 내에서 각 상태 코드에 대한 응답을 정의할 수 있습니다.
 
@@ -55,7 +55,8 @@ Adjust SDK는 커스텀 프롬프트 사용 시 동의 여부도 기록합니다
 </Callout>
 
 ```jsx
-Adjust.requestTrackingAuthorizationWithCompletionHandler(function (status) {
+Adjust.requestAppTrackingAuthorization(function (status) {
+   print("[Adjust]: Authorization status update!");
    switch (status) {
       case 0:
          // ATTrackingManagerAuthorizationStatusNotDetermined case
@@ -73,12 +74,13 @@ Adjust.requestTrackingAuthorizationWithCompletionHandler(function (status) {
 });
 ```
 
-### 예시 {#example}
+### Example {#example}
 
 예시에서는 사용자가 프롬프트와 상호작용할 때 사용자의 인증 상태에 대해 읽을 수 있는\(human\-readable\) 설명을 로그하는 방법을 보여줍니다.
 
 ```jsx
-Adjust.requestTrackingAuthorizationWithCompletionHandler(function (status) {
+Adjust.requestAppTrackingAuthorization(function (status) {
+   print("[Adjust]: Authorization status update!");
    switch (status) {
       case 0:
          console.log("The user has not responded to the access prompt yet.");
@@ -102,7 +104,7 @@ Adjust.requestTrackingAuthorizationWithCompletionHandler(function (status) {
 });
 ```
 
-## 현재 승인 상태 확인 {#get-current-authorization-status}
+## Get current authorization status {#get-current-authorization-status}
 
 <CodeBlock title="메서드 서명">
 
@@ -115,40 +117,27 @@ getAppTrackingAuthorizationStatus: (callback: (authorizationStatus: number) => v
 사용자의 현재 인증 상태는 언제든지 조회가 가능합니다. `getAppTrackingAuthorizationStatus` 메서드를 호출하여 `number`로 인증 상태 코드를 반환합니다.
 
 ```jsx
-Adjust.getAppTrackingAuthorizationStatus();
+Adjust.getAppTrackingAuthorizationStatus(function (status) {
+   // check status value
+});
 ```
 
-### 예시 {#example-1}
+### Example {#example-1}
 
 예시에서는 사용자의 인증 상태를 수집하여 `string`으로 변환하는 방법을 보여줍니다. 해당 정보는 `authorizationStatus`라는 변수로 할당되어 키 `"status"`와 함께 세션 파트너 파라미터로 전달됩니다.
 
 ```jsx
-var authorizationStatus = String(Adjust.getAppTrackingAuthorizationStatus());
-Adjust.addSessionPartnerParameter("status", authorizationStatus);
+Adjust.getAppTrackingAuthorizationStatus(function (status) {
+   Adjust.addGlobalCallbackParameter("status", status.toString());
+});
 ```
 
-## 승인 상태 변경 확인 {#check-for-authorization-status-changes}
+## Custom prompt timing {#custom-prompt-timing}
 
 <CodeBlock title="메서드 서명">
 
 ```ts
-checkForNewAttStatus: () => void
-```
-
-</CodeBlock>
-
-커스텀 ATT 프롬프트를 사용하는 경우, 사용자 인증 상태 변경에 대해 Adjust SDK에 알려야 합니다. `checkForNewAttStatus` 메서드를 호출하여 인증 상태를 Adjust 서버로 전송합니다.
-
-```jsx
-Adjust.checkForNewAttStatus();
-```
-
-## 커스텀 프롬프트 타이밍 {#custom-prompt-timing}
-
-<CodeBlock title="메서드 서명">
-
-```js
-AdjustConfig.prototype.setAttConsentWaitingInterval = function(attConsentWaitingInterval);
+public setAttConsentWaitingInterval(attConsentWaitingInterval: number): void
 ```
 
 </CodeBlock>
@@ -169,5 +158,5 @@ const adjustConfig = new AdjustConfig(
 //...
 adjustConfig.setAttConsentWaitingInterval(30);
 //...
-Adjust.create(adjustConfig);
+Adjust.initSdk(adjustConfig);
 ```
