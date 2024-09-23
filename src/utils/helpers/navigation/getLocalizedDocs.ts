@@ -7,7 +7,7 @@ import type { ContentCollectionEntry } from "@utils/helpers/navigation/types";
  * English content. Ensures that if a child exists, its parent also exists.
  * @returns An array of ContentCollectionEntry items
  */
-const getLocalizedDocs = async (): ContentCollectionEntry[] => {
+const getLocalizedDocs = async (): Promise<ContentCollectionEntry[]> => {
    const docs = await getCollection("docs");
 
    // Filter English docs (as fallback)
