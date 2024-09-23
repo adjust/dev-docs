@@ -20,7 +20,7 @@ redirects:
 
 SDKは、ユーザーがリンクからアプリを起動した後にディープリンクの情報を読み取ることができます。
 
-## ディープリンクの設定 {#set-up-deep-linking}
+## ディープリンクを設定する {#set-up-deep-linking}
 
 ユーザーがアプリをインストールしている場合、ユーザーがディープリンクの情報を含むリンクをクリックするとアプリが起動します。Adjust SDKには、アプリ全体にディープリンクの情報を解析するツールが含まれます。
 
@@ -44,22 +44,22 @@ React Nativeアプリでディープリンクを設定するには、以下の�
 <CodeBlock title="メソッドシグネチャー">
 
 ```ts
-public setShouldLaunchDeeplink(shouldLaunchDeeplink: boolean): void
+public disableDeferredDeeplinkOpening(): void
 ```
 
 </CodeBlock>
 
-SDKはデフォルトでディファードディープリンクを開きます。これは、`boolean`引数を`setShouldLaunchDeeplink`メソッドにパスすることで設定できます。
+SDKはデフォルトでディファードディープリンクを開きます。`disableDeferredDeeplinkOpening`メソッドを呼び出すことで、これを構成できます。
 
 ```js
 const adjustConfig = new AdjustConfig(
    "{YourAppToken}",
    AdjustConfig.EnvironmentSandbox,
 );
-//...
-adjustConfig.setShouldLaunchDeeplink(true);
-//...
-Adjust.create(adjustConfig);
+
+adjustConfig.disableDeferredDeeplinkOpening();
+
+Adjust.initSdk(adjustConfig);
 ```
 
 ### ディファードディープリンクのデリゲートを設定する {#set-up-a-deferred-deep-link-delegate}
@@ -67,7 +67,7 @@ Adjust.create(adjustConfig);
 <CodeBlock title="メソッドシグネチャー">
 
 ```ts
-public setDeferredDeeplinkCallbackListener(callback: (uri: AdjustUri) => void): void
+public setDeferredDeeplinkCallback(callback: (deeplink: AdjustDeeplink) => void): void
 ```
 
 </CodeBlock>
@@ -79,12 +79,12 @@ const adjustConfig = new AdjustConfig(
    "{YourAppToken}",
    AdjustConfig.EnvironmentSandbox,
 );
-//...
-adjustConfig.setDeferredDeeplinkCallbackListener(function (deeplink) {
-   console.log("Deferred deep link URL content: " + deeplink);
+
+adjustConfig.setDeferredDeeplinkCallback(function (deeplink) {
+   console.log("Deferred deep link URL content: " + deeplink.deeplink);
 });
-//...
-Adjust.create(adjustConfig);
+
+Adjust.initSdk(adjustConfig);
 ```
 
 ### 例 {#example}
@@ -95,22 +95,55 @@ Adjust.create(adjustConfig);
 var LogDeepLink = function (deeplinkURL) {
    console.log("Deeplink URL: " + deeplinkURL);
 };
-//...
+
 const adjustConfig = new AdjustConfig(
    "{YourAppToken}",
    AdjustConfig.EnvironmentSandbox,
 );
-adjustConfig.setDeferredDeeplinkCallbackListener(LogDeepLink);
-//...
-Adjust.create(adjustConfig);
+adjustConfig.setDeferredDeeplinkCallback(LogDeepLink);
+
+Adjust.initSdk(adjustConfig);
 ```
 
-### LinkMeを有効化する {#enable-linkme}
+## ディープリンクによるリアトリビューション {#reattribution-via-deep-links}
 
 <CodeBlock title="メソッドシグネチャー">
 
-```js
-public setLinkMeEnabled(linkMeEnabled: boolean): void
+```ts
+processDeeplink: (adjustDeeplink: AdjustDeeplink) => void
+```
+
+</CodeBlock>
+
+Adjustはディープリンクを使ったリエンゲージメントキャンペーンをサポートしています。詳細は、[Campaign Labでディープリンクを設定](https://help.adjust.com/ja/article/deep-links)する方法をご覧ください。
+
+ユーザーをリアトリビュートするには、アプリがディープリンクコンテンツを受け取る時に`Adjust.processDeeplink`メソッドを呼び出す必要があります。Adjust SDKは次に、ディープリンク内の新しいアトリビューションデータを検索します。SDKが新しい情報を見つけた場合、その情報をAdjustのサーバーに転送し、リアトリビューションを行います。
+
+```jsx
+componentDidMount() {
+    Linking.addEventListener('url', this.handleDeepLink);
+    Linking.getInitialURL().then((url) => {
+        if (url) {
+            this.handleDeepLink({ url });
+        }
+    })
+}
+
+componentWillUnmount() {
+    Linking.removeEventListener('url', this.handleDeepLink);
+}
+
+handleDeepLink(deeplink) {
+    Adjust.processDeeplink(new AdjustDeeplink(deeplink.url));
+}
+```
+
+## LinkMeを有効化する {#enable-linkme}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```ts
+public enableLinkMe(): void
 ```
 
 </CodeBlock>
@@ -125,15 +158,15 @@ Adjust SDKは、ユーザーがアプリを初回起動した際にペースト�
 
 ユーザーがLinkMeのURLをクリックすると、そのリンク情報をシステムのペーストボードにコピーするオプションがあります。Adjust SDKを使用してシステムのペーストボードを読み、ディープリンクの情報を確認することができます。ディープリンクがある場合、SDKはユーザーをアプリ内の正しいページに転送します。
 
-アプリ内でペーストボードの確認を有効化するには、configオブジェクトの`setLinkMeEnabled`メソッドに`true`値をパスしてください。
+アプリ内でペーストボードの確認を有効化するには、configオブジェクトの`enableLinkMe`メソッドを呼び出します：
 
 ```js
 const adjustConfig = new AdjustConfig(
    "{YourAppToken}",
    AdjustConfig.EnvironmentSandbox,
 );
-//...
-adjustConfig.setLinkMeEnabled(true);
-//...
-Adjust.create(adjustConfig);
+
+adjustConfig.enableLinkMe();
+
+Adjust.initSdk(adjustConfig);
 ```
