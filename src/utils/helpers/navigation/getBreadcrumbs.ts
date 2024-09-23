@@ -20,7 +20,7 @@ export const getBreadcrumbs = (currentPage: string): Breadcrumb[] => {
 
       if (entry) {
          breadcrumbs.unshift({
-            title: entry.categoryTitle ? entry.categoryTitle : entry.title,
+            title: entry.categoryTitle || entry.title,
             url: entry.slug,
             level: level
          });

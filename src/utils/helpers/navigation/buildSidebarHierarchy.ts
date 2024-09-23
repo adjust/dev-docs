@@ -76,7 +76,7 @@ export const buildSidebarHierarchy = (entries: ContentCollectionEntry[]): [Langu
 
       // Extract version from the entry id
       const structuredEntryVersion = extractVersionFromSlug(structuredEntry.id);
-      structuredEntry.version = structuredEntryVersion ? structuredEntryVersion : undefined;
+      structuredEntry.version = structuredEntryVersion || undefined;
 
       // Find potential children by checking if the slug is a direct parent
       slugMap.forEach((potentialChild, potentialChildSlug) => {
