@@ -15,12 +15,16 @@ import {
   remarkDefinitionList,
   defListHastHandlers,
 } from "remark-definition-list";
+import { writeFile } from "fs";
+import markdoc from "@astrojs/markdoc";
 
 console.log(
   `${import.meta.env.VITE_GITHUB_TOKEN ? "Token found" : "No token found"}`,
 );
 
 const versions = await fetchVersions();
+const versionJSON = JSON.stringify(versions, null, 2)
+await writeFile("src/versionMap.json", versionJSON, (err) => { });
 
 const locales = ["en", "ja", "ko", "zh"];
 
@@ -41,30 +45,23 @@ const updatedRedirectList = prependLocaleToJSON(redirectList, locales);
 // https://astro.build/config
 export default defineConfig({
   redirects: updatedRedirectList,
-  integrations: [
-    AutoImport({
-      imports: [
-        "@components/Accordion.astro",
-        "@components/Callout.astro",
-        "@components/CodeBlock.astro",
-        "@components/ListColumns.astro",
-        "@components/MinorVersion.astro",
-        "@components/SdkVersion.astro",
-        "@components/Tab.astro",
-        "@components/Tabs.astro",
-      ],
-    }),
-    // Enable React for the Algolia search component.
-    react({
-      experimentalReactChildren: true,
-    }),
-    expressiveCode(),
-    mdx({
-      optimize: true,
-    }),
-    tailwind(),
-    sitemap(),
-  ],
+  integrations: [AutoImport({
+    imports: [
+      "@components/Accordion.astro",
+      "@components/Callout.astro",
+      "@components/CodeBlock.astro",
+      "@components/ListColumns.astro",
+      "@components/MinorVersion.astro",
+      "@components/SdkVersion.astro",
+      "@components/Tab.astro",
+      "@components/Tabs.astro",
+    ],
+  }), // Enable React for the Algolia search component.
+  react({
+    experimentalReactChildren: true,
+  }), expressiveCode(), mdx({
+    optimize: true,
+  }), tailwind(), sitemap(), markdoc()],
   site: "https://dev.adjust.com/",
   markdown: {
     remarkPlugins: [
