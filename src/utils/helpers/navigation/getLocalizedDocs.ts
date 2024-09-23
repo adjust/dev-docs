@@ -1,12 +1,13 @@
 import { KNOWN_LANGUAGE_CODES } from "@i18n/locales";
 import { getCollection } from "astro:content";
+import type { ContentCollectionEntry } from "@utils/helpers/navigation/types";
 
 /**
  * Fetches all docs from our content collection and polyfills any missing localized content with
  * English content. Ensures that if a child exists, its parent also exists.
- * @returns An array of ContentCollection items
+ * @returns An array of ContentCollectionEntry items
  */
-const getLocalizedDocs = async () => {
+const getLocalizedDocs = async (): ContentCollectionEntry[] => {
    const docs = await getCollection("docs");
 
    // Filter English docs (as fallback)

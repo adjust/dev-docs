@@ -3,7 +3,7 @@ import { findEntryBySlug } from "@utils/helpers/navigation/findEntryBySlug";
 
 /**
  * Fetches an array of BreadCrumb items for the current page
- * @param currentPage
+ * @param currentPage The current page slug
  * @returns An array of BreadCrumb items
  */
 export const getBreadcrumbs = (currentPage: string): Breadcrumb[] => {
@@ -12,8 +12,8 @@ export const getBreadcrumbs = (currentPage: string): Breadcrumb[] => {
    /**
     * Populates the BreadCrumb array by following the parent links of a given entry.
     * Stops when there are no more parents to populate.
-    * @param slug
-    * @param level
+    * @param slug The current page slug
+    * @param level The level of the current page
     */
    const traverseHierarchy = (slug: string, level: number): void => {
       const entry = findEntryBySlug(slug);

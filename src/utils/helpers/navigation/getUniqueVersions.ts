@@ -3,7 +3,7 @@ import type { ContentCollectionEntry } from "./types";
 
 /**
  * Fetch all unique version entries for SDK documentation
- * @param entries
+ * @param entries An array of ContentCollectionEntry
  * @returns An array of SDK versions
  */
 const getUniqueVersions = (entries: ContentCollectionEntry[]): ContentCollectionEntry["data"]["versions"] => {

@@ -5,7 +5,7 @@ import { Languages, type ContentCollectionEntry, type LanguageTrees, type Sideba
 /**
  * Creates a tree of content for each supported language with a queryable map.
  * This is used for the sidebar as well as for helper functions that query the collection.
- * @param localizedDocs
+ * @param localizedDocs An array of Content Collection entries
  * @returns A language tree for all languages containing the polyfilled content arrays from the fetch step.
  * @returns A map of all content entries searchable by slug. Used for building breadcrumbs.
  */

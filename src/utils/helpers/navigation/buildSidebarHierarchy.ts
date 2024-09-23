@@ -4,7 +4,7 @@ const versionRegex = /v\d/i;
 
 /**
  * Builds a JSON object that represents the content collection as a sidebar.
- * @param entries
+ * @param entries An array of ContentCollectionEntry items
  * @returns A LanguageTree containing SidebarItem entries for API and SDK content.
  * @returns A hashmap of all entries provided for easier querying.
  */
@@ -42,7 +42,7 @@ export const buildSidebarHierarchy = (entries: ContentCollectionEntry[]): [Langu
 
    /**
     * Extracts the version number from a content collection entry ID.
-    * @param id
+    * @param id The path (id) of the collection entry
     * @returns A version string or null
     */
    const extractVersionFromSlug = (id: string): string | undefined => {
