@@ -18,7 +18,7 @@ Adjust React Native SDKを実装することで、アトリビューションや
 
 <Callout type="important">
 
-Adjust SDKは、iOS 9以降またはAndroid APIレベル9（Gingerbread）以降に対応しています。
+Adjust SDKは、iOS 12以降またはAndroid APIレベル21（Lollipop）以降に対応しています。
 
 </Callout>
 
@@ -28,22 +28,9 @@ React NativeアプリでAdjust SDKを使うには、プロジェクトに追加�
 
 1. 次のオプションのいずれか1つを使用して、React Nativeライブラリをダウンロードします。
 
-<Tabs>
-<Tab title="Github">
-
-Adjust React Native SDKの[GitHubのリリースページ](https://github.com/adjust/react_native_sdk/releases/latest)からSDKの最新バージョンをダウンロードできます。
-
-</Tab>
-<Tab title="NPM">
-
-ターミナルで以下のコマンドを実行します：
-
 ```console
-$ npm install react-native-adjust --save
+$ npm install react-native-adjust@$REACT_NATIVE_V5_VERSION --save
 ```
-
-</Tab>
-</Tabs>
 
 2. ターミナルで以下のコマンドを実行し、iOSアプリのCocoaPodsのdependencyをインストールします：
 
@@ -58,7 +45,7 @@ SDKをプロジェクトに実装するには、AdjustのSDK設定をメイン�
 アプリの`.js`ファイルの冒頭に、次の行を追加します：
 
 ```js
-import { Adjust, AdjustEvent, AdjustConfig } from "react-native-adjust";
+import { Adjust, AdjustConfig } from "react-native-adjust";
 ```
 
 ## 3\. Adjust SDKを初期化する {#3-initialize-the-adjust-sdk}
@@ -70,7 +57,7 @@ React Nativeアプリ内で、できるだけ早くAdjust SDKを初期化する�
 constructor(props) {
    super(props);
    const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
-   Adjust.create(adjustConfig);
+   Adjust.initSdk(adjustConfig);
 }
 
 componentWillUnmount() {
@@ -93,9 +80,15 @@ componentWillUnmount() {
 
 ## 4\. Androidデバイスを設定する {#4-set-up-android-devices}
 
-### パーミッションを追加 {#add-permissions}
+### パーミッションを追加する {#add-permissions}
 
-Adjust SDKが情報にアクセスするには、特定のパーミッションが必要です。まだ存在しない場合は、`AndroidManifest.xml`ファイルに追加してください。
+Adjust SDKが情報にアクセスするには、特定のパーミッションが必要です。
+
+-  `INTERNET`: Adjust Android SDKに自動的に追加されます。手動で追加する必要はありません。
+
+また、追加情報へのアクセスを許可するオプションの権限を追加することもできます。
+
+-  `ACCESS_NETWORK_STATE` \(オプション）：これを `AndroidManifest.xml`ファイルに追加して、便利なパラメーターを読み込むことができます。
 
 <CodeBlock title="AndroidManifest.xml">
 
@@ -106,11 +99,6 @@ Adjust SDKが情報にアクセスするには、特定のパーミッション�
 ```
 
 </CodeBlock>
-<Callout type="note">
-
-Adjust SDKは、 **Google Play ストア** をターゲットとし、 **Google Play 開発者サービス** を使用している場合、`ACCESS_WIFI_STATE`パーミッションを必要としません。アプリ内の他の場所で必要ない場合は、削除することができます。
-
-</Callout>
 
 Adjust SDKには、バージョン4\.32\.0以降、デフォルトで`com.google.android.gms.AD_ID`パーミッションが含まれています。アプリをCOPPAに準拠させる必要がある場合や、Google Playストアをターゲットにしていない場合は、`remove`ディレクティブを追加することでこれを削除することができます。
 
@@ -134,7 +122,7 @@ Google Playストアを対象とするアプリは、[Google広告ID](https://su
 <CodeBlock title="build.gradle">
 
 ```groovy
-implementation 'com.google.android.gms:play-services-ads-identifier:18.0.1'
+implementation 'com.google.android.gms:play-services-ads-identifier:18.1.0'
 ```
 
 </CodeBlock>
@@ -143,30 +131,6 @@ implementation 'com.google.android.gms:play-services-ads-identifier:18.0.1'
 Adjust SDKは、`play-services-ads-identifier`dependencyのどのバージョンとも関連付けられていません。Google Play 開発者サービスのライブラリの任意のバージョンを使用できます。
 
 </Callout>
-
-### ProGuardを設定する {#set-up-proguard}
-
-ProGuardを使用している場合は、以下のルールをカスタムのProGuardファイルに追加してください。
-
-<CodeBlock title="Proguard.pro">
-
-```java
--keep class com.adjust.sdk.** { *; }
--keep class com.google.android.gms.common.ConnectionResult {
-   int SUCCESS;
-}
--keep class com.google.android.gms.ads.identifier.AdvertisingIdClient {
-   com.google.android.gms.ads.identifier.AdvertisingIdClient$Info getAdvertisingIdInfo(android.content.Context);
-}
--keep class com.google.android.gms.ads.identifier.AdvertisingIdClient$Info {
-   java.lang.String getId();
-   boolean isLimitAdTrackingEnabled();
-}
--keep public class com.android.installreferrer.** { *; }
-
-```
-
-</CodeBlock>
 
 ### インストールリファラーを設定する {#set-up-install-referrer}
 
@@ -224,53 +188,13 @@ allprojects {
 
 </CodeBlock>
 
-3. Proguardを使用している場合は、Proguardファイルに以下の設定が含まれていることを確認してください。
-
-<CodeBlock title="Proguard.pro">
-
-```java
--keep public class com.android.installreferrer.** { *; }
-```
-
-</CodeBlock>
-
-#### Huawei Referrer API {#huawei-referrer-api}
-
-バージョン4\.22\.0以降より、Adjust SDKはHuawei AppGalleryバージョン10\.4以降のHuaweiデバイスでのインストール計測をサポートしています。Huawei Referrer APIの使用を開始するために行う設定変更はありません。
-
 #### Metaとのリファラー連携 {#meta-referrer-integration}
 
-<Callout type="note">
-
-[Metaの要件](https://developers.facebook.com/docs/app-ads/meta-install-referrer#step-1--add-the-meta-apps)により、Adjust SDKは`<queries>`エレメントをバンドルしています。これらを`AndroidManifest.xml`に追加する必要はありません。
-
-</Callout>
-<MinorVersion added="v4.37.0">
-
-Adjust SDKはv4\.37\.0以降で[Metaインストールリファラー](https://developers.facebook.com/docs/app-ads/meta-install-referrer)をサポートしています。この機能を有効にする方法：
-
-</MinorVersion>
-
-1. [App Dashboard](https://developers.facebook.com/apps)でMetaアプリIDを検索します。詳しくはMetaの[App Dashboardのドキュメント](https://developers.facebook.com/docs/development/create-an-app/app-dashboard)をご覧ください。
-
-2. `AdjustConfig.setFbAppId`メソッドに`string`引数としてアプリIDをパスします。
-
-   ```jsx
-   const adjustConfig = new AdjustConfig(
-      "{YourAppToken}",
-      AdjustConfig.EnvironmentSandbox,
-   );
-   //...
-   adjustConfig.setFbAppId("<fb_app_id_string>");
-   //...
-   Adjust.create(adjustConfig);
-   ```
+Adjust SDKは、Adjust Metaインストールリファラープラグインを使用して[Metaインストールリファラー](https://developers.facebook.com/docs/app-ads/meta-install-referrer)をサポートしています。[連携の詳細については、React Native Meta インストール リファラープラグインをご覧ください](/ja/sdk/react-native/plugins/meta-referrer-plugin)。
 
 ## 5\. iOS frameworksを追加する {#5-add-ios-frameworks}
 
-特定のiOS frameworksをアプリに実装した場合、Adjust SDKは追加の情報を取得できます。これらのframeworksによって特定のSDK機能を有効にできますが、SDKが正常に動作するために必須というわけではありません。Frameworksを実装して、 **プロジェクト設定（Project Settings） > ビルドフェーズ（Build Phases） > バイナリとライブラリをリンク（Link Binary With Libraries）** でそれらをオプションとしてマークすることができます。
-
-<Table>
+特定のiOS frameworksをアプリに実装すると、Adjust SDKは追加の情報を取得できます。これらのframeworksによって特定のSDK機能を有効にできますが、SDKが正常に動作するために必須というわけではありません。フレームワークを追加し、その後、 **Project Settings \-\-> Build Phases \-\-> Link Binary With Libraries** で **Optional** としてマークすることができます。
 
 | Framework                             | 説明                                                                                                                                          | 注意                                                                                              |
 | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
@@ -279,15 +203,7 @@ Adjust SDKはv4\.37\.0以降で[Metaインストールリファラー](https://d
 | **StoreKit.framework**                | iOS 14以降において、このframeworkはSKAdNetwork frameworkにアクセスし、SKAdNetworkとの通信をAdjust SDKで自動的に処理できるようにします。       |                                                                                                   |
 | **AppTrackingTransparency.framework** | iOS 14またはそれ以降において、このframeworkはSDKがATTに対する同意を確認するダイアログをラップし、ユーザーの許諾状況を示す値にアクセスします。 | アプリが「子供向け」カテゴリーをターゲットにしている場合は、このframeworkは実装しないでください。 |
 
-</Table>
-
-## 6\. Adjust SDKシグネチャーを追加する {#6-add-the-adjust-sdk-signature}
-
-Adjust SDKシグネチャーを使用して、Adjust SDKによって送信される全ての通信に署名できます。これによりAdjustのサーバーは、シグネチャーがない不正インストールを検出し、拒否することができます。
-
-Adjust SDKシグネチャーの使用を開始するには、担当のテクニカルアカウントマネージャーまたは[support@adjust.com](mailto:support@adjust.com)までお問い合わせください。
-
-## 7\. 実装をテストする {#7-test-your-integration}
+## 7\. 連携をテストする {#7-test-your-integration}
 
 Adjust SDKは、実装をテストとトラブルシューティングのためのツールを提供します。以下の手順に従って、実装をテストしてください。
 

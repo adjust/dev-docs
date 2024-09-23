@@ -20,48 +20,29 @@ redirects:
 
 <Callout type="note">
 
-以下の値は、[`AdjustConfig`インスタンスの`needsCost`プロパティ](/ja/sdk/react-native/configuration#enable-cost-data-sending)が`true`になっている場合にのみアクセスできます：
+以下の値には、[`AdjustConfig`クラスの`enableCostDataInAttribution`メソッド](/ja/sdk/react-native/configuration#enable-cost-data-sending)を呼び出した場合にのみアクセスが可能です。
 
 -  `costType`
 -  `costAmount`
 -  `costCurrency`
 
 </Callout>
-<Table>
-
-| 値                  | データタイプ | 説明                                                                                             |
-| ------------------- | ------------ | ------------------------------------------------------------------------------------------------ |
-| `trackerToken`      | `string`     | デバイスが現在アトリビュートされているリンクのトークン                                           |
-| `trackerName`       | `string`     | デバイスが現在アトリビュートされているリンクの名前                                               |
-| `network`           | `string`     | デバイスが現在アトリビュートされているネットワークの名前                                         |
-| `campaign`          | `string`     | デバイスが現在アトリビュートされているキャンペーンの名前                                         |
-| `adgroup`           | `string`     | デバイスが現在アトリビュートされているアドグループの名前                                         |
-| `creative`          | `string`     | デバイスが現在アトリビュートされているクリエイティブの名前                                       |
-| `clickLabel`        | `string`     | インストールがタグされている[クリックラベル](https://help.adjust.com/ja/article/user-rewards)    |
-| `adid`              | `string`     | デバイスに割り当てられた一意のAdjust ID                                                          |
-| `costType`          | `string`     | キャンペーン価格モデル（例：cpi）                                                                |
-| `costAmount`        | `number`     | インストールのコスト                                                                             |
-| `costCurrency`      | `string`     | コストに関連する[3文字のISO 4217通貨コード](https://www.iban.com/currency-codes)                 |
-| `fbInstallReferrer` | `string`     | [Facebookインストールリファラー](https://developers.facebook.com/docs/app-ads/install-referrer/) |
-
-</Table>
 
 ## アトリビューションが変更されたときに関数をトリガーする {#trigger-a-function-when-attribution-changes}
 
 <CodeBlock title="プロパティ宣言">
 
-```dart
-typedef void AttributionCallback(AdjustAttribution attributionData);
-AttributionCallback? attributionCallback;
+```ts
+public setAttributionCallback(callback: (attribution: AdjustAttribution) => void): void
 ```
 
 </CodeBlock>
 
-SDKはアトリビューションの変更を受信し、更新を検出したときに関数を呼び出すことができます。コールバック関数を設定するには、関数を引数として`setAttributionCallbackListener`メソッドを呼び出します。
+SDKはアトリビューションの変更を受信し、更新を検出したときに関数を呼び出すことができます。コールバック関数を設定するには、関数を引数として`setAttributionCallback`メソッドを呼び出します。
 
 <Callout type="important">
 
-アプリ内でAdjust SDKを初期化する **前** に、`setAttributionCallbackListener`メソッドを呼び出す必要があります。
+アプリ内でAdjust SDKを初期化する **前** に、`setAttributionCallback`メソッドを呼び出す必要があります。
 
 </Callout>
 <CodeBlock highlight="{range: 3-18}">
@@ -69,7 +50,7 @@ SDKはアトリビューションの変更を受信し、更新を検出した�
 ```jsx
 const adjustConfig = new AdjustConfig(appToken, environment);
 
-adjustConfig.setAttributionCallbackListener(function (attribution) {
+adjustConfig.setAttributionCallback(function (attribution) {
    // Printing all attribution properties.
    console.log("Attribution changed!");
    console.log(attribution.trackerToken);
@@ -79,19 +60,18 @@ adjustConfig.setAttributionCallbackListener(function (attribution) {
    console.log(attribution.adgroup);
    console.log(attribution.creative);
    console.log(attribution.clickLabel);
-   console.log(attribution.adid);
    console.log(attribution.costType);
    console.log(attribution.costAmount);
    console.log(attribution.costCurrency);
    console.log(attribution.fbInstallReferrer);
 });
 
-Adjust.create(adjustConfig);
+Adjust.initSdk(adjustConfig);
 ```
 
 </CodeBlock>
 
-## 現在のアトリビューション情報を取得 {#get-current-attribution-information}
+## 現在のアトリビューション情報を取得する {#get-current-attribution-information}
 
 <CodeBlock title="メソッドシグネチャー">
 
@@ -112,6 +92,5 @@ Adjust.getAttribution((attribution) => {
    console.log("Adgroup = " + attribution.adgroup);
    console.log("Creative = " + attribution.creative);
    console.log("Click label = " + attribution.clickLabel);
-   console.log("Adid = " + attribution.adid);
 });
 ```

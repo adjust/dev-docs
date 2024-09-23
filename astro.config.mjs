@@ -51,7 +51,6 @@ export default defineConfig({
         "@components/MinorVersion.astro",
         "@components/SdkVersion.astro",
         "@components/Tab.astro",
-        "@components/Table.astro",
         "@components/Tabs.astro",
       ],
     }),
@@ -67,9 +66,6 @@ export default defineConfig({
     sitemap(),
   ],
   site: "https://dev.adjust.com/",
-  experimental: {
-    contentCollectionCache: true,
-  },
   markdown: {
     remarkPlugins: [
       [remarkReplaceVersions, versions],
