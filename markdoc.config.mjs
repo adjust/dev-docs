@@ -1,4 +1,4 @@
-import { defineMarkdocConfig, component } from '@astrojs/markdoc/config';
+import { defineMarkdocConfig, nodes, component } from '@astrojs/markdoc/config';
 import { heading } from ".schema/Heading.markdoc";
 import { link } from ".schema/Link.markdoc";
 
@@ -6,6 +6,10 @@ export default defineMarkdocConfig({
    nodes: {
       heading,
       link,
+      fence: {
+         attributes: { ...nodes.fence.attributes },
+         render: component("/src/components/SimpleCode.astro"),
+      },
    },
    tags: {
       accordion: {
