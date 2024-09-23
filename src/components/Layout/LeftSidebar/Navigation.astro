@@ -1,21 +1,15 @@
 ---
+import NavigationItem from "@components/Layout/LeftSidebar/LeftSidebarItem.astro";
+import type { LanguageTree } from "@utils/helpers/navigation/types";
 import classNames from "classnames";
 
-import { getLanguageFromURL } from "@i18n/utils";
-import LeftSidebarItem from "./LeftSidebarItem.astro";
-import { getCurrentPage } from "@utils/helpers/navigation/getCurrentPage";
-
-import type { NavigationData } from "@utils/helpers/navigation/types";
-
 interface Props {
-  navigationEntries: NavigationData["languageTree"];
+  currentSlug: string;
+  sidebar: LanguageTree;
 }
 
-const { navigationEntries } = Astro.props;
-const currentPage = getCurrentPage(Astro.url.pathname);
-
-const langCode = getLanguageFromURL(currentPage);
-const sidebar = navigationEntries[langCode];
+const { currentSlug, sidebar } = Astro.props;
+const allItems = [...sidebar.api, ...sidebar.sdk];
 ---
 
 <nav
@@ -23,17 +17,13 @@ const sidebar = navigationEntries[langCode];
   class="w-[294px] break-words flex flex-col gap-y-[18px] pr-6 text-secondary lg:h-[calc(100%-62px)] lg:pb-6 lg:pl-[18px] lg:pt-0 xs:pt-4 xs:h-full static xs:inset-y-0 xs:left-0 xs:z-30 xs:shadow-right xs:pl-3 lg:shadow-none overflow-y-auto print:hidden sidebar-open:w-full"
 >
   {
-    sidebar!.children.map((child) => (
+    allItems.map((child) => (
       <div
         class={classNames("relative flex items-start", {
-          "nav_top-category pb-4": currentPage === child.slug,
+          nav_top_category: currentSlug === child.slug,
         })}
       >
-        <LeftSidebarItem
-          currentPage={currentPage}
-          sidebarData={child}
-          level={child.level}
-        />
+        <NavigationItem currentSlug={currentSlug} sidebarData={child} />
       </div>
     ))
   }
