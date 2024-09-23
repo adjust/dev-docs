@@ -116,41 +116,5 @@ export default defineMarkdocConfig({
       tabs: {
          render: component("src/components/Tab.astro"),
       },
-      atlastable: {
-         render: component("src/components/Table.astro"),
-         attributes: {
-            search: {
-               type: Boolean,
-               required: false,
-               default: false,
-            },
-            resizable: {
-               type: String,
-               required: false,
-            },
-            noborder: {
-               type: Boolean,
-               required: false,
-               default: false,
-            },
-            striped: {
-               type: Boolean,
-               required: false,
-               default: false,
-            },
-            height: {
-               type: [String, Number],
-               required: false,
-            },
-            autoWidth: {
-               type: String,
-               required: false,
-            },
-            width: {
-               type: String,
-               required: false,
-            }
-         }
-      }
    }
 })
