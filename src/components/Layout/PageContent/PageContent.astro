@@ -1,13 +1,11 @@
 ---
 import type { MarkdownHeading } from "astro";
-
 import TableOfContents from "@components/TableOfContents.astro";
-import type { NavigationData } from "@utils/helpers/navigation/types";
 import CategoryCard from "@components/Cards/CategoryCard.astro";
-
 import { getLanguageFromURL } from "@i18n/utils";
 import { type Locales } from "@i18n/locales";
 import { useTranslations } from "@i18n/utils";
+import type { SidebarItem } from "@utils/helpers/navigation/types";
 
 const currentLang = getLanguageFromURL(Astro.url.pathname);
 
@@ -16,20 +14,25 @@ const t = useTranslations(currentLang as keyof Locales);
 type Props = {
   title: string;
   headings: MarkdownHeading[];
-  childLinks: NavigationData["childLinks"];
+  currentSlug: string;
   type?: string;
+  pageData: SidebarItem | undefined;
 };
 
-const { title, headings, childLinks, type } = Astro.props;
-
-const sortedLinks = childLinks.sort((a, b) => {
-  if (!a.position && !b.position) {
-    return 0;
+const { title, headings, pageData, type } = Astro.props;
+let sortedLinks: SidebarItem[] = [];
+if (type === "category") {
+  if (pageData && pageData.children) {
+    sortedLinks = pageData.children.sort((a, b) => {
+      if (!a.position && !b.position) {
+        return 0;
+      }
+      a.position = Number(a.position) || 0;
+      b.position = Number(b.position) || 0;
+      return a?.position > b?.position ? 1 : -1;
+    });
   }
-  a.position = Number(a.position) || 0;
-  b.position = Number(b.position) || 0;
-  return a?.position > b?.position ? 1 : -1;
-});
+}
 ---
 
 <article
@@ -51,7 +54,7 @@ const sortedLinks = childLinks.sort((a, b) => {
       <slot />
       <!-- Category cards for the entry with "category" type and childs -->
       {
-        sortedLinks.length ? (
+        sortedLinks && sortedLinks.length ? (
           <div class="w-full flex flex-wrap gap-x-2 gap-y-4">
             {sortedLinks.map((child) => (
               <CategoryCard child={child} />
