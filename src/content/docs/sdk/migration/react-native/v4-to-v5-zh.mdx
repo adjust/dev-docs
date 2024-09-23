@@ -1,0 +1,845 @@
+---
+title: "SDK v5 迁移指南"
+description: "按照此指南从 SDK v4 升级到 SDK v5"
+slug: "zh/sdk/migration/react-native/v4-to-v5"
+sidebar-position: 1
+---
+
+## Before you begin {#before-you-begin\}
+
+在更新到 SDK v5 之前，您需要进行以下操作：
+
+1. SDK v5 支持[SDK 签名验证](https://help.adjust.com/zh/article/sdk-signature)。如果您正在使用 SDK 签名库，请先从应用中移除签名库。
+
+2. SDK v5 支持的最低 API 版本已更新。如果您的应用目标版本较低，请先进行更新。
+
+   -  iOS: **12\.0**
+   -  安卓： **21**
+
+## Install the SDK {#install-the-sdk}
+
+要开始使用 SDK v5，您需要将其添加为项目的依赖。为此，请按照以下步骤操作：
+
+1. 使用以下方法之一下载 React Native 库。
+
+在您的终端运行以下指令：
+
+```console
+$ npm install react-native-adjust@$REACT_NATIVE_V5_VERSION --save
+```
+
+2. 在您的终端运行以下指令来为您的 iOS 应用安装 CocoaPods 依赖：
+
+```console
+$ cd ios && pod install
+```
+
+## Update the initialization method {#init-method}
+
+<MinorVersion changed="v5" size="large" />{" "}
+
+在 SDK v4 中，初始化方法为`Adjust.create` 。在 SDK v5 中，该方法已变为`Adjust.initSdk` 。
+
+<CodeBlock useDiffSyntax>
+
+```jsx
+-Adjust.create(adjustConfig); // v4
++Adjust.initSdk(adjustConfig); // v5
+```
+
+</CodeBlock>
+
+## Changed APIs {#changed-apis}
+
+<MinorVersion changed="v5" size="large" />{" "}
+
+The following APIs have been changed in SDK v5\.
+
+### Disable and enable the SDK {#disable-enable-sdk}
+
+在 SDK v4 中，您可以通过调用带`bool`值的`Adjust.setEnabled`来启用和禁用 SDK。
+
+```jsx
+Adjust.setEnabled(false); // disable SDK
+Adjust.setEnabled(true); // enable SDK
+```
+
+在 SDK v5 中，为清晰起见，此功能被分成单独的命令。
+
+-  调用`Adjust.disable`来禁用 SDK。
+-  调用`Adjust.enable`来启用 SDK。
+
+```jsx
+Adjust.disable();
+Adjust.enable();
+```
+
+### Send information in background {#send-in-background}
+
+在 SDK v4 中，您可以使用`bool`值调用`adjustConfig`实例上的`setSendInBackground`方法，以此允许 SDK 在应用后台运行时向 Adjust 发送信息。
+
+```jsx
+adjustConfig.setSendInBackground(true);
+```
+
+在 SDK v5 中，您需要在`adjustConfig`实例上调用`enableSendingInBackground`方法，以此允许 SDK 在应用后台运行时向 Adjust 发送信息。默认状态为`false` 。
+
+```jsx
+adjustConfig.enableSendingInBackground();
+```
+
+### Preinstalled app measurement {#preinstalled-app}
+
+在 SDK v4 中，您可以使用`true`值在`adjustConfig`实例上调用`setPreinstallTrackingEnabled`方法，以此来监测预安装应用。
+
+```jsx
+adjustConfig.setPreinstallTrackingEnabled(true);
+```
+
+在 SDK v5 中，您需要调用`adjustConfig`实例的`enablePreinstallTracking`方法来启用预安装应用监测。默认状态为`false` 。
+
+```jsx
+adjustConfig.enablePreinstallTracking();
+```
+
+### Disable AdServices information reading {#disable-adservices}
+
+在 SDK v4 中，您可以使用`false`值在`adjustConfig`上调用`setAllowAdServicesInfoReading`方法，阻止 Adjust SDK 读取 AdServices 信息。
+
+```jsx
+adjustConfig.setAllowAdServicesInfoReading(false);
+```
+
+在 SDK v5 中，您需要在`adjustConfig`实例上调用`disableAdServices`方法，以防止 Adjust SDK 读取 AdServices 信息。默认状态为`true` 。
+
+```jsx
+adjustConfig.disableAdServices();
+```
+
+### Disable IDFA reading {#disable-idfa}
+
+在 SDK v4 中，您可以使用`false`值在`adjustConfig`实例上调用`setAllowIdfaReading`方法，以防止 Adjust SDK 读取设备的 IDFA。
+
+```jsx
+adjustConfig.setAllowIdfaReading(false);
+```
+
+在 SDK v5 中，您需要在`adjustConfig`实例上调用`disableIdfaReading`方法，以防止 Adjust SDK 读取设备的 IDFA。默认状态为`true` 。
+
+```jsx
+adjustConfig.disableIdfaReading();
+```
+
+### Enable cost data in attribution {#enable-cost-data}
+
+在 SDK v4 中，您可以将`adjustConfig`实例的`setNeedsCost`属性设置为`true`，在设备的归因信息中包含成本数据。
+
+```jsx
+adjustConfig.setNeedsCost(true);
+```
+
+在 SDK v5 中，您需要在`adjustConfig`实例上调用`enableCostDataInAttribution`方法，在设备的归因信息中包含成本数据。默认状态为`false` 。
+
+```jsx
+adjustConfig.enableCostDataInAttribution();
+```
+
+### Set attribution callback {#attribution-callback}
+
+在 SDK v4 中，您可以在`AdjustConfig`实例上调用`setAttributionCallbackListener`方法来设置委托回传函数，在用户归因数据发生变化时触发。
+
+```jsx
+adjustConfig.setAttributionCallbackListener(function (attribution) {});
+```
+
+在 SDK v5 中，该方法已重命名为`setAttributionCallback` 。所有参数不变。
+
+```jsx
+adjustConfig.setAttributionCallback(function (attribution) {});
+```
+
+### Enable LinkMe {#enable-linkme}
+
+在 SDK v4 中，您可以使用`true`值在`adjustConfig`实例上调用`setLinkMeEnabled`方法，以此来启用 [Adjust LinkMe](https://help.adjust.com/zh/article/linkme)。
+
+```jsx
+adjustConfig.setLinkMeEnabled(true);
+```
+
+在 SDK v5 中，您需要在`adjustConfig`实例上调用`enableLinkMe`方法，启用 [Adjust LinkMe](https://help.adjust.com/zh/article/linkme)。默认状态为`false` 。
+
+```jsx
+adjustConfig.enableLinkMe();
+```
+
+### Only read device IDs once {#read-device-id-once}
+
+在 SDK v4 中，您可以使用`true`值在`adjustConfig`实例上调用`setReadDeviceInfoOnceEnabled`方法，指示 SDK 只读取设备 ID 一次。
+
+```jsx
+adjustConfig.setReadDeviceInfoOnceEnabled(true);
+```
+
+在 SDK v5 中，您需要在`adjustConfig`实例上调用`enableDeviceIdsReadingOnce`方法，指示 SDK 只读取设备 ID 一次。默认状态为`false` 。
+
+```jsx
+adjustConfig.enableDeviceIdsReadingOnce();
+```
+
+### Offline mode {#offline-mode}
+
+在 SDK v4 中，您可以通过调用带`bool`参数的`Adjust.setOfflineMode`来启用和禁用 SDK 离线模式。
+
+```jsx
+Adjust.setOfflineMode(true);
+Adjust.setOfflineMode(false);
+```
+
+在 SDK v5 中，为清晰起见，此功能被分成单独的命令。
+
+-  调用`Adjust.switchToOfflineMode`将 SDK 设为离线模式。
+-  调用`Adjust.switchBackToOnlineMode`将 SDK 重新设为在线模式。
+
+```jsx
+Adjust.switchToOfflineMode(); // Put the SDK in offline mode
+Adjust.switchBackToOnlineMode(); // Put the SDK back in online mode
+```
+
+### Session callback parameters {#callback-params}
+
+在 SDK v4 中，您可以通过传递键值对至`Adjust.addSessionCallbackParameter`方法来添加会话参数，也可以使用`Adjust.removeSessionCallbackParameter`方法移除单个参数。
+
+```jsx
+Adjust.addSessionCallbackParameter("key", "value");
+Adjust.removeSessionCallbackParameter("key");
+Adjust.resetSessionCallbackParameters();
+```
+
+在 SDK v5 中，会话参数被重命名为统一参数。
+
+```jsx
+Adjust.addGlobalCallbackParameter("key", "value");
+Adjust.removeGlobalCallbackParameter("key");
+Adjust.removeGlobalCallbackParameters();
+```
+
+### Session partner parameters {#partner-params}
+
+在 SDK v4 中，您可以通过传递键值对至`Adjust.addSessionPartnerParameter`方法来添加会话合作伙伴参数，也可以使用`Adjust.removeSessionPartnerParameter`方法移除单个参数。
+
+```jsx
+Adjust.addSessionPartnerParameter("key", "value");
+Adjust.removeSessionPartnerParameter("key");
+Adjust.resetSessionPartnerParameters();
+```
+
+在 SDK v5 中，会话合作伙伴参数被重命名为统一合作伙伴参数。
+
+```jsx
+Adjust.addGlobalPartnerParameter("key", "value");
+Adjust.removeGlobalPartnerParameter("key");
+Adjust.removeGlobalPartnerParameters();
+```
+
+### Deduplication {#deduplication}
+
+在 SDK v4 中，事件去重与事件`transaction ID`同时进行且唯一 ID 的数量上限为 10 个。
+
+```jsx
+adjustEvent.setTransactionId(orderId);
+```
+
+在 SDK v5 中，该功能与`transaction ID`分离。事件去重添加了名为`deduplicationId`的新 ID 字段。
+
+```jsx
+adjustEvent.setDeduplicationId(deduplicationId);
+```
+
+用户可以自定义可添加到已识别重复事件列表中的去重 ID 数量。默认情况下上限为 10。
+
+```jsx
+adjustConfig.setEventDeduplicationIdsMaxSize(20);
+```
+
+### Session success callbacks {#session-success}
+
+在 SDK v4 中，您可以调用`setSessionTrackingSucceededCallbackListener`来注册 SDK 的成功会话记录。
+
+```jsx
+adjustConfig.setSessionTrackingSucceededCallbackListener(
+   function (sessionSuccess) {
+      // Printing all session success properties.
+      console.log("Session recording succeeded!");
+      console.log(sessionSuccess.message);
+      console.log(sessionSuccess.timestamp);
+      console.log(sessionSuccess.adid);
+      console.log(sessionSuccess.jsonResponse);
+   },
+);
+```
+
+在 SDK v5 中，该方法已重命名为`setSessionTrackingSucceededCallback` 。
+
+```jsx
+adjustConfig.setSessionTrackingSucceededCallback(function (sessionSuccess) {
+   // Printing all session success properties.
+   console.log("Session recording succeeded!");
+   console.log(sessionSuccess.message);
+   console.log(sessionSuccess.timestamp);
+   console.log(sessionSuccess.adid);
+   console.log(sessionSuccess.jsonResponse);
+});
+```
+
+### Session failure callbacks {#session-failure}
+
+在 SDK v4 中，您可以调用`setSessionTrackingFailedCallbackListener`来注册 SDK 的失败会话记录。
+
+```jsx
+adjustConfig.setSessionTrackingFailedCallbackListener(
+   function (sessionFailure) {
+      console.log(sessionFailure.message);
+   },
+);
+```
+
+在 SDK v5 中，该方法已重命名为`setSessionTrackingFailedCallback` 。
+
+```jsx
+adjustConfig.setSessionTrackingFailedCallback(function (sessionFailure) {
+   console.log(sessionFailure.message);
+});
+```
+
+### Event success callbacks {#event-success}
+
+在 SDK v4 中，您可以调用`setEventTrackingSucceededCallbackListener`来注册 SDK 的成功事件记录。
+
+```jsx
+adjustConfig.setEventTrackingSucceededCallbackListener(function (eventSuccess) {
+   // Printing all event success properties.
+   console.log("Event recording succeeded!");
+   console.log(eventSuccess.message);
+   console.log(eventSuccess.timestamp);
+   console.log(eventSuccess.eventToken);
+   console.log(eventSuccess.callbackId);
+   console.log(eventSuccess.adid);
+   console.log(eventSuccess.jsonResponse);
+});
+```
+
+在 SDK v5 中，该方法已重命名为`setEventTrackingSucceededCallback` 。
+
+```jsx
+adjustConfig.setEventTrackingSucceededCallback(function (eventSuccess) {
+   // Printing all event success properties.
+   console.log("Event recording succeeded!");
+   console.log(eventSuccess.message);
+   console.log(eventSuccess.timestamp);
+   console.log(eventSuccess.eventToken);
+   console.log(eventSuccess.callbackId);
+   console.log(eventSuccess.adid);
+   console.log(eventSuccess.jsonResponse);
+});
+```
+
+### Event failure callbacks {#event-failure}
+
+在 SDK v4 中，您可以调用`setEventTrackingFailedCallbackListener`来注册 SDK 的成功事件记录。
+
+```jsx
+adjustConfig.setEventTrackingFailedCallbackListener(function (eventFailure) {
+   // Printing all event failure properties.
+   console.log("Event recording failed!");
+   console.log(eventFailure.message);
+   console.log(eventFailure.timestamp);
+   console.log(eventFailure.eventToken);
+   console.log(eventFailure.callbackId);
+   console.log(eventFailure.adid);
+   console.log(eventFailure.willRetry);
+   console.log(eventFailure.jsonResponse);
+});
+```
+
+在 SDK v5 中，该方法已重命名为`setEventTrackingFailedCallback` 。
+
+```jsx
+adjustConfig.setEventTrackingFailedCallback(function (eventFailure) {
+   // Printing all event failure properties.
+   console.log("Event recording failed!");
+   console.log(eventFailure.message);
+   console.log(eventFailure.timestamp);
+   console.log(eventFailure.eventToken);
+   console.log(eventFailure.callbackId);
+   console.log(eventFailure.adid);
+   console.log(eventFailure.willRetry);
+   console.log(eventFailure.jsonResponse);
+});
+```
+
+### App Store Subscriptions {#app-store-subscriptions}
+
+在 SDK v4 中，您可以通过配置`AdjustAppStoreSubscription`对象来设置新的订阅。该对象使用四个参数进行初始化：`price` 、 `currency` 、 `transactionId`和`receipt` 。
+
+```jsx
+var subscription = new AdjustAppStoreSubscription(
+   price,
+   currency,
+   transactionId,
+   receipt,
+);
+```
+
+在SDK v5 中，您无需发送`receipt`参数，因为收入验证不再需要此参数。
+
+```jsx
+var subscription = new AdjustAppStoreSubscription(
+   price,
+   currency,
+   transactionId,
+);
+```
+
+### Reattribution using deep links {#reattribution-using-deep-links}
+
+在 SDK v4 中，您可以将深度链接信息传递至`Adjust.appWillOpenUrl`方法。
+
+```jsx
+Adjust.appWillOpenUrl("url");
+```
+
+为清晰起见，在 SDK v5 中，该方法已重命名为`Adjust.processDeeplink` 。其中添加了新的`AdjustDeeplink`类用于构建深度链接。要处理深度链接，请使用您的深度链接 URL 实例化`AdjustDeeplink`对象并将其传递至`Adjust.processDeeplink`方法。
+
+```jsx
+Adjust.processDeeplink(new AdjustDeeplink("url"));
+```
+
+### Launch deferred deep links {#launch-deferred-deeplinks}
+
+在 SDK v4 中，您可以使用`true`值来在`adjustConfig`实例上调用`setShouldlaunchDeeplink`方法，允许 SDK 打开深度链接或使用`false`来禁止深度链接打开功能。
+
+```jsx
+adjustConfig.setShouldLaunchDeeplink(true);
+```
+
+在 SDK v5 中，深度链接会默认打开。您需要在`adjustConfig`实例上调用`isDeferredDeeplinkOpeningEnabled`方法来允许 SDK 打开深度链接。
+
+```jsx
+adjustConfig.disableDeferredDeeplinkOpening();
+```
+
+### Deep link resolution {#deeplink-resolution}
+
+在 SDK v4 中，您可以通过将`url`传递至`processDeeplink`方法来解析缩短的深度链接。
+
+```jsx
+Adjust.processDeeplink("url", function (resolvedLink) {
+   console.log("Resolved link: " + resolvedLink);
+});
+```
+
+在 SDK v5 中，您需要发送使用深度链接`url`初始化的`AdjustDeeplink`对象。此操作会返回未缩短的原始深度链接。
+
+```jsx
+Adjust.processAndResolveDeeplink(new AdjustDeeplink("url"), function(resolvedLink) {
+   console.log("Resolved link: " + resolvedLink);
+};
+```
+
+### Deep link callback listener {#deeplink-callback-listener}
+
+在 SDK v4 中，您可以通过在`AdjustConfig`实例上调用`setDeferredDeeplinkCallbackListener`方法来配置监听器函数，在接收到深度链接时触发。
+
+```jsx
+adjustConfig.setDeferredDeeplinkCallbackListener(function (deeplink) {});
+```
+
+在 SDK v5 中，该方法已重命名为`setDeferredDeeplinkCallback` 。所有参数不变。
+
+```jsx
+adjustConfig.setDeferredDeeplinkCallback(function (deeplink) {});
+```
+
+### COPPA compliance {#coppa-compliance}
+
+In SDK v4, you can call the `coppaCompliantEnabled` method on your `adjustConfig` instance with the value `true` to enable COPPA compliance.
+
+```jsx
+adjustConfig.setCoppaCompliantEnabled(true);
+```
+
+在 SDK v5 中，您需要在`adjustConfig`实例上调用`isCoppaComplianceEnabled`方法，启用 COPPA 合规。默认状态为`false` 。
+
+```jsx
+adjustConfig.enableCoppaCompliance();
+```
+
+### Play Store Kids Apps {#play-store-kids}
+
+在 SDK v4 中，您可以使用`true`值在`adjustConfig`实例上调用`setPlayStoreKidsAppEnabled`方法，将应用标记为[Play 商店儿童应用](/zh/sdk/react-native/features/privacy#play-store-kids-apps-android-only)。该属性会在 SDK 初始化期间读取，也就是说 SDK 初始化后该值将无法更新。
+
+```jsx
+adjustConfig.setPlayStoreKidsAppEnabled(true);
+```
+
+在 SDK v5 中，您需要调用`adjustConfig`实例的`enablePlayStoreKidsCompliance`方法来启用合规。默认状态为`false` 。
+
+```jsx
+adjustConfig.enablePlayStoreKidsCompliance();
+```
+
+### Set data residency and URL strategy {#url-strategy}
+
+在 SDK v4 中，URL 策略和数据驻留域名在`adjustConfig`类中被定义为常量。
+
+```jsx
+adjustConfig.setUrlStrategy(AdjustConfig.DataResidencyEU);
+```
+
+在 SDK v5 中，您需要将选定的一个或多个域名以数组的形式发送。您还需要进行下列设置：
+
+-  `useSubdomains` \(`bool`\): 域名是否应被视为 Adjust 域名。若为 `true`，则 SDK 会为域名添加 Adjust 子域名前缀。若为 `false`，SDK 会使用收到的域名，不添加任何前缀。
+-  `isDataResidency` \( `bool` \)：域名是否用于数据驻留。
+
+```jsx
+adjustConfig.setUrlStrategy(["eu.adjust.com"], true, true);
+```
+
+请查看下方表格，了解如何在 SDK v5 中配置 URL 策略。
+
+<Table autoWidth="1,2">
+
+| v4                               | v5 \- 主要和后备域名               | v5 \- 使用子域名 | v5 \- 数据驻留 |
+| -------------------------------- | ---------------------------------- | ---------------- | -------------- |
+| `adjustConfig.DataResidencyEU`   | `"eu.adjust.com"`                  | `true`           | `true`         |
+| `adjustConfig.DataResidencyTR`   | `"tr.adjust.com"`                  | `true`           | `true`         |
+| `adjustConfig.DataResidencyUS`   | `"us.adjust.com"`                  | `true`           | `true`         |
+| `adjustConfig.UrlStrategyChina`  | `"adjust.world"`： `"adjust.com"`  | `true`           | `false`        |
+| `adjustConfig.UrlStrategyCn`     | `"adjust.cn"`： `"adjust.com"`     | `true`           | `false`        |
+| `adjustConfig.UrlStrategyCnOnly` | `"adjust.cn"`                      | `true`           | `false`        |
+| `adjustConfig.UrlStrategyIndia`  | `"adjust.net.in"`： `"adjust.com"` | `true`           | `false`        |
+
+</Table>
+
+### Record ad revenue {#record-ad-revenue}
+
+在 SDK v4 中，您可以通过调用`trackAdRevenue`方法并传递`source`和`payload`作为参数来记录广告收入。
+
+```jsx
+Adjust.trackAdRevenue("source", "payload");
+```
+
+通过 SDK v4 中的新方法，您可以创建带有`source`的新`AdjustAdRevenue`对象并将该对象传递至`trackAdRevenueNew`方法来记录广告收入。
+
+```jsx
+var adRevenue = new AdjustAdRevenue("source");
+adRevenue.setRevenue(6, "CAD");
+Adjust.trackAdRevenueNew(adRevenue);
+```
+
+在 SDK v5 中，您需要使用`source`来创建新的`AdjustAdRevenue`对象并通过将此对象传递至`trackAdRevenue`方法来记录广告收入。
+
+```jsx
+var adRevenue = new AdjustAdRevenue("source");
+adRevenue.setRevenue(6, "CAD");
+Adjust.trackAdRevenue(adRevenue);
+```
+
+### Send ad revenue from a specific source {#send-ad-revenue}
+
+在 SDK v4 中，广告收入来源被定义为`adjustConfig`类中的常量。在 SDK v5 中，广告收入来源需要以字符串形式传递。
+
+<CodeBlock useDiffSyntax>
+
+```jsx
+- var adRevenue = new AdjustAdRevenue(AdjustConfig.AdRevenueSourceAppLovinMAX);
++ var adRevenue = new AdjustAdRevenue("applovin_max_sdk");
+```
+
+</CodeBlock>
+<Table>
+
+| v4                                             | v5                        |
+| ---------------------------------------------- | ------------------------- |
+| `adjustConfig.AdRevenueAppLovinMAX`            | `"applovin_max_sdk"`      |
+| `adjustConfig.AdRevenueSourceAdMob`            | `"admob_sdk"`             |
+| `adjustConfig.AdRevenueSourceIronSource`       | `"ironsource_sdk"`        |
+| `adjustConfig.AdRevenueSourceAdMost`           | `"admost_sdk"`            |
+| `adjustConfig.AdRevenueSourceUnity`            | `"unity_sdk"`             |
+| `adjustConfig.AdRevenueSourceHeliumChartboost` | `"helium_chartboost_sdk"` |
+| `adjustConfig.AdRevenueSourceADX`              | `"adx_sdk"`               |
+| `adjustConfig.AdRevenueSourcePublisher`        | `"publisher_sdk"`         |
+| `adjustConfig.AdRevenueSourceTradplus`         | `"tradplus_sdk"`          |
+| `adjustConfig.AdRevenueSourceTopOn`            | `"topon_sdk"`             |
+| `adjustConfig.AdRevenueSourceMopub`            | 不再支持                  |
+
+</Table>
+
+### Disable SKAdNetwork communication {#disable-skan}
+
+在 SDK v4 中，您可以通过调用`adjustConfig.deactivateSKAdNetworkHandling`方法来阻止 SDK 与 SKAdNetwork 通讯。
+
+```jsx
+adjustConfig.deactivateSKAdNetworkHandling();
+```
+
+在 SDK v5 中，您需要在`adjustConfig`实例上调用`disableSkanAttribution`方法，以此禁用 SKAdNetwork 通讯。默认状态为`true` 。
+
+```jsx
+adjustConfig.disableSkanAttribution();
+```
+
+### Listen for conversion value updates {#listen-for-cv-updates}
+
+在 SDK v4 中，您可以在`adjustConfig`实例上调用`setSkad4ConversionValueUpdatedCallbackListener`方法来监听转化值更新。在 SKAN4 之前，您可以使用`setConversionValueUpdatedCallbackListener`方法。
+
+```jsx
+// pre-SKAN4 callback
+adjustConfig.setConversionValueUpdatedCallbackListener(
+   function (conversionValue) {
+      console.log("Conversion value updated callback received");
+      console.log("Conversion value: " + conversionValue.conversionValue);
+   },
+);
+
+// SKAN4 callback
+adjustConfig.setSkad4ConversionValueUpdatedCallbackListener(
+   function (conversionValue) {
+      console.log("Conversion value updated callback received");
+      console.log("Conversion value: " + conversionValue.conversionValue);
+   },
+);
+```
+
+在 SDK v5 中，您需要为`adjustConfig`对象的`setSkanUpdatedCallback`方法指定一个回传函数。
+
+```jsx
+adjustConfig.setSkanUpdatedCallback(function (skanData) {
+   console.log("Conversion value: " + skanData.conversionValue);
+   console.log("Coarse value: " + skanData.coarseValue);
+   console.log("Lock window: " + skanData.lockWindow);
+   console.log("Error: " + skanData.error);
+});
+```
+
+### Update conversion values {#update-cvs}
+
+在 SDK v4 中，您可以使用以下方法之一向 Adjust 发送更新后转化值：
+
+```jsx
+Adjust.updateConversionValue(6);
+
+Adjust.updateConversionValueWithErrorCallback(6, function(error) {
+ // error is present in case it happened
+});
+
+Adjust.updateConversionValueWithSkad4ErrorCallback(6, 'coarse-value', ‘true’, function(error) {
+ // error is present in case it happened
+});
+```
+
+如需更新 SDK v5 中的转化值，请使用带下列参数的`updateSkanConversionValue`方法：
+
+-  `conversionValue` \( `int` \)：更新后的转化值
+-  `coarseValue` \( `string` \)：更新后的[粗粒度转化值](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
+-  `lockWindow` \(`bool`\)：是否在转化窗口结束前发送回调
+
+```jsx
+Adjust.updateSkanConversionValue(6, "coarse-value", true, function (error) {
+   // error is present in case it happened
+});
+```
+
+### App Tracking Transparency authorization wrapper {#att-wrapper}
+
+在 SDK v4 中，您可以使用`Adjust.requestTrackingAuthorizationWithCompletionHandler`方法处理用户 ATT 授权状态变更。
+
+```jsx
+Adjust.requestTrackingAuthorizationWithCompletionHandler(function (status) {
+   print("[Adjust]: Authorization status update!");
+   switch (status) {
+      case 0:
+         print(
+            "[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusNotDetermined",
+         );
+         break;
+      case 1:
+         print(
+            "[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusRestricted",
+         );
+         break;
+      case 2:
+         print(
+            "[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusDenied",
+         );
+         break;
+      case 3:
+         print(
+            "[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusAuthorized",
+         );
+         break;
+   }
+});
+```
+
+为清晰起见，该参数在 SDK v5 中被重命名为`Adjust.requestAppTrackingAuthorization` 。
+
+```jsx
+Adjust.requestAppTrackingAuthorization(function (status) {
+   print("[Adjust]: Authorization status update!");
+   switch (status) {
+      case 0:
+         print(
+            "[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusNotDetermined",
+         );
+         break;
+      case 1:
+         print(
+            "[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusRestricted",
+         );
+         break;
+      case 2:
+         print(
+            "[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusDenied",
+         );
+         break;
+      case 3:
+         print(
+            "[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusAuthorized",
+         );
+         break;
+   }
+});
+```
+
+## Removed APIs {#removed-apis}
+
+<MinorVersion removed="v5" size="large" />{" "}
+
+The following APIs have been removed in SDK v5\.
+
+### Event buffering {#event-buffering}
+
+SDK v4 支持事件缓冲。该功能可将请求事件、广告收入、推送标签 \(Push token\) 和其他信息存储在本地缓冲区中以便在之后发送。
+
+```jsx
+adjustConfig.setEventBufferingEnabled(true);
+```
+
+该方法在 SDK v5 中已被移除。
+
+### Custom user agent string {#custom-user-agent}
+
+SDK v4 支持通过向 `adjustConfig` 实例上的 `setUserAgent` 方法传递用户字符串代理来设置自定义用户代理。
+
+```jsx
+adjustConfig.setUserAgent("custom-user-agent");
+```
+
+该方法在 SDK v5 中已被移除。
+
+### Set whether a device is known {#set-device-known}
+
+在 SDK v4 中，您可以在`adjustConfig`实例上调用`setDeviceKnown`方法，手动告知 SDK 设备是否为已知设备。
+
+```jsx
+adjustConfig.setDeviceKnown(true);
+```
+
+该方法在 SDK v5 中已被移除。
+
+### Delay SDK start {#delay-sdk-start}
+
+SDK v4 支持通过在`adjustConfig`实例上调用`setDelayStart`方法来延迟 SDK 启动。您最多可以设置 **10 秒** 的延迟。
+
+```jsx
+adjustConfig.setDelayStart(10);
+```
+
+该方法在 SDK v5 中已被移除。中断此延迟的`Adjust.sendFirstPackages`方法也已被移除。
+
+### Check for new ATT status {#check-new-att-status}
+
+SDK v4 支持`Adjust.checkForNewAttStatus`方法。调用该方法会使 SDK 停止延迟，继续工作。
+
+```jsx
+Adjust.checkForNewAttStatus();
+```
+
+该方法在 SDK v5 中已被移除。
+
+### Final Android attribution {#final-android-attribution}
+
+在 SDK v4 中，您可以用`true`值在`adjustConfig`实例上调用`setFinalAndroidAttributionEnabled`方法，发送最终安卓归因。
+
+```jsx
+adjustConfig.setFinalAndroidAttributionEnabled(true);
+```
+
+在 SDK v5 中，该设置已被移除，因为安卓平台上只有最终归因会通过归因回传发送。
+
+### Set referrer {#set-referrer}
+
+在 SDK v4 中，您可以调用`setReferrer`方法，在 SDK 启动时通过自定义点击 ID 触发 SDK 点击。
+
+```jsx
+Adjust.setReferrer("referrer");
+```
+
+该方法在 SDK v5 中已被移除。Google 已弃用用于向 Google Play 服务传递 referrer 信息的`INSTALL_REFERRER` intent 方法。如果您当前正在使用此方法，请迁移至 Google Play Referrer API。
+
+### Convert universal link {#convert-universal-link}
+
+在 SDK v4 中，您可以调用`convertUniversalLink`方法。
+
+```jsx
+Adjust.convertUniversalLink(function (url, scheme, callback) {});
+```
+
+该方法在 SDK v5 中已被移除。
+
+### AdjustEvent changes {#adjustevent-changes}
+
+在 SDK v4 中，您可以将`receipt` 发送到`adjustEvent.setReceipt` 上的`adjustEvent` 方法以进行订阅和购买监测。
+
+```jsx
+adjustEvent.setReceipt("receipt");
+```
+
+SDK v5 中已移除该参数，因为该参数已不再用于收入验证。
+
+### Purchase verification {#purchase-verification}
+
+在 SDK v4 中，您必须实例化带有`receipt`属性的`AdjustAppStorePurchase`对象。该属性用于收入验证。
+
+```jsx
+var appStorePurchase = new AdjustAppStorePurchase(
+   "receipt",
+   "product-id",
+   "transaction-id",
+);
+```
+
+该方法在 SDK v5 中已被移除。如果您使用的是`AdjustAppStorePurchase`类收入验证，则必须从构造调用中移除该参数。
+
+```jsx
+var appStorePurchase = new AdjustAppStorePurchase(
+   "product-id",
+   "transaction-id",
+);
+```
+
+### Disable third party sharing globally {#disable-sharing-globally}
+
+在 SDK v4 中，您可以调用`Adjust.disableThirdPartySharing`方法来全面禁用第三方信息分享。
+
+```jsx
+Adjust.disableThirdPartySharing();
+```
+
+SDK v5 中已删除该功能。在 SDK v5 中，使用`Adjust.trackThirdPartySharing`方法来启用或禁用第三方共享。
+
+```jsx
+var thirdPartySharing = new AdjustThirdPartySharing(false);
+Adjust.trackThirdPartySharing(thirdPartySharing);
+```
