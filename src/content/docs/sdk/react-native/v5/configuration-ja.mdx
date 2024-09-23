@@ -37,13 +37,12 @@ const adjustConfig = new AdjustConfig(
    "{YourAppToken}",
    AdjustConfig.EnvironmentSandbox,
 );
-//...
-Adjust.create(adjustConfig);
+Adjust.initSdk(adjustConfig);
 ```
 
 ## 読み取り専用の設定 {#read-only-configuration}
 
-**読み取り専用** の設定オプションは、SDKの初期化 **前に** `AdjustConfig`インスタンスで設定されます。これらのオプションは、SDKの実行中は変更できません。`Adjust.start()`を実行する前に、使用したいオプションを設定する必要があります。
+**読み取り専用** の設定オプションは、SDKの初期化 **前に** `AdjustConfig`インスタンスで設定されます。これらのオプションは、SDKの実行中は変更できません。`Adjust.initSdk()`を実行する前に、使用したいオプションを設定する必要があります。
 
 ### ログレベルを設定する {#set-your-logging-level}
 
@@ -57,8 +56,6 @@ public setLogLevel(level: LogLevel): void
 
 Adjust SDKは、さまざまな量の情報を返すために、設定可能なログレベルを提供しています。以下のログレベルが利用可能です。
 
-<Table>
-
 | logLevel                        | 説明                                                   |
 | ------------------------------- | ------------------------------------------------------ |
 | `AdjustConfig.LogLevelVerbose`  | ログを全て有効化する                                   |
@@ -69,8 +66,6 @@ Adjust SDKは、さまざまな量の情報を返すために、設定可能な�
 | `AdjustConfig.LogLevelAssert`   | エラーレベル以下のログを無効化する                     |
 | `AdjustConfig.LogLevelSuppress` | ログを全て無効化する                                   |
 
-</Table>
-
 `AdjustConfig`インスタンスの`setLogLevel`メソッドを以下のパラメーターで呼び出すことで、ログレベルを設定できます：
 
 -  `logLevel` （`LogLevel`）：使用したいログレベル
@@ -80,10 +75,10 @@ const adjustConfig = new AdjustConfig(
    "{YourAppToken}",
    AdjustConfig.EnvironmentSandbox,
 );
-//...
+
 adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
-//...
-Adjust.create(adjustConfig);
+
+Adjust.initSdk(adjustConfig);
 ```
 
 ### 外部デバイスIDを設定する {#set-external-device-identifier}
@@ -113,10 +108,10 @@ const adjustConfig = new AdjustConfig(
    "{YourAppToken}",
    AdjustConfig.EnvironmentSandbox,
 );
-//...
+
 adjustConfig.setExternalDeviceId("{Your-External-Device-Id}");
-//...
-Adjust.create(adjustConfig);
+
+Adjust.initSdk(adjustConfig);
 ```
 
 外部デバイスIDをビジネスアナリティクスに使用する場合は、IDを[セッションコールバックパラメーター](/ja/sdk/flutter/features/session-parameters)としてパスすることができます。
@@ -142,10 +137,10 @@ const adjustConfig = new AdjustConfig(
    "{YourAppToken}",
    AdjustConfig.EnvironmentSandbox,
 );
-//...
+
 adjustConfig.setDefaultTracker("{TrackerToken}");
-//...
-Adjust.create(adjustConfig);
+
+Adjust.initSdk(adjustConfig);
 ```
 
 ### コストデータの送信を有効化する {#enable-cost-data-sending}
@@ -153,14 +148,12 @@ Adjust.create(adjustConfig);
 <CodeBlock title="メソッドシグネチャー">
 
 ```ts
-public setNeedsCost(needsCost: boolean): void
+public enableCostDataInAttribution(): void
 ```
 
 </CodeBlock>
 
-デフォルトでは、Adjust SDKはユーザーのアトリビューションの一環としてコストデータを送信しません。コストデータの送信を有効化することで、このデータを送信するようにSDKを設定できます。コストデータの送信を有効化するには、次のパラメーターを使用して、configインスタンスで`setNeedsCost`メソッドを呼び出します：
-
--  `needsCost` （`boolean`）：コストデータの送信を有効化するには`true`、無効化するには`false`に設定します。
+デフォルトでは、Adjust SDKはユーザーのアトリビューションの一環としてコストデータを送信しません。コストデータの送信を有効化することで、このデータを送信するようにSDKを設定できます。コストデータ送信を有効化するには、configインスタンスで`enableCostDataInAttribution`メソッドを呼び出します。
 
 コストデータには、ユーザーの[アトリビューション情報](/ja/sdk/react-native/features/attribution)でアクセスできます。
 
@@ -170,7 +163,7 @@ const adjustConfig = new AdjustConfig(
    AdjustConfig.EnvironmentSandbox,
 );
 adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
-adjustConfig.setNeedsCost(true);
+adjustConfig.enableCostDataInAttribution();
 ```
 
 ### バックグランドでの計測機能を有効化する {#enable-background-recording}
@@ -178,87 +171,32 @@ adjustConfig.setNeedsCost(true);
 <CodeBlock title="メソッドシグネチャー">
 
 ```ts
-public setSendInBackground(sendInBackground: boolean): void
+public enableSendingInBackground(): void
 ```
 
 </CodeBlock>
 
-デフォルトでは、アプリがバックグラウンドで動作している間、Adjust SDKはリクエストの送信を一時停止します。バックグランドでの計測機能を有効化することで、SDKがバックグランドでリクエストを送信するよう設定することが可能です。バックグランドでの計測機能を有効化するには、次のパラメーターを使用して、configインスタンスで`setSendInBackground`メソッドを呼び出します：
-
--  `sendInBackground` （`boolean`）：バックグランドでの送信を有効化するには`true`、無効化するには`false`に設定します。
-
-```jsx
-const adjustConfig = new AdjustConfig(appToken, environment);
-//...
-adjustConfig.setSendInBackground(true);
-//...
-Adjust.create(adjustConfig);
-```
-
-### イベントのバッファリングを有効化する {#enable-event-buffering}
-
-<CodeBlock title="メソッドシグネチャー">
-
-```ts
-public setEventBufferingEnabled(eventBufferingEnabled: boolean): void
-```
-
-</CodeBlock>
-
-Adjust SDKは、ユーザーがアプリ内でイベントをトリガーすると、すぐにイベント情報を送信します。イベントバッファリングを有効にすることで、イベント情報をスケジュールに沿って送信することができます。イベントバッファリングは、デバイス上のローカルバッファにイベントを保存し、1分間に1回、全てのリクエストを送信します。
-
-Configオブジェクトにはブーリアン`eventBufferingEnabled`プロパティが含まれており、それが動作を制御します。このプロパティを設定するには、次のパラメーターを使用して、configオブジェクトの`setEventBufferingEnabled`メソッドを呼び出します：
-
--  `eventBufferingEnabled` （`boolean`）：イベントのバッファリングを有効化するには`true`、無効化するには`false`に設定します。
+デフォルトでは、アプリがバックグラウンドで動作している間、Adjust SDKはリクエストの送信を一時停止します。バックグランドでの計測機能を有効化することで、SDKがバックグランドでリクエストを送信するよう設定することが可能です。バックグラウンドでの計測機能を有効化するには、configインスタンスで`enableSendingInBackground`メソッドを呼び出します。
 
 ```jsx
 const adjustConfig = new AdjustConfig(
-   "{YourAppToken}",
+   "{Your App Token}",
    AdjustConfig.EnvironmentSandbox,
 );
-//...
-adjustConfig.setEventBufferingEnabled(true);
-//...
-Adjust.create(adjustConfig);
-```
-
-### SDKの起動を遅らせる {#delay-the-start-of-the-sdk}
-
-<CodeBlock title="メソッドシグネチャー">
-
-```ts
-public setDelayStart(delayStart: number): void
-```
-
-</CodeBlock>
-
-デフォルトでは、Adjust SDKはアプリの起動直後に動作を開始します。起動時に取得できないデータを[セッションパラメーター](/ja/sdk/android/features/session-parameters)で送信したい場合は、SDKの動作開始を遅らせることができます。これは、ユニークな識別子などの情報を送信する場合に便利です。
-
-動作開始の遅延を設定するには、次の引数を使用して`setDelayStart`メソッドを呼び出します。
-
--  `delayStart` （`number`）：SDKの動作開始を遅らせる時間（秒）。SDKの動作開始を遅らせることができるのは最長 **10秒間** です。
-
-```jsx
-const adjustConfig = new AdjustConfig(
-   "{YourAppToken}",
-   AdjustConfig.EnvironmentSandbox,
-);
-//...
-adjustConfig.setDelayStart(5.5);
-//...
-Adjust.create(adjustConfig);
+adjustConfig.enableSendingInBackground();
+Adjust.initSdk(adjustConfig);
 ```
 
 ## 動的設定 {#dynamic-configuration}
 
 **動的** 設定オプションは、SDKのライフサイクル中に、ユーザーによるイベントやアクションに応じて変更されることがあります。
 
-### オフラインモードに切り替える {#toggle-offline-mode}
+### オフラインモードを有効化する {#activate-offline-mode}
 
 <CodeBlock title="メソッドシグネチャー">
 
 ```ts
-setOfflineMode: (enabled: boolean) => void
+switchToOfflineMode: () => void
 ```
 
 </CodeBlock>
@@ -270,12 +208,26 @@ setOfflineMode: (enabled: boolean) => void
 
 Adjust SDKは、イベントとセッションのデータをAdjustのサーバーにリアルタイムで送信します。SDKをオフラインモードにすると、情報の送信を一時停止することができます。オフラインモードでは、SDKは全てのデータをデバイスのローカルファイルに保存します。オフラインモードを無効にすると、SDKはこの情報をAdjustのサーバーに送信します。
 
-以下の引数を使用して`setOfflineMode`メソッドを呼び出すことで、いつでもオフランモードに切り替えられます：
-
--  `enabled` （`boolean`）：オフラインモードを有効化するには`true`に、オフラインモードを無効化するには`false`に設定します。
+オフラインモードを有効化するには、 `Adjust.switchToOfflineMode`メソッドを呼び出します。
 
 ```jsx
-Adjust.setOfflineMode(true);
+Adjust.switchToOfflineMode();
+```
+
+### オフラインモードを無効化する {#deactivate-offline-mode}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```ts
+switchBackToOnlineMode: () => void
+```
+
+</CodeBlock>
+
+`Adjust.switchBackToOnlineMode`メソッドを呼び出して、SDKを再度有効化することができます。これにより、SDKは情報の送信を再開します。
+
+```jsx
+Adjust.switchBackToOnlineMode();
 ```
 
 ### Pushトークンを設定する {#set-push-tokens}
@@ -304,29 +256,36 @@ Web ViewからPushトークンにアクセスできる場合は、Javascriptで`
 Adjust.setPushToken("YourPushNotificationToken");
 ```
 
-### SDKを無効化または有効化する {#disable-or-enable-the-sdk}
+### SDKを無効化する {#disable-the-sdk}
 
-<Callout type="important">
-
-このメソッドを呼び出せるのは、初回セッションの後のみです。この設定は、セッション間で持続します。
-
-</Callout>
 <CodeBlock title="メソッドシグネチャー">
 
 ```ts
-setEnabled: (enabled: boolean) => void
+disable: () => void
 ```
 
 </CodeBlock>
 
-Adjust SDKは、デフォルトでアプリが開いている時に実行されます。Adjust SDKを無効化または再有効化することで、計測を一時停止したり再起動したりすることができます。Adjust SDKを無効にすると、Adjustサーバーにデータが送信されなくなります。
-
-以下の引数を使用して`setEnabled`メソッドを呼び出すことで、SDKをいつでも有効化または無効化できます：
-
--  `enabled` （`boolean`）：SDKを有効化するには`true`に、SDKを無効化するには`false`に設定します。
+Adjust SDKは、デフォルトでアプリが開いている時に実行されます。`Adjust.disable`メソッドを呼び出すと、Adjust SDKを無効にしてAdjustへの情報送信を停止できます。Adjust SDKを無効にするとデータはAdjustに送信されず、SDKは情報を記録しません。これは、SDKが無効化されているときに呼び出されたAdjustメソッドは何も記録しないことを意味します。
 
 ```jsx
-Adjust.setEnabled(false);
+Adjust.disable();
+```
+
+### SDKを有効化する {#enable-the-sdk}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```ts
+enable: () => void
+```
+
+</CodeBlock>
+
+無効にしたSDKを再度有効にしたい場合は、`Adjust.enable`メソッドを呼び出してください。SDKが有効になると、Adjustのサーバーに情報が送信されます。
+
+```jsx
+Adjust.enable();
 ```
 
 #### 有効化ステータスを確認する {#check-enabled-status}
@@ -342,5 +301,11 @@ isEnabled: (callback: (enabled: boolean) => void) => void
 Adjust SDKが有効であるかどうかを確認するには、`isEnabled`メソッドを呼び出します。このメソッドは、SDKが **有効** （`true`）か **無効** （`false`）かを示す`boolean`値を返します。
 
 ```jsx
-Adjust.isEnabled();
+Adjust.isEnabled((isEnabled) => {
+   if (isEnabled) {
+      console.log("SDK is enabled");
+   } else {
+      console.log("SDK is disabled");
+   }
+});
 ```

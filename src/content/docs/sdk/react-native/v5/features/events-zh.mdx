@@ -14,7 +14,7 @@ redirects:
 
 Adjust SDK 提供一个 `AdjustEvent` 对象，用于架构并向 Adjust 服务器发送来自您应用的事件信息。
 
-## 实例化 AdjustEvent 对象 {#instantiate-an-adjustevent-object}
+## Instantiate an AdjustEvent object {#instantiate-an-adjustevent-object}
 
 <CodeBlock title="方法签名">
 
@@ -32,11 +32,11 @@ constructor(eventToken: string)
 
 ```jsx
 var adjustEvent = new AdjustEvent("abc123");
-//...
+
 Adjust.trackEvent(adjustEvent);
 ```
 
-## 发送事件 {#send-an-event}
+## Send an event {#send-an-event}
 
 <CodeBlock title="方法签名">
 
@@ -56,7 +56,7 @@ var adjustEvent = new AdjustEvent("abc123");
 Adjust.trackEvent(adjustEvent);
 ```
 
-### 示例 {#example}
+### Example {#example}
 
 在此示例中，每次用户与某个按钮互动时，我们就监测到一个带有`g3mfiw`标签的事件。
 
@@ -65,7 +65,7 @@ function _onPress_trackSimpleEvent() {
    var adjustEvent = new AdjustEvent("g3mfiw");
    Adjust.trackEvent(adjustEvent);
 }
-//...
+
 <>
    <View style={styles.container}>
       <TouchableHighlight
@@ -132,7 +132,7 @@ Parameters:
 
 </CodeBlock>
 
-## 记录事件收入 {#record-event-revenue}
+## Record event revenue {#record-event-revenue}
 
 <CodeBlock title="方法签名">
 
@@ -157,13 +157,13 @@ public setRevenue(revenue: number, currency: string): void
 
 ```jsx
 var adjustEvent = new AdjustEvent("abc123");
-//...
+
 adjustEvent.setRevenue(0.01, "EUR");
-//...
+
 Adjust.trackEvent(adjustEvent);
 ```
 
-### 示例 {#example-1}
+### Example {#example-1}
 
 在此示例中，每次用户与某个按钮互动时，我们就监测到一个带有`g3mfiw`标签的事件。该函数会将该事件的 `revenue` 属性设为 _`0.25`_ ，并将 `currency` 属性设为 _`EUR`_ 。
 
@@ -173,7 +173,7 @@ function _onPress_trackRevenueEvent() {
    adjustEvent.setRevenue(0.25, "EUR");
    Adjust.trackEvent(adjustEvent);
 }
-//...
+
 <>
    <View style={styles.container}>
       <TouchableHighlight
@@ -240,29 +240,29 @@ Parameters:
 
 </CodeBlock>
 
-## 收入事件去重 {#deduplicate-revenue-events}
+## Deduplicate revenue events {#deduplicate-revenue-events}
 
 <CodeBlock title="方法签名">
 
 ```ts
-public setTransactionId(transactionId: string): void
+public setDeduplicationId(deduplicationId: string): void
 ```
 
 </CodeBlock>
 
 您也可以发送一个可选的标识符，以避免记录重复事件。SDK 会存储最近 10 个标识符，带有重复交易 ID 的收入事件会被跳过。
 
-要设置标识符，请调用 `setTransactionId` 方法并以 `string` 参数形式发送您的交易 ID。
+要设置标识符，请调用 `setDeduplicationId` 方法并以 `string` 参数形式发送您的去重 ID。
 
 ```jsx
 var adjustEvent = new AdjustEvent("abc123");
-//...
-adjustEvent.setTransactionId("{transactionId}");
-//...
+
+adjustEvent.setDeduplicationId(deduplicationId);
+
 Adjust.trackEvent(adjustEvent);
 ```
 
-### 示例 {#example-2}
+### Example {#example-2}
 
 在此示例中，每次用户与某个按钮互动时，我们就监测到一个带有`g3mfiw`标签的事件。该函数会使用 `setTransactionId` 方法将 `uniqueId` 设为 `5e85484b-1ebc-4141-aab7-25b869e54c49`。
 
@@ -270,10 +270,10 @@ Adjust.trackEvent(adjustEvent);
 function _onPress_trackRevenueEvent() {
    var adjustEvent = new AdjustEvent("g3mfiw");
    var uniqueId = "5e85484b-1ebc-4141-aab7-25b869e54c49";
-   adjustEvent.setTransactionId(uniqueId);
+   adjustEvent.setDeduplicationId(uniqueId);
    Adjust.trackEvent(adjustEvent);
 }
-//...
+
 <>
    <View style={styles.container}>
       <TouchableHighlight
@@ -295,12 +295,34 @@ Parameters:
   environment      sandbox
   event_count      3
   event_token      abc123
-  transaction_id   5e85484b-1ebc-4141-aab7-25b869e54c49
+  deduplication_id   5e85484b-1ebc-4141-aab7-25b869e54c49
 ```
 
 </CodeBlock>
 
-## 添加回传参数 {#add-callback-parameters}
+### Set a deduplication limit {#set-a-deduplication-limit}
+
+<CodeBlock title="方法签名">
+
+```ts
+public setEventDeduplicationIdsMaxSize(eventDeduplicationIdsMaxSize: number): void
+```
+
+</CodeBlock>
+
+您可以自定义可添加到已识别重复事件列表中的去重 ID 数量。默认情况下上限为 10。
+
+要设置自定义限制，请调用`setEventDeduplicationIdsMaxSize`方法并将新限制作为`number`参数传递。
+
+```jsx
+var adjustEvent = new AdjustEvent("abc123");
+
+adjustConfig.setEventDeduplicationIdsMaxSize(20);
+
+Adjust.trackEvent(adjustEvent);
+```
+
+## Add callback parameters {#add-callback-parameters}
 
 <CodeBlock title="方法签名">
 
@@ -318,9 +340,9 @@ public addCallbackParameter(key: string, value: string): void
 
 ```jsx
 var adjustEvent = new AdjustEvent("abc123");
-//...
+
 adjustEvent.addCallbackParameter("key", "value");
-//...
+
 Adjust.trackEvent(adjustEvent);
 ```
 
@@ -346,7 +368,7 @@ Adjust 支持许多占位符，这些占位符可用来将信息从 SDK 发送�
 
 </Callout>
 
-### 示例 {#example-3}
+### Example {#example-3}
 
 在此示例中，每次用户与某个按钮互动时，我们就监测到一个带有`g3mfiw`标签的事件。以下回传参数被添加：
 
@@ -370,7 +392,7 @@ function _onPress_trackCallbackEvent() {
    adjustEvent.addCallbackParameter("revenue_amount", "0.05");
    Adjust.trackEvent(adjustEvent);
 }
-//...
+
 <>
    <View style={styles.container}>
       <TouchableHighlight
@@ -398,7 +420,7 @@ Parameters:
 
 </CodeBlock>
 
-## 添加合作伙伴参数 {#add-partner-parameters}
+## Add partner parameters {#add-partner-parameters}
 
 <CodeBlock title="方法签名">
 
@@ -422,13 +444,13 @@ Adjust 可向您设置的[外部合作伙伴](https://help.adjust.com/zh/article
 
 ```jsx
 var adjustEvent = new AdjustEvent("abc123");
-//...
+
 adjustEvent.addPartnerParameter("key", "value");
-//...
+
 Adjust.trackEvent(adjustEvent);
 ```
 
-### 示例 {#example-4}
+### Example {#example-4}
 
 在此示例中，每次用户与某个按钮互动时，我们就监测到一个带有`g3mfiw`标签的事件。以下合作伙伴参数被添加：
 
@@ -442,7 +464,7 @@ function _onPress_trackPartnerEvent() {
    adjustEvent.addPartnerParameter("user_id", "835");
    Adjust.trackEvent(adjustEvent);
 }
-//...
+
 <>
    <View style={styles.container}>
       <TouchableHighlight
@@ -469,7 +491,7 @@ Parameters:
 
 </CodeBlock>
 
-## 添加回传标识符 {#add-a-callback-identifier}
+## Add a callback identifier {#add-a-callback-identifier}
 
 <CodeBlock title="方法签名">
 
@@ -485,13 +507,13 @@ public setCallbackId(callbackId: string): void
 
 ```jsx
 var adjustEvent = new AdjustEvent("abc123");
-//...
+
 adjustEvent.setCallbackId("your_callback_id");
-//...
+
 Adjust.trackEvent(adjustEvent);
 ```
 
-### 示例 {#example-5}
+### Example {#example-5}
 
 在此示例中，每次用户与某个按钮互动时，我们就监测到一个带有`g3mfiw`标签的事件。在该示例中，`callbackId` 被设为了 `f2e728d8-271b-49ab-80ea-27830a215147`。
 
@@ -499,12 +521,12 @@ Adjust.trackEvent(adjustEvent);
 function _onPress_trackUniqueCallbackEvent() {
    var adjustEvent = new AdjustEvent("g3mfiw");
    var callbackId = "f2e728d8-271b-49ab-80ea-27830a215147";
-   //...
+
    adjustEvent.setCallbackId(callbackId);
-   //...
+
    Adjust.trackEvent(adjustEvent);
 }
-//...
+
 <>
    <View style={styles.container}>
       <TouchableHighlight

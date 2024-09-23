@@ -52,7 +52,6 @@ export default defineConfig({
       "@components/MinorVersion.astro",
       "@components/SdkVersion.astro",
       "@components/Tab.astro",
-      "@components/Table.astro",
       "@components/Tabs.astro",
     ],
   }), // Enable React for the Algolia search component.
@@ -62,9 +61,6 @@ export default defineConfig({
     optimize: true,
   }), tailwind(), sitemap(), markdoc()],
   site: "https://dev.adjust.com/",
-  experimental: {
-    contentCollectionCache: true,
-  },
   markdown: {
     remarkPlugins: [
       [remarkReplaceVersions, versions],
