@@ -52,7 +52,6 @@ export default defineConfig({
       "@components/CodeBlock.astro",
       "@components/ListColumns.astro",
       "@components/MinorVersion.astro",
-      "@components/SdkVersion.astro",
       "@components/Tab.astro",
       "@components/Tabs.astro",
     ],
