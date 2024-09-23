@@ -15,7 +15,7 @@ import {
   remarkDefinitionList,
   defListHastHandlers,
 } from "remark-definition-list";
-
+import { writeFile } from "fs";
 import markdoc from "@astrojs/markdoc";
 
 console.log(
@@ -23,6 +23,8 @@ console.log(
 );
 
 const versions = await fetchVersions();
+const versionJSON = JSON.stringify(versions, null, 2)
+await writeFile("src/versionMap.json", versionJSON, (err) => { });
 
 const locales = ["en", "ja", "ko", "zh"];
 

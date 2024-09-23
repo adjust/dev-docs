@@ -1,8 +1,12 @@
 import { defineMarkdocConfig, nodes, component } from '@astrojs/markdoc/config';
 import { heading } from ".schema/Heading.markdoc";
 import { link } from ".schema/Link.markdoc";
+import versions from "src/versionMap.json";
 
 export default defineMarkdocConfig({
+   variables: {
+      versions
+   },
    nodes: {
       heading,
       link,
