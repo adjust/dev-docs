@@ -1,0 +1,85 @@
+---
+title: "어트리뷰션 정보 확인"
+description: "Adjust SDK를 사용하여 어트리뷰션 변경 사항 수신"
+slug: "ko/sdk/cocos2dx/v4/features/attribution"
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v5: /ko/sdk/cocos2dx/features/attribution
+---
+
+사용자가 Adjust 링크와 상호작용하면 어트리뷰션 정보가 업데이트됩니다. 이는 사용자가 [딥링크](https://help.adjust.com/ko/article/deep-links)와 상호작용하는 경우에 발생할 수 있습니다. 사용자의 어트리뷰션 관련 정보는 `AdjustAttribution2dx` 클래스에 나타납니다.
+
+## AdjustAttribution2dx 클래스 속성
+
+`AdjustAttribution2dx` 클래스는 기기의 현재 어트리뷰션 상태에 관한 세부 내용을 포함합니다. 해당 사용자에 대해 입력되지 않은 모든 값은 `null` 값으로 반환됩니다.
+
+<Callout type="note">
+
+다음 값은 [`AdjustConfig2dx` 인스턴스의 `needsCost` 속성](/ko/sdk/cocos2dx/configuration#enable-cost-data-sending)이 `true`인 경우에만 액세스할 수 있습니다.
+
+-  `costType`
+-  `costAmount`
+-  `costCurrency`
+
+</Callout>
+
+| 값                  | 데이터 유형 | 설명                                                                                         |
+| ------------------- | ----------- | -------------------------------------------------------------------------------------------- |
+| `trackerToken`      | String      | 디바이스가 현재 어트리뷰션된 트래커의 토큰                                                   |
+| `trackerName`       | String      | 디바이스가 현재 어트리뷰션된 트래커의 이름                                                   |
+| `network`           | String      | 디바이스가 현재 어트리뷰션된 네트워크의 이름                                                 |
+| `campaign`          | String      | 디바이스가 현재 어트리뷰션된 캠페인의 이름                                                   |
+| `adgroup`           | String      | 디바이스가 현재 어트리뷰션된 광고그룹의 이름                                                 |
+| `creative`          | String      | 디바이스가 현재 어트리뷰션된 크리에이티브의 이름                                             |
+| `clickLabel`        | String      | 설치가 태그된 [click label](https://help.adjust.com/ko/article/user-rewards)                 |
+| `adid`              | String      | 디바이스에 할당된 고유한 Adjust ID                                                           |
+| `costType`          | String      | 캠페인 가격 모델\(예: CPI\)                                                                  |
+| `costAmount`        | Number      | 설치 비용                                                                                    |
+| `costCurrency`      | String      | 비용 관련 [3자 ISO 4217 통화 코드](https://www.iban.com/currency-codes).                     |
+| `fbInstallReferrer` | String      | [Facebook install referrer](https://developers.facebook.com/docs/app-ads/install-referrer/). |
+
+## 어트리뷰션 변경 시 함수 트리거
+
+<CodeBlock title="메서드 서명">
+
+```cpp
+void setAttributionCallback(void(*attributionCallback)(AdjustAttribution2dx attribution));
+```
+
+</CodeBlock>
+
+SDK는 어트리뷰션 변경 사항을 받고 업데이트가 감지되면 함수를 호출합니다. 콜백 함수를 구성하려면 함수 이름을 인수로 사용하여 `setAttributionCallback` 메서드를 호출합니다.
+
+<Callout type="important">
+
+`setAttributionCallback` 메서드는 앱에서 Adjust SDK를 초기화하기 **이전** 에 호출해야 합니다.
+
+</Callout>
+
+```cpp
+AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment);
+adjustConfig.setLogLevel(AdjustLogLevel2dxVerbose);
+adjustConfig.setAttributionCallback(attributionCallbackMethod);
+Adjust2dx::start(adjustConfig);
+```
+
+## 현재 어트리뷰션 정보 확인
+
+<CodeBlock title="메서드 서명">
+
+```cpp
+static AdjustAttribution2dx getAttribution();
+```
+
+</CodeBlock>
+
+사용자가 앱을 설치하면 Adjust는 해당 설치를 캠페인에 어트리뷰션합니다. Adjust SDK를 사용하면 설치 캠페인 어트리뷰션 정보에 액세스할 수 있습니다. 이 정보를 반환하려면 `getAttribution` 메서드를 호출하여 어트리뷰션 정보를 `AdjustAttribution2dx` 객체로 반환합니다.
+
+```cpp
+AdjustAttribution2dx attribution = Adjust2dx::getAttribution();
+```

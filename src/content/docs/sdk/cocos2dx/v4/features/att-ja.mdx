@@ -1,0 +1,141 @@
+---
+title: "App Tracking Transparencyの設定"
+description: "AppleのApp Tracking Transparencyフレームワークを使用するようにアプリを設定する"
+slug: "ja/sdk/cocos2dx/v4/features/att"
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v5: /ja/sdk/cocos2dx/features/att
+---
+
+広告識別子（IDFA）を記録したい場合は、ユーザーの許諾を得るためのプロンプトを表示する必要があります。これを行うには、アプリにAppleのApp Tracking Transparency（ATT）frameworkを組み込む必要があります。Adjust SDKはユーザーの許諾状況を保存し、リクエストごとにAdjustサーバーに送信します。
+
+## 承認ステータス
+
+| ステータス（Status）                                | コード | 説明                                                                   |
+| --------------------------------------------------- | ------ | ---------------------------------------------------------------------- |
+| `ATTrackingManagerAuthorizationStatusNotDetermined` | `0`    | ユーザーがアクセスプロンプトに応答していない                           |
+| `ATTrackingManagerAuthorizationStatusRestricted`    | `1`    | アプリ関連データへのアクセスがデバイスレベルでブロックされている       |
+| `ATTrackingManagerAuthorizationStatusDenied`        | `2`    | ユーザーがデバイストラッキングによるアプリ関連データへのアクセスを拒否 |
+| `ATTrackingManagerAuthorizationStatusAuthorized`    | `3`    | ユーザーがデバイストラッキングによるアプリ関連データへのアクセスを承認 |
+
+<Callout type="note">
+
+SDKがATT（AppTrackingTransparency）ステータスを取得できない場合、`-1`のステータスコードを受け取る可能性があります。
+
+</Callout>
+
+## アプリトラッキング承認ラッパー
+
+<CodeBlock title="メソッドシグネチャー">
+
+```cpp
+static void requestTrackingAuthorizationWithCompletionHandler(void (*trackingStatusCallback)(int status));
+```
+
+</CodeBlock>
+
+Adjust SDKには、[Appleの`requestTrackingAuthorizationWithCompletionHandler`メソッドのラッパーが含まれています](https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager/3547037-requesttrackingauthorizationwith)。ATTプロンプトをカスタマイズしない場合は、このラッパーを使用することができます。
+
+コールバックメソッドは、ユーザーが同意ダイアログに応答した時にトリガーされ、ユーザーの同意ステータスコードをAdjustサーバーに送信します。コールバック関数内で各ステータスコードに対するレスポンスを定義することができます。
+
+トラッキング リクエスト ダイアログのテキスト内容を指定する必要があります。これを行うには、`Info.plist`ファイルで`NSUserTrackingUsageDescription`キーにテキストを追加してください。
+
+<Callout type="tip">
+
+Adjust SDKは、カスタムプロンプトを使用した場合、同意ステータスも記録します。初期化前にプロンプトを表示した場合、SDKはインストールイベントと共にステータスを送信します。プロンプトを初期化後に表示した場合は、SDKはユーザーが更新した後に、即時にAdjustサーバーにステータスを送信します。
+
+</Callout>
+
+```cpp
+static void authorizationStatusCallback(int status) {
+    switch (status) {
+        case 0:
+            // ATTrackingManagerAuthorizationStatusNotDetermined case
+            break;
+        case 1:
+            // ATTrackingManagerAuthorizationStatusRestricted case
+            break;
+        case 2:
+            // ATTrackingManagerAuthorizationStatusDenied case
+            break;
+        case 3:
+            // ATTrackingManagerAuthorizationStatusAuthorized case
+            break;
+    }
+}
+
+// ...
+
+Adjust2dx::requestTrackingAuthorizationWithCompletionHandler(authorizationStatusCallback);
+```
+
+### 例
+
+この例では、ユーザーがプロンプトと対話したときに、ユーザーの認証状態について人間が読み取れる説明をログに記録する方法を示しています。
+
+```cpp
+static void authorizationStatusCallback(int status) {
+    switch (status) {
+        case 0:
+            CCLOG("The user hasn't responded to the access prompt yet.");
+            break;
+        case 1:
+            CCLOG(("Access to app-related data is blocked at the device level.");)
+            break;
+        case 2:
+            CCLOG("The user has denied access to app-related data for device tracking.");
+            break;
+        case 3:
+            CCLOG("The user has approved access to app-related data for device tracking.");
+            break;
+    }
+}
+
+Adjust2dx::requestTrackingAuthorizationWithCompletionHandler(authorizationStatusCallback);
+```
+
+## 現在の承認ステータスを取得
+
+<CodeBlock title="メソッドシグネチャー">
+
+```cpp
+static int getAppTrackingAuthorizationStatus();
+```
+
+</CodeBlock>
+
+ユーザーの現在の認証ステータスはいつでも取得することができます。`getAppTrackingAuthorizationStatus`メソッドを呼び出し、 **整数** で認証ステータスコードを返してください。
+
+```cpp
+Adjust2dx::getAppTrackingAuthorizationStatus();
+```
+
+### 例
+
+この例では、ユーザーの認証ステータスを収集し、`String`に変換する方法を示しています。この情報は`authorizationStatus`という変数に割り当てられ、`"status"`というキーでセッション パートナー パラメーターとしてパスされます。
+
+```cpp
+std::string authorizationStatus = Adjust2dx::getAppTrackingAuthorizationStatus().c_str();
+Adjust2dx::addSessionPartnerParameter("status", authorizationStatus);
+```
+
+## 承認ステータスの変更を確認する
+
+<CodeBlock title="メソッドシグネチャー">
+
+```cpp
+static void checkForNewAttStatus();
+```
+
+</CodeBlock>
+
+カスタムATTプロンプトを使用する場合、ユーザーの認証ステータスに変更があった場合、Adjust SDKに通知する必要があります。`checkForNewAttStatus`メソッドを呼び出し、Adjustサーバーに認証ステータスを送信してください。
+
+```cpp
+Adjust2dx::checkForNewAttStatus();
+```

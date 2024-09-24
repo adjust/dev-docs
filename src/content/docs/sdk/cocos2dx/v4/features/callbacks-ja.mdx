@@ -1,0 +1,259 @@
+---
+title: "コールバック情報を送信する"
+description: "Adjustにコールバック情報を送信するには、これらのメソッドを使用してください。"
+slug: "ja/sdk/cocos2dx/v4/features/callbacks"
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v5: /ja/sdk/cocos2dx/features/callbacks
+---
+
+SDKがAdjustに情報を送信する時に関数をトリガーするコールバックを設定します。コールバックは **セッション** と **イベント** に対して設定できます。
+
+<Callout type="important">
+
+SDKを初期化する **前** にコールバックパラメーターを登録することが必要です。
+
+</Callout>
+
+## セッションコールバック
+
+SDKがセッション情報を送信した時に関数をトリガーする、セッションコールバックを設定します。 **Success** コールバックと **failure** コールバックが作成できます。 **Success** コールバックは、SDKが情報をAdjustのサーバーに送信する時にトリガーします。 **Failure** コールバックは、SDKが情報を送信している間に問題が発生した際にトリガーします。
+
+セッションコールバックは、レスポンス データ オブジェクトにアクセスできます。そのプロパティをコールバック関数内で使用することが可能です。
+
+| プロパティ     | データタイプ                  | 説明                                                 |
+| -------------- | ----------------------------- | ---------------------------------------------------- |
+| `Message`      | 文字列                        | サーバーからのメッセージまたはSDKのエラーログ        |
+| `Timestamp`    | 文字列                        | Adjustのサーバーからのタイムスタンプ                 |
+| `Adid`         | 文字列                        | Adjustから提供されるユニークデバイスID               |
+| `JsonResponse` | Dictionary `<string, object>` | サーバーからのレスポンスを含むJSONオブジェクト       |
+| `WillRetry`    | Boolean                       | 失敗したパッケージの再送を試みるかどうかを示します。 |
+
+### Successコールバック
+
+<CodeBlock title="メソッドシグネチャー">
+
+```cpp
+void setSessionSuccessCallback(void(*sessionSuccessCallback)(AdjustSessionSuccess2dx sessionSuccess));
+```
+
+</CodeBlock>
+
+SDKがセッションを記録した時に関数をトリガーする、successコールバックを設定します。
+
+```cpp
+#include "Adjust/Adjust2dx.h"
+
+static void sessionSuccessCallbackMethod(AdjustSessionSuccess2dx sessionSuccess) {
+    //...
+}
+
+bool AppDelegate::applicationDidFinishLaunching() {
+    std::string appToken = "{YourAppToken}";
+    std::string environment = AdjustEnvironmentSandbox2dx;
+
+    AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment);
+    adjustConfig.setLogLevel(AdjustLogLevel2dxVerbose);
+    adjustConfig.setSessionSuccessCallback(sessionSuccessCallbackMethod);
+    Adjust2dx::start(adjustConfig);
+}
+```
+
+#### 例
+
+この例では、コールバック関数`sessionSuccess`を作成し、 **success** コールバックとして登録する方法を示しています。その関数は、SDKがセッションを記録した際にタイムスタンプをログに記録します。
+
+```cpp
+#include "Adjust/Adjust2dx.h"
+
+static void sessionSuccess(AdjustSessionSuccess2dx sessionSuccess) {
+    CCLOG("Session recorded at %s", sessionSuccess.getTimestamp().c_str());
+}
+
+bool AppDelegate::applicationDidFinishLaunching() {
+    std::string appToken = "{YourAppToken}";
+    std::string environment = AdjustEnvironmentSandbox2dx;
+
+    AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment);
+    adjustConfig.setLogLevel(AdjustLogLevel2dxVerbose);
+    adjustConfig.setSessionSuccessCallback(sessionSuccess);
+    Adjust2dx::start(adjustConfig);
+}
+```
+
+### Failureコールバック
+
+<CodeBlock title="メソッドシグネチャー">
+
+```cpp
+void setSessionFailureCallback(void(*sessionFailureCallback)(AdjustSessionFailure2dx sessionFailure));
+```
+
+</CodeBlock>
+
+SDKがセッションの記録に失敗した時に関数をトリガーする、failureコールバックを設定します。
+
+```cpp
+#include "Adjust/Adjust2dx.h"
+
+static void sessionFailureCallbackMethod(AdjustSessionFailure2dx sessionFailure) {
+    //...
+}
+
+bool AppDelegate::applicationDidFinishLaunching() {
+    std::string appToken = "{YourAppToken}";
+    std::string environment = AdjustEnvironmentSandbox2dx;
+
+    AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment);
+    adjustConfig.setLogLevel(AdjustLogLevel2dxVerbose);
+    adjustConfig.setSessionFailureCallback(sessionFailureCallbackMethod);
+    Adjust2dx::start(adjustConfig);
+}
+```
+
+#### 例
+
+この例では、コールバック関数`sessionFailure`を作成し、 **failure** コールバックとして登録する方法を示します。その関数は、セッションの失敗メッセージをログに記録します。
+
+```cpp
+#include "Adjust/Adjust2dx.h"
+
+static void sessionFailure(AdjustSessionFailure2dx sessionFailure) {
+    CCLOG("Session recording failed. Response: %s", sessionFailure.getMessage().c_str());
+}
+
+bool AppDelegate::applicationDidFinishLaunching() {
+    std::string appToken = "{YourAppToken}";
+    std::string environment = AdjustEnvironmentSandbox2dx;
+
+    AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment);
+    adjustConfig.setLogLevel(AdjustLogLevel2dxVerbose);
+    adjustConfig.setSessionFailureCallback(sessionFailure);
+    Adjust2dx::start(adjustConfig);
+}
+```
+
+## イベントコールバック
+
+SDKがイベント情報を送信した時に関数をトリガーする、イベントコールバックを設定します。 **Success** コールバックと **failure** コールバックが作成できます。 **Success** コールバックは、SDKが情報をAdjustのサーバーに送信する時にトリガーします。 **Failure** コールバックは、SDKが情報を送信している間に問題が発生した際にトリガーします。
+
+イベントコールバックは、レスポンス データ オブジェクトにアクセスできます。そのプロパティをコールバック関数内で使用することが可能です。
+
+| プロパティ     | データタイプ                  | 説明                                                   |
+| -------------- | ----------------------------- | ------------------------------------------------------ |
+| `Message`      | 文字列                        | サーバーからのメッセージまたはSDKのエラーログ          |
+| `Timestamp`    | 文字列                        | Adjustのサーバーからのタイムスタンプ                   |
+| `Adid`         | 文字列                        | Adjustから提供されるユニークデバイスID                 |
+| `EventToken`   | 文字列                        | イベントトークン                                       |
+| `CallbackId`   | 文字列                        | イベントオブジェクトに設定されたカスタムコールバックID |
+| `JsonResponse` | Dictionary `<string, object>` | サーバーからのレスポンスを含むJSONオブジェクト         |
+| `WillRetry`    | Boolean                       | 失敗したパッケージの再送を試みるかどうかを示します。   |
+
+### Successコールバック
+
+<CodeBlock title="メソッドシグネチャー">
+
+```cpp
+void setEventSuccessCallback(void(*eventSuccessCallback)(AdjustEventSuccess2dx eventSuccess));
+```
+
+</CodeBlock>
+
+SDKがイベントを記録した時に関数をトリガーする、successコールバックを設定します。
+
+```cpp
+#include "Adjust/Adjust2dx.h"
+
+static void eventSuccessCallbackMethod(AdjustEventSuccess2dx eventSuccess) {
+    //...
+}
+
+bool AppDelegate::applicationDidFinishLaunching() {
+    std::string appToken = "{YourAppToken}";
+    std::string environment = AdjustEnvironmentSandbox2dx;
+
+    AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment);
+    adjustConfig.setLogLevel(AdjustLogLevel2dxVerbose);
+    adjustConfig.setEventSuccessCallback(eventSuccessCallbackMethod);
+    Adjust2dx::start(adjustConfig);
+}
+```
+
+#### 例
+
+この例では、コールバック関数`eventSuccess`を作成し、 **success** コールバックとして登録する方法を示しています。その関数は、SDKがイベントを記録した際にタイムスタンプをログに記録します。
+
+```cpp
+#include "Adjust/Adjust2dx.h"
+
+static void eventSuccess(AdjustEventSuccess2dx eventSuccess) {
+    CCLOG("Event recorded at %s", eventSuccess.getTimestamp().c_str());
+}
+
+bool AppDelegate::applicationDidFinishLaunching() {
+    std::string appToken = "{YourAppToken}";
+    std::string environment = AdjustEnvironmentSandbox2dx;
+
+    AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment);
+    adjustConfig.setLogLevel(AdjustLogLevel2dxVerbose);
+    adjustConfig.setEventSuccessCallback(eventSuccess);
+    Adjust2dx::start(adjustConfig);
+}
+```
+
+### Failureコールバック
+
+<CodeBlock title="メソッドシグネチャー">
+
+```cpp
+void setEventFailureCallback(void(*eventFailureCallback)(AdjustEventFailure2dx eventFailure));
+```
+
+</CodeBlock>
+
+SDKがセッションの記録に失敗した時に関数をトリガーする、failureコールバックを設定します。
+
+```cpp
+#include "Adjust/Adjust2dx.h"
+
+static void eventFailureCallbackMethod(AdjustEventFailure2dx eventFailure) {
+    //...
+}
+
+bool AppDelegate::applicationDidFinishLaunching() {
+    std::string appToken = "{YourAppToken}";
+    std::string environment = AdjustEnvironmentSandbox2dx;
+
+    AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment);
+    adjustConfig.setLogLevel(AdjustLogLevel2dxVerbose);
+    adjustConfig.setEventFailureCallback(eventFailureCallbackMethod);
+    Adjust2dx::start(adjustConfig);
+}
+```
+
+#### 例
+
+この例では、コールバック関数`eventFailure`を作成し、 **failure** コールバックとして登録する方法を示します。その関数は、イベントの失敗メッセージをログに記録します。
+
+```cpp
+#include "Adjust/Adjust2dx.h"
+
+static void eventFailure(AdjustEventFailure2dx eventFailure) {
+    CCLOG("Event recording failed. Response: %s", eventFailure.getMessage().c_str());
+}
+
+bool AppDelegate::applicationDidFinishLaunching() {
+    std::string appToken = "{YourAppToken}";
+    std::string environment = AdjustEnvironmentSandbox2dx;
+
+    AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment);
+    adjustConfig.setLogLevel(AdjustLogLevel2dxVerbose);
+    adjustConfig.setEventFailureCallback(eventFailure);
+    Adjust2dx::start(adjustConfig);
+}
+```
