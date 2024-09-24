@@ -1,0 +1,191 @@
+---
+title: Cocos2d-x SDK integration guide
+description: Use the Web SDK to access Adjust's features in your Cocos2d-x apps
+category-title: Cocos2d-x SDK
+slug: en/sdk/cocos2dx
+sidebar-position: 7
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v4: /en/sdk/cocos2dx/v4
+---
+
+The Adjust Android SDK enables you to record attribution, events, and more in your Cocos2d-x app. Follow the steps in this guide to set up your app to work with the Adjust SDK.
+
+## 1. Get the Adjust SDK {% #get-the-adjust-sdk %}
+
+To use the Adjust SDK in your Cocos2d-x app, you need to add it to your project. You can download the latest version from the [GitHub releases page](https://github.com/adjust/cocos2dx_sdk/releases/latest). Extract the archive to a directory.
+
+## 2. Add the SDK to your project {% #add-the-sdk %}
+
+Once you've extracted the release archive, follow these steps to add the Adjust SDK to your project:
+
+1. Navigate to the folder into which you extracted the archive.
+
+1. Copy all C++ files from the `dist` directory and add them to your Cocos2d-x project.
+
+1. (**Android only**): add the paths of the C++ files to the `LOCAL_SRC_FILES` section of your `Android.mk` file.
+
+   ```make
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustConfig2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustAttribution2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustProxy2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustEvent2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/Adjust2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustEventFailure2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustEventSuccess2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustSessionFailure2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustSessionSuccess2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustAppStoreSubscription2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustPlayStoreSubscription2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustThirdPartySharing2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustAdRevenue2dx.cpp
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustAppStorePurchase2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustPlayStorePurchase2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustDeeplink2dx.cpp \
+   ```
+
+## 3. Configure Android settings {% #android-settings %}
+
+To support Android devices, you need to add the Adjust Android SDK to your project dependencies. To do this, add the following to your `build.gradle` file:
+
+```groovy
+dependencies {
+   implementation 'com.adjust.sdk:adjust-android:{% $versions.android.v5 %}'
+}
+```
+
+If you don't use Maven to manage dependencies, you can download the Adjust Android SDK as an `AAR` from [the GitHub releases page](https://github.com/adjust/cocos2dx_sdk/releases).
+
+### Permissions {% #android-permissions %}
+
+The Adjust Android SDK comes with required permissions preconfigured. This includes the `com.google.android.gms.permission.AD_ID` permission. If your app needs to be compliant with the Children's Online Privacy Protection Act (COPPA), you MUST remove this permission by adding the following to your `AndroidManifest.xml` file:
+
+```xml
+<uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
+```
+
+To learn more about COPPA, read [Adjust's COPPA compliance article](https://help.adjust.com/en/article/coppa-compliance).
+
+### Add Google Play Services {% #add-google-play-services %}
+
+Apps that target the Google Play Store must use the [Google Advertising ID](https://support.google.com/googleplay/android-developer/answer/6048248?hl=en) (`gps_adid`) to identify devices. To do this, add the following dependency to the `dependencies` section of your `build.gradle` file.
+
+```groovy
+dependencies: {
+   implementation 'com.google.android.gms:play-services-ads-identifier:18.1.0'
+}
+```
+
+### Set up install referrer {% #set-up-install-referrer %}
+
+The install referrer is an attribution mechanism you can use to attribute an app install to a source. It consists of two parts:
+
+- [x] A set of APIs from these app stores that allow developers to retrieve referral content in their apps.
+- [x] A `referrer` parameter that app stores, such as Google Play and Huawei App Gallery, accept in their app page URLs on their store websites. Here is how the referrer parameter is populated:
+  - When a user clicks on an Adjust link, the Adjust server passes a unique identifier called `reftag`. This identifier is assigned to the click and into the referrer parameter. To learn more about reftag, see the [Reftag article in the Help Center](https://help.adjust.com/en/article/reftag).
+  - When you run [Google Ads](https://support.google.com/google-ads/answer/6357635?hl=en) campaigns, Google passes a unique identifier called `gclid` into the referrer parameter. You MUST enable **Auto-tagging** in your Google Ads account.
+
+#### Google Play Referrer API
+
+To support the [Google Play Referrer API](https://developer.android.com/google/play/installreferrer), follow these steps:
+
+1. Add the Google Maven repository to your `build.gradle` file.
+
+   ```groovy
+   allprojects {
+      repositories {
+         maven {
+            url "https://maven.google.com"
+         }
+      }
+   }
+   ```
+
+1. Add the Install Referrer library to your `build.gradle` file.
+
+   ```groovy
+   dependencies {
+      implementation 'com.android.installreferrer:installreferrer:2.2'
+   }
+   ```
+
+## 4. Configure iOS settings {% #ios-settings %}
+
+To support iOS devices, you need to add the `Adjust.xcframework` framework to your project. To do this, specify which version you want to download in your `Podfile`:
+
+```rb
+# Get pod from repository
+pod 'Adjust', '~> {% $versions.ios.v5 %}'
+
+# Get source directly from GitHub
+pod 'Adjust', :git => 'https://github.com/adjust/ios_sdk.git', :tag => '{% $versions.ios.v5 %}'
+```
+
+If you don't use Cocoapods, you can install the framework manually by fetching it from [the GitHub releases page](https://github.com/adjust/cocos2dx_sdk/releases). Once you've downloaded and extracted the archive, follow these steps to add the framework to your project:
+
+1. Open the project navigator.
+1. Select your target.
+1. Select the **Build Phases** tab.
+1. Expand the **Link Binary with Libraries** group.
+1. Select the **+** button.
+1. Select the `Adjust.xcframework`
+
+| Framework                                                                                                                    | Purpose                                                                                                                      | Notes                                                                                                                        |
+| ---------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `AdSupport.framework`                                                                                                        | Required to enable the Adjust SDK to read the device IDFA.                                                                   | You MUST NOT add this framework if your app targets the "Kids" category                                                      |
+| `AdServices.framework`                                                                                                       | Required for handling Apple Search Ads                                                                                       |                                                                                                                              |
+| `StoreKit.framework`                                                                                                         | Required to access the SKAdNetwork framework and for the Adjust SDK to handle communications with SKAdNetwork.               |                                                                                                                              |
+| `AppTrackingTransparency.framework`                                                                                          | Required in iOS 14 and later to enable the Adjust SDK to wrap the ATT consent dialog and access the user's consent response. | You SHOULD NOT add this framework if your app targets the "Kids" category                                                    |
+
+### Copy additional source files
+
+To complete iOS setup, you MUST copy all Objective-C++ (`.h` and `.mm`) files to your Xcode project alongside the Cocos2d-x C++ files. Ensure that all `.mm` files are listed in the **Build Phases —> Compile Sources** section.
+
+## 5. Set up SDK Signature {% #set-up-sdk-signature %}
+
+SDK v5 includes the [SDK signature library](https://help.adjust.com/en/article/sdk-signature). Follow the testing guide for [iOS](/en/sdk/ios/integrations/signature-library#test-your-app) and [Android](/en/sdk/android/integrations/signature-library#test-your-app) to ensure your integration works.
+
+Signature protection is inactive by default. To enable it, you need to:
+
+1. [Enforce signature validation](https://help.adjust.com/en/article/sdk-signature#enforce-signature-validation).
+1. [Provide your app's SHA-1 fingerprints](https://help.adjust.com/en/article/sdk-signature#manage-your-certificate-fingerprints) prior to testing.
+
+## 6. Integrate the Adjust SDK {% #integrate-the-adjust-sdk %}
+
+Once you've updated your project settings, you can integrate the Adjust SDK into your app. To do this:
+
+1. Find your application delegate file in the **Project Navigator** and open it.
+1. Include the `Adjust/Adjust2dx.h` class at the top of the file.
+1. Instantiate an `AdjustConfig2dx` object inside the `applicationDidFinishLaunching` method with the following arguments:
+   - `appToken`: Your Adjust app token
+   - `environment`: `AdjustEnvironmentSandbox2dx`
+1. Optionally adjust your [logging level](/en/sdk/cocos2dx/configuration#set-your-logging-level) to adjust the verbosity of your logging.
+1. Call the `Adjust2dx::initSdk` method and pass your `AdjustConfig2dx` instance as an argument.
+
+{% callout type="important" %}
+When running tests you should ensure that your environment is set to `AdjustEnvironmentSandbox2dx`. Change this to `AdjustEnvironmentProduction2dx` before you submit your application to app stores.
+{% /callout %}
+
+```cpp
+#include "Adjust/Adjust2dx.h"
+
+bool AppDelegate::applicationDidFinishLaunching() {
+   std::string appToken = "{YourAppToken}";
+   std::string environment = AdjustEnvironmentSandbox2dx;
+
+   AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment);
+   adjustConfig.setLogLevel(AdjustLogLevel2dxVerbose);
+   Adjust2dx::initSdl=k(adjustConfig);
+}
+```
+
+## 7. Build your app
+
+Well done! You should now be able to build and run your Cocos2d-x app. Enable logging to check for any issues. Check your logs to see the `Install tracked` message.
+
+You are ready to start attributing your users with the Adjust SDK.
