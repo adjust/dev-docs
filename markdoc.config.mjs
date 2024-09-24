@@ -2,6 +2,7 @@ import { defineMarkdocConfig, nodes, component } from '@astrojs/markdoc/config';
 import { heading } from ".schema/Heading.markdoc";
 import { link } from ".schema/Link.markdoc";
 import { paragraph } from ".schema/Paragraph.markdoc";
+import { list } from ".schema/List.markdoc";
 import versions from "src/versionMap.json";
 
 export default defineMarkdocConfig({
@@ -11,6 +12,7 @@ export default defineMarkdocConfig({
    nodes: {
       heading,
       link,
+      list,
       paragraph,
       fence: {
          attributes: { ...nodes.fence.attributes },
