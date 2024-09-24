@@ -99,8 +99,10 @@ export const buildSidebarHierarchy = (entries: ContentCollectionEntry[]): [Langu
          if ((isSpecialCase || isDirectChild) && potentialChildSlug.startsWith(entry.slug + '/') && potentialChildSlug !== entry.slug) {
             // Set the parent for the child
             potentialChild.parent = entry.slug;
+
+            // Insert the child in the correct position or alphabetically
             if (potentialChild.position) {
-               structuredEntry.children?.splice(potentialChild.position - 1, 0, potentialChild,)
+               structuredEntry.children?.splice(potentialChild.position - 1, 0, potentialChild);
             } else {
                structuredEntry.children?.push(potentialChild);
             }
@@ -112,6 +114,23 @@ export const buildSidebarHierarchy = (entries: ContentCollectionEntry[]): [Langu
                hierarchy.api = hierarchy.api.filter(item => item.slug !== potentialChild.slug);
             }
          }
+      });
+
+      // Sort the children alphabetically if they have no position
+      structuredEntry.children?.sort((a, b) => {
+         if (a.position && b.position) {
+            return 0;
+         }
+         if (a.position) {
+            return -1;
+         }
+         if (b.position) {
+            return 1;
+         }
+         // Sort alphabetically by file name (last part of the id)
+         const aFileName = a.id.split('/').pop()?.toLowerCase();
+         const bFileName = b.id.split('/').pop()?.toLowerCase();
+         return aFileName?.localeCompare(bFileName!);
       });
 
       // If the entry has no parent, nest it directly under the type array
