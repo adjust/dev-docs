@@ -45,6 +45,21 @@ const updatedRedirectList = prependLocaleToJSON(redirectList, locales);
 // https://astro.build/config
 export default defineConfig({
   redirects: updatedRedirectList,
+  i18n: {
+    defaultLocale: "en",
+    locales: ["en", "ja", "ko", "zh"],
+    routing: {
+      prefixDefaultLocale: true
+    },
+    fallback: {
+      ja: "en",
+      ko: "en",
+      zh: "en"
+    },
+    routing: {
+      fallbackType: "rewrite"
+    }
+  },
   integrations: [AutoImport({
     imports: [
       "@components/Accordion.astro",
