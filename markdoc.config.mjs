@@ -4,10 +4,12 @@ import { link } from ".schema/Link.markdoc";
 import { paragraph } from ".schema/Paragraph.markdoc";
 import { list } from ".schema/List.markdoc";
 import versions from "src/versionMap.json";
+import variables from "src/variables.json";
 
 export default defineMarkdocConfig({
    variables: {
-      versions
+      versions,
+      variables
    },
    nodes: {
       heading,

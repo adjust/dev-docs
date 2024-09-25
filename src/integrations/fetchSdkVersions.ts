@@ -27,6 +27,10 @@ let versionReplacements: VersionMap = {
     v4: "vx.x.x",
     v5: "vx.x.x",
   },
+  cocos2dx: {
+    v4: "vx.x.x",
+    v5: "vx.x.x",
+  },
   web: "vx.x.x",
   windows: "vx.x.x",
 };
