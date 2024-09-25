@@ -124,7 +124,7 @@ export default defineMarkdocConfig({
          }
       },
       tabs: {
-         render: component("src/components/Tab.astro"),
+         render: component("src/components/Tabs.astro"),
       },
    }
 })
