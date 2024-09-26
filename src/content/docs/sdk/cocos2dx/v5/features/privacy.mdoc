@@ -68,21 +68,27 @@ adjustConfig.enablePlayStoreKidsCompliance();
 Adjust2dx::initSdk(adjustConfig);
 ```
 
-## Configure third-party sharing options {% #configure-third-party-sharing-options %}
+## Configure third party sharing options {% #configure-third-party-sharing-options %}
 
-You can use the Adjust SDK to record when a user changes their third-party sharing settings. Third party sharing settings are configured using the `AdjustThirdPartySharing2dx` class.
+Adjust shares all metrics with all SANs and module partners by default. To change this, configure your third party sharing preferences using the `AdjustThirdPartySharing2dx` class.
 
-To enable or disable third party sharing with the Adjust SDK, you need to instantiate an `AdjustThirdPartySharing2dx` object. This object contains variables that control how third party sharing is handled by Adjust.
+You can update your third party sharing settings at any time during the Adjust SDK lifecycle by instantiating an `AdjustThirdPartySharing2dx` object and passing it to `Adjust2dx::trackThirdPartySharing`.
+
+{% callout type="important" %}
+If you need to communicate third party sharing settings before the install session, for example [disabling third party sharing globally](#disable-third-party-sharing-globally) or [configuring per-partner sharing settings](#configure-per-partner-sharing-settings), you MUST instantiate and configure an `AdjustThirdPartySharing2dx` instance and call `Adjust2dx::trackThirdPartySharing` **before** calling `Adjust2dx::initSdk`.
+{% /callout %}
+
+### Instantiate a third party sharing object {% #instantiate-a-third-party-sharing-object %}
 
 To instantiate a third party sharing object, create a new `AdjustThirdPartySharing2dx` instance and pass the following parameters:
 
-- `isEnabled` (`bool`): Whether third party sharing is enabled. Pass `true` to enable third party sharing or `false` to disable third party sharing.
+- `isEnabled` (`bool` | `null`): Whether third party sharing is enabled. Pass `true` or `null` to enable third party sharing. Pass `false` to disable third party sharing.
 
 ```cpp
 AdjustThirdPartySharing2dx adjustThirdPartySharing = new AdjustThirdPartySharing2dx(true);
 ```
 
-Once you've instantiated your `AdjustThirdPartySharing2dx` object, you can send the information to Adjust by calling the `Adjust2dx::trackThirdPartySharing` method with your `AdjustThirdPartySharing2dx` instance as an argument.
+Once you've instantiated your `AdjustThirdPartySharing2dx` object, send the information to Adjust by calling the `Adjust2dx::trackThirdPartySharing` method with your `AdjustThirdPartySharing2dx` instance as an argument.
 
 ```cpp
 AdjustThirdPartySharing2dx adjustThirdPartySharing = new AdjustThirdPartySharing2dx(true);
@@ -94,9 +100,9 @@ Adjust2dx::trackThirdPartySharing(adjustThirdPartySharing);
 If you want to disable sharing information with all partners, including the initial install session, you MUST:
 
 1. Instantiate your `AdjustThirdPartySharing2dx` instance with a `false` argument.
-1. Call `Adjust2dx::trackThirdPartySharing` BEFORE you call `Adjust2dx::initSdk`.
+1. Call `Adjust2dx::trackThirdPartySharing` **before** you call `Adjust2dx::initSdk`.
 
-The Adjust SDK caches the third party sharing update call and sends it before the install session information.
+The Adjust SDK caches the third party sharing update and sends it to Adjust **before** the install session information.
 
 ```cpp
 AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment);
@@ -107,15 +113,22 @@ Adjust2dx::initSdk(adjustConfig);
 
 ### Configure per-partner sharing settings {% #configure-per-partner-sharing-settings %}
 
-If you instantiate your `AdjustAttribution2dx` object with a `true` argument, the Adjust SDK defaults to sending all information to every partner you have set up for your app. To control this, you must customize what data you share on a per-partner basis by calling the `addPartnerSharingSetting` method on your `AdjustAttribution2dx` instance with the following arguments:
+{% callout type="important" %}
+For SAN partners, you MAY pass the partner's name as the `partnerName`. For module partners, you MUST pass the partner ID. Adjust RECOMMENDS you pass the partner ID for both SANs and module partners.
+{% /callout %}
+
+If you instantiate your `AdjustAttribution2dx` object with a `true` or `null` argument, the Adjust SDK defaults to sending all information to every partner you have set up for your app. To control this, you must customize what data you share on a per-partner basis by calling the `addPartnerSharingSetting` method on your `AdjustAttribution2dx` instance with the following arguments:
 
 | Argument                                                                                                                                                                                                 | Type                                                                                                                                                                                                     | Description                                                                                                                                                                                              |
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `partnerName`                                                                                                                                                                                            | `string`                                                                                                                                                                                                 | The ID of the partner. [Download the full list of available partners](https://assets.ctfassets.net/5s247im0esyq/2QQROOadVqJzrME7yXKObe/7aca25e53d38befb2d469809e62b6fcc/3rd-party-sharing-partners.xlsx) |
-| `key`                                                                                                                                                                                                    | `string`                                                                                                                                                                                                 | The metric to share with the partner                                                                                                                                                                     |
-| `value`                                                                                                                                                                                                  | `bool`                                                                                                                                                                                                   | The user's decision                                                                                                                                                                                      |
+| `key`                                                                                                                                                                                                    | `string`                                                                                                                                                                                                 | The metric you want to update.                                                                                                                                                                           |
+| `value`                                                                                                                                                                                                  | `bool`                                                                                                                                                                                                   | Pass `false` to stop sharing a metric with the specified partner or `true` to resume sharing.                                                                                                            |
 
-To enable specific features, you MUST disable `all` metrics, then enable only the metrics you want to share.
+To share only specific metrics with a partner, you MUST:
+
+1. Set `all` metrics to `false`.
+1. Set each metric you want to share to `true`.
 
 ```cpp
 AdjustThirdPartySharing2dx adjustThirdPartySharing = new AdjustThirdPartySharing2dx(true);
@@ -150,9 +163,7 @@ The following metrics can be controlled using this method:
 - `uninstall`
 {% /listcolumns %}
 
-When you set a `false` value against a metric for a partner, Adjust stops sharing the metric with the partner.
-
-### Examples
+#### Examples
 
 If you want to stop sharing all metrics with a specific partner, pass the `all` key with a `false` value.
 
@@ -170,14 +181,10 @@ adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "all", true);
 Adjust2dx::trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
-You can stop or start sharing specific metrics by calling the `addPartnerSharingSetting` method multiple times with different keys. For example, if you only want to share event information with a partner, you can pass:
+To only share event data with a specific partner:
 
-- `all` with a `false` value to disable sharing all information.
-- `event` with a `true` value to enable event sharing
-
-{% callout type="note" %}
-Specific keys always take priority over `all`. If you pass `all` with other keys, the individual key values override the `all` setting.
-{% /callout %}
+- Pass `all` with a `false` value to stop sharing all metrics.
+- Pass `event` with a `true` value to start sharing events.
 
 ```cpp
 AdjustThirdPartySharing2dx adjustThirdPartySharing = new AdjustThirdPartySharing2dx(true);
@@ -188,7 +195,7 @@ Adjust2dx::trackThirdPartySharing(adjustThirdPartySharing);
 
 ### Add per-partner granular information {% #add-per-partner-granular-information %}
 
-You can attach granular information when a user updates their third-party sharing preferences. Use this information to communicate more detail about a user's decision. To do this, call the `addGranularOption` method on your `AdjustThirdPartySharing2dx` instance with the following parameters:
+You can attach granular information when a user updates their third party sharing preferences. Use this information to communicate more detail about a user's decision. To do this, call the `addGranularOption` method on your `AdjustThirdPartySharing2dx` instance with the following parameters:
 
 | Argument                                                                                                                                                                                                 | Type                                                                                                                                                                                                     | Description                                                                                                                                                                                              |
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -202,15 +209,17 @@ adjustThirdPartySharing.addGranularOption("PartnerA", "foo", "bar");
 Adjust2dx::trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
+Granular options can be configured or updated at any time during the Adjust SDK lifecycle. If you configure granular options before calling `Adjust2dx::initSdk`, the Adjust SDK caches the value and sends it before the initial install.
+
 #### Manage Facebook Limited Data Use {% #manage-facebook-ldu %}
 
 {% callout type="important" %}
-The Adjust SDK sends information to Facebook as soon as the app is installed. You MUST set this **before** initializing the SDK.
+You MUST configure these granular options and call `Adjust2dx::trackThirdPartySharing` **before** calling `Adjust2dx::initSdk`.
 {% /callout %}
 
 Facebook provides a feature called Limited Data Use (LDU) to comply with the California Consumer Privacy Act (CCPA). This feature enables you to notify Facebook when a California-based user is opted out of the sale of data. You can also use it if you want to opt all users out by default.
 
-You can update the Facebook LDU status using the following keys
+You can update the Facebook LDU status using the following keys:
 
 {% table %}
 - Key
@@ -239,9 +248,14 @@ AdjustThirdPartySharing2dx adjustThirdPartySharing = new AdjustThirdPartySharing
 adjustThirdPartySharing.addGranularOption("facebook", "data_processing_options_country", "1");
 adjustThirdPartySharing.addGranularOption("facebook", "data_processing_options_state", "1000");
 Adjust2dx::trackThirdPartySharing(adjustThirdPartySharing);
+Adjust2dx::initSdk(adjustConfig);
 ```
 
 #### Provide consent data to Google (Digital Markets Act compliance) {% #dma-compliance %}
+
+{% callout type="important" %}
+You MUST configure these granular options and call `Adjust2dx::trackThirdPartySharing` **before** calling `Adjust2dx::initSdk`. You MUST NOT change these granular options later or Google won't claim attribution.
+{% /callout %}
 
 To comply with the EU's Digital Markets Act (DMA), Google Ads and the Google Marketing Platform require explicit consent to receive Adjust’s attribution requests to their APIs. To communicate this consent, you MUST the following granular options to your third party sharing instance for the partner `google_dma` if:
 
@@ -272,8 +286,20 @@ To comply with the EU's Digital Markets Act (DMA), Google Ads and the Google Mar
 AdjustThirdPartySharing2dx adjustThirdPartySharing = new AdjustThirdPartySharing2dx(true);
 adjustThirdPartySharing.addGranularOption("google_dma", "eea", "1");
 adjustThirdPartySharing.addGranularOption("google_dma", "ad_personalization", "1");
+adjustThirdPartySharing.addGranularOption("google_dma", "ad_user_data", "0");
+Adjust2dx::trackThirdPartySharing(adjustThirdPartySharing);
+Adjust2dx::initSdk(adjustConfig);
+```
+
+If your user isn't in the EEA, you MUST set both `ad_personalization` and `ad_user_data` to `1`. If these values aren't set, Google won't claim attribution.
+
+```cpp
+AdjustThirdPartySharing2dx adjustThirdPartySharing = new AdjustThirdPartySharing2dx(true);
+adjustThirdPartySharing.addGranularOption("google_dma", "eea", "0");
+adjustThirdPartySharing.addGranularOption("google_dma", "ad_personalization", "1");
 adjustThirdPartySharing.addGranularOption("google_dma", "ad_user_data", "1");
 Adjust2dx::trackThirdPartySharing(adjustThirdPartySharing);
+Adjust2dx::initSdk(adjustConfig);
 ```
 
 ## Set URL strategy {% #set-url-strategy %}
