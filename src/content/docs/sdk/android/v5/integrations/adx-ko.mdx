@@ -1,0 +1,57 @@
+---
+title: AD(X) SDK 연동
+description: Ad(X) 연동을 사용하여 Ad(X) 정보를 Adjust 서버로 전달합니다.
+slug: ko/sdk/android/integrations/adx
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v4: /ko/sdk/android/v4/integrations/adx
+---
+
+Adjust SDK를 사용하여 AD\(X\) 데이터를 `AdjustAdRevenue` 인스턴스로 Adjust에 전송할 수 있습니다. 다음을 수행하시기 바랍니다.
+
+1. AD\(X\) SDK에서 `rewardedAd.OnPaidEvent` 메서드가 호출될 때 트리거하는 새로운 함수를 생성합니다. 이 함수는 인수로 eCPM\(Effective Cost Per Mille, 유효 1\) 금액을 받습니다.
+2. `"adx_sdk"` 소스를 사용하여 [`AdjustAdRevenue` 객체](/ko/sdk/android/features/ad-revenue)를 인스턴스화합니다.
+3. `AdjustAdRevenue` 객체의 세부 정보를 입력합니다. `ecpm` 값을 1,000으로 나누면 해당 광고의 예상 매출이 반환됩니다.
+4. `trackAdRevenue` 메서드를 호출하여 Adjust로 광고 매출 정보를 전송합니다.
+
+## 예시 {#example}
+
+<Tabs>
+<Tab title="Kotlin">
+
+```kotlin
+override fun onPaidEvent(double ecpm) {
+	double revenue = ecpm / 1000
+
+	AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue("adx_sdk")
+	adjustAdRevenue.setRevenue(revenue, "USD")
+	adjustAdRevenue.setAdRevenueUnit("ADX Rewarded Ad")
+
+	Adjust.trackAdRevenue(adjustAdRevenue)
+}
+
+```
+
+</Tab>
+<Tab title="Java">
+
+```java
+@Override
+public void onPaidEvent(double ecpm) {
+	double revenue = ecpm / 1000;
+
+	AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue("adx_sdk");
+	adjustAdRevenue.setRevenue(revenue, "USD");
+	adjustAdRevenue.setAdRevenueUnit("ADX Rewarded Ad");
+
+	Adjust.trackAdRevenue(adjustAdRevenue);
+}
+```
+
+</Tab>
+</Tabs>

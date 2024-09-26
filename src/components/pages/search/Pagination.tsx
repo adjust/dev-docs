@@ -33,9 +33,9 @@ const Pagination: FC<PaginationProps> = ({ canRefine, lang }) => {
   const iconRightColor = isLastPage ? "#808080" : "#000";
 
   return (
-    <>
+    <div className="flex justify-center items-center mb-16">
       {isPaginaton && (
-        <div className="flex justify-center items-center mb-16">
+        <>
           <span
             className={classNames(
               "mr-3  flex items-center justify-center min-h-[20px] min-w-[20px]",
@@ -65,9 +65,9 @@ const Pagination: FC<PaginationProps> = ({ canRefine, lang }) => {
           >
             <Icon name="ChevronRight" size="small" color={iconRightColor} />
           </span>
-        </div>
+        </>
       )}
-    </>
+    </div>
   );
 };
 

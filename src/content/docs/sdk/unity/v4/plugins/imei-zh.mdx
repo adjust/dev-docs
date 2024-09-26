@@ -1,0 +1,95 @@
+---
+title: IMEI 插件
+description: 使用 IMEI 插件读取设备 IMEI。
+slug: zh/sdk/unity/v4/plugins/imei
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v5: /zh/sdk/unity/plugins/imei
+---
+
+<Callout type="important">
+
+该插件仅适用于不面向 Google Play 商店的应用。
+
+</Callout>
+
+移动设备均带有一个 IMEI \(国际移动设备识别码\) 和一个 MEID \(移动设备识别码\)。在某些市场中，您可以使用安卓设备的 IMEI 和 MEID 进行归因。要使用此功能，您需要首先在 Adjust 控制面板中进行必要设置。完成设置后，才可以使用此插件。
+
+IMEI 插件会提供设备的 IMEI 和 MEID。除 IMEI 和 MEID 外，SDK 还会继续使用其他标识符。
+
+使用插件前，请确保已按照[入门指南](/zh/sdk/unity)中的说明将 Adjust SDK 集成进您的应用。
+
+## 将插件添加至您的应用 {#add-the-plugin-to-your-app}
+
+您需要将 IMEI 插件加入自己的项目，才能使用它。添加 IMEI 插件的方法有两种：
+
+-  [从 Adjust GitHub 发布页面中下载 JAR](https://github.com/adjust/android_sdk/releases)。
+-  将依赖添加至您的 `build.gradle` 文件。
+
+<CodeBlock title="build.gradle">
+
+```groovy
+dependencies {
+   implementation 'com.adjust.sdk:adjust-android:$UNITY_V4_VERSION'
+   implementation 'com.adjust.sdk:adjust-android-imei:$UNITY_V4_VERSION'
+}
+
+```
+
+</CodeBlock>
+
+## 添加权限 {#add-permissions}
+
+请确保以下权限已包含在 `AndroidManifest.xml` 文件中。否则，请进行添加。
+
+<CodeBlock title="AndroidManifest.xml">
+
+```xml
+<uses-permission android:name="android.permission.READ_PHONE_STATE" />
+```
+
+</CodeBlock>
+<Callout type="note">
+
+从安卓 6\.0 起，您可能需要[申请应用权限](https://developer.android.com/training/permissions/requesting)。如果操作系统已经设置好，不需要应用权限，则无需进行此操作。
+
+</Callout>
+
+## 更新 ProGuard 设置 {#update-proguard-settings}
+
+如果您的应用不是针对 Google Play 商店，则无需添加入门指南中的所有规则。您可以移除与 Google Play 服务相关的规则和 install referrer 库，只需保留适用于 Adjust SDK 的规则。
+
+<CodeBlock title="proguard.pro">
+
+```java
+-keep public class com.adjust.sdk.** { *; }
+```
+
+</CodeBlock>
+
+## 使用插件 {#use-the-plugin}
+
+<Callout type="important">
+
+IMEI 和 MEID 为永久标识符。您需要自行确保对此类数据的收集和处理是合法的。
+
+</Callout>
+
+设置好插件后，就可以收集设备的 IMEI 和 MEID 了。为此，请在启用 Adjust SDK 前调用 `AdjustImei.readImei` 方法。
+
+```cs
+AdjustImei.ReadImei();
+// ...
+Adjust.start(config);
+```
+
+如果您想阻止 SDK 读取 IMEI 和 MEID，请调用 `AdjustImei.doNotReadImei` 方法。
+
+```cs
+AdjustImei.doNotReadImei();
+```

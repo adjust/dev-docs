@@ -1,0 +1,551 @@
+---
+title: Sociomantic
+description: Sociomantic 플러그인을 사용하여 Sociomantic 정보를 Adjust로 전달합니다.
+slug: ko/sdk/ios/v4/plugins/sociomantic
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v5: /ko/sdk/ios/plugins/sociomantic
+---
+
+Adjust SDK와 Sociomantic 이벤트를 연동할 수 있습니다.
+
+## 환경 설정 {#set-up-your-environment}
+
+<Tabs>
+<Tab title="Cocoapods">
+
+`Podfile`에 다음 줄을 추가합니다.
+
+<CodeBlock title="Podfile">
+
+```text
+pod 'Adjust/Sociomantic'
+```
+
+</CodeBlock>
+</Tab>
+<Tab title="Carthage">
+
+`Cartfile`에 다음 줄을 추가합니다.
+
+<CodeBlock title="Cartfile">
+
+```text
+github "adjust/ios_sdk" "sociomantic"
+```
+
+</CodeBlock>
+</Tab>
+</Tabs>
+
+### 소스로부터의 설치 {#install-from-source}
+
+다음의 방법으로 Adjust Sociomantic 플러그인을 프로젝트에 직접 추가할 수 있습니다:
+
+1. [배포 페이지](https://github.com/adjust/ios_sdk/releases)에서 다운로드한 아카이브 내 `plugin/Sociomantic` 폴더를 찾습니다.
+2. `ADJSociomantic.h` 및 `ADJSociomantic.m` 파일을 프로젝트 내 Adjust 폴더에 드래그합니다.
+3. **해당 파일을 추가하기 위한 옵션 선택** 이라는 창이 나타나면, **필요한 경우 아이템 복사** 체크박스를 선택한 뒤, 라디오 버튼을 선택하여 **그룹을 생성** 합니다.
+
+## Sociomantic 이벤트 {#sociomantic-events}
+
+Sociomantic 플러그인 설치가 완료되면, Sociomantic 이벤트 메서드와 다음의 상수에 액세스할 수 있습니다. 이를 딕셔너리의 속성 이름으로 사용해야 합니다.
+
+-  `NSString *const SCMCategory;`
+-  `NSString *const SCMProductName;`
+-  `NSString *const SCMSalePrice;`
+-  `NSString *const SCMProductURL;`
+-  `NSString *const SCMProductImageURL;`
+-  `NSString *const SCMBrand;`
+-  `NSString *const SCMDescription;`
+-  `NSString *const SCMTimestamp;`
+-  `NSString *const SCMValidityTimestamp;`
+-  `NSString *const SCMQuantity;`
+-  `NSString *const SCMScore;`
+-  `NSString *const SCMProductID;`
+-  `NSString *const SCMAmount;`
+-  `NSString *const SCMCurrency;`
+-  `NSString *const SCMActionConfirmed;`
+-  `NSString *const SCMActionConfirmed;`
+-  `NSString *const SCMCustomerAgeGroup;`
+-  `NSString *const SCMCustomerEducation;`
+-  `NSString *const SCMCustomerGender;`
+-  `NSString *const SCMCustomerID;`
+-  `NSString *const SCMCustomerMHash;`
+-  `NSString *const SCMCustomerSegment;`
+-  `NSString *const SCMCustomerTargeting;`
+
+Sociomantic 이벤트 전송 전에, 다음과 같이 파트너 ID를 설정해야 합니다.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+ADJSociomantic.injectPartnerId(intoSociomanticEvents: "{sociomanticPartnerId}")
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "ADJSociomantic.h"
+
+[ADJSociomantic injectPartnerIdIntoSociomanticEvents:@"{sociomanticPartnerId}"];
+```
+
+</Tab>
+</Tabs>
+
+파트너 ID 설정이 완료되면, 다른 Sociomantic 이벤트를 연동할 수 있습니다.
+
+## 예시 {#examples}
+
+### 커스텀 이벤트 {#customer-event}
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: ANY_TOKEN)
+let customerData = [
+    SCMCustomerID: "123456"
+]
+
+ADJSociomantic.injectCustomerData(into: event, withData: customerData)
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "ADJSociomantic.h"
+
+ADJEvent *event = [ADJEvent eventWithEventToken:ANY_TOKEN];
+NSDictionary *customerData = @{
+    SCMCustomerID: @"123456"
+};
+
+[ADJSociomantic injectCustomerDataIntoEvent:event withData:customerData];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+</Tabs>
+
+### 홈 페이지 보기 {#view-home-page}
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: HOMEPAGE_TOKEN)
+
+ADJSociomantic.injectHomePage(into: event)
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab sync="objc">
+
+```objc
+#import "ADJSociomantic.h"
+
+ADJEvent *event = [ADJEvent eventWithEventToken:HOMEPAGE_TOKEN];
+
+[ADJSociomantic injectHomePageIntoEvent:event];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+</Tabs>
+
+### 목록 보기 {#view-listing}
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: LISTING_TOKEN)
+let categories = ["category_1", "category_2", "category_3"]
+let date = "1427792434"
+
+ADJSociomantic.injectViewListing(into: event, withCategories: categories)
+// You also can provide a date like this
+ADJSociomantic.injectViewListing(into: event, withCategories: categories, withDate: date)
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "ADJSociomantic.h"
+
+ADJEvent *event = [ADJEvent eventWithEventToken:LISTING_TOKEN];
+NSArray *categories = @[@"category_1", @"category_2", @"category_3"];
+NSString *date = @"1427792434";
+
+[ADJSociomantic injectViewListingIntoEvent:event withCategories:categories];
+// You also can provide a date like this
+[ADJSociomantic injectViewListingIntoEvent:event withCategories:categories withDate:date];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+</Tabs>
+
+### 상품 보기 {#view-product}
+
+<Callout type="note">
+
+어느 설정을 사용해야 할지 모르겠는 경우, Sociomantic의 담당 테크니컬 어카운트 매니저에게 연락하시기 바랍니다.
+
+</Callout>
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: PRODUCT_VIEW_TOKEN)
+let params = [
+    SCMCategory: ["cat1", "cat2"],
+    SCMProductName: "stuff",
+    SCMDescription: "pure awesomeness"
+]
+
+ADJSociomantic.injectViewProduct(into: event, productId: "productId_4", withParameters: params)
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "ADJSociomantic.h"
+
+ADJEvent *event      = [ADJEvent eventWithEventToken:PRODUCT_VIEW_TOKEN];
+NSDictionary *params = @{
+    SCMCategory     : @[@"cat1", @"cat2"],
+    SCMProductName  : @"stuff",
+    SCMDescription  : @"pure awesomeness"
+};
+
+[ADJSociomantic injectViewProductIntoEvent:event productId:@"productId_4" withParameters:params];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+</Tabs>
+
+### 이용 가능한 제품 파라미터 {#available-product-parameters}
+
+| 파라미터 이름          | 필수 요건 | 설명                                                            | 참고                                                                                                                                                                                                  |
+| ---------------------- | --------- | --------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `SCMCategory`          | 필수      | 제품 카테고리\(전체 카테고리 위치값\)                           | 카테고리나 목록 페이지의 트래킹 코드에 제공된 카테고리 정보는 피드나 제품 페이지의 트래킹 코드에 제공된 카테고리 정보와 일치해야 합니다.                                                              |
+| `SCMProductName`       | 필수      | 제품 이름                                                       | 특수문자는 암호화되면 안되며, 올바른 UTF\-8 형식으로 제공되어야 합니다. HTML markup을 사용하지 마시기 바랍니다.                                                                                       |
+| `SCMSalePrice`         | 필수      | 소수값의 판매 금액\(예: 2\.99\)                                 | 소수점을 사용하고, 1,000단위에 쉼표를 사용하지 마시기 바랍니다.                                                                                                                                       |
+| `SCMAmount`            | 필수      | 소수값의 일반 금액\(예: 3\.99\)                                 | 소수점을 사용하고, 1,000단위에 쉼표를 사용하지 마시기 바랍니다.                                                                                                                                       |
+| `SCMCurrency`          | 필수      | ISO 4217 형식의 통화 코드\(예: EUR\)                            | 고정 통화 코드. 트래킹 코드 예시에서 사용자에게 제공되어야 함.                                                                                                                                        |
+| `SCMProductURL`        | 필수      | 제품 URL\(딥링크\)                                              | 올바르게 작동하는 딥링크를 제공하시기 바랍니다. 클릭 트래킹 파라미터\(Google Analytics, HURRA, Eulerian 등\)가 없는 것이 이상적입니다. 항상 다음 항목과 함께 딥링크를 사용합니다. `http://`           |
+| `SCMProductImageURL`   | 필수      | 제품 이미지 URL                                                 | 합리적인 크기의 이미지를 제공하시기 바랍니다. 광고에서 가장 잘 나타나려면 최소 200x200px 해상도에, 동일한 이미지 비율을 갖고 있어야 합니다.                                                           |
+| `SCMBrand`             | 필수      | 제품 브랜드                                                     | 특수문자는 암호화되면 안되며, 올바른 UTF\-8 형식으로 제공되어야 합니다\(위 SCMProductName과 동일\). HTML markup을 사용하지 마시기 바랍니다.                                                           |
+| `SCMDescription`       | 선택      | 간략한 제품 묘사                                                | 특수문자는 암호화되면 안되며, 올바른 UTF\-8 형식으로 제공되어야 합니다\(위 SCMProductName과 동일\). HTML markup을 사용하지 마시기 바랍니다.                                                           |
+| `SCMTimestamp`         | 선택      | 제품이 언제까지 구매 가능한지를 보여주는 타임스탬프\(GMT 시간\) | 방문자가 검색한 날짜를 제공하시기 바랍니다. 이는 NSNumber 내에 래핑되어 있는 NSTimeInterval여야 합니다. \(예시 참조\)                                                                                 |
+| `SCMValidityTimestamp` | 선택      | 제품이 언제까지 구매 가능한지를 보여주는 타임스탬프\(GMT 시간\) | 제품이 언제까지 구매 가능한지 unix 타임스탬프를 제공하시기 바랍니다. 항상 구매 가능한 제품에는 0을 사용합니다. 이는 NSNumber 내에 래핑되어 있는 NSTimeInterval여야 합니다. \(위 SCMTimestamp와 동일\) |
+| `SCMQuantity`          | 선택      | 제품의 재고량                                                   | Sociomantic 담당자와 의논 후에 이 필드를 연동하시기 바랍니다.                                                                                                                                         |
+| `SCMScore`             | 선택      | 제품의 우선순위 점수\(값 범위는 0~10\.0\)                       | Sociomantic 담당자와 의논 후에 이 필드를 연동하시기 바랍니다.                                                                                                                                         |
+
+### Cart {#cart}
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: CART_TOKEN)
+let product5 = [
+    SCMAmount: NSNumber(value: 100),
+    SCMCurrency: "EUR",
+    SCMQuantity: NSNumber(value: 1),
+    SCMProductID: "productId_5"
+]
+let product6 = "productId_6"
+let product7 = [
+    SCMProductID: "productId_7"
+]
+
+
+let productList = [product5, product6, product7]
+
+ADJSociomantic.injectCart(into: event, cart: productList)
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "ADJSociomantic.h"
+
+ADJEvent *event = [ADJEvent eventWithEventToken:CART_TOKEN];
+NSDictionary *product5 = @{
+    SCMAmount    : @100,
+    SCMCurrency  : @"EUR",
+    SCMQuantity  : @1,
+    SCMProductID : @"productId_5",
+};
+NSString *product6 = @"productId_6";
+NSDictionary *product7 = @{
+    SCMProductID : @"productId_7"
+};
+
+NSArray * productList = @[product5, product6, product7];
+
+[ADJSociomantic injectCartIntoEvent:event cart:productList];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+</Tabs>
+
+### 이용 가능한 장바구니 파라미터 {#available-cart-parameters}
+
+| 파라미터 이름  | 필수 요건 | 설명                                 | 참고                                                                                                                                                |
+| -------------- | --------- | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `SCMProductID` | 필수      | 제품 ID                              | 색상이나 사이즈에 대한 subID를 제외한 제품 ID를 제공하시기 바랍니다.                                                                                |
+| `SCMAmount`    | 선택      | 소수값의 제품 가격\(예: 2\.99\)      | 소수점을 사용하고, 1,000단위에 쉼표를 사용하지 마시기 바랍니다. 제품 당 가격을 제공하시기 바랍니다. 수량이 1보다 큰 값을 갖고 있을 때도 적용됩니다. |
+| `SCMCurrency`  | 선택      | ISO 4217 형식의 통화 코드\(예: EUR\) | 고정 통화 코드. 트래킹 코드 예시에서 사용자에게 제공되어야 함.                                                                                      |
+| `SCMQuantity`  | 선택      | 선택한 제품의 수량                   | 정수 값을 사용합니다.                                                                                                                               |
+
+### 확인되지 않은 트랜잭션 {#unconfirmed-transaction}
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: TRANSACTION_TOKEN)
+let product5 = "productId_5"
+let product6 = [
+    SCMQuantity: NSNumber(value: 3),
+    SCMProductID: "productId_6"
+]
+let productList = [product5, product6]
+
+ADJSociomantic.injectTransaction(into: event, transactionId: "123456", withProducts: productList)
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "ADJSociomantic.h"
+
+ADJEvent *event = [ADJEvent eventWithEventToken:TRANSACTION_TOKEN];
+NSString *product5 =  @"productId_5";
+NSDictionary *product6 = @{
+    SCMQuantity  : @3,
+    SCMProductID : @"productId_6"
+};
+NSArray * productList = @[product5, product6];
+
+[ADJSociomantic injectTransactionIntoEvent:event transactionId:@"123456" withProducts:productList];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+</Tabs>
+
+또는 파라미터와 함께:
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: TRANSACTION_TOKEN)
+let product5 = "productId_5"
+let product6 = [
+    SCMQuantity: NSNumber(value: 3),
+    SCMProductID: "productId_6"
+]
+let productList = [product5, product6]
+let parameters = [
+    SCMQuantity: NSNumber(value: 4 /* 3 times product6 and 1 product5 */)
+]
+
+ADJSociomantic.injectTransaction(into: event, transactionId: "123456", withProducts: productList, withParameters: parameters)
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "ADJSociomantic.h"
+
+ADJEvent *event = [ADJEvent eventWithEventToken:TRANSACTION_TOKEN];
+NSString *product5 =  @"productId_5";
+NSDictionary *product6 = @{
+    SCMQuantity  : @3,
+    SCMProductID : @"productId_6"
+};
+NSArray *productList = @[product5, product6];
+NSDictionary *parameters = @{
+    SCMQuantity: @4  // 3 times product6 and 1 product5
+};
+
+[ADJSociomantic injectTransactionIntoEvent:event transactionId:@"123456" withProducts:productList withParameters:parameters];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+</Tabs>
+
+### 확인된 트랜잭션 {#confirmed-transactions}
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: TRANSACTION_TOKEN)
+let product5 = "productId_5"
+let product6 = [
+    SCMQuantity: NSNumber(value: 3),
+    SCMProductID: "productId_6"
+]
+let productList = [product5, product6]
+
+ADJSociomantic.injectConfirmedTransaction(into: event, transactionId: "123456", withProducts: productList)
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "ADJSociomantic.h"
+
+ADJEvent *event = [ADJEvent eventWithEventToken:TRANSACTION_TOKEN];
+NSString *product5 =  @"productId_5";
+NSDictionary *product6 = @{
+    SCMQuantity  : @3,
+    SCMProductID : @"productId_6"
+};
+NSArray * productList = @[product5, product6];
+
+[ADJSociomantic injectConfirmedTransactionIntoEvent:event transactionId:@"123456" withProducts:productList];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+</Tabs>
+
+또는 파라미터와 함께:
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: TRANSACTION_TOKEN)
+let product5 = "productId_5"
+let product6 = [
+    SCMQuantity: NSNumber(value: 3),
+    SCMProductID: "productId_6"
+]
+let productList = [product5, product6]
+let parameters = [
+    SCMQuantity: NSNumber(value: 4 /* 3 times product6 and 1 product5 */)
+]
+
+ADJSociomantic.injectConfirmedTransaction(into: event, transactionId: "123456", withProducts: productList, withParameters: parameters)
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "ADJSociomantic.h"
+
+ADJEvent *event = [ADJEvent eventWithEventToken:TRANSACTION_TOKEN];
+NSString *product5 =  @"productId_5";
+NSDictionary *product6 = @{
+    SCMQuantity  : @3,
+    SCMProductID : @"productId_6"
+};
+NSArray *productList = @[product5, product6];
+NSDictionary *parameters = @{
+    SCMQuantity: @4  // 3 times product6 and 1 product5
+};
+
+[ADJSociomantic injectConfirmedTransactionIntoEvent:event transactionId:@"123456" withProducts:productList withParameters:parameters];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+</Tabs>
+
+### 이용 가능한 장바구니 파라미터 {#available-cart-parameters-1}
+
+| 파라미터 이름 | 필수 요건 | 설명                                 | 참고                                                                                                                                                |
+| ------------- | --------- | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `SCMAmount`   | 선택      | 소수값의 제품 가격\(예: 2\.99\)      | 소수점을 사용하고, 1,000단위에 쉼표를 사용하지 마시기 바랍니다. 제품 당 가격을 제공하시기 바랍니다. 수량이 1보다 큰 값을 갖고 있을 때도 적용됩니다. |
+| `SCMCurrency` | 선택      | ISO 4217 형식의 통화 코드\(예: EUR\) | 고정 통화 코드. 트래킹 코드 예시에서 사용자에게 제공되어야 함.                                                                                      |
+| `SCMQuantity` | 선택      | 선택한 제품의 수량                   | 정수 값을 사용합니다.                                                                                                                               |
+
+### 리드 이벤트 {#lead-event}
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: LEAD_TOKEN)
+
+ADJSociomantic.injectLead(into: event, leadID: "123456789")
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "ADJSociomantic.h"
+
+ADJEvent *event = [ADJEvent eventWithEventToken:LEAD_TOKEN];
+
+[ADJSociomantic injectLeadIntoEvent:event leadID:@"123456789"];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+</Tabs>
+
+또는 컨펌된 리드:
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: LEAD_TOKEN)
+
+ADJSociomantic.injectLead(into: event, leadID: "123456789", andConfirmed: true)
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "ADJSociomantic.h"
+
+ADJEvent *event = [ADJEvent eventWithEventToken:LEAD_TOKEN];
+
+[ADJSociomantic injectLeadIntoEvent:event leadID:@"123456789" andConfirmed:YES];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+</Tabs>

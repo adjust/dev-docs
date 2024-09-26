@@ -1,0 +1,43 @@
+---
+title: AD(X) SDK integration
+description: Use the Ad(X) integration to pass AD(X) information to Adjust's servers.
+slug: en/sdk/unity/integrations/adx
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v4: /en/sdk/unity/v4/integrations/adx
+---
+
+You can use the Adjust SDK to send AD(X) data to Adjust as an `AdjustAdRevenue` instance. To do this:
+
+1. Create a new function that triggers when the `rewardedAd.OnPaidEvent` method is called in the AD(X) SDK. This function should receive the eCPM (Effective Cost Per Mille) amount as an argument.
+2. Instantiate an [`AdjustAdRevenue` object](/en/sdk/unity/features/ad-revenue) with the source `"adx_sdk"`.
+3. Fill in the details of your `AdjustAdRevenue` object. Divide the `ecpm` value by 1000 to return the estimated revenue for the ad.
+4. Send the ad revenue information to Adjust by calling the `Adjust.TrackAdRevenue` method.
+
+<Callout type="seealso">
+
+For more information about the `rewardedAd.OnPaidEvent` method, see [AD(X)'s rewarded ad documentation](https://docs.adxcorp.kr/unity/sdk-integration/ad-formats/rewarded-ad/ad-x#id-4.-a-d-revenue-onpaidevent)
+
+</Callout>
+
+## Example {#example}
+
+```cs
+rewardedAd.OnPaidEvent += RewardedAd_OnPaidEvent;
+
+void RewardedAd_OnPaidEvent(double ecpm)
+{
+  double revenue = ecpm / 1000f;
+
+  AdjustAdRevenue adRevenue = new AdjustAdRevenue("adx_sdk");
+  adRevenue.SetRevenue(revenue, "USD");
+  adRevenue.AdRevenueUnit = "ADX Rewarded Ad";
+
+  Adjust.TrackAdRevenue(adRevenue);
+}
+```

@@ -8,7 +8,7 @@ sidebar-label: "サーバー間（S2S）アトリビューションチェック�
 
 サーバー間（S2S）アトリビューションおよびセッション計測には、Adjust SDKの基本機能を複製した、カスタムアプリ内ソリューションが必要となります。このS2Sアトリビューションチェックリストでは、アプリ内ソリューションの要件について概要を説明します。これらの要件を満たすことで、Adjustが受信する情報のセキュリティとレポートの正確性が保証されます。
 
-## [事前準備](before-you-begin)
+## 事前準備 {#before-you-begin}
 
 Adjust SDKは、アトリビューションおよびセッション計測に必要なコードを最小限に抑えています。アプリにこのコードを実装することが、Adjustが推奨するアトリビューションおよびセッション計測の方法です。簡単に実装可能なこのコードが、カスタムソリューションに複製する機能を提供します。
 
@@ -16,49 +16,49 @@ Adjust SDKは、アトリビューションおよびセッション計測に必�
 
 📖 [Android](/ja/sdk/android) / [iOS](/ja/sdk/ios) / [Windows](/ja/sdk/windows) / [Adobe Air](https://github.com/adjust/adobe_air_sdk#basic-integration) / [Unity](/ja/sdk/unity) / [Cordova](https://github.com/adjust/cordova_sdk#basic-integration) / [Marmalade](https://github.com/adjust/marmalade_sdk#basic-integration) / [Xamarin](https://github.com/adjust/xamarin_sdk#basic-integration) / [Cocos2d\-x](https://github.com/adjust/cocos2dx_sdk#basic-integration) / [React Native](/ja/sdk/react-native) / [Titanium](https://github.com/adjust/titanium_sdk#basic-integration) / [Corona](https://github.com/adjust/corona_sdk#basic-integration)
 
-## [チェックリストの概要](checklist-overview)
+## チェックリストの概要 {#checklist-overview}
 
 Adjustのサーバー間（S2S）アトリビューションチェックリストは、3つの主要領域（データの整合性とセキュリティ、広告IDとデバイスID、サードパーティ連携）の下に5つの要件が含まれています。いずれの項目も、正確なアトリビューションおよびセッション計測に不可欠です。アプリ内ソリューションは、デフォルトでこれらの要件を満たすAdjust SDKの基本機能を複製する必要があります。
 
-## [1\. セキュリティと整合性の維持](1-maintain-security-and-integrity)
+## 1\. セキュリティと整合性の維持 {#1-maintain-security-and-integrity}
 
 リクエストを保護し、情報をローカルに保存することで、アプリが作成および取得してサーバーに送信する情報のセキュリティと整合性を保証する必要があります。
 
-### [アプリからサーバーに送信されるリクエストを保護する](secure-app-to-server-requests)
+### アプリからサーバーに送信されるリクエストを保護する {#secure-app-to-server-requests}
 
 モバイル業界では、モバイルアプリの不正インストールが横行し、マーケターに数十億ドルを超える多額の損害を与えています。モバイルアプリの不正インストール防止に欠かせない最初のステップは、アプリからサーバーに送信されるリクエストを保護することです。データのセキュリティを保証できない場合は、Adjustがお客様のサーバーから送信された情報の正当性を確認することができません。このため、レポート内の不正なデータに対して脆弱な状態となります。
 
 この要件を満たしていない場合、レポートや支出においてスプーフィングインストールの影響を受けやすくなり、広告予算にも悪影響を与える可能性があります。リクエストのセキュリティを保証できない場合、S2S連携は推奨されません。
 
-#### [Adjustがインストールを保護する仕組み](how-adjust-secures-installs)
+#### Adjustがインストールを保護する仕組み {#how-adjust-secures-installs}
 
 Adjustは、[Adjust SDKシグネチャー](https://help.adjust.com/ja/article/sdk-signature)で全てのインストールを保護します。このシグネチャーは、[アプリシークレット](https://help.adjust.com/ja/article/sdk-signature#what-is-an-app-secret)で保護された暗号化ハッシュで、Adjust SDKに実装することで、レポートされる全てのインストールとともに送信されます。Adjustは、全てのインストールのハッシュを確認し、認証できないトラフィックに対しては、そのアトリビューションを拒否します。
 
-### [情報をローカルに保存する](buffer-information-locally)
+### 情報をローカルに保存する {#buffer-information-locally}
 
 デバイスがオフラインの間に、ユーザーが初めてアプリを起動する **インストール** としてカウントされるか、セッションを発生させる可能性があります。オフラインアクティビティがAdjustのサーバーに到達しない場合は、正確にアトリビュートすることができません。
 
 この要件を満たしていない場合、4Gハンドオーバーなどの短時間の機能停止が発生したり、ネットワークやWiFiが長時間使用できなくなったりすると、データが失われます。最初の試行時には、合計でインストールの10〜20がAdjustに到達しません。Adjustがこのようなデータを受信しない場合、実際に発生した事象の代わりに、現在のデータに基づいてアトリビューションが行われます。
 
-#### [Adjustが情報をバッファリングする方法](how-adjust-buffers-information)
+#### Adjustが情報をバッファリングする方法 {#how-adjust-buffers-information}
 
 Adjust SDKでは、全てのアプリ内行動をキューに保存しているため、接続可能なときにAdjustのサーバーにデータを送信することができます。
 
-## [2\. 広告IDおよびデバイスIDの収集と作成](2-collect-and-create-advertising-and-device-ids)
+## 2\. 広告IDおよびデバイスIDの収集と作成 {#2-collect-and-create-advertising-and-device-ids}
 
 AndroidのGoogle Playストア広告ID（GPS_ADID）とiOSの広告主（IDFA）は、いずれも[広告ID](https://help.adjust.com/ja/article/device-identifiers#advertising-ids)です。エンドユーザーは、どちらの広告IDもリセットするか、アクセスを無効にすることができます。このためAdjustでは、デバイスIDやUUID（Universally Unique Identifier、iOSのみ）も活用して、アトリビューションおよびセッション計測を行っています。ユーザーがデバイスをリセットしないかぎり、これらのIDがリセットされることはありません。
 
-### [あらゆる広告IDとデバイスIDを収集する](gather-every-possible-advertising-and-device-id)
+### あらゆる広告IDとデバイスIDを収集する {#gather-every-possible-advertising-and-device-id}
 
 広告IDはリセットが可能です。意図的に何度も広告IDをリセットされることがあります（例：アプリ内リワードシステムで不正行為を行う）。また、iOSユーザーのおよそ15％は、LAT（追跡型広告を制限）を有効にすることで、 IDFAへのアクセスを無効にしています。こうした理由から、Adjustは正確にアトリビュートし、アプリ内セッションを継続的に記録するために、広告ID以外のIDも併用しています。
 
 この要件を満たしていない場合、以前に記録された広告IDなしで記録された全てのセッション、または広告IDなしで記録されたセッション（iOSでLATを有効にしている全てのユーザー）は、全て新規インストールとしてアトリビュートされます。
 
-#### [AdjustがIDを収集する方法](how-adjust-collects-ids)
+#### AdjustがIDを収集する方法 {#how-adjust-collects-ids}
 
 Adjust SDKは、合法的に入手可能なあらゆる広告IDとデバイスIDをデフォルトで収集します。AdjustはこれらのIDをマッピングするため、IDがリセットされても、そのユーザーのシステムをすでに保持している他のIDに新しいIDをマッピングすることができます。
 
-### [普遍的に一意のIDを生成し、デバイスのキーチェーンに保存する（iOS）](generate-a-universally-unique-identifier-and-persist-it-to-the-device-keychain-ios)
+### 普遍的に一意のIDを生成し、デバイスのキーチェーンに保存する（iOS） {#generate-a-universally-unique-identifier-and-persist-it-to-the-device-keychain-ios}
 
 ユーザーが広告IDをリセットし、アプリをアンインストールして再インストールした場合、あるいはLATを有効にした場合は、AdjustはIDFAやIDFVを取得することができません。ユーザーのアプリ内セッションを継続的に記録するため、Adjustはデバイスのキーチェーンに永続的にローカルで生成されるUUIDを利用しています。AdjustがUUIDを他のデバイス情報にマッピングします。これにより、Adjustは次のような場合でもユーザーのアプリ内アクティビティをシームレスに計測することができます。
 
@@ -68,30 +68,30 @@ Adjust SDKは、合法的に入手可能なあらゆる広告IDとデバイスID
 
 この要件を満たしていない場合、デバイスファームからのインストールがレポートに含まれる可能性があります（デバイスファームでは、広告IDが常にリセットされ、新規インストールがシミュレートされています）。LATを有効にしているユーザーは、各セッション時に新規インストールとしてアトリビュートされます。
 
-#### [AdjustがUUIDを管理する方法](how-adjust-manages-uuids)
+#### AdjustがUUIDを管理する方法 {#how-adjust-manages-uuids}
 
 Adjustはインストール時にUUIDを生成し、Adjustのシステムの他のデバイス情報にマッピングします。
 
-## [3\. サードパーティー連携と追加データ](3-third-party-integrations-and-additional-data)
+## 3\. サードパーティー連携と追加データ {#3-third-party-integrations-and-additional-data}
 
 Apple Search Ads、Google Playストア、およびサードパーティアプリストア（Amazon Appstoreなど）へのアトリビューションに必要となる重要な情報は、サードパーティー連携を通じてアプリ内でのみ収集できます。
 
 次の機能をサポートする必要があります。
 
-### [Android](android)
+### Android {#android}
 
 -  [Google PlayストアのリファラーAPI](https://developer.android.com/google/play/installreferrer/igetinstallreferrerservice.html)
 -  [変化を通じて検出されたDalvik VMの命令セット](https://android.googlesource.com/platform/libcore/+/master/libart/src/main/java/dalvik/system/VMRuntime.java#109)の収集。
 -  [ディープリンクリアトリビューション](https://developer.android.com/training/app-links/deep-linking.html)。
 
-### [iOS](ios)
+### iOS {#ios}
 
 -  [Apple Search AdsアトリビューションAPI](https://searchads.apple.com/help/reporting/0028-apple-ads-attribution-api)
 -  [ディープリンクリアトリビューション](https://developer.apple.com/library/content/documentation/General/Conceptual/AppSearch/UniversalLinks.html)。
 
 アプリ内で収集されたこれらの情報がリアトリビューションの対象と見なされるには、受信後、ただちにAdjustにも転送される必要があります。
 
-### [全てのソースでアトリビューションに必要なデータを収集する](collect-the-necessary-data-for-attribution-across-all-sources)
+### 全てのソースでアトリビューションに必要なデータを収集する {#collect-the-necessary-data-for-attribution-across-all-sources}
 
 Adjustでは、これらの連携を通じて送信された情報を活用することで、正確かつ包括的なアトリビューションとディープリンクのリアトリビューションを行っています。
 
@@ -107,7 +107,7 @@ Apple Search AdsのアトリビューションAPIがない場合、Adjustは次�
 
 -  Apple Search Adsのインストール
 
-#### [Adjustが必要なアトリビューションデータを収集する方法](how-adjust-collects-the-necessary-attribution-data)
+#### Adjustが必要なアトリビューションデータを収集する方法 {#how-adjust-collects-the-necessary-attribution-data}
 
 これらの連携に必要なコードは、Adjust SDKガイド[Android](/ja/sdk/android)および[iOS向け](/ja/sdk/ios)で入手いただけます。また、 [Android](/ja/sdk/android/features/deep-links)と[iOS向け](/ja/sdk/ios/features/deep-links)のディープリンクガイドの手順に従って、Adjust SDKでディープリンクのリアトリビューションを有効にできます。
 

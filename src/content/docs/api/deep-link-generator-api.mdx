@@ -1,0 +1,287 @@
+---
+title: "Deep link generator API"
+description: "Use the Deep link generator API to create short and long deep links for your apps, individually or in bulk."
+category-title: Deep link generator API
+slug: en/api/deep-link-generator-api
+sidebar-position: 8
+---
+
+Use the Deep link generator API to create short and long deep links for your apps, individually or in bulk. These customized deep links enhance the user experience across various platforms.
+
+## Before you begin {#before-you-begin}
+
+Here's what you need to know before getting started.
+
+### Availability {#availability}
+
+<Callout type="important">
+
+The Deep link generator API has a rate limit of 200 requests per second. You will get a 429 error if you exceed this limit.
+
+</Callout>
+
+-  You need to be on the TrueLink Base, Core, or Enterprise package to get access to the Deep link generator API.
+-  Links created using the Deep link generator API aren't displayed in [Campaign Lab](https://help.adjust.com/en/article/campaign-setup).
+-  The TTL (time-to-live) for shorts links created using the Deep link generator API is 120 days.
+
+### Requirements {#requirements}
+
+-  Admin, Editor, or Custom Editor [permissions](https://help.adjust.com/en/article/permission-levels).
+-  [Set up the same branded domain](https://help.adjust.com/en/article/set-up-branded-domain) for your iOS and Android app.
+   -  For iOS apps, ensure that you add your branded domain as [an Associated Domain](https://help.adjust.com/en/article/set-up-branded-domain#ios-only-update). This sets the domain to be configured as a Universal Link.
+   -  For Android apps, ensure that you define your branded domain as the [Android App Link](https://help.adjust.com/en/article/set-up-android-app-links).
+-  A custom link for your app.
+   -  Single-platform apps, multi-platform apps - [Create a custom link in Campaign Lab](https://help.adjust.com/en/article/custom-link-setup) to get a single link token.
+   -  Multiple single-platform apps - Create a [combined custom link in Campaign Lab](https://help.adjust.com/en/article/custom-link-setup#combined-custom-links) from multiple single-platform apps to create a single combined custom link that has multiple link tokens separated by an '\_'. For more information, see [Platform-specific link tokens for combined custom links](https://help.adjust.com/en/article/manage-custom-link-setup#link-tokens-combined-custom-link).
+-  Update the Adjust SDK to resolve short links.
+   -  [iOS](https://dev.adjust.com/en/sdk/ios/features/short-links) | [Android](https://dev.adjust.com/en/sdk/android/features/short-links) | [Unity](https://dev.adjust.com/en/sdk/unity/features/short-links) | [React Native](https://dev.adjust.com/en/sdk/react-native/features/short-links) | [Flutter](https://dev.adjust.com/en/sdk/flutter/features/short-links) | [Cordova](https://dev.adjust.com/en/sdk/cordova/features/short-links) | [Cocos2d-x](https://dev.adjust.com/en/sdk/cocos2dx/features/short-links)
+-  If you've [set up data residency](https://help.adjust.com/en/article/data-residency-setup), make sure you are using the same region for your iOS and Android apps.
+
+## Authentication {#authentication}
+
+The Deep link generator API uses [Bearer tokens](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication) for authentication. You MUST include your Adjust API token in an `Authorization` header with each request you make to the Deep link generator API.
+
+If your organization has enabled Single Sign-On (SSO), contact your Adjust representative or email support@adjust.com for help with finding your API token.
+
+For non-SSO accounts, API tokens are located in a user's **profile**. To find your token, follow these steps:
+
+1. Select the account (user) icon.
+2. Select **Account settings**.
+3. Select the **My profile** tab.
+4. Your **API Token** is shown with your **User Details**. Select the copy button to copy the token to your system clipboard.
+
+### Reset your Adjust API token {#reset-your-adjust-api-token}
+
+You can reset your Adjust API token at any time. Resetting your token invalidates the old token. If you reset your Adjust API token, you MUST replace your old token anywhere that you're using it. Requests made with an invalidated token are rejected by Adjust.
+
+To reset your Adjust API token:
+
+1. Select the account (user) icon.
+2. Select **Account settings**.
+3. Select the **My Profile** tab.
+4. Your **API Token** is shown with your **User details**.
+5. Select **Reset API token**.
+6. Enter your account password in the modal that appears and select **Reset** to reset your API token. A confirmation appears in the top right of the screen.
+7. Select the copy button next to the **API Token** to copy the token to your system clipboard.
+
+## Parameters {#parameters}
+
+| Parameter                | Data type          | In     | Description                                                                                                                                                                                                       |
+| ------------------------ | ------------------ | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `adjust_auth_token`      | `String`           | Header | Adjust API token                                                                                                                                                                                                  |
+| `link_token`             | `String`           | Body   | The link token from your custom link. If you're generating deep links from a combined link, ensure that you use the correct link token from the combined custom link in Campaign Lab.                             |
+| `shorten_url`            | `Boolean`          | Body   | Whether the link will be shortened. The link isn't shortened by default. Default value - false                                                                                                                    |
+| `campaign`               | `String` or `null` | Body   | The name of the campaign                                                                                                                                                                                          |
+| `adgroup`                | `String` or `null` | Body   | The name of the adgroup                                                                                                                                                                                           |
+| `creative`               | `String` or `null` | Body   | The name of the creative                                                                                                                                                                                          |
+| `deep_link_path`         | `String`           | Body   | Specifies the in-app destination your users are taken to. Use this for single-platform apps.                                                                                                                      |
+| `ios_deep_link_path`     | `String`           | Body   | Specifies the iOS in-app destination your users are taken to. Use this for multi-platform iOS apps or combined links.                                                                                             |
+| `android_deep_link_path` | `String`           | Body   | Specifies the Android in-app destination your users are taken to. Use this for multi-platform Android apps or combined links.                                                                                     |
+| `fallback`               | `String`           | Body   | Landing page where you send off-platform users. When you specify the fallback URL, it's recommended to specify `redirect_macos` for macOS users.                                                                  |
+| `redirect_macos`         | `String`           | Body   | Redirect URL to override Adjust's default redirect for macOS. When you specify the `fallback`, it's recommended to specify this parameter for macOS users.                                                        |
+| `label`                  | `String`           | Body   | Adds custom data to the link. Use this parameter to add a unique [user referral ID](https://help.adjust.com/en/article/set-up-user-referrals) that's autopopulated when a user shares a short link from your app. |
+| `og_title`               | `String`           | Body   | Title of the social sharing preview of the link.                                                                                                                                                                  |
+| `og_description`         | `String`           | Body   | Description of the social sharing preview of the link.                                                                                                                                                            |
+| `og_image`               | `String`           | Body   | URL to a JPG or PNG image of at least 200 x 200 pixels size for the social sharing preview of the link.                                                                                                           |
+
+## Generate a single deep link {#generate-a-single-deep-link}
+
+Send a `POST` request to generate a long or a short deep link for single- or multi-platform apps.
+
+### Endpoint {#endpoint-single}
+
+```http
+https://automate.adjust.com/engage/deep-links
+```
+
+### Examples {#examples-single}
+
+**Single-platform apps**
+
+<CodeBlock title="Request - cURL">
+
+```bash
+curl --location 'https://automate.adjust.com/engage/deep-links' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer adjustApiToken' \
+--data '{
+     "link_token": "1c52mluz",
+     "redirect": "https://example.com/redirect",
+     "fallback": "https://example.com/fallback",
+     "deep_link_path": "/custom-path",
+     "shorten_url": true
+   }'
+```
+
+</CodeBlock>
+
+<CodeBlock title="Response">
+
+```http
+{"url": "https://insights.go.link/fryYl"}
+```
+
+</CodeBlock>
+
+**Multi-platform apps**
+
+<CodeBlock title="Request - cURL">
+
+```bash
+curl --location 'https://automate.adjust.com/engage/deep-links' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer adjustApiToken' \
+--data '{
+     "link_token": "2d41nkvy",
+     "redirect": "https://example.com/redirect",
+     "fallback": "https://example.com/fallback",
+     "android_deep_link_path": "/custom-path",
+     "redirect_macos": "https://www.example.com/redirectmacos",
+     "shorten_url": true
+   }'
+```
+
+</CodeBlock>
+
+<CodeBlock title="Response">
+
+```url
+{"url": "https://insights.go.link/jlbKj"}
+```
+
+</CodeBlock>
+
+**Combined links**
+
+Ensure that you [create a combined custom link in Campaign Lab](https://help.adjust.com/en/article/custom-link-setup) before you generate a deep link using the Deep link generator API.
+
+<CodeBlock title="Request - cURL">
+
+```bash
+curl --location 'https://automate.adjust.com/engage/deep-links' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer adjustApiToken' \
+--data '{
+     "link_token": "1c2n7ybx_1cjet4nl",
+     "redirect": "https://example.com/redirect",
+     "fallback": "https://example.com/fallback",
+     "ios_deep_link_path": "/custom-path-ios",
+     "android_deep_link_path": "/custom-path-android",
+     "redirect_macos": "https://www.example.com/redirectmacos",
+     "shorten_url": true
+   }'
+```
+
+</CodeBlock>
+
+<CodeBlock title="Response">
+
+```http
+{"url": "https://insights.go.link/6JtQx"}
+```
+
+</CodeBlock>
+
+## Generate deep links in bulk {#generate-deep-links-in-bulk}
+
+Send a `POST` request to generate long or short deep links for single- or multi-platform apps in bulk.
+
+### Endpoint {#endpoint-bulk}
+
+```http
+https://automate.adjust.com/engage/deep-links/bulk
+```
+
+### Example {#example-bulk}
+
+<CodeBlock title="Request - cURL">
+
+```bash
+curl --location 'https://automate.adjust.com/engage/deep-links/bulk' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer adjustApiToken' \
+--data '{
+"data": [
+    {
+    "link_token": "1doptv0c",
+    "redirect": "https://example.com/redirect",
+    "fallback": "https://example.com/fallback",
+    "campaign": "custom-campaign",
+    "shorten_url": true
+    },
+    {
+      "link_token": "1df3xslh_1dsykkaa",
+      "redirect": "https://example.com/redirect",
+      "fallback": "https://example.com/fallback",
+      "ios_deep_link_path": "/custom-path-ios",
+      "android_deep_link_path": "/custom-path-android",
+      "shorten_url": true
+    },
+    {
+      "link_token": "1dzwtdjt",
+      "redirect": "https://example.com/redirect",
+      "fallback": "https://example.com/fallback",
+      "android_deep_link_path": "/custom-path",
+      "shorten_url": true
+    }
+  ]
+}'
+```
+
+</CodeBlock>
+
+<CodeBlock title="Response">
+
+```json
+{
+   "data": [
+      {
+         "url": "https://kapp.go.link/4IlkC"
+      },
+      {
+         "url": "https://kapp.go.link/6KnoE"
+      },
+      {
+         "url": "https://insights.go.link/5JmnD"
+      }
+   ]
+}
+```
+
+</CodeBlock>
+
+## Update short link token {#update-short-link-token}
+
+Send a `PUT` request to update an existing short link token in a deep link to a long link.
+
+### Endpoint {#endpoint-update}
+
+```http
+https://automate.adjust.com/engage/deep-links/{short_token}
+```
+
+### Example {#example-update}
+
+<CodeBlock title="Request - cURL">
+
+```bash
+curl --location --request PUT 'https://automate.adjust.com/engage/deep-links/4IlkC' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer adjustApiToken' \
+--data '{
+  "link_token": "1doptv0c",
+  "redirect": "https://example.com/new-redirect",
+  "fallback": "https://example.com/new-fallback",
+  "deep_link_path": "/new-custom-path"
+}'
+```
+
+</CodeBlock>
+
+<CodeBlock title="Response">
+
+```http
+204 No Content
+```
+
+</CodeBlock>

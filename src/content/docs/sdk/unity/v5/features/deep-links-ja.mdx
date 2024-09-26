@@ -1,0 +1,153 @@
+---
+title: ディープリンク
+description: ディープリンクを設定するには、このセクションのガイドに従ってください。
+category-title: ディープリンク
+slug: ja/sdk/unity/features/deep-links
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v4: /ja/sdk/unity/v4/features/deep-links
+---
+
+ディープリンクを作成して、ユーザーをアプリ内の特定の場所に誘導します。Adjust SDKは、ユーザーがデバイスにアプリをインストール済みかどうかによって、異なるロジックを使用します。
+
+-  ダイレクトディープリンクは、ユーザーがアプリをすでにデバイスにインストールしている場合に使用されます。そのリンクは、リンクで指定されたページにユーザーをリダイレクトします。
+-  ディファードディープリンクは、ユーザーがアプリをデバイスにインストールしていない場合に使用されます。そのリンクは、ユーザーをアプリストアに送り、アプリを先にインストールしてもらいます。ユーザーがアプリをインストールすると、リンクで指定されたページが開きます。
+
+SDKは、ユーザーがリンクからアプリを起動した後にディープリンクの情報を読み取ることができます。
+
+## ディープリンクの設定 {#set-up-deep-linking}
+
+ユーザーがアプリをインストールしている場合、ユーザーがディープリンクの情報を含むリンクをクリックするとアプリが起動します。Adjust SDKには、アプリ全体にディープリンクの情報を解析するツールが含まれます。
+
+v4\.30以降、SDKは必要な設定をAndroidとiOSのプロジェクトに注入します。ディープリンクを設定するには、Unity EditorのInspectorウィンドウでURLスキームを追加してください。
+
+![Unityエディターのスクリーンショット](@images/unity/deep-links/1-editor.png)
+
+## iOSでのディープリンク {#deep-linking-on-ios}
+
+iOS 9以降を実行するデバイスは、[ユニバーサルリンク](https://developer.apple.com/library/ios/documentation/General/Conceptual/AppSearch/UniversalLinks.html)を使用してディープリンクを処理します。アプリでディープリンクを開くには、アプリにユニバーサルリンクスキームを追加する必要があります。これを行うには、以下の手順に従ってください。
+
+1. Adjustダッシュボードでユニバーサルリンクを設定します。
+2. Apple Developerポータルでアプリの **Associated Domains** を設定します。
+3. Unityエディター（Unity Editor）を開きます。
+4. Adjustプレハブの **DEEP LINKING** セクションに移動します。
+5. **iOS Universal Links Domain** フィールドにユニバーサルリンクまたはリンクを入力します。リンクの先頭からプロトコルを削除してください（例：`https://`または`applinks:` ）。
+
+## Androidでのディープリンク {#deep-linking-on-android}
+
+Androidデバイスは、一意のURIスキームを使用してディープリンクを処理します。ディープリンクを設定するには、Adjustプレハブの **Android URI Schemes** セクションにスキームを追加します。SDKが必要なXMLタグを`AndroidManifest.xml`に追加します。
+
+![UnityプレハブメニューのAndroid URIスキームセクションのスクリーンショット](@images/unity/deep-links/2-uri-schemes.png)
+
+## ディファードディープリンク {#deferred-deep-linking}
+
+### ディファードディープリンクを開かないようにする {#disable-opening-deferred-deep-links}
+
+<CodeBlock title="プロパティ宣言">
+
+```cs
+public bool? IsDeferredDeeplinkOpeningEnabled { get; set; }
+```
+
+</CodeBlock>
+
+Adjust SDKは、デフォルトでディファードディープリンクを開きます。これを無効にするには、 `AdjustConfig`インスタンスの`IsDeferredDeeplinkOpeningEnabled`プロパティに`false`の値を割り当てます。
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+//...
+adjustConfig.IsDeferredDeeplinkOpeningEnabled = false;
+//...
+Adjust.InitSdk(adjustConfig);
+```
+
+### ディファードディープリンクのデリゲートを設定する {#set-up-a-deferred-deep-link-delegate}
+
+<CodeBlock title="プロパティ宣言">
+
+```cs
+public Action<string> DeferredDeeplinkDelegate { get; set; }
+```
+
+</CodeBlock>
+
+Adjust SDKがディファードディープリンクを受け取った際に、デリゲート関数を呼び出すように設定することができます。このデリゲート関数は、ディープリンクを`string`引数で受け取ります。
+
+```cs
+private void DeferredDeeplinkCallback(string deeplinkURL) {
+   //...
+}
+
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+adjustConfig.DeferredDeeplinkDelegate = DeferredDeeplinkCallback;
+Adjust.InitSdk(adjustConfig);
+```
+
+### 例 {#example}
+
+この例では、ユーザーがディファードディープリンクを開いたときに、ディープリンクのアドレスをログに記録する方法を示しています。
+
+```cs
+private void LogDeepLink(string deepLinkURL) {
+ Debug.Log("Deeplink URL: " + deeplinkURL);
+}
+//...
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+adjustConfig.DeferredDeeplinkDelegate = LogDeepLink;
+//...
+Adjust.InitSdk(adjustConfig);
+```
+
+## ディープリンクによるリアトリビューション {#reattribution-via-deep-links}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```cs
+public static void ProcessDeeplink(AdjustDeeplink deeplink);
+```
+
+</CodeBlock>
+
+Adjustはディープリンクを使ったリエンゲージメントキャンペーンをサポートしています。詳細は、[Campaign Labでディープリンクを設定](https://help.adjust.com/ja/article/deep-links)する方法をご覧ください。
+
+ユーザーをリアトリビュートするには、ディープリンクURLで`AdjustDeeplink`オブジェクトをインスタンス化し、`Adjust.ProcessDeeplink`メソッドにパスする必要があります。Adjust SDKは次に、ディープリンク内の新しいアトリビューションデータを検索します。SDKが新しい情報を見つけた場合、その情報をAdjustのサーバーに転送し、リアトリビューションを行います。
+
+```cs
+AdjustDeeplink adjustDeeplink = new AdjustDeeplink("url");
+Adjust.ProcessDeeplink(adjustDeeplink);
+```
+
+## LinkMeを有効にする {#enable-linkme}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```cs
+public bool? IsLinkMeEnabled { get; set; }
+```
+
+</CodeBlock>
+
+Adjust SDKでは、デバイスのペーストボードからディープリンクの情報をコピーすることが可能です。AdjustのLinkMeソリューションを組み合わせることで、iOS 15以降のデバイスでディファードディープリンクを有効化することができます。
+
+<Callout type="important">
+
+Adjust SDKは、ユーザーがアプリを初回起動した際にペーストボードを確認します。デバイスは、ユーザーのアプリに、ペーストボードの読み取りを許可するかどうかを尋ねるダイアログを表示します。
+
+</Callout>
+
+ユーザーがLinkMeのURLをクリックすると、そのリンク情報をシステムのペーストボードにコピーするオプションがあります。Adjust SDKを使用してシステムのペーストボードを読み、ディープリンクの情報を確認することができます。ディープリンクがある場合、SDKはユーザーをアプリ内の正しいページに転送します。
+
+アプリでペーストボードのチェックを有効化するには、`AdjustConfig`インスタンスの`IsLinkMeEnabled`プロパティに`true`値を代入します。
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
+//...
+adjustConfig.IsLinkMeEnabled = true;
+//...
+Adjust.InitSdk(adjustConfig);
+```

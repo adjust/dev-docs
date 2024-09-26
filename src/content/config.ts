@@ -10,6 +10,7 @@ const docs = defineCollection({
     "category-title": z.string().optional(),
     navPath: z.string().optional(),
     lang: z.literal("en-us").default(SITE.defaultLanguage),
+    redirects: z.record(z.string(), z.string()).optional(),
     dir: z.union([z.literal("ltr"), z.literal("rtl")]).default("ltr"),
     image: z
       .object({
@@ -20,6 +21,15 @@ const docs = defineCollection({
     ogLocale: z.string().optional(),
     type: z.enum(["category"]).optional(),
     multiVersion: z.boolean().default(false),
+    versions: z
+      .array(
+        z.object({
+          value: z.string(),
+          label: z.string(),
+          default: z.boolean().optional(),
+        }),
+      )
+      .optional(),
   }),
 });
 

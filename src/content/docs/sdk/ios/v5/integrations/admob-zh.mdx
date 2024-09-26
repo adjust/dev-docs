@@ -1,0 +1,56 @@
+---
+title: AdMob SDK 集成
+description: 使用 Admob 集成，向 Adjust 服务器传送 Admob 信息。
+slug: zh/sdk/ios/integrations/admob
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v4: /zh/sdk/ios/v4/integrations/admob
+---
+
+如果您想使用 AdMob SDK 监测广告收入，可以借助 SDK 到 SDK 集成，将数据发送到 Adjust 服务器。
+
+<Callout type="note">
+
+如果您对 AdMob 广告收入监测有任何疑问，请联系您的专属客户经理，或发送邮件至 [support@adjust.com](mailto:support@adjust.com)。
+
+</Callout>
+
+## 操作前须知 {#before-you-begin}
+
+1. [配置 Adjust SDK 并将其集成至您的应用](/zh/sdk/ios)。
+2. 在 AdMob 中配置展示层级广告收入 \(ILAR\)。[请参考 Google 的说明文档](https://support.google.com/admob/answer/11322405)。
+
+## 示例 {#example}
+
+```objc
+- (void)requestRewardedAd {
+   __weak ViewController *weakSelf = self;
+
+  GADRequest *request = [GADRequest request];
+  [GADRewardedAd
+   loadWithAdUnitID:@"ad unit ID"
+   request:request
+   completionHandler:^(GADRewardedAd *ad, NSError *error) {
+     self.rewardedAd = ad;
+     self.rewardedAd.paidEventHandler = ^void(GADAdValue *_Nonnull value) {
+        ViewController *strongSelf = weakSelf;
+          // for more information, please check AdMob official docs at:
+          // https://developers.google.com/admob/ios/impression-level-ad-revenue
+          GADAdNetworkResponseInfo *loadedAdNetworkResponseInfo = strongSelf.rewardedAd.responseInfo.loadedAdNetworkResponseInfo;
+
+          // send ad revenue info to Adjust
+          ADJAdRevenue *adRevenue = [[ADJAdRevenue alloc]
+                              initWithSource:@"admob_sdk"];
+          [adRevenue setRevenue:value.value currency:value.currencyCode];
+          [adRevenue setAdRevenueNetwork:loadedAdNetworkResponseInfo.adSourceName]
+          [Adjust trackAdRevenue:adRevenue];
+      }
+    }
+  ];
+}
+```

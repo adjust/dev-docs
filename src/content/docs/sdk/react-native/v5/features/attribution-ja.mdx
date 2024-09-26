@@ -1,0 +1,96 @@
+---
+title: アトリビューション情報の取得
+description: Adjust SDKを使ってアトリビューションの変更を受信する
+slug: ja/sdk/react-native/features/attribution
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v4: /ja/sdk/react-native/v4/features/attribution
+---
+
+ユーザーがAdjustリンクをクリックすると、そのアトリビューション情報が更新されます。これは、ユーザーが[ディープリンク](https://help.adjust.com/ja/article/deep-links)をクリックした場合に発生します。ユーザーのアトリビューションについての情報は、`AdjustAttribution`クラスに表示されます。
+
+## AdjustAttributionクラスのプロパティ {#adjustattribution-class-properties}
+
+`AdjustAttribution`クラスには、デバイスの現在のアトリビューションステータスに関する詳細が含まれています。ユーザーの入力されていない値は全て`null`値として返されます。
+
+<Callout type="note">
+
+以下の値には、[`AdjustConfig`クラスの`enableCostDataInAttribution`メソッド](/ja/sdk/react-native/configuration#enable-cost-data-sending)を呼び出した場合にのみアクセスが可能です。
+
+-  `costType`
+-  `costAmount`
+-  `costCurrency`
+
+</Callout>
+
+## アトリビューションが変更されたときに関数をトリガーする {#trigger-a-function-when-attribution-changes}
+
+<CodeBlock title="プロパティ宣言">
+
+```ts
+public setAttributionCallback(callback: (attribution: AdjustAttribution) => void): void
+```
+
+</CodeBlock>
+
+SDKはアトリビューションの変更を受信し、更新を検出したときに関数を呼び出すことができます。コールバック関数を設定するには、関数を引数として`setAttributionCallback`メソッドを呼び出します。
+
+<Callout type="important">
+
+アプリ内でAdjust SDKを初期化する **前** に、`setAttributionCallback`メソッドを呼び出す必要があります。
+
+</Callout>
+<CodeBlock highlight="{range: 3-18}">
+
+```jsx
+const adjustConfig = new AdjustConfig(appToken, environment);
+
+adjustConfig.setAttributionCallback(function (attribution) {
+   // Printing all attribution properties.
+   console.log("Attribution changed!");
+   console.log(attribution.trackerToken);
+   console.log(attribution.trackerName);
+   console.log(attribution.network);
+   console.log(attribution.campaign);
+   console.log(attribution.adgroup);
+   console.log(attribution.creative);
+   console.log(attribution.clickLabel);
+   console.log(attribution.costType);
+   console.log(attribution.costAmount);
+   console.log(attribution.costCurrency);
+   console.log(attribution.fbInstallReferrer);
+});
+
+Adjust.initSdk(adjustConfig);
+```
+
+</CodeBlock>
+
+## 現在のアトリビューション情報を取得する {#get-current-attribution-information}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```ts
+getAttribution: (callback: (attribution: AdjustAttribution) => void) => void
+```
+
+</CodeBlock>
+
+ユーザーがアプリをインストールすると、Adjustはそのインストールをキャンペーンにアトリビュートします。Adjust SDKでは、インストールのキャンペーンアトリビューションの詳細にアクセスすることができます。この情報を返すには、`getAttribution`メソッドを呼び出して、アトリビューション情報を`AdjustAttribution`オブジェクトとして返します。
+
+```jsx
+Adjust.getAttribution((attribution) => {
+   console.log("Tracker token = " + attribution.trackerToken);
+   console.log("Tracker name = " + attribution.trackerName);
+   console.log("Network = " + attribution.network);
+   console.log("Campaign = " + attribution.campaign);
+   console.log("Adgroup = " + attribution.adgroup);
+   console.log("Creative = " + attribution.creative);
+   console.log("Click label = " + attribution.clickLabel);
+});
+```

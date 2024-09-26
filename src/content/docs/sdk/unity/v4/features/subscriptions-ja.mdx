@@ -1,0 +1,326 @@
+---
+title: サブスクリプション情報の送信
+description: Adjustにサブスクリプション情報を送信するには、これらのメソッドを使用してください。
+slug: ja/sdk/unity/v4/features/subscriptions
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v5: /ja/sdk/unity/features/subscriptions
+---
+
+<Callout type="important">
+
+以下の手順は、Adjust SDK内でサブスクリプション計測を行う場合にのみ有効です。この機能を有効化するには、アプリ固有の情報を別途追加する必要があります。設定のサポートをいたしますので、[support@adjust.com](mailto:support@adjust.com)または担当のテクニカルアカウントマネージャーまでお問い合わせください。
+
+</Callout>
+
+App StoreおよびPlay Storeのサブスクリプションを計測し、それぞれの有効性をAdjust SDKで確認できます。ユーザーがサブスクリプションの購入を完了したら、その詳細を含む`AdjustAppStoreSubscription`または`AdjustPlayStoreSubscription`を作成してください。
+
+## 1\. Instantiate a subscription object {#1-instantiate-a-subscription-object}
+
+開始するには、サブスクリプション購入の詳細を含むサブスクリプションオブジェクトを作成する必要があります。
+
+<Tabs>
+<Tab title="App Store" sync="appstore" icon="PlatformIos">
+<CodeBlock title="メソッドシグネチャー">
+
+```cs
+public AdjustAppStoreSubscription(string price, string currency, string transactionId, string receipt)
+```
+
+</CodeBlock>
+
+以下のプロパティを含む`AdjustAppStoreSubscription`オブジェクトを作成します：
+
+| パラメーター    | データタイプ | 説明                                                                                                                                                                                                                                                                                              |
+| --------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `price`         | `string`     | サブスクリプションの価格                                                                                                                                                                                                                                                                          |
+| `currency`      | `string`     | サブスクリプションの通貨。[`priceLocale`](https://developer.apple.com/documentation/foundation/nslocale/1642836-currencycode?language=objc)オブジェクトの[`currencyCode`](https://developer.apple.com/documentation/storekit/skproduct/1506145-pricelocale?language=objc)としてフォーマットされる |
+| `transactionId` | `string`     | トランザクションID                                                                                                                                                                                                                                                                                |
+| `receipt`       | `string`     | レシート情報                                                                                                                                                                                                                                                                                      |
+
+```cs
+AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
+   price,
+   currency,
+   transactionId,
+   receipt);
+```
+
+</Tab>
+<Tab title="Play Store" sync="playstore" icon="PlatformGooglePlay">
+<CodeBlock title="メソッドシグネチャー">
+
+```cs
+public AdjustPlayStoreSubscription(string price, string currency, string sku, string orderId, string signature, string purchaseToken)
+```
+
+</CodeBlock>
+
+以下のプロパティを含む`AdjustPlayStoreSubscription`オブジェクトを作成します：
+
+| パラメーター    | データタイプ | 説明                                                                                                                                                                                    |
+| --------------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `price`         | `string`     | サブスクリプションの価格                                                                                                                                                                |
+| `currency`      | `string`     | サブスクリプション通貨                                                                                                                                                                  |
+| `sku`           | `string`     | プロダクトID                                                                                                                                                                            |
+| `orderId`       | `string`     | トランザクションID                                                                                                                                                                      |
+| `signature`     | `string`     | 購入データのシグネチャー                                                                                                                                                                |
+| `purchaseToken` | `string`     | トランザクションの一意のトークン。詳細は[Googleのドキュメント](<https://developer.android.com/reference/com/android/billingclient/api/Purchase#getPurchaseToken()>)を参照してください。 |
+
+```cs
+AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
+   price,
+   currency,
+   sku,
+   orderId,
+   signature,
+   purchaseToken);
+```
+
+</Tab>
+</Tabs>
+
+### Record the purchase date {#record-the-purchase-date}
+
+ユーザーがサブスクリプションを購入した日を記録することができます。SDKはこのデータを返して、レポートします。
+
+<Tabs>
+<Tab title="App Store" sync="appstore" icon="PlatformIos">
+<CodeBlock title="メソッドシグネチャー">
+
+```cs
+public void setTransactionDate(string transactionDate);
+```
+
+</CodeBlock>
+
+サブスクリプションオブジェクトで`setTransactionDate`メソッドを呼び出し、サブスクリプションのタイムスタンプを記録します。
+
+```cs
+AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
+    price,
+    currency,
+    transactionId,
+    receipt);
+//...
+subscription.setTransactionDate(transactionDate);
+```
+
+</Tab>
+<Tab title="Play Store" sync="playstore" icon="PlatformGooglePlay">
+<CodeBlock title="メソッドシグネチャー">
+
+```cs
+public void setPurchaseTime(string purchaseTime);
+```
+
+</CodeBlock>
+
+サブスクリプションオブジェクトで`setPurchaseTime`メソッドを呼び出し、サブスクリプションのタイムスタンプを記録します。
+
+```cs
+AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
+    price,
+    currency,
+    sku,
+    orderId,
+    signature,
+    purchaseToken);
+subscription.setPurchaseTime(purchaseTime);
+```
+
+</Tab>
+</Tabs>
+
+### Record the purchase region \(iOS only\) {#record-the-purchase-region-ios-only}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```cs
+public void setSalesRegion(string salesRegion);
+```
+
+</CodeBlock>
+
+ユーザーがサブスクリプションを購入した地域を記録することができます。これを行うには、subscriptionオブジェクトの`setSalesRegion`メソッドを呼び、国コードを`string`としてパスします。これは、[`priceLocale`](https://developer.apple.com/documentation/storekit/skproduct/1506145-pricelocale?language=swift)オブジェクトの[`countryCode`](https://developer.apple.com/documentation/foundation/nslocale/1643060-countrycode?language=swift)としてフォーマットされる必要があります。
+
+```cs
+AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
+    price,
+    currency,
+    transactionId,
+    receipt);
+//...
+subscription.setSalesRegion(salesRegion);
+```
+
+### Add callback parameters {#add-callback-parameters}
+
+コールバックパラメーターをサブスクリプションオブジェクトに追加することができます。Adjustは、これらのパラメーターをコールバックURLに追加します。コールバックパラメーターを追加するには、サブスクリプションオブジェクトの`addCallbackParameter`メソッドを呼び出してください。このメソッドを複数回呼び出すことで、複数のコールバックパラメーターを追加できます。
+
+<Tabs>
+<Tab title="App Store" sync="appstore" icon="PlatformIos">
+<CodeBlock title="メソッドシグネチャー">
+
+```cs
+public void addCallbackParameter(string key, string value);
+```
+
+</CodeBlock>
+
+```cs
+AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
+    price,
+    currency,
+    transactionId,
+    receipt);
+//...
+subscription.addCallbackParameter("key1", "value1");
+subscription.addCallbackParameter("key2", "value2");
+```
+
+</Tab>
+<Tab title="Play Store" sync="playstore" icon="PlatformGooglePlay">
+<CodeBlock title="メソッドシグネチャー">
+
+```cs
+public void addCallbackParameter(string key, string value);
+```
+
+</CodeBlock>
+
+```cs
+AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
+    price,
+    currency,
+    sku,
+    orderId,
+    signature,
+    purchaseToken);
+//...
+subscription.addCallbackParameter("key1", "value1");
+subscription.addCallbackParameter("key2", "value2");
+```
+
+</Tab>
+</Tabs>
+
+### Add partner parameters {#add-partner-parameters}
+
+パートナーパラメーターをサブスクリプションオブジェクトに追加することができます。SDKは、ユーザーがサブスクリプションを購入した時に、Adjustサーバーへこれらを送信します。Adjustサーバーは、その情報をネットワークパートナーに転送します。パラメーターパラメーターを追加するには、サブスクリプションオブジェクトの`addPartnerParameter`メソッドを呼び出してください。このメソッドを複数回呼び出すことで、複数のコールバックパラメーターを追加できます。
+
+<Tabs>
+<Tab title="App Store" sync="appstore" icon="PlatformIos">
+<CodeBlock title="メソッドシグネチャー">
+
+```cs
+public void addPartnerParameter(string key, string value);
+```
+
+</CodeBlock>
+
+```cs
+AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
+    price,
+    currency,
+    transactionId,
+    receipt);
+//...
+subscription.addPartnerParameter("key1", "value1");
+subscription.addPartnerParameter("key2", "value2");
+```
+
+</Tab>
+<Tab title="Play Store" sync="playstore" icon="PlatformGooglePlay">
+<CodeBlock title="メソッドシグネチャー">
+
+```cs
+public void addPartnerParameter(string key, string value);
+```
+
+</CodeBlock>
+
+```cs
+AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
+    price,
+    currency,
+    sku,
+    orderId,
+    signature,
+    purchaseToken);
+//...
+subscription.addPartnerParameter("key1", "value1");
+subscription.addPartnerParameter("key2", "value2");
+```
+
+</Tab>
+</Tabs>
+
+## 2\. Record subscription information {#2-record-subscription-information}
+
+サブスクリプションオブジェクトを設定したら、Adjust SDKを使用して記録することが可能です。
+
+<Tabs>
+<Tab title="App Store" sync="appstore" icon="PlatformIos">
+<CodeBlock title="メソッドシグネチャー">
+
+```cs
+public static void trackAppStoreSubscription(AdjustAppStoreSubscription subscription);
+```
+
+</CodeBlock>
+
+完了したオブジェクトを `trackAppStoreSubscription`メソッドにパスして、ユーザーのサブスクリプション購入を記録します。
+
+```cs
+AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
+   price,
+   currency,
+   transactionId,
+   receipt);
+subscription.setTransactionDate(transactionDate);
+subscription.setSalesRegion(salesRegion);
+subscription.addCallbackParameter("key1", "value1");
+subscription.addCallbackParameter("key2", "value2");
+subscription.addPartnerParameter("key1", "value1");
+subscription.addPartnerParameter("key2", "value2");
+
+Adjust.trackAppStoreSubscription(subscription);
+```
+
+</Tab>
+<Tab title="Play Store" sync="playstore" icon="PlatformGooglePlay">
+<CodeBlock title="メソッドシグネチャー">
+
+```cs
+public static void trackPlayStoreSubscription(AdjustPlayStoreSubscription subscription);
+```
+
+</CodeBlock>
+
+完了したオブジェクトを `trackPlayStoreSubscription`メソッドにパスして、ユーザーのサブスクリプション購入を記録します。
+
+```cs
+AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
+   price,
+   currency,
+   sku,
+   orderId,
+   signature,
+   purchaseToken);
+subscription.setPurchaseTime(purchaseTime);
+subscription.addCallbackParameter("key1", "value1");
+subscription.addCallbackParameter("key2", "value2");
+subscription.addPartnerParameter("key1", "value1");
+subscription.addPartnerParameter("key2", "value2");
+
+Adjust.trackPlayStoreSubscription(subscription);
+```
+
+</Tab>
+</Tabs>

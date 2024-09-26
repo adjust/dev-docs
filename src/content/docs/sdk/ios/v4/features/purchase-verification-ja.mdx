@@ -1,0 +1,58 @@
+---
+title: 購入認証SDK
+description: App Storeでの購入認証
+slug: ja/sdk/ios/v4/features/purchase-verification
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v5: /ja/sdk/ios/features/purchase-verification
+---
+
+[購入認証](https://help.adjust.com/ja/article/purchase-verification)を有効にしている場合は、購入イベントと共に追加情報を送信して、購入イベントを認証する必要があります。Adjustのサーバーがこの情報を`ADJEvent`オブジェクトで受け取ると、情報をAppleに転送して購入を確認します。
+
+購入認証を行うには、イベントトークンを使用して`ADJEvent`オブジェクトをインスタンス化し、以下のプロパティを設定してください。
+
+-  `transactionId` （`NSString`）：正常に完了した購入の[`transactionIdentifier`値](https://developer.apple.com/documentation/storekit/skpaymenttransaction/1411288-transactionidentifier)
+-  `productId` （`NSString`）：購入に成功したアイテムのプロダクトID
+-  `receipt` （`NSData`）：正常に完了した購入に関する情報を含む[署名済みレシート](https://developer.apple.com/documentation/foundation/bundle/1407276-appstorereceipturl)
+
+<Callout type="seealso">
+
+`ADJEvent`クラスの詳細については、[イベント情報の送信](/ja/sdk/ios/features/events)をご覧ください。
+
+</Callout>
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let receiptURL = Bundle.main.appStoreReceiptURL;
+let receipt = try Data(contentsOf: receiptURL, options: .alwaysMapped)
+
+let event = ADJEvent(eventToken: "abc123")
+event?.setRevenue(6.0, currency: "EUR");
+event?.setTransactionId("transaction-id");
+event?.setProductId("product-id");
+event?.setReceipt(receipt);
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
+NSData *receipt = [NSData dataWithContentsOfURL:receiptURL];
+ADJEvent *event = [ADJEvent eventWithEventToken::@"your-event-token"];
+[event setRevenue:6.0 currency:@"EUR"];
+[event setTransactionId:@"transaction-id"];
+[event setProductId:@"product-id"];
+[event setReceipt:receipt];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+</Tabs>

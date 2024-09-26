@@ -1,0 +1,233 @@
+---
+title: コールバックの設定
+description: SDKがAdjustに情報を送信する時に関数をトリガーするコールバックを設定します。
+slug: ja/sdk/cordova/v4/features/callbacks
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v5: /ja/sdk/cordova/features/callbacks
+---
+
+SDKがAdjustに情報を送信する時に関数をトリガーするコールバックを設定します。コールバックはセッションとイベントに対して設定できます。
+
+<Callout type="important">
+
+SDKを初期化する **前** にコールバックパラメーターを登録することが必要です。
+
+</Callout>
+
+## セッションコールバック {#session-callbacks}
+
+SDKがセッション情報を送信した時に関数をトリガーする、セッションコールバックを設定します。 **Success** コールバックと **failure** コールバックが作成できます。 **Success** コールバックは、SDKが情報をAdjustのサーバーに送信する時にトリガーします。 **Failure** コールバックは、SDKが情報を送信している間に問題が発生した際にトリガーします。
+
+セッションコールバックは、レスポンス データ オブジェクトにアクセスできます。そのプロパティをコールバック関数内で使用することが可能です。
+
+| プロパティ     | データタイプ             | 説明                                                 |
+| -------------- | ------------------------ | ---------------------------------------------------- |
+| `Message`      | `string`                 | サーバーからのメッセージまたはSDKのエラーログ        |
+| `Timestamp`    | `string`                 | Adjustのサーバーからのタイムスタンプ                 |
+| `Adid`         | `string`                 | Adjustから提供されるユニークデバイスID               |
+| `JsonResponse` | `object<string, object>` | サーバーからのレスポンスを含むJSONオブジェクト       |
+| `WillRetry`    | `boolean`                | 失敗したパッケージの再送を試みるかどうかを示します。 |
+
+### Successコールバック {#success-callbacks}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```js
+setSessionTrackingSucceededCallbackListener(
+   sessionTrackingSucceededCallback: (session: AdjustSessionSuccess) => void
+)
+```
+
+</CodeBlock>
+
+SDKがセッションを記録した時に関数をトリガーする、successコールバックを設定します。
+
+```js
+var adjustConfig = new AdjustConfig(appToken, environment);
+
+adjustConfig.setSessionTrackingSucceededCallbackListener(
+   function (sessionSuccess) {
+      // Printing all session success properties.
+      console.log("Session tracking succeeded!");
+      console.log(sessionSuccess.message);
+      console.log(sessionSuccess.timestamp);
+      console.log(sessionSuccess.adid);
+      console.log(sessionSuccess.jsonResponse);
+   },
+);
+
+Adjust.create(adjustConfig);
+```
+
+#### 例 {#example}
+
+この例では、SDKがAdjustにセッションデータを送信した時刻のタイムスタンプを表示する`sessionTrackingSucceededCallback`を登録する方法を示しています。
+
+```js
+var adjustConfig = new AdjustConfig(appToken, environment);
+
+adjustConfig.setSessionTrackingSucceededCallbackListener(
+   function (sessionSuccess) {
+      console.log(`Session recorded at ${sessionSuccess.timestamp}`);
+   },
+);
+
+Adjust.create(adjustConfig);
+```
+
+### Failureコールバック {#failure-callbacks}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```js
+setSessionTrackingFailedCallbackListener(sessionTrackingFailedCallback: (session: AdjustSessionFailure) => void)
+```
+
+</CodeBlock>
+
+SDKがセッションの記録に失敗した時に関数をトリガーする、failureコールバックを設定します。
+
+```js
+var adjustConfig = new AdjustConfig(appToken, environment);
+
+adjustConfig.setSessionTrackingFailedCallbackListener(
+   function (sessionFailure) {
+      // Printing all session failure properties.
+      console.log("Session tracking failed!");
+      console.log(sessionFailure.message);
+      console.log(sessionFailure.timestamp);
+      console.log(sessionFailure.adid);
+      console.log(sessionFailure.willRetry);
+      console.log(sessionFailure.jsonResponse);
+   },
+);
+
+Adjust.create(adjustConfig);
+```
+
+#### 例 {#example}
+
+この例では、SDKがセッションデータの送信に失敗した理由を表示する`sessionTrackingFailedCallback`を登録する方法を示しています。
+
+```js
+var adjustConfig = new AdjustConfig(appToken, environment);
+
+adjustConfig.setSessionTrackingFailedCallbackListener(
+   function (sessionFailure) {
+      console.log(
+         `SDK failed to record session due to ${sessionFailure.message}`,
+      );
+   },
+);
+
+Adjust.create(adjustConfig);
+```
+
+## イベントコールバック {#event-callbacks}
+
+SDKがイベント情報を送信した時に関数をトリガーする、イベントコールバックを設定します。 **Success** コールバックと **failure** コールバックが作成できます。 **Success** コールバックは、SDKが情報をAdjustのサーバーに送信する時にトリガーします。 **Failure** コールバックは、SDKが情報を送信している間に問題が発生した際にトリガーします。
+
+イベントコールバックは、レスポンス データ オブジェクトにアクセスできます。そのプロパティをコールバック関数内で使用することが可能です。
+
+| プロパティ     | データタイプ             | 説明                                                   |
+| -------------- | ------------------------ | ------------------------------------------------------ |
+| `Message`      | `string`                 | サーバーからのメッセージまたはSDKのエラーログ          |
+| `Timestamp`    | `string`                 | Adjustのサーバーからのタイムスタンプ                   |
+| `Adid`         | `string`                 | Adjustから提供されるユニークデバイスID                 |
+| `JsonResponse` | `object<string, object>` | サーバーからのレスポンスを含むJSONオブジェクト         |
+| `EventToken`   | `string`                 | イベントトークン                                       |
+| `CallbackId`   | `string`                 | イベントオブジェクトに設定されたカスタムコールバックID |
+| `WillRetry`    | `boolean`                | 失敗したパッケージの再送を試みるかどうかを示します。   |
+
+### Successコールバック {#success-callbacks}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```js
+setEventTrackingSucceededCallbackListener(eventTrackingSucceededCallback: (event: AdjustEventSuccess) => void)
+```
+
+</CodeBlock>
+
+SDKがイベントを記録した時に関数をトリガーする、successコールバックを設定します。
+
+```js
+var adjustConfig = new AdjustConfig(appToken, environment);
+
+adjustConfig.setEventTrackingSucceededCallbackListener(function (eventSuccess) {
+   // Printing all event success properties.
+   console.log("Event tracking succeeded!");
+   console.log(eventSuccess.message);
+   console.log(eventSuccess.timestamp);
+   console.log(eventSuccess.eventToken);
+   console.log(eventSuccess.callbackId);
+   console.log(eventSuccess.adid);
+   console.log(eventSuccess.jsonResponse);
+});
+
+Adjust.create(adjustConfig);
+```
+
+#### 例 {#example}
+
+この例では、SDKがAdjustにセッションデータを送信した時刻のタイムスタンプを表示する`eventTrackingSucceededCallback`を登録する方法を示しています。
+
+```js
+var adjustConfig = new AdjustConfig(appToken, environment);
+
+adjustConfig.setEventTrackingSucceededCallbackListener(function (eventSuccess) {
+   console.log(`Event recorded at ${eventSuccess.timestamp}`);
+});
+
+Adjust.create(adjustConfig);
+```
+
+### Failureコールバック {#failure-callbacks}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```js
+setEventTrackingFailedCallbackListener(eventTrackingFailedCallback: (event: AdjustEventFailure) => void)
+```
+
+</CodeBlock>
+
+SDKがセッションの記録に失敗した時に関数をトリガーする、failureコールバックを設定します。
+
+```js
+var adjustConfig = new AdjustConfig(appToken, environment);
+
+adjustConfig.setEventTrackingFailedCallbackListener(function (eventFailure) {
+   // Printing all event failure properties.
+   console.log("Event tracking failed!");
+   console.log(eventFailure.message);
+   console.log(eventFailure.timestamp);
+   console.log(eventFailure.eventToken);
+   console.log(eventFailure.callbackId);
+   console.log(eventFailure.adid);
+   console.log(eventFailure.willRetry);
+   console.log(eventFailure.jsonResponse);
+});
+
+Adjust.create(adjustConfig);
+```
+
+#### 例 {#example}
+
+この例では、SDKがセッションデータの送信に失敗した理由を表示する`eventFailureCallback`を登録する方法を示しています。
+
+```js
+var adjustConfig = new AdjustConfig(appToken, environment);
+
+adjustConfig.setEventTrackingFailedCallbackListener(function (eventFailure) {
+   console.log(`SDK failed to record event due to ${eventFailure.message}`);
+});
+
+Adjust.create(adjustConfig);
+```

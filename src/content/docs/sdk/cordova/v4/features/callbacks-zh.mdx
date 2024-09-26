@@ -1,0 +1,233 @@
+---
+title: 设置回传
+description: 设置回传来在 SDK 向 Adjust 发送信息时触发函数。
+slug: zh/sdk/cordova/v4/features/callbacks
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v5: /zh/sdk/cordova/features/callbacks
+---
+
+设置回传来在 SDK 向 Adjust 发送信息时触发函数。您可以针对会话和事件设置回传。
+
+<Callout type="important">
+
+您必须在初始化 SDK **之前** 注册回传。
+
+</Callout>
+
+## 会话回传 {#session-callbacks}
+
+设置会话回传来在 SDK 向 Adjust 发送会话信息时触发函数。您可以创建 **success** 回传和 **failure** 回传。SDK 向 Adjust 服务器发送信息时会触发 **success** 回传。SDK 向 Adjust 发送信息时出现问题会触发 **failure** 回传。
+
+会话回传可访问响应数据对象。您可以在回传函数中使用其属性。
+
+| 属性           | 数据类型                 | 描述                                |
+| -------------- | ------------------------ | ----------------------------------- |
+| `Message`      | `string`                 | 服务器信息或者 SDK 记录的错误信息。 |
+| `Timestamp`    | `string`                 | 来自 Adjust 服务器的时间戳。        |
+| `Adid`         | `string`                 | 由 Adjust 提供的设备唯一标识符。    |
+| `JsonResponse` | `object<string, object>` | 带服务器响应的 JSON 对象。          |
+| `WillRetry`    | `boolean`                | 指示包发送失败后是否再次尝试发送。  |
+
+### success 回传 {#success-callbacks}
+
+<CodeBlock title="方法签名">
+
+```js
+setSessionTrackingSucceededCallbackListener(
+   sessionTrackingSucceededCallback: (session: AdjustSessionSuccess) => void
+)
+```
+
+</CodeBlock>
+
+设置 success 回传来在 SDK 记录到会话时触发函数。
+
+```js
+var adjustConfig = new AdjustConfig(appToken, environment);
+
+adjustConfig.setSessionTrackingSucceededCallbackListener(
+   function (sessionSuccess) {
+      // Printing all session success properties.
+      console.log("Session tracking succeeded!");
+      console.log(sessionSuccess.message);
+      console.log(sessionSuccess.timestamp);
+      console.log(sessionSuccess.adid);
+      console.log(sessionSuccess.jsonResponse);
+   },
+);
+
+Adjust.create(adjustConfig);
+```
+
+#### 示例 {#example}
+
+该示例展示了如何注册一个 `sessionTrackingSucceededCallback`，来输出 SDK 向 Adjust 发送会话数据的时间戳。
+
+```js
+var adjustConfig = new AdjustConfig(appToken, environment);
+
+adjustConfig.setSessionTrackingSucceededCallbackListener(
+   function (sessionSuccess) {
+      console.log(`Session recorded at ${sessionSuccess.timestamp}`);
+   },
+);
+
+Adjust.create(adjustConfig);
+```
+
+### failure 回传 {#failure-callbacks}
+
+<CodeBlock title="方法签名">
+
+```js
+setSessionTrackingFailedCallbackListener(sessionTrackingFailedCallback: (session: AdjustSessionFailure) => void)
+```
+
+</CodeBlock>
+
+设置 failure 回传来在 SDK 未能记录到会话时触发函数。
+
+```js
+var adjustConfig = new AdjustConfig(appToken, environment);
+
+adjustConfig.setSessionTrackingFailedCallbackListener(
+   function (sessionFailure) {
+      // Printing all session failure properties.
+      console.log("Session tracking failed!");
+      console.log(sessionFailure.message);
+      console.log(sessionFailure.timestamp);
+      console.log(sessionFailure.adid);
+      console.log(sessionFailure.willRetry);
+      console.log(sessionFailure.jsonResponse);
+   },
+);
+
+Adjust.create(adjustConfig);
+```
+
+#### 示例 {#example}
+
+该示例展示了如何注册一个 `sessionTrackingFailedCallback`，来输出 SDK 发送会话数据失败的原因。
+
+```js
+var adjustConfig = new AdjustConfig(appToken, environment);
+
+adjustConfig.setSessionTrackingFailedCallbackListener(
+   function (sessionFailure) {
+      console.log(
+         `SDK failed to record session due to ${sessionFailure.message}`,
+      );
+   },
+);
+
+Adjust.create(adjustConfig);
+```
+
+## 事件回传 {#event-callbacks}
+
+设置事件回传来在 SDK 向 Adjust 发送事件信息时触发函数。您可以创建 **success** 回传和 **failure** 回传。SDK 向 Adjust 服务器发送信息时会触发 **success** 回传。SDK 向 Adjust 发送信息时出现问题会触发 **failure** 回传。
+
+事件回传可访问响应数据对象。您可以在回传函数中使用其属性。
+
+| 属性           | 数据类型                 | 描述                                |
+| -------------- | ------------------------ | ----------------------------------- |
+| `Message`      | `string`                 | 服务器信息或者 SDK 记录的错误信息。 |
+| `Timestamp`    | `string`                 | 来自 Adjust 服务器的时间戳。        |
+| `Adid`         | `string`                 | 由 Adjust 提供的设备唯一标识符。    |
+| `JsonResponse` | `object<string, object>` | 带服务器响应的 JSON 对象。          |
+| `EventToken`   | `string`                 | 事件识别码                          |
+| `CallbackId`   | `string`                 | 事件对象上设置的自定义回传 ID       |
+| `WillRetry`    | `boolean`                | 指示包发送失败后是否再次尝试发送。  |
+
+### success 回传 {#success-callbacks}
+
+<CodeBlock title="方法签名">
+
+```js
+setEventTrackingSucceededCallbackListener(eventTrackingSucceededCallback: (event: AdjustEventSuccess) => void)
+```
+
+</CodeBlock>
+
+设置 success 回传来在 SDK 记录到事件时触发函数。
+
+```js
+var adjustConfig = new AdjustConfig(appToken, environment);
+
+adjustConfig.setEventTrackingSucceededCallbackListener(function (eventSuccess) {
+   // Printing all event success properties.
+   console.log("Event tracking succeeded!");
+   console.log(eventSuccess.message);
+   console.log(eventSuccess.timestamp);
+   console.log(eventSuccess.eventToken);
+   console.log(eventSuccess.callbackId);
+   console.log(eventSuccess.adid);
+   console.log(eventSuccess.jsonResponse);
+});
+
+Adjust.create(adjustConfig);
+```
+
+#### 示例 {#example}
+
+该示例展示了如何注册一个 `eventTrackingSucceededCallback`，来输出 SDK 向 Adjust 发送事件数据的时间戳。
+
+```js
+var adjustConfig = new AdjustConfig(appToken, environment);
+
+adjustConfig.setEventTrackingSucceededCallbackListener(function (eventSuccess) {
+   console.log(`Event recorded at ${eventSuccess.timestamp}`);
+});
+
+Adjust.create(adjustConfig);
+```
+
+### failure 回传 {#failure-callbacks}
+
+<CodeBlock title="方法签名">
+
+```js
+setEventTrackingFailedCallbackListener(eventTrackingFailedCallback: (event: AdjustEventFailure) => void)
+```
+
+</CodeBlock>
+
+设置 failure 回传来在 SDK 未能记录到事件时触发函数。
+
+```js
+var adjustConfig = new AdjustConfig(appToken, environment);
+
+adjustConfig.setEventTrackingFailedCallbackListener(function (eventFailure) {
+   // Printing all event failure properties.
+   console.log("Event tracking failed!");
+   console.log(eventFailure.message);
+   console.log(eventFailure.timestamp);
+   console.log(eventFailure.eventToken);
+   console.log(eventFailure.callbackId);
+   console.log(eventFailure.adid);
+   console.log(eventFailure.willRetry);
+   console.log(eventFailure.jsonResponse);
+});
+
+Adjust.create(adjustConfig);
+```
+
+#### 示例 {#example}
+
+该示例展示了如何注册一个 `eventFailureCallback`，来输出 SDK 发送事件数据失败的原因。
+
+```js
+var adjustConfig = new AdjustConfig(appToken, environment);
+
+adjustConfig.setEventTrackingFailedCallbackListener(function (eventFailure) {
+   console.log(`SDK failed to record event due to ${eventFailure.message}`);
+});
+
+Adjust.create(adjustConfig);
+```

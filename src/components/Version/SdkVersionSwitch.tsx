@@ -1,67 +1,104 @@
-import { type FC, useEffect, useCallback } from "react";
+import { type FC, useCallback, useEffect } from "react";
 import { ComboBox } from "@adjust/components";
 import { useStore } from "@nanostores/react";
+import type { CollectionEntry } from "astro:content";
+import type { Option } from "@adjust/components/build/ComboBox/ComboBox";
+
 import type { Locales } from "@i18n/locales";
 import { useTranslations } from "@i18n/utils";
-import type { Option } from "@adjust/components/build/ComboBox/ComboBox";
+import { getCurrentPage } from "@utils/helpers/navigation/getCurrentPage";
 import {
-  getQueryParameter,
-  updateQueryParameter,
-} from "@components/utils/queryParamHelpers";
-import { $versions, changeVersionValue } from "@store/sdkVersionsStore";
+  $versions,
+  changeVersionValue,
+  supportedVersions,
+  updateVersionsItems,
+  type VersionStore,
+} from "@store/sdkVersionsStore";
+import type { NavigationData } from "@utils/helpers/navigation/types";
 
-// Declare the supported values.
-// If another value is provided (e.g. "version=v3"), ignore it.
+interface SdkVersionSwitchProps {
+  lang: string;
+  redirects: CollectionEntry<"docs">["data"]["redirects"];
+  sdkVersions: NavigationData["versions"]["sdk"];
+}
 
-const supportedVersions = ["v4", "v5"];
-
-const VersionSwitch: FC<{ lang: string }> = ({ lang }) => {
+const VersionSwitch: FC<SdkVersionSwitchProps> = ({
+  lang,
+  redirects,
+  sdkVersions,
+}) => {
   const t = useTranslations(lang as keyof Locales);
   const versions = useStore($versions);
 
-  useEffect(() => {
-    const queryVersion = getQueryParameter("version");
-    if (queryVersion && supportedVersions.includes(queryVersion)) {
-      changeVersionValue({ label: queryVersion, value: queryVersion });
-    } else {
-      updateQueryParameter("version", versions.currentVersion.value);
+  const handleVersionChange = useCallback(
+    (newVersion: VersionStore["currentVersion"]) => {
+      changeVersionValue(newVersion);
+
+      const redirectValue = (redirects as { [key: string]: string })?.[
+        newVersion.value
+      ];
+
+      const href = location.href;
+      if (newVersion.value !== versions.currentVersion.value) {
+        if (redirectValue) {
+          return (location.href = redirectValue);
+        }
+
+        const defaultVersionReg = /\/(\w*)v\d/gi;
+        const versionReg = /\/sdk\/(\w*)(\/|$)/gi;
+
+        if (newVersion.default) {
+          return (location.href = href.replace(defaultVersionReg, "$1"));
+        }
+
+        return (location.href = href.replace(
+          versionReg,
+          `/sdk/$1/${newVersion.value}/`,
+        ));
+      }
+    },
+    [],
+  );
+
+  const handleUrlVersion = () => {
+    const url = location.href;
+    const urlVersion = url.match(/(\w*)v\d/gi);
+
+    if (
+      !getCurrentPage(url).endsWith("/sdk") &&
+      !versions.currentVersion.value
+    ) {
+      // if we have a version in the URL and it`s not the current version we change current selected to this version
+      if (
+        urlVersion?.length &&
+        versions.currentVersion.value !== urlVersion[0]
+      ) {
+        const version = supportedVersions.find(
+          (item) => item.value === urlVersion[0],
+        );
+        if (version) {
+          return changeVersionValue(version);
+        }
+      }
+      // we change the version to the default if we can`t update the version by the current URL
+      if (
+        !urlVersion?.length ||
+        !supportedVersions.find((item) => item.value === urlVersion[0])
+      ) {
+        return changeVersionValue(
+          supportedVersions.find((item) => item.default)!,
+        );
+      }
     }
+  };
+
+  useEffect(() => {
+    handleUrlVersion();
   }, []);
 
-  const updateSdkVersionVisibility = useCallback(() => {
-    const sdkVersionSelectors = document.querySelectorAll(
-      "[role='SdkVersionSelector']",
-    );
-
-    sdkVersionSelectors.forEach((selector) => {
-      const version = selector.getAttribute("data-message"); // The version number is stored in the data-message attribute
-      const currentVersion = versions.currentVersion.value;
-
-      if (version !== currentVersion) {
-        selector.classList.add("hidden");
-      } else {
-        selector.classList.remove("hidden");
-      }
-    });
-
-    // Dispatch a custom event to notify that the SDK version visibility has been updated
-    const event = new Event("versionUpdated");
-    document.dispatchEvent(event);
-  }, [versions.currentVersion.value]);
-
+  // need to add versions from the page data to the SDK versions store
   useEffect(() => {
-    updateSdkVersionVisibility();
-  }, [updateSdkVersionVisibility]);
-
-  useEffect(() => {
-    const queryVersion = getQueryParameter("version");
-    if (versions.currentVersion.value !== queryVersion) {
-      updateQueryParameter("version", versions.currentVersion.value);
-    }
-  }, [versions.currentVersion.value]);
-
-  const handleVersionChange = useCallback((newVersion: Option) => {
-    changeVersionValue(newVersion);
+    updateVersionsItems(sdkVersions as Option[]);
   }, []);
 
   const label = t("sdkversionswitch.label");
@@ -69,7 +106,7 @@ const VersionSwitch: FC<{ lang: string }> = ({ lang }) => {
   return (
     <div
       id="combobox-holder"
-      className="flex flex-col w-full min-h-90px justify-start gap-y-8 bg-slate-100 p-6 rounded-lg mb-14 md:flex-row md:items-center md:gap-x-8"
+      className="flex flex-col w-full min-h-90px justify-start gap-y-4 bg-slate-100 p-6 rounded-lg mb-14"
     >
       <label htmlFor="combobox">{label}</label>
       <ComboBox

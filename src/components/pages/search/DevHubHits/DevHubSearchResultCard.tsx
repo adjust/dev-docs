@@ -1,9 +1,9 @@
 import type { FC } from "react";
 import classNames from "classnames";
 import { Snippet } from "react-instantsearch";
-import type { Hit } from "@algolia/client-search";
 
 import type { DevHubSearchResultCardProps, HitBreadcrumb } from "./types";
+import type { Hit } from "../types";
 
 const DevHubSearchResultCard: FC<DevHubSearchResultCardProps> = ({ hit }) => {
   // need to manually add an ellipsis cause Typesense doesn`t support this in the config

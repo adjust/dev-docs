@@ -1,0 +1,175 @@
+---
+title: Purchase verification
+description: Verify your App Store and Play Store purchases
+slug: en/sdk/flutter/v4/features/purchase-verification
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v5: /en/sdk/flutter/features/purchase-verification
+---
+
+If you've enabled [purchase verification](https://help.adjust.com/en/article/purchase-verification), you can use the Adjust SDK to request purchase verification. There are two ways to verify purchases with the Adjust SDK:
+
+1. Create an `AdjustEvent` object that represents your purchase and configure purchase properties for the target store.
+2. Create an `AdjustAppStorePurchase` (Apple App Store) or `AdjustPlayStorePurchase` (Google Play Store) object representing the purchase.
+
+<Callout type="tip">
+
+If you use revenue events to measure your purchases in Adjust, you should use the `AdjustEvent` class. If you only want to verify a purchase but don't want to associate it with an event, use the `AdjustAppStorePurchase` or `AdjustPlayStorePurchase` class.
+
+</Callout>
+
+When you send purchase information with the Adjust SDK, Adjust does the following:
+
+1. Sends the information to the relevant store and waits for a status response.
+2. Forwards the status response to the Adjust SDK.
+
+You can access the purchase verification status by using a callback. Results are returned as `AdjustPurchaseVerificationResult` objects containing the following properties:
+
+-  `verificationStatus` (`String`): The status of the purchase.
+-  `code` (`num`): The status code of the purchase.
+-  `message` (`String`): Any message returned by the store.
+
+## Verify purchase and record event {#verify-purchase-and-record-event}
+
+<Tabs>
+<Tab title="App Store" icon="StoreAppStore" sync="appstore">
+
+<CodeBlock title="Method signature">
+
+```dart
+static Future<AdjustPurchaseVerificationResult?> verifyAndTrackAppStorePurchase(
+      AdjustEvent event) async
+```
+
+</CodeBlock>
+
+To send a revenue event for verification and listen for the purchase verification status, follow these steps:
+
+1. Instantiate an `AdjustEvent` object with the your event token and set the following parameters:
+   -  `productId` (`String`): The product identifier of the item that was successfully purchased.
+   -  `transactionId` (`String`): The ID of the transaction you want to verify.
+2. Call the `Adjust.VerifyAndTrackPlayStorePurchase` method with the following argument:
+   -  `event` (`AdjustEvent`): Your instantiated event object. Expect the verification response to arrive as part of the `Future<AdjustPurchaseVerificationResult?>` return value.
+
+In this example, the purchase verification response is output to the logging daemon.
+
+```dart
+AdjustEvent adjustEvent = new AdjustEvent('abc123');
+adjustEvent.setRevenue(6.66, 'CAD');
+adjustEvent.transactionId = 'transaction-id';
+adjustEvent.productId = 'product-id';
+Adjust.verifyAndTrackAppStorePurchase(adjustEvent).then((result) {
+        print('Verification status = $result?.verificationStatus');
+        print('Code = $result?.code.toString()');
+        print('Message = $result?.message');
+}
+```
+
+</Tab>
+<Tab title="Google Play" icon="PlatformGooglePlay" sync="playstore">
+
+<CodeBlock title="Method signature">
+
+```dart
+static Future<AdjustPurchaseVerificationResult?> verifyAndTrackPlayStorePurchase(
+      AdjustEvent event) async
+```
+
+</CodeBlock>
+
+To send a revenue event for verification and listen for the purchase verification status, follow these steps:
+
+1. Instantiate an `AdjustEvent` object with the your event token and set the following parameters:
+   -  `productId` (`String`): The ID of the product that has been purchased.
+   -  `purchaseToken` (`String`): The purchase token associated with the purchase.
+2. Call the `Adjust.verifyAndTrackPlayStorePurchase` method with the following argument:
+   -  `adjustEvent` (`AdjustEvent`): Your instantiated event object. Expect the verification response to arrive as part of the `Future<AdjustPurchaseVerificationResult?>` return value.
+
+In this example, the purchase verification response is output to the logging daemon.
+
+```dart
+AdjustEvent adjustEvent = new AdjustEvent('abc123');
+adjustEvent.setRevenue(6.66, 'CAD');
+adjustEvent.productId = 'product-id';
+adjustEvent.purchaseToken = 'purchase-token';
+Adjust.verifyAndTrackPlayStorePurchase(adjustEvent).then((result) {
+        print('Verification status = $result?.verificationStatus');
+        print('Code = $result?.code.toString()');
+        print('Message = $result?.message');
+}
+```
+
+</Tab>
+</Tabs>
+
+## Only verify purchase {#only-verify-purchase}
+
+<Tabs>
+<Tab title="App Store" icon="StoreAppStore" sync="appstore">
+
+<CodeBlock title="Method signature">
+
+```dart
+static Future<AdjustPurchaseVerificationResult?> verifyAppStorePurchase(
+    AdjustAppStorePurchase purchase) async
+```
+
+</CodeBlock>
+
+To send a standalone App Store purchase and listen for the purchase verification status, follow these steps:
+
+1. Instantiate an `AdjustAppStorePurchase` object with the following arguments:
+   -  `productId` (`String`): The product identifier of the item that was successfully purchased.
+   -  `transactionId` (`String`): The ID of the transaction you want to verify.
+2. Call the `Adjust.verifyAppStorePurchase` method with the following argument:
+   -  `purchase` (`AdjustAppStorePurchase`): Your instantiated event object. Expect the verification response to arrive as part of the `Future<AdjustPurchaseVerificationResult?>` return value.
+
+In this example, the purchase verification response is output to the logging daemon.
+
+```dart
+AdjustAppStorePurchase purchase = new AdjustAppStorePurchase('product-id', 'transaction-id');
+Adjust.verifyAppStorePurchase(purchase).then((result) {
+        print('Verification status = $result?.verificationStatus');
+        print('Code = $result?.code.toString()');
+        print('Message = $result?.message');
+}
+```
+
+</Tab>
+<Tab title="Google Play" icon="PlatformGooglePlay" sync="playstore">
+
+<CodeBlock title="Method signature">
+
+```dart
+static Future<AdjustPurchaseVerificationResult?> verifyPlayStorePurchase(
+    AdjustPlayStorePurchase purchase) async
+```
+
+</CodeBlock>
+
+To send a standalone Play Store purchase and listen for the purchase verification status, follow these steps:
+
+1. Instantiate an `AdjustPlayStorePurchase` with the following arguments:
+   -  `productId` (`String`): The ID of the product that has been purchased.
+   -  `purchaseToken` (`String`): The purchase token associated with the purchase.
+2. Call the `Adjust.VerifyPlayStorePurchase` method with the following argument:
+   -  `purchase` (`AdjustPlayStorePurchase`): Your instantiated purchase object. Expect the verification response to arrive as part of the `Future<AdjustPurchaseVerificationResult?>` return value.
+
+In this example, the purchase verification response is output to the logging daemon.
+
+```dart
+AdjustPlayStorePurchase purchase = new AdjustPlayStorePurchase('product-id', 'purchase-token');
+Adjust.verifyPlayStorePurchase(purchase).then((result) {
+        print('Verification status = $result?.verificationStatus');
+        print('Code = $result?.code.toString()');
+        print('Message = $result?.message');
+}
+```
+
+</Tab>
+</Tabs>
