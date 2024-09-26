@@ -76,6 +76,16 @@ export default defineMarkdocConfig({
             }
          }
       },
+      icon: {
+         render: component("src/components/Icon.astro"),
+         attributes: {
+            type: {
+               type: String,
+               required: true,
+               matches: ["Trash", "Pencil", "Person", "CogWheel", "Check", "Cross"]
+            }
+         }
+      },
       listcolumns: {
          render: component("src/components/ListColumns.astro"),
       },
