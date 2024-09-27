@@ -74,9 +74,7 @@ Adjust shares all metrics with all SANs and module partners by default. To chang
 
 You can update your third party sharing settings at any time during the Adjust SDK lifecycle by instantiating an `AdjustThirdPartySharing2dx` object and passing it to `Adjust2dx::trackThirdPartySharing`.
 
-{% callout type="important" %}
-If you need to communicate third party sharing settings before the install session, for example [disabling third party sharing globally](#disable-third-party-sharing-globally) or [configuring per-partner sharing settings](#configure-per-partner-sharing-settings), you MUST instantiate and configure an `AdjustThirdPartySharing2dx` instance and call `Adjust2dx::trackThirdPartySharing` **before** calling `Adjust2dx::initSdk`.
-{% /callout %}
+If you need to communicate third party sharing settings before the install session, for example [disabling third party sharing globally](#disable-third-party-sharing-globally) or [configuring per-partner sharing settings](#configure-per-partner-sharing-settings), you MUST instantiate and configure an `AdjustThirdPartySharing2dx` instance and call `Adjust2dx::trackThirdPartySharing` **before** calling `Adjust2dx::initSdk`. This ensures that your settings apply to all data sent to Adjust, including the install session.
 
 ### Instantiate a third party sharing object {% #instantiate-a-third-party-sharing-object %}
 
@@ -117,13 +115,24 @@ Adjust2dx::initSdk(adjustConfig);
 For SAN partners, you MAY pass the partner's name as the `partnerName`. For module partners, you MUST pass the partner ID. Adjust RECOMMENDS you pass the partner ID for both SANs and module partners.
 {% /callout %}
 
-If you instantiate your `AdjustThirdPartySharing2dx` object with a `true` or without parameters, the Adjust SDK defaults to sending all information to every partner you have set up for your app. To control this, you must customize what data you share on a per-partner basis by calling the `addPartnerSharingSetting` method on your `AdjustThirdPartySharing2dx` instance with the following arguments:
+If you want to share metrics only with specific partners, or you want to configure which metrics to share with specific partners, you MUST do the following:
 
-| Argument                                                                                                                                                                                                 | Type                                                                                                                                                                                                     | Description                                                                                                                                                                                              |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `partnerName`                                                                                                                                                                                            | `std::string`                                                                                                                                                                                                 | The ID of the partner. [Download the full list of available partners](https://assets.ctfassets.net/5s247im0esyq/2QQROOadVqJzrME7yXKObe/7aca25e53d38befb2d469809e62b6fcc/3rd-party-sharing-partners.xlsx) |
-| `key`                                                                                                                                                                                                    | `std::string`                                                                                                                                                                                                 | The metric you want to update.                                                                                                                                                                           |
-| `value`                                                                                                                                                                                                  | `bool`                                                                                                                                                                                                   | Pass `false` to stop sharing a metric with the specified partner or `true` to resume sharing.                                                                                                            |
+1. Instantiate your `AdjustThirdPartySharing2dx` object with a `true` argument.
+2. Customize what data you share on a per-partner basis by calling the `addPartnerSharingSetting` method on your `AdjustThirdPartySharing2dx` instance with the following arguments:
+
+{% deflist %}
+`partnerName` (`std::string`)
+
+: The ID of the partner. [Download the full list of available partners](https://assets.ctfassets.net/5s247im0esyq/2QQROOadVqJzrME7yXKObe/7aca25e53d38befb2d469809e62b6fcc/3rd-party-sharing-partners.xlsx).
+
+`key` (`std::string`)
+
+: The metric you want to update.
+
+`value` (`bool`)
+
+: Pass `false` to stop sharing a metric with the specified partner or `true` to resume sharing.
+{% /deflist %}
 
 To share only specific metrics with a partner, you MUST:
 
@@ -197,11 +206,19 @@ Adjust2dx::trackThirdPartySharing(adjustThirdPartySharing);
 
 You can attach granular information when a user updates their third party sharing preferences. Use this information to communicate more detail about a user's decision. To do this, call the `addGranularOption` method on your `AdjustThirdPartySharing2dx` instance with the following parameters:
 
-| Argument                                                                                                                                                                                                 | Type                                                                                                                                                                                                     | Description                                                                                                                                                                                              |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `partnerName`                                                                                                                                                                                            | `string`                                                                                                                                                                                                 | The ID of the partner. [Download the full list of available partners](https://assets.ctfassets.net/5s247im0esyq/2QQROOadVqJzrME7yXKObe/7aca25e53d38befb2d469809e62b6fcc/3rd-party-sharing-partners.xlsx) |
-| `key`                                                                                                                                                                                                    | `string`                                                                                                                                                                                                 | The key of the granular information.                                                                                                                                                                     |
-| `value`                                                                                                                                                                                                  | `std::string`                                                                                                                                                                                                 | The value of the granular information.                                                                                                                                                                   |
+{% deflist %}
+`partnerName` (`std::string`)
+
+: The ID of the partner. [Download the full list of available partners](https://assets.ctfassets.net/5s247im0esyq/2QQROOadVqJzrME7yXKObe/7aca25e53d38befb2d469809e62b6fcc/3rd-party-sharing-partners.xlsx)
+
+`key` (`std::string`)
+
+: The key of the granular information.
+
+` value` (`std::string`)
+
+: The value of the granular information.
+{% /deflist %}
 
 ```cpp
 AdjustThirdPartySharing2dx adjustThirdPartySharing = AdjustThirdPartySharing2dx(true);
@@ -221,23 +238,23 @@ Facebook provides a feature called Limited Data Use (LDU) to comply with the Cal
 
 You can update the Facebook LDU status using the following keys:
 
-{% table %}
-- Key
-- Description
-- Values
----
-- `data_processing_options_country`
-- The country in which the user is located.
-- - `0`: Request that Facebook use geolocation.
-  - `1`: United States of America.
----
-- `data_processing_options_state`
-- Notifies Facebook in which state the user is located.
-- - `0`: Request that Facebook use geolocation.
-  - `1000`: California.
-  - `1001`: Colorado.
-  - `1002`: Connecticut.
-{% /table %}
+{% deflist %}
+`data_processing_options_country`
+
+: The country in which the user is located.
+
+- `0`: Request that Facebook use geolocation.
+- `1`: United States of America.
+
+`data_processing_options_state`
+
+: Notifies Facebook in which state the user is located.
+
+- `0`: Request that Facebook use geolocation.
+- `1000`: California.
+- `1001`: Colorado.
+- `1002`: Connecticut.
+{% /deflist %}
 
 {% callout type="note" %}
 If you call this method with a `0` value for **either** `data_processing_options_country` or `data_processing_options_state`, the Adjust SDK passes **both** fields back as `0`.
@@ -253,34 +270,28 @@ Adjust2dx::initSdk(adjustConfig);
 
 #### Provide consent data to Google (Digital Markets Act compliance) {% #dma-compliance %}
 
-{% callout type="important" %}
-You MUST configure these granular options and call `Adjust2dx::trackThirdPartySharing` **before** calling `Adjust2dx::initSdk`. You MUST NOT change these granular options later or Google won't claim attribution.
-{% /callout %}
-
-To comply with the EU's Digital Markets Act (DMA), Google Ads and the Google Marketing Platform require explicit consent to receive Adjust’s attribution requests to their APIs. To communicate this consent, you MUST the following granular options to your third party sharing instance for the partner `google_dma` if:
+To comply with the EU's Digital Markets Act (DMA), Google Ads and the Google Marketing Platform require explicit consent to receive Adjust’s attribution requests to their APIs. You MUST communicate the user's consent choices if:
 
 - You have users in the European Economic Area (EEA). This includes EU member states, Switzerland, Norway, Iceland and Slovenia.
-- You use Google Ads or Google Marketing Platform
+- You use Google Ads or Google Marketing Platform.
 
-{% table %}
-- Key
-- Value
-- Description
----
-- `eea`
-- `1` or `0`
-- Informs Adjust whether users installing the app are within the European Economic Area (`1`) or not (`0`).
----
-- `ad_personalization`
-- `1` or `0`
-- Informs Adjust whether users consented with being served personalized ads via Google Ads and/or Google Marketing Platform (`1`) or not (`0`).
+To communicate this consent, add the following granular options to your third party sharing instance for the partner `google_dma`:
 
-  This parameter also informs the `npa` parameter reserved for Google Marketing Platform.
----
-- `ad_user_data`
-- `1` or `0`
-- Informs Adjust whether users consented with their advertiser ID being leveraged for attribution purposes
-{% /table %}
+{% deflist %}
+`eea` (`1` or `0`)
+
+: Informs Adjust whether users installing the app are within the European Economic Area (`1`) or not (`0`).
+
+`ad_personalization` (`1` or `0`)
+
+: Informs Adjust whether users consented with being served personalized ads via Google Ads and/or Google Marketing Platform (`1`) or not (`0`).
+
+: This parameter also informs the `npa` parameter reserved for Google Marketing Platform.
+
+`ad_user_data` (`1` or `0`)
+
+: Informs Adjust whether users consented with their advertiser ID being leveraged for attribution purposes
+{% /deflist %}
 
 ```cpp
 AdjustThirdPartySharing2dx adjustThirdPartySharing = AdjustThirdPartySharing2dx(true);
@@ -313,9 +324,19 @@ This is useful if you're operating in a country with strict privacy requirements
 
 To set your country of data residency, call the `setUrlStrategy` method on your `AdjustConfig2dx` instance with the following parameter:
 
-- `urlStrategyDomains` (`std::vector<std::string>`): The endpoints to which you want to send SDK traffic.
-- `shouldUseSubdomains` (`bool`): Whether the source should prefix a subdomain.
-- `isDataResidency` (`bool`): Whether the domain should be used for data residency.
+{% deflist %}
+`urlStrategyDomains` (`std::vector<std::string>`)
+
+: The endpoints to which you want to send SDK traffic.
+
+`shouldUseSubdomains` (`bool`)
+
+: Whether the source should prefix a subdomain.
+
+`isDataResidency` (`bool`)
+
+: Whether the domain should be used for data residency.
+{% /deflist %}
 
 See the table below for a list of strategies.
 
@@ -341,7 +362,11 @@ If you've enabled [Data Privacy settings](https://help.adjust.com/en/article/man
 
 To toggle this feature, call the `trackMeasurementConsent` method with the following argument:
 
-- `measurementConsent` (`bool`): Whether consent measurement is enabled (`true`) or not (`false`).
+{% deflist %}
+`measurementConsent` (`bool`)
+
+: Whether consent measurement is enabled (`true`) or not (`false`).
+{% /deflist %}
 
 When enabled, the SDK communicates the data privacy settings to Adjust's servers. Adjust's servers then applies your data privacy rules to the user. The Adjust SDK continues to work as expected.
 
