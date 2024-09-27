@@ -76,6 +76,9 @@ export default defineMarkdocConfig({
             }
          }
       },
+      deflist: {
+         render: component("src/components/DefList.astro"),
+      },
       listcolumns: {
          render: component("src/components/ListColumns.astro"),
       },
