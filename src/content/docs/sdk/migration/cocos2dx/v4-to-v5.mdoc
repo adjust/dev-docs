@@ -9,8 +9,6 @@ sidebar-position: 1
 
 Here's what you need to do before updating to SDK v5:
 
-1. SDK v5 supports [SDK signature verification](https://help.adjust.com/en/article/sdk-signature) natively. If you currently use the SDK signature library, you need to remove the signature library from your app first.
-
 1. The minimum supported API versions for SDK v5 have been updated. If your app targets a lower version, you need to update it first.
 
    - iOS: **12.0**
@@ -46,13 +44,52 @@ To start using SDK v5, you need to add it as a dependency in your project. To do
    $(LOCAL_PATH)/../../../Classes/Adjust/AdjustPurchaseVerificationResult2dx.cpp \
    ```
 
-1. (**Android only**): add the Adjust Android SDK to your project using Maven.
+   If you're using CMake, add the following list of sources and headers to your `CMakeLists.txt` file:
 
-   ```groovy
-   dependencies {
-      implementation 'com.adjust.sdk:adjust-android:5.0.0'
-   }
-   ```
+   ```cmake
+   # add cross-platforms source files and header files
+   list(APPEND GAME_SOURCE
+       Classes/Adjust/AdjustConfig2dx.cpp
+       Classes/Adjust/AdjustAttribution2dx.cpp
+       Classes/Adjust/AdjustProxy2dx.cpp
+       Classes/Adjust/AdjustEvent2dx.cpp
+       Classes/Adjust/AdjustAdRevenue2dx.cpp
+       Classes/Adjust/AdjustAppStoreSubscription2dx.cpp
+       Classes/Adjust/AdjustPlayStoreSubscription2dx.cpp
+       Classes/Adjust/AdjustAppStorePurchase2dx.cpp
+       Classes/Adjust/AdjustPlayStorePurchase2dx.cpp
+       Classes/Adjust/Adjust2dx.cpp
+       Classes/Adjust/AdjustEventFailure2dx.cpp
+       Classes/Adjust/AdjustEventSuccess2dx.cpp
+       Classes/Adjust/AdjustSessionFailure2dx.cpp
+       Classes/Adjust/AdjustSessionSuccess2dx.cpp
+       Classes/Adjust/AdjustThirdPartySharing2dx.cpp
+       Classes/Adjust/AdjustDeeplink2dx.cpp
+       Classes/Adjust/AdjustPurchaseVerificationResult2dx.cpp
+       )
+   list(APPEND GAME_HEADER
+       Classes/Adjust/AdjustConfig2dx.h
+       Classes/Adjust/AdjustAttribution2dx.h
+       Classes/Adjust/AdjustProxy2dx.h
+       Classes/Adjust/AdjustEvent2dx.h
+       Classes/Adjust/AdjustAdRevenue2dx.h
+       Classes/Adjust/AdjustAppStoreSubscription2dx.h
+       Classes/Adjust/AdjustPlayStoreSubscription2dx.h
+       Classes/Adjust/AdjustAppStorePurchase2dx.h
+       Classes/Adjust/AdjustPlayStorePurchase2dx.h
+       Classes/Adjust/Adjust2dx.h
+       Classes/Adjust/AdjustEventFailure2dx.h
+       Classes/Adjust/AdjustEventSuccess2dx.h
+       Classes/Adjust/AdjustSessionFailure2dx.h
+       Classes/Adjust/AdjustSessionSuccess2dx.h
+       Classes/Adjust/AdjustThirdPartySharing2dx.h
+       Classes/Adjust/AdjustDeeplink2dx.h
+       Classes/Adjust/AdjustPurchaseVerificationResult2dx.h
+       )
+    ```
+
+1. (**Android only**): download the latest `adjust-android.aar` from [the GitHub releases page](https://github.com/adjust/cocos2dx_sdk/releases/latest) and import it into your Android Studio project.
+1. (**iOS only**): download the latest `AdjustSdk.xcframework` from [the GitHub releases page](https://github.com/adjust/cocos2dx_sdk/releases/latest) and link it in your Xcode project.
 
 ## Update the initialization method {% #update-the-init-method %}
 
@@ -516,7 +553,7 @@ Adjust2dx::updateSkanConversionValue(6, "low", true, [](std::string error) {
 In SDK v4, you can handle changes to a user's ATT authorization status using the `Adjust2dx::requestTrackingAuthorizationWithCompletionHandler` method.
 
 ```cpp
-static void authorizationStatusCallback(int status) {
+Adjust2dx::requestTrackingAuthorizationWithCompletionHandler([] (int status) {
     switch (status) {
         case 0:
             // ATTrackingManagerAuthorizationStatusNotDetermined case
@@ -531,15 +568,13 @@ static void authorizationStatusCallback(int status) {
             // ATTrackingManagerAuthorizationStatusAuthorized case
             break;
     }
-}
-
-Adjust2dx::requestTrackingAuthorizationWithCompletionHandler(authorizationStatusCallback);
+});
 ```
 
 This has been renamed to `Adjust2dx::requestAppTrackingAuthorization` in SDK v5 for clarity.
 
 ```cpp
-static void authorizationStatusCallback(int status) {
+Adjust2dx::requestAppTrackingAuthorization([] (int status) {
     switch (status) {
         case 0:
             // ATTrackingManagerAuthorizationStatusNotDetermined case
@@ -554,9 +589,7 @@ static void authorizationStatusCallback(int status) {
             // ATTrackingManagerAuthorizationStatusAuthorized case
             break;
     }
-}
-
-Adjust2dx::requestAppTrackingAuthorization(authorizationStatusCallback);
+});
 ```
 
 ### Get device information {% #device-info %}
