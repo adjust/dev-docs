@@ -43,6 +43,7 @@ To start using SDK v5, you need to add it as a dependency in your project. To do
    $(LOCAL_PATH)/../../../Classes/Adjust/AdjustAppStorePurchase2dx.cpp \
    $(LOCAL_PATH)/../../../Classes/Adjust/AdjustPlayStorePurchase2dx.cpp \
    $(LOCAL_PATH)/../../../Classes/Adjust/AdjustDeeplink2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustPurchaseVerificationResult2dx.cpp \
    ```
 
 1. (**Android only**): add the Adjust Android SDK to your project using Maven.
@@ -267,7 +268,7 @@ adjustEvent.setDeduplicationId("deduplication-id");
 You can set a custom limit on the number of `deduplicationId` that can be added to the list for identifying duplicate events. By default, the limit is set to **10**.
 
 ```cpp
-AdjustConfig adjustConfig = new AdjustConfig("appToken", AdjustEnvironment.Sandbox);
+AdjustConfig2dx adjustConfig = AdjustConfig2dx("appToken", AdjustEnvironmentSandbox2dx);
 adjustConfig.setEventDeduplicationIdsMaxSize(20);
 Adjust2dx::initSdk(adjustConfig);
 ```
@@ -277,13 +278,13 @@ Adjust2dx::initSdk(adjustConfig);
 In SDK v4, you can set a new subscription by configuring an `AdjustAppStoreSubscription2dx` object. This object is initialized with four arguments: `price`, `currency`, `transactionId`, and `receipt`.
 
 ```cpp
-AdjustAppStoreSubscription2dx subscription = AdjustAppStoreSubscription2dx(price, currency, transactionId, receipt)
+AdjustAppStoreSubscription2dx subscription = AdjustAppStoreSubscription2dx(price, currency, transactionId, receipt);
 ```
 
 In SDK v5, you don't need to pass the `receipt` argument as it's no longer needed for purchase verification.
 
 ```cpp
-AdjustAppStoreSubscription2dx subscription = AdjustAppStoreSubscription2dx(price, currency, transactionId)
+AdjustAppStoreSubscription2dx subscription = AdjustAppStoreSubscription2dx(price, currency, transactionId);
 ```
 
 ### Reattribution using deep links {% #reattribution-using-deep-links %}
@@ -358,11 +359,11 @@ adjustConfig.setUrlStrategy(AdjustDataResidencyEU);
 
 In SDK v5, you need to pass your chosen domain or domains as an array. You need to also set the following:
 
-- `useSubdomains` (`boolean`): Whether the domain should be treated as an Adjust domain. If `true`, the SDK will prefix the domains with Adjust-specific subdomains. If `false`, the SDK will use the provided domain as-is, without adding any prefixes.
-- `isDataResidency` (`boolean`): Whether the domain should be used for data residency.
+- `useSubdomains` (`bool`): Whether the domain should be treated as an Adjust domain. If `true`, the SDK will prefix the domains with Adjust-specific subdomains. If `false`, the SDK will use the provided domain as-is, without adding any prefixes.
+- `isDataResidency` (`bool`): Whether the domain should be used for data residency.
 
 ```cpp
-adjustConfig.setUrlStrategy(["eu.adjust.com"], true, true);
+adjustConfig.setUrlStrategy({"eu.adjust.com"}, true, true);
 ```
 
 Check the table below to see how to configure your URL strategy in SDK v5.
@@ -381,22 +382,22 @@ Check the table below to see how to configure your URL strategy in SDK v5.
 
 ```cpp
 // India URL strategy
-adjustConfig.setUrlStrategy({'adjust.net.in', 'adjust.com'}, true, false);
+adjustConfig.setUrlStrategy({"adjust.net.in", "adjust.com"}, true, false);
 
 // China URL strategy
-adjustConfig.setUrlStrategy({'adjust.world', 'adjust.com'}, true, false);
+adjustConfig.setUrlStrategy({"adjust.world", "adjust.com"}, true, false);
 
 // China only URL strategy
-adjustConfig.setUrlStrategy({'adjust.cn'}, true, false);
+adjustConfig.setUrlStrategy({"adjust.cn"}, true, false);
 
 // EU URL strategy
-adjustConfig.setUrlStrategy({'eu.adjust.com'}, true, true);
+adjustConfig.setUrlStrategy({"eu.adjust.com"}, true, true);
 
 // Turkey URL strategy
-adjustConfig.setUrlStrategy({'tr.adjust.com'}, true, true);
+adjustConfig.setUrlStrategy({"tr.adjust.com"}, true, true);
 
 // US URL strategy
-adjustConfig.setUrlStrategy({'us.adjust.com'}, true, true);
+adjustConfig.setUrlStrategy({"us.adjust.com"}, true, true);
 ```
 
 ### Record ad revenue {% #record-ad-revenue %}
@@ -415,16 +416,15 @@ AdjustAdRevenue2dx adRevenue = AdjustAdRevenue2dx("applovin_max_sdk")
 
 | v4                                      | v5                                      |
 | --------------------------------------- | --------------------------------------- |
-| `AdjustAdRevenueAppLovinMAX`            | `'applovin_max_sdk'`                    |
-| `AdjustAdRevenueSourceAdMob`            | `'admob_sdk'`                           |
-| `AdjustAdRevenueSourceIronSource`       | `'ironsource_sdk'`                      |
-| `AdjustAdRevenueSourceAdMost`           | `'admost_sdk'`                          |
-| `AdjustAdRevenueSourceUnity`            | `'unity_sdk'`                           |
-| `AdjustAdRevenueSourceHeliumChartboost` | `'helium_chartboost_sdk'`               |
-| `adjustConfig.AdRevenueSourceADX`       | `'adx_sdk'`                             |
-| `AdjustAdRevenueSourcePublisher`        | `'publisher_sdk'`                       |
-| `AdjustAdRevenueSourceTradplus`         | `'tradplus_sdk'`                        |
-| `AdjustAdRevenueSourceTopOn`            | `'topon_sdk'`                           |
+| `AdjustAdRevenueSourceAppLovinMAX`            | `"applovin_max_sdk"`                    |
+| `AdjustAdRevenueSourceAdMob`            | `"admob_sdk"`                           |
+| `AdjustAdRevenueSourceIronSource`       | `"ironsource_sdk"`                      |
+| `AdjustAdRevenueSourceAdMostSource`           | `"admost_sdk"`                          |
+| `AdjustAdRevenueSourceUnity`            | `"unity_sdk"`                           |
+| `AdjustAdRevenueSourceHeliumChartboost` | `"helium_chartboost_sdk"`               |
+| `AdjustAdRevenueSourceAdx`       | `"adx_sdk"`                             |
+| `AdjustAdRevenueSourcePublisher`        | `"publisher_sdk"`                       |
+| `AdjustAdRevenueSourceTopOn`            | `"topon_sdk"`                           |
 | `AdjustAdRevenueSourceMopub`            | No longer supported                     |
 
 ### Disable SKAdNetwork communication {% #disable-skan %}
@@ -501,9 +501,9 @@ Adjust2dx::updatePostbackConversionValue(6, "low", false, [](std::string error) 
 
 To update conversion values in SDK v5, use the `updateSkanConversionValue` method with the following arguments:
 
-- `conversionValue` (`Number`): The updated conversion value
-- `coarseValue` (`string`): The updated [coarse conversion value](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
-- `lockWindow` (`boolean`): Whether to send the postback before the conversion window ends
+- `conversionValue` (`int`): The updated conversion value
+- `coarseValue` (`std::string`): The updated [coarse conversion value](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
+- `lockWindow` (`bool`): Whether to send the postback before the conversion window ends
 
 ```cpp
 Adjust2dx::updateSkanConversionValue(6, "low", true, [](std::string error) {
@@ -618,7 +618,7 @@ This setting has been removed in SDK v5.
 
 ### Custom user agent string {% #custom-user-agent %}
 
-SDK v4 supports setting a custom User Agent by calling `adjustConfig.setUserAgent()` with a user agent string.
+SDK v4 supports setting a custom User Agent by calling `adjustConfig.setUserAgent` with a user agent string.
 
 ```cpp
 adjustConfig.setUserAgent("custom-user-agent");
@@ -628,7 +628,7 @@ This setting has been removed in SDK v5.
 
 ### Set whether a device is known {% #set-device-known %}
 
-In SDK v4, you can call the `adjustConfig.setDeviceKnown()` method to manually inform the SDK whether a device is known.
+In SDK v4, you can call the `adjustConfig.setDeviceKnown` method to manually inform the SDK whether a device is known.
 
 ```cpp
 adjustConfig.setDeviceKnown(true);
@@ -638,7 +638,7 @@ This setting has been removed in SDK v5.
 
 ### Delay SDK start {% #delay-sdk-start %}
 
-SDK v4 supports delaying the start of the SDK by calling `adjustConfig.setDelayStart()` with up to **10 seconds** of delay.
+SDK v4 supports delaying the start of the SDK by calling `adjustConfig.setDelayStart` with up to **10 seconds** of delay.
 
 ```cpp
 adjustConfig.setDelayStart(10);
@@ -648,13 +648,13 @@ This method has been removed in SDK v5. The `Adjust2dx::sendFirstPackages()` met
 
 ### Disable third party sharing globally {% #disable-sharing-globally %}
 
-In SDK v4, you can call the `Adjust2dx::disableThirdPartySharing()` method to globally disable sharing information with third parties globally.
+In SDK v4, you can call the `Adjust2dx::disableThirdPartySharing` method to globally disable sharing information with third parties globally.
 
 ```cpp
-Adjust2dx::disableThirdPartySharing()
+Adjust2dx::disableThirdPartySharing();
 ```
 
-This feature has been removed from SDK v5. In SDK v5, use the `Adjust2dx::trackThirdPartySharing()` method to enable or disable third party sharing.
+This feature has been removed from SDK v5. In SDK v5, use the `Adjust2dx::trackThirdPartySharing` method to enable or disable third party sharing.
 
 ```cpp
 AdjustThirdPartySharing2dx thirdPartySharing = AdjustThirdPartySharing2dx(false);
