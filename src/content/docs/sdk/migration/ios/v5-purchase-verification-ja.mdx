@@ -1,11 +1,10 @@
 ---
-title: "iOS認証購入移行ガイド"
+title: "iOS購入認証移行ガイド"
 description: "購入認証SDKからSDK v5のビルトイン購入認証機能に移行するには、このガイドをご覧ください。"
 sidebar-label: "v5 購入認証SDK"
 sidebar-position: 3
-slug: "ja/sdk/migration/ios/v5-purchase-verification"
+slug: "en/sdk/migration/ios/v5-purchase-verification"
 ---
-
 このガイドでは、 Adjustの購入認証SDKから、SDK v5のビルトイン購入認証に移行する方法を説明します。SDK v5の購入認証ワークフローは、購入認証を行うための合理化されたアプローチです。
 
 購入認証SDKは、3つの認証ステップに分けられます。
@@ -49,52 +48,48 @@ ADJEvent *event = [ADJEvent eventWithEventToken::@"your-event-token"];
 
 SDK v5では、このワークフローは簡素化されています。`[Adjust verifyAndTrackAppStorePurchase]`メソッドを使用すると、Adjustのサーバーにイベントを送信し、認証ステータスをコールバックで受け取ることができます。Adjustは、イベントと認証ステータスを自動的に記録します。
 
-## ガイド {#guide}
+ガイド \{\#guide\}
+------------------
 
-購入認証SDKからSDK v5ビルトイン購入認証に移行するには、以下の手順に従ってください。
+購入認証SDKからSDK v5のビルトイン購入認証機能に移行するには、このガイドをご覧ください。
 
-### 1\. 購入認証SDKをアンインストールする {#uninstall-the-pv-sdk}
+### 1\. 購入認証SDKをアンインストールする \{\#uninstall\-the\-pv\-sdk\}
 
-この機能を利用するには、まずAdjust購入認証SDKをアンインストールしてください。
+この機能を利用するには、まずはAdjust購入認証SDKをアンインストールしてください。
 
-### 2\. 購入認証SDKコードを削除する {#remove-pv-sdk-code}
+### 2\. 購入認証SDKコードを削除する \{\#remove\-pv\-sdk\-code\}
 
 Adjustの購入認証SDKをアンインストールしたら、プロジェクトから全ての購入認証コードを削除する必要があります。
 
-### 3\. SDK v5購入認証へ移行する {#migrate-to-sdk-v5-pv}
+### 3\. SDK v5の購入認証に移行する \{\#migrate\-to\-sdk\-v5\-pv\}
 
 既存の購入認証コードを削除したら、SDK v5に組み込まれた購入認証メソッドを使用してください。Adjust SDKで購入認証を行うには、次の2つの方法があります。
 
-1. 購入を示す`ADJEvent`オブジェクトを作成し、以下のプロパティを追加します。
-
-   -  `productId` （`NSString`）：購入に成功したアイテムのプロダクトID。
-   -  `transactionId` \( `NSString` \)：認証したいトランザクションのID。
+1. 購入を示す`ADJEvent`オブジェクトを作成し、以下のプロパティを追加します。 
+   * `productId` （`NSString`）：購入に成功したアイテムのプロダクトID。
+   * `transactionId` \( `NSString` \)：認証したいトランザクションのID。
 
 2. プロダクトID、トランザクションID、受領証で`ADJAppStorePurchase`オブジェクトを作成します。
 
-<Callout type="tip">
+<callout type="tip"> 
 
 収益イベントを使用してAdjustで購入を計測する場合は、 `ADJEvent`クラスを使用してください。購入のみを確認したいが、イベントと関連付けない場合は、 `ADJAppStorePurchase`クラスを使用してください。
+</Callout> 
 
-</Callout>
-
-#### イベントの記録と購入認証 {#record-event-and-verify-purchase}
+#### イベントを記録し購入を認証する \{\#record\-event\-and\-verify\-purchase\}
 
 購入認証の目的で収益イベントを送信し、購入認証ステータスを受け取るには、以下の手順に従ってください。
 
-1. イベントトークンを使用して`ADJEvent`オブジェクトをインスタンス化し、以下のパラメーターを設定します。
+1. イベントトークンを使用して`ADJEvent`オブジェクトをインスタンス化し、以下のパラメーターを設定します。 
+   * `productId` （`NSString`）：購入に成功したアイテムのプロダクトID。
+   * `transactionId` \( `NSString` \)：認証したいトランザクションのID。
 
-   -  `productId` （`NSString`）：購入に成功したアイテムのプロダクトID。
-   -  `transactionId` \( `NSString` \)：認証したいトランザクションのID。
-
-2. 次の引数を使用して`Adjust.verifyAndTrackPlayStorePurchase`メソッドを呼び出します：
-   -  `event` \( `ADJEvent` \)：インスタンス化されたイベントオブジェクト。
-   -  `callback` \( `ADJVerificationResultBlock` \)： `ADJPurchaseVerificationResult`オブジェクトを引数として受け取るデリゲートコールバック関数。
+2. 次の引数を使用して`Adjust.verifyAndTrackPlayStorePurchase`メソッドを呼び出します： 
+   * `event` \( `ADJEvent` \)：インスタンス化されたイベントオブジェクト。
+   * `callback` \( `ADJVerificationResultBlock` \)： `ADJPurchaseVerificationResult`オブジェクトを引数として受け取るデリゲートコールバック関数。
 
 この例では、購入認証レスポンスがログdaemonに出力されます。
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 let event = ADJEvent(eventToken: "g3mfiw")!
@@ -108,8 +103,7 @@ Adjust.verifyAndTrackAppStorePurchase(event) { verificationResult in
 }
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 ADJEvent *event = [[ADJEvent alloc] initWithEventToken:yourEventToken];
@@ -123,26 +117,22 @@ ADJEvent *event = [[ADJEvent alloc] initWithEventToken:yourEventToken];
 }];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-#### 購入認証のみの場合 {#only-verify-purchase}
+#### 購入認証のみの場合 \{\#only\-verify\-purchase\}
 
 独立して購入データを送信し、購入認証ステータスを受信するには、次の手順に従ってください。
 
-1. 以下の引数で`ADJAppStorePurchase`をインスタンス化します：
+1. 以下の引数で`ADJAppStorePurchase`をインスタンス化します： 
+   * `productId` （`NSString`）：購入に成功したアイテムのプロダクトID。
+   * `transactionId` \( `NSString` \)：認証したいトランザクションのID。
 
-   -  `productId` （`NSString`）：購入に成功したアイテムのプロダクトID。
-   -  `transactionId` \( `NSString` \)：認証したいトランザクションのID。
-
-2. 次の引数を使用して`Adjust.verifyAppStorePurchase`メソッドを呼び出します：
-   -  `purchase` \( `ADJAppStorePurchase` \)：インスタンス化された購入オブジェクト
-   -  `callback` \( `ADJVerificationResultBlock` \)： `ADJPurchaseVerificationResult`オブジェクトを引数として受け取るデリゲートコールバック関数。
+2. 次の引数を使用して`Adjust.verifyAppStorePurchase`メソッドを呼び出します： 
+   * `purchase` \( `ADJAppStorePurchase` \)：インスタンス化された購入オブジェクト
+   * `callback` \( `ADJVerificationResultBlock` \)： `ADJPurchaseVerificationResult`オブジェクトを引数として受け取るデリゲートコールバック関数。
 
 この例では、購入認証レスポンスがログdaemonに出力されます。
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 let appStorePurchase = ADJAppStorePurchase(transactionId: yourTransactionId,
@@ -155,8 +145,7 @@ Adjust.verifyAppStorePurchase(appStorePurchase) { verificationResult in
 }
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 ADJAppStorePurchase *appStorePurchase = [[ADJAppStorePurchase alloc]
@@ -170,5 +159,5 @@ ADJAppStorePurchase *appStorePurchase = [[ADJAppStorePurchase alloc]
 }];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs>
+
