@@ -24,7 +24,7 @@ export const buildSidebarHierarchy = (entries: ContentCollectionEntry[]): [Langu
    // Initialize the map with SidebarItems
    sortedEntries.forEach(entry => {
       const { id, slug, data } = entry;
-      const { title, description, "sidebar-label": label, "sidebar-position": position, "category-title": categoryTitle, type } = data;
+      const { title, description, "sidebar-label": label, "sidebar-position": position, "category-title": categoryTitle, type, redirects } = data;
       slugMap.set(entry.slug, {
          id,
          title,
@@ -36,7 +36,8 @@ export const buildSidebarHierarchy = (entries: ContentCollectionEntry[]): [Langu
          children: [],
          type,
          version: "",
-         level: 0
+         level: 0,
+         redirects
       });
    });
 

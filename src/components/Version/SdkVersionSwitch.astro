@@ -1,0 +1,102 @@
+---
+import { findEntryBySlug } from "@utils/helpers/navigation/findEntryBySlug";
+import { uniqueSdkVersions } from "@utils/helpers/navigation/getUniqueVersions";
+
+// Props passed to this component
+interface Props {
+  lang: string;
+  currentPage: string;
+}
+
+// Extract props from Astro
+const { lang, currentPage } = Astro.props;
+
+// Find the current page data and any redirects from the frontmatter
+const pageData = findEntryBySlug(currentPage);
+const redirects = pageData?.redirects || {};
+const defaultVersion =
+  (uniqueSdkVersions && uniqueSdkVersions.find((v) => v.default)?.value) || "";
+---
+
+<div
+  id="combobox-holder"
+  class="flex flex-col w-full min-h-90px justify-start gap-y-4 bg-slate-100 p-6 rounded-lg mb-14"
+  data-redirects={JSON.stringify(redirects)}
+>
+  <label for="combobox">Switch SDK Version</label>
+  <select id="combobox" name="combobox">
+    {
+      uniqueSdkVersions &&
+        uniqueSdkVersions.map((sdkVersion) => (
+          <option value={sdkVersion.value}>{sdkVersion.label}</option>
+        ))
+    }
+  </select>
+</div>
+
+<script>
+  import { $versions, changeVersionValue } from "@store/sdkVersionsStore";
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const versionSelect = document.getElementById(
+      "combobox",
+    ) as HTMLSelectElement | null;
+    const comboboxHolder = document.getElementById("combobox-holder");
+
+    if (versionSelect && comboboxHolder) {
+      const redirectsAttribute = comboboxHolder.getAttribute("data-redirects");
+      const redirects = redirectsAttribute
+        ? JSON.parse(redirectsAttribute)
+        : {};
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlVersion = urlParams.get("version");
+
+      // Get the current version from the store
+      const currentVersion = $versions.get().currentVersion;
+
+      // Set the select input value from URL param, store, or default
+      if (urlVersion && versionSelect.options.namedItem(urlVersion)) {
+        versionSelect.value = urlVersion;
+      } else if (currentVersion) {
+        versionSelect.value = currentVersion.value;
+      }
+
+      // Handle version change and redirect logic
+      versionSelect.addEventListener("change", function () {
+        const selectedVersion = versionSelect.value;
+        const selection = { label: selectedVersion, value: selectedVersion };
+        changeVersionValue(selection);
+        const currentUrl = window.location.href;
+
+        // Check if there's a redirect for the selected version
+        if (redirects[selectedVersion]) {
+          window.location.href = redirects[selectedVersion];
+        } else {
+          // Fallback logic for changing version in the URL
+          const defaultVersionReg = /\/(\w*)v\d/gi;
+          const versionReg = /\/sdk\/(\w*)(\/|$)/gi;
+
+          if (selectedVersion === "${defaultVersion}") {
+            // Redirect to default version URL by removing version part
+            window.location.href = currentUrl.replace(defaultVersionReg, "$1");
+          } else {
+            // Redirect to the selected version
+            window.location.href = currentUrl.replace(
+              versionReg,
+              `/sdk/$1/${selectedVersion}/`,
+            );
+          }
+        }
+      });
+
+      // Check for version in URL query params
+      if (urlVersion && redirects[urlVersion]) {
+        changeVersionValue({ label: urlVersion, value: urlVersion });
+        window.location.href = redirects[urlVersion];
+      }
+    } else {
+      console.warn("Version select or combobox holder element not found.");
+    }
+  });
+</script>
