@@ -47,19 +47,56 @@ Once you've extracted the release archive, follow these steps to add the Adjust 
    $(LOCAL_PATH)/../../../Classes/Adjust/AdjustAppStorePurchase2dx.cpp \
    $(LOCAL_PATH)/../../../Classes/Adjust/AdjustPlayStorePurchase2dx.cpp \
    $(LOCAL_PATH)/../../../Classes/Adjust/AdjustDeeplink2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustPurchaseVerificationResult2dx.cpp \
    ```
+
+   If you're using CMake, add the following list of sources and headers to your `CMakeLists.txt` file:
+
+   ```cmake
+   # add cross-platforms source files and header files
+   list(APPEND GAME_SOURCE
+       Classes/Adjust/AdjustConfig2dx.cpp
+       Classes/Adjust/AdjustAttribution2dx.cpp
+       Classes/Adjust/AdjustProxy2dx.cpp
+       Classes/Adjust/AdjustEvent2dx.cpp
+       Classes/Adjust/AdjustAdRevenue2dx.cpp
+       Classes/Adjust/AdjustAppStoreSubscription2dx.cpp
+       Classes/Adjust/AdjustPlayStoreSubscription2dx.cpp
+       Classes/Adjust/AdjustAppStorePurchase2dx.cpp
+       Classes/Adjust/AdjustPlayStorePurchase2dx.cpp
+       Classes/Adjust/Adjust2dx.cpp
+       Classes/Adjust/AdjustEventFailure2dx.cpp
+       Classes/Adjust/AdjustEventSuccess2dx.cpp
+       Classes/Adjust/AdjustSessionFailure2dx.cpp
+       Classes/Adjust/AdjustSessionSuccess2dx.cpp
+       Classes/Adjust/AdjustThirdPartySharing2dx.cpp
+       Classes/Adjust/AdjustDeeplink2dx.cpp
+       Classes/Adjust/AdjustPurchaseVerificationResult2dx.cpp
+       )
+   list(APPEND GAME_HEADER
+       Classes/Adjust/AdjustConfig2dx.h
+       Classes/Adjust/AdjustAttribution2dx.h
+       Classes/Adjust/AdjustProxy2dx.h
+       Classes/Adjust/AdjustEvent2dx.h
+       Classes/Adjust/AdjustAdRevenue2dx.h
+       Classes/Adjust/AdjustAppStoreSubscription2dx.h
+       Classes/Adjust/AdjustPlayStoreSubscription2dx.h
+       Classes/Adjust/AdjustAppStorePurchase2dx.h
+       Classes/Adjust/AdjustPlayStorePurchase2dx.h
+       Classes/Adjust/Adjust2dx.h
+       Classes/Adjust/AdjustEventFailure2dx.h
+       Classes/Adjust/AdjustEventSuccess2dx.h
+       Classes/Adjust/AdjustSessionFailure2dx.h
+       Classes/Adjust/AdjustSessionSuccess2dx.h
+       Classes/Adjust/AdjustThirdPartySharing2dx.h
+       Classes/Adjust/AdjustDeeplink2dx.h
+       Classes/Adjust/AdjustPurchaseVerificationResult2dx.h
+       )
+    ```
 
 ## 3. Configure Android settings {% #android-settings %}
 
-To support Android devices, you need to add the Adjust Android SDK to your project dependencies. To do this, add the following to your `build.gradle` file:
-
-```groovy
-dependencies {
-   implementation 'com.adjust.sdk:adjust-android:{% $versions.android.v5 %}'
-}
-```
-
-If you don't use Maven to manage dependencies, you can download the Adjust Android SDK as an `AAR` from [the GitHub releases page](https://github.com/adjust/cocos2dx_sdk/releases).
+To support Android devices, you need to download the latest `adjust-android.aar` from [the GitHub releases page](https://github.com/adjust/cocos2dx_sdk/releases/latest) and import it into your Android Studio project.
 
 ### Permissions {% #android-permissions %}
 
@@ -161,11 +198,11 @@ Once you've updated your project settings, you can integrate the Adjust SDK into
 
 1. Find your application delegate file in the **Project Navigator** and open it.
 1. Include the `Adjust/Adjust2dx.h` class at the top of the file.
-1. Instantiate an `AdjustConfig2dx` object inside the `applicationDidFinishLaunching` method with the following arguments:
+1. Instantiate an `AdjustConfig2dx` object with the following arguments:
    - `appToken`: Your Adjust app token
    - `environment`: `AdjustEnvironmentSandbox2dx`
 1. Optionally adjust your [logging level](/en/sdk/cocos2dx/configuration#set-your-logging-level) to adjust the verbosity of your logging.
-1. Call the `Adjust2dx::initSdk` method and pass your `AdjustConfig2dx` instance as an argument.
+1. Call the `Adjust2dx::initSdk` method and pass your `AdjustConfig2dx` instance as an argument as soon as possible after the app is launched.
 
 {% callout type="important" %}
 When running tests you should ensure that your environment is set to `AdjustEnvironmentSandbox2dx`. Change this to `AdjustEnvironmentProduction2dx` before you submit your application to app stores.
@@ -174,14 +211,12 @@ When running tests you should ensure that your environment is set to `AdjustEnvi
 ```cpp
 #include "Adjust/Adjust2dx.h"
 
-bool AppDelegate::applicationDidFinishLaunching() {
-   std::string appToken = "{% $variables.config.token %}";
-   std::string environment = AdjustEnvironmentSandbox2dx;
+std::string appToken = "{% $variables.config.token %}";
+std::string environment = AdjustEnvironmentSandbox2dx;
 
-   AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment);
-   adjustConfig.setLogLevel(AdjustLogLevel2dxVerbose);
-   Adjust2dx::initSdk(adjustConfig);
-}
+AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment);
+adjustConfig.setLogLevel(AdjustLogLevel2dxVerbose);
+Adjust2dx::initSdk(adjustConfig);
 ```
 
 ## 7. Build your app

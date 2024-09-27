@@ -38,7 +38,7 @@ The Adjust SDK also records the consent status if you use a custom prompt. If yo
 {% /callout %}
 
 ```cpp
-static void authorizationStatusCallback(int status) {
+Adjust2dx::requestAppTrackingAuthorization([] (int status) {
     switch (status) {
         case 0:
             // ATTrackingManagerAuthorizationStatusNotDetermined case
@@ -53,8 +53,7 @@ static void authorizationStatusCallback(int status) {
             // ATTrackingManagerAuthorizationStatusAuthorized case
             break;
     }
-}
-Adjust2dx::requestAppTrackingAuthorization(authorizationStatusCallback);
+});
 ```
 
 ## Customize prompt timing {% #customize-prompt-timing %}
@@ -64,9 +63,9 @@ If your app includes an onboarding process or a tutorial, you may want to delay 
 If the user closes the app before the timeout ends, or before they select their consent status, the timeout restarts when they reopen the app.
 
 ```cpp
-AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment, false);
+AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment);
 adjustConfig.setAttConsentWaitingInterval({% $variables.config.attWaitingInterval %});
-Adjust2dx::InitSdk(adjustConfig);
+Adjust2dx::initSdk(adjustConfig);
 ```
 
 ## Get current authorization status {% #get-current-authorization-status %}
@@ -75,12 +74,4 @@ You can retrieve a user's current authorization status at any time. Call the `Ad
 
 ```cpp
 Adjust2dx::getAppTrackingAuthorizationStatus();
-```
-
-## Check for authorization status changes {% #check-for-auth-status-changes %}
-
-If you use a custom ATT prompt, you need to inform the Adjust SDK of changes to the user's authorization status. Call the `Adjust2dx::checkForNewAttStatus()` method to send the authorization status to Adjust's servers.
-
-```cpp
-Adjust2dx::checkForNewAttStatus();
 ```

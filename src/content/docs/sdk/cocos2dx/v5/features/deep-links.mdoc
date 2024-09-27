@@ -34,21 +34,15 @@ Follow the instructions for setting up deep linking for your target platform:
 You can configure the Adjust SDK to call a callback function when it receives a deferred deep link. This callback function receives the deep link as a `string` argument.
 
 ```cpp
-#include "Adjust/Adjust2dx.h"
+std::string appToken = "{% $variables.config.token %}";
+std::string environment = AdjustEnvironmentSandbox2dx;
 
-static bool deferredDeeplinkCallbackMethod(std::string deeplink) {
-   // Add your code
-}
-
-bool AppDelegate::applicationDidFinishLaunching() {
-    std::string appToken = "{% $variables.config.token %}";
-    std::string environment = AdjustEnvironmentSandbox2dx;
-
-    AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment);
-    adjustConfig.setLogLevel(AdjustLogLevel2dxVerbose);
-    adjustConfig.setDeferredDeeplinkCallback(deferredDeeplinkCallbackMethod);
-    Adjust2dx::initSdk(adjustConfig);
-}
+AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment);
+adjustConfig.setLogLevel(AdjustLogLevel2dxVerbose);
+adjustConfig.setDeferredDeeplinkCallback([](std::string adjustDeeplink) {
+    // process adjustDeeplink
+});
+Adjust2dx::initSdk(adjustConfig);
 ```
 
 ## Reattribution via deep links {% #reattribution-via-deep-links %}
@@ -58,8 +52,8 @@ Adjust enables you to run re-engagement campaigns using deep links. For more inf
 To reattribute your user, you need to instantiatee an `AdjustDeeplink2dx` object with the deep link URL and pass it to the `Adjust2dx::processDeeplink` method. The Adjust SDK then looks for new attribution data within the deep link. If the SDK finds new information, it forwards the information to Adjust’s servers for reattribution.
 
 ```cpp
-AdjustDeeplink2dx adjustDeeplink = new AdjustDeeplink2dx("url");
-Adjust::processDeeplink(adjustDeeplink);
+AdjustDeeplink2dx adjustDeeplink = AdjustDeeplink2dx("url");
+Adjust2dx::processDeeplink(adjustDeeplink);
 ```
 
 ## Enable LinkMe {% #enable-linkme %}
@@ -84,9 +78,9 @@ adjustConfig.enableLinkMe();
 Adjust2dx::initSdk(adjustConfig)
 ```
 
-## Get the last resolved link {% #get-the-last-resolved-link %}
+## Get the last processed link {% #get-the-last-processed-link %}
 
-You can return the last deep link URL resolved by the `Adjust2sx::processDeeplink()` or `Adjust2dx::processAndResolveDeepLink()` method by calling the `Adjust2dx::getLastDeeplink()` method. This method returns the last resolved deep link as a deep link object.
+You can return the last deep link URL resolved by the `Adjust2sx::processDeeplink` or `Adjust2dx::processAndResolveDeepLink` method by calling the `Adjust2dx::getLastDeeplink` method. This method returns the last processed deep link as a deep link object.
 
 ```cpp
 Adjust2dx::getLastDeeplink([](std::string lastDeeplink) {
