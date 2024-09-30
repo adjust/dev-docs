@@ -1,0 +1,90 @@
+---
+title: Configure deep link settings
+description: Configure deep link settings for your app
+slug: en/sdk/ios/v4/features/deep-links/configure-deep-link-settings
+sidebar-position: 1
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v5: /en/sdk/ios/features/deep-links/configure-deep-link-settings
+---
+
+<br />
+## Set up a branded domain
+<br />
+In the Adjust dashboard, [set up a branded
+domain](https://help.adjust.com/en/article/set-up-branded-domain) using Adjust's
+go.link domain (for example: `example.go.link`).
+
+Copy your branded domain to configure it in Xcode in the section below.
+
+<br />
+## Configure settings in Xcode
+<br />
+### Configure universal links
+
+1. Open your Xcode project/workspace (use the .xcworkspace file if you are using Cocoapods, otherwise use the .xcodeproj file).
+2. In the navigator pane, select the project name to access the project settings.
+3. In the project settings, under **Targets**, select the appropriate target (usually your app's name).
+4. Select the **Signing & Capabilities** tab.
+5. Complete these steps for both the **Release** and **Debug** sub-tabs:
+
+   -  Note the value in the **Bundle Identifier** field. This is your app's Bundle ID ("Release Bundle ID" or "Debug Bundle ID," respectively), which you'll need to add to the Adjust dashboard later.
+   -  In the **Associated Domains** section, add an entry for your branded domain. Here is an example using the branded domain `example.go.link`:
+
+      `applinks:example.go.link`
+
+**Troubleshoot missing or problematic Associated Domains settings**
+
+-  If you don't see the **Associated Domains** section you might need to enable it first:
+   1. Next to the **Release** or **Debug** sub-tab (wherever it's missing), click **+ Capability**.
+   2. Search for "Associated Domains" and select it.
+-  If you get an error message, such as "Provisioning profile \{profile_name\} doesn't support the Associated Domains capability" when trying to enable Associated Domains, your provisioning profile likely needs to be updated:
+   -  For automatic signing, make sure "Automatically manage signing" is selected at the top of the Signing & Capabilities page.
+   -  For manual signing:
+      1. Go to the Apple Developer portal and [enable the Associated Domains capability](https://developer.apple.com/help/account/manage-identifiers/enable-app-capabilities) for your app.
+      2. [Download and import](https://help.apple.com/xcode/mac/current/#/dev1bf96f17e) the updated provisioning profile into Xcode.
+
+### Configure app scheme
+
+App scheme is required for certain use cases where iOS doesn’t support universal links. You can reuse an existing app scheme for Adjust deep linking.
+
+1. In Xcode, select the **Info** tab.
+2. Expand the **URL Types** section.
+
+If your app already has an app scheme, determine which of the below configurations you have and retrieve it:
+
+| **URL Schemes** field                                                 | **Identifier** field                                                           | App Scheme                                                                                                                                          |
+| --------------------------------------------------------------------- | ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Static value, such as `example`                                       | Static value, such as `com.example.app`                                        | `example://` is the "Release App Scheme"                                                                                                            |
+| Static value, such as `example`                                       | Build setting variable, such as `$(PRODUCT_BUNDLE_IDENTIFIER)`                 | `example://` is the "Release App Scheme"                                                                                                            |
+| Two static values, such as `example` and `exampleDebug`, respectively | Static values, such as `com.example.app` and `com.example.debug`, respectively | `example://` is the "Release App Scheme" and `exampleDebug://` is the "Debug App Scheme"                                                            |
+| Build setting variable, such as `$(APP_SCHEME)`                       | Static values, such as `com.example.app` and `com.example.debug`, respectively | **Build Settings** tab -> search for "APP_SCHEME" -> values for Release and Debug are the "Release App Scheme" and "Debug App Scheme," respectively |
+| Build setting variable, such as `$(APP_SCHEME)`                       | Build setting variable, such as `$(PRODUCT_BUNDLE_IDENTIFIER)`                 | **Build Settings** tab -> search for "APP_SCHEME" -> values for Release and Debug are the "Release App Scheme" and "Debug App Scheme," respectively |
+
+If you need to set up an app scheme, follow these steps: - Select the **+** button to add a new URL Type. - Fill in the following fields: - **Identifier**: `$(PRODUCT_BUNDLE_IDENTIFIER)` - **Role**: Editor - **URL Schemes**: Enter your desired app scheme (for example: enter `example` to represent `example://`). Don't use `http`, `https`, or reserved iOS schemes like `mailto`, `tel`, `sms`, or `facetime`. Entering a static value here will create a single app scheme used for both release and debug builds. - Once created, remember to note the app scheme for configuration in the Adjust dashboard later.
+
+<br />
+## Retrieve App ID Prefix from Apple Developer Portal
+
+1. Log into the [Apple Developer portal](https://developer.apple.com/account/).
+2. Under **Certificates, IDs & Profiles**, select **Identifiers**.
+3. Select your app.
+4. Near the top of the page, copy the **App ID Prefix** to configure in the Adjust dashboard below.
+   <br />
+
+## Configure settings in Adjust dashboard
+
+In the Adjust dashboard, [create an app](https://help.adjust.com/en/article/app-setup) if you haven't already done so. Then, configure its [iOS platform settings](https://help.adjust.com/en/article/platforms-ios-android-amazon-microsoft) using the previously collected data points, detailed below. Note that the Adjust dashboard only supports one bundle ID and one app scheme per app. If you need to test with a Debug Bundle ID or Debug App Scheme, create a separate test app.
+
+| Data Point         | Example           | Requirement                                                                                           |
+| ------------------ | ----------------- | ----------------------------------------------------------------------------------------------------- |
+| Release Bundle ID  | com.example.app   | Required.                                                                                             |
+| Debug Bundle ID    | com.example.debug | Required if Debug Bundle ID is different than Release Bundle ID, and you are testing a debug build.   |
+| Release App Scheme | example://        | Required for use cases where iOS doesn't support universal links.                                     |
+| Debug App Scheme   | exampleDebug://   | Required if Debug App Scheme is different than Release App Scheme, and you are testing a debug build. |
+| App ID Prefix      | ABCDE12345        | Required.                                                                                             |
