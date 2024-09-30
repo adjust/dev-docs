@@ -20,149 +20,90 @@ You can record App Store and Play Store subscriptions and verify their validity 
 
 ## How it works {% #how-it-works %}
 
-After the user purchases a subscription, create an `AdjustAppStoreSubscription2dx` or `AdjustPlayStoreSubscription2dx` instance. These instances contain subscription details that allows Adjust to measure the subscription event.
+After the user purchases a subscription, create an `AdjustAppStoreSubscription2dx` or `AdjustPlayStoreSubscription2dx` instance. These classes contain properties representing subscription details that allow Adjust to measure the subscription event.
 
-## Reference {% #reference %}
+## App Store subscriptions {% #app-store-subscriptions %}
 
-The `AdjustAppStoreSubscription2dx` and `AdjustPlayStoreSubscription2dx` classes are used to hold information about a subscription. Each subscription is represented by unique `AdjustAppStoreSubscription2dx` or `AdjustPlayStoreSubscription2dx` instances.
+The `AdjustAppStoreSubscription2dx` class represents App Store subscription information. You can create multiple instances of this class to send subscription information to Adjust.
 
-To get started, you need to create a subscription object containing details of the subscription purchase.
+To get started, you need to instantiate a subscription object containing details of the subscription purchase.
 
-### Instantiate a subscription object {% #instantiate-a-subscription-object %}
-
-{% tabs %}
-{% tab title="App Store" sync="appstore" %}
+### Instantiate an App Store subscription object {% #instantiate-an-app-store-subscription-object %}
 
 Instantiate an `AdjustAppStoreSubscription2dx` object with the following arguments:
 
-| Argument      | Type | Description                                                                                                                                                                                                                                                                                         |
-| --------------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `price`         | `std::string`    | The price of the subscription                                                                                                                                                                                                                                                                       |
-| `currency`      | `std::string`    | The currency of the subscription. Formatted as the [`currencyCode`](https://developer.apple.com/documentation/foundation/nslocale/1642836-currencycode?language=objc) of the [`priceLocale`](https://developer.apple.com/documentation/storekit/skproduct/1506145-pricelocale?language=objc) object |
-| `transactionId` | `std::string`    | Your ID for the transaction                                                                                                                                                                                                                                                                         |
+{% deflist %}
+`price` (`std::string`)
+
+: The price of the subscription
+
+`currency` (`std::string`)
+
+: The currency of the subscription. Formatted as the [`currencyCode`](https://developer.apple.com/documentation/foundation/nslocale/1642836-currencycode?language=objc) of the [`priceLocale`](https://developer.apple.com/documentation/storekit/skproduct/1506145-pricelocale?language=objc) object.
+
+`transactionId` (`std::string`)
+
+: Your ID for the transaction.
+{% /deflist %}
 
 ```cpp
 AdjustAppStoreSubscription2dx subscription = AdjustAppStoreSubscription2dx({% $variables.subscription.appStoreSubscription %});
 ```
 
-{% /tab %}
-{% tab title="Play Store" sync="playstore" %}
-
-Instantiate an `AdjustPlayStoreSubscription2dx` object with the following arguments:
-
-| Argument       | Type | Description                                                                                                                                                                                 |
-| --------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `price`         | `std::string`    | The price of the subscription                                                                                                                                                               |
-| `currency`      | `std::string`    | The currency of the subscription                                                                                                                                                            |
-| `sku`           | `std::string`    | The ID of the product                                                                                                                                                                       |
-| `orderId`       | `std::string`    | Your ID for the transaction                                                                                                                                                                 |
-| `signature`     | `std::string`    | The signature of the purchase data                                                                                                                                                          |
-| `purchaseToken` | `std::string`    | The unique token of the transaction. See [Google's documentation](<https://developer.android.com/reference/com/android/billingclient/api/Purchase#getPurchaseToken()>) for more information |
-
-```cpp
-AdjustPlayStoreSubscription2dx subscription = AdjustPlayStoreSubscription2dx({% $variables.subscription.playStoreSubscription %});
-```
-{% /tab %}
-{% /tabs %}
-
-### Record the purchase date {% #record-the-purchase-date %}
+### Record the purchase date {% #record-the-purchase-date-app-store %}
 
 You can record the date on which the user purchased a subscription. The SDK returns this data for you to report on.
 
-{% tabs %}
-{% tab title="App Store" sync="appstore" %}
-
 Call the `setTransactionDate` method on your subscription object to record the timestamp of the subscription.
 
-| Argument          | Type      | Description                              |
-| ----------------- | --------- | ---------------------------------------- |
-| `transactionDate` | `std::string`  | The timestamp of the subscription        |
+{% deflist %}
+`transactionDate` (`std::string`)
+
+: The timestamp of the subscription
+{% /deflist %}
 
 ```cpp
 AdjustAppStoreSubscription2dx subscription = AdjustAppStoreSubscription2dx({% $variables.subscription.appStoreSubscription %});
 subscription.setTransactionDate(transactionDate);
 ```
 
-{% /tab %}
-{% tab title="Play Store" sync="playstore" %}
-
-Call the `setPurchaseTime` method on your subscription object to record the timestamp of the subscription.
-
-| Argument          | Type      | Description                              |
-| ----------------- | --------- | ---------------------------------------- |
-| `purchaseTime`    | `std::string`  | The timestamp of the subscription        |
-
-```cpp
-AdjustPlayStoreSubscription2dx subscription = AdjustPlayStoreSubscription2dx({% $variables.subscription.playStoreSubscription %});
-subscription.setPurchaseTime(purchaseTime);
-```
-{% /tab %}
-{% /tabs %}
-
-### Record the purchase region (iOS only) {% #record-the-purchase-region-ios-only %}
+### Record the purchase region {% #record-the-purchase-region %}
 
 You can record the region in which the user purchased a subscription. To do this, call the `setSalesRegion` method on your subscription object and pass the country code as a **string**. This needs to be formatted as the [`countryCode`](https://developer.apple.com/documentation/storekit/storefront/3792000-countrycode) of the [`Storefront`](https://developer.apple.com/documentation/storekit/storefront) object.
 
-| Argument          | Type      | Description                              |
-| ----------------- | --------- | ---------------------------------------- |
-| `salesRegion`     | `std::string`  | The country code for the subscription    |
+{% deflist %}
+`salesRegion` (`std::string`)
+
+: The country code for the subscription.
+{% /deflist %}
 
 ```cpp
 AdjustAppStoreSubscription2dx subscription = AdjustAppStoreSubscription2dx({% $variables.subscription.appStoreSubscription %});
 subscription.setSalesRegion(salesRegion);
 ```
 
-### Add callback parameters {% #add-callback-parameters %}
+### Add callback parameters {% #add-callback-parameters-app-store %}
 
 You can add callback parameters to your subscription object. The SDK appends these parameters to your callback URL. To add callback parameters, call the `addCallbackParameter` method on your subscription object. You can add multiple callback parameters by calling this method multiple times.
 
-{% tabs %}
-{% tab title="App Store" sync="appstore" %}
-
 ```cpp
 AdjustAppStoreSubscription2dx subscription = AdjustAppStoreSubscription2dx({% $variables.subscription.appStoreSubscription %});
 subscription.addCallbackParameter("{% $variables.subscription.key1 %}");
 subscription.addCallbackParameter("{% $variables.subscription.key2 %}");
 ```
 
-{% /tab %}
-{% tab title="Play Store" sync="playstore" %}
-
-```cpp
-AdjustPlayStoreSubscription2dx subscription = AdjustPlayStoreSubscription2dx({% $variables.subscription.playStoreSubscription %});
-subscription.addCallbackParameter("{% $variables.subscription.key1 %}");
-subscription.addCallbackParameter("{% $variables.subscription.key2 %}");
-```
-
-{% /tab %}
-{% /tabs %}
-
-### Add partner parameters {% #add-partner-parameters %}
+### Add partner parameters {% #add-partner-parameters-app-store %}
 
 You can add partner parameters to your subscription object. The SDK sends these to Adjust's servers when the user purchases a subscription. Adjust's servers forward the information on to your network partner. To add partner parameters, call the `addPartnerParameter` method on your subscription object. You can add multiple partner parameters by calling this method multiple times.
 
-{% tabs %}
-{% tab title="App Store" sync="appstore" %}
-
 ```cpp
 AdjustAppStoreSubscription2dx subscription = AdjustAppStoreSubscription2dx({% $variables.subscription.appStoreSubscription %});
 subscription.addPartnerParameter("{% $variables.subscription.key1 %}");
 subscription.addPartnerParameter("{% $variables.subscription.key2 %}");
 ```
 
-{% /tab %}
-{% tab title="Play Store" sync="playstore" %}
+### App Store subscription tutorial {% #tutorial-app-store %}
 
-```cpp
-AdjustPlayStoreSubscription2dx subscription = AdjustPlayStoreSubscription2dx({% $variables.subscription.playStoreSubscription %});
-subscription.addPartnerParameter("{% $variables.subscription.key1 %}");
-subscription.addPartnerParameter("{% $variables.subscription.key2 %}");
-```
-
-{% /tab %}
-{% /tabs %}
-
-## Tutorial {% #tutorial %}
 Once you have set up your subscription object, you can record it using the Adjust SDK.
 
 This tutorial demonstrates how to use the `AdjustAppStoreSubscription2dx` and `AdjustPlayStoreSubscription2dx` classes to send subscription information to Adjust. You will learn:
@@ -171,9 +112,6 @@ This tutorial demonstrates how to use the `AdjustAppStoreSubscription2dx` and `A
 1. How to use the `AdjustAppStoreSubscription2dx` and `AdjustPlayStoreSubscription2dx` classes in your app to send subscription information to Adjust.
 
 To send subscription information to Adjust, follow these steps:
-
-{% tabs %}
-{% tab title="App Store" sync="appstore" %}
 
 1. Instantiate and populate an `AdjustAppStoreSubscription2dx` object with the `price`, `currency`, and `transactionId`. In the example below, the following properties are set:
    - The transaction date is set to _txn\_20230918T123456Z_
@@ -201,8 +139,93 @@ subscription.addPartnerParameter("{% $variables.subscription.key2 %}");
 Adjust2dx::trackAppStoreSubscription(subscription);
 ```
 
-{% /tab %}
-{% tab title="Play Store" sync="playstore" %}
+## Play Store subscriptions {% #play-store-subscriptions %}
+
+The `AdjustPlayStoreSubscription2dx` class represents App Store subscription information. You can create multiple instances of this class to send subscription information to Adjust.
+
+To get started, you need to instantiate a subscription object containing details of the subscription purchase.
+
+### Instantiate a Play Store subscription object {% #instantiate-a-play-store-subscription-object %}
+
+Instantiate an `AdjustPlayStoreSubscription2dx` object with the following arguments:
+
+{% deflist %}
+`price` (`std::string`)
+
+: The price of the subscription
+
+`currency` (`std::string`)
+
+: The currency of the subscription
+
+`sku` (`std::string`)
+
+: The ID of the product
+
+`orderId` (`std::string`)
+
+: Your ID for the transaction
+
+`signature` (`std::string`)
+
+: The signature of the purchase data
+
+`purchaseToken` (`std::string`)
+
+: The unique token of the transaction. See [Google's documentation](https://developer.android.com/reference/com/android/billingclient/api/Purchase#getPurchaseToken\(\)) for more information
+{% /deflist %}
+
+```cpp
+AdjustPlayStoreSubscription2dx subscription = AdjustPlayStoreSubscription2dx({% $variables.subscription.playStoreSubscription %});
+```
+
+### Record the purchase date {% #record-the-purchase-date-play-store %}
+
+You can record the date on which the user purchased a subscription. The SDK returns this data for you to report on.
+
+Call the `setPurchaseTime` method on your subscription object to record the timestamp of the subscription.
+
+{% deflist %}
+`purchaseTime` (`std::string`)
+
+: The timestamp of the subscription.
+{% /deflist %}
+
+```cpp
+AdjustPlayStoreSubscription2dx subscription = AdjustPlayStoreSubscription2dx({% $variables.subscription.playStoreSubscription %});
+subscription.setPurchaseTime(purchaseTime);
+```
+
+### Add callback parameters {% #add-callback-parameters-play-store %}
+
+You can add callback parameters to your subscription object. The SDK appends these parameters to your callback URL. To add callback parameters, call the `addCallbackParameter` method on your subscription object. You can add multiple callback parameters by calling this method multiple times.
+
+```cpp
+AdjustPlayStoreSubscription2dx subscription = AdjustPlayStoreSubscription2dx({% $variables.subscription.playStoreSubscription %});
+subscription.addCallbackParameter("{% $variables.subscription.key1 %}");
+subscription.addCallbackParameter("{% $variables.subscription.key2 %}");
+```
+
+### Add partner parameters {% #add-partner-parameters-play-store %}
+
+You can add partner parameters to your subscription object. The SDK sends these to Adjust's servers when the user purchases a subscription. Adjust's servers forward the information on to your network partner. To add partner parameters, call the `addPartnerParameter` method on your subscription object. You can add multiple partner parameters by calling this method multiple times.
+
+```cpp
+AdjustPlayStoreSubscription2dx subscription = AdjustPlayStoreSubscription2dx({% $variables.subscription.playStoreSubscription %});
+subscription.addPartnerParameter("{% $variables.subscription.key1 %}");
+subscription.addPartnerParameter("{% $variables.subscription.key2 %}");
+```
+
+### Play Store subscription tutorial {% #tutorial-play-store %}
+
+Once you have set up your subscription object, you can record it using the Adjust SDK.
+
+This tutorial demonstrates how to use the `AdjustAppStoreSubscription2dx` and `AdjustPlayStoreSubscription2dx` classes to send subscription information to Adjust. You will learn:
+
+1. How to create create and populate an `AdjustAppStoreSubscription2dx` or `AdjustPlayStoreSubscription2dx` instance.
+1. How to use the `AdjustAppStoreSubscription2dx` and `AdjustPlayStoreSubscription2dx` classes in your app to send subscription information to Adjust.
+
+To send subscription information to Adjust, follow these steps:
 
 1. Instantiate and populate an `AdjustPlayStoreSubscription2dx` object with the `price`, `currency`, `sku`, `orderId`, `signature`, `purchaseToken`. In the example below, the following properties are set:
    - The purchase time is set to _txn\_20230918T123456Z_
@@ -227,6 +250,3 @@ subscription.addPartnerParameter("{% $variables.subscription.key1 %}");
 subscription.addPartnerParameter("{% $variables.subscription.key2 %}");
 Adjust2dx::trackPlayStoreSubscription(subscription);
 ```
-
-{% /tab %}
-{% /tabs %}

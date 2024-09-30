@@ -96,16 +96,21 @@ export const parseDefList = async (htmlString: string): Promise<string> => {
                         currentDescription.push({
                            type: "element",
                            tagName: "dd",
-                           children: textChildren.map(child => {
-                              if (child.type === 'text') {
-                                 // Strip leading colon or whitespace for descriptions
-                                 return {
-                                    ...child,
-                                    value: child.value.replace(/^:/, '').trim(),
-                                 };
-                              }
-                              return child;
-                           }),
+                           children: [{
+                              type: "element",
+                              tagName: "p",
+                              children: textChildren.map(child => {
+                                 if (child.type === 'text') {
+                                    // Strip leading colon or whitespace for descriptions
+                                    return {
+                                       ...child,
+                                       value: child.value.replace(/^:/, '').trim(),
+                                    };
+                                 }
+                                 return child;
+                              }),
+                              properties: {},
+                           }],
                            properties: {},
                         });
                      }
