@@ -70,17 +70,27 @@ Adjust2dx::initSdk(adjustConfig);
 
 ## Configure third party sharing options {% #configure-third-party-sharing-options %}
 
-Adjust shares all metrics with all SANs and module partners by default. To change this, configure your third party sharing preferences using the `AdjustThirdPartySharing2dx` class.
+Adjust shares all metrics with all Self-Attributing Networks (SANs) and module partners you've configured for your app by default. You can configure and update your third party sharing settings at any time during the Adjust SDK lifecycle by instantiating an `AdjustThirdPartySharing2dx` object and passing it to `Adjust2dx::trackThirdPartySharing`.
 
-You can update your third party sharing settings at any time during the Adjust SDK lifecycle by instantiating an `AdjustThirdPartySharing2dx` object and passing it to `Adjust2dx::trackThirdPartySharing`.
+If you initialize the Adjust SDK with `Adjust2dx::initSdk` **before** you configure and send your preferences with `Adjust2dx::trackThirdPartySharing`, your third party sharing options don't apply to your install session.
 
-If you need to communicate third party sharing settings before the install session, for example [disabling third party sharing globally](#disable-third-party-sharing-globally) or [configuring per-partner sharing settings](#configure-per-partner-sharing-settings), you MUST instantiate and configure an `AdjustThirdPartySharing2dx` instance and call `Adjust2dx::trackThirdPartySharing` **before** calling `Adjust2dx::initSdk`. This ensures that your settings apply to all data sent to Adjust, including the install session.
+Adjust RECOMMENDS you configure third party sharing settings and call `Adjust2dx::trackThirdPartySharing` **before** calling `Adjust2dx::initSdk`. When you do this, the Adjust SDK caches the third party sharing update and sends it before the install session information, ensuring that your settings apply to the install session and all subsequent sessions.
+
+You MUST configure your third party sharing settings before initializing the SDK to do the following:
+
+1. Configure the sharing of data with third parties **including the install session**.
+1. [Configure Facebook Limited Data Use (LDU) settings](#manage-facebook-ldu).
+1. [Communicate Google Digital Market Act (DMA) compliance](#dma-compliance).
 
 ### Instantiate a third party sharing object {% #instantiate-a-third-party-sharing-object %}
 
 To instantiate a third party sharing object, create a new `AdjustThirdPartySharing2dx` instance and pass the following parameters:
 
-- `isEnabled` (`bool`): Whether third party sharing is enabled. Pass `true` to enable third party sharing. Pass `false` to disable third party sharing.
+{% deflist %}
+`isEnabled` (`bool`)
+
+: Whether third party sharing is enabled. Pass `true` to enable third party sharing. Pass `false` to disable third party sharing.
+{% /deflist %}
 
 ```cpp
 AdjustThirdPartySharing2dx adjustThirdPartySharing = AdjustThirdPartySharing2dx(true);
@@ -118,7 +128,7 @@ For SAN partners, you MAY pass the partner's name as the `partnerName`. For modu
 If you want to share metrics only with specific partners, or you want to configure which metrics to share with specific partners, you MUST do the following:
 
 1. Instantiate your `AdjustThirdPartySharing2dx` object with a `true` argument.
-2. Customize what data you share on a per-partner basis by calling the `addPartnerSharingSetting` method on your `AdjustThirdPartySharing2dx` instance with the following arguments:
+1. Customize what data you share on a per-partner basis by calling the `addPartnerSharingSetting` method on your `AdjustThirdPartySharing2dx` instance with the following arguments:
 
 {% deflist %}
 `partnerName` (`std::string`)
@@ -180,6 +190,7 @@ If you want to stop sharing all metrics with a specific partner, pass the `all` 
 AdjustThirdPartySharing2dx adjustThirdPartySharing = AdjustThirdPartySharing2dx(true);
 adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "all", false);
 Adjust2dx::trackThirdPartySharing(adjustThirdPartySharing);
+Adjust2dx::initSdk(adjustConfig);
 ```
 
 To re-enable sharing, pass the `all` key with a `true` value.
@@ -188,6 +199,7 @@ To re-enable sharing, pass the `all` key with a `true` value.
 AdjustThirdPartySharing2dx adjustThirdPartySharing = AdjustThirdPartySharing2dx(true);
 adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "all", true);
 Adjust2dx::trackThirdPartySharing(adjustThirdPartySharing);
+Adjust2dx::initSdk(adjustConfig);
 ```
 
 To only share event data with a specific partner:
@@ -200,6 +212,7 @@ AdjustThirdPartySharing2dx adjustThirdPartySharing = new AdjustThirdPartySharing
 adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "all", false);
 adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "event", true);
 Adjust2dx::trackThirdPartySharing(adjustThirdPartySharing);
+Adjust2dx::initSdk(adjustConfig);
 ```
 
 ### Add per-partner granular information {% #add-per-partner-granular-information %}
@@ -215,7 +228,7 @@ You can attach granular information when a user updates their third party sharin
 
 : The key of the granular information.
 
-` value` (`std::string`)
+`value` (`std::string`)
 
 : The value of the granular information.
 {% /deflist %}
@@ -302,7 +315,7 @@ Adjust2dx::trackThirdPartySharing(adjustThirdPartySharing);
 Adjust2dx::initSdk(adjustConfig);
 ```
 
-If your user isn't in the EEA, you MUST set both `ad_personalization` and `ad_user_data` to `1`. If these values aren't set, Google won't claim attribution.
+If your user isn't in the EEA, you MUST set both `ad_personalization` and `ad_user_data` to `1`. If these values aren't set, Google won't claim attribution and will return an error.
 
 ```cpp
 AdjustThirdPartySharing2dx adjustThirdPartySharing = AdjustThirdPartySharing2dx(true);
