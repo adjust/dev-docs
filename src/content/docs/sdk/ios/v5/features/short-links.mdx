@@ -47,6 +47,21 @@ Call the `processAndResolveDeeplink:completionHandler:` method from your `AppDel
 
 ```swift
 
+func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([any UIUserActivityRestoring]?) -> Void) -> Bool {
+      if userActivity.activityType.isEqual(NSUserActivityTypeBrowsingWeb) {
+          // Pass deep link URL to Adjust in order to potentially reattribute the user
+          // and to get the URL resolved if it’s a shortened one.
+          if let webpageURL = userActivity.webpageURL {
+              let deeplink = ADJDeeplink(deeplink: webpageURL)!
+              Adjust.processAndResolve(deeplink) { resolveDeeplink in
+                    // resolvedLink contains either resolved URL (if it was unshortened)
+                    // or just echoed URL if it was not shortened
+              }
+          }
+      }
+    return true
+}
+
 ```
 
 </Tab>
@@ -57,7 +72,8 @@ Call the `processAndResolveDeeplink:completionHandler:` method from your `AppDel
     if ([[userActivity activityType] isEqualToString:NSUserActivityTypeBrowsingWeb]) {
         // Pass deep link URL to Adjust in order to potentially reattribute the user
         // and to get the URL resolved if it’s a shortened one.
-        [Adjust processAndResolveDeeplink:[userActivity webpageURL]
+        ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:[userActivity webpageURL]];
+        [Adjust processAndResolveDeeplink:deeplink
                 withCompletionHandler:^(NSString * _Nullable resolvedLink) {
             // resolvedLink contains either resolved URL (if it was unshortened)
             // or just echoed URL if it was not shortened
