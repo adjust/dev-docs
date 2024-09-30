@@ -1,6 +1,6 @@
 ---
 title: "Android Web Bridge v5移行ガイド"
-description: "Android Web BridgeをSDK v4からSDK v5にアップグレードする方法"
+description: "Android Web BridgeをSDK v4からSDK v5にアップグレードする方法をご覧ください"
 slug: "ja/sdk/migration/android/web-v4-to-v5"
 sidebar-position: 2
 sidebar-label: "Web Bridge v5"
@@ -13,7 +13,7 @@ SDK v5にアップデートする前に、以下を行ってください。
 1. SDK v5は[SDKシグネチャーの検証](https://help.adjust.com/ja/article/sdk-signature)をネイティブにサポートします。現在SDKシグネチャーライブラリを使用している場合は、まずこれをアンインストールしてください。
 2. アプリがバージョン[**21**](https://developer.android.com/tools/releases/platforms#5.0)以前のAPIバージョンを対象にしている場合、SDK v5を使用する前にアプリをアップデートする必要があります。
 
-## SDKのインストール {#install-the-sdk}
+## SDKをインストールする {#install-the-sdk}
 
 SDK v5の使用を開始するには、プロジェクトにdependencyとしてSDK v5を追加する必要があります。これを行うには、以下の手順に従ってください。
 
@@ -34,23 +34,12 @@ SDK v5の使用を開始するには、プロジェクトにdependencyとしてS
 
    </CodeBlock>
 
-## 変更内容 {#changes}
+## 初期化メソッドを更新 {#init-method}
 
-<Callout type="warning">
-
-SDK v5はメジャーバージョンアップです。つまり、コードを更新しなければならないような大きな変更があるということです。
-
-</Callout>
-
-v5 SDKをインストールしたら、新しいAPIを使用するために既存のAdjustコードを更新する必要があります。
-
-### 初期化メソッド {#init-method}
-
-<MinorVersion changed="v5">
+<MinorVersion changed="v5" size="large" />
 
 SDK v4では、初期化メソッドは`Adjust.onCreate(AdjustConfig)`です。SDK v5では`Adjust.initSdk(AdjustConfig)`に変更されています。
 
-</MinorVersion>
 <CodeBlock useDiffSyntax>
 
 ```js
@@ -62,17 +51,15 @@ const adjustConfig = new AdjustConfig(this, appToken, environment);
 
 </CodeBlock>
 
-### 設定 {#configuration}
+## 変更されたAPI {#changed-apis}
 
-このセクションでは、SDK設定の変更について説明します。
+<MinorVersion changed="v5" size="large" />
 
-#### SDKを無効化・有効化する {#disable-enable-sdk}
+SDK v5では、以下のAPIが変更されました。
 
-<MinorVersion changed="v5">
+### SDKを無効化および有効化する {#disable-enable-sdk}
 
 SDK v4では、`boolean`値で`Adjust.setEnabled()`を呼び出すことで、SDKを有効化・無効化することができます。
-
-</MinorVersion>
 
 -  SDKを無効化するには、`Adjust.setEnabled(false)`を呼び出します。
 -  SDKを有効化するには、`Adjust.setEnabled(true)`を呼び出します。
@@ -92,13 +79,9 @@ Adjust.disable(); // disable SDK
 Adjust.enable(); // enable SDK
 ```
 
-#### オフラインモード {#offline-mode}
-
-<MinorVersion changed="v5">
+### オフラインモード {#offline-mode}
 
 SDK v4では、`boolean`値で`Adjust.setOfflineMode()`を呼び出すことで、SDKでオフラインモードを有効化・無効化することができます。
-
-</MinorVersion>
 
 ```js
 Adjust.setOfflineMode(false); // put SDK in offline mode
@@ -115,13 +98,9 @@ Adjust.switchToOfflineMode(); // put SDK in offline mode
 Adjust.switchBackToOnlineMode(); // put SDK back in online mode
 ```
 
-#### プリインストール計測 {#preinstall-recording}
+### プリインストール記録 {#preinstall-recording}
 
-<MinorVersion changed="v5">
-
-SDK v4では、ブーリアン引数で`AdjustConfig`インスタンスの`setPreinstallTrackingEnabled`メソッドを呼び出すことで、アプリがデバイスにプリインストールされた時に、Adjust SDKがAdjustにインストールデータを送信するように設定できます。
-
-</MinorVersion>
+SDK v4では、アプリがデバイスにプリインストールされている場合、`AdjustConfig`インスタンスの`setPreinstallTrackingEnabled`メソッドをブール引数で呼び出すことで、Adjust SDKがインストールデータをAdjustに送信できるように設定できます。
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -135,13 +114,9 @@ const adjustConfig = new AdjustConfig(this, appToken, environment);
 adjustConfig.enablePreinstallTracking();
 ```
 
-#### アトリビューションにコストデータを有効化する {#enable-cost-data-in-attribution}
+### アトリビューションにコストデータを有効化する {#enable-cost-data-in-attribution}
 
-<MinorVersion changed="v5">
-
-SDK v4では、ブーリアン引数で`AdjustConfig`インスタンスの`setNeedsCost`メソッドを呼び出すことで、SDKがユーザーのアトリビューションの一部としてコストデータを送信できるようにすることができます。
-
-</MinorVersion>
+SDK v4では、`AdjustConfig`インスタンスの`setNeedsCost`メソッドをブール引数で呼び出すことで、SDKがユーザーのアトリビューションの一部としてコストデータを送信できるように設定できます。
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -155,13 +130,9 @@ const adjustConfig = new AdjustConfig(this, appToken, environment);
 adjustConfig.enableCostDataInAttribution();
 ```
 
-#### バックグラウンドで情報を送信する {#send-information-in-background}
+### バックグラウンドで情報を送信する {#send-information-in-background}
 
-<MinorVersion changed="v5">
-
-SDK v4では、ブーリアン引数で`AdjustConfig`インスタンスの`setSendInBackground`メソッドを呼び出すことで、アプリがバックグラウンドで実行されている時に、SDKがAdjustに情報を送信できるようにすることができます。
-
-</MinorVersion>
+SDK v4では、`AdjustConfig`インスタンスの`setSendInBackground`メソッドをブール引数で呼び出すことで、アプリがバックグラウンドで実行されている時に、SDKがAdjustに情報を送信できるように設定できます。
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -175,13 +146,9 @@ const adjustConfig = new AdjustConfig(this, appToken, environment);
 adjustConfig.enableSendingInBackground();
 ```
 
-#### デバイスIDを1回だけ読み取る {#read-device-ids-only-once}
-
-<MinorVersion changed="v5">
+### デバイスIDを1回だけ読み取る {#read-device-ids-only-once}
 
 SDK v4では、ブーリアン値でs`AdjustConfig`インスタンスの`setReadDeviceInfoOnceEnabled`メソッドを呼び出すことで、初期化時にデバイスIDを1度だけ読み取るようにSDKを設定することができます。
-
-</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -195,79 +162,10 @@ const adjustConfig = new AdjustConfig(this, appToken, environment);
 adjustConfig.enableDeviceIdsReadingOnce();
 ```
 
-#### イベントバッファリング {#event-buffering}
-
-<MinorVersion removed="v5">
-
-SDK v4はイベントのバッファリングをサポートしています。この機能は、リクエストイベント、広告収益、Pushトークン、その他の情報をローカルバッファに保存し、後日送信します。
-
-</MinorVersion>
-
-```js
-const adjustConfig = new AdjustConfig(this, appToken, environment);
-adjustConfig.setEventBufferingEnabled(true);
-```
-
-この設定はSDK v5では廃止されています。
-
-#### カスタムユーザーエージェント文字列 {#custom-user-agent}
-
-<MinorVersion removed="v5">
-
-SDK v4は、ユーザーエージェント文字列で`AdjustConfig`インスタンスの`setUserAgent`メソッドを呼び出すことで、カスタムユーザーエージェントの設定をサポートしています。
-
-</MinorVersion>
-
-```js
-const adjustConfig = new AdjustConfig(this, appToken, environment);
-adjustConfig.setUserAgent("user_agent_value");
-```
-
-この設定はSDK v5では廃止されています。
-
-#### 既知のデバイスかどうかを設定する {#set-device-known}
-
-<MinorVersion removed="v5">
-
-SDK v4では、`AdjustConfig`インスタンスの`setDeviceKnown`メソッドを呼び出して、既知のデバイスかどうかをSDKに手動で通知することができます。
-
-</MinorVersion>
-
-```js
-const adjustConfig = new AdjustConfig(this, appToken, environment);
-adjustConfig.setDeviceKnown(true);
-```
-
-この設定はSDK v5では廃止されています。
-
-#### SDKの起動開始を遅延させる {#delay-sdk-start}
-
-<MinorVersion removed="v5">
-
-SDK v4では、最大 **120秒** の遅延で`AdjustConfig`インスタンスの`setDelayStart`メソッドを呼び出すことで、SDKの起動を遅らせることができます。遅延が終了する前にアプリの準備ができている場合、 `Adjust.sendFirstPackages`を呼び出すことで情報がすぐに送信されます。
-
-</MinorVersion>
-
-```js
-const adjustConfig = new AdjustConfig(this, appToken, environment);
-adjustConfig.setDelayStart(delay);
-
-Adjust.sendFirstPackages();
-```
-
-SDK v5では、これら両方のメソッドが削除されました。
-
-### 記録機能 {#recording-features}
-
-このセクションでは、Adjustに情報を送信する機能の変更点について説明します。
-
-#### セッションコールバックパラメーター {#callback-params}
-
-<MinorVersion changed="v5">
+### セッションコールバックパラメーター {#callback-params}
 
 SDK v5では、セッション コールバック パラメーターはグローバル コールバック パラメーターに名称変更されました。
 
-</MinorVersion>
 <CodeBlock useDiffSyntax>
 
 ```js
@@ -282,13 +180,10 @@ SDK v5では、セッション コールバック パラメーターはグロー
 
 </CodeBlock>
 
-#### セッションパートナーパラメーター {#partner-params}
-
-<MinorVersion changed="v5">
+### セッションパートナーパラメーター {#partner-params}
 
 SDK v5では、セッション パートナー パラメーターはグローバル パートナー パラメーターに名称変更されました。
 
-</MinorVersion>
 <CodeBlock useDiffSyntax>
 
 ```js
@@ -303,13 +198,9 @@ SDK v5では、セッション パートナー パラメーターはグローバ
 
 </CodeBlock>
 
-#### イベントの重複排除 {#event-deduplication}
-
-<MinorVersion changed="v5">
+### イベントの重複排除 {#event-deduplication}
 
 SDK v4では、イベント重複排除はイベント`order ID`と組み合わされ、最大10個のユニークIDに制限されています。
-
-</MinorVersion>
 
 ```js
 const event = new AdjustEvent("event_token");
@@ -330,35 +221,9 @@ event.setDeduplicationId("deduplication_id");
 Adjust.trackEvent(event);
 ```
 
-### ディープリンク {#deep-links}
-
-このセクションでは、SDK v5でのディープリンクに関する変更点を説明します。
-
-#### ディープリンクを使用したリアトリビューション {#reattribution-using-deep-links}
-
-<MinorVersion removed="v5">
-
-SDK v4では、 `Adjust.appWillOpenUrl()`メソッドを呼び出すことで、Web BridgeでディープリンクURLをAdjustにパスすることができます。
-
-</MinorVersion>
-
-```js
-Adjust.appWillOpenUrl(data, getApplicationContext());
-```
-
-このメソッドはSDK v5では廃止されています。
-
-### プライバシー機能 {#privacy-features}
-
-このセクションでは、Adjust SDKのプライバシー機能の変更点について説明します。
-
-#### 児童オンラインプライバシー保護法（COPPA）コンプライアンス {#coppa-compliance}
-
-<MinorVersion changed="v5">
+### 児童オンラインプライバシー保護法（COPPA）コンプライアンス {#coppa-compliance}
 
 SDK v4では、 [COPPAコンプライアンス](/ja/sdk/android/features/privacy#coppa-compliance)は、ブーリアン引数でconfigオブジェクトの`setCoppaCompliantEnabled`メソッドを呼び出すことで設定されます。
-
-</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -372,13 +237,9 @@ const adjustConfig = new AdjustConfig(this, appToken, environment);
 adjustConfig.enableCoppaCompliance();
 ```
 
-#### Playストアの子供向けアプリ {#play-store-kids}
-
-<MinorVersion changed="v5">
+### Playストアの子供向けアプリ {#play-store-kids}
 
 SDK v4では、ブーリアン引数でconfigオブジェクトの`setPlayStoreKidsAppEnabled`メソッドを呼び出すことで、[アプリをPlayストアの子供向け](/ja/sdk/android/features/privacy#play-store-kids-apps)アプリとしてマークできます。
-
-</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -392,27 +253,9 @@ const adjustConfig = new AdjustConfig(this, appToken, environment);
 adjustConfig.enablePlayStoreKidsCompliance();
 ```
 
-#### 特定のソースの広告収益を送信する {#send-ad-revenue}
-
-<MinorVersion removed="v5">
-
-SDK v4では、 `Adjust.trackAdRevenue()`メソッドにソースとペイロードをパスすることで、特定のソースから広告収益を送信することができます。
-
-</MinorVersion>
-
-```js
-Adjust.trackAdRevenue(source, payload);
-```
-
-このメソッドはSDK v5では廃止されています。
-
-#### データレジデンシーとURL戦略を設定する {#url-strategy}
-
-<MinorVersion changed="v5">
+### データレジデンシーとURL戦略を設定する {#url-strategy}
 
 SDK v4では、URL戦略とデータレジデンシーのドメインは`AdjustConfig`クラスの定数として定義されています。
-
-</MinorVersion>
 
 ```js
 const adjustConfig = new AdjustConfig(this, appToken, environment);
@@ -444,7 +287,7 @@ SDK v5でURL戦略を設定する方法については、以下の表をご確�
 | `AdjustConfig.UrlStrategyCnOnly` | `"adjust.cn"`                            | `true`                   | `false`                  |
 | `AdjustConfig.UrlStrategyIndia`  | `"adjust.net.in"`。 `"adjust.com"`       | `true`                   | `false`                  |
 
-##### 例 {#examples}
+#### 例 {#examples}
 
 <CodeBlock title="インド URL戦略">
 
@@ -495,13 +338,9 @@ adjustConfig.setUrlStrategy(["us.adjust.com"], true, true);
 
 </CodeBlock>
 
-#### サードパーティとの共有をグローバルに無効化する {#disable-sharing-globally}
-
-<MinorVersion removed="v5">
+### サードパーティとの共有をグローバルに無効化する {#disable-sharing-globally}
 
 SDK v4では、`Adjust.disableThirdPartySharing()`メソッドを呼び出すことで、サードパーティとの情報共有をグローバルに無効化することができます。
-
-</MinorVersion>
 
 ```js
 Adjust.disableThirdPartySharing();
@@ -514,17 +353,10 @@ const adjustThirdPartySharing = new AdjustThirdPartySharing(true);
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
-### デバイス情報を取得 {#device-info}
-
-このセクションでは、SDK v5におけるデバイス情報ゲッターの変更点について説明します。
-
-#### デバイスIDゲッター {#device-id-getters}
-
-<MinorVersion changed="v5">
+### デバイスIDゲッター {#device-id-getters}
 
 SDK v4では、全てのデバイスIDのゲッターメソッドは同期的に実行されます。SDK v5では、これらのメソッドは非同期に実行されるように変更されています。
 
-</MinorVersion>
 <CodeBlock title="ADIDゲッター">
 
 ```js
@@ -582,3 +414,86 @@ Adjust.isEnabled(function (isEnabled) {
 ```
 
 </CodeBlock>
+
+## 削除されたAPI {#removed-apis}
+
+<MinorVersion removed="v5" size="large" />
+
+SDK v5では、以下のAPIが削除されました。
+
+### イベントバッファリング {#event-buffering}
+
+SDK v4はイベントのバッファリングをサポートしています。この機能は、リクエストイベント、広告収益、Pushトークン、その他の情報をローカルバッファに保存し、後日送信します。
+
+```js
+const adjustConfig = new AdjustConfig(this, appToken, environment);
+adjustConfig.setEventBufferingEnabled(true);
+```
+
+SDK v5では、この設定はご利用いただけません。
+
+### カスタムユーザーエージェント文字列 {#custom-user-agent}
+
+SDK v4は、ユーザーエージェント文字列で`AdjustConfig`インスタンスの`setUserAgent`メソッドを呼び出すことで、カスタムユーザーエージェントの設定をサポートしています。
+
+```js
+const adjustConfig = new AdjustConfig(this, appToken, environment);
+adjustConfig.setUserAgent("user_agent_value");
+```
+
+SDK v5では、この設定はご利用いただけません。
+
+### 既知のデバイスかどうかを設定する {#set-device-known}
+
+SDK v4では、`AdjustConfig`インスタンスの`setDeviceKnown`メソッドを呼び出して、既知のデバイスかどうかをSDKに手動で通知することができます。
+
+```js
+const adjustConfig = new AdjustConfig(this, appToken, environment);
+adjustConfig.setDeviceKnown(true);
+```
+
+SDK v5では、この設定はご利用いただけません。
+
+### SDKの起動開始を遅延させる {#delay-sdk-start}
+
+SDK v4では、最大 **120秒** の遅延で`AdjustConfig`インスタンスの`setDelayStart`メソッドを呼び出すことで、SDKの起動を遅らせることができます。遅延が終了する前にアプリの準備ができている場合、 `Adjust.sendFirstPackages`を呼び出すことで情報がすぐに送信されます。
+
+```js
+const adjustConfig = new AdjustConfig(this, appToken, environment);
+adjustConfig.setDelayStart(delay);
+
+Adjust.sendFirstPackages();
+```
+
+SDK v5では、これら両方のメソッドが削除されました。
+
+### ディープリンクを使用したリアトリビューション {#reattribution-using-deep-links}
+
+SDK v4では、 `Adjust.appWillOpenUrl()`メソッドを呼び出すことで、Web BridgeでディープリンクURLをAdjustにパスすることができます。
+
+```js
+Adjust.appWillOpenUrl(data, getApplicationContext());
+```
+
+このメソッドはSDK v5では廃止されています。
+
+### 特定のソースの広告収益を送信する {#send-ad-revenue}
+
+SDK v4では、 `Adjust.trackAdRevenue()`メソッドにソースとペイロードをパスすることで、特定のソースから広告収益を送信することができます。
+
+```js
+Adjust.trackAdRevenue(source, payload);
+```
+
+このメソッドはSDK v5では廃止されています。
+
+### アプリシークレットを設定{#set-app-secret}
+
+SDK v4では、`AdjustConfig`インスタンスの`setAppSecret`メソッドを呼び出して、SDKトラフィックの署名に使用するアプリシークレットを設定することができます。
+
+```js
+const adjustConfig = new AdjustConfig(this, appToken, environment);
+adjustConfig.setAppSecret(secretId, info1, info2, info3, info4);
+```
+
+SDK v5では、この設定はご利用いただけません。

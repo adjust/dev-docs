@@ -1,7 +1,7 @@
+// Import necessary types
 import type { ContentCollectionEntry, LanguageTree, SidebarItem } from "@utils/helpers/navigation/types";
 
 const versionRegex = /v\d/i;
-
 /**
  * Builds a JSON object that represents the content collection as a sidebar.
  * @param entries An array of ContentCollectionEntry items
@@ -9,19 +9,19 @@ const versionRegex = /v\d/i;
  * @returns A hashmap of all entries provided for easier querying.
  */
 export const buildSidebarHierarchy = (entries: ContentCollectionEntry[]): [LanguageTree, Map<string, SidebarItem>] => {
-   // Initialize arrays for sdk and api
+   // Initialize arrays for SDK and API content
    const hierarchy = {
       sdk: [] as SidebarItem[],
       api: [] as SidebarItem[],
    };
 
-   // Sort the array by slug length, shortest first
+   // Sort entries by slug length (shortest first)
    const sortedEntries = entries.sort((a, b) => a.slug.length - b.slug.length);
 
    // Create a map for quick lookup by slug
    const slugMap = new Map<string, SidebarItem>();
 
-   // Initialize the map with SidebarItems
+   // Populate the slugMap with SidebarItems
    sortedEntries.forEach(entry => {
       const { id, slug, data } = entry;
       const { title, description, "sidebar-label": label, "sidebar-position": position, "category-title": categoryTitle, type } = data;
@@ -75,43 +75,52 @@ export const buildSidebarHierarchy = (entries: ContentCollectionEntry[]): [Langu
       const type = slugParts[1];
 
       // Extract version from the entry id
-      const structuredEntryVersion = extractVersionFromSlug(structuredEntry.id);
-      structuredEntry.version = structuredEntryVersion || undefined;
+      structuredEntry.version = extractVersionFromSlug(structuredEntry.id) || undefined;
 
       // Find potential children by checking if the slug is a direct parent
       slugMap.forEach((potentialChild, potentialChildSlug) => {
-         if (!potentialChildSlug.startsWith(entry.slug + "/")) {
+         if (!potentialChildSlug.startsWith(entry.slug + "/") || potentialChild.parent) {
+            // Skip if child doesn't start with the parent slug or already has a parent
             return;
          }
 
          const parentSlugParts = entry.slug.split('/');
+         const parentIdParts = entry.id.split('/');
          const childSlugParts = potentialChild.slug.split('/');
 
-         // Special case: index pages in versioned folders are always 2 levels above their parent
+         // Special case: Handle index pages in versioned folders
          let isSpecialCase = false;
-         if (versionRegex.exec(childSlugParts[3])) {
-            isSpecialCase = (parentSlugParts.length === 2 && childSlugParts.length === 4);
+         if (
+            childSlugParts.length === 4 &&
+            versionRegex.test(childSlugParts[3]) &&
+            parentIdParts.length === 2 &&
+            childSlugParts.slice(0, 2).join("/") === parentSlugParts.join("/")
+         ) {
+            isSpecialCase = true;
          }
 
-         // Normal case: the child should only be one level deeper than its parent
+         // Normal case: the child is one level deeper than the parent
          const isDirectChild = childSlugParts.length === parentSlugParts.length + 1;
 
+         // Assign child only if it's a direct child or matches the special case
          if ((isSpecialCase || isDirectChild) && potentialChildSlug.startsWith(entry.slug + '/') && potentialChildSlug !== entry.slug) {
-            // Set the parent for the child
-            potentialChild.parent = entry.slug;
+            // Only set the parent if it doesn't already have one to avoid double nesting
+            if (!potentialChild.parent) {
+               potentialChild.parent = entry.slug;
 
-            // Insert the child in the correct position or alphabetically
-            if (potentialChild.position) {
-               structuredEntry.children?.splice(potentialChild.position - 1, 0, potentialChild);
-            } else {
-               structuredEntry.children?.push(potentialChild);
-            }
+               // Insert the child in the correct position or alphabetically
+               if (potentialChild.position) {
+                  structuredEntry.children?.splice(potentialChild.position - 1, 0, potentialChild);
+               } else {
+                  structuredEntry.children?.push(potentialChild);
+               }
 
-            // Remove the entry from the root array since it's now in a child array
-            if (type === "sdk") {
-               hierarchy.sdk = hierarchy.sdk.filter(item => item.slug !== potentialChild.slug);
-            } else if (type === "api") {
-               hierarchy.api = hierarchy.api.filter(item => item.slug !== potentialChild.slug);
+               // Remove the entry from the root hierarchy since it's now a child
+               if (type === "sdk") {
+                  hierarchy.sdk = hierarchy.sdk.filter(item => item.slug !== potentialChild.slug);
+               } else if (type === "api") {
+                  hierarchy.api = hierarchy.api.filter(item => item.slug !== potentialChild.slug);
+               }
             }
          }
       });
@@ -133,7 +142,7 @@ export const buildSidebarHierarchy = (entries: ContentCollectionEntry[]): [Langu
          return aFileName?.localeCompare(bFileName!);
       });
 
-      // If the entry has no parent, nest it directly under the type array
+      // If the entry has no parent, add it to the top level
       if (!structuredEntry.parent) {
          if (type === "sdk") {
             hierarchy.sdk.push(structuredEntry);
