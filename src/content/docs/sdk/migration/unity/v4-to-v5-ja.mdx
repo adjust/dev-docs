@@ -11,10 +11,13 @@ SDK v5にアップデートする前に、以下を行ってください。
 
 1. SDK v5は[SDKシグネチャーの検証](https://help.adjust.com/ja/article/sdk-signature)をネイティブにサポートします。現在SDKシグネチャーライブラリを使用している場合は、まずこれをアンインストールしてください。
 2. SDK v5の最小サポート対象APIバージョンが更新されました。以前のバージョンをターゲットにしている場合は、まずアプリをアップデートする必要があります。
+
    -  iOS： **12\.0**
    -  Android: **21**
 
-## SDKのインストール {#install-the-sdk}
+3. SDKの名前空間の名前が`com.adjust.sdk`から`AdjustSdk`に変更されました。
+
+## SDKをインストールする {#install-the-sdk}
 
 SDK v5をインストールする前に、まずプロジェクトから全てのSDK v4アセットとコードを削除する必要があります。
 
@@ -30,7 +33,7 @@ SDK v5をインストールする前に、まずプロジェクトから全て�
 2. Xcodeプロジェクトから`Adjust`への全てのリファレンスを削除します。
 
    -  プロジェクトの **Libraries** セクションの`Adjust`ディレクトリを削除します。
-   -  **General** タブを開き、 **Frameworks、Libraries、Embedded Contentの** 下にある`Adjust.a`ライブラリを削除します。
+   -  **General** タブを開き、 **Frameworks、Libraries、Embedded Content** 内の`Adjust.a`ライブラリを削除します。
    -  **オプション** ：SDK v4では、アプリターゲットの **その他のリンカーフラグ** 設定で`-ObjC`フラグを追加します。これがSDKによって自動的に追加された場合にのみ、このフラグを削除してください。
 
 3. Android Studioプロジェクトで`Adjust`へのリファレンスを全て削除します。
@@ -48,27 +51,11 @@ SDK v5をインストールする前に、まずプロジェクトから全て�
 
 SDK v5は、iOSとAndroid SDKをバイナリ依存として使用しなくなりました。基盤となるiOSおよびAndroid SDKをインストールするには、[External Dependency Manager for Unity \(EDM4U\)](https://github.com/googlesamples/unity-jar-resolver)を使用して、CocoaPodsとMavenからパッケージをインストールする必要があります。
 
-## 変更内容 {#changes}
+## 初期化メソッドを更新 {#init-method}
 
-<Callout type="warning">
-
-SDK v5はメジャーバージョンアップです。つまり、コードを更新しなければならないような大きな変更があるということです。
-
-</Callout>
-
-v5 SDKをインストールしたら、新しいAPIを使用するために既存のAdjustコードを更新する必要があります。
-
-### SDKの名前空間 {#sdk-namespace}
-
-SDKの名前空間の名前が`com.adjust.sdk`から`AdjustSdk`に変更されました。
-
-### 初期化メソッド {#init-method}
-
-<MinorVersion changed="v5">
+<MinorVersion changed="v5" size="large" />
 
 SDK v4では、SDKは`AdjustConfig`オブジェクトを設定し、`Adjust.start()`メソッドにパスすることで初期化されます。
-
-</MinorVersion>
 
 ```cs
 AdjustConfig adjustConfig = new AdjustConfig("appToken", AdjustEnvironment.Sandbox);
@@ -82,44 +69,38 @@ AdjustConfig adjustConfig = new AdjustConfig("appToken", AdjustEnvironment.Sandb
 Adjust.InitSdk(adjustConfig);
 ```
 
-### シグネチャー設定 {#signature-setup}
+## シグネチャーライブラリを設定 {#signature-setup}
 
-SDK v5には、 [SDKシグネチャーライブラリ](https://help.adjust.com/ja/article/sdk-signature)が含まれています。これをテストするには[シグネチャーライブラリ連携ガイド](/ja/sdk/unity/integrations/signature-library)の手順に従ってください。
+SDK v5には、 [SDKシグネチャーライブラリ](https://help.adjust.com/ja/article/sdk-signature)が含まれています。これは、[シグネチャーライブラリ連携ガイド](/ja/sdk/unity/integrations/signature-library)のテスト手順に従ってテストすることができます。
 
 シグネチャーの保護機能は、デフォルトで非アクティブになっています。これを有効化するには、以下の手順に従ってください
 
 1. [シグネチャーの検証を有効化します](https://help.adjust.com/ja/article/sdk-signature#enforce-signature-validation)。
 2. テスト前に[アプリのSHA\-1フィンガープリントを提供してください](https://help.adjust.com/ja/article/sdk-signature#manage-your-certificate-fingerprints)。
 
-### 設定 {#configuration}
+## 変更されたAPI {#changed-apis}
 
-このセクションでは、SDK設定の変更について説明します。
+<MinorVersion changed="v5" size="large" />
 
-#### ログレベルの設定 {#set-log-level}
+SDK v5では、以下のAPIが変更されました。
 
-<MinorVersion changed="v5">
+### ログレベルを設定する {#set-log-level}
 
-SDK v4では、 `AdjustConfig.setLogLevel()`メソッドに`AdjustLogLevel`定数をパスすることでログレベルを設定できます。
-
-</MinorVersion>
+SDK v4では、`AdjustLogLevel`定数を`AdjustConfig.setLogLevel()`メソッドにパスすることで、ログレベルを設定できます。
 
 ```cs
 adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
 ```
 
-SDK v5では、 `AdjustConfig`インスタンスの`LogLevel`プロパティに`AdjustLogLevel`定数を割り当てる必要があります。
+SDK v5では、 `AdjustConfig`インスタンスの`LogLevel`プロパティに`AdjustLogLevel`定数を設定する必要があります。
 
 ```cs
 adjustConfig.LogLevel = AdjustLogLevel.Verbose;
 ```
 
-#### SDKを無効化・有効化する {#disable-enable-sdk}
-
-<MinorVersion changed="v5">
+### SDKを無効化および有効化する {#disable-enable-sdk}
 
 SDK v4では、`bool`値で`Adjust.setEnabled()`を呼び出すことで、SDKを有効化・無効化することができます。
-
-</MinorVersion>
 
 -  SDKを無効化するには、`Adjust.setEnabled(false)`を呼び出します。
 -  SDKを有効化するには、`Adjust.setEnabled(true)`を呼び出します。
@@ -139,13 +120,9 @@ Adjust.Disable(); // Disable the SDK
 Adjust.Enable(); // Enable the SDK
 ```
 
-#### バックグラウンドで情報を送信する {#send-in-background}
-
-<MinorVersion changed="v5">
+### バックグラウンドで情報を送信する {#send-in-background}
 
 SDK v4では、`AdjustConfig.setSendInBackground()`メソッドに`true`引数を付けて呼び出すことで、アプリがバックグラウンドで動作している間にSDKがAdjustに情報を送信することができます。
-
-</MinorVersion>
 
 ```cs
 adjustConfig.setSendInBackground(true);
@@ -157,29 +134,21 @@ SDK v5では、`AdjustConfig`インスタンスの`IsSendingInBackgroundEnabled`
 adjustConfig.IsSendingInBackgroundEnabled = true;
 ```
 
-#### プリインストールアプリ計測 {#preinstalled-app}
-
-<MinorVersion changed="v5">
+### プリインストールアプリ計測 {#preinstalled-app}
 
 SDK v4では、 `AdjustConfig.setPreinstallTrackingEnabled`メソッドを使用して、プリインストールアプリの計測を有効にできます。
-
-</MinorVersion>
 
 ```cs
 adjustConfig.setPreinstallTrackingEnabled(true);
 ```
 
-SDK v5では、 `AdjustConfig`インスタンスの`IsPreinstallTrackingEnabled`プロパティを`true`に設定する必要があります。
+SDK v5では、`AdjustConfig`インスタンスの`IsPreinstallTrackingEnabled`プロパティを`true`値に設定する必要があります。
 
 ```cs
 adjustConfig.IsPreinstallTrackingEnabled = true;
 ```
 
-<MinorVersion changed="v5">
-
 SDK v4では、 `AdjustConfig.setPreinstallFilePath`メソッドを使用して、プリインストールされたアプリ情報を含むパスを設定できます。
-
-</MinorVersion>
 
 ```cs
 adjustConfig.setPreinstallFilePath("path");
@@ -191,11 +160,7 @@ SDK v5では、`AdjustConfig`インスタンスの`PreinstallFilePath`プロパ�
 adjustConfig.PreinstallFilePath = "path";
 ```
 
-<MinorVersion changed="v5">
-
-SDK v4では、 `AdjustConfig.setDefaultTracker()`メソッドを使用して、デフォルトリンクトークンを設定して、プリインストールアプリのインストールを計測できます。
-
-</MinorVersion>
+SDK v4では、`AdjustConfig.setDefaultTracker()`メソッドを使用して、プリインストールされたアプリのインストールを計測するためにデフォルトのリンクトークンを設定できます。
 
 ```cs
 adjustConfig.setDefaultTracker("abc123");
@@ -207,49 +172,37 @@ SDK v5では、リンクを`AdjustConfig`インスタンスの`DefaultTracker`�
 adjustConfig.DefaultTracker = "abc123";
 ```
 
-#### 外部デバイスIDの設定 {#set-external-device-id}
+### 外部デバイスIDを設定する {#set-external-device-id}
 
-<MinorVersion changed="v5">
-
-SDK v4では、 `AdjustConfig.setExternalDeviceId()`メソッドにIDをパスすることで外部デバイスIDを設定できます。
-
-</MinorVersion>
+SDK v4では、 `AdjustConfig.setExternalDeviceId()`メソッドにIDをパスすることで、外部デバイスIDを設定できます。
 
 ```cs
 adjustConfig.setExternalDeviceId("unique-custom-device-id");
 ```
 
-SDK v5では、 `AdjustConfig`インスタンスの`ExternalDeviceID`プロパティにIDを直接割り当てる必要があります。
+SDK v5では、デリゲート関数を`AdjustConfig`インスタンスの`ExternalDeviceID`プロパティに設定する必要があります。
 
 ```cs
 adjustConfig.ExternalDeviceId = "unique-custom-device-id";
 ```
 
-#### MetaアプリIDを設定する {#set-meta-app-id}
+### MetaアプリIDを設定する {#set-meta-app-id}
 
-<MinorVersion changed="v5">
-
-SDK v4では、`AdjustConfig.setFbAppId()`メソッドを使用してPushトークンを設定できます。
-
-</MinorVersion>
+SDK v4では、`AdjustConfig.setFbAppId()`メソッドを使用してMeta app IDを設定できます。
 
 ```cs
 adjustConfig.setFbAppId("fb-app-id");
 ```
 
-SDK v5では、 `AdjustConfig`インスタンスの`FbAppId`プロパティにMetaアプリIDを割り当てる必要があります。
+SDK v5では、Meta app IDを`AdjustConfig`インスタンスの`FbAppId`プロパティに設定する必要があります。
 
 ```cs
 adjustConfig.FbAppId = "fb-app-id";
 ```
 
-#### AdServices情報の読み取りを無効化する {#disable-adservices}
-
-<MinorVersion changed="v5">
+### AdServices情報の読み取りを無効化する {#disable-adservices}
 
 SDK v4では、`AdjustConfig.setAllowAdServicesInfoReading()`メソッドに`false`引数を付けて呼び出すことで、Adjust SDKがAdServices情報を読み取らないようにすることができます。
-
-</MinorVersion>
 
 ```cs
 adjustConfig.setAllowAdServicesInfoReading(false);
@@ -261,13 +214,9 @@ SDK v5でAdjust SDKがAdServices情報を読み取らないようにするには
 adjustConfig.IsAdServicesEnabled = false;
 ```
 
-#### IDFAの読み取りを無効化する {#disable-idfa}
-
-<MinorVersion changed="v5">
+### IDFAの読み取りを無効化する {#disable-idfa}
 
 SDK v4では、`AdjustConfig.setAllowIdfaReading()`メソッドに`false`引数を付けて呼び出すことで、Adjust SDKがデバイスのIDFAを読み取らないようにすることができます。
-
-</MinorVersion>
 
 ```cs
 adjustConfig.setAllowIdfaReading(false);
@@ -279,31 +228,23 @@ SDK v5でAdjust SDKがデバイスのIDFAを読み取らないようにするに
 adjustConfig.IsIdfaReadingEnabled = false;
 ```
 
-#### アトリビューションにコストデータを有効化する {#enable-cost-data}
-
-<MinorVersion changed="v5">
+### アトリビューションにコストデータを有効化する {#enable-cost-data}
 
 SDK v4では、`Adjust.setNeedsCost()`メソッドに`true`引数をつけて呼び出すことで、デバイスのアトリビューション情報のコストデータを有効化することができます。
-
-</MinorVersion>
 
 ```cs
 adjustConfig.setNeedsCost(true);
 ```
 
-SDK v5でデバイスのアトリビューション情報のコストデータを有効化するには、 `AdjustConfig`インスタンスの`IsCostDataInAttributionEnabled`プロパティを`true`に設定する必要があります。
+SDK v5でデバイスのアトリビューション情報のコストデータを有効化するには、`AdjustConfig`インスタンスの`IsCostDataInAttributionEnabled`プロパティを`true`に設定する必要があります。
 
 ```cs
 adjustConfig.IsCostDataInAttributionEnabled = true;
 ```
 
-#### LinkMeを有効化する {#enable-linkme}
-
-<MinorVersion changed="v5">
+### LinkMeを有効化する {#enable-linkme}
 
 SDK v4では、`AdjustConfig.setLinkMeEnabled()`メソッドに`true`引数を付けて呼び出すことで、[Adjust LinkMe](https://help.adjust.com/ja/article/linkme)を有効化できます。
-
-</MinorVersion>
 
 ```cs
 adjustConfig.setLinkMeEnabled(true);
@@ -315,31 +256,23 @@ SDK v5でLinkMeを有効化するには、 `AdjustConfig`インスタンスの`I
 adjustConfig.IsLinkMeEnabled = true;
 ```
 
-#### デバイスIDを1回だけ読み取る {#read-device-id-once}
-
-<MinorVersion changed="v5">
+### デバイスIDを1回だけ読み取る {#read-device-id-once}
 
 SDK v4では、`AdjustConfig.setReadDeviceInfoOnceEnabled()`メソッドに`true`引数を付けて呼び出すことで、起動時に1回だけデバイス識別子を読み込むようにSDKに指示することができます。
-
-</MinorVersion>
 
 ```cs
 adjustConfig.setReadDeviceInfoOnceEnabled(true);
 ```
 
-SDK v5では、 `AdjustConfig`インスタンスの`IsDeviceIdsReadingOnceEnabled`プロパティを`true`に設定し、SDKがデバイスIDを1回だけ読み取るように指示する必要があります。
+SDK v5でSDKがディープリンクを開くには、 `AdjustConfig`インスタンスの`IsDeviceIdsReadingOnceEnabled`プロパティを`true`に設定する必要があります。
 
 ```cs
 adjustConfig.IsDeviceIdsReadingOnceEnabled = true;
 ```
 
-#### オフラインモード {#offline-mode}
-
-<MinorVersion changed="v5">
+### オフラインモード {#offline-mode}
 
 SDK v4では、`bool`引数で`Adjust.setOfflineMode()`を呼び出すことで、SDKでオフラインモードを有効化・無効化することができます。
-
-</MinorVersion>
 
 ```cs
 Adjust.setOfflineMode(true);
@@ -356,73 +289,9 @@ Adjust.SwitchToOfflineMode(); // Put the SDK in offline mode
 Adjust.SwitchBackToOnlineMode(); // Put the SDK back in online mode
 ```
 
-#### イベントバッファリング {#event-buffering}
-
-<MinorVersion removed="v5">
-
-SDK v4はイベントのバッファリングをサポートしています。この機能は、リクエストイベント、広告収益、Pushトークン、その他の情報をローカルバッファに保存し、後日送信します。
-
-</MinorVersion>
-
-```cs
-adjustConfig.setEventBufferingEnabled(true);
-```
-
-この設定はSDK v5では廃止されています。
-
-#### カスタムユーザーエージェント文字列 {#custom-user-agent}
-
-<MinorVersion removed="v5">
-
-SDK v4では、ユーザーエージェント文字列で`AdjustConfig.setUserAgent()`を呼び出すことによるカスタムユーザーエージェントの設定をサポートしています。
-
-</MinorVersion>
-
-```cs
-adjustConfig.setUserAgent("custom-user-agent");
-```
-
-この設定はSDK v5では廃止されています。
-
-#### 既知のデバイスかどうかを設定する {#set-device-known}
-
-<MinorVersion removed="v5">
-
-SDK v4では、`AdjustConfig.setDeviceKnown()`メソッドを呼び出して、既知のデバイスかどうかをSDKに手動で通知することができます。
-
-</MinorVersion>
-
-```cs
-adjustConfig.setDeviceKnown(true);
-```
-
-この設定はSDK v5では廃止されています。
-
-#### SDKの起動開始を遅延させる {#delay-sdk-start}
-
-<MinorVersion removed="v5">
-
-SDK v4では、`AdjustConfig setDelayTimer()`を最大 **10秒** 遅延させて呼び出すことで、SDKの開始を遅延させることができます。
-
-</MinorVersion>
-
-```cs
-adjustConfig.setDelayTimer(10);
-```
-
-この設定はSDK v5では廃止されています。
-
-### 記録機能 {#recording-features}
-
-このセクションでは、Adjustに情報を送信する機能の変更点について説明します。
-
-#### セッションコールバックパラメーター {#callback-params}
-
-<MinorVersion changed="v5">
+### セッションコールバックパラメーター {#callback-params}
 
 SDK v4では、`Adjust.addSessionCallbackParameter()`メソッドにキーと値のペアをパスすることでセッションパラメーターを追加し、`Adjust.removeSessionCallbackParameter()`メソッドを使用して個々のパラメーターを削除することができます。
-
-</MinorVersion>
 
 ```cs
 Adjust.addSessionCallbackParameter("key", "value");
@@ -438,13 +307,9 @@ Adjust.RemoveGlobalCallbackParameter("key");
 Adjust.RemoveGlobalCallbackParameters();
 ```
 
-#### セッションパートナーパラメーター {#partner-params}
-
-<MinorVersion changed="v5">
+### セッションパートナーパラメーター {#partner-params}
 
 SDK v4では、`Adjust.addSessionPartnerParameter()`メソッドにキーと値のペアをパスすることでセッション パートナー パラメーターを追加し、`Adjust.removeSessionPartnerParameter()`メソッドを使用して個々のパラメーターを削除することができます。
-
-</MinorVersion>
 
 ```cs
 Adjust.addSessionPartnerParameter("key", "value");
@@ -460,13 +325,9 @@ Adjust.RemoveGlobalPartnerParameter("key");
 Adjust.RemoveGlobalPartnerParameters();
 ```
 
-#### 成功および失敗コールバック {#success-failure-callbacks}
-
-<MinorVersion changed="v5">
+### Successおよびfailureコールバック {#success-failure-callbacks}
 
 SDK v4では、 `AdjustConfig.setSessionSuccessDelegate()`および`AdjustConfig.setSessionFailureDelegate()`メソッドにそれぞれデリゲート関数をパスすることで、セッションの成功および失敗コールバックを設定できます。
-
-</MinorVersion>
 
 ```cs
 adjustConfig.setSessionSuccessDelegate(sessionSuccessCallback); // Session success callback
@@ -494,17 +355,9 @@ adjustConfig.EventSuccessDelegate = eventSuccessCallback; // Event success callb
 adjustConfig.EventFailureDelegate = eventFailureCallback; // Event failure callback
 ```
 
-### サブスクリプション情報を送信する {#send-subscriptions}
-
-このセクションでは、Adjust SDKのサブスクリプション送信に関する変更について説明します。
-
-#### App Storeのサブスクリプション {#app-store-subscriptions}
-
-<MinorVersion changed="v5">
+### App Storeのサブスクリプション {#app-store-subscriptions}
 
 以下のクラスプロパティは、SDK v5で直接設定する必要があります：
-
-</MinorVersion>
 
 -  `TransactionDate`
 -  `SalesRegion`
@@ -540,13 +393,9 @@ Adjust.trackAppStoreSubscription(subscription);
 
 </CodeBlock>
 
-#### Play ストア サブスクリプション {#play-store-subscriptions}
-
-<MinorVersion changed="v5">
+### Play ストア サブスクリプション {#play-store-subscriptions}
 
 以下のクラスプロパティは、SDK v5で直接設定する必要があります：
-
-</MinorVersion>
 
 -  `PurchaseTime`
 
@@ -580,13 +429,9 @@ Adjust.trackPlayStoreSubscription(subscription);
 
 </CodeBlock>
 
-### AdjustEvent クラス {#adjustevent-class}
-
-<MinorVersion changed="v5">
+### AdjustEventクラス {#adjustevent-class}
 
 以下のクラスプロパティは、SDK v5で直接設定する必要があります：
-
-</MinorVersion>
 
 -  `CallbackId`
 -  `TransactionId`
@@ -628,13 +473,9 @@ Adjust.trackEvent(adjustEvent);
 
 </CodeBlock>
 
-#### イベントの重複排除 {#event-deduplication}
-
-<MinorVersion changed="v5">
+### イベントの重複排除 {#event-deduplication}
 
 SDK v4では、イベント重複排除はイベント`transaction ID`と組み合わされ、最大10個のユニークIDに制限されています。
-
-</MinorVersion>
 
 ```cs
 adjustEvent.setTransactionId("transaction-id");
@@ -656,13 +497,9 @@ Adjust.InitSdk(adjustConfig);
 
 ### AdjustAttributionクラス {#attribution-class}
 
-<MinorVersion changed="v5">
-
 SDK v4では、`AdjustAttribution`コールは`adid`というプロパティを持ちます。SDK v5 では、`AdjustAttribution` クラスから`adid`プロパティが削除されました。デバイスのADIDを取得するには、[`Adjust.GetAdid()`ゲッターメソッド](#device-info)を使用してください。
 
-</MinorVersion>
-
-さらに、 `AdjustAttribution`クラスの全ての内部メンバーは公開プロパティになります。
+さらに、 `AdjustAttribution`クラスの全ての内部メンバーは、現在は公開プロパティとしてアクセスできるようになりました。
 
 <CodeBlock title="クラスメンバー" useDiffSyntax>
 
@@ -694,35 +531,23 @@ SDK v4では、`AdjustAttribution`コールは`adid`というプロパティを�
 
 </CodeBlock>
 
-#### アトリビューションがコールバックを変更 {#attribution-changed-callback}
+### アトリビューションの変化のコールバック {#attribution-changed-callback}
 
-<MinorVersion changed="v5">
-
-SDK v4では、 `AdjustConfig.setAttributionChangedDelegate()`関数にデリゲート関数を割り当てることで、デバイスのアトリビューションが変化した時にデリゲート関数を呼び出すことができます。
-
-</MinorVersion>
+SDK v4では、デバイスのアトリビューションが変更された際にデリゲート関数を呼び出すため、関数を`AdjustConfig.setAttributionChangedDelegate()`関数に設定できます。
 
 ```cs
 adjustConfig.setAttributionChangedDelegate(attributionCallback);
 ```
 
-SDK v5では、 `AdjustConfig`インスタンスの`AttributionChangedDelegate`プロパティにデリゲート関数を割り当てる必要があります。
+SDK v5では、デリゲート関数を`AdjustConfig`インスタンスの`AttributionChangedDelegate`プロパティに設定する必要があります。
 
 ```cs
 adjustConfig.AttributionChangedDelegate = attributionCallback;
 ```
 
-### ディープリンク {#deep-links}
-
-このセクションでは、SDK v5でのディープリンクに関する変更点を説明します。
-
-#### ディープリンクを使用したリアトリビューション {#reattribution-using-deep-links}
-
-<MinorVersion changed="v5">
+### ディープリンクを使用したリアトリビューション {#reattribution-using-deep-links}
 
 SDK v4では、`Adjust.appWillOpenUrl()`メソッドにディープリンク情報をパスすることができます。
-
-</MinorVersion>
 
 ```cs
 Adjust.appWillOpenUrl("url");
@@ -735,35 +560,23 @@ AdjustDeeplink adjustDeeplink = new AdjustDeeplink("url");
 Adjust.ProcessDeeplink(adjustDeeplink);
 ```
 
-#### ディファードディープリンクをローンチする {#launch-deferred-deeplinks}
+### ディファードディープリンクをローンチする {#launch-deferred-deeplinks}
 
-<MinorVersion changed="v5">
-
-SDK v4では、`AdjustConfig.setLaunchDeferredDeeplink()`メソッドを呼び出してディファード ディープリンク コールバックを処理できます。
-
-</MinorVersion>
+SDK v4では、ディファードディープリンクを開くために`AdjustConfig.setLaunchDeferredDeeplink()`メソッドを呼び出すことができます。
 
 ```cs
 adjustConfig.setLaunchDeferredDeeplink(true);
 ```
 
-SDK v5でSDKがディープリンクを開くには、 `AdjustConfig`インスタンスの`IsDeferredDeeplinkOpeningEnabled`プロパティを`true`に設定する必要があります。
+SDK v5でSDKがディープリンクを開けるようにするには、 `AdjustConfig`インスタンスの`IsDeferredDeeplinkOpeningEnabled`プロパティを`true`に設定する必要があります。
 
 ```cs
 adjustConfig.IsDeferredDeeplinkOpeningEnabled = true;
 ```
 
-### プライバシー機能 {#privacy-features}
-
-このセクションでは、Adjust SDKのプライバシー機能の変更点について説明します。
-
-#### 児童オンラインプライバシー保護法（COPPA）コンプライアンス {#coppa-compliance}
-
-<MinorVersion changed="v5">
+### 児童オンラインプライバシー保護法（COPPA）コンプライアンス {#coppa-compliance}
 
 SDK v4では、 `bool`値で`AdjustConfig`インスタンスの`setCoppaCompliantEnabled`メソッドを呼び出すことで、アプリがCOPPAに準拠していることをマークすることができます。
-
-</MinorVersion>
 
 ```cs
 adjustConfig.setCoppaCompliantEnabled(true);
@@ -775,13 +588,9 @@ SDK v5では、`AdjustConfig`インスタンスの`IsCoppaComplianceEnabled`プ�
 adjustConfig.IsCoppaComplianceEnabled = true;
 ```
 
-#### Playストアの子供向けアプリ {#play-store-kids}
-
-<MinorVersion changed="v5">
+### Playストアの子供向けアプリ {#play-store-kids}
 
 SDK v4では、`AdjustConfig`クラスを使用してアプリを[Playストアの子供向けアプリ](/ja/sdk/unity/features/privacy#play-store-kids-apps)として表示できます。このプロパティはSDKの初期化中に読み込まれるため、SDKを初期化したら値を更新することはできません。
-
-</MinorVersion>
 
 ```cs
 adjustConfig.setPlayStoreKidsAppEnabled(true);
@@ -793,13 +602,9 @@ SDK v5では、コンプライアンスを有効にするには、`AdjustConfig`
 adjustConfig.IsPlayStoreKidsComplianceEnabled = true;
 ```
 
-#### データレジデンシーとURL戦略を設定する {#url-strategy}
-
-<MinorVersion changed="v5">
+### データレジデンシーとURL戦略を設定する {#url-strategy}
 
 SDK v4では、URL戦略とデータレジデンシーのドメインは`AdjustConfig`クラスの定数として定義されています。
-
-</MinorVersion>
 
 ```cs
 adjustConfig.setUrlStrategy(AdjustConfig.AdjustDataResidencyEU);
@@ -826,7 +631,7 @@ SDK v5でURL戦略を設定する方法については、以下の表をご確�
 | `AdjustConfig.AdjustUrlStrategyCnOnly` | `"adjust.cn"`                            | `true`                   | `false`                  |
 | `AdjustConfig.AdjustUrlStrategyIndia`  | `"adjust.net.in"`。 `"adjust.com"`       | `true`                   | `false`                  |
 
-##### 例 {#examples}
+#### 例 {#examples}
 
 <CodeBlock title="インド URL戦略">
 
@@ -871,17 +676,9 @@ adjustConfig.SetUrlStrategy(new List<string> {"us.adjust.com"}, true, true);
 
 </CodeBlock>
 
-### サードパーティーとの共有に関する変更 {#third-party-sharing-changes}
+### AdjustThirdPartySharingクラスの変更 {#adjustthirdparty-classc-changes}
 
-このセクションでは、SDKバージョン5でのサードパーティ共有機能の変更について説明します。
-
-#### AdjustThirdPartySharing クラスの変更点 {#adjustthirdparty-classc-changes}
-
-<MinorVersion changed="v5">
-
-SDK v5では以下のプラグインが削除されました：
-
-</MinorVersion>
+SDK v5では、以下のメソッドの名前が変更されています。
 
 -  `addGranularOption` \-> `AddGranularOption`
 -  `addPartnerSharingSetting` \-> `AddPartnerSharingSetting`
@@ -904,36 +701,10 @@ Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 
 </CodeBlock>
 
-#### サードパーティとの共有をグローバルに無効化する {#disable-sharing-globally}
-
-<MinorVersion removed="v5">
-
-SDK v4では、`Adjust.disableThirdPartySharing()`メソッドを呼び出すことで、サードパーティとの情報共有をグローバルに無効化することができます。
-
-</MinorVersion>
-
-```cs
-Adjust.disableThirdPartySharing()
-```
-
-この機能はSDK v5では削除されました。SDK v5では、`Adjust.trackThirdPartySharing()`メソッドを使用してサードパーティとのデータ共有を有効化または無効化できます。
-
-```cs
-AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(false);
-Adjust.TrackThirdPartySharing(adjustThirdPartySharing);
-```
-
-### 広告収益 {#ad-revenue}
-
-このセクションでは、SDK v5でのディープリンクに関する変更点を説明します。
-
-#### 特定のソースの広告収益を送信する {#send-ad-revenue}
-
-<MinorVersion changed="v5">
+### 特定のソースの広告収益を送信する {#send-ad-revenue}
 
 SDK v4では、広告収益ソースは`AdjustConfig`クラスの定数として定義されています。SDK v5では、広告収益ソースは文字列としてパスされる必要があります。
 
-</MinorVersion>
 <CodeBlock useDiffSyntax>
 
 ```cs
@@ -957,13 +728,9 @@ SDK v4では、広告収益ソースは`AdjustConfig`クラスの定数として
 | `AdjustConfig.AdjustAdRevenueSourceTopOn`            | `"topon_sdk"`             |
 | `AdjustConfig.AdjustAdRevenueSourceMopub`            | サポート終了              |
 
-#### AdjustAdRevenueクラスの変更 {#adjustadrevenue-class-changes}
-
-<MinorVersion changed="v5">
+### AdjustAdRevenueクラスの変更 {#adjustadrevenue-class-changes}
 
 以下のクラスプロパティは、SDK v5で直接設定する必要があります：
-
-</MinorVersion>
 
 -  `AdImpressionsCount`
 -  `AdRevenueNetwork`
@@ -1003,23 +770,15 @@ Adjust.trackAdRevenue(adRevenue);
 
 </CodeBlock>
 
-### SKAdNetworkとATT {#skad-att}
+### ATTポップアップの待機インターバルを設定{#configure-att-interval}
 
-このセクションでは、SDK v5におけるSKAdNetworkとApp Tracking Transparency（ATT）機能の変更点について説明します。
-
-#### ATTポップアップの待機インターバルを設定 {#configure-att-interval}
-
-<MinorVersion changed="v5">
-
-SDK v4では、`AdjustConfig`インスタンスの`setAttConsentWaitingInterval`メソッドを使用して、Adjustへのインストール情報の送信を遅らせる間隔を設定することができます。この延滞により、ユーザーはATTポップアップ画面と接触する時間が得られます。
-
-</MinorVersion>
+SDK v4では、 `AdjustConfig`インスタンスの`setAttConsentWaitingInterval`メソッドを使用して、Adjustへのインストール情報の送信を遅らせるインターバルを設定できます。この遅延により、ユーザーがATTポップアップを確認する時間を確保できます。
 
 ```cs
 adjustConfig.setAttConsentWaitingInterval(66);
 ```
 
-SDK v5では、 `AdjustConfig`インスタンスの`AttConsentWaitingInterval`プロパティにディレイインターバルを割り当てる必要があります。
+SDK v5では、ディレイインターバルを`AdjustConfig`インスタンスの`AttConsentWaitingInterval`プロパティに設定する必要があります。
 
 ```cs
 adjustConfig.AttConsentWaitingInterval = 66;
@@ -1027,11 +786,7 @@ adjustConfig.AttConsentWaitingInterval = 66;
 
 #### SKAdNetworkの通信を無効化する {#disable-skan}
 
-<MinorVersion changed="v5">
-
 SDK v4では、`AdjustConfig.deactivateSKAdNetworkHandling()`メソッドを呼び出すことで、SDKがSKAdNetworkと通信しないようにすることができます。
-
-</MinorVersion>
 
 ```cs
 AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
@@ -1039,7 +794,7 @@ adjustConfig.deactivateSKAdNetworkHandling();
 Adjust.start(adjustConfig);
 ```
 
-SDK v5では、SKAdNetworkの通信を無効化するには、 `AdjustConfig`インスタンスの`IsSkanAttributionEnabled`プロパティを`false`に設定する必要があります。
+SDK v5では、SKAdNetworkとの通信を無効にするには、`AdjustConfig`インスタンスの`IsSkanAttributionEnabled`プロパティを`false`に設定する必要があります。
 
 ```cs
 AdjustConfig adjustConfig = new AdjustConfig("appToken", AdjustEnvironment.Sandbox);
@@ -1047,52 +802,30 @@ adjustConfig.IsSkanAttributionEnabled = false;
 Adjust.InitSdk(adjustConfig);
 ```
 
-#### 承認ステータスの変更を確認 {#check-att-status-change}
+### Conversion valueのアップデートを受信する {#listen-for-cv-updates}
 
-<MinorVersion removed="v5">
-
-SDK v4では、`Adjust.checkForNewAttStatus()`メソッドを使ってSDKにユーザーのATTステータスを読み込ませ、Adjustのサーバーに情報を転送することができます。
-
-</MinorVersion>
-
-```cs
-Adjust.checkForNewAttStatus();
-```
-
-このメソッドはSDK v5では廃止されています。
-
-#### Conversion valueのアップデートを受信する {#listen-for-cv-updates}
-
-<MinorVersion changed="v5">
-
-SDK v4では、 `AdjustConfig.setConversionValueUpdatedDelegate()`にデリゲート関数を割り当てて、conversion valueの更新を受信することができます。
-
-</MinorVersion>
+SDK v4では、コンバージョン値の更新を受信するために、デリゲート関数を`AdjustConfig.setConversionValueUpdatedDelegate()`にパスして設定できます。
 
 ```cs
 adjustConfig.setConversionValueUpdatedDelegate(ConversionValueUpdatedCallback);
 ```
 
-SDK v5では、 `AdjustConfig`インスタンスの`SkanUpdatedDelegate`プロパティにデリゲート関数を割り当てる必要があります。
+SDK v5では、デリゲート関数を`AdjustConfig`インスタンスの`SkanUpdatedDelegate`プロパティに設定する必要があります。
 
 ```cs
 adjust.SkanUpdatedDelegate = skanUpdatedCallback;
 ```
 
-#### Conversion valueを更新する {#update-cvs}
+### Conversion valueを更新する {#update-cvs}
 
-<MinorVersion changed="v5">
-
-SDK v4では、`Adjust.updateConversionValue()`メソッドを使ってAdjustに更新されたconversion valueを送信することができます。このメソッドはAppleが廃止した[`updateConversionValue`メソッド](https://developer.apple.com/documentation/storekit/skadnetwork/3566697-updateconversionvalue)をラップするため、SDK v5では削除されています。
-
-</MinorVersion>
+SDK v4では、`Adjust.updateConversionValue()`メソッドを使ってAdjustに更新されたconversion valueを送ることができます。このメソッドはAppleが廃止した[`updateConversionValue`メソッド](https://developer.apple.com/documentation/storekit/skadnetwork/3566697-updateconversionvalue)をラップするため、SDK v5では削除されています。
 
 SDK v5でconversion valueを更新するには、以下の引数で`Adjust.UpdateSkanConversionValue()`メソッドを使用します：
 
 -  `conversionValue` （`int`）：更新されたconversion value
 -  `coarseValue` （`string`）：更新された[粗いconversion value](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
 -  `lockWindow` （`bool`）：コンバージョン期間が終了する前にポストバックを送信するかどうか
--  `callback` `Action<string>`発生したエラーを処理できるコールバック関数
+-  `callback` （`Action<string>`）：発生したエラーを処理できるコールバック関数
 
 ```cs
 Adjust.UpdateSkanConversionValue(1, "low", false, error =>
@@ -1101,13 +834,9 @@ Adjust.UpdateSkanConversionValue(1, "low", false, error =>
 });
 ```
 
-#### App Tracking Transparency認証ラッパー {#att-wrapper}
+### App Tracking Transparency認証ラッパー {#att-wrapper}
 
-<MinorVersion changed="v5">
-
-SDK v4では、`Adjust requestTrackingAuthorizationWithCompletionHandler()`メソッドを使用してユーザーのATT認証ステータスの変更を処理できます。
-
-</MinorVersion>
+SDK v4では、`Adjust requestTrackingAuthorizationWithCompletionHandler()`メソッドを使用して、ユーザーのATT認証ステータスの変更を処理することができます。
 
 ```cs
 Adjust.requestTrackingAuthorizationWithCompletionHandler((status) =>
@@ -1153,13 +882,10 @@ Adjust.RequestAppTrackingAuthorization((status) =>
 });
 ```
 
-### デバイス情報を取得 {#device-info}
-
-<MinorVersion changed="v5">
+### デバイス情報を取得する {#device-info}
 
 SDK v4では、全てのデバイス情報ゲッターメソッドは同期的に実行されます。SDK v5では、これらのメソッドは非同期に実行されるように変更されまています。非同期処理の完了時に情報を処理するコールバック関数を追加することができます。
 
-</MinorVersion>
 <CodeBlock title="IDFAゲッター">
 
 ```cs
@@ -1220,7 +946,7 @@ Adjust.GetAmazonAdId(amazonAdId =>
 ```
 
 </CodeBlock>
-<CodeBlock title="ラストディープリンクゲッター">
+<CodeBlock title="最新のディープリンクゲッター">
 
 ```cs
 Adjust.GetLastDeeplink(lastDeeplink =>
@@ -1230,3 +956,84 @@ Adjust.GetLastDeeplink(lastDeeplink =>
 ```
 
 </CodeBlock>
+
+## 削除されたAPI {#removed-apis}
+
+<MinorVersion removed="v5" size="large" />
+
+SDK v5では、以下のAPIが削除されました。
+
+### イベントバッファリング {#event-buffering}
+
+SDK v4はイベントのバッファリングをサポートしています。この機能は、リクエストイベント、広告収益、Pushトークン、その他の情報をローカルバッファに保存し、後日送信します。
+
+```cs
+adjustConfig.setEventBufferingEnabled(true);
+```
+
+SDK v5では、この設定はご利用いただけません。
+
+### カスタムユーザーエージェント文字列 {#custom-user-agent}
+
+SDK v4では、ユーザーエージェント文字列で`AdjustConfig.setUserAgent()`を呼び出すことによるカスタムユーザーエージェントの設定をサポートしています。
+
+```cs
+adjustConfig.setUserAgent("custom-user-agent");
+```
+
+SDK v5では、この設定はご利用いただけません。
+
+### 既知のデバイスかどうかを設定する {#set-device-known}
+
+SDK v4では、`AdjustConfig.setDeviceKnown()`メソッドを呼び出して、既知のデバイスかどうかをSDKに手動で通知することができます。
+
+```cs
+adjustConfig.setDeviceKnown(true);
+```
+
+SDK v5では、この設定はご利用いただけません。
+
+### SDKの起動開始を遅延させる {#delay-sdk-start}
+
+SDK v4では、`AdjustConfig setDelayTimer()`を最大 **10秒** 遅延させて呼び出すことで、SDKの開始を遅延させることができます。
+
+```cs
+adjustConfig.setDelayTimer(10);
+```
+
+SDK v5では、この設定はご利用いただけません。
+
+### サードパーティとの共有をグローバルに無効化する {#disable-sharing-globally}
+
+SDK v4では、`Adjust.disableThirdPartySharing()`メソッドを呼び出すことで、サードパーティとの情報共有をグローバルに無効化することができます。
+
+```cs
+Adjust.disableThirdPartySharing()
+```
+
+この機能はSDK v5では削除されました。SDK v5では、`Adjust.trackThirdPartySharing()`メソッドを使用してサードパーティとのデータ共有を有効化または無効化できます。
+
+```cs
+AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(false);
+Adjust.TrackThirdPartySharing(adjustThirdPartySharing);
+```
+
+### 承認ステータスの変更を確認する {#check-att-status-change}
+
+SDK v4では、`Adjust.checkForNewAttStatus()`メソッドを使ってSDKにユーザーのATTステータスを読み込ませ、Adjustのサーバーに情報を転送することができます。
+
+```cs
+Adjust.checkForNewAttStatus();
+```
+
+このメソッドはSDK v5では廃止されています。
+
+### アプリシークレットを設定{#set-app-secret}
+
+SDK v4では、`AdjustConfig`インスタンスの`setAppSecret`メソッドを呼び出して、SDKトラフィックの署名に使用するアプリシークレットを設定することができます。
+
+```cs
+adjustConfig.setAppSecret(secretId, info1, info2, info3, info4);
+```
+
+SDK v5では、この設定はご利用いただけません。

@@ -42,12 +42,39 @@ You don't need to set up LinkMe or [Link resolution](/en/sdk/ios/features/deep-l
 
 Call the `processAndResolveDeeplink:completionHandler:` method from your `AppDelegate` to resolve a short Adjust link URL that deep linked users into your app.
 
+<Tabs>
+<Tab title="Swift">
+
+```swift
+
+func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([any UIUserActivityRestoring]?) -> Void) -> Bool {
+      if userActivity.activityType.isEqual(NSUserActivityTypeBrowsingWeb) {
+          // Pass deep link URL to Adjust in order to potentially reattribute the user
+          // and to get the URL resolved if it’s a shortened one.
+         if let incomingURL = userActivity.webpageURL {
+              if let deeplink = ADJDeeplink(deeplink: incomingURL) {
+                  Adjust.processAndResolve(deeplink) { resolveDeeplink in
+                      // resolvedLink contains either resolved URL (if it was unshortened)
+                      // or just echoed URL if it was not shortened
+                  }
+              }
+          }
+      }
+    return true
+}
+
+```
+
+</Tab>
+<Tab title="Objective-C">
+
 ```objc
 - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> *restorableObjects))restorationHandler {
     if ([[userActivity activityType] isEqualToString:NSUserActivityTypeBrowsingWeb]) {
         // Pass deep link URL to Adjust in order to potentially reattribute the user
         // and to get the URL resolved if it’s a shortened one.
-        [Adjust processAndResolveDeeplink:[userActivity webpageURL]
+        ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:[userActivity webpageURL]];
+        [Adjust processAndResolveDeeplink:deeplink
                 withCompletionHandler:^(NSString * _Nullable resolvedLink) {
             // resolvedLink contains either resolved URL (if it was unshortened)
             // or just echoed URL if it was not shortened
@@ -56,5 +83,8 @@ Call the `processAndResolveDeeplink:completionHandler:` method from your `AppDel
     return YES;
 }
 ```
+
+</Tab>
+</Tabs>
 
 In case the link you sent to `processDeeplink:completionHandler:` method was shortened, `resolvedLink` returns the extended original link. In case the link you passed to the method wasn't shortened, then `resolvedLink` contains the same link you have passed.
