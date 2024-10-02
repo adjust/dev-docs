@@ -16,41 +16,17 @@ redirects:
 
 The Adjust Android SDK enables you to record attribution, events, and more in your Cocos2d-x app. Follow the steps in this guide to set up your app to work with the Adjust SDK.
 
-## 1. Download project dependencies {% #download-project-dependencies %}
+## 1. Install the SDK {% #install-the-sdk %}
 
-To get started with the Adjust SDK, you need to download the necessary dependencies to add them to your Cocos2d-x project. First:
+To start using SDK v5, you need to add it as a dependency in your project. To do this:
 
-1. Download the latest source code archive from [the Adjust Cocos2d-x SDK GitHub repository](https://github.com/adjust/cocos2dx_sdk/releases/latest).
-1. Unzip the archive.
+1. Download the SDK archive [from GitHub](https://github.com/adjust/cocos2dx_sdk/releases)
 
-Next, download the relevant dependencies for your target platform or platforms.
+1. Copy the C++ files from the `dist` directory and add them to your Cocos2d-x project
 
-### Android
+1. (**Android only**): add the paths of the C++ files to the `LOCAL_SRC_FILES` section of your `Android.mk` file.
 
-1. Download the latest `adjust-android.aar` from [the Adjust Cocos2d-x SDK GitHub repository](https://github.com/adjust/cocos2dx_sdk/releases/latest).
-1. Download the latest `adjust-android-signature.aar` from [the Adjust Signature library GitHub repository](https://github.com/adjust/adjust_signature_sdk/releases/latest).
-
-### iOS
-
-1. Download the latest `AdjustSdk.framework` from [the Adjust Cocos2d-x SDK GitHub repository](https://github.com/adjust/cocos2dx_sdk/releases/latest).
-1. Download the latest `AdjustSigSdk-iOS-Static.a` from [the Adjust Signature library GitHub repository](https://github.com/adjust/adjust_signature_sdk/releases/latest).
-
-## 2. Add the SDK to your project {% #add-the-sdk %}
-
-Once you've downloaded the necessary dependencies, follow these steps to add the Adjust SDK to your Cocos2d-x project:
-
-1. Navigate to the unzipped SDK release archive.
-1. Copy all C++ files from the `dist` directory to your Cocos2d-x project.
-
-Follow these steps to set up the Adjust SDK in your Android and iOS projects.
-
-### Android
-
-1. Import the `adjust-android.aar` archive into your Android Studio project.
-
-1. Add the paths of the C++ files to the `LOCAL_SRC_FILES` section of your `Android.mk` file.
-
-   ```make
+   ```text
    $(LOCAL_PATH)/../../../Classes/Adjust/AdjustConfig2dx.cpp \
    $(LOCAL_PATH)/../../../Classes/Adjust/AdjustAttribution2dx.cpp \
    $(LOCAL_PATH)/../../../Classes/Adjust/AdjustProxy2dx.cpp \
@@ -114,17 +90,23 @@ Follow these steps to set up the Adjust SDK in your Android and iOS projects.
        )
    ```
 
-1. Set up the SDK signature library.
+1. (**Android only**): download the latest `adjust-android.aar` from [the GitHub releases page](https://github.com/adjust/cocos2dx_sdk/releases/latest) and import it into your Android Studio project.
 
-   1. Add the `adjust-android-signature.aar` to your Android Studio project.
-   1. [Provide your app's SHA-1 fingerprints](https://help.adjust.com/en/article/sdk-signature#manage-your-certificate-fingerprints) prior to testing.
+1. (**iOS only**): download the latest `AdjustSdk.framework` from [the GitHub releases page](https://github.com/adjust/cocos2dx_sdk/releases/latest) and link it in your Xcode project.
 
-### iOS
+## 2. Set up the Signature library {% #signature-setup %}
 
-1. Link the `AdjustSdk.framework` framework in your Xcode project.
-1. Set up the SDK signature library.
-   1. Link the `AdjustSigSdk-iOS-Static.a` in your Xcode project.
-   1. Add the [Signature library privacy manifest](https://github.com/adjust/adjust_signature_sdk/blob/main/Resources/iOS/PrivacyInfo.xcprivacy) properties to your app's privacy manifest.
+SDK v5 uses the [SDK signature library](https://help.adjust.com/en/article/sdk-signature) to encrypt information sent from the Adjust SDK to Adjust's servers. You MUST add the signature library to your project to use SDK v5.
+
+### Android apps
+
+1. Download the latest `adjust-android-signature.aar` from [the Adjust Signature library GitHub repository](https://github.com/adjust/adjust_signature_sdk/releases/latest).
+1. Add the `.aar` to your Android Studio project.
+
+### iOS apps
+
+1. Download the latest `AdjustSigSdk-iOS-Static.a` from [the Adjust Signature library GitHub repository](https://github.com/adjust/adjust_signature_sdk/releases/latest).
+1. Link the `.a` in your Xcode project.
 
 ## 3. Configure Android settings {% #android-settings %}
 
@@ -201,10 +183,10 @@ To add support for the [Meta Install Referrer](https://developers.facebook.com/d
 
    ```cpp
    #include "Adjust/Adjust2dx.h"
-
+   
    std::string appToken = "{% $variables.config.token %}";
    std::string environment = AdjustEnvironmentSandbox2dx;
-
+   
    AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment);
    adjustConfig.setFbAppId("{% $variables.config.fbAppId %}");
    Adjust2dx::initSdk(adjustConfig);
@@ -231,9 +213,10 @@ To complete iOS setup, you MUST copy all Objective-C++ (`.h` and `.mm`) files fr
 
 ### Update your app's privacy manifest {% #update-privacy-manifest %}
 
-To inform the App Store of the Adjust SDK's privacy requirements, you need to add Adjust's privacy manifest properties to your app's privacy manifest.
+To inform the App Store of the Adjust SDK's privacy requirements, you need to merge your privacy manifest with Adjust's privacy manifests.
 
-Adjust's privacy manifest is available [on GitHub](https://github.com/adjust/ios_sdk/blob/master/Adjust/PrivacyInfo.xcprivacy).
+1. Add the [Adjust SDK privacy manifest on GitHub](https://github.com/adjust/ios_sdk/blob/master/Adjust/PrivacyInfo.xcprivacy) properties to your app's privacy manifest.
+1. Add the [Signature library privacy manifest](https://github.com/adjust/adjust_signature_sdk/blob/main/Resources/iOS/PrivacyInfo.xcprivacy) properties to your app's privacy manifest.
 
 ## 6. Integrate the Adjust SDK {% #integrate-the-adjust-sdk %}
 
