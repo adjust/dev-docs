@@ -70,15 +70,7 @@ Adjust2dx::initSdk(adjustConfig);
 
 ## Configure third party sharing options {% #configure-third-party-sharing-options %}
 
-Adjust shares all metrics with all Self-Attributing Networks (SANs) and module partners you've configured for your app by default. You can configure and update your third party sharing settings at any time during the Adjust SDK lifecycle by instantiating an `AdjustThirdPartySharing2dx` object and passing it to `Adjust2dx::trackThirdPartySharing`.
-
-If you configure third party sharing settings and call `Adjust2dx::trackThirdPartySharing` before calling `Adjust2dx::initSdk`, Adjust will receive the third party sharing settings before the install session.
-
-You MUST configure your third party sharing settings before initializing the SDK to do the following:
-
-1. Configure the sharing of data with third parties **including the install session**.
-1. [Configure Facebook Limited Data Use (LDU) settings](#manage-facebook-ldu).
-1. [Communicate Google Digital Market Act (DMA) compliance](#dma-compliance).
+You can use the Adjust SDK to record when a user changes their third-party sharing settings by instantiating an `AdjustThirdPartySharing2dx` object and passing it to `Adjust2dx::trackThirdPartySharing`.
 
 ### Instantiate a third party sharing object {% #instantiate-a-third-party-sharing-object %}
 
@@ -104,26 +96,10 @@ AdjustThirdPartySharing2dx adjustThirdPartySharing = AdjustThirdPartySharing2dx(
 Adjust2dx::trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
-### Disable third party sharing globally {% #disable-third-party-sharing-globally %}
-
-If you want to disable sharing information with all partners, including the initial install session, you MUST:
-
-1. Instantiate your `AdjustThirdPartySharing2dx` instance with a `false` argument.
-1. Call `Adjust2dx::trackThirdPartySharing` **before** you call `Adjust2dx::initSdk`.
-
-The Adjust SDK caches the third party sharing update and sends it to Adjust **before** the install session information.
-
-```cpp
-AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment);
-AdjustThirdPartySharing2dx adjustThirdPartySharing = AdjustThirdPartySharing2dx(false);
-Adjust2dx::trackThirdPartySharing(adjustThirdPartySharing);
-Adjust2dx::initSdk(adjustConfig);
-```
-
 ### Configure per-partner sharing settings {% #configure-per-partner-sharing-settings %}
 
 {% callout type="important" %}
-For SAN partners, you MAY pass the partner's name as the `partnerName`. For module partners, you MUST pass the partner ID. Adjust RECOMMENDS you pass the partner ID for both SANs and module partners.
+For SAN partners, you MAY pass the partner's name as the `partnerName`. For other partners, you MUST pass the partner ID.
 {% /callout %}
 
 If you want to share metrics only with specific partners, or you want to configure which metrics to share with specific partners, you MUST do the following:
@@ -194,7 +170,6 @@ If you want to stop sharing all metrics with a specific partner, pass the `all` 
 AdjustThirdPartySharing2dx adjustThirdPartySharing = AdjustThirdPartySharing2dx(true);
 adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "all", false);
 Adjust2dx::trackThirdPartySharing(adjustThirdPartySharing);
-Adjust2dx::initSdk(adjustConfig);
 ```
 
 To re-enable sharing, pass the `all` key with a `true` value.
@@ -203,7 +178,6 @@ To re-enable sharing, pass the `all` key with a `true` value.
 AdjustThirdPartySharing2dx adjustThirdPartySharing = AdjustThirdPartySharing2dx(true);
 adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "all", true);
 Adjust2dx::trackThirdPartySharing(adjustThirdPartySharing);
-Adjust2dx::initSdk(adjustConfig);
 ```
 
 To only share event data with a specific partner:
@@ -216,7 +190,6 @@ AdjustThirdPartySharing2dx adjustThirdPartySharing = new AdjustThirdPartySharing
 adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "all", false);
 adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "event", true);
 Adjust2dx::trackThirdPartySharing(adjustThirdPartySharing);
-Adjust2dx::initSdk(adjustConfig);
 ```
 
 ### Add per-partner granular information {% #add-per-partner-granular-information %}
@@ -243,12 +216,10 @@ adjustThirdPartySharing.addGranularOption("PartnerA", "foo", "bar");
 Adjust2dx::trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
-Granular options can be configured or updated at any time during the Adjust SDK lifecycle. If you configure granular options before calling `Adjust2dx::initSdk`, the Adjust SDK caches the value and sends it before the initial install.
-
 #### Manage Facebook Limited Data Use {% #manage-facebook-ldu %}
 
 {% callout type="important" %}
-You MUST configure these granular options and call `Adjust2dx::trackThirdPartySharing` **before** calling `Adjust2dx::initSdk`.
+The Adjust SDK sends information to Facebook as soon as the app is installed. You need to make sure you call this method **before** initializing the SDK.
 {% /callout %}
 
 Facebook provides a feature called Limited Data Use (LDU) to comply with the California Consumer Privacy Act (CCPA). This feature enables you to notify Facebook when a California-based user is opted out of the sale of data. You can also use it if you want to opt all users out by default.
@@ -282,7 +253,6 @@ AdjustThirdPartySharing2dx adjustThirdPartySharing = AdjustThirdPartySharing2dx(
 adjustThirdPartySharing.addGranularOption("facebook", "data_processing_options_country", "1");
 adjustThirdPartySharing.addGranularOption("facebook", "data_processing_options_state", "1000");
 Adjust2dx::trackThirdPartySharing(adjustThirdPartySharing);
-Adjust2dx::initSdk(adjustConfig);
 ```
 
 #### Provide consent data to Google (Digital Markets Act compliance) {% #dma-compliance %}
@@ -316,7 +286,6 @@ adjustThirdPartySharing.addGranularOption("google_dma", "eea", "1");
 adjustThirdPartySharing.addGranularOption("google_dma", "ad_personalization", "1");
 adjustThirdPartySharing.addGranularOption("google_dma", "ad_user_data", "0");
 Adjust2dx::trackThirdPartySharing(adjustThirdPartySharing);
-Adjust2dx::initSdk(adjustConfig);
 ```
 
 If your user isn't in the EEA, you MUST set both `ad_personalization` and `ad_user_data` to `1`. If these values aren't set, Google won't claim attribution and will return an error.
@@ -327,7 +296,6 @@ adjustThirdPartySharing.addGranularOption("google_dma", "eea", "0");
 adjustThirdPartySharing.addGranularOption("google_dma", "ad_personalization", "1");
 adjustThirdPartySharing.addGranularOption("google_dma", "ad_user_data", "1");
 Adjust2dx::trackThirdPartySharing(adjustThirdPartySharing);
-Adjust2dx::initSdk(adjustConfig);
 ```
 
 ## Set URL strategy {% #set-url-strategy %}
