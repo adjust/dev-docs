@@ -16,19 +16,39 @@ redirects:
 
 The Adjust Android SDK enables you to record attribution, events, and more in your Cocos2d-x app. Follow the steps in this guide to set up your app to work with the Adjust SDK.
 
-## 1. Get the Adjust SDK {% #get-the-adjust-sdk %}
+## 1. Download project dependencies {% #download-project-dependencies %}
 
-To use the Adjust SDK in your Cocos2d-x app, you need to add it to your project. You can download the latest version from the [GitHub releases page](https://github.com/adjust/cocos2dx_sdk/releases/latest). Extract the archive to a directory.
+To get started with the Adjust SDK, you need to download the necessary dependencies to add them to your Cocos2d-x project. First:
+
+1. Download the latest source code archive from [the Adjust Cocos2d-x SDK GitHub repository](https://github.com/adjust/cocos2dx_sdk/releases/latest).
+1. Unzip the archive.
+
+Next, download the relevant dependencies for your target platform or platforms.
+
+### Android
+
+1. Download the latest `adjust-android.aar` from [the Adjust Cocos2d-x SDK GitHub repository](https://github.com/adjust/cocos2dx_sdk/releases/latest).
+1. Download the latest `adjust-android-signature.aar` from [the Adjust Signature library GitHub repository](https://github.com/adjust/adjust_signature_sdk/releases/latest).
+
+### iOS
+
+1. Download the latest `AdjustSdk.framework` from [the Adjust Cocos2d-x SDK GitHub repository](https://github.com/adjust/cocos2dx_sdk/releases/latest).
+1. Download the latest `AdjustSigSdk-iOS-Static.a` from [the Adjust Signature library GitHub repository](https://github.com/adjust/adjust_signature_sdk/releases/latest).
 
 ## 2. Add the SDK to your project {% #add-the-sdk %}
 
-Once you've extracted the release archive, follow these steps to add the Adjust SDK to your project:
+Once you've downloaded the necessary dependencies, follow these steps to add the Adjust SDK to your Cocos2d-x project:
 
-1. Navigate to the folder into which you extracted the archive.
+1. Navigate to the unzipped SDK release archive.
+1. Copy all C++ files from the `dist` directory to your Cocos2d-x project.
 
-1. Copy all C++ files from the `dist` directory and add them to your Cocos2d-x project.
+Follow these steps to set up the Adjust SDK in your Android and iOS projects.
 
-1. (**Android only**): add the paths of the C++ files to the `LOCAL_SRC_FILES` section of your `Android.mk` file.
+### Android
+
+1. Import the `adjust-android.aar` archive into your Android Studio project.
+
+1. Add the paths of the C++ files to the `LOCAL_SRC_FILES` section of your `Android.mk` file.
 
    ```make
    $(LOCAL_PATH)/../../../Classes/Adjust/AdjustConfig2dx.cpp \
@@ -94,9 +114,21 @@ Once you've extracted the release archive, follow these steps to add the Adjust 
        )
    ```
 
+1. Set up the SDK signature library.
+
+   1. Add the `adjust-android-signature.aar` to your Android Studio project.
+   1. [Provide your app's SHA-1 fingerprints](https://help.adjust.com/en/article/sdk-signature#manage-your-certificate-fingerprints) prior to testing.
+
+### iOS
+
+1. Link the `AdjustSdk.framework` framework in your Xcode project.
+1. Set up the SDK signature library.
+   1. Link the `AdjustSigSdk-iOS-Static.a` in your Xcode project.
+   1. Add the [Signature library privacy manifest](https://github.com/adjust/adjust_signature_sdk/blob/main/Resources/iOS/PrivacyInfo.xcprivacy) properties to your app's privacy manifest.
+
 ## 3. Configure Android settings {% #android-settings %}
 
-To support Android devices, you need to download the latest `adjust-android.aar` from [the GitHub releases page](https://github.com/adjust/cocos2dx_sdk/releases/latest) and import it into your Android Studio project.
+Follow these steps to configure the Adjust SDK for Android devices.
 
 ### Permissions {% #android-permissions %}
 
@@ -122,8 +154,8 @@ dependencies: {
 
 The install referrer is an attribution mechanism you can use to attribute an app install to a source. It consists of two parts:
 
-- [x] A set of APIs from these app stores that allow developers to retrieve referral content in their apps.
-- [x] A `referrer` parameter that app stores, such as Google Play and Huawei App Gallery, accept in their app page URLs on their store websites. Here is how the referrer parameter is populated:
+- A set of APIs from these app stores that allow developers to retrieve referral content in their apps.
+- A `referrer` parameter that app stores, such as Google Play and Huawei App Gallery, accept in their app page URLs on their store websites. Here is how the referrer parameter is populated:
   - When a user clicks on an Adjust link, the Adjust server passes a unique identifier called `reftag`. This identifier is assigned to the click and into the referrer parameter. To learn more about reftag, see the [Reftag article in the Help Center](https://help.adjust.com/en/article/reftag).
   - When you run [Google Ads](https://support.google.com/google-ads/answer/6357635?hl=en) campaigns, Google passes a unique identifier called `gclid` into the referrer parameter. You MUST enable **Auto-tagging** in your Google Ads account.
 
@@ -180,16 +212,11 @@ To add support for the [Meta Install Referrer](https://developers.facebook.com/d
 
 ## 4. Configure iOS settings {% #ios-settings %}
 
-To support iOS devices, you need to add the `Adjust.xcframework` framework to your project. To do this:
+Follow these steps to configure the Adjust SDK for iOS devices.
 
-1. Download the `Adjust.xcframework` framework [from GitHub](https://github.com/adjust/cocos2dx_sdk/releases).
-1. Extract the archive.
-1. Open the project navigator.
-1. Select your target.
-1. Select the **Build Phases** tab.
-1. Expand the **Link Binary with Libraries** group.
-1. Select the **+** button.
-1. Select the `Adjust.xcframework`
+### Link additional frameworks {% #link-frameworks %}
+
+Link the following frameworks to your Xcode project to give the Adjust SDK access to device-level information.
 
 | Framework                                                                                                                    | Purpose                                                                                                                      | Notes                                                                                                                        |
 | ---------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
@@ -198,31 +225,15 @@ To support iOS devices, you need to add the `Adjust.xcframework` framework to yo
 | `StoreKit.framework`                                                                                                         | Required to access the SKAdNetwork framework and for the Adjust SDK to handle communications with SKAdNetwork.               |                                                                                                                              |
 | `AppTrackingTransparency.framework`                                                                                          | Required in iOS 14 and later to enable the Adjust SDK to wrap the ATT consent dialog and access the user's consent response. | You SHOULD NOT add this framework if your app targets the "Kids" category                                                    |
 
-### Copy additional source files
+### Copy additional source files {% #copy-source-files %}
 
-To complete iOS setup, you MUST copy all Objective-C++ (`.h` and `.mm`) files to your Xcode project alongside the Cocos2d-x C++ files. Ensure that all `.mm` files are listed in the **Build Phases --> Compile Sources** section.
+To complete iOS setup, you MUST copy all Objective-C++ (`.h` and `.mm`) files from the `dist` directory of the unzipped SDK archive to your Xcode project. Ensure that all `.mm` files are listed in the **Build Phases --> Compile Sources** section.
 
 ### Update your app's privacy manifest {% #update-privacy-manifest %}
 
 To inform the App Store of the Adjust SDK's privacy requirements, you need to add Adjust's privacy manifest properties to your app's privacy manifest.
 
 Adjust's privacy manifest is available [on GitHub](https://github.com/adjust/ios_sdk/blob/master/Adjust/PrivacyInfo.xcprivacy).
-
-## 5. Set up SDK Signature {% #set-up-sdk-signature %}
-
-The [SDK signature library](https://help.adjust.com/en/article/sdk-signature) encrypts information sent from the Adjust SDK to Adjust's servers. You MUST add the signature library to your project to use the Adjust SDK.
-
-### Android apps
-
-1. Download the latest `adjust-android-signature.aar` from [the Adjust Signature library GitHub repository](https://github.com/adjust/adjust_signature_sdk/releases/latest).
-1. Add the `.aar` to your Android Studio project.
-1. [Provide your app's SHA-1 fingerprints](https://help.adjust.com/en/article/sdk-signature#manage-your-certificate-fingerprints) prior to testing.
-
-### iOS apps
-
-1. Download the latest `AdjustSigSdk-iOS-Static.a` from [the Adjust Signature library GitHub repository](https://github.com/adjust/adjust_signature_sdk/releases/latest).
-1. Link the `.a` in your Xcode project.
-1. Add the [Signature library privacy manifest](https://github.com/adjust/adjust_signature_sdk/blob/main/Resources/iOS/PrivacyInfo.xcprivacy) properties to your app's privacy manifest.
 
 ## 6. Integrate the Adjust SDK {% #integrate-the-adjust-sdk %}
 
