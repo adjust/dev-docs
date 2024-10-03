@@ -41,7 +41,7 @@ const DevHubSearchResultCard: FC<DevHubSearchResultCardProps> = ({ hit }) => {
             hit={hit}
             attribute="content"
             className={classNames("overflow-hidden text-ellipsis box", {
-              "after:ml-2 after:content-['...']  before:mr-2 before:content-['...']":
+              "after:ml-1 after:content-['...']  before:mr-1 before:content-['...']":
                 isEllipsis,
             })}
             style={{
