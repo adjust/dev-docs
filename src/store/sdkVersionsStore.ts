@@ -1,14 +1,15 @@
 import { persistentMap } from "@nanostores/persistent";
 import { uniqBy } from "lodash-es";
-import type { Option } from "@adjust/components/build/ComboBox/ComboBox";
+
+interface Option {
+  label: string;
+  value: string;
+  default?: boolean;
+}
 
 export interface VersionStore {
-  items: Option[] & {
-    default?: boolean;
-  };
-  currentVersion: Option & {
-    default?: boolean;
-  };
+  items: Option[]
+  currentVersion: Option
 }
 
 // Declare the supported values.
