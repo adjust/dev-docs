@@ -31,7 +31,7 @@ const defaultVersion =
     <select
       id="combobox"
       name="combobox"
-      class="rounded-md w-full bg-white px-3 border border-gray-80 text-sm min-h-8 appearance-none"
+      class="rounded-md w-full bg-white px-3 border border-gray-80 text-sm min-h-8 appearance-none text-transparent shadow-sm"
     >
       {
         uniqueSdkVersions &&
@@ -62,7 +62,8 @@ const defaultVersion =
       "combobox",
     ) as HTMLSelectElement | null;
     const comboboxHolder = document.getElementById("combobox-holder");
-    const defaultVersion = comboboxHolder?.getAttribute("data-default-version");
+    const defaultVersion =
+      comboboxHolder?.getAttribute("data-default-version") || "";
 
     if (versionSelect && comboboxHolder) {
       const redirectsAttribute = comboboxHolder.getAttribute("data-redirects");
@@ -73,15 +74,22 @@ const defaultVersion =
       const urlParams = new URLSearchParams(window.location.search);
       const urlVersion = urlParams.get("version");
 
-      // Get the current version from the store
-      const currentVersion = $versions.get().currentVersion;
+      // Wait for the store to be ready before displaying the select text
+      $versions.subscribe((store) => {
+        const currentVersion = store.currentVersion;
 
-      // Set the select input value from URL param, store, or default
-      if (urlVersion && versionSelect.options.namedItem(urlVersion)) {
-        versionSelect.value = urlVersion;
-      } else if (currentVersion) {
-        versionSelect.value = currentVersion.value;
-      }
+        // Set the select input value from URL param, store, or default
+        if (urlVersion && versionSelect.options.namedItem(urlVersion)) {
+          versionSelect.value = urlVersion;
+        } else if (currentVersion) {
+          versionSelect.value = currentVersion.value;
+        } else {
+          versionSelect.value = defaultVersion;
+        }
+
+        // Show the select text once version is loaded
+        versionSelect.classList.remove("text-transparent");
+      });
 
       // Handle version change and redirect logic
       versionSelect.addEventListener("change", function () {
