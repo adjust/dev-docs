@@ -97,22 +97,23 @@ func application(
     -> Bool {
 
     if userActivity.activityType == NSUserActivityTypeBrowsingWeb {
-        let incomingURL = userActivity.webpageURL
-
-        // call the below method to resolve deep link
-        ADJLinkResolution.resolveLink(
-        withUrl: incomingURL,
-        resolveUrlSuffixArray: ["email.example.com", "short.example.com"],
-        callback: { resolvedURL in
-            // add your code below to handle deep link
-            // (for example, open deep link content)
-            // resolvedURL object contains the deep link
-
-
-            // call the below method to send deep link to Adjust's servers
-            let deeplink = ADJDeeplink(deeplink: resolvedURL)!
-            Adjust.processDeeplink(deeplink)
-        })
+        if let incomingURL = userActivity.webpageURL {
+            // call the below method to resolve deep link
+            ADJLinkResolution.resolveLink(
+                with: incomingURL,
+                resolveUrlSuffixArray: ["email.example.com", "short.example.com"],
+                callback: { resolvedURL in
+                    // add your code below to handle deep link
+                    // (for example, open deep link content)
+                    // resolvedURL object contains the deep link
+                    if let resolvedDeeplink = resolvedURL {
+                        // call the below method to send deep link to Adjust's servers
+                        if let deeplink = ADJDeeplink(deeplink: resolvedDeeplink) {
+                            Adjust.processDeeplink(deeplink)
+                        }
+                    }
+                })
+        }
       } else {
           return false
       }
@@ -183,8 +184,9 @@ func application(
 
 
     // call the below method to send deep link to Adjust's servers
-    Adjust.processDeeplink(ADJDeeplink(deeplink: incomingURL))
-
+    if let deeplink = ADJDeeplink(deeplink: incomingURL) {
+        Adjust.processDeeplink(deeplink)
+    }
     return true
 }
 ```
@@ -252,8 +254,9 @@ func scene(
 
 
         // call the below method to send deep link to Adjust's servers
-        let deeplink = ADJDeeplink(deeplink: resolvedURL)!
-         Adjust.processDeeplink(deeplink)
+        if let deeplink = ADJDeeplink(deeplink: resolvedURL) {
+            Adjust.processDeeplink(deeplink)
+        }
       })
 }
 
@@ -275,8 +278,9 @@ func scene(
 
 
             // call the below method to send deep link to Adjust's servers
-            let deeplink = ADJDeeplink(deeplink: resolvedURL)!
-            Adjust.processDeeplink(deeplink)
+            if let deeplink = ADJDeeplink(deeplink: resolvedURL) {
+                Adjust.processDeeplink(deeplink)
+            }
         })
     }
 }
@@ -348,7 +352,7 @@ func scene(
 1. Update the `scene(_:willConnectTo:options:)` method in your scene delegate. When a user clicks on your custom URL scheme deep link and the user has your app closed, iOS opens your app and delivers the deep link to this method.
 2. Update the `scene(_:openURLContexts:)` method in your scene delegate. When a user clicks on your custom URL scheme deep link, and the user has your app running in the background, iOS opens your app and delivers the deep link to this method.
 
-These methods call the `Adjust.appWillOpen` method in the Adjust SDK. This method sends deep links to Adjust's servers to recordd them. You can pass both Adjust and non-Adjust deep links to this method. Adjust's servers ignore any deep links that don’t have Adjust parameters.
+These methods call the `Adjust.processDeeplink` method in the Adjust SDK. This method sends deep links to Adjust's servers to recordd them. You can pass both Adjust and non-Adjust deep links to this method. Adjust's servers ignore any deep links that don’t have Adjust parameters.
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -369,7 +373,9 @@ func scene(
 
 
     // call the below method to send deep link to Adjust's servers
-    Adjust.processDeeplink(incomingURL)
+    if let deeplink = ADJDeeplink(deeplink: incomingURL) {
+        Adjust.processDeeplink(deeplink)
+    }
 }
 ```
 
@@ -389,7 +395,8 @@ func scene(
 
 
         // call the below method to send deep link to Adjust's servers
-        [Adjust processDeeplink:incomingURL];
+        ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:incomingURL];
+        [Adjust processDeeplink:deeplink];
     }
 }
 ```

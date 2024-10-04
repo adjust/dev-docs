@@ -1,24 +1,45 @@
 import { unified } from "unified";
 import rehypeParse from "rehype-parse";
 import rehypeStringify from "rehype-stringify";
-import type { Element, Root } from "hast";
+import type { Element, Root, Text } from "hast";
+
+/**
+ * Extracts text content from an element's children recursively.
+ * @param children The children of the element.
+ * @returns The concatenated text content.
+ */
+const getTextContent = (children: (Element | Text)[]): string => {
+   return children
+      .map((child) => {
+         if (child.type === 'text') {
+            return child.value;
+         } else if (child.type === 'element') {
+            // Recursively get the text content of nested elements
+            return getTextContent(child.children as (Element | Text)[]);
+         }
+         return '';
+      })
+      .join('');
+};
 
 /**
  * Checks if a value is a definition list term.
- * @param text The text value of the element.
+ * @param children The children of the element.
  * @returns Whether the value of the element is a term.
  */
-const isTerm = (text: string): boolean => {
-   return /^\S[^: ].*$/.test(text.trim());
+const isTerm = (children: (Element | Text)[]): boolean => {
+   const text = getTextContent(children).trim();
+   return /^\S[^: ].*$/.test(text);
 };
 
 /**
  * Checks if a value is a definition list description.
- * @param text The text value of the element.
- * @returns Whether the value of the element is a term.
+ * @param children The children of the element.
+ * @returns Whether the value of the element is a description.
  */
-const isDescription = (text: string): boolean => {
-   return /^(:|\s)/.test(text.trim());
+const isDescription = (children: (Element | Text)[]): boolean => {
+   const text = getTextContent(children).trim();
+   return /^(:|\s)/.test(text);
 };
 
 /**
@@ -53,78 +74,78 @@ export const parseDefList = async (htmlString: string): Promise<string> => {
             children.forEach((element) => {
                if (element.type === 'element') {
                   if (element.tagName === 'p') {
-                     const text = element.children
-                        .filter((child): child is Element & { value: string } => child.type === 'text')
-                        .map((child) => child.value)
-                        .join("")
-                        .trim();
+                     const textChildren = element.children as (Element | Text)[];
 
-                     // Perform this action for each term
-                     if (isTerm(text)) {
+                     // Check if this paragraph contains a term
+                     if (isTerm(textChildren)) {
                         // If we reach a new term, we need to finish appending the descriptions to the last term we were working on.
                         if (currentTerm) {
-                           // Add the term to the list
+                           // Push the last term and its descriptions
                            dlNode.children.push(currentTerm);
-                           // Add all collected descriptions
                            currentDescription.forEach(dd => dlNode.children.push(dd));
                            currentDescription = [];
                         }
 
-                        // If this is the first term, assign it as the current term.
                         currentTerm = {
                            type: "element",
                            tagName: "dt",
-                           children: [{ type: "text", value: text }],
+                           children: textChildren,  // Keep all children, including inline formatting
                            properties: {},
                         };
-                     } else if (isDescription(text) && currentTerm) {
-                        // If the element is a description (paragraph starting with whitespace or a colon), add it to the currentDescription array
+                     } else if (isDescription(textChildren) && currentTerm) {
                         currentDescription.push({
                            type: "element",
                            tagName: "dd",
-                           children: [{ type: "text", value: text.replace(/^:/, "").trim() }],
+                           children: [{
+                              type: "element",
+                              tagName: "p",
+                              children: textChildren.map(child => {
+                                 if (child.type === 'text') {
+                                    // Strip leading colon or whitespace for descriptions
+                                    return {
+                                       ...child,
+                                       value: child.value.replace(/^:/, '').trim(),
+                                    };
+                                 }
+                                 return child;
+                              }),
+                              properties: {},
+                           }],
                            properties: {},
                         });
                      }
                   } else {
-                     // If the element isn't a paragraph tag, it will be a description
+                     // Non-paragraph elements are considered descriptions
                      if (currentTerm) {
-                        // If we have an ongoing term, finalize it
                         dlNode.children.push(currentTerm);
                         currentTerm = null;
-                        // Add all collected descriptions
                         currentDescription.forEach(dd => dlNode.children.push(dd));
                         currentDescription = [];
                      }
 
-                     // Wrap all elements that aren't a paragraph in a <dd> tag
                      const ddElement: Element = {
                         type: "element",
                         tagName: "dd",
-                        children: [element],
+                        children: [element],  // Wrap the non-paragraph element
                         properties: {},
                      };
-                     // Add the description element to the definition list
                      dlNode.children.push(ddElement);
                   }
                }
             });
 
-            // Finalize the last term-description pair if it exists
+            // Finalize the last term-description pair
             if (currentTerm) {
                dlNode.children.push(currentTerm);
-               if (currentDescription.length > 0) {
-                  currentDescription.forEach(dd => dlNode.children.push(dd));
-               }
+               currentDescription.forEach(dd => dlNode.children.push(dd));
             }
 
-            // Overwrite the entire tree with the new <dl> node
+            // Replace the tree with the new <dl> node
             tree.children = [dlNode];
          };
       })
-      .use(rehypeStringify); // Convert the result to a string so we can use set:html
+      .use(rehypeStringify);
 
-   // Process and return the transformed HTML
    const result = await processor.process(htmlString);
    return String(result);
 };
