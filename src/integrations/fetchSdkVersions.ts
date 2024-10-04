@@ -28,15 +28,15 @@ type GraphQLResponse = {
 };
 
 let versionReplacements: VersionMap = {
-  android: { v4: "vx.x.x", v5: "vx.x.x" },
-  ios: { v4: "vx.x.x", v5: "vx.x.x" },
-  unity: { v4: "vx.x.x", v5: "vx.x.x" },
-  react_native: { v4: "vx.x.x", v5: "vx.x.x" },
-  cordova: { v4: "vx.x.x", v5: "vx.x.x" },
-  flutter: { v4: "vx.x.x", v5: "vx.x.x" },
-  cocos2dx: { v4: "vx.x.x", v5: "vx.x.x" },
-  web: "vx.x.x",
-  windows: "vx.x.x",
+  android: { v4: "x.x.x", v5: "x.x.x" },
+  ios: { v4: "x.x.x", v5: "x.x.x" },
+  unity: { v4: "x.x.x", v5: "x.x.x" },
+  react_native: { v4: "x.x.x", v5: "x.x.x" },
+  cordova: { v4: "x.x.x", v5: "x.x.x" },
+  flutter: { v4: "x.x.x", v5: "x.x.x" },
+  cocos2dx: { v4: "x.x.x", v5: "x.x.x" },
+  web: "x.x.x",
+  windows: "x.x.x",
 };
 
 /**
@@ -86,8 +86,8 @@ export async function fetchVersions() {
             const response = await octokit.graphql<GraphQLResponse>(query);
 
             // Extract the first v4 and v5 tag names
-            const firstV4Tag = response.v4Tags.refs.edges[0]?.node.name || "Not found";
-            const firstV5Tag = response.v5Tags.refs.edges[0]?.node.name || "Not found";
+            const firstV4Tag = response.v4Tags.refs.edges[0]?.node.name.replace("v", "") || "Not found";
+            const firstV5Tag = response.v5Tags.refs.edges[0]?.node.name.replace("v", "") || "Not found";
 
             currentPlatform.v4 = firstV4Tag;
             currentPlatform.v5 = firstV5Tag;
@@ -112,7 +112,7 @@ export async function fetchVersions() {
             `;
 
             const response = await octokit.graphql<GraphQLResponse>(query);
-            versionReplacements[platform] = response.latestTag?.refs.edges[0]?.node.name || "Not found";
+            versionReplacements[platform] = response.latestTag?.refs.edges[0]?.node.name.replace("v", "") || "Not found";
           }
         }
       );
