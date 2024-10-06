@@ -1,0 +1,77 @@
+---
+title: Set up SKAN and conversion values
+description: Configure SKAN features for your iOS apps.
+slug: en/sdk/cocos2dx/features/skan
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v5: /en/sdk/cocos2dx/v4/features/skad
+---
+
+StoreKit Ad Network (SKAN) is Apple's framework for app install and reinstall attribution. The SKAN workflow goes like this:
+
+1. Apple gathers attribution information and notifies the relevant ad network.
+1. The network sends a postback with this information to Adjust.
+1. Adjust displays SKAN data in [Datascape](https://help.adjust.com/en/suite/article/datascape) and [Data Canvas](https://help.adjust.com/en/classic/article/data-canvas-classic).
+
+## Disable SKAN communication {% #disable-skadnetwork-communication %}
+
+The Adjust SDK registers for SKAN attribution upon initialization by default. To disable this behavior, call the `disableSkanAttribution` method on your `AdjustConfig2dx` instance.
+
+```cpp
+AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment);
+adjustConfig.disableSkanAttribution();
+Adjust2dx::initSdk(adjustConfig);
+```
+
+## Update conversion values {% #update-conversion-values %}
+
+Conversion values are a mechanism used to track user behavior in SKAN. You can map 64 conditions to values from 0 through 63 and send this integer value to SKAN on user install. This gives you insight into how your users interact with your app in the first few days.
+
+If you manage your conversion values with Adjust, the servers update this value in the SDK. You can also update this value by using the `updateSkanConversionValue` method. This method wraps [Apple's `updatePostbackConversionValue` method](https://developer.apple.com/documentation/storekit/skadnetwork/4097267-updatepostbackconversionvalue). You MUST pass the following arguments:
+
+{% deflist %}
+`fineValue` (`int`)
+
+: Your conversion value. Must be between `0` and `63`.
+
+`coarseValue` (`std::string`)
+
+: The coarse conversion value. This value is used if your app doesn't have sufficient installs to reach the privacy threshold. The following values are allowed:
+
+- `"low"` (`SKAdNetworkCoarseConversionValueLow`)
+- `"medium"` (`SKAdNetworkCoarseConversionValueMedium`)
+- `"high"` (`SKAdNetworkCoarseConversionValueHigh`)
+
+`lockWindow` (`bool`)
+
+: Whether to send the postback before the conversion window ends (`true`).
+
+`errorCallback` (`function`)
+
+: A function that receives any error message returned by SKAN as a `string`.
+{% /deflist %}
+
+```cpp
+Adjust2dx::updateSkanConversionValue(6, "low", true, [](std::string error) {
+    std::cout << "Error while updating conversion value: " << error;
+});
+```
+
+## Listen for changes to conversion values {% #listen-for-changes-to-conversion-values %}
+
+If you use Adjust to manage conversion values, the Adjust's servers send conversion value updates to the SDK. You can set up a callback function to listen for these changes using the `setSkanUpdatedCallback` method. Pass your function as an argument.
+
+```cpp
+adjustConfig.setSkanUpdatedCallback([](
+    std::unordered_map<std::string, std::string> data) {
+    std::cout << "\nConversion value: " << data["conversionValue"];
+    std::cout << "\nCoarse value: " << data["coarseValue"];
+    std::cout << "\nLock window: " << data["lockWindow"];
+    std::cout << "\nError: " << data["error"];
+});
+```

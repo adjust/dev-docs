@@ -55,6 +55,7 @@ export interface SidebarItem {
    type?: "category"
    version?: string;
    level: number;
+   redirects?: Record<string, string>
 }
 
 export interface LanguageTree {

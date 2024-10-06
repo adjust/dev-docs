@@ -1,0 +1,135 @@
+---
+title: Set up SKAdNetwork and conversion values
+description: Configure SKAdNetwork features for your iOS apps.
+slug: en/sdk/cocos2dx/v4/features/skad
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v5: /en/sdk/cocos2dx/features/skan
+---
+
+<Callout type="important">
+
+This feature is only available on devices running iOS 14 and above.
+
+</Callout>
+
+StoreKit Ad Network (SKAdNetwork) is Apple's attribution framework for app install and reinstall attribution. The SKAdNetwork workflow goes like this:
+
+1. Apple gathers attribution information and notifies the relevant ad network.
+2. The network sends a postback with this information to Adjust.
+3. Adjust displays SKAdNetwork data in [Datascape](https://help.adjust.com/en/suite/article/datascape) and [Data Canvas](https://help.adjust.com/en/classic/article/data-canvas-classic).
+
+## Disable SKAdNetwork communication
+
+<CodeBlock title="Method signature">
+
+```cpp
+void deactivateSkAdNetworkHandling();
+```
+
+</CodeBlock>
+
+<MinorVersion added="v4.23.0">
+
+The Adjust SDK communicates with SKAdNetwork by default on v4.23.0 and above. The SDK registers for SKAdNetwork attribution upon initialization.
+
+</MinorVersion>
+
+Your config object contains a boolean `isSKAdNetworkHandlingActive` property that controls this behavior. You can disable SKAdNetwork communication by calling the `deactivateSKAdNetworkHandling` method with no argument.
+
+<Callout type="important">
+
+You must call the `deactivateSKAdNetworkHandling` method _before_ initializing the Adjust SDK.
+
+</Callout>
+
+```cpp
+AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment, false);
+adjustConfig.deactivateSKAdNetworkHandling();
+Adjust2dx::start(adjustConfig);
+```
+
+## Update conversion values
+
+<CodeBlock title="Method signature">
+
+```cpp
+static void updateConversionValue(int conversionValue);
+```
+
+</CodeBlock>
+
+Conversion values are a mechanism used to track user behavior in SKAdNetwork. You can map 64 conditions to values from 0 through 63 and send this integer value to SKAdNetwork on user install. This gives you insight into how your users interact with your app in the first few days.
+
+If you manage your conversion values with Adjust, the servers update this value in the SDK. You can also update this value by using the `updateConversionValue` method. This method wraps [Apple's `updateConversionValue` method](https://developer.apple.com/documentation/storekit/skadnetwork/3566697-updateconversionvalue). It accepts an integer argument representing your updated conversion value.
+
+```cpp
+Adjust2dx::updateConversionValue(6);
+```
+
+### Example
+
+This example shows how to update a conversion value to `10` in response to a user triggering an event.
+
+```cpp
+bool HelloWorld::init() {
+    auto position =
+            Vec2(origin.x + visibleSize.width / 2,
+                 origin.y + visibleSize.height - label->getContentSize().height
+                 + offset
+                 - divide * (++index));
+    makeButton(mainmenu, "Update conversion value", position,
+               CC_CALLBACK_1(HelloWorld::onUpdateCv, this));
+}
+
+void HelloWorld::onUpdateCv(cocos2d::Ref *pSender) {
+    Adjust2dx::updateConversionValue(6);
+}
+```
+
+## Listen for changes to conversion values
+
+<CodeBlock title="Method signature">
+
+```cpp
+void setConversionValueUpdatedCallback(void(*callbackMethod)(int conversionValue));
+```
+
+</CodeBlock>
+
+If you use Adjust to manage conversion values, the Adjust's servers send conversion value updates to the SDK. You can set up a callback function to listen for these changes using the `setConversionValueUpdatedCallback` method. Pass your function as an argument.
+
+```cpp
+AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment, false);
+adjustConfig.setConversionValueUpdatedCallback(conversionValueUpdatedCallbackMethod);
+Adjust2dx::start(adjustConfig);
+```
+
+### Example
+
+This example shows how to log the following when the conversion value updates:
+
+-  A message confirming the conversion value update
+-  The new conversion value
+
+```cpp
+#include "Adjust/Adjust2dx.h"
+
+bool AppDelegate::applicationDidFinishLaunching() {
+    std::string appToken = "{YourAppToken}";
+    std::string environment = AdjustEnvironmentSandbox2dx;
+
+    AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment);
+    adjustConfig.setLogLevel(AdjustLogLevel2dxVerbose);
+    adjustConfig.setPostbackConversionValueUpdatedCallback([](int conversionValue) {
+        std::cout << "\nConversion value updated. Callback received";
+        std::cout << "\nConversion value: " << conversionValue;
+    });
+    Adjust2dx::start(adjustConfig);
+}
+```
