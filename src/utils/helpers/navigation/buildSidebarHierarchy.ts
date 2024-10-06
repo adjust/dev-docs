@@ -94,7 +94,7 @@ export const buildSidebarHierarchy = (entries: ContentCollectionEntry[]): [Langu
          if (
             childSlugParts.length === 4 &&
             versionRegex.test(childSlugParts[3]) &&
-            parentIdParts.length === 2 &&
+            parentIdParts.length === 3 &&
             childSlugParts.slice(0, 2).join("/") === parentSlugParts.join("/")
          ) {
             isSpecialCase = true;
