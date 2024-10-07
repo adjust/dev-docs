@@ -60,6 +60,9 @@ export default defineConfig({
       fallbackType: "rewrite"
     }
   },
+  experimental: {
+    contentCollectionCache: true
+  },
   integrations: [AutoImport({
     imports: [
       "@components/Accordion.astro",
