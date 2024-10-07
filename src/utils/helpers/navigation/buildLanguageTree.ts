@@ -1,15 +1,17 @@
 import { buildSidebarHierarchy } from "@utils/helpers/navigation/buildSidebarHierarchy";
-import { localizedDocs } from "@utils/helpers/navigation/getLocalizedDocs";
 import { Languages, type ContentCollectionEntry, type LanguageTrees, type SidebarItem } from "@utils/helpers/navigation/types";
+import { getCollection } from "astro:content";
+
+export const fetchedDocs = await getCollection("docs");
 
 /**
  * Creates a tree of content for each supported language with a queryable map.
  * This is used for the sidebar as well as for helper functions that query the collection.
- * @param localizedDocs An array of Content Collection entries
+ * @param fetchedDocs An array of Content Collection entries
  * @returns A language tree for all languages containing the polyfilled content arrays from the fetch step.
  * @returns A map of all content entries searchable by slug. Used for building breadcrumbs.
  */
-const buildLanguageTree = (localizedDocs: ContentCollectionEntry[]): [LanguageTrees, Map<string, SidebarItem>] => {
+const buildLanguageTree = (fetchedDocs: ContentCollectionEntry[]): [LanguageTrees, Map<string, SidebarItem>] => {
    let languageTree: LanguageTrees = {
       "en": { sdk: [], api: [] },
       "ja": { sdk: [], api: [] },
@@ -21,8 +23,8 @@ const buildLanguageTree = (localizedDocs: ContentCollectionEntry[]): [LanguageTr
    let fullSlugMap = new Map<string, SidebarItem>();
 
    languages.forEach((language) => {
-      // Filter the localizedDocs by language
-      const content = localizedDocs.filter((doc) =>
+      // Filter the fetchedDocs by language
+      const content = fetchedDocs.filter((doc) =>
          doc.slug.split('/')[0] === language
       )
 
@@ -37,4 +39,4 @@ const buildLanguageTree = (localizedDocs: ContentCollectionEntry[]): [LanguageTr
    return [languageTree, fullSlugMap];
 };
 
-export const [languageTree, slugMap] = buildLanguageTree(localizedDocs);
+export const [languageTree, slugMap] = buildLanguageTree(fetchedDocs);

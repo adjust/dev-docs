@@ -1,4 +1,4 @@
-import { localizedDocs } from "./getLocalizedDocs";
+import { fetchedDocs } from "./buildLanguageTree";
 import type { ContentCollectionEntry } from "./types";
 
 /**
@@ -21,4 +21,4 @@ const getUniqueVersions = (entries: ContentCollectionEntry[]): ContentCollection
    return uniqueVersions;
 };
 
-export const uniqueSdkVersions = getUniqueVersions(localizedDocs);
+export const uniqueSdkVersions = getUniqueVersions(fetchedDocs);
