@@ -1,31 +1,29 @@
 ---
 title: "Web SDK 連携ガイド"
-description: "Web SDKを使ってWebアプリでAdjustの機能にアクセスする"
+description: "Web SDKを使用して、WebアプリでAdjustの機能にアクセスしましょう。"
 category-title: "Web SDK"
-slug: "ja/sdk/web"
+slug: "en/sdk/web"
 sidebar-position: 8
 ---
-
 Adjust Web SDKを実装することで、アトリビューションやイベントなどのさまざまなデータをWebアプリで記録できます。このガイドでは、Adjust SDKをアプリに実装する方法をご紹介します。
 
-## 1\. プロジェクトにSDKを追加する {#1-add-the-sdk-to-your-project}
+1\. プロジェクトにSDKを追加する \{\#add\-the\-sdk\-to\-your\-project\}
+-------------------------------------------------------------------
 
 まずは、WebアプリにSDKを追加します。Adjust SDKは、CommonJSとAMD（Asynchronous Module Definition）の両方の環境で動作します。CDN（Content Delivery Network）を利用して読み込むと、グローバルの`Adjust`名前空間を通じてアクセスできます。
 
-### CDNを使用する {#using-a-cdn}
+### CDNを使用する \{\#using\-a\-cdn\}
 
 CDNを利用してSDKを読み込むときは、本番用ビルドには縮小バージョンを使用する必要があります。バージョンを指定するには、`https://cdn.adjust.com/adjust-5.6.0.min.js`のようにCDNターゲットに追加します。`https://cdn.adjust.com/adjust-latest.min.js`のように、`adjust-latest`パッケージをターゲットにすることで、最新版を入手することができます。このパッケージは自動的にアップデートされるため、ターゲットファイルを変更する必要はありません。
-
-<Callout type="tip">
+<callout type="tip"> 
 
 SDKのファイルは、迅速なサービスを実現するためにキャッシュされます。このキャッシュは30分ごとに更新されます。強制的に最新バージョンに更新する場合は、ヘッダーで特定のバージョンをターゲットにしてください。
+</Callout> 
 
-</Callout>
-
-CDNを利用してSDKを読み込むには、Webアプリの`<head>`タグ間に次のスニペットを追加します。
+CDNを利用してSDKを読み込むには、Webアプリの`<head id="sl-md0000000">`タグ間に次のスニペットを追加します。
 
 ```html
-<script type="application/javascript">
+<script type="application/javascript" id="sl-md0000000">
    !(function (t, e, a, r, n, s, d, l, o, i, u) {
       (t.Adjust = t.Adjust || {}), (t.Adjust_q = t.Adjust_q || []);
       for (var c = 0; c < l.length; c++) o(t.Adjust, t.Adjust_q, l[c]);
@@ -80,12 +78,12 @@ CDNを利用してSDKを読み込むには、Webアプリの`<head>`タグ間に
 
 Adjust SDKはページごとに読み込まれ、ページの読み込みごとに1回起動されます。
 
-#### サブリソース完全性 {#subresource-integrity}
+#### サブリソース完全性 \{\#subresource\-integrity\}
 
 XSS（クロスサイトスクリプティング）攻撃を緩和するために[サブリソース完全性](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity)チェックを使用する場合、次の呼び出しを使用すると、パッケージが実行される前に検証することができます。
 
 ```html
-<script type="application/javascript">
+<script type="application/javascript" id="sl-md0000000">
    !(function (t, e, a, r, n, s, o, d, l, i, u) {
       (t.Adjust = t.Adjust || {}), (t.Adjust_q = t.Adjust_q || []);
       for (var c = 0; c < d.length; c++) l(t.Adjust, t.Adjust_q, d[c]);
@@ -140,42 +138,38 @@ XSS（クロスサイトスクリプティング）攻撃を緩和するため�
 </script>
 ```
 
-### npmを使用する {#using-npm}
+### npmを使用する \{\#using\-npm\}
 
 Adjust SDKは[npm](https://www.npmjs.com/package/@adjustcom/adjust-web-sdk)でも提供されています。パッケージをプロジェクトに追加するには、好みのパッケージマネージャーを使用します。
-
-<Tabs>
-<Tab title="NPM" sync="npm">
+<tabs> <tab title="NPM" sync="npm"> 
 
 ```console
 $ npm install @adjustcom/adjust-web-sdk --save
 ```
 
-</Tab>
-<Tab title="yarn" sync="yarn">
+</Tab> <tab title="yarn" sync="yarn"> 
 
 ```console
 $ yarn add @adjustcom/adjust-web-sdk
 ```
 
-</Tab>
-<Tab title="pnpm" sync="pnpm">
+</Tab> <tab title="pnpm" sync="pnpm"> 
 
 ```console
 $ pnpm add @adjustcom/adjust-web-sdk
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-## 2\. SDKを初期化する {#2-initialize-the-sdk}
+2\. SDKを初期化する \{\#initialize\-the\-sdk\}
+----------------------------------------------
 
 SDKをインストールしたら、初期化する必要があります。これを行うには、`initSdk`メソッドを呼び出します。このメソッドは、アプリでのSDKの動作をカスタマイズするいくつかの引数を取ります。
 
 SDKを初期化するには、`initSdk`呼び出しに次の引数を追加する必要があります。
 
--  `appToken` （`string`）：お客様の[Adjustアプリトークン](https://help.adjust.com/ja/article/app-token-and-reporting-currency#view-your-app-details)。
--  `environment` （`string`）：SDKを実行したい環境。テスト用のサンドボックスモードでSDKを実行するには`sandbox`をパスします。リリース用の本番モードでSDKを実行するには`production`をパスします。
+* `appToken` （`string`）：お客様の[Adjustアプリトークン](https://help.adjust.com/en/article/app-token-and-reporting-currency#view-your-app-details)。
+* `environment` （`string`）：SDKを実行したい環境。テスト用のサンドボックスモードでSDKを実行するには`sandbox`をパスします。リリース用の本番モードでSDKを実行するには`production`をパスします。
 
 ```js
 Adjust.initSdk({
@@ -184,8 +178,8 @@ Adjust.initSdk({
 });
 ```
 
-<Callout type="seealso">
+<callout type="seealso"> 
 
-Adjust SDKの設定をカスタマイズするには、[設定ガイド](/ja/sdk/web/configuration)をご覧ください。
-
+Adjust SDKの設定をカスタマイズするには、[設定ガイド](/en/sdk/web/configuration)をご覧ください。
 </Callout>
+
