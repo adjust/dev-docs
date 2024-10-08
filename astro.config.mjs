@@ -51,16 +51,14 @@ export default defineConfig({
     defaultLocale: "en",
     locales: ["en", "ja", "ko", "zh"],
     routing: {
-      prefixDefaultLocale: true
+      prefixDefaultLocale: true,
+      fallbackType: "rewrite",
     },
     fallback: {
       ja: "en",
       ko: "en",
       zh: "en"
     },
-    routing: {
-      fallbackType: "rewrite"
-    }
   },
   experimental: {
     contentCollectionCache: true
