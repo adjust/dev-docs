@@ -2,69 +2,69 @@
 title: "서버 간(S2S) API"
 description: "앱 코드 변경 없이 Adjust S2S API를 사용하여 앱을 Adjust에 연결하세요."
 category-title: "S2S API"
-slug: "en/api/s2s-api"
+slug: "ko/api/s2s-api"
 sidebar-position: 8
 ---
+
 ### S2S 엔드포인트 \{\#s2s\-endpoints\}
 
-|                엔드포인트                |       Function       |
-|-------------------------------------|----------------------|
-| `https://s2s.adjust.com/event`      | Adjust에 인앱 이벤트 통보    |
+| 엔드포인트                          | Function                       |
+| ----------------------------------- | ------------------------------ |
+| `https://s2s.adjust.com/event`      | Adjust에 인앱 이벤트 통보      |
 | `https://s2s.adjust.com/ad_revenue` | Adjust에 광고 매출 데이터 통보 |
-| `https://s2s.adjust.com/session`    | Adjust에 세션 데이터 통보    |
+| `https://s2s.adjust.com/session`    | Adjust에 세션 데이터 통보      |
 
-### 기기 ID \{\#device\-identifiers\}
+### 기기 ID {#device-identifiers}
 
 서버 간 이벤트를 위해 사용할 수 있는 기기 ID는 다음과 같습니다.
 
-#### 선호되는 ID \{\#preferred\-identifiers\}
+#### 선호되는 ID {#preferred-identifiers}
 
-|               이름               |      값      |
-|--------------------------------|-------------|
-| Raw IDFA \(IOS\)             | `idfa`      |
-| Raw Google advertising ID      | `gps_adid`  |
-| Raw Amazon Fire advertising ID | `fire_adid` |
-| 오픈 광고 ID \(OAID, Huawei\)    | `oaid`      |
-| 웹 ID\(Adjust 웹 SDK에서 생성\)    | `web_uuid`  |
+| 이름                            | 값          |
+| ------------------------------- | ----------- |
+| Raw IDFA \(IOS\)                | `idfa`      |
+| Raw Google advertising ID       | `gps_adid`  |
+| Raw Amazon Fire advertising ID  | `fire_adid` |
+| 오픈 광고 ID \(OAID, Huawei\)   | `oaid`      |
+| 웹 ID\(Adjust 웹 SDK에서 생성\) | `web_uuid`  |
 
-#### 백업 ID \{\#backup\-identifiers\}
+#### 백업 ID {#backup-identifiers}
 
-|              이름               |      값       |
-|-------------------------------|--------------|
-| Raw IDFV\(IOS만 해당\)         | `idfv`       |
+| 이름                        | 값           |
+| --------------------------- | ------------ |
+| Raw IDFV\(IOS만 해당\)      | `idfv`       |
 | Android ID \(Android only\) | `android_id` |
 
-이벤트 제출에 대한 응답 \{\#event\-submission\-responses\}
------------------------------------------------------
+## 이벤트 제출에 대한 응답 {#event-submission-responses}
 
-성공적으로 기록된 모든 이벤트는 `OK`라는 응답을 반환합니다. 
+성공적으로 기록된 모든 이벤트는 `OK`라는 응답을 반환합니다.
 
 트래킹에 실패한 이벤트는 다음과 같이 HTTP 오류 코드와 JSON 메시지를 반환합니다.
-<codeblock title="오류 응답"> 
+
+<CodeBlock title="오류 응답">
 
 ```json
 { "error": "Event request failed (${error_message})" }
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 오류 메시지는 요청의 어떤 부분이 잘못 되었는지를 알려줍니다. 다음 표를 참고하여 오류를 식별한 다음, 설정을 검토하거나 지원이 필요한 경우 [support@adjust.com](mailto:support@adjust.com)에 문의하세요.
 
-| 오류 코드 |                     오류 메시지                     |                                         원인                                         |
-|-------|------------------------------------------------|------------------------------------------------------------------------------------|
-| `400` | `Bad event state`                              | 요청 세부 사항이 기대를 충족하지 못하는 경우에 발생 \(예: `created at` 시점이 `installed_at` 시점보다 앞서 발생함\) |
-| `400` | `Invalid app token`                            | 앱 토큰이 올바르게 설정 되지 않음                                                                |
-| `400` | `Ignoring event, earlier unique event tracked` | 특정 이벤트가 이미 기록됨. 중복된 요청으로 처리되지 않음.                                                  |
-| `400` | `Invalid callback parameters`                  | 콜백 파라미터를 추출할 수 없음                                                                  |
-| `400` | `Invalid event token`                          | 이벤트 토큰이 존재하지 않거나, 잘못 설정되었거나, 앱 토큰과 일치하지 않음                                         |
-| `400` | `Invalid revenue`                              | 숫자가 잘못 설정되었거나 한도보다 높은 값을 입력함 \(한도: 100,000,000,000\)                             |
-| `401` | `Failed to authorize request`                  | 인증 토큰이 없거나 일치하지 않음                                                                 |
-| `403` | `App is inactive`                              | 앱이 대시보드에서 비활성화 됨                                                                   |
-| `403` | `Tracking disabled`                            | 이 플랫폼에서는 측정할 수 없음                                                                  |
-| `403` | `Event token blocklisted`                      | 이벤트 토큰이 차단 리스트에 등록되었습니다                                                            |
-| `404` | `App token not found`                          | App token을 찾을 수                                                                    |
-| `404` | `Device not found`                             | 디바이스 데이터를 찾을 수 없음                                                                  |
-| `413` | `Request size too large`                       | 요청 크기가 최대 허용치인 1MB를 넘음                                                             |
-| `451` | `Device is opted out`                          | Device is opted out                                                                |
-| `500` | `Internal error, contact support@adjust.com`   | 디바이스 데이터를 업데이트 하던 중 내부에 오류가 발생함                                                    |
-
+| 오류 코드 | 오류 메시지                                    | 원인                                                                                                                |
+| --------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `400`     | `Bad event state`                              | 요청 세부 사항이 기대를 충족하지 못하는 경우에 발생 \(예: `created at` 시점이 `installed_at` 시점보다 앞서 발생함\) |
+| `400`     | `Invalid app token`                            | 앱 토큰이 올바르게 설정 되지 않음                                                                                   |
+| `400`     | `Ignoring event, earlier unique event tracked` | 특정 이벤트가 이미 기록됨. 중복된 요청으로 처리되지 않음.                                                           |
+| `400`     | `Invalid callback parameters`                  | 콜백 파라미터를 추출할 수 없음                                                                                      |
+| `400`     | `Invalid event token`                          | 이벤트 토큰이 존재하지 않거나, 잘못 설정되었거나, 앱 토큰과 일치하지 않음                                           |
+| `400`     | `Invalid revenue`                              | 숫자가 잘못 설정되었거나 한도보다 높은 값을 입력함 \(한도: 100,000,000,000\)                                        |
+| `401`     | `Failed to authorize request`                  | 인증 토큰이 없거나 일치하지 않음                                                                                    |
+| `403`     | `App is inactive`                              | 앱이 대시보드에서 비활성화 됨                                                                                       |
+| `403`     | `Tracking disabled`                            | 이 플랫폼에서는 측정할 수 없음                                                                                      |
+| `403`     | `Event token blocklisted`                      | 이벤트 토큰이 차단 리스트에 등록되었습니다                                                                          |
+| `404`     | `App token not found`                          | App token을 찾을 수                                                                                                 |
+| `404`     | `Device not found`                             | 디바이스 데이터를 찾을 수 없음                                                                                      |
+| `413`     | `Request size too large`                       | 요청 크기가 최대 허용치인 1MB를 넘음                                                                                |
+| `451`     | `Device is opted out`                          | Device is opted out                                                                                                 |
+| `500`     | `Internal error, contact support@adjust.com`   | 디바이스 데이터를 업데이트 하던 중 내부에 오류가 발생함                                                             |
