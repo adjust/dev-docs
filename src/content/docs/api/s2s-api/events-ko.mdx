@@ -1,52 +1,50 @@
 ---
 title: "서버 간(S2S) 이벤트"
 description: "서버 간(S2S) 이벤트 API는 Adjust가 앱에서 일어나는 이벤트를 HTTP 요청을 통해서 기록할 수 있도록 합니다."
-slug: "ko/api/s2s-api/events"
+slug: "en/api/s2s-api/events"
 sidebar-position: 2
 sidebar-label: "S2S 이벤트"
 ---
-
 서버 간\(S2S\) 이벤트 API를 사용하면 HTTP 요청을 통해 Adjust에 이벤트 데이터를 전송할 수 있습니다. Adjust SDK를 사용하여 설치, 세션, 리어트리뷰션을 기록하고, S2S API를 사용하여 **커스텀** 이벤트만 전송하시기 바랍니다.
 
-S2S 이벤트를 iOS 14\+ 앱으로 설정하면 Adjust는 전환값을 S2S 응답으로 서버에 전송합니다. 이후 서버는 인앱에서 전환값을 업데이트해야 합니다. 본 설정에 관한 자세한 내용은 [iOS 14\+ S2S 이벤트 지원](https://help.adjust.com/ko/article/support-for-s2s-events) 페이지를 확인하시기 바랍니다.
-
-<Callout type="note">
+S2S 이벤트를 iOS 14\+ 앱으로 설정하면 Adjust는 전환값을 S2S 응답으로 서버에 전송합니다. 이후 서버는 인앱에서 전환값을 업데이트해야 합니다. 본 설정에 관한 자세한 내용은 [iOS 14\+ S2S 이벤트 지원](https://help.adjust.com/en/article/support-for-s2s-events) 페이지를 확인하시기 바랍니다.
+<callout type="note"> 
 
 어트리뷰션의 경우, Adjust는 SDK로부터 전송된 클릭과 S2S 클릭을 구분하지 않습니다. 두 클릭 모두 어트리뷰션 워터폴에서는 동일한 것으로 간주됩니다.
+</Callout> 
 
-</Callout>
-
-이 페이지에서는 서버 간 이벤트 기록을 설정하고 관련 문제를 해결하는 방법을 확인하실 수 있습니다.
-
-<CodeBlock title="엔드포인트" highlight="/event">
+이 페이지에서는 서버 간 이벤트 기록을 설정하고 관련 문제를 해결하는 방법을 확인하실 수 있습니다. 
+<codeblock title="엔드포인트" highlight="/event"> 
 
 ```text
 https://s2s.adjust.com/event
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-## S2S 이벤트 전송 {#send-s2s-events}
+S2S 이벤트 전송 \{\#send\-s2s\-events\}
+---------------------------------------
 
 `/event` 엔드포인트는 다음의 S2S 이벤트 요청을 허용합니다.
 
--  URL 파라미터가 포함된 GET
--  URL 파라미터가 포함된 POST.
--  Body 파라미터가 포함된 POST. `Content-Type` 은 반드시 `application/x-www-form-urlencoded` 으로 설정되어야 합니다.
+* URL 파라미터가 포함된 GET
+* URL 파라미터가 포함된 POST.
+* Body 파라미터가 포함된 POST. `Content-Type` 은 반드시 `application/x-www-form-urlencoded` 으로 설정되어야 합니다.
 
-## S2S 보안 설정 {#set-up-s2s-security}
+S2S 보안 설정 \{\#set\-up\-s2s\-security\}
+--------------------------------------------
 
 S2S 보안을 설정하여 S2S 이벤트의 보안을 보장하고, 스푸핑 요청을 방지할 수 있습니다. 이를 위해서는 수신되는 모든 요청에 Adjust 대시보드에서 생성된 토큰이 포함되어야 합니다. 토큰이 포함되어 있지 않거나 올바르지 않은 토큰을 포함한 요청은 Adjust 서버에서 거부됩니다.
 
-설정을 하려면 [S2S 보안](/ko/api/s2s-api/security) 페이지에 명시된 단계를 수행하시기 바랍니다.
+설정을 하려면 [S2S 보안](/en/api/s2s-api/security) 페이지에 명시된 단계를 수행하시기 바랍니다.
 
-## 필수 파라미터 {#required-parameters}
+필수 파라미터 \{\#required\-parameters\}
+--------------------------------------
 
-<Callout type="important">
+<callout type="important"> 
 
 S2S 이벤트 파라미터는 대소문자를 구분해야 합니다.
-
-</Callout>
+</Callout> 
 
 `/event` 엔드포인트는 모든 요청에서 다음 파라미터가 필요합니다.
 
@@ -55,79 +53,74 @@ S2S 이벤트 파라미터는 대소문자를 구분해야 합니다.
 3. 앱 토큰.
 4. 해당 요청이 서버 간 요청임을 알려주는 하드코드된 `s2s=1` 파라미터.
 
-| 파라미터                                          | 설명                               | 예시                                                                                      |
-| ------------------------------------------------- | ---------------------------------- | ----------------------------------------------------------------------------------------- |
-| 광고 ID\(예: iOS: `idfa` , Android: `gps_adid`\). | 기기 ID 전체 목록 표시.            | `idfa=D2CADB5F-410F-4963-AC0C-2A78534BDF1E gps_adid=660e1d86-6796-463a-be86-897993136018` |
-| `event_token`                                     | 대시보드의 Adjust 이벤트 토큰      | `event_token=f0ob4r`                                                                      |
-| `app_token`                                       | 대시보드의 Adjust 앱 토큰          | `app_token=4w565xzmb54d`                                                                  |
-| `s2s`                                             | S2S 파라미터 값을 1으로 설정하세요 | `s2s=1`                                                                                   |
+|                       파라미터                       |          설명           |                                            예시                                             |
+|--------------------------------------------------|-----------------------|-------------------------------------------------------------------------------------------|
+| 광고 ID\(예: iOS: `idfa` , Android: `gps_adid`\). | 기기 ID 전체 목록 표시.       | `idfa=D2CADB5F-410F-4963-AC0C-2A78534BDF1E gps_adid=660e1d86-6796-463a-be86-897993136018` |
+| `event_token`                                    | 대시보드의 Adjust 이벤트 토큰   | `event_token=f0ob4r`                                                                      |
+| `app_token`                                      | 대시보드의 Adjust 앱 토큰     | `app_token=4w565xzmb54d`                                                                  |
+| `s2s`                                            | S2S 파라미터 값을 1으로 설정하세요 | `s2s=1`                                                                                   |
 
 ### 기기 ID
 
-| 파라미터                | ID 유형                           | 형식                |
-| ----------------------- | --------------------------------- | ------------------- |
-| `android_id`            | Raw Android ID                    | 소문자, 하이픈 없음 |
-| `android_id_lower_md5`  | 해시된 Android ID                 | 소문자, MD5         |
-| `android_id_lower_sha1` | 해시된 Android ID                 | 소문자, SHA1        |
-| `android_id_upper_md5`  | 해시된 Android ID                 | 대문자, MD5         |
-| `android_id_upper_sha1` | 해시된 Android ID                 | 대문자, SHA1        |
-| `idfv`                  | Raw IDFV                          | 대문자, 하이픈 있음 |
-| `imei`                  | Raw IMEI                          | 하이픈 없음         |
-| `imei_lower_md5`        | 해시된 IMEI                       | 소문자, 하이픈 없음 |
-| `meid`                  | Raw MEID                          | 대문자, 하이픈 없음 |
-| `win_naid`              | 미가공 Windows 네트워크 어댑터 ID | 소문자, 하이픈 있음 |
-| `win_hwid`              | 미가공 Windows Store 하드웨어 ID  | 하이픈 없음         |
+|          파라미터           |           ID 유형           |     형식      |
+|-------------------------|---------------------------|-------------|
+| `android_id`            | Raw Android ID            | 소문자, 하이픈 없음 |
+| `android_id_lower_md5`  | 해시된 Android ID            | 소문자, MD5    |
+| `android_id_lower_sha1` | 해시된 Android ID            | 소문자, SHA1   |
+| `android_id_upper_md5`  | 해시된 Android ID            | 대문자, MD5    |
+| `android_id_upper_sha1` | 해시된 Android ID            | 대문자, SHA1   |
+| `idfv`                  | Raw IDFV                  | 대문자, 하이픈 있음 |
+| `imei`                  | Raw IMEI                  | 하이픈 없음      |
+| `imei_lower_md5`        | 해시된 IMEI                  | 소문자, 하이픈 없음 |
+| `meid`                  | Raw MEID                  | 대문자, 하이픈 없음 |
+| `win_naid`              | 미가공 Windows 네트워크 어댑터 ID   | 소문자, 하이픈 있음 |
+| `win_hwid`              | 미가공 Windows Store 하드웨어 ID | 하이픈 없음      |
 
-### 이벤트 전송을 위한 기타 권장 파라미터 {#recommended-additional-parameters-for-event-submission}
+### 이벤트 전송을 위한 기타 권장 파라미터 \{\#recommended\-additional\-parameters\-for\-event\-submission\}
 
 정확한 이벤트 어트리뷰션을 위해 이벤트에 다음 파라미터를 포함시키십시오.
-
-<Callout type="important">
+<callout type="important"> 
 
 iOS 디바이스의 경우 `adid` 광고 ID를 사용해야 합니다. 이렇게 하면 IDFA 사용이 불가한 경우에도 기기 데이터를 일치시킬 수 있습니다.
+</Callout> 
 
-</Callout>
+|                    파라미터                    |                                                                                 설명                                                                                  |                                                                                                     예시                                                                                                     |
+|--------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `adid`                                     | 디바이스와 연관된 Adjust 식별자. iOS에서 IDFA 정보를 확인할 수 없는 LAT 사용자를 식별하는 데 유용합니다.                                                                                                | `adid=18546f6171f67e29d1cb983322ad1329`                                                                                                                                                                    |
+| `ip_address`                               | 디바이스의 IP 주소입니다. 이벤트를 서드파티\(예: Google\)와 연동하고 콜백에 위치 관련 정보\(예: `city`, `postal_code`\)를 포함하는 데 사용합니다. <br/>`ip_address` 파라미터는 IPv4 주소만 허용하며, IPv6은 현재 지원되지 않습니다. | `ip_address=192.0.0.1`                                                                                                                                                                                     |
+| `created_at_unix` \(권장\) 또는 `created_at` | 이벤트가 발생한 날짜와 시간입니다.                                                                                                                                                 | `created_at_unix=1484085154` 또는 `created_at=2017-01-02T15:04:05.000+0000`                                                                                                                                  |
+| `user_agent`                               | 디바이스의 `User-Agent`입니다. 반드시 URL이 인코딩되어야 합니다.                                                                                                                         | `user_agent=Mozilla%2F5.0%20%28iPhone%3B%20CPU%20iPhone%20OS%2016_6%20like%20Mac%20OS%20X%29%20AppleWebKit%2F605.1.15%20%28KHTML%2C%20like%20Gecko%29%20Version%2F16.5%20Mobile%2F15E148%20Safari%2F604.1` |
 
-| 파라미터                                     | 설명                                                                                                                                                                                                                                | 예시                                                                                                                                                                                                       |
-| -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `adid`                                       | 디바이스와 연관된 Adjust 식별자. iOS에서 IDFA 정보를 확인할 수 없는 LAT 사용자를 식별하는 데 유용합니다.                                                                                                                            | `adid=18546f6171f67e29d1cb983322ad1329`                                                                                                                                                                    |
-| `ip_address`                                 | 디바이스의 IP 주소입니다. 이벤트를 서드파티\(예: Google\)와 연동하고 콜백에 위치 관련 정보\(예: `city`, `postal_code`\)를 포함하는 데 사용합니다. <br/>`ip_address` 파라미터는 IPv4 주소만 허용하며, IPv6은 현재 지원되지 않습니다. | `ip_address=192.0.0.1`                                                                                                                                                                                     |
-| `created_at_unix` \(권장\) 또는 `created_at` | 이벤트가 발생한 날짜와 시간입니다.                                                                                                                                                                                                  | `created_at_unix=1484085154` 또는 `created_at=2017-01-02T15:04:05.000+0000`                                                                                                                                |
-| `user_agent`                                 | 디바이스의 `User-Agent`입니다. 반드시 URL이 인코딩되어야 합니다.                                                                                                                                                                    | `user_agent=Mozilla%2F5.0%20%28iPhone%3B%20CPU%20iPhone%20OS%2016_6%20like%20Mac%20OS%20X%29%20AppleWebKit%2F605.1.15%20%28KHTML%2C%20like%20Gecko%29%20Version%2F16.5%20Mobile%2F15E148%20Safari%2F604.1` |
-
-#### 이벤트 타임스탬프 {#event-timestamp}
+#### 이벤트 타임스탬프 \{\#event\-timestamp\}
 
 이벤트 타임스탬프는 `created_at_unix` 파라미터 또는 `created_at` 파라미터를 사용하여 지정할 수 있습니다.
 
--  `created_at_unix`: the UNIX timestamp at which the event was sent. For example: `1484085154`.
--  `created_at`: A URL encoded timestamp in the [ISO 8601 format](https://www.iso.org/iso-8601-date-and-time-format.html). For example: `2023-01-02T15%3A04%3A05.000%2B0000`
+* `created_at_unix`: 이벤트가 전송된 UNIX 타임스탬프입니다. 예: `1484085154`.
+* `created_at`: [ISO 8601 형식](https://www.iso.org/iso-8601-date-and-time-format.html)의 URL 인코딩된 타임스탬프. 예: `2023-01-02T15%3A04%3A05.000%2B0000`
 
-<Callout type="important">
+<callout type="important"> 
 
 요청에서 타임스탬프를 보내지 않을 경우 Adjust는 이벤트가 수신된 시간을 이벤트 날짜로 사용합니다.
-
-</Callout>
+</Callout> 
 
 다음 내용을 확인하시기 바랍니다.
 
--  이벤트는 요청의 타임스탬프에 따라 각 디바이스 및 이벤트 토큰에 대해 순차적으로 제출해야 합니다. Adjust에서 나열된 디바이스 및 이벤트에 대해 이전에 수신한 이벤트보다 앞선 타임스탬프의 이벤트를 수신할 경우 해당 이벤트는 거부됩니다.
--  모든 이벤트는 58일 이내에 제출되어야 합니다. 타임스탬프가 58일을 초과한 이벤트는 거부됩니다.
+* 이벤트는 요청의 타임스탬프에 따라 각 디바이스 및 이벤트 토큰에 대해 순차적으로 제출해야 합니다. Adjust에서 나열된 디바이스 및 이벤트에 대해 이전에 수신한 이벤트보다 앞선 타임스탬프의 이벤트를 수신할 경우 해당 이벤트는 거부됩니다.
+* 모든 이벤트는 58일 이내에 제출되어야 합니다. 타임스탬프가 58일을 초과한 이벤트는 거부됩니다.
 
-### 커스텀 데이터 공유하기 {#share-custom-data}
+### 커스텀 데이터 공유 \{\#share\-custom\-data\}
 
 콜백 및 파트너 파라미터를 사용하여 사용자 지정 이벤트를 Adjust로 전송합니다. 콜백 파라미터는 로 데이터 내보내기에서 사용할 수 있으며, 파트너 파라미터는 네트워크 파트너와 공유됩니다.
 
 다음 파라미터를 사용하여 요청에 파라미터를 추가합니다.
 
--  `callback_params`: a URL encoded JSON object containing **string** key\-value pairs.
--  `partner_params`: a URL encoded JSON object containing **string** key\-value pairs.
+* `callback_params`: **문자열** 키\-값 쌍을 포함한 URL로 인코딩된 JSON 객체
+* `partner_params`: **문자열** 키\-값 쌍을 포함한 URL로 인코딩된 JSON 객체
 
-<Callout type="important">
+<callout type="important"> 
 
 사용자 지정 데이터 객체에 객체를 중첩하지 마시기 바랍니다.
-
-</Callout>
-<CodeBlock title="인코딩 되지 않은 예시">
+</Callout> <codeblock title="인코딩 되지 않은 예시"> 
 
 ```json
 {
@@ -136,64 +129,58 @@ iOS 디바이스의 경우 `adid` 광고 ID를 사용해야 합니다. 이렇게
 }
 ```
 
-</CodeBlock>
-<CodeBlock title="인코딩된 예시" highlight="f0o, bar, baz">
+</CodeBlock> <codeblock title="인코딩된 예시" highlight="f0o, bar, baz"> 
 
 ```text
 %7B%22f0o%22%3A%22bar%22%2C%20%22bar%22%3A%22baz%22%7D
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 로 데이터 내보내기에서 콜백 파라미터를 수신하려면 서버 간 콜의 `callback_params` 파라미터에 데이터를 추가합니다.
-
-<CodeBlock title="콜백 파라미터" highlight="callback_params">
+<codeblock title="콜백 파라미터" highlight="callback_params"> 
 
 ```console
 curl --location https://s2s.adjust.com/event?s2s=1&event_token=f0ob4r&app_token=4w565xzmb54d&idfa=8A3CB124-5A79-4334-8802-F75FEC099C58&callback_params=%7B%22f0o%22%3A%22bar%22%2C%20%22bar%22%3A%22baz%22%7D
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 네트워크 파트너에게 이벤트 정보를 전송하려면 서버 간 콜의 `partner_params` 파라미터에 데이터를 추가합니다.
-
-<CodeBlock title="파트너 파라미터" highlight="partner_params">
+<codeblock title="파트너 파라미터" highlight="partner_params"> 
 
 ```console
 curl --location https://s2s.adjust.com/event?s2s=1&event_token=f0ob4r&app_token=4w565xzmb54d&idfa=8A3CB124-5A79-4334-8802-F75FEC099C58&partner_params=%7B%22f0o%22%3A%22bar%22%2C%20%22bar%22%3A%22baz%22%7D
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-### 매출 이벤트 기록 {#record-revenue-events}
+### 매출 이벤트 기록 \{\#record\-revenue\-events\}
 
 이벤트 제출에 다음의 매출 파라미터를 추가하여 S2S 매출 이벤트를 기록할 수 있습니다.
 
-| 파라미터    | 설명                                                                                                                                 |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| revenue     | 통화 단위를 제외한 매출 이벤트 값<br/>\(예: 149\.99 = $149\.99\). Adjust 서버에서 이 파라미터의 최소값은 0\.001로 설정되어 있습니다. |
-| currency    | 이벤트와 관련된 통화 코드입니다.                                                                                                     |
-| environment | 데이터를 게시할 환경\(`environment=sandbox` 또는 `environment=production`\)입니다.<br/>디폴트값은 `production`로 설정됩니다.         |
+|    파라미터     |                                                  설명                                                   |
+|-------------|-------------------------------------------------------------------------------------------------------|
+| revenue     | 통화 단위를 제외한 매출 이벤트 값<br/>\(예: 149\.99 = $149\.99\). Adjust 서버에서 이 파라미터의 최소값은 0\.001로 설정되어 있습니다.   |
+| currency    | 이벤트와 관련된 통화 코드입니다.                                                                                    |
+| environment | 데이터를 게시할 환경\(`environment=sandbox` 또는 `environment=production`\)입니다.<br/>디폴트값은 `production`로 설정됩니다. |
 
-### 예시 {#example}
+### 예: \{\#example\}
 
-<Tabs>
-<Tab title="GET">
+<tabs> <tab title="GET"> 
 
 ```console
 curl "https://s2s.adjust.com/event?s2s=1&event_token=f0ob4r&app_token=4w565xzmb54d&idfa=D2CADB5F-410F-4963-AC0C-2A78534BDF1E&created_at=2017-01-02T15%3A04%3A05Z%2B0200&callback_params=%7B%22f0o%22%3A%22bar%22%2C%20%22bar%22%3A%22baz%22%7D&partner_params=%7B%22f0o%22%3A%22bar%22%2C%20%22bar%22%3A%22baz%22%7D&currency=EUR&revenue=123.4&environment=sandbox"
 ```
 
-</Tab>
-<Tab title="URL 파라미터가 포함된 POST">
+</Tab> <tab title="URL 파라미터가 포함된 POST"> 
 
 ```console
 curl -X POST \
 "https://s2s.adjust.com/event?s2s=1&event_token=f0ob4r&app_token=4w565xzmb54d&idfa=D2CADB5F-410F-4963-AC0C-2A78534BDF1E&created_at=2017-01-02T15%3A04%3A05Z%2B0200&callback_params=%7B%22f0o%22%3A%22bar%22%2C%20%22bar%22%3A%22baz%22%7D&partner_params=%7B%22f0o%22%3A%22bar%22%2C%20%22bar%22%3A%22baz%22%7D&currency=EUR&revenue=123.4&environment=sandbox"
 ```
 
-</Tab>
-<Tab title="body를 포함한 POST">
+</Tab> <tab title="body를 포함한 POST"> 
 
 ```console
 curl -X POST \
@@ -202,5 +189,5 @@ curl -X POST \
 "https://s2s.adjust.com/event"
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs>
+
