@@ -23,8 +23,8 @@ const buildLanguageTree = (localizedDocs: ContentCollectionEntry[]): [LanguageTr
    languages.forEach((language) => {
       // Filter the localizedDocs by language
       const content = localizedDocs.filter((doc) =>
-         doc.slug.startsWith(language)
-      );
+         doc.slug.split('/')[0] === language
+      )
 
       // Build the sidebar hierarchy and add each part to the relevant type
       const [hierarchy, slugMap] = buildSidebarHierarchy(content);

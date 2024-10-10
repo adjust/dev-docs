@@ -80,7 +80,7 @@ def process_file(file, locale):
 # Main function to find and process all relevant files
 def main():
     for locale in locales:
-        pattern = f"src/content/docs/**/**/*-{locale}.mdx"
+        pattern = f"src/content/docs/{locale}/**/*.mdx"
         files = glob.glob(pattern, recursive=True)
         for file in files:
             print(f"{file}")
