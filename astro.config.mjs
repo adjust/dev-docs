@@ -32,6 +32,8 @@ const prependLocaleToJSON = (input, locales) => {
   const result = {};
 
   for (const [key, value] of Object.entries(input)) {
+    const localeRegex = /^\/[a-z]{2}\//;
+    if (localeRegex.exec(value)) return;
     locales.forEach((locale) => {
       result[`/${locale}${key}`] = `/${locale}${value}`;
     });
@@ -45,6 +47,23 @@ const updatedRedirectList = prependLocaleToJSON(redirectList, locales);
 // https://astro.build/config
 export default defineConfig({
   redirects: updatedRedirectList,
+  i18n: {
+    defaultLocale: "en",
+    locales: ["en", "ja", "ko", "zh"],
+    routing: {
+      prefixDefaultLocale: true,
+      fallbackType: "rewrite",
+      redirectToDefaultLocale: false,
+    },
+    fallback: {
+      ja: "en",
+      ko: "en",
+      zh: "en"
+    },
+  },
+  experimental: {
+    contentCollectionCache: true
+  },
   integrations: [AutoImport({
     imports: [
       "@components/Accordion.astro",

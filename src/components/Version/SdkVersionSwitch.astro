@@ -25,6 +25,7 @@ const defaultVersion =
   class="flex flex-col w-full min-h-90px justify-start gap-y-4 bg-slate-100 p-6 rounded-lg mb-14"
   data-redirects={JSON.stringify(redirects)}
   data-default-version={defaultVersion}
+  data-lang={lang}
 >
   <label for="combobox">{t("sdkversionswitch.label")}</label>
   <div class="relative w-full">
@@ -67,9 +68,17 @@ const defaultVersion =
 
     if (versionSelect && comboboxHolder) {
       const redirectsAttribute = comboboxHolder.getAttribute("data-redirects");
-      const redirects = redirectsAttribute
-        ? JSON.parse(redirectsAttribute)
-        : {};
+      const lang = comboboxHolder.getAttribute("data-lang");
+      let redirects = redirectsAttribute ? JSON.parse(redirectsAttribute) : {};
+      for (const key in redirects) {
+        if (redirects.hasOwnProperty(key)) {
+          // Check if the value starts with the required string
+          if (!redirects[key].startsWith(`/${lang}/`)) {
+            // Prepend the required string if it doesn't start with it
+            redirects[key] = redirects[key].replace("/en/", `/${lang}/`);
+          }
+        }
+      }
 
       const urlParams = new URLSearchParams(window.location.search);
       const urlVersion = urlParams.get("version");

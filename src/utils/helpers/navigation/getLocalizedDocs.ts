@@ -2,13 +2,14 @@ import { KNOWN_LANGUAGE_CODES } from "@i18n/locales";
 import { getCollection } from "astro:content";
 import type { ContentCollectionEntry } from "@utils/helpers/navigation/types";
 
+const docs = await getCollection("docs");
+
 /**
  * Fetches all docs from our content collection and polyfills any missing localized content with
  * English content. Ensures that if a child exists, its parent also exists.
  * @returns An array of ContentCollectionEntry items
  */
-const getLocalizedDocs = async (): Promise<ContentCollectionEntry[]> => {
-   const docs = await getCollection("docs");
+const getLocalizedDocs = async (docs): Promise<ContentCollectionEntry[]> => {
 
    // Filter English docs (as fallback)
    const defaultLangFallback = docs.filter((doc) =>
@@ -25,23 +26,24 @@ const getLocalizedDocs = async (): Promise<ContentCollectionEntry[]> => {
    // Process each language
    return KNOWN_LANGUAGE_CODES.flatMap((langKey) => {
       const docsByLang = docs.filter((doc) => doc.slug.startsWith(`${langKey}/`));
+      const allSlugs = new Set(docsByLang.map((doc) => doc.slug));
 
-      // Use fallback content if language content is missing
-      let localizedDocs = docsByLang.length > 0
-         ? docsByLang
-         : defaultLangFallback.map((doc) => ({
-            ...doc,
-            slug: doc.slug.replace(/^en\//, `${langKey}/`),
-            isFallback: true, // Mark as fallback
-         }));
+      let localizedDocs = [...docsByLang];
 
-      // Ensure that every child item has its parent in the same language
-      const allSlugs = new Set(localizedDocs.map((doc) => doc.slug)); // Slugs we already have
+      // Loop through each English doc and check if there's a localized version
       defaultLangFallback.forEach((doc) => {
          const localizedSlug = doc.slug.replace(/^en\//, `${langKey}/`);
-         const parentSlug = findParentSlug(localizedSlug);
 
-         // If a child exists but the parent is missing, polyfill the parent
+         // If the localized version doesn't exist, add the fallback version
+         if (!allSlugs.has(localizedSlug)) {
+            localizedDocs.push({
+               ...doc,
+               slug: localizedSlug,
+               isFallback: true,
+            });
+            allSlugs.add(localizedSlug);
+         }
+         const parentSlug = findParentSlug(localizedSlug);
          if (parentSlug && !allSlugs.has(parentSlug)) {
             const parentDoc = defaultLangFallback.find((d) => d.slug === `en/${parentSlug.split('/').slice(1).join('/')}`);
             if (parentDoc) {
@@ -60,4 +62,4 @@ const getLocalizedDocs = async (): Promise<ContentCollectionEntry[]> => {
 }
 
 // Call the function to get the localized docs
-export const localizedDocs = await getLocalizedDocs();
+export const localizedDocs = await getLocalizedDocs(docs);
