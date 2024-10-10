@@ -56,7 +56,7 @@ slug: "ko/sdk/migration/unity/v5-purchase-verification"
    Adjust.trackEvent(adjustEvent);
    ```
 
-SDK v5에서는 이 워크플로우가 간소화되었습니다. `Adjust.verifyAndTrackAppStorePurchase()` 및 `Adjust.verifyAndTrackPlayStorePurchase()` 메서드를 통해 Adjust 서버로 이벤트를 보내고 인증 상태를 콜백으로 받을 수 있습니다. Adjust는 이벤트와 인증 상태를 자동으로 기록합니다.
+SDK v5에서는 이 워크플로우가 간소화되었습니다. `Adjust.verifyAndTrackAppStorePurchase()` 및 `Adjust.verifyAndTrackPlayStorePurchase()` 메서드를 사용하면 이벤트를 Adjust 서버로 전송하고, 검증 상태를 콜백으로 수신할 수 있습니다. Adjust는 이벤트와 검증 상태를 자동으로 기록합니다.
 
 ## 가이드 {#guide}
 
@@ -74,8 +74,8 @@ Adjust 구매 검증 SDK 삭제가 완료되면, 프로젝트에서 모든 구�
 
 기존의 구매 검증 코드를 삭제한 후에는 이를 SDK v5에 내장된 구매 검증 메서드로 교체할 수 있습니다. Adjust SDK로 구매를 검증하는 방법에는 두 가지가 있습니다.
 
-1. 구매를 나타내는 `AdjustEvent` 객체를 만들고 타깃 스토어에 대한 구매 속성을 구성합니다.
-2. 구매를 나타내는 `AdjustAppStorePurchase`\(Apple 앱 스토어\) 또는 `AdjustPlayStorePurchase`\(Google 플레이 스토어\) 객체를 생성합니다.
+1. 구매를 나타내는 `AdjustEvent` 객체를 생성하고 대상 스토어에 대한 구매 속성을 구성합니다.
+2. 구매를 나타내는 `AdjustAppStorePurchase` \(Apple App Store\) 또는 `AdjustPlayStorePurchase` \(Google Play Store\) 객체를 생성합니다.
 
 <Callout type="tip">
 
@@ -83,7 +83,7 @@ Adjust에서 구매를 측정하기 위해 매출 이벤트를 사용하는 경�
 
 </Callout>
 
-#### 이벤트 기록 및 구매 인증 {#record-event-and-verify-purchase}
+#### 이벤트 기록 및 구매 검증 {#record-event-and-verify-purchase}
 
 <Tabs>
 <Tab title="App Store" icon="StoreAppStore" sync="appstore">
@@ -93,11 +93,11 @@ Adjust에서 구매를 측정하기 위해 매출 이벤트를 사용하는 경�
 1. 이벤트 토큰으로 `AdjustEvent` 객체를 인스턴스화하고 다음 파라미터를 설정합니다.
 
    -  `ProductId` \(`string`\): 성공적으로 구매된 아이템의 제품 ID.
-   -  `TransactionId` \(`string`\): 인증할 거래의 ID.
+   -  `TransactionId` \(`string`\): 검증하고자 하는 트랜잭션의 ID.
 
-2. 다음 인수로 `Adjust.VerifyAndTrackPlayStorePurchase` 메서드를 호출합니다.
+2. 다음 인수와 함께 `Adjust.VerifyAndTrackPlayStorePurchase` 메서드를 호출합니다.
    -  `event` \(`AdjustEvent`\): 인스턴스화된 이벤트 객체.
-   -  `callback` \(`Action`\): 인수로 `AdjustPurchaseVerificationResult` 객체를 수신하는 델리게이트 콜백 함수.
+   -  `callback` \(`Action`\): `AdjustPurchaseVerificationResult` 객체를 인수로 수신하는 델리게이트 콜백 함수.
 
 이 예시에서, 구매 검증 응답은 logging daemon으로 출력됩니다.
 
@@ -121,12 +121,12 @@ Adjust.VerifyAndTrackPlayStorePurchase(adjustEvent, verificationResult =>
 
 1. 이벤트 토큰으로 `AdjustEvent` 객체를 인스턴스화하고 다음 파라미터를 설정합니다.
 
-   -  `ProductId` \(`String`\): 구매한 제품의 ID.
+   -  `ProductId` \(`String`\): 구매된 제품의 ID.
    -  `PurchaseToken` \(`String`\): 구매와 관련된 구매 토큰.
 
-2. 다음 인수로 `Adjust.VerifyAndTrackPlayStorePurchase` 메서드를 호출합니다.
+2. 다음 인수와 함께 `Adjust.VerifyAndTrackPlayStorePurchase` 메서드를 호출합니다.
    -  `ajustEvent` \(`AdjustEvent`\): 인스턴스화된 이벤트 객체.
-   -  `callback` \(`Action`\): 인수로 `AdjustPurchaseVerificationResult` 객체를 수신하는 델리게이트 콜백 함수.
+   -  `callback` \(`Action`\): `AdjustPurchaseVerificationResult` 객체를 인수로 수신하는 델리게이트 콜백 함수.
 
 이 예시에서, 구매 검증 응답은 logging daemon으로 출력됩니다.
 
@@ -156,11 +156,11 @@ Adjust.VerifyAndTrackPlayStorePurchase(adjustEvent, verificationResult =>
 1. 다음 인수를 사용하여 `AdjustAppStorePurchase` 객체를 인스턴스화합니다.
 
    -  `ProductId` \(`string`\): 성공적으로 구매된 아이템의 제품 ID.
-   -  `TransactionId` \(`string`\): 인증할 거래의 ID.
+   -  `TransactionId` \(`string`\): 검증하고자 하는 트랜잭션의 ID.
 
-2. 다음 인수로 `Adjust.VerifyAppStorePurchase` 메서드를 호출합니다.
+2. 다음 인수와 함께 `Adjust.VerifyAppStorePurchase` 메서드를 호출합니다.
    -  `purchase` \(`AdjustAppStorePurchase`\): 인스턴스화된 이벤트 객체.
-   -  `callback` \(`Action`\): 인수로 `AdjustPurchaseVerificationResult` 객체를 수신하는 델리게이트 콜백 함수.
+   -  `callback` \(`Action`\): `AdjustPurchaseVerificationResult` 객체를 인수로 수신하는 델리게이트 콜백 함수.
 
 이 예시에서, 구매 검증 응답은 logging daemon으로 출력됩니다.
 
@@ -181,12 +181,12 @@ Adjust.VerifyAppStorePurchase(purchase, verificationResult =>
 
 1. 다음 인수를 사용하여 `AdjustPlayStorePurchase`를 인스턴스화합니다.
 
-   -  `ProductId` \(`string`\): 구매한 제품의 ID.
+   -  `ProductId` \(`string`\): 구매된 제품의 ID.
    -  `PurchaseToken` \(`string`\): 구매와 관련된 구매 토큰.
 
-2. 다음 인수로 `Adjust.VerifyPlayStorePurchase` 메서드를 호출합니다.
+2. 다음 인수와 함께 `Adjust.VerifyPlayStorePurchase` 메서드를 호출합니다.
    -  `purchase` \(`AdjustPlayStorePurchase`\): 인스턴스화된 구매 객체.
-   -  `verificationResultCallback` \(`Action`\): 인수로 `AdjustPurchaseVerificationResult` 객체를 수신하는 델리게이트 콜백 함수.
+   -  `verificationResultCallback` \(`Action`\): `AdjustPurchaseVerificationResult` 객체를 인수로 수신하는 델리게이트 콜백 함수.
 
 이 예시에서, 구매 검증 응답은 logging daemon으로 출력됩니다.
 
