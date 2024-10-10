@@ -49,7 +49,7 @@ export const buildSidebarHierarchy = (entries: ContentCollectionEntry[]): [Langu
    const extractVersionFromSlug = (id: string): string | undefined => {
       const idParts = id.split('/');
       // If content is versioned, it will always be at the 3rd position
-      const versionIndex = 2;
+      const versionIndex = 3;
       const matchedVersion = versionRegex.exec(idParts[versionIndex]);
       return matchedVersion ? matchedVersion[0] : undefined;
    };
@@ -94,7 +94,7 @@ export const buildSidebarHierarchy = (entries: ContentCollectionEntry[]): [Langu
          if (
             childSlugParts.length === 4 &&
             versionRegex.test(childSlugParts[3]) &&
-            parentIdParts.length === 2 &&
+            parentIdParts.length === 3 &&
             childSlugParts.slice(0, 2).join("/") === parentSlugParts.join("/")
          ) {
             isSpecialCase = true;

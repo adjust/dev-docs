@@ -1,20 +1,15 @@
 ---
-import { type CollectionEntry } from "astro:content";
 import MainLayout from "./../../layouts/MainLayout.astro";
 import { localizedDocs } from "@utils/helpers/navigation/getLocalizedDocs";
 
 export async function getStaticPaths() {
-  return localizedDocs.map((doc) => ({
-    params: {
-      // The slug always starts with the lang as a two character string
-      lang: doc.slug.substring(0, 2),
-      slug: doc.slug.substring(3),
-    },
-    props: doc,
-  }));
-}
+  const paths = localizedDocs.map((page) => {
+    const [lang, ...slug] = page.slug.split("/");
+    return { params: { lang, slug: slug.join("/") || undefined }, props: page };
+  });
 
-type Props = CollectionEntry<"docs">;
+  return paths;
+}
 
 const post = Astro.props;
 
