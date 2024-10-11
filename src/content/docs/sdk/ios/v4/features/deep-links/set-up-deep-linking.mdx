@@ -35,7 +35,7 @@ Update your AppDelegate to implement direct and deferred deep linking.
 
 <CodeBlock title="AppDelegate.swift">
 
-```swift {38-39,54-101}
+```swift {40-41, 58-117}
 import Foundation
 import UIKit
 import Adjust
@@ -81,9 +81,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
         // Initialize Adjust SDK
         Adjust.appDidLaunch(adjustConfig)
 
-        // Example: initialize window and root view controller
+        // Example: initialize app's main window
+        // and set up the initial view hierarchy
         window = UIWindow(frame: UIScreen.main.bounds)
-        let rootViewController = ViewController()
+        let rootViewController = OnboardingViewController()
         let navigationController = UINavigationController(
             rootViewController: rootViewController)
         window?.rootViewController = navigationController
@@ -109,9 +110,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
                 self.window?.rootViewController as? UINavigationController
             {
                 // Handle incoming universal link
-                DeeplinkHandler.handleDeeplink(
-                    incomingLink,
-                    navigationController: navigationController)
+                DeeplinkHandler.handleDeeplink(incomingLink)
             }
         }
         return true
@@ -134,9 +133,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
             self.window?.rootViewController as? UINavigationController
         {
             // Handle incoming deep link
-            DeeplinkHandler.handleDeeplink(
-                incomingLink,
-                navigationController: navigationController)
+            DeeplinkHandler.handleDeeplink(incomingLink)
         }
         return true
     }
@@ -166,13 +163,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
 
 <CodeBlock title="AppDelegate.m">
 
-```objc {34-35, 53-103}
+```objc {37-38, 58-115}
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <Adjust/Adjust.h>
 
 @class DeeplinkHandler;
-@class ViewController;
+@class OnboardingViewController;
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, AdjustDelegate>
 @property(strong, nonatomic) UIWindow *window;
@@ -209,10 +206,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
     // Initialize Adjust SDK
     [Adjust appDidLaunch:adjustConfig];
 
-    // Example: initialize window and root view controller
+    // Example: initialize app's main window
+    // and set up the initial view hierarchy
     self.window =
         [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    UIViewController *rootViewController = [[UIViewController alloc] init];
+    OnboardingViewController *rootViewController =
+        [[OnboardingViewController alloc] init];
     UINavigationController *navigationController =
         [[UINavigationController alloc]
             initWithRootViewController:rootViewController];
@@ -239,8 +238,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
         if ([navigationController
                 isKindOfClass:[UINavigationController class]]) {
             // Handle incoming universal link
-            [DeeplinkHandler handleDeeplink:incomingLink
-                       navigationController:navigationController];
+            [DeeplinkHandler handleDeeplink:incomingLink];
         }
     }
     return YES;
@@ -262,8 +260,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
         (UINavigationController *)self.window.rootViewController;
     if ([navigationController isKindOfClass:[UINavigationController class]]) {
         // Handle incoming app scheme deep link
-        [DeeplinkHandler handleDeeplink:incomingLink
-                   navigationController:navigationController];
+        [DeeplinkHandler handleDeeplink:incomingLink];
     }
     return YES;
 }
@@ -298,20 +295,20 @@ For deferred deep linking, this is the sequence for most apps:
 3. The app begins its onboarding process (for example: ATT prompt, onboarding screens, login prompt).
 4. After the ATT prompt response or timeout, the Adjust SDK sends session and attribution requests to Adjust's servers.
 5. Adjust's servers respond with attribution data, including the deep link the user clicked on ("deferred deep link").
-6. The Adjust SDK triggers a deferred deep link callback in your app, which stores the deferred deep link (shown in the code example above).
-7. Once onboarding completes, the app retrieves the stored deep link and navigates the user accordingly (shown in the code example below).
+6. The Adjust SDK triggers a deferred deep link callback in your app, which stores the deferred deep link (shown in the AppDelegate implementation above).
+7. Once onboarding completes, the app retrieves the stored deep link and navigates the user accordingly (shown in the OnboardingViewController example class below).
 
 <Tabs>
 <Tab title="Swift" sync="swift">
 
-<CodeBlock title="ViewController.swift">
+<CodeBlock title="OnboardingViewController.swift">
 
 ```swift
 import Foundation
 import UIKit
 import Adjust
 
-class ViewController: UIViewController {
+class OnboardingViewController: UIViewController {
 
     var hasCompletedOnboarding: Bool {
         get {
@@ -346,9 +343,7 @@ class ViewController: UIViewController {
             UserDefaults.standard.removeObject(forKey: "lastDeferredLink")
 
             // Handle deferred deep link
-            DeeplinkHandler.handleDeeplink(
-                deferredLink, navigationController: self.navigationController)
-
+            DeeplinkHandler.handleDeeplink(deferredLink)
         }
         else {
             // Show main content
@@ -362,7 +357,7 @@ class ViewController: UIViewController {
 </Tab>
 <Tab title="Objective-C" sync="objc">
 
-<CodeBlock title="ViewController.m">
+<CodeBlock title="OnboardingViewController.m">
 
 ```objc
 #import <Foundation/Foundation.h>
@@ -371,17 +366,17 @@ class ViewController: UIViewController {
 
 @class DeeplinkHandler;
 
-@interface ViewController : UIViewController
+@interface OnboardingViewController : UIViewController
 
 @end
 
-@interface ViewController ()
+@interface OnboardingViewController ()
 
 @property(nonatomic, assign) BOOL hasCompletedOnboarding;
 
 @end
 
-@implementation ViewController
+@implementation OnboardingViewController
 
 - (BOOL)hasCompletedOnboarding {
     return [[NSUserDefaults standardUserDefaults]
@@ -417,8 +412,7 @@ class ViewController: UIViewController {
             removeObjectForKey:@"lastDeferredLink"];
 
         // Handle deferred deep link
-        [DeeplinkHandler handleDeeplink:deferredLink
-                   navigationController:self.navigationController];
+        [DeeplinkHandler handleDeeplink:deferredLink];
     } else {
         // Show main content
     }
@@ -432,7 +426,7 @@ class ViewController: UIViewController {
 </Tab>
 </Tabs>
 
-The preceding code examples use the example DeeplinkHandler class below. This code example handles all types of links:
+The preceding code examples use an example DeeplinkHandler class. This example class is shown below and handles all types of links:
 
 -  Adjust branded links (full go.link links)
 -  Adjust short branded links (short go.link links)
@@ -467,46 +461,104 @@ import UIKit
 import Adjust
 
 class DeeplinkHandler {
-
-    static func handleDeeplink(
-        _ incomingLink: URL,
-        navigationController: UINavigationController?
-    ) {
-        // Send incoming deep link to Adjust for attribution,
-        // and resolve short link, if applicable.
-        Adjust.processDeeplink(incomingLink) { processedLinkString in
-            guard let processedLink = URL(string: processedLinkString) else {
-                print("Invalid processed link")
-                return
-            }
-
-            // Extract path, query items, and fragment from the
-            // resolved link.
-            let components = URLComponents(
-                url: processedLink,
-                resolvingAgainstBaseURL: true)
-            let path = components?.path ?? ""
-            let queryItems = components?.queryItems
-            let fragment = components?.fragment
-
-            // Implement the navigation or other app-specific
-            // logic based on the deep link components.
-            // Example: Navigate to a specific view controller within the
-            // navigationController.
-            DispatchQueue.main.async {
-                // Example of navigating based on the path or
-                // other components. This is a placeholder.
-                // Replace with your actual navigation logic.
-                // Handle paths, query items, and fragments
-                // as needed.
-                if path == "/somePath" {
-                    let viewController = SomeViewController()
-                    navigationController?.pushViewController(
-                        viewController, animated: true)
-                }
-            }
-        }
+  static func handleDeeplink(_ incomingLink: URL) {
+    guard let navigationController = getNavigationController() else {
+      return
     }
+
+    // Send incoming deep link to Adjust's servers for attribution
+    // and to resolve short link, if applicable.
+    Adjust.processDeeplink(incomingLink) { processedLinkString in
+      guard let processedLink = URL(string: processedLinkString) else {
+        print("Invalid processed link")
+        return
+      }
+
+      // Extract path, query items, and fragment from the resolved link.
+      let components = URLComponents(
+        url: processedLink,
+        resolvingAgainstBaseURL: true)
+      let path = components?.path ?? ""
+      let queryItems = components?.queryItems ?? []
+
+      // Parse query parameters into a dictionary for easier access
+      let params = queryItems.reduce(into: [String: String]()) {
+        result, item in
+        result[item.name] = item.value
+      }
+      let fragment = components?.fragment
+
+      // Implement the navigation or other app-specific logic based on
+      // the deep link components.
+      DispatchQueue.main.async {
+        // Example of navigating based on the path or other components.
+        // Replace with your actual navigation logic.
+        // Handle paths, query items, and fragments as needed.
+        switch path {
+        case "/product":
+          if let productId = params["id"] {
+            let productVC = ProductViewController(
+              productId: productId
+            )
+            navigationController.pushViewController(
+              productVC,
+              animated: true
+            )
+          }
+        case "/category":
+          if let categoryName = params["name"] {
+            let categoryVC = CategoryViewController(
+              category: categoryName
+            )
+            navigationController.pushViewController(
+              categoryVC,
+              animated: true
+            )
+          }
+        case "/search":
+          if let query = params["q"] {
+            let searchVC = SearchViewController(
+              searchQuery: query
+            )
+            navigationController.pushViewController(
+              searchVC,
+              animated: true
+            )
+          }
+        default:
+          print("Unhandled deep link path: \(path)")
+        }
+      }
+    }
+  }
+
+  static func getNavigationController() -> UINavigationController? {
+    // For UIKit apps using AppDelegate lifecycle, get the navigation
+    // controller: This allows us to navigate to the appropriate view
+    // controller based on the deep link.
+    if let navigationController = UIApplication.shared.windows
+      .first(where: { $0.isKeyWindow })?
+      .rootViewController as? UINavigationController
+    {
+      return navigationController
+    }
+
+    // For UIKit apps using SceneDelegate lifecycle, use this instead to
+    // get the navigation controller:
+    /*
+        guard let sceneDelegate = UIApplication.shared.connectedScenes
+            .compactMap({ $0.delegate as? SceneDelegate })
+            .first,
+            let navigationController = sceneDelegate.window?
+                .rootViewController as? UINavigationController
+        else {
+            return nil
+        }
+        return navigationController
+        */
+
+    return nil
+  }
 }
 ```
 
@@ -523,54 +575,119 @@ class DeeplinkHandler {
 #import <Adjust/Adjust.h>
 
 @interface DeeplinkHandler : NSObject
-
-+ (void)handleDeeplink:(NSURL *)incomingLink
-    navigationController:(UINavigationController *)navigationController;
-
++ (void)handleDeeplink:(NSURL *)incomingLink;
 @end
 
 @implementation DeeplinkHandler
 
-+ (void)handleDeeplink:(NSURL *)incomingLink
-    navigationController:(UINavigationController *)navigationController {
-    // Send incoming deep link to Adjust for attribution,
-    // and resolve short link, if applicable.
-    [Adjust
-        processDeeplink:incomingLink
-             completion:^(NSString *_Nullable processedLinkString) {
-               NSURL *processedLink = [NSURL URLWithString:processedLinkString];
-               if (!processedLink) {
-                   NSLog(@"Invalid processed link");
-                   return;
-               }
++ (void)handleDeeplink:(NSURL *)incomingLink {
+    UINavigationController *navigationController = [self getNavigationController];
 
-               // Extract path, query items, and fragment from the
-               // resolved link.
-               NSURLComponents *components =
-                   [NSURLComponents componentsWithURL:processedLink
-                              resolvingAgainstBaseURL:YES];
-               NSString *path = components.path ?: @"";
-               NSArray<NSURLQueryItem *> *queryItems = components.queryItems;
-               NSString *fragment = components.fragment;
+    if (!navigationController) {
+        return;
+    }
 
-               // Implement the navigation or other app-specific
-               // logic based on the deep link components.
-               // Example: Navigate to a specific view controller within the
-               // navigationController.
-               dispatch_async(dispatch_get_main_queue(), ^{
-                 // Example of navigating based on the path or
-                 // other components. This is a placeholder.
-                 // Replace with your actual navigation logic.
-                 // Handle paths, query items, and fragments
-                 // as needed.
-                 if ([path isEqualToString:@"/somePath"]) {
-                     UIViewController *viewController =
-                         [[UIViewController alloc] init];
-                     [navigationController pushViewController:viewController
-                                                     animated:YES];
-                 }
-               });
-             }];
+    // Send incoming deep link to Adjust's servers for attribution
+    // and to resolve short link, if applicable.
+    [Adjust processDeeplink:incomingLink
+          completionHandler:^(NSString * _Nonnull processedLinkString) {
+        NSURL *processedLink = [NSURL URLWithString:processedLinkString];
+        if (!processedLink) {
+            NSLog(@"Invalid processed link");
+            return;
+        }
+
+        // Extract path, query items, and fragment from the resolved link.
+        NSURLComponents *components =
+            [NSURLComponents componentsWithURL:processedLink
+                       resolvingAgainstBaseURL:YES];
+        NSString *path = components.path ?: @"";
+        NSArray<NSURLQueryItem *> *queryItems = components.queryItems ?: @[];
+
+        // Parse query parameters into a dictionary for easier access
+        NSMutableDictionary<NSString *, NSString *> *params =
+            [NSMutableDictionary dictionary];
+        for (NSURLQueryItem *item in queryItems) {
+            params[item.name] = item.value;
+        }
+        NSString *fragment = components.fragment;
+
+        // Implement the navigation or other app-specific logic based on
+        // the deep link components.
+        dispatch_async(dispatch_get_main_queue(), ^{
+            // Example of navigating based on the path or other components.
+            // Replace with your actual navigation logic.
+            // Handle paths, query items, and fragments as needed.
+            if ([path isEqualToString:@"/product"]) {
+                NSString *productId = params[@"id"];
+                if (productId) {
+                    ProductViewController *productVC =
+                        [[ProductViewController alloc]
+                            initWithProductId:productId];
+                    [navigationController pushViewController:productVC
+                                                    animated:YES];
+                }
+            } else if ([path isEqualToString:@"/category"]) {
+                NSString *categoryName = params[@"name"];
+                if (categoryName) {
+                    CategoryViewController *categoryVC =
+                        [[CategoryViewController alloc]
+                            initWithCategory:categoryName];
+                    [navigationController pushViewController:categoryVC
+                                                    animated:YES];
+                }
+            } else if ([path isEqualToString:@"/search"]) {
+                NSString *query = params[@"q"];
+                if (query) {
+                    SearchViewController *searchVC =
+                        [[SearchViewController alloc]
+                            initWithSearchQuery:query];
+                    [navigationController pushViewController:searchVC
+                                                    animated:YES];
+                }
+            } else {
+                NSLog(@"Unhandled deep link path: %@", path);
+            }
+        });
+    }];
+}
+
++ (UINavigationController *)getNavigationController {
+    // For UIKit apps using AppDelegate lifecycle, get the navigation
+    // controller: This allows us to navigate to the appropriate view
+    // controller based on the deep link.
+    UINavigationController *navigationController = nil;
+    for (UIWindow *window in UIApplication.sharedApplication.windows) {
+        if (window.isKeyWindow) {
+            navigationController =
+                (UINavigationController *)window.rootViewController;
+            break;
+        }
+    }
+    if (!navigationController) {
+        return nil;
+    }
+
+    // For UIKit apps using SceneDelegate lifecycle, use this instead to
+    // get the navigation controller:
+    /*
+    for (UIWindowScene *scene in
+         UIApplication.sharedApplication.connectedScenes) {
+        id<UIWindowSceneDelegate> sceneDelegate =
+            (id<UIWindowSceneDelegate>)scene.delegate;
+        if ([sceneDelegate isKindOfClass:[SceneDelegate class]]) {
+            SceneDelegate *sceneDel = (SceneDelegate *)sceneDelegate;
+            navigationController =
+                (UINavigationController *)sceneDel.window.rootViewController;
+            break;
+        }
+    }
+    if (!navigationController) {
+        return nil;
+    }
+    */
+
+    return navigationController;
 }
 
 @end
@@ -606,10 +723,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     willConnectTo session: UISceneSession,
     options connectionOptions: UIScene.ConnectionOptions
   ) {
-    // Example: initialize and make the window visible
+    // Example: configure the scene's window
+    // and set up the initial view hierarchy
     guard let windowScene = (scene as? UIWindowScene) else { return }
     window = UIWindow(windowScene: windowScene)
-    let rootViewController = ViewController()
+    let rootViewController = OnboardingViewController()
     let navigationController = UINavigationController(
       rootViewController: rootViewController)
     window?.rootViewController = navigationController
@@ -619,9 +737,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       let incomingLink = urlContext.url
 
       // Handle incoming deep link
-      DeeplinkHandler.handleDeeplink(
-        incomingLink,
-        navigationController: navigationController)
+      DeeplinkHandler.handleDeeplink(incomingLink)
     }
   }
 
@@ -633,9 +749,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       let incomingLink = userActivity.webpageURL
     {
       // Handle incoming universal link
-      DeeplinkHandler.handleDeeplink(
-        incomingLink,
-        navigationController: navigationController)
+      DeeplinkHandler.handleDeeplink(incomingLink)
     }
   }
 
@@ -653,9 +767,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       let incomingLink = urlContext.url
 
       // Handle incoming deep link
-      DeeplinkHandler.handleDeeplink(
-        incomingLink,
-        navigationController: navigationController)
+      DeeplinkHandler.handleDeeplink(incomingLink)
     }
   }
 }
@@ -673,7 +785,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 #import <UIKit/UIKit.h>
 
 @class DeeplinkHandler;
-@class ViewController;
+@class OnboardingViewController;
 
 @interface SceneDelegate : UIResponder <UIWindowSceneDelegate>
 
@@ -689,11 +801,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 - (void)scene:(UIScene *)scene
     willConnectToSession:(UISceneSession *)session
                  options:(UISceneConnectionOptions *)connectionOptions {
-  // Example: initialize and make the window visible
+  // Example: configure the scene's window
+  // and set up the initial view hierarchy
   UIWindowScene *windowScene = (UIWindowScene *)scene;
   self.window = [[UIWindow alloc] initWithWindowScene:windowScene];
-  ViewController *rootViewController = [[ViewController alloc] init];
-  UINavigationController *navigationController = [[UINavigationController alloc]
+  OnboardingViewController *rootViewController =
+      [[OnboardingViewController alloc] init];
+  UINavigationController *navigationController =
+      [[UINavigationController alloc]
       initWithRootViewController:rootViewController];
   self.window.rootViewController = navigationController;
   [self.window makeKeyAndVisible];
@@ -704,8 +819,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     NSURL *incomingLink = urlContext.URL;
 
     // Handle incoming deep link
-    [DeeplinkHandler handleDeeplink:incomingLink
-               navigationController:navigationController];
+    [DeeplinkHandler handleDeeplink:incomingLink];
   }
 }
 
@@ -719,8 +833,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     NSURL *incomingLink = userActivity.webpageURL;
 
     // Handle incoming universal link
-    [DeeplinkHandler handleDeeplink:incomingLink
-               navigationController:self.window.rootViewController];
+    [DeeplinkHandler handleDeeplink:incomingLink];
   }
 }
 
@@ -738,8 +851,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     NSURL *incomingLink = urlContext.URL;
 
     // Handle incoming deep link
-    [DeeplinkHandler handleDeeplink:incomingLink
-               navigationController:self.window.rootViewController];
+    [DeeplinkHandler handleDeeplink:incomingLink];
   }
 }
 
