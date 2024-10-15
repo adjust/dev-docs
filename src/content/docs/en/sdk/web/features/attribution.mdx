@@ -1,0 +1,113 @@
+---
+title: Get attribution information
+description: Listen for attribution changes using the Adjust SDK
+slug: en/sdk/web/features/attribution
+---
+
+When a user interacts with an Adjust link, their attribution information updates. This can happen if the user interacts with a [deep link](https://help.adjust.com/en/article/deep-links). Information about a user's attribution is represented in an Attribution object.
+
+The Attribution object contains the following information:
+
+<CodeBlock title="Interface declaration">
+
+```js
+export type AttributionMapT = $ReadOnly<{|
+   adid: string,
+   tracker_token: string,
+   tracker_name: string,
+   network?: string,
+   campaign?: string,
+   adgroup?: string,
+   creative?: string,
+   click_label?: string,
+   state: string,
+|}>;
+```
+
+</CodeBlock>
+
+| Values          | Data type | Description                                                                                         |
+| --------------- | --------- | --------------------------------------------------------------------------------------------------- |
+| `adid`          | `string`  | The device's unique Adjust identifier.                                                              |
+| `tracker_token` | `string`  | The link token associated with the attribution.                                                     |
+| `tracker_name`  | `string`  | The name of the campaign link.                                                                      |
+| `network`       | `string`  | The network associate with the campaign.                                                            |
+| `campaign`      | `string`  | The name of the campaign associated with the attribution.                                           |
+| `adgroup`       | `string`  | The adgroup associated with the attribution.                                                        |
+| `creative`      | `string`  | The creative associated with the attribution.                                                       |
+| `click_label`   | `string`  | The [click label](https://help.adjust.com/en/article/user-rewards) associated with the attribution. |
+| `state`         | `string`  | The current state of the attribution. Either `installed` or `reattributed`                          |
+
+## Trigger a callback when attribution changes {#trigger-a-callback-when-attribution-changes}
+
+<CodeBlock title="Property declaration">
+
+```js
+attributionCallback: (string, Object) => mixed;
+```
+
+</CodeBlock>
+
+The SDK can listen for attribution changes and call a function when it detects an update. You can set an attribution callback method by specifying an `attributionCallback` function in the `initSdk` method. Within your function, you have access to the user's attribution information.
+
+```js
+Adjust.initSdk({
+   appToken: "YOUR_APP_TOKEN",
+   environment: "sandbox",
+   attributionCallback: function (e, attribution) {
+      console.log("Adid: " + attribution.adid);
+      console.log("Tracker Token: " + attribution.tracker_token);
+      console.log("Tracker Name: " + attribution.tracker_name);
+      console.log("Network: " + attribution.network);
+      console.log("Campaign: " + attribution.campaign);
+      console.log("Adgroup: " + attribution.adgroup);
+      console.log("Creative: " + attribution.creative);
+      console.log("Click Label: " + attribution.click_label);
+      console.log("Attribution State: " + attribution.state);
+   },
+});
+```
+
+## Get current attribution information {#get-current-attribution-information}
+
+<CodeBlock title="Method signature">
+
+```js
+function getAttribution(): Attribution | undefined;
+```
+
+</CodeBlock>
+
+When a user installs your app, Adjust attributes the install to a campaign. The Adjust SDK gives you access to campaign attribution details for your install. To return this information, call the `getAttribution` method.
+
+```js
+const attribution = Adjust.getAttribution();
+```
+
+## Set a referrer {#set-a-referrer}
+
+<CodeBlock title="Method signature">
+
+```js
+function setReferrer(referrer: string): void;
+```
+
+</CodeBlock>
+
+You can set a referrer to trigger an SDK click with a custom click ID when the SDK starts. The SDK sends your custom click ID to Adjust's servers for attribution purposes.
+
+<Callout type="important">
+
+Call this method as close to initializing the SDK as possible to ensure your referrer is used for attribution.
+
+</Callout>
+
+To set your referrer, call the `setReferrer` method and pass your referrer as a URL-encoded `string` argument.
+
+<CodeBlock highlight="adjust_external_click_id%3DEXTERNAL_CLICK_ID\">
+
+```js
+Adjust.setReferrer("adjust_external_click_id%3DEXTERNAL_CLICK_ID");
+```
+
+</CodeBlock>

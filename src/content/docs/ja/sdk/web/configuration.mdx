@@ -1,0 +1,257 @@
+---
+title: "設定"
+description: "Adjust SDKを設定するには、このセクションのガイドに従ってください。"
+category-title: "設定"
+slug: "ja/sdk/web/configuration"
+sidebar-position: 1
+---
+
+`Adjust.initSdk`メソッドにプロパティを割り当てることで、Adjust SDKの動作を設定することができます。
+
+## 必要な設定 {#required-configuration}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```ts
+function initSdk({ logLevel, logOutput, ...options }: InitOptions): void;
+```
+
+</CodeBlock>
+
+Adjust SDKを設定するには、次の引数を使用して`Adjust.initSdk`メソッドを呼び出す必要があります。
+
+-  `appToken` （`string`）：お客様の[Adjustアプリトークン](https://help.adjust.com/ja/article/app-token-and-reporting-currency#view-your-app-details)。
+-  `environment` （`string`）：SDKを実行したい環境。テスト用のサンドボックスモードでSDKを実行するには`sandbox`をパスします。リリース用の本番モードでSDKを実行するには`production`をパスします。
+
+```js
+Adjust.initSdk({
+   appToken: "YOUR_APP_TOKEN",
+   environment: "sandbox",
+});
+```
+
+### ログのオプション {#logging-options}
+
+<CodeBlock title="インターフェイス宣言">
+
+```js
+export type LogOptionsT = $ReadOnly<
+   $Shape<{|
+      logLevel: "none" | "error" | "warning" | "info" | "verbose",
+      logOutput: string,
+   |}>
+>;
+
+```
+
+</CodeBlock>
+
+Adjust SDKは、さまざまな量の情報を返すために、設定可能なログレベルを提供しています。以下のログレベルが利用可能です。
+
+| 値        | 説明                         |
+| --------- | ---------------------------- |
+| `verbose` | ログをフルで有効化する       |
+| `info`    | 情報、警告、エラーログを返す |
+| `warning` | 警告とエラーログを返す       |
+| `error`   | エラーログのみを返す         |
+| `none`    | 全てのログを無効化する       |
+
+ログレベルを設定するには、`initSdk`メソッドに`logLevel`引数を指定します。値をパスしない場合、SDKのデフォルトは`error`となります。
+
+```js
+Adjust.initSdk({
+   appToken: "YOUR_APP_TOKEN",
+   environment: "sandbox",
+   logLevel: "verbose",
+});
+```
+
+#### ログアウトプットを設定する {#set-log-output}
+
+Webアプリでログの出力先を他に設定することで、ログを画面に直接表示することができます。これを設定するには、`initSdk`メソッドの`logOutput`引数にHTMLセレクターを指定します。SDKのログはこのコンテナに出力されます。
+
+```js
+Adjust.initSdk({
+   appToken: "YOUR_APP_TOKEN",
+   environment: "sandbox",
+   logOutput: "#logDiv",
+});
+```
+
+## 初期化オプション {#initialization-options}
+
+<CodeBlock title="インターフェイス宣言">
+
+```js
+export type InitOptionsT = $ReadOnly<
+   $Shape<{|
+      appToken: $PropertyType<BaseParamsT, "appToken">,
+      environment: $PropertyType<BaseParamsT, "environment">,
+      defaultTracker: $PropertyType<BaseParamsT, "defaultTracker">,
+      externalDeviceId: $PropertyType<BaseParamsT, "externalDeviceId">,
+      customUrl: $PropertyType<CustomConfigT, "customUrl">,
+      dataResidency: $PropertyType<CustomConfigT, "dataResidency">,
+      urlStrategy: $PropertyType<CustomConfigT, "urlStrategy">,
+      eventDeduplicationListLimit: $PropertyType<
+         CustomConfigT,
+         "eventDeduplicationListLimit"
+      >,
+      namespace: $PropertyType<CustomConfigT, "namespace">,
+      attributionCallback: (string, Object) => mixed,
+   |}>
+>;
+
+```
+
+</CodeBlock>
+
+### 外部デバイスIDを設定する {#set-external-device-identifier}
+
+<CodeBlock title="プロパティ宣言">
+
+```js
+externalDeviceId: string;
+```
+
+</CodeBlock>
+
+外部デバイスIDは、デバイスまたはユーザーに割り当てることができるカスタム値です。セッションやプラットフォームを横断してユーザーを認識することができます。また、ユーザーが新規インストールとして2度カウントされないように、ユーザーごとにインストールの重複を排除することも可能です。外部デバイスIDの使用を開始する際は、Adjustの担当者にお問い合わせください。
+
+外部デバイスIDをデバイスのカスタム識別子として使用できます。これは、他のシステム上で継続性を保ちたい場合に役立ちます。`Adjust.initSdk`を呼び出すとき、外部デバイスIDを`externalDeviceId`引数としてパスします。
+
+<Callout type="seealso">
+
+詳細は、Adjustヘルプセンターの[外部デバイスIDのページ](https://help.adjust.com/ja/article/external-device-identifiers)をご覧ください。
+
+</Callout>
+
+```js
+Adjust.initSdk({
+   appToken: "YOUR_APP_TOKEN",
+   environment: "sandbox",
+   externalDeviceId: "YOUR_EXTERNAL_DEVICE_ID",
+});
+```
+
+外部デバイスIDをビジネスアナリティクスに使用する場合は、IDを[セッションコールバックパラメーター](/ja/sdk/web/features/global-params)としてパスすることができます。
+
+既存の外部デバイスIDをAdjustにインポートすることが可能です。これにより、Adjustサーバーが今後のデータを既存のデバイス記録と一致させることができます。この設定をご希望の場合は、Adjustの担当者にお問い合わせください。
+
+### デフォルトのリンクトークンを設定する {#set-default-link-token}
+
+<CodeBlock title="プロパティ宣言">
+
+```js
+defaultTracker: string;
+```
+
+</CodeBlock>
+
+アプリがデバイスにプリインストールされている場合、デフォルトのリンクトークンを設定できます。ユーザーがプリインストールされたアプリを初めて起動すると、インストールはデフォルトのリンクトークンにアトリビュートされます。`Adjust.initSdk`を呼び出すとき、`defaultTracker`引数でトークンをパスします。
+
+```js
+Adjust.initSdk({
+   appToken: "YOUR_APP_TOKEN",
+   environment: "sandbox",
+   defaultTracker: "YOUR_LINK_TOKEN",
+});
+```
+
+### ストレージの名前空間を設定する {#set-storage-namespace}
+
+<CodeBlock title="プロパティ宣言">
+
+```js
+namespace: string;
+```
+
+</CodeBlock>
+
+Adjust SDKは、デフォルトでデータを保存するストレージの名前空間を作成します。データの宛先を制御する場合は、これをオーバーライドしてカスタム名前空間を指定することができます。
+
+SDKがデフォルトの名前空間に保存していたデータは、カスタム名前空間が設定されるとその名前空間に移動します。
+
+<Callout type="warning">
+
+設定後はカスタム名前空間を変更しないでください。カスタム名前空間に保存された情報は、新しい名前空間に移動 **されません** 。
+
+</Callout>
+
+`initSdk`メソッドで`namespace`プロパティを指定することで、カスタム名前空間を設定することができます。
+
+```js
+Adjust.initSdk({
+   appToken: "YOUR_APP_TOKEN",
+   environment: "sandbox",
+   namespace: "myCustomNamespace",
+});
+```
+
+## 動的設定 {#dynamic-configuration}
+
+**動的** 設定オプションは、SDKのライフサイクル中に、ユーザーによるイベントやアクションに応じて変更されることがあります。
+
+### オフラインモードに切り替える {#toggle-offline-mode}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```js
+function switchToOfflineMode(): void;
+```
+
+</CodeBlock>
+<Callout type="important">
+
+このオフラインモード設定は、セッション間では記憶されません。オフラインモードは、新規セッションの開始時に非有効化されます。
+
+</Callout>
+
+Adjust SDKは、イベントとセッションのデータをAdjustのサーバーにリアルタイムで送信します。SDKをオフラインモードにすると、情報の送信を一時停止することができます。オフラインモードでは、SDKは全てのデータをブラウザのIndexedDBに保存するか、または、IndexedDBがサポートされていない場合は、localStorage に保存します。
+
+以下の引数を使用して`switchToOfflineMode`メソッドを呼び出すことで、いつでもオフランモードに切り替えられます：
+
+```js
+Adjust.switchToOfflineMode();
+```
+
+#### イベントバッファリング {#event-buffering}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```js
+function switchBackToOnlineMode(): void;
+```
+
+</CodeBlock>
+
+オフラインモードを無効にすると、SDKは保存されている全ての情報をAdjustのサーバーに送信します。これを行うには、`switchBackToOnlineMode`メソッドを呼び出します。
+
+```js
+Adjust.switchBackToOnlineMode();
+```
+
+### SDKを無効化する {#disable-the-sdk}
+
+```js
+function stop(): void;
+```
+
+Adjust SDKは、デフォルトでアプリが開いている時に実行されます。Adjust SDKを無効化または再有効化することで、計測を一時停止したり再起動したりすることができます。Adjust SDKを無効にすると、Adjustサーバーにデータが送信されなくなります。
+
+`stop`メソッドを呼び出すことで、Adjust SDKをいつでも無効化できます。
+
+```js
+Adjust.stop();
+```
+
+### SDKを再有効化する {#reenable-the-sdk}
+
+```js
+function restart(): void;
+```
+
+`restart`メソッドを呼び出すことで、Adjust SDKをいつでも再起動できます。
+
+```js
+Adjust.restart();
+```

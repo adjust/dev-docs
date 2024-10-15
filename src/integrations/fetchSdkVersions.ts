@@ -2,35 +2,47 @@ import { Octokit } from "@octokit/core";
 
 const octokit = new Octokit({ auth: import.meta.env.VITE_GITHUB_TOKEN });
 
-let versionReplacements: VersionMap = {
-  android: {
-    v4: "vx.x.x",
-    v5: "vx.x.x",
-  },
-  ios: {
-    v4: "vx.x.x",
-    v5: "vx.x.x",
-  },
-  unity: {
-    v4: "vx.x.x",
-    v5: "vx.x.x",
-  },
-  react_native: {
-    v4: "vx.x.x",
-    v5: "vx.x.x",
-  },
-  cordova: {
-    v4: "vx.x.x",
-    v5: "vx.x.x",
-  },
-  flutter: {
-    v4: "vx.x.x",
-    v5: "vx.x.x",
-  },
-  web: "vx.x.x",
-  windows: "vx.x.x",
+type TagNode = {
+  node: {
+    name: string;
+  };
 };
 
+// Define the shape of the GraphQL response
+type GraphQLResponse = {
+  v4Tags: {
+    refs: {
+      edges: TagNode[];
+    };
+  };
+  v5Tags: {
+    refs: {
+      edges: TagNode[];
+    };
+  };
+  latestTag?: {
+    refs: {
+      edges: TagNode[];
+    };
+  };
+};
+
+let versionReplacements: VersionMap = {
+  android: { v4: "x.x.x", v5: "x.x.x" },
+  ios: { v4: "x.x.x", v5: "x.x.x" },
+  unity: { v4: "x.x.x", v5: "x.x.x" },
+  react_native: { v4: "x.x.x", v5: "x.x.x" },
+  cordova: { v4: "x.x.x", v5: "x.x.x" },
+  flutter: { v4: "x.x.x", v5: "x.x.x" },
+  cocos2dx: { v4: "x.x.x", v5: "x.x.x" },
+  web: "x.x.x",
+  windows: "x.x.x",
+};
+
+/**
+ * Queries the GitHub GraphQL endpoint for the latest versioned tag of each platform
+ * @returns A VersionMap of the latest versions of each SDK
+ */
 export async function fetchVersions() {
   try {
     if (import.meta.env.PROD) {
@@ -38,42 +50,71 @@ export async function fetchVersions() {
         async (platform) => {
           const currentPlatform = versionReplacements[platform];
           if (typeof currentPlatform === "object") {
-            const response = await octokit.request(
-              "GET /repos/{owner}/{repo}/releases",
-              {
-                owner: "adjust",
-                repo: `${platform}_sdk`,
-                per_page: 5,
-              },
-            );
-            let firstV4Release = "";
-            let firstV5Release = "";
+            const query = `
+              query RepositoryTags {
+                v4Tags: repository(owner: "adjust", name: "${platform}_sdk") {
+                  refs(
+                    refPrefix: "refs/tags/"
+                    orderBy: { field: TAG_COMMIT_DATE, direction: DESC }
+                    first: 1
+                    query: "v4"
+                  ) {
+                    edges {
+                      node {
+                        name
+                      }
+                    }
+                  }
+                }
+                v5Tags: repository(owner: "adjust", name: "${platform}_sdk") {
+                  refs(
+                    refPrefix: "refs/tags/"
+                    orderBy: { field: TAG_COMMIT_DATE, direction: DESC }
+                    first: 1
+                    query: "v5"
+                  ) {
+                    edges {
+                      node {
+                        name
+                      }
+                    }
+                  }
+                }
+              }
+            `;
 
-            for (const release of response.data) {
-              if (!firstV4Release && release.tag_name.startsWith("v4")) {
-                firstV4Release = release.tag_name;
-              }
-              if (!firstV5Release && release.tag_name.startsWith("v5")) {
-                firstV5Release = release.tag_name;
-              }
-              if (firstV4Release && firstV5Release) {
-                break;
-              }
-            }
+            const response = await octokit.graphql<GraphQLResponse>(query);
 
-            currentPlatform.v4 = firstV4Release;
-            currentPlatform.v5 = firstV5Release;
+            // Extract the first v4 and v5 tag names
+            const firstV4Tag = response.v4Tags.refs.edges[0]?.node.name.replace("v", "") || "Not found";
+            const firstV5Tag = response.v5Tags.refs.edges[0]?.node.name.replace("v", "") || "Not found";
+
+            currentPlatform.v4 = firstV4Tag;
+            currentPlatform.v5 = firstV5Tag;
           } else {
-            const response = await octokit.request(
-              "GET /repos/{owner}/{repo}/releases/latest",
-              {
-                owner: "adjust",
-                repo: `${platform}_sdk`,
-              },
-            );
-            versionReplacements[platform] = response.data.tag_name;
+            const query = `
+              query RepositoryTags {
+                latestTag: repository(owner: "adjust", name: "${platform}_sdk") {
+                  refs(
+                    refPrefix: "refs/tags/"
+                    orderBy: { field: TAG_COMMIT_DATE, direction: DESC }
+                    first: 1
+                    query: "v"
+                  ) {
+                    edges {
+                      node {
+                        name
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+
+            const response = await octokit.graphql<GraphQLResponse>(query);
+            versionReplacements[platform] = response.latestTag?.refs.edges[0]?.node.name.replace("v", "") || "Not found";
           }
-        },
+        }
       );
 
       await Promise.all(fetchPromises);

@@ -1,0 +1,68 @@
+---
+title: "Status endpoint"
+description: "Use the status endpoint to check the status of your new app"
+slug: en/api/app-automation-api/status-endpoint
+sidebar-position: 4
+---
+
+Use the `/status` endpoint to check the status of your new app. This endpoint returns the status of the process that copies settings from your `_Template` app to your new app.
+
+<CodeBlock title="Endpoint" highlight="/status, {ticket_token}">
+
+```http
+GET https://settings.adjust.com/api/status/{ticket_token}
+```
+
+</CodeBlock>
+
+## Fetch copy process {#fetch-copy-process}
+
+Use this endpoint to return the status of a settings copy process. You receive your `ticket_token` when you create your app using the [`/app` endpoint](/en/api/app-automation-api/app-endpoint).
+
+| Name             | Data type | In   | Description                                                                                                 |
+| ---------------- | --------- | ---- | ----------------------------------------------------------------------------------------------------------- |
+| `ticket_token`\* | `String`  | Path | The token of the ticket you want to check. <br />The `/app` endpoint returns this when you create your app. |
+
+```json
+{
+   "status": "String"
+}
+```
+
+### Statuses {#statuses}
+
+-  `NEW`: the ticket was created, but the migration job hasn't started.
+-  `OPENED`: the job for this ticket has started.
+-  `FAILED`: the job failed.
+-  `COMPLETED`: the job was completed successfully.
+
+## Example {#example}
+
+<CodeBlock title="cURL" highlight="<ticket_token>">
+
+```console
+$ curl \
+--header "AdjustAuthorization: Token <adjust api token>" \
+--header "SignatureAuthorization: Token <adjust signature token>" \
+-X GET https://settings.adjust.com/api/status/<ticket_token>
+```
+
+</CodeBlock>
+
+<CodeBlock title="Success response">
+
+```json
+{
+   "status": "OPENED",
+   "events": {
+      "successes": [],
+      "failures": []
+   },
+   "partners": {
+      "section": "partners",
+      "detail": "Could not be start, because {events} sections has failed"
+   }
+}
+```
+
+</CodeBlock>

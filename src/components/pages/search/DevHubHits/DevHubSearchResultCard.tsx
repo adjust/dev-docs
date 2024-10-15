@@ -3,18 +3,9 @@ import classNames from "classnames";
 import { Snippet } from "react-instantsearch";
 
 import type { DevHubSearchResultCardProps, HitBreadcrumb } from "./types";
-import type { Hit } from "../types";
 
 const DevHubSearchResultCard: FC<DevHubSearchResultCardProps> = ({ hit }) => {
-  // need to manually add an ellipsis cause Typesense doesn`t support this in the config
-  const updateHitSnippet = (hit: Hit<any>) => {
-    if (hit._snippetResult.content.matchedWords?.length) {
-      hit._snippetResult.content.value = `... ${hit._snippetResult.content.value} ...`;
-    }
-    return hit;
-  };
-
-  const updatedHit = updateHitSnippet(hit);
+  const isEllipsis = !!hit._snippetResult?.content?.matchedWords?.length;
 
   return (
     <div className="max-w-[956px]">
@@ -47,9 +38,12 @@ const DevHubSearchResultCard: FC<DevHubSearchResultCardProps> = ({ hit }) => {
         </h5>
         <p className="text-heading-5 h-[40px] text-ellipsis overflow-hidden text-search-primary">
           <Snippet
-            hit={updatedHit}
+            hit={hit}
             attribute="content"
-            className="overflow-hidden text-ellipsis box"
+            className={classNames("overflow-hidden text-ellipsis box", {
+              "after:ml-1 after:content-['...']  before:mr-1 before:content-['...']":
+                isEllipsis,
+            })}
             style={{
               WebkitBoxOrient: "vertical",
               MozBoxOrient: "vertical",

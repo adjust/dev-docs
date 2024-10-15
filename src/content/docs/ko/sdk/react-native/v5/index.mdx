@@ -1,0 +1,223 @@
+---
+title: React Native SDK 연동 가이드
+description: React Native SDK를 사용해 React Native 앱의 Adjust 기능에 액세스
+category-title: React Native SDK
+slug: ko/sdk/react-native
+sidebar-position: 4
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v4: /ko/sdk/react-native/v4
+---
+
+Adjust React Native SDK를 통해 React Native 앱의 어트리뷰션, 이벤트 등을 측정할 수 있습니다. 본 가이드의 단계를 수행하여 Adjust SDK와 연동되도록 앱을 설정하시기 바랍니다. 이에 대한 예시는 [GitHub](https://github.com/adjust/react_native_sdk/tree/master/example)에서 확인하실 수 있습니다.
+
+<Callout type="important">
+
+Adjust SDK는 iOS 12 이상 버전과 Android API level 21 \(Lollipop\) 이상을 지원합니다.
+
+</Callout>
+
+## 1\. Add the SDK to your project {#1-add-the-sdk-to-your-project}
+
+React Native 앱에서 Adjust SDK를 시작하려면 우선 프로젝트에 Adjust SDK를 추가해야 합니다. Adjust SDK를 추가를 위해 다음 단계를 따르시기 바랍니다.
+
+1. 다음 방법 중 한 가지를 사용하여 React Native 라이브러리를 다운로드합니다.
+
+```console
+$ npm install react-native-adjust@$REACT_NATIVE_V5_VERSION --save
+```
+
+2. 터미널에서 다음 명령어를 실행하여 iOS 앱용 CocoaPods 디펜던시를 설치합니다.
+
+```console
+$ cd ios && pod install
+```
+
+## 2\. Integrate the SDK {#2-integrate-the-sdk}
+
+SDK를 프로젝트에 연동하려면 Adjust의 SDK 구성을 메인 앱 Javascript 파일로 가져와야 합니다.
+
+앱의 `.js` 파일 시작 부분에 다음 라인을 추가합니다.
+
+```js
+import { Adjust, AdjustConfig } from "react-native-adjust";
+```
+
+## 3\. Initialize the Adjust SDK {#3-initialize-the-adjust-sdk}
+
+React Native 앱에서 최대한 빨리 Adjust SDK를 초기화하시기 바랍니다. 이를 위해 앱 토큰 및 앱을 실행하고자 하는 환경과 함께 config 객체를 초기화하시기 바랍니다. 앱의 `.js` 파일 시작 부분에 다음 코드 라인을 추가합니다.
+
+```js
+constructor(props) {
+   super(props);
+   const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+   Adjust.initSdk(adjustConfig);
+}
+
+componentWillUnmount() {
+   Adjust.componentWillUnmount();
+}
+```
+
+다음 `AdjustConfig` 인수를 전달합니다.
+
+-  `{YourAppToken}`을 귀하의 토큰으로 교체합니다. 앱 토큰 확인 방법은 [앱 설정](https://help.adjust.com/ko/article/app-settings#view-your-app-token) 페이지를 참조하시기 바랍니다.
+-  **앱 환경** 을 선택합니다.
+   -  앱을 테스트하며 테스트 데이터를 전송하려는 경우 `AdjustConfig.EnvironmentSandbox`를 사용합니다. 테스트 데이터를 보려면 대시보드에서 [샌드박스 모드를 활성화](https://help.adjust.com/ko/article/filter-data#sandbox)해야 합니다.
+   -  테스트를 끝내고 앱 출시가 준비되면 `AdjustConfig.EnvironmentProduction`을 사용하십시오.
+
+<Callout type="important">
+
+테스트 시에는 환경이 `AdjustEnvironment.sandbox`로 설정되어야 합니다. 앱을 앱스토어에 제출하기 전에 이를 `AdjustEnvironment.production`으로 변경합니다.
+
+</Callout>
+
+## 4\. Set up Android devices {#4-set-up-android-devices}
+
+### Add permissions {#add-permissions}
+
+Adjust SDK는 정보 액세스를 위한 특정 권한이 필요합니다.
+
+-  `INTERNET`: Adjust Android SDK에 자동으로 추가됨. 수동으로 추가할 필요는 없습니다.
+
+추가 정보에 대한 액세스를 허용하는 선택적 권한을 추가할 수도 있습니다.
+
+-  `ACCESS_NETWORK_STATE` \(선택\): 이를 `AndroidManifest.xml` 파일에 추가하여 유용한 특정 파라미터를 읽을 수 있습니다.
+
+<CodeBlock title="<code>AndroidManifest.xml</code>을 실행합니다.">
+
+```xml
+<uses-permission android:name="android.permission.INTERNET"/>
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
+```
+
+</CodeBlock>
+
+Adjust SDK 4\.32\.0 및 이상 버전에는 `com.google.android.gms.AD_ID` 권한이 기본값으로 포함됩니다. 앱이 COPPA 준수 대상이거나 Google 플레이 스토어를 타겟으로 하지 않는 경우, `remove`를 추가하여 이 권한을 제거할 수 있습니다.
+
+<CodeBlock title="<code>AndroidManifest.xml</code>을 실행합니다.">
+
+```xml
+<uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
+```
+
+</CodeBlock>
+<Callout type="seealso">
+
+이 권한에 대한 자세한 내용은 Google의 [`AdvertisingIdClient.Info`](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid) 문서를 참조하시기 바랍니다.
+
+</Callout>
+
+### Add Google Play Services {#add-google-play-services}
+
+Google Play Store를 타겟팅하는 앱은 기기를 식별하기 위해 반드시 [Google Advertising ID](https://support.google.com/googleplay/android-developer/answer/6048248?hl=en) \(`gps_adid`\)를 사용해야 합니다. 이를 위해 `build.gradle` 파일의 `dependencies` 섹션에 다음의 디펜던시를 추가합니다.
+
+<CodeBlock title="build.gradle">
+
+```groovy
+implementation 'com.google.android.gms:play-services-ads-identifier:18.1.0'
+```
+
+</CodeBlock>
+<Callout type="note">
+
+Adjust SDK는 `play-services-ads-identifier` 디펜던시의 버전과 연결되어 있지 않습니다. 따라서 Google 플레이 서비스 라이브러리의 모든 버전을 사용할 수 있습니다.
+
+</Callout>
+
+### Set up install referrer {#set-up-install-referrer}
+
+설치 리퍼러는 앱 설치를 소스에 어트리뷰션하는 데 사용할 수 있는 어트리뷰션 메커니즘입니다. 이는 두 개의 부분으로 구성됩니다.
+
+-  [x] 개발자가 앱에서 추천 콘텐츠를 검색할 수 있도록 하는 앱 스토어의 API 집합체입니다.
+-  [x] Google Play 및 Huawei App Gallery와 같은 앱 스토어가 스토어 웹사이트의 앱 페이지 URL에서 허용하는 `referrer` 파라미터입니다. 리퍼러 파라미터가 생성되는 방법은 다음과 같습니다.
+   -  사용자가 Adjust 링크를 클릭하면 Adjust 서버는 `reftag`라는 고유 식별자를 전달합니다. 이 식별자는 클릭과 리퍼러 파라미터에 할당됩니다. reftag에 관한 자세한 정보는 [Reftag](https://help.adjust.com/ko/article/reftag)를 참고하시기 바랍니다.
+   -  [Google 애드](https://support.google.com/google-ads/answer/6357635?hl=en) 캠페인을 실행할 때 Google은 `gclid`라는 고유 식별자를 리퍼러 파라미터에 전달합니다. Google Ads 계정에서 **Auto\-tagging** 이 활성화되어 있어야 합니다.
+
+<Callout type="note">
+
+설치 리퍼러가 필수는 아니지만 어트리뷰션 정확도 향상을 위해 적극 권장됩니다.
+
+</Callout>
+
+#### Google Play Referrer API {#google-play-referrer-api}
+
+<MinorVersion added="v4.12.0">
+
+[Google Play Referrer API](https://developer.android.com/google/play/installreferrer) 지원 방법:
+
+</MinorVersion>
+
+1. 최상위 `build.gradle` 파일의 **디펜던시 블록** 에 다음의 라인을 추가합니다.
+
+<CodeBlock title="build.gradle">
+
+```groovy
+dependencies {
+//...
+implementation 'com.android.installreferrer:installreferrer:2.2'
+//...
+}
+
+```
+
+</CodeBlock>
+
+2. `installreferrer` 라이브러리는 **Google Maven** 리포지토리의 일부입니다. 앱을 빌드하려면 앱의 최상위 `build.gradle` 파일에 Google Maven 리포지토리를 추가해야 합니다.
+
+<CodeBlock title="build.gradle">
+
+```groovy
+allprojects {
+   repositories {
+      maven {
+         url "https://maven.google.com"
+      }
+   }
+}
+
+
+```
+
+</CodeBlock>
+
+#### Meta referrer integration {#meta-referrer-integration}
+
+Adjust SDK는 Adjust Meta 설치 리퍼러 플러그인을 사용하는 [Meta 설치 리퍼러](https://developers.facebook.com/docs/app-ads/meta-install-referrer)를 지원합니다. [연동에 대한 자세한 내용은 React Native Meta 설치 리퍼러 플러그인을 참조하시기 바랍니다](/ko/sdk/react-native/plugins/meta-referrer-plugin).
+
+## 5\. Add iOS frameworks {#5-add-ios-frameworks}
+
+Adjust SDK는 특정 iOS 프레임워크가 앱에 포함된 경우 추가적인 정보를 얻을 수 있습니다. 이러한 프레임워크는 특정 SDK 기능을 활성화하지만, SDK가 일반적으로 작동하기 위해 반드시 필요한 것은 아닙니다. Project Settings \-\-> Build Phases \-\-> Link Binary With Libraries에서 프레임워크를 추가한 뒤 이를 **Optional** 로 지정할 수 있습니다.
+
+| 프레임워크                            | 설명                                                                                                          | 참고 사항                                                                    |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| **AdSupport.framework**               | SDK가 IDFA 값과 \(iOS 14 이전의 경우\) AT 정보에 액세스하기 위해 필요.                                        | 앱이 "아동" 카테고리를 타겟팅하는 경우에는 이 프레임워크를 실행할 필요 없음. |
+| **AdServices.framework**              | 본 프레임워크는 Apple Search Ads 어트리뷰션을 위해 필요합니다.                                                |                                                                              |
+| **StoreKit.framework**                | SKAdNetwork 프레임워크에 액세스하고, Adjust SDK가 iOS 14 및 이후 버전에서 통신을 자동으로 처리하기 위해 필요. |                                                                              |
+| **AppTrackingTransparency.framework** | iOS 14 및 이후 버전에서 SDK가 사용자의 ATT 동의를 래핑하고 사용자의 동의 응답에 액세스하기 위해 필요.         | 앱이 "아동" 카테고리를 타겟팅하는 경우에는 이 프레임워크를 실행할 필요 없음. |
+
+## 7\. Test your integration {#7-test-your-integration}
+
+Adjust SDK는 연동 테스트와 문제 해결 툴을 제공합니다. 다음과 같이 설정을 테스트하시기 바랍니다.
+
+-  환경을 `AdjustConfig.EnvironmentSandbox`로 설정합니다.
+-  Adjust 대시보드 결과에 [샌드박스 필터](https://help.adjust.com/ko/article/filter-data#sandbox)를 추가합니다.
+-  로그 수준을 `AdjustConfig.LogLevelVerbose`로 설정합니다.
+
+<Callout type="tip">
+
+문제 발생 시, 모든 상세 내용과 로그를 [support@adjust.com](mailto:support@adjust.com)에 보내시기 바랍니다.
+
+</Callout>
+
+### Test Google Play Services integration {#test-google-play-services-integration}
+
+Adjust SDK가 기기의 Google 광고 ID를 수신할 수 있는지 테스트하려면 로그 수준을 `AdjustConfig.LogLevelVerbose`로 설정하고, 환경을 `AdjustConfig.EnvironmentSandbox`로 설정합니다. 앱을 시작하고 세션이나 이벤트를 기록합니다. SDK가 광고 ID를 읽으면 `gps_adid` 파라미터를 로그합니다.
+
+Google광고 ID를 읽을 수 없다면 SDK [Github repository](https://github.com/adjust/react_native_sdk)에 이슈를 제기하거나 [support@adjust.com](mailto:support@adjust.com)으로 메일로 문의해 주시기 바랍니다.

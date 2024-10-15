@@ -1,0 +1,148 @@
+---
+title: "Server-to-server (S2S) sessions"
+description: "The server-to-server (S2S) sessions API lets Adjust record your sessions via HTTP requests."
+slug: en/api/s2s-api/sessions
+sidebar-position: 4
+sidebar-label: S2S sessions
+---
+
+Sessions are the base of all attribution and measurement in Adjust. They trigger when a user resumes using an app from the background or when they open the app. Use the S2S Session API to record each user session in your app.
+
+<Callout type="important">
+
+Adjust needs to turn this feature on for you. Contact your Technical Account Manager or support@adjust.com to proceed.
+
+</Callout>
+
+## Before you begin {#before-you-begin}
+
+### Authentication {#authentication}
+
+[Set up S2S Security](/en/api/s2s-api/security) to guarantee the security of your S2S sessions and protect against spoofed requests. This requires each incoming request to carry an authentication token generated in your Adjust dashboard. Requests that don't carry the token or that carry an incorrect token are rejected by Adjust's servers.
+
+## Record sessions {#record-sessions}
+
+Adjust groups sessions to save resources. This means there must be a gap of at least 30 minutes after a session, before the Adjust server accepts a new session as triggered.
+
+<CodeBlock title="endpoint" highlight="/session">
+
+```text
+https://s2s.adjust.com/session
+```
+
+</CodeBlock>
+
+### Headers {#headers}
+
+| Parameter                | Description                                           | Example                             |
+| ------------------------ | ----------------------------------------------------- | ----------------------------------- |
+| `Content-Type`           | The format of the POST payload, hardcoded             | `application/x-www-form-urlencoded` |
+| `X-Adjust-Forwarded-For` | IP address of the device                              | `180.220.253.39`                    |
+| `Authorization`          | Your Adjust authentication token as a `Bearer` token. | `Bearer authentication_token`       |
+
+### Payload {#payload}
+
+Find the full list of parameters in the table below.
+
+| Parameter             | Description                                                                                                                                                                                | Example                                           |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------- |
+| `s2s`\*               | Server-to-server parameter: enables Adjust's servers to recognize server-side activity. <br/>Must always be `1`.                                                                           | `1`                                               |
+| `app_token`           | Unique authentication token for your app                                                                                                                                                   | `pezwd5bre2xb`                                    |
+| `vida`                | Vizio advertising identifier, Vizio only                                                                                                                                                   | `dca2365e-0d78-47c6-aaac-9567846c6c9e`            |
+| `rida`                | Roku advertising identifier, Roku only                                                                                                                                                     |                                                   |
+| `tifa`                | Tizen OS advertising identifier, Samsung only                                                                                                                                              |                                                   |
+| `idfa`                | iOS advertising identifier, iOS only                                                                                                                                                       | `29DDE430-CE81-4F00-A50C-689595AAD142`            |
+| `idfv`                | iOS vendor identifier, iOS only                                                                                                                                                            | `59E27F41-A86B-4560-B585-63161F871C4B`            |
+| `gps_adid`            | Google Play advertising identifier, only sent if Google Play Services library is added. Android only                                                                                       | `6cf94580-46c2-490c-b882-2f6ae269b579`            |
+| `oaid`                | Open Advertising ( Anonymous ) identifier                                                                                                                                                  | `ed799bac-2537-6122-377a-edebce5db5a5`            |
+| `imei`                | International Mobile Equipment Identity                                                                                                                                                    | `490154203237518`                                 |
+| `android_id`          | Android identifier, only sent if `gps_adid` isn't present. Android only                                                                                                                    | `e11a8c233efb29f3`                                |
+| `persistent_ios_uuid` | Same as ios_uuid, but saved in Keychain so that re-installed apps will have same value, iOS only                                                                                           | `3b35fcfb-6115-4cff-830f-e32a248c487d`            |
+| `app_version`         | This parameter represents build number in iOS and actual app version in Android.                                                                                                           | `1.0`                                             |
+| `app_version_short`   | Represents actual app version number in iOS. iOS only                                                                                                                                      | `1.0`                                             |
+| `session_count`       | Number of recorded sessions including current one.                                                                                                                                         | `1`                                               |
+| `subsession_count`    | Number of sub-sessions recorded. First session ever recorded (Install) doesn't contain this parameter. <br/>Every subsequent session contains number of sub-sessions for previous session. | `1`                                               |
+| `session_length`      | Length of session in seconds. First session ever recorded (Install) doesn't contain this parameter. <br/>Every subsequent session contains length of the previous session.                 | `123`                                             |
+| `time_spent`          | Time spent active during previous session                                                                                                                                                  | `123`                                             |
+| `tracking_enabled`    | Indicates whether the user has Limit Ad Tracking enabled                                                                                                                                   | `1`                                               |
+| `bundle_id`           | The bundle identifier, iOS only.                                                                                                                                                           | `com.adjust.example`                              |
+| `package_name`        | The package name, Android only.                                                                                                                                                            | `com.adjust.example`                              |
+| `environment`         | `sandbox` for testing or `production` for live traffic                                                                                                                                     | `sandbox`                                         |
+| `country`             | Local country code                                                                                                                                                                         | `de`                                              |
+| `language`            | Local language code                                                                                                                                                                        | `en`                                              |
+| `os_name`             | `ios` or `android`                                                                                                                                                                         | `ios`                                             |
+| `os_version`          | Current version of the operating system                                                                                                                                                    | `11.0`                                            |
+| `cpu_type`            | Processor family of CPU                                                                                                                                                                    | `arm64-v8a`                                       |
+| `created_at`          | Timestamp of local device, creation of the package including timezone.                                                                                                                     | `2024-03-23T09:46:47.288Z-0400`                   |
+| `sent_at`             | Timestamp of local device, sending the package including timezone.                                                                                                                         | `2024-03-23T09:47:47.288Z-0400`                   |
+| `device_type`         | Model of the device                                                                                                                                                                        | `Phone (android), iphone`                         |
+| `device_name`         | URL encoded model identifier                                                                                                                                                               | `Moto G (5) Plus, iPhone10,5`                     |
+| `hardware_name`       | Device board configuration                                                                                                                                                                 | `N66AP`                                           |
+| `install_receipt`     | Cryptographically signed install receipt from App Store, iOS only                                                                                                                          | `Super long string representation of the receipt` |
+| `ip_address`          | The IP address of the device.<br/>The `ip_address` parameter accepts only IPv4 addresses. IPv6 isn't currently supported.                                                                  | `ip_address=192.0.0.1`                            |
+
+## Provide consent data to Google (Digital Markets Act compliance) {#provide-consent-data-to-google-digital-markets-act-compliance}
+
+To [comply with the EU's Digital Markets Act (DMA)](https://help.adjust.com/en/article/google-compliancy-with-the-dma), Google Ads and the Google Marketing Platform require explicit consent to receive Adjust’s attribution requests to their APIs.
+
+<Callout type="important">
+
+Passing these options is required if you use Google Ads or Google Marketing Platform and have users located in the European Economic Area (EEA).
+
+</Callout>
+
+Adjust supports the following Google DMA parameters for S2S session and install requests. Adjust expects the parameters to be in request Form.
+
+You must send the `ad_personalization` parameter if you are working with Google Ads and the `npa` parameter if you are working with Google Marketing Platform.
+
+| Key                  | Value                                                                                                                          | Description                                                                                                                                                                                                                                                  |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `eea`                | <ul><li>`1`: users are in the EEA and the DMA applies</li><li>`0`: users aren't in the EEA and the DMA doesn't apply</li></ul> | Informs Google whether users are located in the EEA and thus whether the European regulations, including the DMA, apply to this user and conversion.                                                                                                         |
+| `ad_personalization` | <ul><li>`1`: user consented</li><li>`0`: user didn't consent</li></ul>                                                         | Informs whether users consented to being served personalized ads via Google Ads after installing the app.                                                                                                                                                    |
+| `ad_user_data`       | <ul><li>`1`: user consented</li><li>`0`: user didn't consent</li></ul>                                                         | Informs Google whether users granted consent to personal data being shared for measurement purposes or not.<br/>The consent applies to all the Core Platform Services (CPS) advertisers have specified in their Google Ads and Google Marketing Platform UI. |
+| `npa`                | <ul><li>`1`: user consented</li><li>`0`: user didn't consent</li></ul>                                                         | Informs whether users consented to being served personalized ads via Google Marketing Platform after installing the app.                                                                                                                                     |
+
+## Example {#example}
+
+<CodeBlock title="Request">
+
+```sh
+curl -X "POST" \
+-H 'Authorization: Bearer ADD_YOUR_AUTH_TOKEN_HERE' \
+-H 'User-Agent: Adjust Streaming Job (akka-http)' \
+-d "app_token=a1234b2x3a4o&app_version=Roku%2FDVP-10.5+%2810.5.0.0010%29&created_at_unix=1543915806015&environment=production&os_name=android&rida=099aa0bc-d123-4567-8999-a1b7c50767b1&s2s=1" \
+"https://s2s.adjust.com/session"
+
+```
+
+</CodeBlock>
+
+<CodeBlock title="Response">
+
+```json
+{
+   "Host": "s2s.adjust.com",
+   "Path": "/session",
+   "Method": "POST",
+   "ReceivedAt": "2022-01-01T17:00:01.030986068Z",
+   "Header": {
+      "Connection": ["close"],
+      "User-Agent": ["Adjust Streaming Job (akka-http)"],
+      "Authorization": ["Bearer ADD_YOUR_AUTH_TOKEN_HERE"],
+      "Content-Length": ["0"],
+      "X-Adjust-Forwarded-For": ["71.142.112.183", "34.221.136.124"],
+      "X-Adjust-Forwarded-Proto": ["https"]
+   },
+   "Form": {
+      "s2s": ["1"],
+      "rida": ["099aa0bc-d123-4567-8999-a1b7c50767b1"],
+      "os_name": ["android"],
+      "app_token": ["a1234b2x3a4o"],
+      "app_version": ["Roku/DVP-10.5 (10.5.0.0010)"],
+      "environment": ["production"],
+      "created_at_unix": ["1543915806015"]
+   }
+}
+```
+
+</CodeBlock>

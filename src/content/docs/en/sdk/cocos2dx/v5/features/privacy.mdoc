@@ -1,0 +1,360 @@
+---
+title: Set up privacy features
+description: Configure features that you can use to handle user privacy in your app.
+slug: en/sdk/cocos2dx/features/privacy
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v4: /en/sdk/cocos2dx/v4/features/privacy
+---
+
+The Adjust SDK contains features that you can use to handle user privacy in your app.
+
+## Send right to be forgotten request {% #send-rtbf-request %}
+
+The EU’s General Data Protection Regulation (GDPR) and similar privacy laws worldwide (CCPA, LGPD, etc.) grant data subjects comprehensive rights when it comes to the processing of their personal data. These rights include, among others, the right to erasure (see [Art. 17 GDPR](https://gdpr.eu/article-17-right-to-be-forgotten/))([1](https://help.adjust.com/en/article/gdpr#ref-1)). As a data processor, Adjust is obliged to support you (the data controller) in the processing of such requests from your (app) users.
+
+You can send the user's erasure request to Adjust by calling the `Adjust2dx::gdprForgetMe()` method. Once Adjust has been notified:
+
+- Adjust will permanently delete all of the user’s historical personal data from its internal systems and database.
+- Adjust will no longer receive data from this user/device via the Adjust SDK.([2](https://help.adjust.com/en/article/gdpr#ref-2))
+
+```cpp
+Adjust2dx::gdprForgetMe();
+```
+
+## Set up apps for children {% #set-up-apps-for-children %}
+
+If your app targets the "Kids" category, you MUST prevent your app from collecting device identifiers. To do this:
+
+1. (Android only): Remove the `com.google.android.gms.permission.AD_ID` permission by adding the following to your `AndroidManifest.xml` file:
+
+   ```xml
+   <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
+   ```
+
+1. (iOS only): Ensure that you unlink the `AdSupport.framework` and `AppTrackingTransparency.framework` frameworks from your project.
+
+### Configure COPPA compliance {% #configure-coppa-compliance %}
+
+{% callout type="important" %}
+See [COPPA compliance](https://help.adjust.com/en/article/coppa-compliance) in the Help Center to see if your app needs to be COPPA compliant.
+{% /callout %}
+
+If your app falls under a category that needs to be compliant with the Children's Online Privacy Protection Act (COPPA), you MUST call the `enableCoppaCompliance` method on your `AdjustConfig2dx` instance. Calling this method does the following:
+
+1. Disables third-party sharing **before** the user launches their first `session`.
+1. Prevents the SDK from reading device and advertising IDs (for example: `gps_adid` and `android_id`).
+
+```cpp
+AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment);
+adjustConfig.enableCoppaCompliance();
+Adjust2dx::initSdk(adjustConfig);
+```
+
+### Configure Play Store Kids Apps compliance (Android only) {% #configure-play-store-kids-compliance %}
+
+If your app targets users under the age of 13, and the install region **isn't** the USA, you need to mark it as a Kids App. This prevents the SDK from reading device and advertising IDs (for example: `gps_adid` and `android_id`).
+
+To mark your app as a Kids App, call the `enablePlayStoreKidsCompliance` method on your `AdjustConfig2dx` instance.
+
+```cpp
+AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment);
+adjustConfig.enablePlayStoreKidsCompliance();
+Adjust2dx::initSdk(adjustConfig);
+```
+
+## Configure third party sharing options {% #configure-third-party-sharing-options %}
+
+You can use the Adjust SDK to record when a user changes their third-party sharing settings by instantiating an `AdjustThirdPartySharing2dx` object and passing it to `Adjust2dx::trackThirdPartySharing`.
+
+### Instantiate a third party sharing object {% #instantiate-a-third-party-sharing-object %}
+
+To instantiate a third party sharing object, create a new `AdjustThirdPartySharing2dx` instance and pass the following parameters:
+
+{% deflist %}
+`isEnabled` (`bool`)
+
+: Whether third party sharing is enabled.
+
+- Pass `true` to enable third party sharing.
+- Pass `false` to disable third party sharing.
+{% /deflist %}
+
+```cpp
+AdjustThirdPartySharing2dx adjustThirdPartySharing = AdjustThirdPartySharing2dx(true);
+```
+
+Once you've instantiated your `AdjustThirdPartySharing2dx` object, send the information to Adjust by calling the `Adjust2dx::trackThirdPartySharing` method with your `AdjustThirdPartySharing2dx` instance as an argument.
+
+```cpp
+AdjustThirdPartySharing2dx adjustThirdPartySharing = AdjustThirdPartySharing2dx(true);
+Adjust2dx::trackThirdPartySharing(adjustThirdPartySharing);
+```
+
+### Configure per-partner sharing settings {% #configure-per-partner-sharing-settings %}
+
+{% callout type="important" %}
+For SAN partners, you MAY pass the partner's name as the `partnerName`. For other partners, you MUST pass the partner ID.
+{% /callout %}
+
+If you want to share metrics only with specific partners, or you want to configure which metrics to share with specific partners, you MUST do the following:
+
+1. Instantiate your `AdjustThirdPartySharing2dx` object with a `true` argument.
+1. Customize what data you share on a per-partner basis by calling the `addPartnerSharingSetting` method on your `AdjustThirdPartySharing2dx` instance with the following arguments:
+
+{% deflist %}
+`partnerName` (`std::string`)
+
+: The ID of the partner. [Download the full list of available partners](https://assets.ctfassets.net/5s247im0esyq/5WvsJ7J7fGFUlfsFeGdalj/643651619adc3256acac7885ec60624d/modules.csv).
+
+`key` (`std::string`)
+
+: The metric you want to update.
+
+`value` (`bool`)
+
+: Whether to share the metric with the specified spartner.
+
+- Pass `false` to stop sharing the metric.
+- Pass `true` to resume sharing the metric.
+{% /deflist %}
+
+To share only specific metrics with a partner, you MUST:
+
+1. Set `all` metrics to `false`.
+1. Set each metric you want to share to `true`.
+
+```cpp
+AdjustThirdPartySharing2dx adjustThirdPartySharing = AdjustThirdPartySharing2dx(true);
+adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "all", false);
+adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "install", true);
+Adjust2dx::trackThirdPartySharing(adjustThirdPartySharing);
+```
+
+The following metrics can be controlled using this method:
+
+{% listcolumns %}
+- `ad_revenue`
+- `all`
+- `attribution`
+- `update`
+- `att_update`
+- `cost_update`
+- `event`
+- `install`
+- `reattribution`
+
+---
+
+- `reattribution_reinstall`
+- `reinstall`
+- `rejected_install`
+- `rejected_reattribution`
+- `sdk_click`
+- `sdk_info`
+- `session`
+- `subscription`
+- `uninstall`
+{% /listcolumns %}
+
+#### Examples
+
+If you want to stop sharing all metrics with a specific partner, pass the `all` key with a `false` value.
+
+```cpp
+AdjustThirdPartySharing2dx adjustThirdPartySharing = AdjustThirdPartySharing2dx(true);
+adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "all", false);
+Adjust2dx::trackThirdPartySharing(adjustThirdPartySharing);
+```
+
+To re-enable sharing, pass the `all` key with a `true` value.
+
+```cpp
+AdjustThirdPartySharing2dx adjustThirdPartySharing = AdjustThirdPartySharing2dx(true);
+adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "all", true);
+Adjust2dx::trackThirdPartySharing(adjustThirdPartySharing);
+```
+
+To only share event data with a specific partner:
+
+- Pass `all` with a `false` value to stop sharing all metrics.
+- Pass `event` with a `true` value to start sharing events.
+
+```cpp
+AdjustThirdPartySharing2dx adjustThirdPartySharing = new AdjustThirdPartySharing2dx(true);
+adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "all", false);
+adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "event", true);
+Adjust2dx::trackThirdPartySharing(adjustThirdPartySharing);
+```
+
+### Add per-partner granular information {% #add-per-partner-granular-information %}
+
+You can attach granular information when a user updates their third party sharing preferences. Use this information to communicate more detail about a user's decision. To do this, call the `addGranularOption` method on your `AdjustThirdPartySharing2dx` instance with the following parameters:
+
+{% deflist %}
+`partnerName` (`std::string`)
+
+: The ID of the partner. [Download the full list of available partners](https://assets.ctfassets.net/5s247im0esyq/5WvsJ7J7fGFUlfsFeGdalj/643651619adc3256acac7885ec60624d/modules.csv)
+
+`key` (`std::string`)
+
+: The key of the granular information.
+
+`value` (`std::string`)
+
+: The value of the granular information.
+{% /deflist %}
+
+```cpp
+AdjustThirdPartySharing2dx adjustThirdPartySharing = AdjustThirdPartySharing2dx(true);
+adjustThirdPartySharing.addGranularOption("PartnerA", "foo", "bar");
+Adjust2dx::trackThirdPartySharing(adjustThirdPartySharing);
+```
+
+#### Manage Facebook Limited Data Use {% #manage-facebook-ldu %}
+
+{% callout type="important" %}
+The Adjust SDK sends information to Facebook as soon as the app is installed. You need to make sure you call this method **before** initializing the SDK.
+{% /callout %}
+
+Facebook provides a feature called Limited Data Use (LDU) to comply with the California Consumer Privacy Act (CCPA). This feature enables you to notify Facebook when a California-based user is opted out of the sale of data. You can also use it if you want to opt all users out by default.
+
+You can update the Facebook LDU status using the following keys:
+
+{% deflist %}
+`data_processing_options_country`
+
+: The country in which the user is located.
+
+- `0`: Request that Facebook use geolocation.
+- `1`: United States of America.
+
+`data_processing_options_state`
+
+: Notifies Facebook in which state the user is located.
+
+- `0`: Request that Facebook use geolocation.
+- `1000`: California.
+- `1001`: Colorado.
+- `1002`: Connecticut.
+{% /deflist %}
+
+{% callout type="note" %}
+If you call this method with a `0` value for **either** `data_processing_options_country` or `data_processing_options_state`, the Adjust SDK passes **both** fields back as `0`.
+{% /callout %}
+
+```cpp
+AdjustThirdPartySharing2dx adjustThirdPartySharing = AdjustThirdPartySharing2dx(true);
+adjustThirdPartySharing.addGranularOption("facebook", "data_processing_options_country", "1");
+adjustThirdPartySharing.addGranularOption("facebook", "data_processing_options_state", "1000");
+Adjust2dx::trackThirdPartySharing(adjustThirdPartySharing);
+```
+
+#### Provide consent data to Google (Digital Markets Act compliance) {% #dma-compliance %}
+
+To comply with the EU's Digital Markets Act (DMA), Google Ads and the Google Marketing Platform require explicit consent to receive Adjust’s attribution requests to their APIs. You MUST communicate the user's consent choices if:
+
+- You have users in the European Economic Area (EEA). This includes EU member states, Switzerland, Norway, Iceland and Slovenia.
+- You use Google Ads or Google Marketing Platform.
+
+To communicate this consent, add the following granular options to your third party sharing instance for the partner `google_dma`:
+
+{% deflist %}
+`eea` (`1` or `0`)
+
+: Informs Adjust whether users installing the app are within the European Economic Area (`1`) or not (`0`).
+
+`ad_personalization` (`1` or `0`)
+
+: Informs Adjust whether users consented with being served personalized ads via Google Ads and/or Google Marketing Platform (`1`) or not (`0`).
+
+: This parameter also informs the `npa` parameter reserved for Google Marketing Platform.
+
+`ad_user_data` (`1` or `0`)
+
+: Informs Adjust whether users consented with their advertiser ID being leveraged for attribution purposes
+{% /deflist %}
+
+```cpp
+AdjustThirdPartySharing2dx adjustThirdPartySharing = AdjustThirdPartySharing2dx(true);
+adjustThirdPartySharing.addGranularOption("google_dma", "eea", "1");
+adjustThirdPartySharing.addGranularOption("google_dma", "ad_personalization", "1");
+adjustThirdPartySharing.addGranularOption("google_dma", "ad_user_data", "0");
+Adjust2dx::trackThirdPartySharing(adjustThirdPartySharing);
+```
+
+If your user isn't in the EEA, you MUST set both `ad_personalization` and `ad_user_data` to `1`. If these values aren't set, Google won't claim attribution and will return an error.
+
+```cpp
+AdjustThirdPartySharing2dx adjustThirdPartySharing = AdjustThirdPartySharing2dx(true);
+adjustThirdPartySharing.addGranularOption("google_dma", "eea", "0");
+adjustThirdPartySharing.addGranularOption("google_dma", "ad_personalization", "1");
+adjustThirdPartySharing.addGranularOption("google_dma", "ad_user_data", "1");
+Adjust2dx::trackThirdPartySharing(adjustThirdPartySharing);
+```
+
+## Set URL strategy {% #set-url-strategy %}
+
+The URL strategy feature allows you to set either:
+
+- The country in which Adjust stores your data (data residency).
+- The endpoint to which the Adjust SDK sends traffic (URL strategy).
+
+This is useful if you're operating in a country with strict privacy requirements. When you set your URL strategy, Adjust stores data in the selected data residency region or sends traffic to the chosen domain.
+
+To set your country of data residency, call the `setUrlStrategy` method on your `AdjustConfig2dx` instance with the following parameter:
+
+{% deflist %}
+`urlStrategyDomains` (`std::vector<std::string>`)
+
+: The endpoints to which you want to send SDK traffic.
+
+`shouldUseSubdomains` (`bool`)
+
+: Whether the source should prefix a subdomain.
+
+`isDataResidency` (`bool`)
+
+: Whether the domain should be used for data residency.
+{% /deflist %}
+
+See the table below for a list of strategies.
+
+| URL strategy                      | Main and fallback domain          | Use sub domains                   | Is Data Residency                 |
+| --------------------------------- | --------------------------------- | --------------------------------- | --------------------------------- |
+| EU data residency                 | `"eu.adjust.com"`                 | `true`                            | `true`                            |
+| Turkish data residency            | `"tr.adjust.com"`                 | `true`                            | `true`                            |
+| US data residency                 | `"us.adjust.com"`                 | `true`                            | `true`                            |
+| China global URL strategy         | `"adjust.world"`, `"adjust.com"`  | `true`                            | `false`                           |
+| China URL strategy                | `"adjust.cn"`, `"adjust.com"`     | `true`                            | `false`                           |
+| China only URL strategy           | `"adjust.cn"`                     | `true`                            | `false`                           |
+| India URL strategy                | `"adjust.net.in"`, `"adjust.com"` | `true`                            | `false`                           |
+
+```cpp
+AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment);
+adjustConfig.setUrlStrategy({"eu.adjust.com"}, true, true);
+Adjust2dx::initSdk(adjustConfig);
+```
+
+## Toggle consent measurement per user {% #toggle-consent-measurement-per-user %}
+
+If you've enabled [Data Privacy settings](https://help.adjust.com/en/article/manage-data-collection-and-retention) in Adjust, you need to set up the Adjust SDK to work with them. This includes settings such as consent expiry period and user data retention period.
+
+To toggle this feature, call the `trackMeasurementConsent` method with the following argument:
+
+{% deflist %}
+`measurementConsent` (`bool`)
+
+: Whether consent measurement is enabled (`true`) or not (`false`).
+{% /deflist %}
+
+When enabled, the SDK communicates the data privacy settings to Adjust's servers. Adjust's servers then applies your data privacy rules to the user. The Adjust SDK continues to work as expected.
+
+```cpp
+Adjust2dx::trackMeasurementConsent(true);
+```

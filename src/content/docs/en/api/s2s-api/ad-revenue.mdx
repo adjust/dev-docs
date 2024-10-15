@@ -1,0 +1,111 @@
+---
+title: "Server-to-server (S2S) ad revenue"
+description: "Send your ad revenue data to Adjust server-to-server to view it in your dashboard Statistics and Cohorts."
+slug: en/api/s2s-api/ad-revenue
+sidebar-position: 3
+sidebar-label: S2S ad revenue
+---
+
+If you record ad revenue yourself, you can share this data server-to-server (S2S) to view it with all your other Adjust-measured metrics. This gives a complete overview of your campaign performance, letting you calculate your users’ Lifetime Value (LTV) and optimize your campaign Return on Ad Spend (ROAS) and Return on Investment (ROI).
+
+Send your ad revenue data to Adjust server-to-server to view it in your dashboard Statistics and Cohorts.
+
+<CodeBlock title="Endpoint" highlight="/ad_revenue">
+
+```text
+https://s2s.adjust.com/ad_revenue
+```
+
+</CodeBlock>
+
+## Before you begin {#before-you-begin}
+
+Here’s what you need to know before getting started:
+
+-  Ad revenue sent S2S is added to ad revenue KPIs and Cohort calculations for LTV and ROAS.
+
+### Availability {#availability}
+
+-  Ad revenue package
+
+## Send S2S ad revenue {#send-s2s-ad-revenue}
+
+<Callout type="note">
+
+Ad revenue should be sent no later than 28 days after the `created_at` date. It doesn't need to be sent chronologically.
+
+</Callout>
+
+The `/ad_revenue` endpoint accepts the following requests for S2S ad revenue:
+
+-  GET with URL parameters
+-  POST with URL parameters (no body)
+-  POST with body parameters as Content-Type `application/x-www-form-urlencoded`
+
+## Set up S2S Security {#set-up-s2s-security}
+
+Set up S2S Security to guarantee the security of your S2S ad revenue and protect against spoofed requests. This requires each incoming request to carry a token generated in your Adjust dashboard. Requests that don't carry the token or that carry an incorrect token are rejected by Adjust's servers. To get set up, follow the steps in the [S2S Security article](/en/api/s2s-api/security).
+
+<Callout type="note">
+
+Always test the implementation of your auth token in your ad revenue requests before activating S2S authentication in the dashboard.
+
+</Callout>
+
+## Required parameters {#required-parameters}
+
+To send ad revenue to Adjust, you must pass the following parameters:
+
+| Parameter                | Description                                                                                                                                                                                                                                       | Example                                                                                                               |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `idfa`; `gps_adid`; etc. | Platform dependent Device ID. [See full list](https://help.adjust.com/en/article/server-to-server-events#accepted-identifiers).                                                                                                                   | <ul><li>`idfa=D2CADB5F-410F-4963-AC0C-2A78534BDF1E`</li><li>`gps_adid=660e1d86-6796-463a-be86-897993136018`</li></ul> |
+| `app_token`              | Adjust app token from the dashboard.                                                                                                                                                                                                              | `app_token=4w565xzmb54d`                                                                                              |
+| `s2s`                    | s2s parameter set to 1.                                                                                                                                                                                                                           | `1`                                                                                                                   |
+| `revenue` or `amount`    | The amount of ad revenue earned by the device.                                                                                                                                                                                                    | `4.99`                                                                                                                |
+| `currency`               | The currency that the revenue is represented in.<br/>If your event request contains the `{revenue}` or `{amount}` parameter with a value appended, you must also send `{currency}`.<br/>If this parameter is missing, Adjust rejects the request. | `USD`                                                                                                                 |
+| `ad_impressions_count`   | The number of impressions the revenue is associated with.                                                                                                                                                                                         | `100`                                                                                                                 |
+| `source`                 | Always publisher.                                                                                                                                                                                                                                 | `publisher`                                                                                                           |
+
+The following parameters are **recommended** but not mandatory.
+
+| Parameter                                       | Description                                                                               | Example                                                                    |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `adid`                                          | Adjust device ID (all platforms)                                                          | 18546f6171f67e29d1cb983322ad1329                                           |
+| `created_at_unix` (recommended) or `created_at` | The exact time an ad impression was served to the user (shouldn't be older than 28 days). | `created_at_unix=1484085154`<br/>`created_at=2017-01-02T15:04:05.000+0000` |
+| `environment`                                   | The current SDK environment setting.                                                      | `production` or `sandbox`.                                                 |
+
+### Recommended additional parameters for callbacks {#recommended-additional-parameters-for-callbacks}
+
+| Parameter              | Description                                                                                               | Example                                                                  |
+| ---------------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `callback_params`      | Use to pass your callback parameters as a JSON object<br/>Formatted as **escaped** `string:string` pairs. | `callback_params=%7B%22f0o%22%3A%22bar%22%2C%20%22bar%22%3A%22baz%22%7D` |
+| `ad_revenue_network`   | Additional data about ad revenue                                                                          | `ad_revenue_network=Admob`                                               |
+| `ad_revenue_unit`      | Additional data about ad revenue                                                                          | `ad_revenue_unit=rewarded_video`                                         |
+| `ad_revenue_placement` | Additional data about ad revenue                                                                          | `ad_revenue_placement=home_screen`                                       |
+
+## Example {#example}
+
+```console
+curl -X POST \
+-H "Authorization: Bearer b9eb9d6228842aeb05d64f30d56b361e" \
+"https://s2s.adjust.com/ad_revenue?app_token=abc123abc123&idfa=FAD135C7-C5F8-4DCC-9478-2203956B0870&source=publisher&ad_impressions_count=1&revenue=0.01&currency=USD&s2s=1"
+```
+
+<Tabs>
+<Tab title="Success" icon="Check">
+
+```json
+{ "status": "OK" }
+```
+
+</Tab>
+<Tab title="Error" icon="Cross">
+
+```json
+{
+   "error": "Ad revenue request failed (wrong authentication token) (app_token:abc123abc123)"
+}
+```
+
+</Tab>
+</Tabs>

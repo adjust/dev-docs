@@ -15,12 +15,16 @@ import {
   remarkDefinitionList,
   defListHastHandlers,
 } from "remark-definition-list";
+import { writeFile } from "fs";
+import markdoc from "@astrojs/markdoc";
 
 console.log(
   `${import.meta.env.VITE_GITHUB_TOKEN ? "Token found" : "No token found"}`,
 );
 
 const versions = await fetchVersions();
+const versionJSON = JSON.stringify(versions, null, 2)
+await writeFile("src/versionMap.json", versionJSON, (err) => { });
 
 const locales = ["en", "ja", "ko", "zh"];
 
@@ -28,6 +32,8 @@ const prependLocaleToJSON = (input, locales) => {
   const result = {};
 
   for (const [key, value] of Object.entries(input)) {
+    const localeRegex = /^\/[a-z]{2}\//;
+    if (localeRegex.exec(value)) return;
     locales.forEach((locale) => {
       result[`/${locale}${key}`] = `/${locale}${value}`;
     });
@@ -41,35 +47,40 @@ const updatedRedirectList = prependLocaleToJSON(redirectList, locales);
 // https://astro.build/config
 export default defineConfig({
   redirects: updatedRedirectList,
-  integrations: [
-    AutoImport({
-      imports: [
-        "@components/Accordion.astro",
-        "@components/Callout.astro",
-        "@components/CodeBlock.astro",
-        "@components/ListColumns.astro",
-        "@components/MinorVersion.astro",
-        "@components/SdkVersion.astro",
-        "@components/Tab.astro",
-        "@components/Table.astro",
-        "@components/Tabs.astro",
-      ],
-    }),
-    // Enable React for the Algolia search component.
-    react({
-      experimentalReactChildren: true,
-    }),
-    expressiveCode(),
-    mdx({
-      optimize: true,
-    }),
-    tailwind(),
-    sitemap(),
-  ],
-  site: "https://dev.adjust.com/",
-  experimental: {
-    contentCollectionCache: true,
+  i18n: {
+    defaultLocale: "en",
+    locales: ["en", "ja", "ko", "zh"],
+    routing: {
+      prefixDefaultLocale: true,
+      fallbackType: "rewrite",
+      redirectToDefaultLocale: false,
+    },
+    fallback: {
+      ja: "en",
+      ko: "en",
+      zh: "en"
+    },
   },
+  experimental: {
+    contentCollectionCache: true
+  },
+  integrations: [AutoImport({
+    imports: [
+      "@components/Accordion.astro",
+      "@components/Callout.astro",
+      "@components/CodeBlock.astro",
+      "@components/ListColumns.astro",
+      "@components/MinorVersion.astro",
+      "@components/Tab.astro",
+      "@components/Tabs.astro",
+    ],
+  }), // Enable React for the Algolia search component.
+  react({
+    experimentalReactChildren: true,
+  }), expressiveCode(), mdx({
+    optimize: true,
+  }), tailwind(), sitemap(), markdoc()],
+  site: "https://dev.adjust.com/",
   markdown: {
     remarkPlugins: [
       [remarkReplaceVersions, versions],

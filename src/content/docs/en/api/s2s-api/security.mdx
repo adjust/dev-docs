@@ -1,0 +1,153 @@
+---
+title: "Server-to-server (S2S) security"
+description: "With Adjust's S2S Security feature, you can guarantee the security of your S2S events and protect against spoofed requests."
+slug: en/api/s2s-api/security
+sidebar-position: 1
+sidebar-label: S2S security
+---
+
+With Adjust's S2S Security feature, you can guarantee the security of your S2S events and protect against spoofed requests. Each S2S authentication incoming request must carry a token generated in your Adjust dashboard. Requests that don't carry a valid token are rejected by Adjust's servers.
+
+## Before you begin {#before-you-begin}
+
+Here's what you need to know before getting started.
+
+<Callout type="warning">
+
+S2S Security isn't compatible with Google Tag Manager event measurement. Using Adjust's S2S authentication tokens in your Google Tag Manager configuration means that incoming Google Tag events are rejected.
+
+</Callout>
+
+### Requirements {#requirements}
+
+-  [Admin permissions](https://help.adjust.com/en/article/permission-levels)
+
+## Create an S2S token {#create-an-s2s-token}
+
+You must configure at least one token and specify its **scope**. Scopes define what actions you can take using a token. The following scopes are available:
+
+-  **Events**: grants the ability to send event data.
+-  **Sessions**: grants the ability to send session data.
+-  **Ad revenue**: grants the ability to send ad revenue data.
+-  **GDPR**: grants the ability to authenticate the GDPR endpoint. The GDPR scope isn't available at token creation, but you can set it up in the [Enable S2S authentication](#enable-s2s-authentication) section.
+
+To create a new scoped token:
+
+1. Under **AppView**, select **All apps**.
+2. Select your app.
+3. Select the **Protection** tab.
+4. Under the **S2S Security** section, select **Open S2S Security**.
+
+   ![The S2S security page in Adjust](@images/s2s/1-s2s-security.png)
+
+5. Select **+ New token**. A modal appears.
+6. In the modal that appears, enter a token **Token name**.
+
+   ![The "Add a new token" modal](@images/s2s/2-add-token-modal.png)
+
+7. Select the scope or scopes you want to assign to the token from the **Scope** dropdown. You can select multiple scopes for each token.
+
+   ![A token modal with scopes selected](@images/s2s/3-token-scope-modal.png)
+
+8. Select **Add token** to save your token.
+9. Select **Copy token and close** to copy the token. Send it to your developer to add to your S2S event requests.
+
+   ![A modal with a "Copy token and close" option](@images/s2s/4-copy-token.png)
+
+The scopes of each token are visible in the token list.
+
+The **Enable S2S authentication** toggle is **OFF** by default. Follow the instructions in the next section to enable S2S authentication.
+
+## Enable S2S authentication {#enable-s2s-authentication}
+
+<Callout type="important">
+
+Activate S2S authentication only after your developer has tested token implementation, and your Technical Account Manager or support@adjust.com has validated your setup.
+
+</Callout>
+
+After adding your scoped tokens, you need to enable S2S authentication for the selected scope endpoints. To enable S2S authentication, follow these steps:
+
+1. Under **AppView**, select **All apps**.
+2. Select your app.
+3. Select the **Protection** tab.
+4. Under the **S2S Security** section, select **Open S2S Security**.
+5. Ensure you have at least one scoped token configured.
+6. Switch the **Enable S2S authentication** toggle **ON**.
+7. (Optional) You may also customize the authentication scopes by selecting the endpoint or endpoints to authenticate.
+
+   ![An authentication scopes modal with scopes selected](@images/s2s/7-select-authentication-scopes.png)
+
+8. Select **Apply**.
+
+You can modify authentication scopes at any time by selecting **Customize scopes**.
+
+## Modify a scoped token {#modify-a-scoped-token}
+
+To modify the scopes of an existing token:
+
+1. Under **AppView**, select **All apps**.
+2. Select your app.
+3. Select the **Protection** tab.
+4. Under the **S2S Security** section, select **Open S2S Security**.
+5. Find your token in the list and select the edit icon.
+6. Add or remove scopes from the **Scope** dropdown.
+7. Select **Edit token** to save your changes.
+
+   ![A modal showing a token with a list of scopes](@images/s2s/6-scoped-token-edit.png)
+
+Now, all incoming S2S requests are required to carry an active authentication token. If you previously configured a token without any scopes, these will continue to work for **all** endpoints. For added security, you should use scoped tokens.
+
+## Example authenticated request {#example-authenticated-request}
+
+```console
+curl -v -X \
+POST -H \
+"Authorization: Bearer v8s5opi0zs45607l8h8c48wak2vxb5oe" \
+"https://s2s.adjust.com/event?s2s=1&app_token=abc123kuvada7&event_token=xyzklm&gps_adid=11110111-2345-6789-1122-000000005678"
+```
+
+```text
+> POST /event?s2s=1&app_token=abc123kuvada7&event_token=xyzklm&gps_adid=11110111-2345-6789-1122-000000005678 HTTP/1.1
+> Host: s2s.adjust.com
+> User-Agent: curl/7.54.0
+> Accept: */*
+> Authorization: Bearer v8s5opi0zs45607l8h8c48wak2vxb5oe
+```
+
+Requests return one of the responses below.
+
+| Response code | Response message             | Reason                                                                                       |
+| ------------- | ---------------------------- | -------------------------------------------------------------------------------------------- |
+| `200`         | OK                           | Request accepted                                                                             |
+| `202`         | Missing authentication token | No token added to the request                                                                |
+| `202`         | Wrong authentication token   | Token added but not recognized.<br />Check it's set correctly and is active on the dashboard |
+| `401`         | Session failed               | The request had insufficient authentication scopes                                           |
+
+## Manage your tokens {#manage-your-tokens}
+
+To add multiple auth tokens, follow the same [setup steps listed above](#activate-s2s-authentication).
+
+<Callout type="note">
+
+Always test your tokens after implementation. When S2S authentication is active, requests with new tokens that aren't correctly implemented are rejected.
+
+</Callout>
+
+If you're no longer using a token, you can **deactivate** it:
+
+1. Under **AppView**, select **My apps**.
+2. Select your app.
+3. Select the **Protection** tab.
+4. Under the **S2S Security** section, select **Open S2S Security**.
+5. Find your token and slide the toggle to the **off** position.
+
+<Callout type="important">
+
+If you deactivate all your tokens, Adjust automatically deactivates S2S authentication to ensure you don't reject all S2S traffic.
+
+</Callout>
+
+You can reactivate inactive tokens at any time sliding the toggle to the **on** position, or hide inactive tokens by turning the **Show inactive tokens** toggle off.
+
+To deactivate S2S authentication, disable the toggle labeled **S2S authentication is ON: you’re protected against fraud.**. A warning modal appears. Select **Turn off** to deactivate S2S authentication.

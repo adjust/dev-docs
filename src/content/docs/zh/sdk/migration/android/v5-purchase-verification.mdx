@@ -1,0 +1,177 @@
+---
+title: "安卓收入验证迁移指南"
+description: "按照此指南从收入验证 SDK 迁移到 SDK v5 的内置收入验证功能。"
+sidebar-label: "v5 收入验证"
+sidebar-position: 3
+slug: "zh/sdk/migration/android/v5-purchase-verification"
+---
+
+本指南将向您介绍如何从 Adjust 收入验证 SDK 迁移至 SDK v5 的内置收入验证功能。SDK v5 收入验证流程是一种更简化的收入验证方法。
+
+使用收入验证 SDK 时，验证分为三个步骤：
+
+1. 初始化收入验证 SDK。
+
+```java
+String yourAppToken = "{YourAppToken}";
+String environment = ADJPConstants.ENVIRONMENT_SANDBOX;
+
+ADJPConfig config = new ADJPConfig(yourAppToken, environment);
+
+AdjustPurchase.init(config);
+```
+
+2. 验证您的购买。
+
+```java
+AdjustPurchase.verifyPurchase(purchase.getSku(),
+                              purchase.getToken(),
+                              purchase.getDeveloperPayload(),
+                              new OnADJPVerificationFinished() {
+    @Override
+    public void onVerificationFinished(ADJPVerificationInfo info) {
+        // process ADJPVerificationInfo
+    }
+});
+```
+
+3. 根据验证结果配置`AdjustEvent`对象并将其发送至 Adjust。
+
+```java
+AdjustEvent adjustEvent = new AdjustEvent("abc123");
+adjustEvent.setRevenue(6.0, "EUR");
+adjustEvent.setProductId("product-id");
+adjustEvent.setPurchaseToken("purchase-token");
+Adjust.trackEvent(adjustEvent);
+```
+
+在 SDK v5 中，此工作流程得到了简化。`Adjust.verifyAndTrackPlayStorePurchase()`方法允许您向 Adjust 服务器发送事件并通过回传接收验证状态。Adjust 会自动记录事件和验证状态。
+
+## 指南 {#guide}
+
+按照本指南中的步骤从收入验证 SDK 迁移至 SDK v5 内置收入验证功能。
+
+### 1\. 卸载收入验证 SDK {#uninstall-the-pv-sdk}
+
+要开始迁移，请卸载 Adjust 收入验证 SDK 。
+
+### 2\. 移除收入验证 SDK 代码 {#remove-pv-sdk-code}
+
+卸载 Adjust 收入验证 SDK 后，您必须从项目中移除所有收入验证代码。
+
+### 3\. 迁移至 SDK v5 收入验证 {#migrate-to-sdk-v5-pv}
+
+移除现有收入验证代码后，您就转而使用 SDK v5 的内置收入验证方法了。通过 Adjust SDK 验证购买的方法有两种：
+
+1. 创建代表购买的`AdjustEvent`对象并添加以下属性：
+
+   -  `productId` \(`String`\)：已被成功售出货品的产品识别码。
+   -  `purchaseToken` \(`String`\)：已成功完成的应用内购买的购买识别码。
+
+2. 使用您的产品 ID 和购买识别码创建`AdjustPlayStorePurchase`对象。
+
+<Callout type="tip">
+
+如果您在 Adjust 中使用收入事件来监测购买，则应使用`AdjustEvent`类。如果您只想验证购买但不想将其与事件关联，请使用`AdjustPlayStorePurchase`类。
+
+</Callout>
+
+#### 记录事件并验证购买 {#record-event-and-verify-purchase}
+
+如需发送收入事件进行验证并监听收入验证状态，请按照下列步骤操作：
+
+1. 使用您的事件识别码实例化`AdjustEvent`对象并设置以下参数：
+
+   -  `productId` \( `String` \)：已购买产品的 ID。
+   -  `purchaseToken` \( `String` \): 与购买关联的购买识别码。
+
+2. 请使用下列参数调用 `Adjust.verifyAndTrackPlayStorePurchase` 方法：
+   -  `event` \( `AdjustEvent` \): 您的实例化事件对象。
+   -  `callback` \( `OnPurchaseVerificationFinishedListener` \)：接收`AdjustPurchaseVerificationResult`对象作为参数的委托回传函数。
+
+在此示例中，收入验证响应被输出至日志后台进程。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val adjustEvent = AdjustEvent("abc123")
+adjustEvent.setRevenue(6.0, "EUR")
+adjustEvent.productId = "product-id"
+adjustEvent.purchaseToken = "purchase-token"
+Adjust.trackEvent(adjustEvent)
+
+Adjust.verifyAndTrackPlayStorePurchase(adjustEvent) {
+    result -> Log.d("Verification status: ", result.verificationStatus)
+    Log.d("Code: ", result.code)
+    Log.d("Message: ", result.message)
+}
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustEvent adjustEvent = new AdjustEvent("abc123");
+adjustEvent.setRevenue(6.0, "EUR");
+adjustEvent.setProductId("product-id");
+adjustEvent.setPurchaseToken("purchase-token");
+Adjust.trackEvent(adjustEvent);
+
+Adjust.verifyAndTrackPlayStorePurchase(adjustEvent, new OnPurchaseVerificationFinishedListener() {
+    @Override
+    public void onFinished(AdjustPurchaseVerificationResult result) {
+       Log.d("Verification status: ", result.verificationStatus);
+       Log.d("Code: ", result.code);
+       Log.d("Message: ", result.message);
+    }
+});
+```
+
+</Tab>
+</Tabs>
+
+#### 仅验证购买 {#only-verify-purchase}
+
+要发送单独购买并监听收入验证状态，请按照下列步骤操作：
+
+1. 使用以下参数实例化`AdjustPlayStorePurchase`：
+
+   -  `productId` \( `String` \)：已购买产品的 ID。
+   -  `purchaseToken` \( `String` \): 与购买关联的购买识别码。
+
+2. 请使用下列参数调用 `Adjust.verifyPlayStorePurchase` 方法：
+   -  `purchase` \( `AdjustPlayStorePurchase` \): 实例化的购买对象。
+   -  `callback` \( `OnPurchaseVerificationFinishedListener` \)：接收`AdjustPurchaseVerificationResult`对象作为参数的委托回传函数。
+
+在此示例中，收入验证响应被输出至日志后台进程。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+val purchase = AdjustPlayStorePurchase("product-id", "purchase-token")
+Adjust.verifyPlayStorePurchase(purchase) {
+    result -> Log.d("Verification status: ", result.verificationStatus)
+    Log.d("Code: ", result.code)
+    Log.d("Message: ", result.message)
+}
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+AdjustPlayStorePurchase purchase = new AdjustPlayStorePurchase("product-id", "purchase-token");
+Adjust.verifyPlayStorePurchase(purchase, new OnPurchaseVerificationFinishedListener() {
+    @Override
+    public void onFinished(AdjustPurchaseVerificationResult result) {
+       Log.d("Verification status: ", result.verificationStatus);
+       Log.d("Code: ", result.code);
+       Log.d("Message: ", result.message);
+    }
+});
+```
+
+</Tab>
+</Tabs>

@@ -1,0 +1,186 @@
+---
+title: SKAdNetworkとconversion valueの設定
+description: iOSアプリのSKAdNetwork機能を設定します。
+slug: ja/sdk/ios/features/skad
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v4: /ja/sdk/ios/v4/features/skad
+---
+
+<Callout type="important">
+
+この機能は、iOS 14以降のiOSデバイスのみにおいて利用可能です。
+
+</Callout>
+
+StoreKit AdNetwork（SKAdNetwork）は、アプリのインストールおよび再インストールアトリビューションのための、Appleのフレームワークです。SKAdNetworkのワークフローは以下のようになります：
+
+1. Appleがアトリビューション情報を収集し、関連するアドネットワークに通知します。
+2. ネットワークがこの情報をAdjustにポストバックで送信します。
+3. Adjustが[Datascape](https://help.adjust.com/ja/suite/article/datascape)上にSKAdNetworkデータを表示します。
+
+## Disable SKAdNetwork communication {#disable-skadnetwork-communication}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```objc
+- (void)disableSkanAttribution;
+```
+
+</CodeBlock>
+
+Adjust SDKはデフォルトでSKAdNetworkと通信を行います。SDKは初期化時にSKAdNetworkのアトリビューションを記録します。
+
+SKAdNetworkとの通信を非有効化するには、引数なしで`disableSkanAttribution`メソッドを呼び出してください。
+
+<Callout type="important">
+
+Adjust SDKを初期化する _前_ に、`disableSkanAttribution`メソッドを呼び出す必要があります。
+
+</Callout>
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox
+let adjustConfig = ADJConfig(
+    appToken: yourAppToken,
+    environment: environment)
+//...
+adjustConfig.disableSkanAttribution()
+//...
+Adjust.initSdk(adjustConfig)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:@"{YourAppToken}"
+                                            environment:ADJEnvironmentSandbox];
+[adjustConfig disableSkanAttribution];
+/// ...
+[Adjust initSdk:adjustConfig];
+```
+
+</Tab>
+</Tabs>
+
+## Update conversion values {#update-conversion-values}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```objc
++ (void)updateSkanConversionValue:(NSInteger)conversionValue
+                      coarseValue:(nullable NSString *)coarseValue
+                       lockWindow:(nullable NSNumber *)lockWindow
+            withCompletionHandler:(void (^_Nullable)(NSError *_Nullable error))completion;
+```
+
+</CodeBlock>
+
+Conversion valueは、SKAdNetworkでアプリ内のユーザー行動を計測するためのメカニズムです。64の条件を`0`～`63`の値に対応させ、ユーザーのインストール時にこの整数値をSKAdNetworkに送信することができます。これによって、はじめの3日間のユーザー行動に関するインサイトを取得することが可能になります。
+
+Adjustでconversion valueを管理している場合、AdjustのサーバーはSDKでこの値を更新します。また、`updateSkanConversionValue`メソッドを使用して、この値を更新することが可能です。以下の引数を受け入れます。
+
+| 引数          | データタイプ                                                                                                                | 説明                                                                                                                                                                                                                                                                              |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fineValue`   | 整数                                                                                                                        | Conversion value。`0`～`63`の値にする必要があります。                                                                                                                                                                                                                             |
+| `coarseValue` | [`SKAdNetwork.CoarseConversionValue`](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue) | 粒度が粗いconversion value。この値は、プライバシーのしきい値に到達するだけのアプリインストール数でない場合に使用されます。<ul><li>`SKAdNetworkCoarseConversionValueLow`</li><li>`SKAdNetworkCoarseConversionValueMedium`</li><li>`SKAdNetworkCoarseConversionValueHigh`</li></ul> |
+| `lockWindow`  | Boolean                                                                                                                     | Conversion期間の終了前にポストバックを送信するかどうか。<br/>`true`を指定した場合、conversion期間の終了を待たずにポストバックを送信するようにシステムに指示します。デフォルトの設定は`false`となっています。                                                                      |
+| `completion`  | 機能                                                                                                                        | オプションの完了ハンドラー。conversion valueのアップデート時にこのメソッドで発生するエラーをキャッチして処理するために指定します。<br/>ハンドラーを指定しない場合は、この値を`nil`に設定します。                                                                                  |
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+Adjust.updateSkanConversionValue(
+    1,
+    coarseValue: SKAdNetwork.CoarseConversionValue.low,
+    lockWindow: false) { error in
+    if let error {
+        print(String(format: "An error occurred during completion: %@", error))
+    }
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[Adjust updateSkanConversionValue:1
+                        coarseValue:SKAdNetworkCoarseConversionValueLow
+                        lockWindow:NO
+               withCompletionHandler:^(NSError *_Nullable error) {
+      NSLog(@"An error occurred during completion: %@", error);
+}];
+```
+
+</Tab>
+</Tabs>
+
+## SKAdNetwork callbacks {#skadnetwork-4-0-callbacks}
+
+SKAdNetwork 4\.0のポストバックにはいくつかの追加情報が含まれており、広告主はユーザーに関する詳細なインサイトを得ることができます。この追加情報は、Adjustサーバーによってconversion valueが更新されるときにペイロードで送信されます。この情報にアクセスするには、 `[adjustSkanUpdatedWithConversionData]`メソッドに完了ハンドラーをパスしてください。完了ハンドラーでコールバック情報にアクセスできます。
+
+-  `conversion_value`: The updated conversion value.
+-  `coarse_value`: The updated [coarse conversion value](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
+-  `lock_window`: Whether to send the postback before the conversion window ends
+-  `error`: Any error message returned by the update.
+
+### Example {#example-3}
+
+この例では、粒度が細かいconversion value、粒度が粗いconversion value、SKAdNetworkポストバックがconversion期間の終了前に送信されるよう設定されているかどうかをログに記録する方法を示しています。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+func adjustSkanUpdated(withConversionData data: [String: String]) {
+    print("Conversion value updated callback called!")
+    print(String(format: "Conversion value dictionary: \n%@", data.description))
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+- (void)adjustSkanUpdatedWithConversionData:(NSDictionary<NSString *, NSString *> *)data {
+    NSLog(@"Conversion value updated callback called!");
+    NSLog(@"Conversion value dictionary: \n%@", data.description);
+}
+```
+
+</Tab>
+</Tabs>
+
+## Set up direct install postbacks {#set-up-direct-install-postbacks}
+
+<Callout type="note">
+
+ダイレクトインストールポストバックには、SKAdNetworkの情報のみが含まれます。キャンペーンデータなどの情報は含まれません。
+
+</Callout>
+
+獲得したSKAdNetworkコールバックのコピーをAdjustに送信するようにアプリを設定できます。これにより、SKAdNetworkの情報をアナリティクスで使用できるようになります。
+
+ダイレクトインストールポストバックを設定するには、`Info.plist`ファイルにAdjustのコールバックURLを追加してください：
+
+1. Xcodeのプロジェクトナビゲーターで **Info.plist** を選択します。
+2. プロパティリストエディタでキーの横にある追加ボタンを選択し、`Return`キーを押します。
+3. キーの名前として _`NSAdvertisingAttributionReportEndpoint`_ を入力します。
+4. ポップアップ画面で **Type** から **String** までを設定します。
+5. アドレス _`https://adjust-skadnetwork.com`_ を入力します。
+
+<Callout type="seealso">
+
+詳しくはAppleのガイド[Configuring an Advertised App](https://developer.apple.com/documentation/storekit/skadnetwork/configuring_an_advertised_app)をご覧ください。
+
+</Callout>
