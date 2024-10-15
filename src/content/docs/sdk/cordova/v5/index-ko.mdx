@@ -1,0 +1,161 @@
+---
+title: "Cordova SDK 연동 가이드"
+description: "Cordova SDK를 사용하여 Cordova 앱에서 Adjust 기능에 액세스"
+category-title: "Cordova SDK"
+slug: "en/sdk/cordova"
+sidebar-position: 6
+versions: 
+    - 
+        label: "v5"
+        value: "v5"
+        default: true
+    - 
+        label: "v4"
+        value: "v4"
+redirects: 
+    v4: "/ko/sdk/cordova/v4"
+---
+Adjust Cordova SDK를 사용하면 Cordova 앱에서의 어트리뷰션, 이벤트 등을 측정할 수 있습니다. 본 가이드의 단계를 수행하여 Adjust SDK와 연동되도록 앱을 설정하시기 바랍니다. 이에 대한 예시는 [GitHub](https://github.com/adjust/cordova_sdk/tree/master/example-cordova)에서 확인하실 수 있습니다.
+
+1\. 프로젝트에 SDK 추가 \{\#add\-the\-sdk\-to\-your\-project\}
+----------------------------------------------------------------
+
+Adjust Cordova SDK는 npm에서 플러그인으로 이용 가능합니다. 프로젝트에 추가하려면 다음을 수행하시기 바랍니다. 
+
+### Cordova 플러그인 \{\#cordova\-plugin\}
+
+Cordova 플러그인에 Adjust Cordova SDK를 추가하려면 다음 명령을 실행합니다.
+
+```console
+> cordova plugin add com.adjust.sdk
+Fetching plugin "com.adjust.sdk" via npm
+Installing "com.adjust.sdk" for android
+Installing "com.adjust.sdk" for ios
+```
+
+### Ionic \{\#ionic\}
+
+앱을 빌드할 때 Ionic을 사용하는 경우 다음 명령을 실행하여 [`awesome-cordova-plugins` 리포지토리](https://github.com/danielsogl/awesome-cordova-plugins)로부터 SDK를 추가합니다.
+
+```console
+> npm install @awesome-cordova-plugins/adjust --save
+> ionic cordova plugin add com.adjust.sdk
+```
+
+2\. Android 기기 설정 \{\#set\-up\-android\-devices\}
+--------------------------------------------------------
+
+### 권한 추가 \{\#add\-permissions\}
+
+Adjust SDK에는 `com.google.android.gms.AD_ID` 권한이 기본값으로 포함됩니다. 앱이 COPPA 준수 대상이거나 Google 플레이 스토어를 타겟으로 하지 않는 경우, `android.permission.INTERNET`를 추가하여 이 권한을 제거할 수 있습니다.
+<codeblock title="plugin.xml"> 
+
+```xml
+<config-file target="AndroidManifest.xml" parent="/manifest" id="sl-md0000000">
+  <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" id="sl-md0000000" />
+</config-file>
+```
+
+</CodeBlock> <callout type="seealso"> 
+
+이 권한에 대한 자세한 내용은 Google의 [`AdvertisingIdClient.Info documentation`](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid)을 참조하시기 바랍니다.
+</Callout> 
+
+### 설치 리퍼러 설정 \{\#set\-up\-install\-referrer\}
+
+Adjust SDK는 기본 설정에 따라 [Google Play Referrer API](https://developer.android.com/google/play/installreferrer) 에 대한 지원을 활성화합니다. Huawei 리퍼러 API와 Meta 설치 리퍼러는 Android용 플러그인으로 제공됩니다. 관련 문서를 참조하여 Android 앱에 대한 플러그인을 설정하시기 바랍니다.
+
+* [Huawei 리퍼러 API](/en/sdk/android/plugins/huawei-referrer-plugin)
+* [Meta 설치 리퍼러](/en/sdk/android/plugins/meta-referrer-plugin)
+
+#### Meta 리퍼러 연동 \{\#meta\-referrer\-integration\}
+
+Meta 설치 리퍼러를 활성화하려면 `AdjustConfig` 인스턴스에서 Meta 앱 ID를 설정해야 합니다. 이를 위해 다음을 수행하시기 바랍니다.
+
+1. [앱 대시보드](https://developers.facebook.com/apps)에서 Meta 앱 ID를 확인합니다. 자세한 내용은 Meta의 [앱 대시보드 문서](https://developers.facebook.com/docs/development/create-an-app/app-dashboard)를 참조하시기 바랍니다.
+
+2. 앱 ID를 `AdjustConfig` 인스턴스의 `setFbAppId` 메서드에 전달합니다.
+
+   <codeblock highlight="{range: 5}"> 
+
+   ```js
+   var adjustConfig = new AdjustConfig(
+      "{YourAppToken}",
+      AdjustConfig.EnvironmentSandbox,
+   );
+   adjustConfig.setFbAppId("FB_APP_ID");
+   Adjust.initSdk(adjustConfig);
+   ```
+
+   </CodeBlock> 
+
+3\. iOS 프레임워크 추가 \{\#add\-ios\-frameworks\}
+-------------------------------------------------
+
+Adjust SDK는 iOS 기기에서 아래의 프레임워크를 자동으로 연결합니다.
+
+|                프레임워크                |                                        설명                                         |                                   참고 사항                                   |
+|-------------------------------------|-----------------------------------------------------------------------------------|---------------------------------------------------------------------------|
+| `AdSupport.framework`               | 디바이스 IDFA에 대한 액세스와, iOS 14 이하 버전의 기기에서 LAT에 대한 액세스도 활성화합니다.                       | 앱이 "아동" 카테고리를 타겟으로 하는 경우 이 프레임워크를 추가하지 않습니다.                              |
+| `AdServices.framework`              | Apple 검색 광고 어트리뷰션 처리                                                              |                                                                           |
+| `StoreKit.framework`                | SKAdNetwork 프레임워크에 대한 액세스 활성화                                                     | Adjust SDK가 iOS 14 이상 버전의 기기에서 SKAdNetwork와의 커뮤니케이션을 처리하도록 허용하기 위해 필요합니다. |
+| `AppTrackingTransparency.framework` | Adjust SDK가 iOS 14 이상 버전의 기기에서 사용자 트래킹 동의 다이얼로그 및 액세스 동의 응답을 래핑하도록 허용하기 위해 필요합니다. | 앱이 "아동" 카테고리를 타겟으로 하는 경우 이 프레임워크를 추가하지 않습니다.                              |
+
+4\. SDK 서명 설정 \{\#set\-up\-sdk\-signature\}
+--------------------------------------------------
+
+SDK v5는 [SDK Signature 라이브러리](https://help.adjust.com/en/article/sdk-signature) 를 포함합니다. [iOS](/en/sdk/ios/integrations/signature-library#test-your-app) 와 [Android](/en/sdk/android/integrations/signature-library#test-your-app) 용 테스트 가이드를 참조하여 연동이 잘 되는지 확인하시기 바랍니다.
+
+서명 보호는 기본 설정에 따라 비활성화되어 있습니다. 활성화하려면 다음이 필요합니다.
+
+1. [Signature 검증 시행](https://help.adjust.com/en/article/sdk-signature#enforce-signature-validation).
+2. 테스트하기 전에 [앱의 SHA\-1 핑커프린트를 제공합니다](https://help.adjust.com/en/article/sdk-signature#manage-your-certificate-fingerprints).
+
+5\. Adjust SDK 초기화 \{\#initialize\-the\-adjust\-sdk\}
+------------------------------------------------------------
+
+<callout type="important"> 
+
+테스트 시에는 반드시 환경이 `AdjustConfig.EnvironmentSandbox` 로 설정되어야 합니다. 앱을 앱스토어에 제출하기 전에 이를 `AdjustConfig.EnvironmentProduction`으로 변경합니다.
+</Callout> 
+
+Flutter 앱에서 최대한 빨리 Adjust SDK를 초기화하시기 바랍니다. 이를 위해 다음을 수행하시기 바랍니다.
+
+1. 다음 인수를 사용하여 `AdjustConfig` 객체를 인스턴스화합니다. 
+   * `appToken`: [Adjust 앱 토큰](https://help.adjust.com/en/article/app-settings#view-your-app-token)입니다.
+   * `environment`: 앱이 실행 중인 환경. 로컬에서 앱을 테스트하려면 이 값을 `AdjustConfig.EnvironmentSandbox` 로 설정하시기 바랍니다.
+
+2. `AdjustConfig` 인스턴스를 `Adjust.initSdk` 메서드에 전달하여 SDK를 초기화합니다.
+
+```js
+var adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox,
+);
+Adjust.initSdk(adjustConfig);
+```
+
+6\. 앱 빌드
+---------
+
+잘하셨습니다\! 이제 Cordova 앱을 빌드하고 실행할 수 있을 것입니다. 로깅을 실행하여 문제가 있는지 확인합니다. 로그를 검토하여 `Install tracked` 메시지를 확인합니다.
+
+Adjust SDK를 통해 사용자 어트리뷰션을 시작할 수 있습니다.
+
+7\. 연동 테스트 \{\#test\-your\-integration\}
+----------------------------------------------
+
+Adjust SDK는 연동 테스트와 문제 해결 툴을 제공합니다. 다음과 같이 설정을 테스트하시기 바랍니다.
+
+* 환경을 `AdjustConfig.EnvironmentSandbox`로 설정합니다.
+* Adjust 대시보드 결과에 샌드박스 필터를 추가합니다.
+* 로그 수준을 `AdjustConfig.LogLevelVerbose`로 설정합니다.
+
+문제 발생 시, 모든 상세 내용과 로그를 [support@adjust.com](mailto:support@adjust.com)에 보내시기 바랍니다.
+
+### Google Play Services 연동 테스트 \{\#test\-google\-play\-services\-integration\}
+
+Adjust SDK가 기기의 Google 광고 ID를 수신할 수 있는지 테스트하려면 로그 수준을 **verbose** 로 설정하고, 환경을 **Sandbox\(샌드박스\)** 로 설정합니다. 앱을 시작하고 세션이나 이벤트를 측정합니다. SDK가 광고 ID를 읽으면 `gps_adid`\(Google 플레이 서비스 광고주 ID\) 파라미터를 로깅합니다.
+
+Google 광고 ID를 조회하는 데 문제가 있다면 SDK [Github repository](https://github.com/adjust/cordova_sdk)에 이슈를 제기하거나 [support@adjust.com](mailto:support@adjust.com)으로 문의해 주시기 바랍니다.
+
