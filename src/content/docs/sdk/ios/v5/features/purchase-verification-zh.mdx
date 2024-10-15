@@ -1,0 +1,150 @@
+---
+title: "收入验证"
+description: "验证 App Store 购买"
+slug: "en/sdk/ios/features/purchase-verification"
+versions: 
+    - 
+        label: "v5"
+        value: "v5"
+        default: true
+    - 
+        label: "v4"
+        value: "v4"
+redirects: 
+    v4: "/en/sdk/ios/v4/features/purchase-verification"
+---
+如果您已启用[收入验证](https://help.adjust.com/en/article/purchase-verification)，就可以使用 Adjust SDK 请求收入验证。
+<callout type="important"> 
+
+要使用收入验证，您首先需要在 Adjust suite 中为应用设置收入验证。请参阅[为应用设置收入验证](https://help.adjust.com/en/article/set-up-purchase-verification-for-your-app)，了解相关说明。
+</Callout> 
+
+通过 Adjust SDK 验证购买的方法有两种：
+
+1. 创建代表购买的`ADJEvent`对象并添加以下属性： 
+   * `transactionId` \( `NSString` \)：要验证的交易 ID。
+   * `productId` \(`NSString`\)：已被成功售出货品的产品识别码。
+
+2. 适用您的交易 ID 和产品 ID 创建一个`ADJAppStorePurchase`对象。
+
+<callout type="tip"> 
+
+如果您在 Adjust 中使用收入事件来监测购买，则应使用`ADJEvent`类。如果您只想验证购买但不想将其与事件关联，请使用`ADJAppStorePurchase`类。
+</Callout> 
+
+当您使用 Adjust SDK 发送购买信息时，Adjust 会进行下列操作：
+
+1. 向 App Store 发送信息并等待状态响应。
+2. 将状态响应转发至 Adjust SDK。
+
+您可以使用回传查看收入验证状态。结果以`ADJPurchaseVerificationResult`对象的形式返回，包含以下属性：
+
+* `verificationStatus` \( `NSString` \)：购买状态。
+* `code` \( `int` \)：购买的状态代码。
+* `message` \( `NSString` \)：App Store 返回的任何消息。
+
+记录事件并验证购买 \{\#record\-event\-and\-verify\-purchase\}
+-----------------------------------------------------------
+
+<codeblock title="方法签名"> 
+
+```objc
+- (void)verifyAndTrackAppStorePurchase:(nonnull ADJEvent *)event
+                 withCompletionHandler:(nonnull ADJVerificationResultBlock)completion;
+```
+
+</CodeBlock> 
+
+如需发送收入事件进行验证并监听收入验证状态，请按照下列步骤操作：
+
+1. 使用您的事件识别码实例化`ADJEvent`对象并设置以下参数： 
+   * `transactionId` \( `NSString` \)：要验证的交易 ID。
+   * `productId` \(`NSString`\)：已被成功售出货品的产品识别码。
+
+2. 请使用下列参数调用 `Adjust.verifyAndTrackPlayStorePurchase` 方法： 
+   * `event` \( `ADJEvent` \): 您的实例化事件对象。
+   * `callback` \( `ADJVerificationResultBlock` \)：接收`ADJPurchaseVerificationResult`对象作为参数的委托回传函数。
+
+在此示例中，收入验证响应被输出至日志后台进程。
+<tabs> <tab title="Swift" sync="swift"> 
+
+```swift
+guard let event = ADJEvent(eventToken: "g3mfiw") else { return }
+event.setProductId("product-id")
+event.setTransactionId("transaction-id")
+
+Adjust.verifyAndTrackAppStorePurchase(event) { verificationResult in
+   print("Verification status: \(verificationResult.verificationStatus)")
+   print("Code: \(verificationResult.code)")
+   print("Message: \(verificationResult.message)")
+}
+```
+
+</Tab> <tab title="Objective-C" sync="objc"> 
+
+```objc
+ADJEvent *event = [[ADJEvent alloc] initWithEventToken:yourEventToken];
+[event setProductId:@"product-id"];
+[event setTransactionId:@"transaction-id"];
+
+[Adjust verifyAndTrackAppStorePurchase:event withCompletionHandler:^(ADJPurchaseVerificationResult * _Nonnull verificationResult) {
+      NSLog(@"Verification status: %@", verificationResult.verificationStatus);
+      NSLog(@"Code: %d", verificationResult.code);
+      NSLog(@"Message: %@", verificationResult.message);
+}];
+```
+
+</Tab> </Tabs> 
+
+仅验证购买 \{\#only\-verify\-purchase\}
+---------------------------------------
+
+<codeblock title="方法签名"> 
+
+```objc
+- (void)verifyAppStorePurchase:(nonnull ADJAppStorePurchase *)purchase
+         withCompletionHandler:(nonnull ADJVerificationResultBlock)completion;
+```
+
+</CodeBlock> 
+
+要发送单独购买并监听收入验证状态，请按照下列步骤操作：
+
+1. 使用以下参数实例化`ADJAppStorePurchase`： 
+   * `transactionId` \( `NSString` \)：要验证的交易 ID。
+   * `productId` \(`NSString`\)：已被成功售出货品的产品识别码。
+
+2. 请使用下列参数调用 `Adjust.verifyAppStorePurchase` 方法： 
+   * `purchase` \( `ADJAppStorePurchase` \): 实例化的购买对象。
+   * `callback` \( `ADJVerificationResultBlock` \)：接收`ADJPurchaseVerificationResult`对象作为参数的委托回传函数。
+
+在此示例中，收入验证响应被输出至日志后台进程。
+<tabs> <tab title="Swift" sync="swift"> 
+
+```swift
+let appStorePurchase = ADJAppStorePurchase(transactionId: yourTransactionId,
+                           productId: yourProductId;
+
+Adjust.verifyAppStorePurchase(appStorePurchase) { verificationResult in
+   print("Verification status: \(verificationResult.verificationStatus)")
+   print("Code: \(verificationResult.code)")
+   print("Message: \(verificationResult.message)")
+}
+```
+
+</Tab> <tab title="Objective-C" sync="objc"> 
+
+```objc
+ADJAppStorePurchase *appStorePurchase = [[ADJAppStorePurchase alloc]
+                                             initWithTransactionId:yourTranscationId
+                                             productId:yourProductId];
+
+[Adjust verifyAppStorePurchase:appStorePurchase withCompletionHandler:^(ADJPurchaseVerificationResult * _Nonnull verificationResult) {
+     NSLog(@"Verification status: %@", verificationResult.verificationStatus);
+     NSLog(@"Code: %d", verificationResult.code);
+     NSLog(@"Message: %@", verificationResult.message);
+}];
+```
+
+</Tab> </Tabs>
+
