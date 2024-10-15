@@ -1,0 +1,305 @@
+---
+title: "Cocos2d-x SDK 集成指南"
+description: "使用 Web SDK 在您的 Cocos2d-x 应用中使用 Adjust 功能"
+category-title: "Cocos2d-x SDK"
+slug: "en/sdk/cocos2dx/v4"
+sidebar-position: 7
+versions: 
+    - 
+        label: "v5"
+        value: "v5"
+        default: true
+    - 
+        label: "v4"
+        value: "v4"
+redirects: 
+    v5: "/en/sdk/cocos2dx"
+---
+通过 Adjust安卓SDK，您可以在 Cocos2d\-x 应用中记录归因、事件及更多数据。请按照本指南中说明的步骤操作，在应用内设置 Adjust SDK。
+<callout type="seealso"> 
+
+请在 [GitHub](https://github.com/adjust/cocos2dx_sdk/tree/master/example/Classes) 中查看 Adjust SDK 集成示例。
+</Callout> 
+
+1\. 获取 Adjust SDK
+------------------
+
+要在您的 Cocos2d\-x 应用中使用 Adjust SDK，请先将 SDK 加入项目。您可以从[GitHub 发布页面](https://github.com/adjust/cocos2dx_sdk/releases/latest)下载最新版本的 SDK。将存档解压缩到您选择的目录中。
+
+2\. 添加 SDK 至您的项目
+-----------------
+
+要添加 SDK 至您的项目：
+
+1. 解压 Adjust SDK 档案
+
+2. 复制`dist`目录下的 C\+\+ 文件，将其添加进 Cocos2d\-x 项目
+
+3. \( **仅限安卓** \)将 C\+\+ 文件的路径添加到`Android.mk`文件的`LOCAL_SRC_FILES`部分。
+
+   <codeblock title="Android.mk"> 
+
+   ```text
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustConfig2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustAttribution2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustProxy2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustEvent2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/Adjust2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustEventFailure2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustEventSuccess2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustSessionFailure2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustSessionSuccess2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustAppStoreSubscription2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustPlayStoreSubscription2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustThirdPartySharing2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustAdRevenue2dx.cpp
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustAppStorePurchase2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustPlayStorePurchase2dx.cpp \
+   ```
+
+   </CodeBlock> 
+
+3\. 更新项目设置
+-----------
+
+要在项目中使用 Adjust SDK，您需要更新项目设置。按照本节中的说明操作：
+
+### 安卓设置
+
+#### SDK JAR 库
+
+<callout type="important"> 
+
+Cocos2d\-x SDK 附带的`adjust-android.jar`与独立安卓 SDK 库不同。请仅在 Cocos2d\-x 应用中使用 Cocos2d\-x SDK 中的`adjust-android.jar` 。
+</Callout> 
+
+针对安卓的 Cocos2d\-x 应用需要 Java Archive \(JAR\) 库。如需将 JAR 库集成到您的应用中，请将`adjust-android.jar`库从解压后的档案中复制到项目的`libs`文件夹中。
+
+#### 添加权限
+
+要授予 Adjust SDK 读取设备信息的权限，您需要声明应用所需的权限。为此，请在 `AndroidManifest.xml` 文件中添加权限。
+
+请添加下列权限，以访问在线功能：
+<codeblock title="AndroidManifest.xml"> 
+
+```xml
+<uses-permission android:name="android.permission.INTERNET" id="sl-md0000000"/>
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" id="sl-md0000000"/>
+```
+
+</CodeBlock> 
+
+如果您的应用并不面向 Google Play 商店，那么请添加下列权限，以读取设备的互联网连接状态：
+<codeblock title="AndroidManifest.xml"> 
+
+```xml
+<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" id="sl-md0000000"/>
+```
+
+</CodeBlock> <minorversion changed="4.32.0"> 
+
+Adjust SDK 默认包含 `com.google.android.gms.AD_ID` 权限。如果您要让应用符合 COPPA \(儿童在线隐私保护法\) 规定，或者应用并不面向 Google Play 商店，请务必使用 `remove` 命令移除权限。
+</MinorVersion> <codeblock title="AndroidManifest.xml"> 
+
+```xml
+<uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" id="sl-md0000000"/>
+```
+
+</CodeBlock> 
+
+#### 设置 Proguard
+
+如果您使用 Proguard 优化应用，那么请务必添加规则，避免Proguard 移除类：
+<codeblock title="proguard.pro"> 
+
+```java
+-keep class com.adjust.sdk.** { *; }
+-keep class com.google.android.gms.common.ConnectionResult {
+   int SUCCESS;
+}
+-keep class com.google.android.gms.ads.identifier.AdvertisingIdClient {
+   com.google.android.gms.ads.identifier.AdvertisingIdClient$Info getAdvertisingIdInfo(android.content.Context);
+}
+-keep class com.google.android.gms.ads.identifier.AdvertisingIdClient$Info {
+   java.lang.String getId();
+   boolean isLimitAdTrackingEnabled();
+}
+-keep public class com.android.installreferrer.** { *; }
+
+```
+
+</CodeBlock> 
+
+应用不在 Google Play 商店发布，请添加下列规则：
+<codeblock title="proguard.pro"> 
+
+```java
+-keep public class com.adjust.sdk.** { *; }
+```
+
+</CodeBlock> 
+
+#### 设置 Install Referrer
+
+Install Referrer 是一种唯一标识符，可用来将安装归因至来源。Adjust SDK 需要该信息进行归因。您可以使用下列方法之一调取 install referrer 信息：
+
+##### Google Play Referrer API
+
+<minorversion added="v4.12.0"> 
+
+面向 Google Play 商店的应用可以使用 Google Play Referrer API。
+</MinorVersion> 
+
+要支持 Google Play Referrer API，请将下列行添加进您的 `build.gradle` 文件：
+<codeblock title="build.gradle"> 
+
+```groovy
+dependencies {
+   implementation 'com.android.installreferrer:installreferrer:2.2'
+}
+
+```
+
+</CodeBlock> 
+
+如果您使用的是 Proguard，请务必添加规则，避免依赖被移除。
+<codeblock title="proguard.pro"> 
+
+```java
+-keep public class com.android.installreferrer.** { *; }
+```
+
+</CodeBlock> 
+
+##### 华为 Referrer API
+
+<minorversion added="v4.22.0"> 
+
+面向华为设备的应用可以使用华为 Referrer API。Adjust SDK 可以针对装有华为 App Gallery v10\.4 或更新版本的华为设备记录安装信息。您无需进行任何调整，即可开始使用该 API。
+</MinorVersion> 
+
+##### Meta Install Referrer
+
+<minorversion added="v4.37.0"> 
+
+Adjust SDK v4\.37\.0 及更高版本支持[Meta Install Referrer](https://developers.facebook.com/docs/app-ads/meta-install-referrer)。要启用该功能：
+</MinorVersion> 
+
+1. 在[应用控制面板](https://developers.facebook.com/apps)中找到您的 Meta app ID。更多信息，请参考 Meta 的[应用控制面板文档](https://developers.facebook.com/docs/development/create-an-app/app-dashboard)。
+
+2. [将 Meta 应用添加至您的`AndroidManifest.xml`文件](https://developers.facebook.com/docs/app-ads/meta-install-referrer#step-1--add-the-meta-apps)。
+
+   <codeblock title="AndroidManifest.xml"> 
+
+   ```xml
+   <queries id="sl-md0000000">
+      <package android:name="com.facebook.katana" id="sl-md0000000" />
+   </queries>
+   
+   <queries id="sl-md0000000">
+      <package android:name="com.instagram.android" id="sl-md0000000" />
+   </queries>
+   ```
+
+   </CodeBlock> 
+3. 将应用 ID 作为 **字符串** 参数传递至`AdjustConfig2dx.setFbAppId`方法。
+
+   ```cpp
+   AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment, false);
+   adjustConfig.setFbAppId("your-fb-app-id");
+   Adjust2dx::start(adjustConfig);
+   ```
+
+### iOS 设置
+
+在应用中添加特定 iOS 框架后，Adjust SDK 就能获取额外信息。这些框架可以支持特定 SDK 功能，但即便没有这些框架，SDK 也能正常工作。您可以添加这些框架，然后在 **Project Settings \->  Build Phases \->  Link Binary With Libraries** 下将其设置为可选。
+
+|                 框架                  |                               描述                                |                             注意事项                             |
+|-------------------------------------|-----------------------------------------------------------------|--------------------------------------------------------------|
+| `AdSupport.framework`               | 允许读取设备 IDFA。对于操作系统为 iOS 14 及更早版本的设备，添加该框架也会允许读取 LAT 信息。         | 如果您的应用属于 "儿童" 类别，那么请勿添加该框架                                   |
+| `AdServices.framework`              | 处理 Apple Search Ads 归因                                          |                                                              |
+| `StoreKit.framework`                | 允许访问 SKAdNetwork 框架                                             | 若要允许 Adjust 处理 iOS 14 或更新操作版本设备上与 SKAdNetwork 的通讯，那么必须添加该框架。 |
+| `AppTrackingTransparency.framework` | 若要允许 Adjust SDK 包装用户跟踪许可对话，并读取 iOS 14 或更新操作版本设备的许可响应，那么必须添加该框架。 | 如果您的应用属于 "儿童" 类别，那么请勿添加该框架                                   |
+
+#### 添加链接器标记
+
+要支持来自`AdjustSdk.framework`的类别，您需要添加链接器标记。为此请进行下列操作：
+
+1. 找到 **Project Settings \-\-> Build Settings** 
+2. 选择 **Other Linker Flags** 。
+3. 添加`-ObjC`标记。
+
+#### 复制其他源文件
+
+要完成 iOS 设置，您必须将所有 Objective\-C\+\+ \( `.h`和`.mm` \) 文件与 Cocos2d\-x C\+\+ 文件一起复制到 Xcode 项目中。确保所有`.mm`文件都列在 **Build Phases \-\-> Compile Sources** 部分中。
+
+4\. 集成 Adjust SDK
+------------------
+
+更新项目设置后，您就可以将 Adjust SDK 集成到应用中了。为此请进行下列操作：
+
+1. 在 **项目导航** 中找到并打开应用委托文件。
+2. 在文件顶部包含`Adjust/Adjust2dx.h`类。
+3. 使用以下参数在`applicationDidFinishLaunching`方法中实例化`AdjustConfig2dx`对象： 
+   * `appToken`: 您的 Adjust 应用识别码
+   * `environment`: `AdjustEnvironmentSandbox2dx`
+
+4. 您也可以通过调整[日志级别](/en/sdk/cocos2dx/configuration#set-your-logging-level)来调整日志的详细程度。
+5. 调用`Adjust2dx::start`方法并将`AdjustConfig2dx`实例作为参数传送。
+
+<callout type="important"> 
+
+在进行测试时，应当确保将环境设置为 `AdjustEnvironmentSandbox2dx` 。请在向应用商店提交应用前，将此设为 `AdjustEnvironmentProduction2dx`。
+</Callout> 
+
+```cpp
+#include "Adjust/Adjust2dx.h"
+
+bool AppDelegate::applicationDidFinishLaunching() {
+   std::string appToken = "{YourAppToken}";
+   std::string environment = AdjustEnvironmentSandbox2dx;
+
+   AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment);
+   adjustConfig.setLogLevel(AdjustLogLevel2dxVerbose);
+   Adjust2dx::start(adjustConfig);
+}
+```
+
+5\. 配置会话发送 \(仅限安卓\)
+----------------------
+
+要确保 Adjust SDK 可以发送安卓设备上的会话信息，您必须在应用转到后台或前台时调用特定的 Adjust 方法。配置方法如下：
+
+1. 在 **项目导航** 中找到并打开应用委托文件。
+
+2. 在`applicationWillEnterForeground`方法中添加对`onResume`方法的调用。
+
+3. 在`applicationDidEnterBackground`方法中添加对`onPause`方法的调用。
+
+   <codeblock highlight="{range: 5}, {range: 11}"> 
+
+   ```cpp
+   #include "Adjust/Adjust2dx.h"
+   
+   void AppDelegate::applicationDidEnterBackground() {
+      #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+         Adjust2dx::onPause();
+      #endif
+   }
+   
+   void AppDelegate::applicationWillEnterForeground() {
+      #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+         Adjust2dx::onResume();
+      #endif
+   }
+   ```
+
+   </CodeBlock> 
+
+6\. 创建您的应用
+-----------
+
+完成了！您现在可以创建并运行 Cocos2d\-x 应用了。请启用日志，检查可能存在的问题。请查看日志中的 `Install tracked` 信息。
+
+您现在已经准备就绪，可以使用 Adjust SDK 进行用户归因了。
+
