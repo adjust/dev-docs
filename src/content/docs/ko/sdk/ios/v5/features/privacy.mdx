@@ -24,11 +24,11 @@ Adjust SDK에는 앱에서 사용자 프라이버시를 관리할 수 있는 기
 
 </CodeBlock>
 
-EU의 개인정보 보호 규정\(GDPR\) 및 유사한 전 세계 개인정보 보호법\(CCPA, LGPD 등\)은 데이터 주체에게 개인 데이터 처리와 관련하여 포괄적인 권리를 부여합니다. 이러한 권리에는 삭제 권리\( [GDPR 17조](https://gdpr.eu/article-17-right-to-be-forgotten/) 참조\)\([1](https://help.adjust.com/ko/article/gdpr#ref-1)\)가 포함됩니다. 데이터 처리자로서 Adjust는 귀하의 \(앱\) 사용자의 이러한 요청을 처리하는 데 있어 귀하\(데이터 컨트롤러\)를 지원할 의무가 있습니다.
+EU의 개인정보 보호 규정\(GDPR\) 및 기타 개인정보 보호법\(CCPA, LGPD 등\)은 데이터 주체에게 개인 데이터 처리와 관련하여 포괄적인 권리를 부여합니다. 이러한 권리에는 삭제 권리\([GDPR 17조](https://gdpr.eu/article-17-right-to-be-forgotten/)\)\([1](https://help.adjust.com/ko/article/gdpr#ref-1)\)가 포함됩니다. 데이터 처리자로서 Adjust는 귀하의 \(앱\) 사용자의 이러한 요청을 처리하는 데 있어 귀하\(데이터 컨트롤러\)를 지원할 의무가 있습니다.
 
-`gdprForgetMe` 메서드를 호출하여 사용자의 삭제 요청을 Adjust로 전송할 수 있습니다. Adjust가 알림을 받은 경우:
+`gdprForgetMe` 메서드를 호출하여 사용자의 삭제 요청을 Adjust로 전송할 수 있습니다. 삭제 요청 수신 시 Adjust는 다음의 조치를 취합니다:
 
--  Adjust는 내부 시스템과 데이터베이스에서 해당 사용자의 모든 과거 개인 정보를 영구적으로 삭제합니다.
+-  Adjust 내부 시스템에서 해당 사용자의 모든 개인 정보 기록을 영구적으로 삭제합니다.
 -  Adjust는 더 이상 Adjust SDK를 통해 해당 사용자/기기로부터 데이터를 수신하지 않습니다.\([2](https://help.adjust.com/ko/article/gdpr#ref-2)\)
 
 <Tabs>
@@ -72,7 +72,7 @@ Adjust SDK와의 서드파티 공유를 활성화 또는 비활성화하려면 `
 <Tab title="Swift" sync="swift">
 
 ```swift
-let adjustThirdPartySharing = ADJThirdPartySharing(isEnabled: 1)
+guard let adjustThirdPartySharing = ADJThirdPartySharing(isEnabled: 1) else { return }
 Adjust.trackThirdPartySharing(adjustThirdPartySharing)
 ```
 
@@ -98,7 +98,7 @@ ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc] in
 <Tab title="Swift" sync="swift">
 
 ```swift
-let adjustThirdPartySharing = ADJThirdPartySharing(isEnabled: 0)
+guard let adjustThirdPartySharing = ADJThirdPartySharing(isEnabled: 0) else { return }
 Adjust.trackThirdPartySharing(adjustThirdPartySharing)
 ```
 
@@ -150,7 +150,7 @@ ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc] in
 <Tab title="Swift" sync="swift">
 
 ```swift
-let adjustThirdPartySharing = ADJThirdPartySharing(isEnabled:nil)
+guard let adjustThirdPartySharing = ADJThirdPartySharing(isEnabled:nil) else { return }
 adjustThirdPartySharing.addGranularOption("PartnerA", key: "foo", value: "bar")
 Adjust.trackThirdPartySharing(adjustThirdPartySharing)
 ```
@@ -179,11 +179,11 @@ Facebook은 CCPA\(California Consumer Privacy Act, 캘리포니아 소비자 프
 
 `addGranularOption` 메서드에 다음 인수를 전달하여 Facebook LDU 상태를 업데이트할 수 있습니다.
 
-| 파라미터                          | 설명                                                                                                                                                                                              |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `partner_name`                    | LDU를 토글하기 위해 `facebook`를 사용하시기 바랍니다.                                                                                                                                             |
-| `data_processing_options_country` | 사용자가 위치한 국가.<ul><li>`0`: Request that Facebook use geolocation.</li><li>`1`: United States of America.</li></ul>                                                                         |
-| `data_processing_options_state`   | 사용자가 어느 주에 위치하고 있는지 Facebook에 알림.<ul><li>`0`: Request that Facebook use geolocation.</li><li>`1000`: California.</li><li>`1001`: Colorado</li><li>`1002`: Connecticut</li></ul> |
+| 파라미터                          | 설명                                                                                                                                                                                             |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `partner_name`                    | LDU를 토글하기 위해 `facebook`를 사용하시기 바랍니다.                                                                                                                                            |
+| `data_processing_options_country` | 사용자가 위치한 국가.<ul><li>`0`: Facebook이 지리적 위치를 사용하도록 요청.</li><li>`1`: 미국</li></ul>                                                                                          |
+| `data_processing_options_state`   | 사용자가 어느 주에 위치하고 있는지 Facebook에 알림.<ul><li>`0`: Facebook이 지리적 위치를 사용하도록 요청.</li><li>`1000`: 캘리포니아</li><li>`1001`: 콜로라도</li><li>`1002`: 코네티컷</li></ul> |
 
 <Callout type="note">
 
@@ -194,7 +194,7 @@ Facebook은 CCPA\(California Consumer Privacy Act, 캘리포니아 소비자 프
 <Tab title="Swift" sync="swift">
 
 ```swift
-let tps = ADJThirdPartySharing(isEnabled:nil)
+guard let tps = ADJThirdPartySharing(isEnabled:nil) else { return }
 tps.addGranularOption("facebook", key: "data_processing_options_country", value: "1")
 tps.addGranularOption("facebook", key: "data_processing_options_state", value: "1000")
 Adjust.trackThirdPartySharing(tps)
@@ -222,7 +222,7 @@ ADJThirdPartySharing *tps = [[ADJThirdPartySharing alloc] initWithIsEnabled:@1];
 
 <Callout type="important">
 
-귀하가 Google 애드 또는 Google 마케팅 플랫폼을 사용하고 사용자가 EEA\(European Economic Area, 유럽 경제 지역\)에 위치한 경우 이러한 옵션을 전달해야 합니다.
+귀하가 Google Ads 또는 Google 마케팅 플랫폼을 사용하고 사용자가 EEA\(European Economic Area,유럽 경제 지역\)에 위치한 경우 이러한 옵션을 전달해야 합니다.
 
 </Callout>
 
@@ -238,7 +238,7 @@ EU의 DMA\(Digital Markets Act, 디지털 시장법\)에 따라 Google 애드와
 <Tab title="Swift" sync="swift">
 
 ```swift
-let adjustThirdPartySharing = ADJThirdPartySharing(isEnabled:nil)
+guard let adjustThirdPartySharing = ADJThirdPartySharing(isEnabled:nil) else { return }
 adjustThirdPartySharing.addGranularOption("google_dma", key: "eea", value: "1")
 adjustThirdPartySharing.addGranularOption("google_dma", key: "ad_personalization", value: "1")
 adjustThirdPartySharing.addGranularOption("google_dma", key: "ad_user_data", value: "1")
@@ -316,7 +316,7 @@ ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc]
 
 </Callout>
 
-#### 예시 {#examples}
+#### 예 {#examples}
 
 특정 파트너와의 모든 지표 공유를 중단하려면 `all` 키를 `false` 값과 함께 전달하시기 바랍니다.
 
@@ -324,7 +324,7 @@ ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc]
 <Tab title="Swift" sync="swift">
 
 ```swift
-let adjustThirdPartySharing = ADJThirdPartySharing.initWithIsEnabledNumberBool(nil)
+guard let adjustThirdPartySharing = ADJThirdPartySharing(isEnabled:nil) else { return }
 adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", key: "all", value: false)
 Adjust.trackThirdPartySharing(adjustThirdPartySharing)
 ```
@@ -333,7 +333,7 @@ Adjust.trackThirdPartySharing(adjustThirdPartySharing)
 <Tab title="Objective-C" sync="objc">
 
 ```objc
-ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc] initWithIsEnabledNumberBool:nil];
+ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc] initWithIsEnabled:nil];
 [adjustThirdPartySharing addPartnerSharingSetting:@"PartnerA" key:@"all" value:@NO];
 [Adjust trackThirdPartySharing:adjustThirdPartySharing];
 ```
@@ -347,7 +347,7 @@ ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc] in
 <Tab title="Swift" sync="swift">
 
 ```swift
-let adjustThirdPartySharing = ADJThirdPartySharing.initWithIsEnabledNumberBool(nil)
+guard let adjustThirdPartySharing = ADJThirdPartySharing(isEnabled:nil) else { return }
 adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", key: "all", value: true)
 Adjust.trackThirdPartySharing(adjustThirdPartySharing)
 ```
@@ -356,7 +356,7 @@ Adjust.trackThirdPartySharing(adjustThirdPartySharing)
 <Tab title="Objective-C" sync="objc">
 
 ```objc
-ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc] initWithIsEnabledNumberBool:nil];
+ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc] initWithIsEnabled:nil];
 [adjustThirdPartySharing addPartnerSharingSetting:@"PartnerA" key:@"all" value:@YES];
 [Adjust trackThirdPartySharing:adjustThirdPartySharing];
 ```
@@ -378,7 +378,7 @@ ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc] in
 <Tab title="Swift" sync="swift">
 
 ```swift
-let adjustThirdPartySharing = ADJThirdPartySharing.initWithIsEnabledNumberBool(nil)
+guard let adjustThirdPartySharing = ADJThirdPartySharing(isEnabled:nil) else { return }
 adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", key: "all", value: false)
 adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", key: "event", value: true)
 Adjust.trackThirdPartySharing(adjustThirdPartySharing)
@@ -388,7 +388,7 @@ Adjust.trackThirdPartySharing(adjustThirdPartySharing)
 <Tab title="Objective-C" sync="objc">
 
 ```objc
-ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc] initWithIsEnabledNumberBool:nil];
+ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc] initWithIsEnabled:nil];
 [adjustThirdPartySharing addPartnerSharingSetting:@"PartnerA" key:@"all" value:@NO];
 [adjustThirdPartySharing addPartnerSharingSetting:@"PartnerA" key:@"event" value:@YES];
 [Adjust trackThirdPartySharing:adjustThirdPartySharing];
@@ -438,7 +438,7 @@ URL 전략 기능을 사용하여 다음을 설정할 수 있습니다.
 <Tab title="Swift" sync="swift">
 
 ```swift
-let domain = []
+let domain = [] as [String]
 adjustConfig.setUrlStrategy(domain, useSubdomains: true, isDataResidency: false)
 ```
 
@@ -454,7 +454,7 @@ NSArray *domain = [];
 </Tab>
 </Tabs>
 
-### 예시 {#url-strategy-examples}
+### 예 {#url-strategy-examples}
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -462,7 +462,7 @@ NSArray *domain = [];
 
 ```swift
 let domain = ["adjust.net.in", "adjust.com"]
-adjustConfig.setUrlStrategy(domain, useSubdomains: true, isDataResidency: false)
+adjustConfig?.setUrlStrategy(domain, useSubdomains: true, isDataResidency: false)
 ```
 
 </CodeBlock>
@@ -470,7 +470,7 @@ adjustConfig.setUrlStrategy(domain, useSubdomains: true, isDataResidency: false)
 
 ```swift
 let domain = ["adjust.world", "adjust.com"]
-adjustConfig.setUrlStrategy(domain, useSubdomains: true, isDataResidency: false)
+adjustConfig?.setUrlStrategy(domain, useSubdomains: true, isDataResidency: false)
 ```
 
 </CodeBlock>
@@ -478,7 +478,7 @@ adjustConfig.setUrlStrategy(domain, useSubdomains: true, isDataResidency: false)
 
 ```swift
 let domain = ["adjust.cn"]
-adjustConfig.setUrlStrategy(domain, useSubdomains: true, isDataResidency: false)
+adjustConfig?.setUrlStrategy(domain, useSubdomains: true, isDataResidency: false)
 ```
 
 </CodeBlock>
@@ -486,7 +486,7 @@ adjustConfig.setUrlStrategy(domain, useSubdomains: true, isDataResidency: false)
 
 ```swift
 let domain = ["eu.adjust.com"]
-adjustConfig.setUrlStrategy(domain, useSubdomains: true, isDataResidency: true)
+adjustConfig?.setUrlStrategy(domain, useSubdomains: true, isDataResidency: true)
 ```
 
 </CodeBlock>
@@ -494,7 +494,7 @@ adjustConfig.setUrlStrategy(domain, useSubdomains: true, isDataResidency: true)
 
 ```swift
 let domain = ["tr.adjust.com"]
-adjustConfig.setUrlStrategy(domain, useSubdomains: true, isDataResidency: true)
+adjustConfig?.setUrlStrategy(domain, useSubdomains: true, isDataResidency: true)
 ```
 
 </CodeBlock>
@@ -502,7 +502,7 @@ adjustConfig.setUrlStrategy(domain, useSubdomains: true, isDataResidency: true)
 
 ```swift
 let domain = ["us.adjust.com"]
-adjustConfig.setUrlStrategy(domain, useSubdomains: true, isDataResidency: true)
+adjustConfig?.setUrlStrategy(domain, useSubdomains: true, isDataResidency: true)
 ```
 
 </CodeBlock>
@@ -610,7 +610,7 @@ Adjust.trackMeasurementConsent(true)
 
 </CodeBlock>
 
-앱에서 COPPA\(Children's Online Privacy Protection Act, 어린이 온라인 개인정보 보호법\)를 준수해야 하는 경우 SDK 초기화 도중 또는 이후에 `enableCoppaCompliance` 메서드를 호출합니다. 이 메서드는 다음을 수행합니다.
+앱에서 COPPA\(Children's Online Privacy Protection Act, 어린이 온라인 개인정보 보호법\)를 준수해야 하는 경우 SDK 초기화 이전에 `enableCoppaCompliance` 메서드를 `ADJConfig` 인스턴스에서 호출합니다. 이 메서드는 다음을 수행합니다.
 
 1. 서드파티 공유를 비활성화합니다.
 2. SDK가 디바이스 ID와 광고 ID 읽는 것을 방지합니다\(예: `idfa`\).
@@ -668,7 +668,7 @@ let adjustConfig = ADJConfig(
     appToken: yourAppToken,
     environment: environment)
 
-adjustConfig.disableIdfvReading();
+adjustConfig?.disableIdfvReading();
 ```
 
 </Tab>
