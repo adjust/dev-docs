@@ -14,14 +14,37 @@ jobs:
         uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4
         with:
           ref: ${{ github.event.pull_request.head.ref }}
-      - name: Run translation fixes script
+
+      # Set up Python environment
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: python .github/scripts/fix_i18n.py
+          cache: "poetry"
+
+      # Install Poetry
+      - name: Install Poetry
+        run: |
+          pipx install poetry
+
+      # Install dependencies using Poetry
+      - name: Install dependencies with Poetry
+        working-directory: .github/scripts
+        run: |
+          poetry install
+
+      # Run the script using Poetry
+      - name: Run translation fixes script with Poetry
+        working-directory: .github/scripts
+        run: |
+          poetry run python fix_i18n.py
+
+      # Check for modified files
       - name: Check for modified files
         id: git-check
         run: echo "MODIFIED=$(if [ -n "$(git status --porcelain)" ]; then echo "true"; else echo "false"; fi)" >> "$GITHUB_OUTPUT"
+
+      # Set up Node if files were modified
       - name: Set up node
         if: ${{ steps.git-check.outputs.MODIFIED == 'true' }}
         uses: actions/setup-node@v4
@@ -29,9 +52,13 @@ jobs:
           node-version: "20.x"
           registry-url: https://npm.pkg.github.com/
           scope: "@adjust"
+
+      # Install npm dependencies if files were modified
       - name: Install dependencies
         if: ${{ steps.git-check.outputs.MODIFIED == 'true' }}
         run: npm i
+
+      # Commit and push changes if any files were modified
       - name: Commit changes
         if: ${{ steps.git-check.outputs.MODIFIED == 'true' }}
         run: |
