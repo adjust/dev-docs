@@ -14,25 +14,28 @@ redirects:
 
 Adjust SDKには、アプリ内でのユーザープライバシーの処理に使用できる機能が含まれています。
 
-## 忘れられる権利のリクエストを送信する {#send-right-to-be-forgotten-request}
+## 消去リクエストを送信する {#send-erasure-request}
 
 <CodeBlock title="メソッドシグネチャー">
 
-```js
+```ts
 gdprForgetMe(): void
 ```
 
 </CodeBlock>
 
-欧州連合の一般データ保護規制（GDPR）第17条は、ユーザーに忘れられる権利（Right To Be Forgotten）を付与するものです。Adjustのサーバーが忘れられる権利（RTBF）リクエストを受信すると、Adjustはユーザーデータを削除します。また、SDKは当該アプリに対するデバイスからのリクエスト送信を停止します。
+EUの一般データ保護規則（GDPR）および類似する世界的なプライバシー法（CCPA、LGPDなど）は、個人データの処理に関する包括的な権利をデータ主体に付与しています。これらの権利には、消去権（[GDPR第17条](https://gdpr.eu/article-17-right-to-be-forgotten/)を参照）（[1](https://help.adjust.com/ja/article/gdpr#ref-1)）が含まれます。データ処理者として、Adjustは、（アプリ）ユーザー（データ管理者）からのそのようなリクエストの処理をサポートする義務があります。
 
-`gdprForgetMe`メソッドを呼び出すことで、ユーザーのRTBFリクエストをAdjustに送信することができます。
+`gdprForgetMe`メソッドを呼び出すことで、ユーザーの消去リクエストをAdjustに送信することができます。Adjustが通知を受けると、以下の対応をします。
+
+-  Adjustはその内部システムおよびデータベースから、履歴として保管されているユーザーの全ての個人データを完全に削除します。
+-  Adjustは、Adjust SDKを介して、このユーザー/デバイスからデータを受信しなくなります。（[2](https://help.adjust.com/ja/article/gdpr#ref-2)）
 
 ```js
 Adjust.gdprForgetMe();
 ```
 
-## 特定のユーザーの情報をサードパーティと共有する {#thirdparty-sharing-for-specific-users}
+## 特定のユーザーの情報をサードパーティと共有する {#third-party-sharing-for-specific-users}
 
 Adjust SDKを使用して、ユーザーがサードパーティとの共有設定を変更した時にそれを記録することができます。サードパーティの共有設定は、`AdjustThirdPartySharing`クラスを使用して構成されます。
 
@@ -40,8 +43,8 @@ Adjust SDKを使用して、ユーザーがサードパーティとの共有設�
 
 <CodeBlock title="メソッドシグネチャー">
 
-```js
-constructor(isEnabled: boolean)
+```ts
+constructor(isEnabled: boolean | null)
 ```
 
 </CodeBlock>
@@ -50,10 +53,12 @@ Adjust SDKでサードパーティ共有を有効化または無効化するに�
 
 サードパーティ共有オブジェクトをインスタンス化するには、新しい`AdjustThirdPartySharing`インスタンスを作成して以下のパラメーターをパスしてください：
 
--  `isEnabled` （`boolean`）：サードパーティとの共有が有効化されているかどうか。サードパーティとの共有を有効化するには`true`を、無効化するには`false`をパスします。
+-  `isEnabled` \(`boolean` または `null`\)：サードパーティとの共有が有効かどうかを指定します。サードパーティとの共有を有効にするには `true` を、無効にするには `false` をパスします。現在の `isEnabled` トグルの状態に基づいてパートナー共有設定を調整したい場合は、`null` をパスしてください。
 
 ```js
 var adjustThirdPartySharing = new AdjustThirdPartySharing(true);
+
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
 <Callout type="note">
@@ -65,7 +70,8 @@ var adjustThirdPartySharing = new AdjustThirdPartySharing(true);
 `AdjustThirdPartySharing`オブジェクトをインスタンス化したら、`AdjustThirdPartySharing`インスタンスを引数として`Adjust.trackThirdPartySharing`メソッドを呼び出すことで、Adjustに情報を送信することができます。
 
 ```js
-var adjustThirdPartySharing = new AdjustThirdPartySharing(true);
+var adjustThirdPartySharing = new AdjustThirdPartySharing(false);
+
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
@@ -73,7 +79,7 @@ Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 
 <CodeBlock title="メソッドシグネチャー">
 
-```js
+```ts
 addGranularOption(partnerName: string, key: string, value: string): void
 ```
 
@@ -85,24 +91,11 @@ addGranularOption(partnerName: string, key: string, value: string): void
 -  `key` （`string`）：オプションのキー
 -  `value` （`string`）：オプションの値
 
-以下のパラメーターが利用可能です：
-
-| Partner Name                           | 文字列の値                  |
-| -------------------------------------- | --------------------------- |
-| Apple Ads                              | `apple_ads`                 |
-| Facebook                               | `facebook`                  |
-| Google 広告 \(Google Ads\)             | `adwords`                   |
-| Google マーケティング プラットフォーム | `google_marketing_platform` |
-| Snapchat                               | `snapchat`                  |
-| Tencent                                | `tencent`                   |
-| TikTok SAN                             | `tiktok_san`                |
-| X（旧Twitter）                         | `twitter`                   |
-| Yahoo Gemini                           | `yahoo_gemini`              |
-| Yahoo\! JAPANスポンサードサーチ        | `yahoo_japan_search`        |
-
 ```js
-var adjustThirdPartySharing = new AdjustThirdPartySharing(true);
+var adjustThirdPartySharing = new AdjustThirdPartySharing(null);
+
 adjustThirdPartySharing.addGranularOption("PartnerA", "key", "value");
+
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
@@ -110,7 +103,7 @@ Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 
 <Callout type="important">
 
-アプリがインストールされると、Adjust SDKはすぐに情報をFacebookに送信します。このメソッドは、必ずSDKを初期化する前に呼び出してください。
+アプリがインストールされると、Adjust SDKはすぐに情報をFacebookに送信します。このメソッドは、必ずSDKを初期化する **前に** 呼び出してください。
 
 </Callout>
 
@@ -118,20 +111,22 @@ Facebookは、カリフォルニア州消費者プライバシー法（CCPA）�
 
 Facebook LDUのステータスは、`addGranularOption`メソッドに引数を渡すことで更新できます。
 
-| パラメーター                      | 説明                                                                                                                                                                                                     |
-| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `partner_name`                    | `facebook`を使用してLDUを切り替えます。                                                                                                                                                                  |
-| `data_processing_options_country` | ユーザーの居住国<ul><li>`0`：Facebookに位置情報の使用をリクエスト</li><li>`1`：アメリカ合衆国</li></ul>                                                                                                  |
-| `data_processing_options_state`   | どの州に位置するユーザーであるかをFacebookに通知します。<ul><li>`0`：Facebookに位置情報の使用をリクエスト</li><li>`1000`：カリフォルニア</li><li>`1001`：コロラド</li><li>`1002`：コネチカット</li></ul> |
+| パラメーター                      | 説明                                                                                                                                                                                                             |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `partner_name`                    | `facebook`を使用してLDUを切り替えます。                                                                                                                                                                          |
+| `data_processing_options_country` | ユーザーの居住国<ul><li>`0`: Facebookに位置情報の使用をリクエスト。</li><li>`1`: アメリカ合衆国。</li></ul>                                                                                                      |
+| `data_processing_options_state`   | どの州に位置するユーザーであるかをFacebookに通知します。<ul><li>`0`: Facebookに位置情報の使用をリクエスト。</li><li>`1000`: カリフォルニア。</li><li>`1001`: コロラド。</li><li>`1002`: コネチカット。</li></ul> |
 
 <Callout type="note">
 
 `data_processing_options_country`フィールド **または** `data_processing_options_state`フィールドに値`0`を指定してこのメソッドを呼び出すと、Adjust SDKは **両方** のフィールドを`0`としてパスします。
 
 </Callout>
+<CodeBlock highlight="{range: 3-12}">
 
 ```js
-var adjustThirdPartySharing = new AdjustThirdPartySharing(true);
+var adjustThirdPartySharing = new AdjustThirdPartySharing(null);
+
 adjustThirdPartySharing.addGranularOption(
    "facebook",
    "data_processing_options_country",
@@ -142,21 +137,21 @@ adjustThirdPartySharing.addGranularOption(
    "data_processing_options_state",
    "1000",
 );
+
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
-#### Googleに同意データを提供（デジタル市情法へのコンプライアンス） {#provide-consent-data-to-google-digital-markets-act-compliance}
+</CodeBlock>
+
+#### Googleに同意データを提供する（デジタル市情法へのコンプライアンス） {#provide-consent-data-to-google-digital-markets-act-compliance}
 
 <Callout type="important">
 
 Google 広告またはGoogle マーケティング プラットフォームを使用し、ユーザーの所在地が欧州経済領域（EEA）である場合は、これらの情報をパスする必要があります。
 
 </Callout>
-<MinorVersion added="v4.26.0">
 
 EUのデジタル市場法（DMA）に準拠するため、Google 広告およびGoogle マーケティング プラットフォームは、AdjustからAPIへのアトリビューションリクエストを受信することに明示的な同意を必要とします。 この同意を通知するには、パートナー`google_dma`のAdjustサードパーティ共有オブジェクトに、以下の詳細オプションを追加してください。
-
-</MinorVersion>
 
 | キー                 | 値                                   | 説明                                                                                                                                                                                                                                                                        |
 | -------------------- | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -165,7 +160,7 @@ EUのデジタル市場法（DMA）に準拠するため、Google 広告およ�
 | `ad_user_data`       | `1` \(positive\) \| `0` \(negative\) | ユーザーが広告主IDをアトリビューション目的で利用することに同意したかどうかをAdjustに通知します。                                                                                                                                                                            |
 
 ```js
-var adjustThirdPartySharing = new AdjustThirdPartySharing(true);
+var adjustThirdPartySharing = new AdjustThirdPartySharing(null);
 adjustThirdPartySharing.addGranularOption("google_dma", "eea", "1");
 adjustThirdPartySharing.addGranularOption(
    "google_dma",
@@ -176,46 +171,102 @@ adjustThirdPartySharing.addGranularOption("google_dma", "ad_user_data", "1");
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
-### パートナー設定を更新する {#update-partner-settings}
+### パートナー共有設定を更新する {#update-partner-settings}
 
 <CodeBlock title="メソッドシグネチャー">
 
-```js
+```ts
 addPartnerSharingSetting(partnerName: string, key: string, value: boolean): void
 ```
 
 </CodeBlock>
 
-Adjust SDKを使用して、パートナーごとにサードパーティーとの共有設定を更新することができます。これを行うには、パートナー名とオプションを使用して`addPartnerSharingSetting`メソッドを呼び出します。
+デフォルトでは、Adjustは全ての指標をアプリ設定で設定したパートナーと共有します。Adjust SDKを使用して、パートナーごとにサードパーティーとの共有設定を更新することができます。これを行うには、次の引数を使用して`addPartnerSharingSetting`メソッドを呼び出します：
+
+| 引数          | データタイプ | 説明                                                                                                                                                                                |
+| ------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `partnerName` | `string`     | パートナーの名前。[利用可能なパートナーの全リストをダウンロードする](https://assets.ctfassets.net/5s247im0esyq/5WvsJ7J7fGFUlfsFeGdalj/643651619adc3256acac7885ec60624d/modules.csv) |
+| `key`         | `string`     | パートナーと共有する指標                                                                                                                                                            |
+| `value`       | `boolean`    | ユーザーの決定                                                                                                                                                                      |
+
+`key`を使用すると、無効化または再有効化する指標を指定できます。全ての指標の共有を有効化/無効化するには、 `all`キーを使用します。利用可能な指標のリストは以下をご覧ください。
+
+<ListColumns>
+
+-  `ad_revenue`
+-  `all`
+-  `attribution`
+-  `update`
+-  `att_update`
+-  `cost_update`
+-  `event`
+-  `install`
+-  `reattribution`
+
+---
+
+-  `reattribution_reinstall`
+-  `reinstall`
+-  `rejected_install`
+-  `rejected_reattribution`
+-  `sdk_click`
+-  `sdk_info`
+-  `session`
+-  `subscription`
+-  `uninstall`
+
+</ListColumns>
+
+パートナーの指標に対して`false`値を設定すると、Adjustはパートナーとの指標の共有を停止します。
+
+<Callout type="tip">
+
+指標を選択してパートナーと共有したい場合は、 `false`値を含む`all`キーをパスして全ての共有を無効にした後、 `true`値を含めて任意の指標をパスすると、共有するデータを制限することができます。
+
+</Callout>
+
+#### 例 {#examples}
+
+特定のパートナーとの全ての指標の共有を停止する場合は、 `false`値を含む`all`キーをパスします。
 
 ```js
-var adjustThirdPartySharing = new AdjustThirdPartySharing(true);
-adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "foo", false);
+var adjustThirdPartySharing = new AdjustThirdPartySharing(null);
+adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "all", false);
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
-## サードパーティとの共有を無効にする {#disable-thirdparty-sharing}
+共有を再度有効化するには、 `true`値を含む`all`キーをパスします。
+
+```js
+var adjustThirdPartySharing = new AdjustThirdPartySharing(null);
+adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "all", true);
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+```
+
+異なるキーで`addPartnerSharingSetting`メソッドを複数回呼び出すことで、特定の指標の共有を停止または開始できます。例えば、イベント情報のみをパートナーと共有したい場合は、以下をパスすることができます。
+
+-  `all` に`false`値を指定して、全ての情報の共有を無効化する。
+-  `event` に`true`値を指定して、イベントの共有を有効化する。
+
+<Callout type="note">
+
+特定のキーは、常に`all`より優先されます。`all`を他のキーと一緒にパスすると、個々のキー値が`all`設定を上書きします。
+
+</Callout>
+
+```js
+var adjustThirdPartySharing = new AdjustThirdPartySharing(null);
+adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "all", false);
+adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "event", true);
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+```
+
+## データレジデンシー {#data-residency}
 
 <CodeBlock title="メソッドシグネチャー">
 
-```js
-disableThirdPartySharing(): void
-```
-
-</CodeBlock>
-
-全てのユーザーに対してサードパーティとのデータ共有を無効化するには、`disableThirdPartySharing`メソッドを呼び出します。Adjustサーバーがこの情報を受信すると、サードパーティとのデータ共有を停止します。Adjust SDKは引き続き通常通り動作します。
-
-```js
-Adjust.disableThirdPartySharing();
-```
-
-## URL戦略を設定する {#set-url-strategy}
-
-<CodeBlock title="メソッドシグネチャー">
-
-```js
-setUrlStrategy(urlStrategy: AdjustUrlStrategy)
+```ts
+setUrlStrategy(urlStrategyDomains: string[], useSubdomains: boolean, isDataResidency: boolean): void
 ```
 
 </CodeBlock>
@@ -227,31 +278,40 @@ URL戦略機能では、以下のいずれかを設定することができま�
 
 これは、プライバシー要件が厳しい国で事業を展開している場合に便利です。URL戦略を設定すると、Adjustは選択したデータレジデンシー地域にデータを保管したり、選択したドメインにトラフィックを送信したりします。
 
-データレジデンシーの国を設定するには、configインスタンスの`urlStrategy`プロパティに次のURL戦略のうちの1つを割り当てます。
+データレジデンシーの国を設定するには、次のパラメーターのいずれかを指定して`AdjustConfig`インスタンスから`setUrlStrategy`メソッドを呼び出します：
 
-| 値                              | 説明                                                    |
-| ------------------------------- | ------------------------------------------------------- |
-| `AdjustConfig.DataResidencyEU`  | データレジデンシーのエリアをEUに設定します。            |
-| `AdjustConfig.DataResidencyTR`  | データレジデンシーのエリアをTurkeyに設定します。        |
-| `AdjustConfig.DataResidencyUS`  | データレジデンシーのエリアをUSAに設定します。           |
-| `AdjustConfig.UrlStrategyChina` | URL strageryを`app.adjust.world`ドメインに設定します。  |
-| `AdjustConfig.UrlStrategyCn`    | URL strageryを`app.adjust.cn`ドメインに設定します。     |
-| `AdjustConfig.UrlStrategyIndia` | URL strageryを`app.adjust.net.in`ドメインに設定します。 |
+-  `urlStrategyDomains` （`string[]` ）：SDKのトラフィック送信先となるエンドポイントの配列。
+-  `useSubdomains` （`boolean`）：ドメインをAdjustドメインとして扱うかどうか。`true`の場合、SDKはAdjust固有のサブドメインをドメインにプレフィックスとします。`false`の場合、SDKはプレフィックスを追加せずに、指定されたドメインをそのまま使用します。
+-  `isDataResidency` （`boolean`）：ドメインをデータレジデンシーに使用するかどうか。
+
+| IR: 戦略                 | メインおよびフォールバックドメイン | サブドメインの使用 | データレジデンシー |
+| ------------------------ | ---------------------------------- | ------------------ | ------------------ |
+| EU データレジデンシー    | `"eu.adjust.com"`                  | `true`             | `true`             |
+| トルコデータレジデンシー | `"tr.adjust.com"`                  | `true`             | `true`             |
+| 米国 データレジデンシー  | `"us.adjust.com"`                  | `true`             | `true`             |
+| 中国グローバル URL設定   | `"adjust.world"`。 `"adjust.com"`  | `true`             | `false`            |
+| 中国 URL戦略             | `"adjust.cn"`。 `"adjust.com"`     | `true`             | `false`            |
+| 中国限定 URL設定         | `"adjust.cn"`                      | `true`             | `false`            |
+| インド URL戦略           | `"adjust.net.in"`。 `"adjust.com"` | `true`             | `false`            |
+
+<CodeBlock highlight="'eu.adjust.com'\], true, true, {range: 5}">
 
 ```js
-var adjustConfig = new AdjustConfig(
+const adjustConfig = new AdjustConfig(
    "{YourAppToken}",
    AdjustConfig.EnvironmentSandbox,
 );
-adjustConfig.setUrlStrategy(AdjustConfig.DataResidencyEU);
-Adjust.create(adjustConfig);
+adjustConfig.setUrlStrategy(["eu.adjust.com"], true, true);
+Adjust.initSdk(adjustConfig);
 ```
+
+</CodeBlock>
 
 ## 特定のユーザーの同意を計測する {#consent-measurement-for-specific-users}
 
 <CodeBlock title="メソッドシグネチャー">
 
-```js
+```ts
 trackMeasurementConsent(measurementConsent: boolean): void
 ```
 
@@ -261,7 +321,7 @@ Adjustダッシュボードで[データプライバシー設定](https://help.a
 
 この機能を切り替えるには、次の引数を使用して`trackMeasurementConsent`メソッドを呼び出します：
 
--  `measurementConsent` （`boolean`）：同意計測が有効化されている（`true`）か無効化されている（`false`）か。
+-  `consentMeasurement` （`boolean`）：同意計測が有効化されている（`true`）か無効化されている（`false`）か。
 
 有効化されている場合、SDKはデータプライバシー設定をAdjustサーバーに通信します。Adjustサーバーは、お客様のデータプライバシーのルールをユーザーに適用させます。Adjust SDKは引き続き通常通り動作します。
 
@@ -269,74 +329,52 @@ Adjustダッシュボードで[データプライバシー設定](https://help.a
 Adjust.trackMeasurementConsent(true);
 ```
 
-## 子供のためのプライバシー設定 {#privacy-for-children}
-
-<MinorVersion changed="v4.32.0">
-
-Adjust SDKには、バージョン4\.32\.0以降、デフォルトで`com.google.android.gms.permission.AD_ID`パーミッションが含まれています。アプリをCOPPAに準拠させる必要がある場合や、Google Playストアをターゲットにしていない場合は、ディレクティブを追加することでこれを削除することができます。
-
-</MinorVersion>
-<CodeBlock title="AndroidManifest.xml">
-
-```xml
-<uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
-```
-
-</CodeBlock>
-
-このパーミッションに関する詳細は、Googleの[`AdvertisingIdClient.Info documentation`](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid)をご参照ください。
-
-### 児童オンラインプライバシー保護法（COPPA）コンプライアンス {#coppa-compliance}
+## 児童オンラインプライバシー保護法（COPPA）コンプライアンス {#coppa-compliance}
 
 <CodeBlock title="メソッドシグネチャー">
 
-```js
-setCoppaCompliantEnabled(coppaCompliantEnabled: boolean)
+```ts
+enableCoppaCompliance(): void
 ```
 
 </CodeBlock>
 
-アプリが児童オンラインプライバシー保護法（COPPA）に準拠する必要がある場合は、configインスタンスの`coppaCompliantEnabled`プロパティに`boolean`値を割り当てます。このプロパティを`true`に設定します：
+アプリが児童オンラインプライバシー保護法（COPPA）に準拠する必要がある場合は、`enableCoppaCompliance`メソッドを呼び出します。このメソッドは、以下の動作を実行します。
 
 1. ユーザーが最初の`session`を行う **前に** サードパーティとのデータ情報共有を無効にする。
 2. SDKがデバイスIDと広告ID（例：`gps_adid`、`android_id`）を読み取るのを防ぐ。
 
 ```js
-var adjustConfig = new AdjustConfig(
+const adjustConfig = new AdjustConfig(
    "{YourAppToken}",
    AdjustConfig.EnvironmentSandbox,
 );
-adjustConfig.setCoppaCompliantEnabled(true);
-Adjust.create(adjustConfig);
+
+adjustConfig.enableCoppaCompliance();
+Adjust.initSdk(adjustConfig);
 ```
 
-`false`引数を使用してこのメソッドを呼び出すと、COPPAへの準拠を無効化できます。
-
-<Callout type="important">
-
-COPPAメソッドを無効化しても、サードパーティとのデータ共有は再有効化 **されません** 。ユーザーの[サードパーティとのデータ共有を再度有効化する](#third-party-sharing-for-specific-users)必要があります。
-
-</Callout>
-
-### Playストアの子供向けアプリ（Androidのみ） {#play-store-kids-apps-android-only}
+## Playストアの子供向けアプリ（Androidのみ） {#play-store-kids-apps-android-only}
 
 <CodeBlock title="メソッドシグネチャー">
 
-```js
-setPlayStoreKidsAppEnabled(playStoreKidsAppEnabled: boolean)
+```ts
+enablePlayStoreKidsCompliance(): void
 ```
 
 </CodeBlock>
 
 アプリが13歳未満のユーザーをターゲットとしており、インストールの地域が米国 **ではない** 場合は、子供向けアプリとして登録してください。これにより、SDKがデバイスIDと広告ID（例：`gps_adid`、`android_id`）を読み取るのを防ぐことができます。
 
-アプリを子供向けアプリとして表示するには、configインスタンスの`playStoreKidsAppEnabled`プロパティに`boolean`値を割り当てます。アプリを子供向けアプリとして表示するには`true`に、非子供向けアプリとして表示するには`false`に設定します。
+アプリを子供向けアプリとして表示するには、`enablePlayStoreKidsCompliance`メソッドを呼び出します。
 
 ```js
-var adjustConfig = new AdjustConfig(
+const adjustConfig = new AdjustConfig(
    "{YourAppToken}",
    AdjustConfig.EnvironmentSandbox,
 );
-adjustConfig.setPlayStoreKidsAppEnabled(true);
-Adjust.create(adjustConfig);
+
+adjustConfig.enablePlayStoreKidsCompliance();
+
+Adjust.initSdk(adjustConfig);
 ```
