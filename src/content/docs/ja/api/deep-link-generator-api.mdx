@@ -1,0 +1,288 @@
+---
+title: "ディープリンクジェネレーター API"
+description: "ディープリンクジェネレーターAPIを使用して、アプリ用に短縮および長いディープリンクを個別あるいは一括で作成できます。"
+category-title: "ディープリンクジェネレーター API"
+slug: "ja/api/deep-link-generator-api"
+sidebar-position: 8
+---
+
+ディープリンクジェネレーターAPIを使用して、アプリ用の短いおよび長いディープリンクを個別または一括で作成できます。これらのカスタマイズされたディープリンクは、さまざまなプラットフォームでユーザー体験を向上させます。
+
+## 事前準備 {#before-you-begin}
+
+はじめに、以下の設定手順をご覧ください。
+
+### ご利用の条件 {#availability}
+
+<Callout type="important">
+
+ディープリンクジェネレーターAPIには、1秒あたり200リクエストのレート制限があります。この制限を超えると、429エラーが発生します。
+
+</Callout>
+
+-  ディープリンクジェネレーターAPIは、TrueLinkのBase、Core、またはEnterpriseのパッケージにご契約のお客様にご利用いただけます。
+-  ディープリンクジェネレーターAPIを使用して作成されたリンクは、 [Campaign Lab](https://help.adjust.com/ja/article/campaign-setup)に表示されません。
+-  ディープリンクジェネレーターAPIを使用して作成されたショートリンクのTTL（有効期間）は120日です。
+
+### 要件 {#requirements}
+
+-  管理者、編集者およびカスタムの編集者の[アクセス権限](https://help.adjust.com/ja/article/permission-levels)。
+-  iOSアプリとAndroidアプリに[同じブランドドメインを設定](https://help.adjust.com/ja/article/set-up-branded-domain)していること。
+
+   -  iOSアプリの場合、ブランドドメインを[関連ドメイン（Associated Domain）](https://help.adjust.com/ja/article/set-up-branded-domain#ios-only-update)として追加するようにしてください。これにより、ドメインがユニバーサルリンクとして設定されるようになります。
+   -  Androidアプリの場合、ブランドドメインを[Android アプリリンク（Android App Link）](https://help.adjust.com/ja/article/set-up-android-app-links)として定義するようにしてください。
+
+-  アプリのカスタムリンク。
+
+   -  シングルプラットフォームアプリ、マルチプラットフォームアプリ \- [Campaign Labでカスタムリンクを作成して](https://help.adjust.com/ja/article/custom-link-setup)、単一のリンクトークンを取得します。
+   -  複数のシングルプラットフォームアプリ \- 複数のシングルプラットフォームアプリから[Campaign Labでカスタムリンク](https://help.adjust.com/ja/article/custom-link-setup#combined-custom-links)を作成し、「\_」で区切られた複数のリンクトークンを含む、1つの複合カスタムリンクを作成します。詳細については、[複合カスタムリンク向けプラットフォーム固有のリンクトークンを](https://help.adjust.com/ja/article/manage-custom-link-setup#link-tokens-combined-custom-link)参照してください。
+
+-  Adjust SDKを更新して、短縮リンクを解決すること。
+
+   -  [iOS](https://dev.adjust.com/en/sdk/ios/features/short-links) \| [Android](https://dev.adjust.com/en/sdk/android/features/short-links) \| [Unity](https://dev.adjust.com/en/sdk/unity/features/short-links) \| [React Native](https://dev.adjust.com/en/sdk/react-native/features/short-links) \| [Flutter](https://dev.adjust.com/en/sdk/flutter/features/short-links) \| [Cordova](https://dev.adjust.com/en/sdk/cordova/features/short-links) \| [Cocos2d\-x](https://dev.adjust.com/en/sdk/cocos2dx/features/short-links)
+
+-  [データレジデンシーを設定](https://help.adjust.com/ja/article/data-residency-setup)している場合、iOSアプリとAndroidアプリで同じ地域を使用していることを確認してください。
+
+## 認証 {#authentication}
+
+ディープリンクジェネレーターは、[ベアラートークン](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication)を使用して認証します。ディープリンクジェネレーターAPIへの各リクエストには、Adjust APIトークンを`Authorization`ヘッダーに必ず含める必要があります。
+
+自社でシングルサインオン（SSO）を有効にしている場合は、 Adjustの担当者または[support@adjust.com](mailto:support@adjust.com)にお問い合わせください。APIトークンの取得方法についてサポートいたします。
+
+SSO以外のアカウントの場合、APIガイドはユーザーの **プロフィール** に表示されます。トークンを確認するには、以下の手順に従ってください。
+
+1. アカウント（ユーザー）アイコンを選択します。
+2. **アカウント設定（Account Settings）** を選択します。
+3. **マイプロフィール（My Profile）** を選択します。
+4. **APIトークン** が **ユーザー情報（User details）** に表示されます。コピーボタンを選択して、トークンをクリップボードにコピーします。
+
+### Adjust APIトークンをリセットする {#reset-your-adjust-api-token}
+
+Adjust APIトークンはいつでもリセットできます。トークンをリセットすると、古いトークンは無効になります。Adjust APIトークンをリセットした場合、使用中の古いトークンを新しいトークンに置き換える必要があります。無効になったトークンを使用したリクエストは、Adjustによって拒否されます。
+
+Adjust APIトークンをリセットする方法：
+
+1. アカウント（ユーザー）アイコンを選択します。
+2. **アカウント設定（Account Settings）** を選択します。
+3. **マイプロフィール（My Profile）** を選択します。
+4. **APIトークン** が **ユーザー情報（User details）** に表示されます。
+5. **APIトークンをリセットする（Reset API token）** を選択します。
+6. 表示されたモーダルにアカウントのパスワードを入力し、 **リセット** を選択してAPIトークンをリセットします。画面の右上に確認メッセージが表示されます。
+7. **APIトークン** の横にあるコピーボタンを選択して、トークンをクリップボードにコピーします。
+
+## パラメーター {#parameters}
+
+| パラメーター             | データタイプ           | 入力する値 | 説明                                                                                                                                                                                                                           |
+| ------------------------ | ---------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `adjust_auth_token`      | `String`               | 説明       | Adjust APIトークン                                                                                                                                                                                                             |
+| `link_token`             | `String`               | ボディ     | カスタムリンクのリンクトークン。複合リンクからディープリンクを生成している場合、Campaign Labで組み合わせたカスタムリンクの正しいリンクトークンを使用していることを確認してください。                                           |
+| `shorten_url`            | `Boolean`              | ボディ     | リンクが短縮されるかどうか。リンクはデフォルトでは短縮されません。デフォルト値 \- false                                                                                                                                        |
+| `campaign`               | `String` または `null` | ボディ     | キャンペーンの名前                                                                                                                                                                                                             |
+| `adgroup`                | `String` または `null` | ボディ     | アドグループの名前                                                                                                                                                                                                             |
+| `creative`               | `String` または `null` | ボディ     | クリエイティブの名前                                                                                                                                                                                                           |
+| `deep_link_path`         | `String`               | ボディ     | ユーザーが遷移するアプリ内の遷移先を指定。シングルプラットフォームアプリにはこれを使用してください。                                                                                                                           |
+| `ios_deep_link_path`     | `String`               | ボディ     | ユーザーが遷移するiOSのアプリ内の遷移先を指定。マルチプラットフォームのiOSアプリまたは複合リンクにはこれを使用してください。                                                                                                   |
+| `android_deep_link_path` | `String`               | ボディ     | ユーザーが遷移するiOSのアプリ内の遷移先を指定。マルチプラットフォームのiOSアプリまたは複合リンクにはこれを使用してください。                                                                                                   |
+| `fallback`               | `String`               | ボディ     | オフプラットフォームのユーザーを送るランディングページ。フォールバックURLを指定する際には、macOSユーザー向けに`redirect_macos`を指定することをお勧めします。                                                                   |
+| `redirect_macos`         | `String`               | ボディ     | macOSのAdjustのデフォルトリダイレクトを上書きするリダイレクトURL。\`fallback\` を指定する場合は、macOSユーザー向けに`fallback`を指定することをお勧めします。                                                                   |
+| `label`                  | `String`               | ボディ     | リンクにカスタムデータを追加します。このパラメーターを使用して、ユーザーがアプリからショートリンクを共有した際に自動入力される一意の[ユーザー紹介ID](https://help.adjust.com/ja/article/set-up-user-referrals)を追加できます。 |
+| `og_title`               | `String`               | ボディ     | リンクのソーシャル共有プレビューのタイトル。                                                                                                                                                                                   |
+| `og_description`         | `String`               | ボディ     | リンクのソーシャル共有プレビューの説明。                                                                                                                                                                                       |
+| `og_image`               | `String`               | ボディ     | ソーシャル共有プレビューに使用する、200 x 200 ピクセル以上のJPGまたはPNG形式の画像のURLを指定。                                                                                                                                |
+
+## 単一のディープリンクを生成{#generate-a-single-deep-link}
+
+シングルまたはマルチプラットフォームのアプリ用に、長いまたは短縮ディープリンクを生成するには、`POST`リクエストを送信します。
+
+### エンドポイント {#endpoint-single}
+
+```http
+https://automate.adjust.com/engage/deep-links
+```
+
+### 例 {#examples-single}
+
+**シングルプラットフォームアプリ**
+
+<CodeBlock title="リクエスト - cURL">
+
+```bash
+curl --location 'https://automate.adjust.com/engage/deep-links' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer adjustApiToken' \
+--data '{
+     "link_token": "1c52mluz",
+     "redirect": "https://example.com/redirect",
+     "fallback": "https://example.com/fallback",
+     "deep_link_path": "/custom-path",
+     "shorten_url": true
+   }'
+```
+
+</CodeBlock>
+<CodeBlock title="レスポンス">
+
+```http
+{"url": "https://insights.go.link/fryYl"}
+```
+
+</CodeBlock>
+
+**マルチプラットフォームアプリ**
+
+<CodeBlock title="リクエスト - cURL">
+
+```bash
+curl --location 'https://automate.adjust.com/engage/deep-links' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer adjustApiToken' \
+--data '{
+     "link_token": "2d41nkvy",
+     "redirect": "https://example.com/redirect",
+     "fallback": "https://example.com/fallback",
+     "android_deep_link_path": "/custom-path",
+     "redirect_macos": "https://www.example.com/redirectmacos",
+     "shorten_url": true
+   }'
+```
+
+</CodeBlock>
+<CodeBlock title="レスポンス">
+
+```url
+{"url": "https://insights.go.link/jlbKj"}
+```
+
+</CodeBlock>
+
+**複合リンク**
+
+ディープリンクジェネレーターAPIを使用してディープリンクを生成する前に、[Campaign Labで複合カスタムリンクを作成](https://help.adjust.com/ja/article/custom-link-setup)してください。
+
+<CodeBlock title="リクエスト - cURL">
+
+```bash
+curl --location 'https://automate.adjust.com/engage/deep-links' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer adjustApiToken' \
+--data '{
+     "link_token": "1c2n7ybx_1cjet4nl",
+     "redirect": "https://example.com/redirect",
+     "fallback": "https://example.com/fallback",
+     "ios_deep_link_path": "/custom-path-ios",
+     "android_deep_link_path": "/custom-path-android",
+     "redirect_macos": "https://www.example.com/redirectmacos",
+     "shorten_url": true
+   }'
+```
+
+</CodeBlock>
+<CodeBlock title="レスポンス">
+
+```http
+{"url": "https://insights.go.link/6JtQx"}
+```
+
+</CodeBlock>
+
+## ディープリンクを一括で生成{#generate-deep-links-in-bulk}
+
+シングルまたはマルチプラットフォームのアプリ用に、長いまたは短縮ディープリンクを一括で生成するには、`POST`リクエストを送信します。
+
+### エンドポイント {#endpoint-bulk}
+
+```http
+https://automate.adjust.com/engage/deep-links/bulk
+```
+
+### 例 {#example-bulk}
+
+<CodeBlock title="リクエスト - cURL">
+
+```bash
+curl --location 'https://automate.adjust.com/engage/deep-links/bulk' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer adjustApiToken' \
+--data '{
+"data": [
+    {
+    "link_token": "1doptv0c",
+    "redirect": "https://example.com/redirect",
+    "fallback": "https://example.com/fallback",
+    "campaign": "custom-campaign",
+    "shorten_url": true
+    },
+    {
+      "link_token": "1df3xslh_1dsykkaa",
+      "redirect": "https://example.com/redirect",
+      "fallback": "https://example.com/fallback",
+      "ios_deep_link_path": "/custom-path-ios",
+      "android_deep_link_path": "/custom-path-android",
+      "shorten_url": true
+    },
+    {
+      "link_token": "1dzwtdjt",
+      "redirect": "https://example.com/redirect",
+      "fallback": "https://example.com/fallback",
+      "android_deep_link_path": "/custom-path",
+      "shorten_url": true
+    }
+  ]
+}'
+```
+
+</CodeBlock>
+<CodeBlock title="レスポンス">
+
+```json
+{
+   "data": [
+      {
+         "url": "https://kapp.go.link/4IlkC"
+      },
+      {
+         "url": "https://kapp.go.link/6KnoE"
+      },
+      {
+         "url": "https://insights.go.link/5JmnD"
+      }
+   ]
+}
+```
+
+</CodeBlock>
+
+## ショートリンクトークンを更新{#update-short-link-token}
+
+`PUT`リクエストを送信して、ディープリンク内の既存のショートリンクトークンを長いリンクに更新します。
+
+### エンドポイント {#endpoint-update}
+
+```http
+https://automate.adjust.com/engage/deep-links/{short_token}
+```
+
+### 例 {#example-update}
+
+<CodeBlock title="リクエスト - cURL">
+
+```bash
+curl --location --request PUT 'https://automate.adjust.com/engage/deep-links/4IlkC' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer adjustApiToken' \
+--data '{
+  "link_token": "1doptv0c",
+  "redirect": "https://example.com/new-redirect",
+  "fallback": "https://example.com/new-fallback",
+  "deep_link_path": "/new-custom-path"
+}'
+```
+
+</CodeBlock>
+<CodeBlock title="レスポンス">
+
+```http
+204 No Content
+```
+
+</CodeBlock>
