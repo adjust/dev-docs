@@ -1,5 +1,6 @@
 import re
 import glob
+import yaml
 
 # Define MDX tags and locales
 MDX_TAGS = [
@@ -28,6 +29,49 @@ def process_file(file, locale):
     with open(file, "r", encoding="utf-8") as f:
         content = f.read()
 
+    # Split the front matter (YAML) from the content
+    front_matter, file_content = split_front_matter(content)
+
+    # Parse the front matter as YAML and update keys
+    front_matter = yaml.safe_load(front_matter)
+    updated_front_matter = fix_front_matter(front_matter, locale)
+
+    # Fix the content (non-front matter)
+    file_content = fix_file_content(file_content, locale)
+
+    # Rebuild the final content (YAML front matter + content)
+    final_content = "---\n" + yaml.dump(updated_front_matter, sort_keys=False, allow_unicode=True) + "---\n" + file_content
+
+    # Write back the modified content
+    with open(file, "w", encoding="utf-8") as f:
+        f.write(final_content)
+
+
+# Split the front matter (YAML) from the content
+def split_front_matter(content):
+    match = re.match(r"^---\n(.*?)\n---\n(.*)", content, re.DOTALL)
+    if match:
+        return match.group(1), match.group(2)
+    return "", content  # If no front matter is found, return empty front matter and original content
+
+
+# Fix the YAML front matter
+def fix_front_matter(front_matter, locale):
+    # Update slug
+    if "slug" in front_matter and front_matter["slug"].startswith("en/"):
+        front_matter["slug"] = f"{locale}/{front_matter['slug'][3:]}"
+
+    # Update redirects slugs
+    if "redirects" in front_matter:
+        for version, slug in front_matter["redirects"].items():
+            if slug.startswith("/en/"):
+                front_matter["redirects"][version] = f"/{locale}/{slug[4:]}"
+
+    return front_matter
+
+
+# Fix MDX content (non-YAML part)
+def fix_file_content(content, locale):
     # Fix tags
     for tag in MDX_TAGS:
         lowercase_tag = tag.lower()
@@ -57,9 +101,6 @@ def process_file(file, locale):
         flags=re.MULTILINE,
     )
 
-    # Update slugs
-    content = re.sub(r"(slug: *)(\"?en\/?)", rf'\1"{locale}/', content)
-
     # Update URLs
     content = re.sub(
         r"https://help.adjust.com/en/", f"https://help.adjust.com/{locale}/", content
@@ -72,15 +113,13 @@ def process_file(file, locale):
     content = re.sub(r' id="sl-md0000000"', "", content)
     content = re.sub(r"\s?md0000000\s?", "", content)
 
-    # Write back the modified content
-    with open(file, "w", encoding="utf-8") as f:
-        f.write(content)
+    return content
 
 
 # Main function to find and process all relevant files
 def main():
     for locale in locales:
-        pattern = f"src/content/docs/{locale}/**/*.mdx"
+        pattern = f"../../src/content/docs/{locale}/**/*.mdx"
         files = glob.glob(pattern, recursive=True)
         for file in files:
             print(f"{file}")
