@@ -9,14 +9,14 @@ sidebar-position: 1
 
 SDK v5로 업데이트하기 전에 다음을 수행하시기 바랍니다.
 
-1. SDK v5는 [SDK Signature\(SDK 서명\) 인증](https://help.adjust.com/ko/article/sdk-signature)을 기본적으로 지원합니다. 현재 SDK 서명 라이브러리를 사용하는 경우 먼저 이것을 삭제해야 합니다.
+1. SDK v5는 [SDK Signature 인증](https://help.adjust.com/ko/article/sdk-signature)을 기본적으로 지원합니다. 현재 SDK 서명 라이브러리를 사용하는 경우 먼저 이것을 삭제해야 합니다.
 2. 앱이 다음보다 낮은 버전의 API를 대상으로 하는 경우 SDK v5를 사용하려면 앱을 업데이트해야 합니다.
    -  iOS: **12\.0**
    -  tvOS: **12\.0**
 
 ## 베타 SDK 설치 {#install-the-sdk}
 
-SDK v5를 사용하려면 XCode 프로젝트에서 디펜던시로 추가해야 합니다. 다음을 수행하시기 바랍니다.
+SDK v5를 사용하려면 XCode 프로젝트에서 디펜던시로 추가해야 합니다. 이를 위해 다음을 수행하시기 바랍니다.
 
 1. 현재 `Podfile`에 있는 이전 버전의 SDK를 모두 제거합니다.
 
@@ -32,9 +32,9 @@ SDK v5를 사용하려면 XCode 프로젝트에서 디펜던시로 추가해야 
 
 3. `pod install`을 실행하여 디펜던시를 설치합니다.
 
-## {#init-method}초기화 메서드 업데이트
+## {#init-method} 초기화 메서드 업데이트
 
-<MinorVersion changed="v5" size="large" />
+<MinorVersion changed="v5" size="large" />{" "}
 
 SDK v4에서는 `ADJConfig` 객체를 구성하고 이를 `[Adjust appDidLaunch]` 메서드에 전달하는 방식으로 SDK를 초기화합니다.
 
@@ -100,17 +100,17 @@ ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:yourAppToken
 </Tab>
 </Tabs>
 
-### SDK Bilib 라이브러리 {#signature-setup}를 구성합니다.
+### SDK Signature 라이브러리 {#signature-setup}를 구성합니다.
 
 SDK v5는 [SDK Signature 라이브러리](https://help.adjust.com/ko/article/sdk-signature) 를 포함합니다. 이를 테스트하려면 [Signature 라이브러리 연동 가이드](/ko/sdk/ios/integrations/signature-library) 에 나온 테스트 단계를 수행하시기 바랍니다.
 
 서명 보호는 기본 설정에 따라 비활성화되어 있습니다. 이를 활성화하려면 [서명 검증을 시행](https://help.adjust.com/ko/article/sdk-signature#enforce-signature-validation) 해야 합니다.
 
-## {#changed-apis}에서 변경됨
+## 변경된 API {#changed-apis}
 
-<MinorVersion changed="v5" size="large" />
+<MinorVersion changed="v5" size="large" />{" "}
 
-다음 플러그인은 SDK v5에서 제거되었습니다.
+다음 API가 SDK v5에서 변경되었습니다.
 
 ### SDK 비활성화 및 활성화 {#disable-enable-sdk}
 
@@ -675,7 +675,7 @@ ADJEvent *event = [ADJEvent eventWithEventToken:@"event_token"];
 </Tab>
 </Tabs>
 
-SDK v5에서는 이 기능이 `transaction ID`와 분리되었습니다. 이벤트 중복 제거를 위해 `deduplicationId`라는 새로운 ID 필드가 추가되었습니다. 사용자는 중복 이벤트를 식별하기 위해 목록에 추가할 수 있는 `deduplicationId` 수의 사용자 지정 한도를 설정할 수 있습니다. 기본 설정에 따라 한도는 **10** 으로 설정되어 있습니다.
+SDK v5에서는 이 기능이 `transaction ID`와 분리되었습니다. 이벤트 중복 제거를 위해 `deduplicationId`라는 새로운 ID 필드가 추가되었습니다. 사용자는 중복 이벤트를 식별하기 위해 목록에 추가할 수 있는 `deduplicationId` 수의 사용자 지정 한도를 설정할 수 있습니다. 기본 설정된 값은 **10** 입니다.
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -690,7 +690,7 @@ let adjustConfig = ADJConfig(
 adjustConfig.setEventDeduplicationIdsMaxSize(20)
 Adjust.initSdk(adjustConfig)
 
-let event = ADJEvent(eventToken: "event_token")
+guard let event = ADJEvent(eventToken: "eventToken") else { return }
 event.setDeduplicationId("deduplication_id")
 Adjust.trackEvent(event)
 ```
@@ -783,8 +783,9 @@ func application(
     // incomingURL object contains the deep link
 
     // call the below method to send deep link to Adjust's servers
-    Adjust.processDeeplink(ADJDeeplink(deeplink: incomingURL))
-
+   if let deeplink = ADJDeeplink(deeplink: incomingURL) {
+      Adjust.processDeeplink(deeplink)
+   }
     return true
 }
 ```
@@ -881,7 +882,7 @@ func adjustDeferredDeeplinkReceived(_ deeplink: URL?) -> Bool {
 
 ### COPPA 준수 {#coppa-compliance}
 
-SDK v4에서는 부울 값과 함께 `ADJConfig` 인스턴스의 `setCoppaCompliantEnabled` 메서드를 호출하여 앱을 COPPA 준수로 표시할 수 있습니다.
+SDK v4에서는 부울 값과 함께 `ADJConfig` 인스턴스의 `setCoppaCompliantEnabled` 메서드를 호출하여 앱이 COPPA를 준수하는 것으로 표시할 수 있습니다.
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -993,7 +994,7 @@ NSArray *domain = [];
 | `ADJUrlStrategyCnOnly` | `"adjust.cn"`                     | `true`                 | `false`                    |
 | `ADJUrlStrategyIndia`  | `"adjust.net.in"`, `"adjust.com"` | `true`                 | `false`                    |
 
-#### 예: {#examples}
+#### 예 {#examples}
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -1147,7 +1148,7 @@ let adjustConfig = ADJConfig(
       appToken: yourAppToken,
       environment: environment)
 
-adjustConfig.disableSkanAttribution()
+adjustConfig?.disableSkanAttribution()
 ```
 
 </Tab>
@@ -1180,10 +1181,10 @@ SDK v5에서는 다음 인수와 함께 `[Adjust updateSkanConversionValue]` 메
 ```swift
 Adjust.updateSkanConversionValue(
     1,
-    coarseValue: SKAdNetwork.CoarseConversionValue.low,
+    coarseValue: SKAdNetwork.CoarseConversionValue.low.rawValue,
     lockWindow: false) { error in
     if let error {
-        print(String(format: "An error occurred during completion: %@", error))
+        print(String(format:"An error occurred during completion: %@", error))
     }
 }
 ```
@@ -1203,7 +1204,7 @@ Adjust.updateSkanConversionValue(
 </Tab>
 </Tabs>
 
-### App Tracking Transparency\(ATT\) 승인 래퍼 {#att-wrapper}
+### ATT\(App Tracking Transparency\) 승인 래퍼 {#att-wrapper}
 
 SDK v4에서는 `[Adjust requestTrackingAuthorizationWithCompletionHandler]` 메서드를 사용하여 사용자의 ATT 승인 상태 변경 사항을 처리할 수 있습니다.
 
@@ -1211,7 +1212,7 @@ SDK v4에서는 `[Adjust requestTrackingAuthorizationWithCompletionHandler]` 메
 <Tab title="Swift" sync="swift">
 
 ```swift
-Adjust.requestTrackingAuthorization() { status in
+Adjust.requestTrackingAuthorization { status in
    switch status {
    case 0:
       // ATTrackingManagerAuthorizationStatusNotDetermined case
@@ -1316,7 +1317,7 @@ SDK v4에서는 모든 기기 정보 게터 메서드가 동기적으로 실행�
 <CodeBlock title="ADID 게터">
 
 ```swift
-Adjust.adid() { adid in
+Adjust.adid { adid in
       // add your completion handler
 };
 ```
@@ -1325,7 +1326,7 @@ Adjust.adid() { adid in
 <CodeBlock title="IDFA 게터">
 
 ```swift
-Adjust.idfa() { idfa in
+Adjust.idfa { idfa in
       // add your completion handler
 };
 ```
@@ -1334,7 +1335,7 @@ Adjust.idfa() { idfa in
 <CodeBlock title="IDFV 게터">
 
 ```swift
-Adjust.idfv() { idfv in
+Adjust.idfv { idfv in
       // add your completion handler
 };
 ```
@@ -1343,7 +1344,7 @@ Adjust.idfv() { idfv in
 <CodeBlock title="SDK 버전 게터">
 
 ```swift
-Adjust.sdkVersion() { sdkVersion in
+Adjust.sdkVersion { sdkVersion in
       // add your completion handler
 };
 ```
@@ -1352,7 +1353,7 @@ Adjust.sdkVersion() { sdkVersion in
 <CodeBlock title="활성화된 상태 게터">
 
 ```swift
-Adjust.isEnabled() { isEnabled in
+Adjust.isEnabled { isEnabled in
       // add your completion handler
 };
 ```
@@ -1361,7 +1362,7 @@ Adjust.isEnabled() { isEnabled in
 <CodeBlock title="어트리뷰션 게터">
 
 ```swift
-Adjust.attribution() { attribution in
+Adjust.attribution { attribution in
       // add your completion handler
 }
 ```
@@ -1426,11 +1427,11 @@ Adjust.attribution() { attribution in
 </Tab>
 </Tabs>
 
-## {#removed-apis}에서 삭제됨
+## 삭제된 API {#removed-apis}
 
-<MinorVersion removed="v5" size="large" />
+<MinorVersion removed="v5" size="large" />{" "}
 
-다음 플러그인은 SDK v5에서 제거되었습니다.
+다음 API가 SDK v5에서 삭제되었습니다.
 
 ### 이벤트 버퍼링 {#event-buffering}
 
@@ -1455,7 +1456,7 @@ Adjust.setEventBufferingEnabled(true)
 
 이 설정은 SDK v5에서 제거되었습니다.
 
-### 커스텀 사용자 에이전트 문자열 {#custom-user-agent}
+### 사용자 지정 사용자 에이전트 문자열 {#custom-user-agent}
 
 SDK v4는 사용자 에이전트 문자열과 함께 `[AdjustConfig setUserAgent]`를 호출하여 사용자 지정 사용자 에이전트를 설정하는 기능을 지원합니다.
 
@@ -1551,7 +1552,7 @@ Adjust.disableThirdPartySharing()
 <Tab title="Swift" sync="swift">
 
 ```swift
-let adjustThirdPartySharing = ADJThirdPartySharing.initWithIsEnabled(false)
+guard let adjustThirdPartySharing = ADJThirdPartySharing(isEnabled: 0) else { return }
 Adjust.trackThirdPartySharing(adjustThirdPartySharing)
 ```
 
@@ -1664,7 +1665,7 @@ func adjustSkanUpdated(withConversionData data: [String: String]) {
 
 ### 앱 시크릿 {#set-an-app-secret} 설정
 
-SDK v4는 SDK 트래픽 서명에 사용할 `ADJConfig` 인스턴스에서 `setAppSecret` 메서드를 호출하여 앱 시크릿을 설정하는 것을 지원합니다.
+SDK v4는 `ADJConfig` 인스턴스의 `setAppSecret` 메서드를 호출하여 SDK 트래픽을 서명하는 데 사용할 앱 시크릿을 설정하는 기능을 지원합니다.
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -1687,7 +1688,7 @@ adjustConfig.setAppSecret(secretId, info1: info1, info2: info2, info3: info3, in
 
 ## 제거된 플러그인 {#removed-plugins}
 
-<MinorVersion removed="v5" size="large" />
+<MinorVersion removed="v5" size="large" />{" "}
 
 다음 플러그인은 SDK v5에서 제거되었습니다.
 
