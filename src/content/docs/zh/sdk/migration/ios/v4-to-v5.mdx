@@ -1,7 +1,7 @@
 ---
-title: "SDK v5 迁移指南"
-description: "按照此指南从 SDK v4 升级到 SDK v5"
-slug: "zh/sdk/migration/ios/v4-to-v5"
+title: SDK v5 迁移指南
+description: 按照此指南从 SDK v4 升级到 SDK v5
+slug: zh/sdk/migration/ios/v4-to-v5
 sidebar-position: 1
 ---
 
@@ -34,7 +34,7 @@ sidebar-position: 1
 
 ## 更新初始化方法 {#init-method}
 
-<MinorVersion changed="v5" size="large" />
+<MinorVersion changed="v5" size="large" />{" "}
 
 在 SDK v4 中，SDK 的初始化方法是配置`ADJConfig`对象并将其传递至`[Adjust appDidLaunch]`方法。
 
@@ -102,13 +102,13 @@ ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:yourAppToken
 
 ### 配置 SDK 签名库 {#signature-setup}
 
-SDK v5 包含[SDK 签名库](https://help.adjust.com/zh/article/sdk-signature)。您可以按照[签名库集成指南](/zh/sdk/ios/integrations/signature-library)中的测试步骤对此进行测试。
+SDK v5 包含 [SDK 签名库](https://help.adjust.com/zh/article/sdk-signature)。您可以按照[签名库集成指南](/zh/sdk/ios/integrations/signature-library)中的测试步骤对此进行测试。
 
 签名保护功能默认处于禁用状态。要启用签名，您需要[执行签名验证](https://help.adjust.com/zh/article/sdk-signature#enforce-signature-validation)。
 
 ## 变更 API {#changed-apis}
 
-<MinorVersion changed="v5" size="large" />
+<MinorVersion changed="v5" size="large" />{" "}
 
 SDK v5 中变更了下列 API。
 
@@ -675,7 +675,7 @@ ADJEvent *event = [ADJEvent eventWithEventToken:@"event_token"];
 </Tab>
 </Tabs>
 
-在 SDK v5 中，该功能与`transaction ID`分离。事件去重添加了名为`deduplicationId`的新 ID 字段。用户可以自定义`deduplicationId`的数量限制，添加到用于识别重复事件的列表中。默认情况下，上限为 **10** 。
+在 SDK v5 中，该功能与`transaction ID`分离。事件去重添加了名为`deduplicationId`的新 ID 字段。用户可以自定义`deduplicationId`的数量限制，添加到用于识别重复事件的列表中。默认情况下，数量上限为 **10** 。
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -690,7 +690,7 @@ let adjustConfig = ADJConfig(
 adjustConfig.setEventDeduplicationIdsMaxSize(20)
 Adjust.initSdk(adjustConfig)
 
-let event = ADJEvent(eventToken: "event_token")
+guard let event = ADJEvent(eventToken: "eventToken") else { return }
 event.setDeduplicationId("deduplication_id")
 Adjust.trackEvent(event)
 ```
@@ -783,8 +783,9 @@ func application(
     // incomingURL object contains the deep link
 
     // call the below method to send deep link to Adjust's servers
-    Adjust.processDeeplink(ADJDeeplink(deeplink: incomingURL))
-
+   if let deeplink = ADJDeeplink(deeplink: incomingURL) {
+      Adjust.processDeeplink(deeplink)
+   }
     return true
 }
 ```
@@ -1147,7 +1148,7 @@ let adjustConfig = ADJConfig(
       appToken: yourAppToken,
       environment: environment)
 
-adjustConfig.disableSkanAttribution()
+adjustConfig?.disableSkanAttribution()
 ```
 
 </Tab>
@@ -1180,10 +1181,10 @@ ADJConfig *adjustConfig = [[ADJConfig alloc]
 ```swift
 Adjust.updateSkanConversionValue(
     1,
-    coarseValue: SKAdNetwork.CoarseConversionValue.low,
+    coarseValue: SKAdNetwork.CoarseConversionValue.low.rawValue,
     lockWindow: false) { error in
     if let error {
-        print(String(format: "An error occurred during completion: %@", error))
+        print(String(format:"An error occurred during completion: %@", error))
     }
 }
 ```
@@ -1211,7 +1212,7 @@ Adjust.updateSkanConversionValue(
 <Tab title="Swift" sync="swift">
 
 ```swift
-Adjust.requestTrackingAuthorization() { status in
+Adjust.requestTrackingAuthorization { status in
    switch status {
    case 0:
       // ATTrackingManagerAuthorizationStatusNotDetermined case
@@ -1316,7 +1317,7 @@ Adjust.requestAppTrackingAuthorization { status in
 <CodeBlock title="ADID getter">
 
 ```swift
-Adjust.adid() { adid in
+Adjust.adid { adid in
       // add your completion handler
 };
 ```
@@ -1325,7 +1326,7 @@ Adjust.adid() { adid in
 <CodeBlock title="IDFA getter">
 
 ```swift
-Adjust.idfa() { idfa in
+Adjust.idfa { idfa in
       // add your completion handler
 };
 ```
@@ -1334,7 +1335,7 @@ Adjust.idfa() { idfa in
 <CodeBlock title="IDFV getter">
 
 ```swift
-Adjust.idfv() { idfv in
+Adjust.idfv { idfv in
       // add your completion handler
 };
 ```
@@ -1343,7 +1344,7 @@ Adjust.idfv() { idfv in
 <CodeBlock title="SDK 版本 getter">
 
 ```swift
-Adjust.sdkVersion() { sdkVersion in
+Adjust.sdkVersion { sdkVersion in
       // add your completion handler
 };
 ```
@@ -1352,7 +1353,7 @@ Adjust.sdkVersion() { sdkVersion in
 <CodeBlock title="启用状态 getter">
 
 ```swift
-Adjust.isEnabled() { isEnabled in
+Adjust.isEnabled { isEnabled in
       // add your completion handler
 };
 ```
@@ -1361,7 +1362,7 @@ Adjust.isEnabled() { isEnabled in
 <CodeBlock title="归因 getter">
 
 ```swift
-Adjust.attribution() { attribution in
+Adjust.attribution { attribution in
       // add your completion handler
 }
 ```
@@ -1428,7 +1429,7 @@ Adjust.attribution() { attribution in
 
 ## 移除 API {#removed-apis}
 
-<MinorVersion removed="v5" size="large" />
+<MinorVersion removed="v5" size="large" />{" "}
 
 SDK v5 中移除了下列 API。
 
@@ -1551,7 +1552,7 @@ SDK v5 中已删除该功能。在 SDK v5 中，使用`[Adjust trackThirdPartySh
 <Tab title="Swift" sync="swift">
 
 ```swift
-let adjustThirdPartySharing = ADJThirdPartySharing.initWithIsEnabled(false)
+guard let adjustThirdPartySharing = ADJThirdPartySharing(isEnabled: 0) else { return }
 Adjust.trackThirdPartySharing(adjustThirdPartySharing)
 ```
 
@@ -1687,7 +1688,7 @@ SDK v5 中已删除该设置。
 
 ## 移除插件 {#removed-plugins}
 
-<MinorVersion removed="v5" size="large" />
+<MinorVersion removed="v5" size="large" />{" "}
 
 SDK v5 中移除了下列插件：
 
