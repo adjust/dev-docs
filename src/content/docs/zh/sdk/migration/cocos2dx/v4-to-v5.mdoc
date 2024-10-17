@@ -1,0 +1,720 @@
+---
+title: SDK v5 迁移指南
+description: 按照此指南从 SDK v4 升级到 SDK v5
+slug: zh/sdk/migration/cocos2dx/v4-to-v5
+sidebar-position: 1
+---
+
+## 操作前须知 {% #before-you-begin %}
+
+在更新到 SDK v5 之前，您需要进行以下操作：
+
+1. SDK v5 支持的最低 API 版本已更新。如果您的应用目标版本较低，请先进行更新。
+
+   - iOS: **12.0**
+   - 安卓： **21**
+
+## 安装 SDK {% #install-the-sdk %}
+
+要开始使用 SDK v5，您需要将其添加为项目的依赖。为此请进行下列操作：
+
+1. [从 GitHub](https://github.com/adjust/cocos2dx_sdk/releases)下载 SDK 档案
+
+1. 复制`dist`目录下的 C++ 文件，将其添加进 Cocos2d-x 项目
+
+1. ( **仅限安卓** )将 C++ 文件的路径添加到`Android.mk`文件的`LOCAL_SRC_FILES`部分。
+
+   ```text
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustConfig2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustAttribution2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustProxy2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustEvent2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/Adjust2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustEventFailure2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustEventSuccess2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustSessionFailure2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustSessionSuccess2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustAppStoreSubscription2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustPlayStoreSubscription2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustThirdPartySharing2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustAdRevenue2dx.cpp
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustAppStorePurchase2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustPlayStorePurchase2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustDeeplink2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustPurchaseVerificationResult2dx.cpp \
+   ```
+
+   如果您使用 CMake，请将以下来源和标头列表添加至您的`CMakeLists.txt`文件：
+
+   ```cmake
+   # add cross-platforms source files and header files
+   list(APPEND GAME_SOURCE
+       Classes/Adjust/AdjustConfig2dx.cpp
+       Classes/Adjust/AdjustAttribution2dx.cpp
+       Classes/Adjust/AdjustProxy2dx.cpp
+       Classes/Adjust/AdjustEvent2dx.cpp
+       Classes/Adjust/AdjustAdRevenue2dx.cpp
+       Classes/Adjust/AdjustAppStoreSubscription2dx.cpp
+       Classes/Adjust/AdjustPlayStoreSubscription2dx.cpp
+       Classes/Adjust/AdjustAppStorePurchase2dx.cpp
+       Classes/Adjust/AdjustPlayStorePurchase2dx.cpp
+       Classes/Adjust/Adjust2dx.cpp
+       Classes/Adjust/AdjustEventFailure2dx.cpp
+       Classes/Adjust/AdjustEventSuccess2dx.cpp
+       Classes/Adjust/AdjustSessionFailure2dx.cpp
+       Classes/Adjust/AdjustSessionSuccess2dx.cpp
+       Classes/Adjust/AdjustThirdPartySharing2dx.cpp
+       Classes/Adjust/AdjustDeeplink2dx.cpp
+       Classes/Adjust/AdjustPurchaseVerificationResult2dx.cpp
+       )
+   list(APPEND GAME_HEADER
+       Classes/Adjust/AdjustConfig2dx.h
+       Classes/Adjust/AdjustAttribution2dx.h
+       Classes/Adjust/AdjustProxy2dx.h
+       Classes/Adjust/AdjustEvent2dx.h
+       Classes/Adjust/AdjustAdRevenue2dx.h
+       Classes/Adjust/AdjustAppStoreSubscription2dx.h
+       Classes/Adjust/AdjustPlayStoreSubscription2dx.h
+       Classes/Adjust/AdjustAppStorePurchase2dx.h
+       Classes/Adjust/AdjustPlayStorePurchase2dx.h
+       Classes/Adjust/Adjust2dx.h
+       Classes/Adjust/AdjustEventFailure2dx.h
+       Classes/Adjust/AdjustEventSuccess2dx.h
+       Classes/Adjust/AdjustSessionFailure2dx.h
+       Classes/Adjust/AdjustSessionSuccess2dx.h
+       Classes/Adjust/AdjustThirdPartySharing2dx.h
+       Classes/Adjust/AdjustDeeplink2dx.h
+       Classes/Adjust/AdjustPurchaseVerificationResult2dx.h
+       )
+   ```
+
+1. ( **仅限安卓** )：从[GitHub 发布页面](https://github.com/adjust/cocos2dx_sdk/releases/latest)下载最新的`adjust-android.aar`并将其导入您的 Android Studio 项目中。
+
+1. ( **仅限 iOS** )：从[GitHub 发布页面](https://github.com/adjust/cocos2dx_sdk/releases/latest)下载最新的`AdjustSdk.framework`并将其链接到您的 Xcode 项目中。
+
+## 设置签名库 {% #signature-setup %}
+
+SDK v5 使用[SDK 签名库](https://help.adjust.com/zh/article/sdk-signature)来加密从 Adjust SDK 发送到 Adjust 服务器的信息。您必须将签名库添加到项目中才能使用 SDK v5。
+
+### 安卓应用
+
+1. 从[Adjust 签名库 GitHub 库](https://github.com/adjust/adjust_signature_sdk/releases/latest)下载最新的`adjust-android-signature.aar` 。
+1. 将`.aar`添加至您的 Android Studio 项目。
+
+### iOS 应用
+
+1. 从[Adjust 签名库 GitHub 库](https://github.com/adjust/adjust_signature_sdk/releases/latest)下载最新的`AdjustSigSdk-iOS-Static.a` 。
+1. 请在您的 Xcode 项目中关联`.a`。
+
+## 更新应用的隐私清单 (仅限 iOS) {% #update-privacy-manifest %}
+
+要向 App Store 通知 Adjust SDK 的隐私要求，您需要将您的隐私清单与 Adjust 的隐私清单合并。
+
+1. 将[Adjust SDK 隐私清单](https://github.com/adjust/ios_sdk/blob/master/Adjust/PrivacyInfo.xcprivacy)属性添加至应用的隐私清单。
+1. 将[签名库隐私清单](https://github.com/adjust/adjust_signature_sdk/blob/main/Resources/iOS/PrivacyInfo.xcprivacy)属性添加至应用的隐私清单。
+
+## 更新初始化方法 {% #update-the-init-method %}
+
+{% minorversion changed="v5" size="large" /%}
+
+在 SDK v4 中，初始化方法为`Adjust2dx::start(adjustConfig)` 。现已变更为`Adjust2dx::initSdk(adjustConfig)` 。
+
+{% codeblock useDiffSyntax=true %}
+
+```cpp
+#include "Adjust/Adjust2dx.h"
+
+std::string appToken = "YourAppToken";
+std::string environment = AdjustEnvironmentSandbox2dx;
+
+AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment);
+- Adjust2dx::start(adjustConfig);
++ Adjust2dx::initSdk(adjustConfig);
+```
+
+
+{% /codeblock %}
+
+## 变更 API {% #changed-apis %}
+
+{% minorversion changed="v5" size="large" /%}
+
+SDK v5 中变更了下列 API。
+
+### 禁用或启用 SDK {% #disable-enable-sdk %}
+
+在 SDK v4 中，您可以通过调用带`bool`值的`Adjust2dx::setEnabled`来启用和禁用 SDK。
+
+```cpp
+Adjust2dx::setEnabled(false); // disable SDK
+Adjust2dx::setEnabled(true); // enable SDK
+```
+
+在 SDK v5 中，为清晰起见，此功能被分成单独的命令。
+
+- 调用`Adjust2dx::disable()`来禁用 SDK。
+- 调用`Adjust2dx::enable()`来启用 SDK。
+
+```cpp
+Adjust2dx::disable();
+Adjust2dx::enable();
+```
+
+### 在后台发送信息 {% #send-in-background %}
+
+在 SDK v4 中，您可以将`adjustConfig`实例上的`sendInBackground`属性设置为`true`，以此允许 SDK 在应用后台运行时向 Adjust 发送信息。
+
+```cpp
+adjustConfig.sendInBackground(true);
+```
+
+在 SDK v5 中，您需要调用`adjustConfig`实例的`enableSendingInBackground`方法，以此允许 SDK 在应用后台运行时向 Adjust 发送信息。
+
+```cpp
+adjustConfig.enableSendingInBackground();
+```
+
+### 预安装应用监测 {% #preinstalled-app %}
+
+在 SDK v4 中，您可以使用`true`参数来调用`adjustConfig`实例的`setPreinstallTrackingEnabled`方法，以此来监测预安装应用。
+
+```cpp
+adjustConfig.setPreinstallTrackingEnabled(true);
+```
+
+在 SDK v5 中，您需要调用`adjustConfig`实例的`enablePreinstallTracking`方法来启用预安装应用监测。
+
+```cpp
+adjustConfig.enablePreinstallTracking();
+```
+
+### 禁用 AdServices 信息读取 {% #disable-adservices %}
+
+在 SDK v4 中，您可以使用`false`值在`adjustConfig`上调用`setAllowAdServicesInfoReading`方法，阻止 Adjust SDK 读取 AdServices 信息。
+
+```cpp
+adjustConfig.setAllowAdServicesInfoReading(false);
+```
+
+在 SDK v5 中，您需要在`adjustConfig`实例上调用`disableAdServices`方法，以防止 Adjust SDK 读取 AdServices 信息。默认状态为`true` 。
+
+```cpp
+adjustConfig.disableAdServices();
+```
+
+### 禁用 IDFA 读取 {% #disable-idfa %}
+
+在 SDK v4 中，您可以使用`false`值在`adjustConfig`实例上调用`setAllowIdfaReading`方法，以防止 Adjust SDK 读取设备的 IDFA。
+
+```cpp
+adjustConfig.setAllowIdfaReading(false);
+```
+
+在 SDK v5 中，您需要在`adjustConfig`实例上调用`disableIdfaReading`方法，以防止 Adjust SDK 读取设备的 IDFA。默认状态为`true` 。
+
+```cpp
+adjustConfig.disableIdfaReading();
+```
+
+### 在归因中启用成本数据 {% #enable-cost-data %}
+
+在 SDK v4 中，您可以将`adjustConfig`实例的`setNeedsCost`属性设置为`true`，在设备的归因信息中包含成本数据。
+
+```cpp
+adjustConfig.setNeedsCost(true);
+```
+
+在 SDK v5 中，您需要在`adjustConfig`实例上调用`enableCostDataInAttribution`方法，在设备的归因信息中包含成本数据。默认状态为`false` 。
+
+```cpp
+adjustConfig.enableCostDataInAttribution();
+```
+
+### 启用 LinkMe {% #enable-linkme %}
+
+在 SDK v4 中，您可以使用`true`值在`adjustConfig`实例上调用`setLinkMeEnabled`方法，以此来启用 [Adjust LinkMe](https://help.adjust.com/zh/article/linkme)。
+
+```cpp
+adjustConfig.setLinkMeEnabled(true);
+```
+
+在 SDK v5 中，您需要在`adjustConfig`实例上调用`enableLinkMe`方法，启用 [Adjust LinkMe](https://help.adjust.com/zh/article/linkme)。默认状态为`false` 。
+
+```cpp
+adjustConfig.enableLinkMe();
+```
+
+### 只读取设备 ID 一次 {% #read-device-id-once %}
+
+在 SDK v4 中，您可以使用`true`值在`adjustConfig`实例上调用`setReadDeviceInfoOnceEnabled`方法，指示 SDK 只读取设备 ID 一次。
+
+```cpp
+adjustConfig.setReadDeviceInfoOnceEnabled(true);
+```
+
+在 SDK v5 中，您需要在`adjustConfig`实例上调用`enableDeviceIdsReadingOnce`方法，指示 SDK 只读取设备 ID 一次。默认状态为`false` 。
+
+```cpp
+adjustConfig.enableDeviceIdsReadingOnce();
+```
+
+### 离线模式 {% #offline-mode %}
+
+在 SDK v4 中，您可以通过调用带`bool`参数的`Adjust2dx::setOfflineMode`来启用和禁用 SDK 离线模式。
+
+```cpp
+Adjust2dx::setOfflineMode(true);
+Adjust2dx::setOfflineMode(false);
+```
+
+在 SDK v5 中，为清晰起见，此功能被分成单独的命令。
+
+- 调用`Adjust2dx::switchToOfflineMode`将 SDK 设为离线模式。
+- 调用`Adjust2dx::switchBackToOnlineMode`将 SDK 重新设为在线模式。
+
+```cpp
+Adjust2dx::switchToOfflineMode(); // Put the SDK in offline mode
+Adjust2dx::switchBackToOnlineMode(); // Put the SDK back in online mode
+```
+
+### 会话回传参数 {% #callback-params %}
+
+在 SDK v4 中，您可以通过传递键值对至`Adjust2dx::addSessionCallbackParameter`方法来添加会话回传参数，也可以使用`Adjust2dx::removeSessionCallbackParameter`方法移除单个参数。
+
+```cpp
+Adjust2dx::addSessionCallbackParameter("key", "value");
+Adjust2dx::removeSessionCallbackParameter("key");
+Adjust2dx::resetSessionCallbackParameters();
+```
+
+在 SDK v5 中，会话回传参数被重命名为统一参数。
+
+```cpp
+Adjust2dx::addGlobalCallbackParameter("key", "value");
+Adjust2dx::removeGlobalCallbackParameter("key");
+Adjust2dx::removeGlobalCallbackParameters();
+```
+
+### 会话合作伙伴参数 {% #partner-params %}
+
+在 SDK v4 中，您可以通过传递键值对至`Adjust2dx::addSessionPartnerParameter`方法来添加会话合作伙伴参数，也可以使用`Adjust2dx::removeSessionPartnerParameter`方法移除单个参数。
+
+```cpp
+Adjust2dx::addSessionPartnerParameter("key", "value");
+Adjust2dx::removeSessionPartnerParameter("key");
+Adjust2dx::resetSessionPartnerParameters();
+```
+
+在 SDK v5 中，会话合作伙伴参数被重命名为统一合作伙伴参数。
+
+```cpp
+Adjust2dx::addGlobalPartnerParameter("key", "value");
+Adjust2dx::removeGlobalPartnerParameter("key");
+Adjust2dx::removeGlobalPartnerParameters();
+```
+
+### 事件去重 {% #event-deduplication %}
+
+在 SDK v4 中，事件去重与事件`transaction ID`同时进行且唯一 ID 的数量上限为 10 个。
+
+```cpp
+adjustEvent.setTransactionId("transaction-id");
+```
+
+在 SDK v5 中，该功能与`transaction ID`分离。事件去重添加了名为`deduplicationId`的新 ID 字段。
+
+```cpp
+adjustEvent.setDeduplicationId("deduplication-id");
+```
+
+您可以自定义`deduplicationId`的数量限制，添加到用于识别重复事件的列表中。默认情况下，数量上限为 **10** 。
+
+```cpp
+AdjustConfig2dx adjustConfig = AdjustConfig2dx("appToken", AdjustEnvironmentSandbox2dx);
+adjustConfig.setEventDeduplicationIdsMaxSize(20);
+Adjust2dx::initSdk(adjustConfig);
+```
+
+### App Store 订阅 {% #app-store-subscriptions %}
+
+在 SDK v4 中，您可以通过配置`AdjustAppStoreSubscription2dx`对象来设置新的订阅。该对象使用四个参数进行初始化：`price` 、 `currency` 、 `transactionId`和`receipt` 。
+
+```cpp
+AdjustAppStoreSubscription2dx subscription = AdjustAppStoreSubscription2dx(price, currency, transactionId, receipt);
+```
+
+在SDK v5 中，您无需发送`receipt`参数，因为收入验证不再需要此参数。
+
+```cpp
+AdjustAppStoreSubscription2dx subscription = AdjustAppStoreSubscription2dx(price, currency, transactionId);
+```
+
+### 通过深度链接进行再归因 {% #reattribution-using-deep-links %}
+
+在 SDK v4 中，您可以将深度链接信息传递至`Adjust2dx::appWillOpenUrl`方法。
+
+```cpp
+Adjust2dx::appWillOpenUrl("url");
+```
+
+为清晰起见，在 SDK v5 中，该方法已重命名为`Adjust2dx::processDeeplink` 。其中添加了新的`AdjustDeeplink2dx`类用于构建深度链接。要处理深度链接，请使用您的深度链接 URL 实例化`AdjustDeeplink2dx`对象并将其传递至`Adjust2dx::processDeeplink`方法。
+
+```cpp
+AdjustDeeplink2dx deeplink = AdjustDeeplink2dx("url");
+Adjust2dx::processDeeplink(deeplink);
+```
+
+### 深度链接解析 {% #deeplink-resolution %}
+
+在 SDK v4 中，您可以通过将`url`传递至`Adjust2dx::processDeeplink`方法来解析缩短的深度链接。
+
+```cpp
+Adjust2dx::processDeeplink("url", [](std::string resolvedLink) {
+    std::cout << "Resolved link: " << resolvedLink;
+});
+```
+
+在 SDK v5 中，您需要发送使用深度链接`url`初始化的`AdjustDeeplink2dx`对象。此操作会返回未缩短的原始深度链接。
+
+```cpp
+AdjustDeeplink2dx deeplink = AdjustDeeplink2dx("url");
+Adjust2dx::processDeeplink(deeplink, [](std::string resolvedLink) {
+    std::cout << "Resolved link: " << resolvedLink;
+});
+```
+
+### COPPA 合规 {% #coppa-compliance %}
+
+在 SDK v4 中，您可以使用`true`值在`adjustConfig`实例上调用`coppaCompliantEnabled`方法，启用 COPPA 合规。
+
+```cpp
+adjustConfig.setCoppaCompliantEnabled(true);
+```
+
+在 SDK v5 中，您需要在`adjustConfig`实例上调用`enableCoppaCompliance`方法，启用 COPPA 合规。默认状态为`false` 。
+
+```cpp
+adjustConfig.enableCoppaCompliance();
+```
+
+### Play 商店儿童应用 {% #play-store-kids %}
+
+在 SDK v4 中，您可以使用`true`值在`adjustConfig`实例上调用`setPlayStoreKidsAppEnabled`方法，将应用标记为[Play 商店儿童应用](/zh/sdk/react-native/features/privacy#play-store-kids-apps-android-only)。该属性会在 SDK 初始化期间读取，也就是说 SDK 初始化后该值将无法更新。
+
+```cpp
+adjustConfig.setPlayStoreKidsAppEnabled(true);
+```
+
+在 SDK v5 中，您需要调用`adjustConfig`实例的`enablePlayStoreKidsCompliance`方法来启用合规。默认状态为`false` 。
+
+```cpp
+adjustConfig.enablePlayStoreKidsCompliance();
+```
+
+### 设置数据驻留和 URL 策略 {% #url-strategy %}
+
+在 SDK v4 中，URL 策略和数据驻留域名在`AdjustConfig`类中被定义为常量。
+
+```cpp
+adjustConfig.setUrlStrategy(AdjustDataResidencyEU);
+```
+
+在 SDK v5 中，您需要将选定的一个或多个域名以数组的形式发送。您还需要进行下列设置：
+
+- `useSubdomains` (`bool`): 域名是否应被视为 Adjust 域名。若为 `true`，则 SDK 会为域名添加 Adjust 子域名前缀。若为 `false`，SDK 会使用收到的域名，不添加任何前缀。
+- `isDataResidency` ( `bool` )：域名是否用于数据驻留。
+
+```cpp
+adjustConfig.setUrlStrategy({"eu.adjust.com"}, true, true);
+```
+
+请查看下方表格，了解如何在 SDK v5 中配置 URL 策略。
+
+| v4                        | v5 - 主要和后备域名                | v5 - 使用子域名 | v5 - 数据驻留 |
+| ------------------------- | ---------------------------------- | --------------- | ------------- |
+| `AdjustDataResidencyEU`   | `"eu.adjust.com"`                  | `true`          | `true`        |
+| `AdjustDataResidencyTR`   | `"tr.adjust.com"`                  | `true`          | `true`        |
+| `AdjustDataResidencyUS`   | `"us.adjust.com"`                  | `true`          | `true`        |
+| `AdjustUrlStrategyChina`  | `"adjust.world"`： `"adjust.com"`  | `true`          | `false`       |
+| `AdjustUrlStrategyCn`     | `"adjust.cn"`： `"adjust.com"`     | `true`          | `false`       |
+| `AdjustUrlStrategyCnOnly` | `"adjust.cn"`                      | `true`          | `false`       |
+| `AdjustUrlStrategyIndia`  | `"adjust.net.in"`： `"adjust.com"` | `true`          | `false`       |
+
+#### 示例 {% #examples %}
+
+```cpp
+// India URL strategy
+adjustConfig.setUrlStrategy({"adjust.net.in", "adjust.com"}, true, false);
+
+// China URL strategy
+adjustConfig.setUrlStrategy({"adjust.world", "adjust.com"}, true, false);
+
+// China only URL strategy
+adjustConfig.setUrlStrategy({"adjust.cn"}, true, false);
+
+// EU URL strategy
+adjustConfig.setUrlStrategy({"eu.adjust.com"}, true, true);
+
+// Turkey URL strategy
+adjustConfig.setUrlStrategy({"tr.adjust.com"}, true, true);
+
+// US URL strategy
+adjustConfig.setUrlStrategy({"us.adjust.com"}, true, true);
+```
+
+### 记录广告收入 {% #record-ad-revenue %}
+
+在 SDK v4 中，您可以通过实例化带有广告收入来源常量的`AdjustAdRevenue2dx`对象来记录广告收入。
+
+```cpp
+AdjustAdRevenue2dx adRevenue = AdjustAdRevenue2dx(AdjustAdRevenueSourceAppLovinMAX);
+```
+
+在 SDK v5 中，您需要使用字符串`source`实例化`AdjustAdRevenue`对象。
+
+```cpp
+AdjustAdRevenue2dx adRevenue = AdjustAdRevenue2dx("applovin_max_sdk")
+```
+
+| v4                                      | v5                        |
+| --------------------------------------- | ------------------------- |
+| `AdjustAdRevenueSourceAppLovinMAX`      | `"applovin_max_sdk"`      |
+| `AdjustAdRevenueSourceAdMob`            | `"admob_sdk"`             |
+| `AdjustAdRevenueSourceIronSource`       | `"ironsource_sdk"`        |
+| `AdjustAdRevenueSourceAdMostSource`     | `"admost_sdk"`            |
+| `AdjustAdRevenueSourceUnity`            | `"unity_sdk"`             |
+| `AdjustAdRevenueSourceHeliumChartboost` | `"helium_chartboost_sdk"` |
+| `AdjustAdRevenueSourceAdx`              | `"adx_sdk"`               |
+| `AdjustAdRevenueSourcePublisher`        | `"publisher_sdk"`         |
+| `AdjustAdRevenueSourceTopOn`            | `"topon_sdk"`             |
+| `AdjustAdRevenueSourceMopub`            | 不再支持                  |
+
+### 关闭 SKAdNetwork 通讯 {% #disable-skan %}
+
+在 SDK v4 中，您可以通过调用`adjustConfig.deactivateSKAdNetworkHandling`方法来阻止 SDK 与 SKAdNetwork 通讯。
+
+```cpp
+adjustConfig.deactivateSKAdNetworkHandling();
+```
+
+在 SDK v5 中，您需要在`adjustConfig`实例上调用`disableSkanAttribution`方法，以此禁用 SKAdNetwork 通讯。默认状态为`true` 。
+
+```cpp
+adjustConfig.disableSkanAttribution();
+```
+
+### 监听转化值更新 {% #listen-for-cv-updates %}
+
+在 SDK v4 中，您可以在`adjustConfig`实例上调用`setPostbackConversionValueUpdatedCallback`方法来监听转化值更新。在 SKAN4 之前，您可以使用`setConversionValueUpdatedCallback`方法。
+
+```cpp
+// pre-SKAN4 callback
+adjustConfig.setConversionValueUpdatedCallback([](int conversionValue) {
+    std::cout << "\nConversion value: " << conversionValue;
+});
+// SKAN4 callback
+adjustConfig.setPostbackConversionValueUpdatedCallback([](
+        int conversionValue,
+        std::string coarseValue,
+        bool lockWindow) {
+    std::cout << "\nConversion value: " << conversionValue;
+    std::cout << "\nCoarse value: " << coarseValue;
+    std::cout << "\nLock window: " << lockWindow;
+});
+```
+
+在 SDK v5 中，您需要为`adjustConfig`对象的`setSkanUpdatedCallback`方法指定一个回传函数。
+
+```cpp
+adjustConfig.setSkanUpdatedCallback([](
+    std::unordered_map<std::string, std::string> data) {
+    std::cout << "\nConversion value: " << data["conversionValue"];
+    std::cout << "\nCoarse value: " << data["coarseValue"];
+    std::cout << "\nLock window: " << data["lockWindow"];
+    std::cout << "\nError: " << data["error"];
+});
+```
+
+### 更新转化值 {% #update-cvs %}
+
+在 SDK v4 中，您可以使用以下方法之一向 Adjust 发送更新后转化值：
+
+```cpp
+// pass just the conversion value (deprecated method)
+Adjust2dx::updateConversionValue(6);
+
+// pass the conversion value and a callback to receive a message about potential error
+Adjust2dx::updatePostbackConversionValue(6, [](std::string error) {
+    std::cout << "Error while updating conversion value: " << error;
+});
+
+// SKAN 4.0
+// pass the conversion value, coarse value and a callback to receive a message about potential error
+Adjust2dx::updatePostbackConversionValue(6, "low", [](std::string error) {
+    std::cout << "Error while updating conversion value: " << error;
+});
+
+// SKAN 4.0
+// pass the conversion value, coarse value, lock window and a callback to receive a message about potential error
+Adjust2dx::updatePostbackConversionValue(6, "low", false, [](std::string error) {
+    std::cout << "Error while updating conversion value: " << error;
+});
+```
+
+如需更新 SDK v5 中的转化值，请使用带下列参数的`updateSkanConversionValue`方法：
+
+- `conversionValue` ( `int` )：更新后的转化值
+- `coarseValue` ( `std::string` )：更新后的[粗粒度转化值](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
+- `lockWindow` (`bool`)：是否在转化窗口结束前发送回调
+
+```cpp
+Adjust2dx::updateSkanConversionValue(6, "low", true, [](std::string error) {
+    std::cout << "Error while updating conversion value: " << error;
+});
+```
+
+### App Tracking Transparency 授权包装器 {% #att-wrapper %}
+
+在 SDK v4 中，您可以使用`Adjust2dx::requestTrackingAuthorizationWithCompletionHandler`方法处理用户 ATT 授权状态变更。
+
+```cpp
+Adjust2dx::requestTrackingAuthorizationWithCompletionHandler([] (int status) {
+    switch (status) {
+        case 0:
+            // ATTrackingManagerAuthorizationStatusNotDetermined case
+            break;
+        case 1:
+            // ATTrackingManagerAuthorizationStatusRestricted case
+            break;
+        case 2:
+            // ATTrackingManagerAuthorizationStatusDenied case
+            break;
+        case 3:
+            // ATTrackingManagerAuthorizationStatusAuthorized case
+            break;
+    }
+});
+```
+
+为清晰起见，该参数在 SDK v5 中被重命名为`Adjust2dx::requestAppTrackingAuthorization` 。
+
+```cpp
+Adjust2dx::requestAppTrackingAuthorization([] (int status) {
+    switch (status) {
+        case 0:
+            // ATTrackingManagerAuthorizationStatusNotDetermined case
+            break;
+        case 1:
+            // ATTrackingManagerAuthorizationStatusRestricted case
+            break;
+        case 2:
+            // ATTrackingManagerAuthorizationStatusDenied case
+            break;
+        case 3:
+            // ATTrackingManagerAuthorizationStatusAuthorized case
+            break;
+    }
+});
+```
+
+### 获取设备信息 {% #device-info %}
+
+在 SDK v4 中，所有设备信息 getter 方法都会同步运行。在 SDK v5 中，这些方法已改为异步运行。您可以添加回传函数，在异步流程完成时处理信息。
+
+```cpp
+// IDFA getter
+Adjust2dx::getIdfa([](std::string idfa) {
+    std::cout << "\nIDFA = " << idfa;
+});
+
+// IDFV getter
+Adjust2dx::getIdfv([](std::string idfv) {
+    std::cout << "\nIDFV = " << idfa;
+});
+
+// ADID getter
+Adjust2dx::getAdid([](std::string adid) {
+    std::cout << "\nAdjust ID = " << adid;
+});
+
+// Attribution getter
+Adjust2dx::getAttribution([](AdjustAttribution2dx attribution) {
+   // process attribution
+});
+
+// Enabled status getter
+Adjust2dx::isEnabled([](bool isEnabled) {
+   // process isEnabled
+});
+
+// SDK version getter
+Adjust2dx::getSdkVersion([](std::string sdkVersion) {
+    std::cout << "\nSDK version = " << sdkVersion;
+});
+
+// Last deep link getter
+Adjust2dx::getLastDeeplink([](std::string lastDeeplink) {
+    std::cout << "\nLast deeplink = " << lastDeeplink;
+});
+```
+
+## 移除 API {% #removed-apis %}
+
+{% minorversion removed="v5" size="large" /%}
+
+SDK v5 中移除了下列 API。
+
+### 事件缓冲 {% #event-buffering %}
+
+SDK v4 支持事件缓冲。该功能可将请求事件、广告收入、推送标签 (Push token) 和其他信息存储在本地缓冲区中以便在之后发送。
+
+```cpp
+adjustConfig.setEventBufferingEnabled(true);
+```
+
+SDK v5 中已删除该设置。
+
+### 自定义用户代理字符串 {% #custom-user-agent %}
+
+SDK v4 支持使用用户代理字符串调用 `adjustConfig.setUserAgent` 来设置自定义用户代理。
+
+```cpp
+adjustConfig.setUserAgent("custom-user-agent");
+```
+
+SDK v5 中已删除该设置。
+
+### 设置设备是否已知 {% #set-device-known %}
+
+在 SDK v4 中，您可以调用`adjustConfig.setDeviceKnown`方法，手动告知 SDK 设备是否为已知设备。
+
+```cpp
+adjustConfig.setDeviceKnown(true);
+```
+
+SDK v5 中已删除该设置。
+
+### 延迟 SDK 启动 {% #delay-sdk-start %}
+
+SDK v4 支持通过调用`adjustConfig.setDelayStart`来延迟 SDK 的启动，最多延迟 **10 秒** 。
+
+```cpp
+adjustConfig.setDelayStart(10);
+```
+
+该方法在 SDK v5 中已被移除。中断此延迟的`Adjust2dx::sendFirstPackages()`方法也已被移除。
+
+### 全局禁用第三方分享 {% #disable-sharing-globally %}
+
+在 SDK v4 中，您可以调用`Adjust2dx::disableThirdPartySharing`方法来全面禁用第三方信息分享。
+
+```cpp
+Adjust2dx::disableThirdPartySharing();
+```
+
+SDK v5 中已删除该功能。在 SDK v5 中，使用`Adjust2dx::trackThirdPartySharing`方法来启用或禁用第三方共享。
+
+```cpp
+AdjustThirdPartySharing2dx thirdPartySharing = AdjustThirdPartySharing2dx(false);
+Adjust2dx::trackThirdPartySharing(thirdPartySharing);
+```
