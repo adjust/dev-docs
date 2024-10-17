@@ -23,7 +23,7 @@ TAG_LIST = "|".join(MDX_TAGS)
 
 # Process each file
 def process_file(file, locale):
-    print(f"Fixing tags in {file} for {locale}")
+    print(f"Processing {file} for {locale}")
 
     # Read file content
     with open(file, "r", encoding="utf-8") as f:
@@ -36,8 +36,11 @@ def process_file(file, locale):
     front_matter = yaml.safe_load(front_matter)
     updated_front_matter = fix_front_matter(front_matter, locale)
 
-    # Fix the content (non-front matter)
-    file_content = fix_file_content(file_content, locale)
+    # Apply MDX or mdoc specific fixes
+    if file.endswith(".mdx"):
+        file_content = fix_mdx_content(file_content, locale)
+    elif file.endswith(".mdoc"):
+        file_content = fix_mdoc_content(file_content, locale)
 
     # Rebuild the final content (YAML front matter + content)
     final_content = "---\n" + yaml.dump(updated_front_matter, sort_keys=False, allow_unicode=True) + "---\n" + file_content
@@ -69,9 +72,18 @@ def fix_front_matter(front_matter, locale):
 
     return front_matter
 
+def remove_escape_slashes_from_tags(content):
+    # This regex finds escaped slashes outside of quotes
+    # It looks for slashes that are not followed by a quote
+    return re.sub(r"\\(?![\"])([-#])", r"\1", content)
+
+def add_newline_after_closing_tags(content):
+    # This will find any closing Markdoc tag and ensure it's followed by a newline
+    return re.sub(r"(\S)(\s*{%\s*/[^%]+%\})", r"\1\n\2", content)
+
 
 # Fix MDX content (non-YAML part)
-def fix_file_content(content, locale):
+def fix_mdx_content(content, locale):
     # Fix tags
     for tag in MDX_TAGS:
         lowercase_tag = tag.lower()
@@ -116,14 +128,34 @@ def fix_file_content(content, locale):
     return content
 
 
+# Fix mdoc content
+def fix_mdoc_content(content, locale):
+    # Unescape escaped curly braces
+    content = re.sub(r"\\{%(.*?)%\\}", r"{%\1%}", content)
+
+    content = remove_escape_slashes_from_tags(content)
+
+    content = add_newline_after_closing_tags(content)
+
+    # Update URLs
+    content = re.sub(
+        r"https://help.adjust.com/en/", f"https://help.adjust.com/{locale}/", content
+    )
+
+    # Update internal links
+    content = re.sub(r"\(/en/(.*?)\)", rf"(/{locale}/\1)", content)
+
+    return content
+
+
 # Main function to find and process all relevant files
 def main():
     for locale in locales:
-        pattern = f"../../src/content/docs/{locale}/**/*.mdx"
-        files = glob.glob(pattern, recursive=True)
-        for file in files:
-            print(f"{file}")
-            process_file(file, locale)
+        patterns = [f"../../src/content/docs/{locale}/**/*.mdx", f"../../src/content/docs/{locale}/**/*.mdoc"]
+        for pattern in patterns:
+            files = glob.glob(pattern, recursive=True)
+            for file in files:
+                process_file(file, locale)
 
 
 if __name__ == "__main__":
