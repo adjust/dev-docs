@@ -66,7 +66,7 @@ export const getDevHubFilters = (lang: keyof Locales) => {
   return `lang:${lang} && ${categoryFilter} && ${platformFilter}`;
 };
 
-const getQueryByOrder = (locale?: string) => {
+const getQueryByLocale = (locale?: string) => {
   switch (locale) {
     case "ja":
       return "title_ja,content_ja";
@@ -96,7 +96,7 @@ export const getTypesenseClient = (
     },
     additionalSearchParameters: {
       preset: typesenseKeys.preset,
-      query_by: getQueryByOrder(locale),
+      query_by: getQueryByLocale(locale),
     },
   });
 
