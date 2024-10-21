@@ -78,8 +78,8 @@ def remove_escape_slashes_from_tags(content):
     return re.sub(r"\\(?![\"])([-#])", r"\1", content)
 
 def add_newline_after_closing_tags(content):
-    # This will find any closing Markdoc tag and ensure it's followed by a newline
-    return re.sub(r"(\S)(\s*{%\s*/[^%]+%\})", r"\1\n\2", content)
+    # Only add a newline if the closing tag is inline with other content
+    return re.sub(r"(\S)(\s*{%\s*/[^%]+%\})(?!\n)", r"\1\n\2", content)
 
 
 # Fix MDX content (non-YAML part)
