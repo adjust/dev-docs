@@ -10,7 +10,7 @@ const HelpCenterIndex: FC<HelpCenterIndexProps> = ({ typesenseKeys, lang }) => {
   const { query } = getSearchParams();
   const [searchState, setSearchState] = useState({ query });
 
-  const typesenseClient = getTypesenseClient(typesenseKeys);
+  const typesenseClient = getTypesenseClient(typesenseKeys, lang);
 
   useEffect(() => {
     const handleSearchChange = () => {
@@ -39,7 +39,7 @@ const HelpCenterIndex: FC<HelpCenterIndexProps> = ({ typesenseKeys, lang }) => {
         filters={`locale:${lang}`}
         index={typesenseKeys.indexName}
         hitsPerPage={6}
-        page={1}
+        page={0}
       />
       <HelpCenterHits lang={lang} />
     </InstantSearch>
