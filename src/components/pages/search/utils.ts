@@ -66,7 +66,23 @@ export const getDevHubFilters = (lang: keyof Locales) => {
   return `lang:${lang} && ${categoryFilter} && ${platformFilter}`;
 };
 
-export const getTypesenseClient = (typesenseKeys: TypesenseKeys) => {
+const getQueryByOrder = (locale?: string) => {
+  switch (locale) {
+    case "ja":
+      return "title_ja,content_ja";
+    case "ko":
+      return "title_ko,content_ko";
+    case "zh":
+      return "title_zh,content_zh";
+    default:
+      return "title,content";
+  }
+};
+
+export const getTypesenseClient = (
+  typesenseKeys: TypesenseKeys,
+  locale?: string,
+) => {
   const typesenseAdapter = new TypesenseInstantSearchAdapter({
     server: {
       apiKey: typesenseKeys.apiKey, // search-only client key
@@ -80,6 +96,7 @@ export const getTypesenseClient = (typesenseKeys: TypesenseKeys) => {
     },
     additionalSearchParameters: {
       preset: typesenseKeys.preset,
+      query_by: getQueryByOrder(locale),
     },
   });
 

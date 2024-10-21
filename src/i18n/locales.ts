@@ -9,3 +9,4 @@ export const LOCALE_NAMES: Locales = {
 
 export const KNOWN_LANGUAGE_CODES = Object.keys(LOCALE_NAMES);
 export const defaultLang = "en";
+export const TOKENIZED_TYPESENSE_LANGS = ["zh", "ko", "ja"];
