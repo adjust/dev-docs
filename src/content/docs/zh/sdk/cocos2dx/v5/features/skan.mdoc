@@ -1,0 +1,77 @@
+---
+title: 设置 SKAN 和转化值
+description: 为 iOS 应用配置 SKAdNetwork 功能。
+slug: zh/sdk/cocos2dx/features/skan
+versions:
+- label: v5
+  value: v5
+  default: true
+- label: v4
+  value: v4
+redirects:
+  v5: /zh/sdk/cocos2dx/v4/features/skad
+---
+
+StoreKit Ad Network (SKAN) 是 Apple 的归因框架，可针对应用安装和重装进行归因。SKAN 的工作流程如下：
+
+1. Apple 会收集归因信息，并通知相关广告渠道。
+1. 然后，广告渠道会通过回调将这些信息传输给 Adjust。
+1. Adjust 在 [Datascape](https://help.adjust.com/zh/suite/article/datascape) 和 [Data Canvas](https://help.adjust.com/zh/classic/article/data-canvas-classic)中展示 SKAN 数据。
+
+## 关闭 SKAN 通讯 {% #disable-skadnetwork-communication %}
+
+Adjust SDK 会在初始化时默认注册 SKAN 归因。要禁用此行为，请在`AdjustConfig2dx`实例上调用`disableSkanAttribution`方法。
+
+```cpp
+AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment);
+adjustConfig.disableSkanAttribution();
+Adjust2dx::initSdk(adjustConfig);
+```
+
+## 更新转化值 {% #update-conversion-values %}
+
+转化值是用来在 SKAN 中跟踪用户行为的机制。您可以将 64 个条件映射至 0-63 的转化值，并在用户安装时将此整数值发送至 SKAN。该信息可帮助您进一步了解用户在安装后的最初几日内是如何与应用交互的。
+
+如果您通过 Adjust 管理转化值，那么服务器会在 SDK 中更新该值。您也可以通过 `updateSkanConversionValue` 方法更新转化值。该方法会包装 [Apple 的 `updatePostbackConversionValue` 方法](https://developer.apple.com/documentation/storekit/skadnetwork/4097267-updatepostbackconversionvalue)。您必须传递以下参数：
+
+{% deflist %}
+`fineValue` (`int`)
+
+: 您的转化值。必须在 `0` 至 `63` 之间。
+
+`coarseValue` (`std::string`)
+
+: 粗粒度转化值。如果应用的安装量不足以达到隐私阈值，就会使用该值。允许使用下列值：
+
+- `"low"` (`SKAdNetworkCoarseConversionValueLow`)
+- `"medium"` (`SKAdNetworkCoarseConversionValueMedium`)
+- `"high"` (`SKAdNetworkCoarseConversionValueHigh`)
+
+`lockWindow` (`bool`)
+
+: 是否在转化窗口结束前发送回调 (`true`)。
+
+`errorCallback` (`function`)
+
+: 接收 SKAN 以`string`形式返回的任何错误消息的函数。
+{% /deflist %}
+
+```cpp
+Adjust2dx::updateSkanConversionValue(6, "low", true, [](std::string error) {
+    std::cout << "Error while updating conversion value: " << error;
+});
+```
+
+## 监听转化值变更{% #listen-for-changes-to-conversion-values %}
+
+如果您使用 Adjust 管理转化值，那么 Adjust 服务器就会将转化值更新发送到 SDK。您可以设置回传函数，使用 `setSkanUpdatedCallback` 方法监听更新。请以参数形式传送您的函数。
+
+```cpp
+adjustConfig.setSkanUpdatedCallback([](
+    std::unordered_map<std::string, std::string> data) {
+    std::cout << "\nConversion value: " << data["conversionValue"];
+    std::cout << "\nCoarse value: " << data["coarseValue"];
+    std::cout << "\nLock window: " << data["lockWindow"];
+    std::cout << "\nError: " << data["error"];
+});
+```
