@@ -35,7 +35,7 @@ Update your AppDelegate to implement direct and deferred deep linking.
 
 <CodeBlock title="AppDelegate.swift">
 
-```swift {40-41, 58-117}
+```swift {37-38, 46-99}
 import Adjust
 import Foundation
 import UIKit
@@ -145,7 +145,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
 
 <CodeBlock title="AppDelegate.m">
 
-```objc {37-38, 58-115}
+```objc {35-36, 44-91}
 #import <Adjust/Adjust.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
@@ -460,7 +460,7 @@ class DeeplinkHandler {
         case "/search":
           if let query = params["q"] {
             let searchVC = SearchViewController(searchQuery: query)
-            navigateTo(viewController: productVC)
+            navigateTo(viewController: searchVC)
           }
         default:
           print("Unhandled deep link path: \(path)")
@@ -470,8 +470,8 @@ class DeeplinkHandler {
   }
 
   private static func navigateTo(viewController: UIViewController) {
-    // Implement your navigation logic here
-    // For example:
+    // Implement navigation logic here
+    // For example, use the following:
     // navigationController.pushViewController(viewController, animated: true)
   }
 }
@@ -709,7 +709,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 ## SwiftUI apps not using SceneDelegate lifecycle
 
-Create an `AppDelegate.swift` file in your project's main directory and reference it in your main application file (for example: `App.swift` as shown below). This is required to handle app lifecycle events and Adjust SDK integration.
+If you haven't already done so, create an `AppDelegate.swift` file in your project's main directory and reference it in your main application file (for example: `App.swift` as shown below). This is required to handle app lifecycle events and Adjust SDK integration.
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -735,34 +735,28 @@ struct MyApp: App {
 </Tab>
 </Tabs>
 
-Update your AppDelegate to implement direct deep linking and deferred deep linking.
+Update your AppDelegate to implement direct and deferred deep linking.
 
 <Tabs>
 <Tab title="Swift" sync="swift">
 
 ```swift
-// AppDelegate.swift
-
 import Adjust
+import Foundation
 import UIKit
 
-@UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate,
-  UNUserNotificationCenterDelegate, AdjustDelegate {
-
+class AppDelegate: UIResponder, UIApplicationDelegate, AdjustDelegate {
   let deeplinkManager = DeeplinkManager.shared
 
   func application(
     _ application: UIApplication,
-    didFinishLaunchingWithOptions launchOptions: [UIApplication
-      .LaunchOptionsKey: Any]?) -> Bool {
-    // Set delegate for push notifications
-    UNUserNotificationCenter.current().delegate = self
-
+    didFinishLaunchingWithOptions launchOptions:
+      [UIApplication.LaunchOptionsKey: Any]?
+  ) -> Bool {
     // Configure Adjust SDK
     // Replace {YourAppToken} with your Adjust app token
     let appToken = "{YourAppToken}"
-    let adjustConfig: ADJConfig?
+    var adjustConfig: ADJConfig?
 
     #if DEBUG
       adjustConfig = ADJConfig(
@@ -777,90 +771,52 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
       adjustConfig?.logLevel = ADJLogLevelSuppress
     #endif
 
-    // Wait up to 30 seconds after app open for user to respond to ATT
-    // before sending install session to Adjust backend.
-    adjustConfig.attConsentWaitingInterval = 30
+    // Wait up to 120 seconds after app open for user to respond to ATT
+    // before sending install session to Adjust's servers.
+    // Ensure this interval is long enough for user to respond.
+    adjustConfig?.attConsentWaitingInterval = 120
 
     // Create delegate for deferred deep linking
-    adjustConfig.delegate = self
+    adjustConfig?.delegate = self
 
     // Initialize Adjust SDK
     Adjust.appDidLaunch(adjustConfig)
 
-    // Initialize and make window visible
-    let contentView = ContentView().environmentObject(deeplinkManager)
-    if let windowScene = UIApplication.shared.connectedScenes.first
-      as? UIWindowScene {
-      let window = UIWindow(windowScene: windowScene)
-      window.rootViewController = UIHostingController(
-        rootView: contentView)
-      self.window = window
-      window.makeKeyAndVisible()
-    }
-
     return true
   }
 
-  // Receive push notification while app is in foreground
-  func userNotificationCenter(
-    _ center: UNUserNotificationCenter,
-    willPresent notification: UNNotification) async ->
-    UNNotificationPresentationOptions {
-
-    // Add your push notification handling here
-
-    // Change to your preferred presentation option
-    return [.alert, .sound]
-  }
-
-  // Receive direct universal link or app scheme deep link
-  // from push notification while app isn't running,
-  // in background, or in foreground and user interacts
-  // with push notification.
-  // Replace "{deepLink}" with your custom key name.
-  func userNotificationCenter(
-    _ center: UNUserNotificationCenter,
-    didReceive response: UNNotificationResponse) async {
-    let userInfo = response.notification.request.content
-      .userInfo
-
-    // Add your push notification handling here
-
-    if let deepLinkURLString = userInfo["{deepLink}"]
-      as? String,
-      let incomingLink = URL(
-        string: deepLinkURLString) {
-      // Update DeeplinkManager with incoming deep link
-      self.deeplinkManager.updateDeeplinkState(with: incomingLink)
-      }
-    }
-  }
-
-  // Receive direct universal link while app isn't running,
-  // or in background.
+  // Receive universal link when app is installed
+  // and user clicks link to open app
+  // from "not running" or background state.
   func application(
     _ application: UIApplication,
     continue userActivity: NSUserActivity,
-    restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+    restorationHandler:
+      @escaping ([UIUserActivityRestoring]?) -> Void
+  ) -> Bool {
     if userActivity.activityType == NSUserActivityTypeBrowsingWeb,
-      let incomingLink = userActivity.webpageURL {
+      let incomingLink = userActivity.webpageURL
+    {
       // Update DeeplinkManager with incoming universal link
-      self.deeplinkManager.updateDeeplinkState(with: incomingLink)
-      }
+      deeplinkManager.updateDeeplink(to: incomingLink)
     }
     return true
   }
 
-  // Receive direct app scheme deep link while app isn't running,
-  // or in background.
+  // Receive deep link when app is installed
+  // and user clicks link to open app
+  // from "not running" or background state.
+  //
+  // Also receive universal link or app scheme deep link
+  // when app programmatically opens link using either
+  // UIApplication.shared.open or SwiftUI's openURL.
   func application(
     _ application: UIApplication,
     open incomingLink: URL,
-    options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
-
-    // Update DeeplinkManager with incoming app scheme deep link
-    self.deeplinkManager.updateDeeplinkState(with: incomingLink)
-
+    options: [UIApplication.OpenURLOptionsKey: Any] = [:]
+  ) -> Bool {
+    // Update DeeplinkManager with incoming deep link
+    deeplinkManager.updateDeeplink(to: incomingLink)
     return true
   }
 
@@ -871,75 +827,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
       // onboarding screens and login.
       UserDefaults.standard.set(
         incomingLink.absoluteString,
-        forKey: "DeferredDeeplinkURL")
+        forKey: "lastDeferredLink")
     }
 
-    // Return true to try to open deep link immediately upon receipt.
+    // Return true to try to open deep link immediately
+    // upon receipt (for example: app has no ATT, onboarding screens, or login).
     // Otherwise, return false.
     return false
-  }
-}
-```
-
-</Tab>
-</Tabs>
-
-Update your SceneDelegate to implement direct linking.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
-
-```swift
-// SceneDelegate.swift
-
-import SwiftUI
-import UIKit
-
-class SceneDelegate: UIResponder, UIWindowSceneDelegate, AdjustDelegate {
-
-  var window: UIWindow?
-  let deeplinkManager = DeeplinkManager.shared
-
-  // Receive direct universal link or app scheme deep link
-  // while app isn't running, or when new scene is created
-  func scene(_ scene: UIScene,
-         willConnectTo session: UISceneSession,
-         options connectionOptions: UIScene.ConnectionOptions) {
-    // Initialize and make window visible
-    let contentView = ContentView().environmentObject(deeplinkManager)
-    if let windowScene = scene as? UIWindowScene {
-      let window = UIWindow(windowScene: windowScene)
-      window.rootViewController = UIHostingController(rootView: contentView)
-      self.window = window
-      window.makeKeyAndVisible()
-    }
-
-    if let urlContext = connectionOptions.urlContexts.first {
-      let incomingLink = urlContext.url
-
-      // Update DeeplinkManager with incoming deep link
-      deeplinkManager.updateDeeplinkState(with: incomingLink)
-    }
-  }
-
-  // Receive direct universal links while app is in background
-  func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
-    if userActivity.activityType == NSUserActivityTypeBrowsingWeb,
-       let incomingLink = userActivity.webpageURL {
-        // Update DeeplinkManager with incoming universal link
-        deeplinkManager.updateDeeplinkState(with: incomingLink)
-    }
-  }
-
-  // Receive direct app scheme deep link in existing scene
-  // while app is in background.
-  func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-    if let urlContext = URLContexts.first {
-      let incomingLink = urlContext.url
-
-      // Update DeeplinkManager with incoming app scheme deep link
-      deeplinkManager.updateDeeplinkState(with: incomingLink)
-    }
   }
 }
 ```
@@ -1042,7 +936,7 @@ struct ContentView: View {
             return
           }
 
-          // Handle resolved deep link
+          // Handle processed deep link
           DeeplinkHandler.shared.handleDeeplink(processedLink)
         }
 
