@@ -11,10 +11,20 @@
 
 ## Required translations
 
-<!-- What locales does this PR need to be translated into? Check [this spreadsheet] to see which locales are required for each SDK. -->
+<!-- If your change affects SDK documentation, make sure you group your changes by localization requirement. For example, if you need to change iOS, Android, Unity, and React Native, you need to put the React Native changes in their own PR to split up the localization job. -->
 
-- [ ] Japanese
-- [ ] Chinese
-- [ ] Korean
-
-<!-- Don't forget to update the job name in Smartling to inform the localization team. -->
+| Platform                | ZH                 | JA                 | KO                 |
+| ----------------------- | ------------------ | ------------------ | ------------------ |
+| iOS                     | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Android                 | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Unity                   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| React Native            | :white_check_mark: | :x:                | :white_check_mark: |
+| Flutter                 | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Cordova                 | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Cocos2d-x               | :white_check_mark: | :x:                | :x:                |
+| Unreal Engine           | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Adobe Air               | :white_check_mark: | :x:                | :x:                |
+| Corona                  | :white_check_mark: | :x:                | :x:                |
+| Xamarin                 | :white_check_mark: | :x:                | :x:                |
+| iOS Adobe extension     | :white_check_mark: | :x:                | :x:                |
+| Android Adobe extension | :white_check_mark: | :x:                | :x:                |
