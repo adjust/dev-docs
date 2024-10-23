@@ -17,4 +17,4 @@
 - [ ] Chinese
 - [ ] Korean
 
-Don't forget to update the job name in Smartling to inform the localization team.
+<!-- Don't forget to update the job name in Smartling to inform the localization team. -->
