@@ -148,6 +148,9 @@ def fix_mdoc_content(content, locale):
     # Add newline between two adjacent closing tags (e.g., {% /tab %}{% /tabs %})
     content = re.sub(r"(%\}\s*)(\{%\s*/[^%]+%\})", r"\1\n\2", content)
 
+    # Convert underlined H2 headers
+    content = re.sub(r"^(.*)\n[-]{2,}\n", r"## \1\n", content, flags=re.MULTILINE)
+
     # Update internal links
     content = re.sub(r"\(/en/(.*?)\)", rf"(/{locale}/\1)", content)
 
