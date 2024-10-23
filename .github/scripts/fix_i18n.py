@@ -142,6 +142,9 @@ def fix_mdoc_content(content, locale):
         r"https://help.adjust.com/en/", f"https://help.adjust.com/{locale}/", content
     )
 
+    # Add newline between two adjacent closing tags (e.g., {% /tab %}{% /tabs %})
+    content = re.sub(r"(%\}\s*)(\{%\s*/[^%]+%\})", r"\1\n\2", content)
+
     # Update internal links
     content = re.sub(r"\(/en/(.*?)\)", rf"(/{locale}/\1)", content)
 
