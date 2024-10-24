@@ -33,7 +33,10 @@ const prependLocaleToJSON = (input, locales) => {
 
   for (const [key, value] of Object.entries(input)) {
     const localeRegex = /^\/[a-z]{2}\//;
-    if (localeRegex.exec(value)) return;
+    if (localeRegex.exec(key)) {
+      result[key] = value;
+      continue;
+    }
     locales.forEach((locale) => {
       result[`/${locale}${key}`] = `/${locale}${value}`;
     });
