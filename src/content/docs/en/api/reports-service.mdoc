@@ -1,0 +1,699 @@
+---
+title: Reports Service API
+description: Use the Reports Service API to fetch aggregated data for your apps.
+category-title: Reports Service API
+sidebar-position: 1
+---
+
+Use the Reports Service API to query Adjust's reporting dataset for aggregated data about your apps and campaigns.
+
+{% partial file="./_authentication.mdoc" /%}
+
+### Use multiple accounts {% #use-multiple-accounts %}
+
+By default, the Reports Service API queries only data relating to the first account your user is associated with. To query data from another account, follow these steps:
+
+1. Select the account icon ({% icon type="Person" /%})
+1. Select **Change account**.
+1. Search for the account you want to query in the pop-up that appears. The account ID is written in parentheses after the account name.
+
+To specify which account you want to query data for, pass your account ID as an `X-Account-ID` header in each request.
+
+```console
+curl --location "https://automate.adjust.com/reports-service/filters_data?required_filters=overview_metrics%2Ccost_metrics&section=cost&overview_metrics__contains=ecpi&cost_metrics__contains=Ad%20spend" \
+--header "Authorization: Bearer {YOUR_API_TOKEN}"
+--header "X-Account-ID: {YOUR_ACCOUNT_ID}"
+```
+
+## Response codes {% #response-codes %}
+
+The Reports Service API returns the following response codes for each endpoint:
+
+| Response                                                                    | Message                                                                     | Notes                                                                       |
+| --------------------------------------------------------------------------- | --------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `200`                                                                       | `Success`                                                                   | Returns report information                                                  |
+| `204`                                                                       | `No content`                                                                | Returned if the response object is empty                                    |
+| `400`                                                                       | `Bad request`                                                               | Returned if your request is malformed or contains unsupported parameters    |
+| `401`                                                                       | `Unauthorized`                                                              | Returned if your credentials are incorrect or absent                        |
+| `403`                                                                       | `Forbidden`                                                                 | Returned if you try to access information you don't have permission to view |
+| `429`                                                                       | `Too many requests`                                                         | Returned if you exceed 50 simultaneous requests                             |
+| `503`                                                                       | `Service unavailable`                                                       | Returned if the server can't be reached                                     |
+| `504`                                                                       | `Gateway timeout`                                                           | Returned if the query takes too long to return a response                   |
+
+## Fetch required information {% #fetch-required-information %}
+
+The Reports Service API
+
+### Retrieve filters {% #retrieve-filters %}
+
+When querying the Reports Service API, you need to filter your reporting data. The Reports Service API supports different filters such as metrics and dimensions. A full list of metrics is available in the [Datascape metrics glossary](https://help.adjust.com/en/article/datascape-metrics-glossary) and a full list of dimensions is available in the [Datascape dimensions glossary](https://help.adjust.com/en/article/datascape-dimensions-glossary).
+
+You can fetch filters programatically using the `filters_data` endpoint. This endpoint returns a full representation of all matching filters.
+
+```http
+GET https://automate.adjust.com/reports-service/filters_data
+```
+
+#### Parameters
+
+You MUST pass the following as a **query parameter**:
+
+{% deflist %}
+`required_filters`: `String`
+
+: A comma-separated list of filters.
+{% /deflist %}
+
+The following filters are available:
+
+| Filter                                                                                                  | Description                                                                                             |
+| ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `apps`                                                                                                  | Returns a list of your apps.                                                                            |
+| `apps_network`                                                                                          | Returns a list of your apps and their associated store IDs.                                             |
+| `overview_metrics`                                                                                      | Returns a list of overview metrics.                                                                     |
+| `skad_metrics`                                                                                          | Returns a list of metrics relating to SKAdNetwork.                                                      |
+| `cohort_maturity`                                                                                       | Returns a list of metrics relating to the maturity of a cohort. Example: mature, immature.              |
+| `cohort_metrics`                                                                                        | Returns a list of metrics relating to your cohorts.                                                     |
+| `event_metrics`                                                                                         | Returns a list of metrics relating to your events. All metrics are duplicated per event.                |
+| `cost_metrics`                                                                                          | Returns a list of metrics relating to cost.                                                             |
+| `etl_metrics`                                                                                           | Returns a list of metrics relating to ETL (extract, transform, load) between Adjust and another system. |
+| `dimensions`                                                                                            | Returns a list of dimensions.                                                                           |
+| `countries`                                                                                             | Returns a list of countries.                                                                            |
+| `currencies`                                                                                            | Returns a list of currencies.                                                                           |
+| `os_names`                                                                                              | Returns a list of operating system names.                                                               |
+| `networks`                                                                                              | Returns a list of networks.                                                                             |
+| `partners`                                                                                              | Returns a list of partners.                                                                             |
+| `ad_revenue_sources`                                                                                    | Returns a list of ad revenue sources.                                                                   |
+| `iap_revenue_mode`                                                                                      | Returns a list of ad revenue modes.                                                                     |
+| `attribution_type`                                                                                      | Returns a list of attribution types. Examples: all, click, impression.                                  |
+| `attribution_source`                                                                                    | Returns a list of attribution sources.                                                                  |
+| `attribution_status`                                                                                    | Returns a list of attribution statuses.                                                                 |
+| `ad_spend_mode`                                                                                         | Returns a list of cost modes. Examples: attribution, network, mixed.                                    |
+| `ad_spend_mode`                                                                                         | Returns a list of ad spend modes. Examples: attribution, network, mixed.                                |
+| `utc_offset`                                                                                            | The offset (in hours) from UTC. Defaults to 0 (UTC).                                                    |
+| `attributes`                                                                                            | Returns a list of attributes.                                                                           |
+| `index`                                                                                                 | Returns a list of key metrics that relate to all apps.                                                  |
+| `period_over_period`                                                                                    | Returns a list of time periods used for data comparison.                                                |
+| `cohort_metric_names`                                                                                   | Returns a list of readable names for cohort metrics.                                                    |
+| `full_cohort_periods`                                                                                   | Returns a list of time periods related to cohorts.                                                      |
+| `store_type`                                                                                            | Returns a list of app stores.                                                                           |
+| `skad_time_adjustment`                                                                                  | Returns a list of valid SKAdNetwork activity windows.                                                   |
+
+You MAY pass the following as **query parameters**:
+
+{% deflist %}
+`section`: `String`
+
+: The section you want to filter items by.
+
+`[required_filters]__contains`: `String`
+
+: A search term to filter your selected required filters by.
+{% /deflist %}
+
+The following sections are available:
+
+| Section                                               | Description                                           |
+| ----------------------------------------------------- | ----------------------------------------------------- |
+| `conversion`                                          | Metrics relating to click and impression conversions. |
+| `fraud`                                               | Metrics relating to fraud prevention.                 |
+| `cost`                                                | Metrics relating to cost.                             |
+| `revenue`                                             | Metrics relating to app revenue.                      |
+| `retention`                                           | Metrics relating to cohort-based user retention.      |
+| `events`                                              | Metrics relating to events.                           |
+| `conversion_events`                                   | Metrics relating to SKAdNetwork conversion events.    |
+| `installs`                                            | Metrics relating to app installs and reinstalls.      |
+| `conversion_values`                                   | Metrics relating to SKAdNetwork conversion values.    |
+
+#### Response format
+
+```json
+{
+   "required_filters_1": [
+      {
+         "id": "string",
+         "name": "string",
+         "short_name": "string",
+         "section": "string",
+         "formatting": "string",
+         "description": "string",
+         "increase_is_negative": false
+      }
+   ]
+}
+```
+
+#### Example
+
+```console
+curl --location "https://automate.adjust.com/reports-service/filters_data?required_filters=overview_metrics%2Ccost_metrics&section=cost&overview_metrics__contains=ecpi&cost_metrics__contains=Ad%20spend" \
+--header "Authorization: Bearer {YOUR_API_TOKEN}"
+```
+
+```json
+{
+    "cost_metrics": [
+        {
+            "id": "network_ad_spend_skan",
+            "name": "Ad spend (SKAN)",
+            "short_name": "",
+            "section": "Cost",
+            "formatting": "money",
+            "description": "The amount spent on ads for SKAN campaigns as reported by the network API",
+            "increase_is_negative": false
+        },
+        {
+            "id": "network_cost",
+            "name": "Ad spend (network)",
+            "short_name": "",
+            "section": "Cost",
+            "formatting": "money",
+            "description": "Ad spend data retrieved via the network API",
+            "increase_is_negative": true
+        },
+        {
+            "id": "network_cost_diff",
+            "name": "Ad spend diff (network)",
+            "short_name": "",
+            "section": "Cost",
+            "formatting": "money",
+            "description": "Difference between the attribution and network data sources",
+            "increase_is_negative": true
+        }
+    ],
+    "overview_metrics": [
+        {
+            "id": "skad_ecpi",
+            "name": "eCPI (SKAN)",
+            "short_name": "",
+            "section": "Cost",
+            "formatting": "decimal",
+            "description": "Effective cost per install, calculated by dividing the amount spent on ads for SKAN campaigns by installs",
+            "increase_is_negative": false
+        },
+        {
+            "id": "ecpi_all",
+            "name": "eCPI (all installs)",
+            "short_name": "eCPI (all)",
+            "section": "Cost",
+            "formatting": "money",
+            "description": "Effective cost per install",
+            "increase_is_negative": true
+        },
+        {
+            "id": "ecpi",
+            "name": "eCPI (paid installs)",
+            "short_name": "eCPI (paid)",
+            "section": "Cost",
+            "formatting": "money",
+            "description": "Effective cost per paid install",
+            "increase_is_negative": true
+        }
+    ]
+}
+```
+
+### Retrieve event slugs {% #retrieve-event-slugs %}
+
+If you want to query your reporting data using your Adjust events, you need to retrieve the slugs for your events by calling the `events` endpoint. This endpoint enables you to search for events using their readable names and returns useful information about each one.
+
+```http
+GET https://automate.adjust.com/reports-service/events
+```
+
+#### Parameters
+
+You MAY pass the following as a **query parameter**:
+
+{% deflist %}
+`events__contains`: `String`
+
+: A search term to filter your events by.
+
+`app_token__in`: `String`
+
+: A comma-separated list of app tokens to filter events by.
+
+`tokens_mapping`: `Boolean`
+
+: If `true`, the response contains the App token to Event token mapping.
+{% /deflist %}
+
+#### Response format
+
+```json
+[
+  {
+    "id": "string",
+    "name": "string",
+    "short_name": "",
+    "section": "",
+    "formatting": "money",
+    "description": "",
+    "app_token": [
+      "string"
+    ],
+    "tokens": [
+      "string"
+    ],
+    "is_skad_event": true,
+    "app_token_x_event_tokens_mapping": {
+      "property1": [
+        "string"
+      ],
+      "property2": [
+        "string"
+      ]
+    }
+  }
+]
+```
+
+#### Example
+
+```console
+curl --location "https://automate.adjust.com/reports-service/events?events__contains=purchase&tokens_mapping=true" \
+--header "Authorization: Bearer {YOUR_API_TOKEN}"
+```
+
+```json
+[
+    {
+        "id": "purchase",
+        "name": "Purchase Event",
+        "short_name": "PUR",
+        "section": "Revenue",
+        "description": "",
+        "app_token": [
+            "4zb92bmajmrd"
+        ],
+        "tokens": [
+            "abc123"
+        ],
+        "is_skad_event": false,
+         "app_token_x_event_tokens_mapping": {
+            "4zb92bmajmrd": [
+                "abc123"
+            ]
+        }
+    }
+]
+```
+
+## Fetch reporting data {% #fetch-reporting-data %}
+
+Once you've collected the required filters for your report, you can fetch reporting data from Adjust in different formats using the reporting endpoints.
+
+### Parameters {% #report-parameters %}
+
+For each reporting endpoint, you MUST pass the following **query parameters**:
+
+{% deflist %}
+`dimensions`: `String`
+
+: A comma-separated list of dimensions to group results by. You can fetch dimensions from the [`filters_data` endpoint](#retrieve-filters) or find a full list in the [Datascape dimensions glossary](https://help.adjust.com/en/article/datascape-dimensions-glossary).
+
+`metrics`: `String`
+
+: A comma-separated list of metrics to report on. You can fetch metrics from the [`filters_data` endpoint](#retrieve-filters) or find a full list in the [Datascape metrics glossary](https://help.adjust.com/en/article/datascape-metrics-glossary).
+
+`date_period`: `String`
+
+: The start and end dates for the report. There are 3 supported formats for dates:
+
+- Logical dates. For example: `this_month_until_yesterday`, `today`, `this_month`.
+- Absolute dates. For example: `2020-12-31:2021-01-01`.
+- Relative dates. For example: `-10d:-3d` (from 10 days ago to 3 days ago).
+{% /deflist %}
+
+You MAY pass the following as **query parameters**:
+
+{% deflist %}
+`cohort_maturity`: `String`
+
+: Whether to include all cohort metric values (`immature`) or only mature cohorts `mature`. If you pass `mature`, any values for immature cohorts are displayed as zeros.
+
+`utc_offset`: `String`
+
+: The timezone used in the report. Formatted as `utc_offset=+01:00`.
+
+`attribution_type`: `String`
+
+: The type of engagement the attribution awards.
+
+- `click` (default)
+- `impression`
+- `all`
+
+`attribution_source`: `String`
+
+: Whether in-app activity is assigned to the user's install source (`first`) or divided among the install source and subsequent sources of reattribution (`dynamic`). Defaults to `dynamic`.
+
+`reattributed`: `String`
+
+: Filter reattributed users.
+
+- `all`: Show all users.
+- `false`: Show only users who aren't reattributed.
+- `true`: Show only reattributed users.
+
+`iap_revenue_mode`: `String`
+
+: The percentage of gross ad revenue.
+
+- `GROSS_100`
+- `GROSS_85`
+- `GROSS_70`
+- `GROSS_60`
+
+`ad_revenue_sources`: `String`
+
+: A comma-separated list of ad revenue sources.
+
+`os_names`: `String`
+
+: A comma-separated list of operating system names. For example: `ios,android`.
+
+`ad_spend_mode`: `String`
+
+: Which ad spend source is applied in calculations. See [How ad spend source affects your data](https://help.adjust.com/en/article/how-ad-spend-source-affects-your-data) for more information.
+
+- `adjust`
+- `network`
+- `mixed`
+
+`sandbox`: `Boolean`
+
+: Whether to use sandbox data (`true`) or production data (`false`). Defaults to `false`.
+
+`sort`: `String`
+
+: A comma-separated list of metrics or dimensions to sort your report by. Use `-` to sort by descending order. For example: `sort=-clicks,installs`.
+
+`index`: `String`
+
+: A comma-separated list of dimensions used to index the report.
+
+`format_dates`: `Boolean`
+
+: Whether to format dates (`true`) or return them in ISO format (`false`). Defaults to `true`.
+
+`period_over_period`: `String`
+
+: The period for comparing report data. For example: `period_over_period=previous_week`.
+
+`currency`: `String`
+
+: The currency used to convert money-related metrics.
+
+`[dimension]__in`: `String`
+
+: A comma-separated list of values to filter a given dimension's value by. Returns only exact matches.
+
+`[dimension]__not_in`: `String`
+
+: A comma-separated list of values to filter a given dimension's value by. Excludes only exact matches.
+
+`[dimension]__contains`: `String`
+
+: A substring to filter a given dimension's value by. Returns partial or exact matches.
+
+`[dimension]__exclude`: `String`
+
+: A substring to filter a given dimension's value by. Exludes partial or exact matches.
+
+`[dimension]__starts_with`: `String`
+
+: A substring to filter a given dimension by prefix. Case insensitive.
+
+`[dimension]__not_starts_with`: `String`
+
+: A substring to filter a given dimension by prefix. Case insensitive.
+
+`[dimension]__ends_with`: `String`
+
+: A substring to filter a given dimension by suffix. Case insensitive.
+
+`[dimension]__not_ends_with`: `String`
+
+: A substring to filter a given dimension by suffix. Case insensitive.
+
+`[metric]__lt`: `String`
+
+: "Less than" filter. Returns only values lower than the specified value for the specified metric.
+
+`[metric]__lte`: `String`
+
+: "Less than or equal to" filter. Returns only values lower than or equal to the specified value for the specified metric.
+
+`[metric]__gt`: `String`
+
+: "Greater than" filter. Returns only values higher than the specified value for the specified metric.
+
+`[metric]__gte`: `String`
+
+: "Greater than or equal to" filter. Returns only values greater than or equal to the specified value for the specified metric.
+
+`[metric]__eq`: `String`
+
+: "Equal to" filter. Returns only values equal to the specified value for the specified metric.
+
+`[metric]__ne`: `String`
+
+: "Not equal to" filter. Returns only values not equal to the specified value for the specified metric.
+{% /deflist %}
+
+### Fetch a JSON report {% #fetch-json-report %}
+
+The `report` endpoint enables you to combine data from many services in a single report. Request installs, revenue, ad spend, and SKAdNetwork data divided by day, app, and ad network.
+
+```http
+GET https://automate.adjust.com/reports-service/report
+```
+
+#### Response format
+
+```json
+{
+  "rows": [],
+  "totals": {},
+  "data_warnings": [],
+  "debug": {
+    "service_urls": [
+      {
+        "method": "string",
+        "url": "string",
+        "params": {},
+        "data": {},
+        "status_code": 0,
+        "duration": 0
+      }
+    ],
+    "cached_at": "2019-08-24T14:15:22Z"
+  },
+  "currencies": [],
+  "immature_cohorts": {}
+}
+```
+
+#### Example
+
+```console
+$ curl --location "https://automate.adjust.com/reports-service/report?ad_spend_mode=network&app_token__in={app_token1},{app_token2}&date_period=2024-05-01:2024-05-02&dimensions=app,partner_name,campaign,campaign_id_network,campaign_network&metrics=installs,network_installs,network_cost,network_ecpi" \
+--header "Authorization: Bearer {YOUR_API_TOKEN}"
+```
+
+```json
+{
+   "rows": [
+      {
+         "attr_dependency": {
+            "campaign_id_network": "unknown",
+            "partner_id": "-300",
+            "partner": "Organic"
+         },
+         "app": "Test app",
+         "partner_name": "Organic",
+         "campaign": "unknown",
+         "campaign_id_network": "unknown",
+         "campaign_network": "unknown",
+         "installs": "10",
+         "network_installs": "0",
+         "network_cost": "0.0",
+         "network_ecpi": "0.0"
+      }
+   ],
+   "totals": {
+      "installs": 10.0,
+      "network_installs": 0.0,
+      "network_cost": 0.0,
+      "network_ecpi": 0.0
+   },
+   "data_warnings": [],
+   "pagination": null
+}
+```
+
+### Fetch a pivot report {% #fetch-pivot-report %}
+
+The `pivot_report` endpoint delivers data in a structured, pivot-table format. It allows you to group and aggregate data across multiple dimensions, making it easier to summarize and compare key metrics. This is useful when you want to analyze patterns or trends without having to manually manipulate the raw data.
+
+```http
+GET https://automate.adjust.com/reports-service/pivot_report
+```
+
+#### Parameters
+
+In addition to the [mandatory parameters for each endpoint](#report-parameters), you MUST pass the following **query parameter** when calling the `pivot_report` endpoint:
+
+{% deflist %}
+`index`: `String`
+
+: A comma-separated list of dimensions used to index the report.
+{% /deflist %}
+
+#### Response format
+
+```json
+{
+  "rows": [],
+  "totals": {},
+  "data_warnings": [],
+  "debug": {
+    "service_urls": [
+      {
+        "method": "string",
+        "url": "string",
+        "params": {},
+        "data": {},
+        "status_code": 0,
+        "duration": 0
+      }
+    ],
+    "cached_at": "2019-08-24T14:15:22Z"
+  },
+  "currencies": [],
+  "immature_cohorts": {},
+  "totals_per_dimension": {}
+}
+```
+
+#### Example
+
+```console
+curl --location "https://automate.adjust.com/reports-service/pivot_report?ad_spend_mode=network&app_token__in={app_token1},{app_token2}&date_period=2021-05-01:2021-05-02&dimensions=app,partner_name,campaign,campaign_id_network,campaign_network&metrics=installs,network_installs,network_cost,network_ecpi&index=app" \
+--header 'Authorization: Bearer {YOUR_API_TOKEN}'
+```
+
+```json
+{
+   "rows": [
+      {
+         "Test App": {
+            "rows": [
+               {
+                  "attr_dependency": {
+                     "app_network": ["google_play:com.test.app"]
+                  },
+                  "campaign_id_network": "123",
+                  "campaign_network": "Campaign Name",
+                  "campaign": "Campaign Name (123)",
+                  "partner_name": "MyPartner",
+                  "installs": 10,
+                  "network_installs": 0,
+                  "network_cost": 0,
+                  "network_ecpi": 0
+               }
+            ]
+         }
+      }
+   ],
+   "totals": {
+      "installs": 10,
+      "network_installs": 0,
+      "network_cost": 0,
+      "network_ecpi": 0
+   },
+   "totals_per_dimension": {
+      "campaign_id_network": {
+         "Organic": {
+            "installs": 10,
+            "network_installs": 0,
+            "network_cost": 0,
+            "network_ecpi": 0
+         }
+      },
+      "campaign_network": {
+         "Organic": {
+            "installs": 10,
+            "network_installs": 0,
+            "network_cost": 0,
+            "network_ecpi": 0
+         }
+      },
+      "app": {
+         "adjust Demo App": {
+            "installs": 10,
+            "network_installs": 0,
+            "network_cost": 0,
+            "network_ecpi": 0
+         }
+      },
+      "campaign": {
+         "Organic": {
+            "installs": 10,
+            "network_installs": 0,
+            "network_cost": 0,
+            "network_ecpi": 0
+         }
+      },
+      "partner_name": {
+         "Organic": {
+            "installs": 10,
+            "network_installs": 0,
+            "network_cost": 0,
+            "network_ecpi": 0
+         }
+      }
+   }
+}
+```
+
+### Fetch a CSV report {% #fetch-csv-report %}
+
+The `csv_report` endpoint returns data in a comma-separated values format, perfect for importing into spreadsheet software or other tools that require a flat file structure. This format is ideal for users who prefer to work with data in Excel or similar applications for further manipulation and reporting.
+
+```http
+GET https://automate.adjust.com/reports-service/csv_report
+```
+
+#### Parameters
+
+In addition to the [parameters for each endpoint](#report-parameters), you MAY pass the following **query parameter** when calling the `csv_report` endpoint:
+
+{% deflist %}
+`readable_names`: `Boolean`
+
+: Whether to return columns with their human-readable names. Defaults to `false`.
+{% /deflist %}
+
+Human-readable names can change depending on upstream requirements. Use slugs for long running reports to ensure consistency. You can use the [events endpoint](#retrieve-event-slugs) to retrieve event slugs.
+
+#### Response format
+
+```text
+app,partner_name,campaign,campaign_id_network,campaign_network,installs,network_cost
+String,String,String,String,String,Number,Number
+```
+
+#### Example
+
+```console
+curl --location "https://automate.adjust.com/reports-service/csv_report?ad_spend_mode=network&app_token__in={app_token1},{app_token2}&date_period=2021-05-01:2021-05-02&dimensions=app,partner_name,campaign,campaign_id_network,campaign_network&metrics=installs,network_cost"
+--header "Authorization: Bearer {YOUR_API_TOKEN}"
+```
+
+```text
+app,partner_name,campaign,campaign_id_network,campaign_network,installs,network_cost
+App Name,AppLovin,Campaign Name (Campaign ID),Campaign ID,Campaign Network,64,1000
+```
