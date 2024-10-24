@@ -2,6 +2,14 @@
 import { type Locales } from "@i18n/locales";
 import { useTranslations } from "@i18n/utils";
 
+type CalloutType =
+  | "info"
+  | "note"
+  | "tip"
+  | "warning"
+  | "important"
+  | "seealso";
+
 interface Props {
   title?: string;
   type?: CalloutType;
@@ -14,20 +22,108 @@ const t = useTranslations(lang as keyof Locales);
 const defaultTypeTitle = t(`callout.${type}`);
 ---
 
-<div class="my-7">
-  <aside role="alert" class=`callout callout-${type}`>
-    <div class="leading-none pt-3 pr-3 pb-0 pl-4">
-      <div class="inline-flex align-middle">
-        <svg class="w-6 h-6">
+<div class="callout-container">
+  <aside role="alert" class=`callout ${type}`>
+    <div class="icon-container">
+      <div class="svg-container">
+        <svg class="callout-svg">
           <use xlink:href=`#${type}-icon`></use>
         </svg>
       </div>
     </div>
-    <div class="flex flex-col flex-grow pt-4 pr-4 pb-2 pl-0">
-      <h2 class="mb-2 font-[500] text-[14px] leading-5">
+    <div class="callout-content-container">
+      <h2 class="callout-title">
         {title ? title : defaultTypeTitle}
       </h2>
       <slot />
     </div>
   </aside>
 </div>
+
+<style>
+  .callout-container {
+    margin-top: 1.75rem;
+    margin-bottom: 1.75rem;
+  }
+
+  .callout {
+    font-family:
+      BlinkMacSystemFont,
+      -apple-system,
+      "Segoe UI",
+      Roboto,
+      Arial,
+      sans-serif;
+    position: relative;
+    display: flex;
+    border-radius: 0.75rem;
+    font-size: 14px;
+    line-height: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .icon-container {
+    line-height: 1;
+    padding: 0.75rem 0.75rem 0 1rem;
+  }
+
+  .svg-container {
+    display: inline-flex;
+    vertical-align: middle;
+  }
+
+  .callout-svg {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .callout-content-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 1rem 1rem 0.5rem 0;
+  }
+
+  .callout-title {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1.25rem;
+  }
+
+  .callout li::marker {
+    font-weight: 400;
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+
+  .callout p {
+    margin-bottom: 0.5rem;
+  }
+
+  .note {
+    background-color: var(--color-primary-20);
+    color: var(--color-primary-130);
+  }
+
+  .tip,
+  .seealso {
+    background-color: var(--color-positive-20);
+    color: var(--color-positive-120);
+  }
+
+  .warning {
+    background-color: var(--color-negative-20);
+    color: var(--color-negative-120);
+  }
+
+  .important {
+    background-color: var(--color-warning-20);
+    color: var(--color-warning-120);
+  }
+
+  .info {
+    background-color: var(--color-neutral-20);
+    color: var(--color-neutral-130);
+  }
+</style>
