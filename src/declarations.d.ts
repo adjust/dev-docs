@@ -11,7 +11,13 @@ declare type BannerKind =
   | "negative"
   | "primary";
 
-declare type CalloutType = "info" | "note" | "tip" | "warning" | "important" | "seealso";
+declare type CalloutType =
+  | "info"
+  | "note"
+  | "tip"
+  | "warning"
+  | "important"
+  | "seealso";
 
 declare interface ApiObject {
   orgName: string;
@@ -28,15 +34,19 @@ declare interface VersionProps {
 
 declare interface VersionMap {
   [key: string]: string | {
-    v4: string,
-    v5: string,
-  }
+    [key: string]: string;
+  };
 }
 
-declare type BadgeColor = "neutral" | "negative" | "positive" | "warning" | "primary";
+declare type BadgeColor =
+  | "neutral"
+  | "negative"
+  | "positive"
+  | "warning"
+  | "primary";
 
 declare type TableHeights = number | "full-height" | undefined;
 
 declare interface MarkdownHeadingWithId extends MarkdownHeading {
-  id?: String
+  id?: String;
 }
