@@ -72,16 +72,12 @@ const adjustThirdPartySharing = new Adjust.ThirdPartySharing(true);
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
-### Disable third-party sharing (Depricated) {#disable-third-party-sharing}
+### Disable third-party sharing (Deprecated) {#disable-third-party-sharing}
 
 <MinorVersion
-   changed="5.7.0"
+   removed="5.7.0"
    link="https://github.com/adjust/web_sdk/releases/tag/v5.7.0"
 />
-
-To disable third-party sharing for all users, call the disableThirdPartySharing method. When Adjust's servers receive this information, Adjust stops sharing the user's data with third parties. The Adjust SDK continues to work as expected.
-
-Adjust.disableThirdPartySharing();
 
 To disable third party sharing in previous versions of the SDK, you needed to call the `disableThirdPartySharing` method. This method is now deprecated. If you are still using it, note that it calls the underlying method directly.
 
@@ -114,35 +110,6 @@ options.addGranularOption("PartnerA", "foo", "bar");
 Adjust.trackThirdPartySharing(options);
 ```
 
-## Data residency {#data-residency}
-
-<CodeBlock title="Property declaration">
-
-```js
-dataResidency: "EU" | "TR" | "US";
-```
-
-</CodeBlock>
-
-The data residency feature allows you to choose the country in which Adjust stores your data. This is useful if you're operating in a country with strict privacy requirements. When you set up data residency, Adjust stores your data in a data center located in the region your have chosen.
-
-To set your country of data residency, pass the region code of your preferred country code in the `dataResidency` property of the `initSdk` method.
-
-| Region                   | Code |
-| ------------------------ | ---- |
-| European Union           | `EU` |
-| Turkey                   | `TR` |
-| United States of America | `US` |
-
-```js
-Adjust.initSdk({
-   appToken: "YOUR_APP_TOKEN",
-   environment: "production",
-   logLevel: "verbose",
-   dataResidency: "EU",
-});
-```
-
 ## URL strategy {#url-strategy}
 
 <MinorVersion
@@ -159,7 +126,7 @@ This is useful if you're operating in a country with strict privacy requirements
 
 To set your country of data residency, call the `AdjustConfig.setUrlStrategy` method following parameters:
 
--  `domains` (`any`): The country or countries of data residence, or the endpoints to which you want to send SDK traffic.
+-  `domains` (`Array<string>`): The country or countries of data residence, or the endpoints to which you want to send SDK traffic. By default, the Adjust SDK sends all data to Adjust's endpoints. If you want to specify a custom endpoint, pass your endpoint in the `domains` property of `urlStrategy`.
 -  `useSubdomains` (`boolean`): Whether the domain should be treated as an Adjust domain. If `true`, the SDK will prefix the domains with Adjust-specific subdomains. If `false`, the SDK will use the provided domain as-is, without adding any prefixes.
 -  `isDataResidency` (`boolean`): Optional. Whether the domain should be used for data residency.
 
@@ -184,22 +151,56 @@ Adjust.initSdk({
 });
 ```
 
-## Set custom endpoint {#set-custom-endpoint}
+### Set custom endpoint {#set-custom-endpoint}
 
-<CodeBlock title="Property declaration">
+<MinorVersion
+   removed="5.7.0"
+   link="https://github.com/adjust/web_sdk/releases/tag/v5.7.0"
+/>
 
-```js
-customUrl: string;
-```
+In previous versions of the SDK, you needed to pass your endpoint in the `customUrl` property of the `initSdk` method. However, it is now deprecated. To set data residency in the current SDK, use the `urlStrategy` configuration instead.
 
-</CodeBlock>
-
-By default, the Adjust SDK sends all data to Adjust's endpoints. If you want to specify a custom endpoint, pass your endpoint in the `customUrl` property of the `initSdk` method.
+<CodeBlock del="{range: 5}" ins="{range: 6-10}">
 
 ```js
 Adjust.initSdk({
    appToken: "YOUR_APP_TOKEN",
-   environment: "sandbox",
-   customUrl: "https://my-custom-url.com/",
+   environment: "production",
+   logLevel: "verbose",
+   customUrl: "my.custom.domain.com",
+   urlStrategy: {
+      domains: ["my.custom.domain"],
+      useSubdomains: true,
+      isDataResidency: false,
+   },
 });
 ```
+
+</CodeBlock>
+
+### Data residency (Deprecated) {#data-residency}
+
+<MinorVersion
+   removed="5.7.0"
+   link="https://github.com/adjust/web_sdk/releases/tag/v5.7.0"
+/>
+
+In previous versions of the SDK, this feature was used to configure data residency. However, it is now deprecated. To set data residency in the current SDK, use the `urlStrategy` configuration instead.
+
+<CodeBlock del="{range: 5}" ins="{range: 6-10}">
+
+```js
+Adjust.initSdk({
+   appToken: "YOUR_APP_TOKEN",
+   environment: "production",
+   logLevel: "verbose",
+   dataResidency: "EU",
+   urlStrategy: {
+      domains: ["adjust.cn", "adjust.com"],
+      useSubdomains: true,
+      isDataResidency: false,
+   },
+});
+```
+
+</CodeBlock>
