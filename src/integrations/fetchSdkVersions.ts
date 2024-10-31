@@ -21,19 +21,19 @@ type GraphQLResponse = {
 };
 
 let versionReplacements: VersionMap = {
-  android: { v4: "x.x.x", v5: "x.x.x" },
-  ios: { v4: "x.x.x", v5: "x.x.x" },
-  unity: { v4: "x.x.x", v5: "x.x.x" },
-  react_native: { v4: "x.x.x", v5: "x.x.x" },
-  cordova: { v4: "x.x.x", v5: "x.x.x" },
-  flutter: { v4: "x.x.x", v5: "x.x.x" },
-  cocos2dx: { v4: "x.x.x", v5: "x.x.x" },
+  android: { versions: { v4: "x.x.x", v5: "x.x.x" }, useSdkSuffix: true },
+  ios: { versions: { v4: "x.x.x", v5: "x.x.x" }, useSdkSuffix: true },
+  unity: { versions: { v4: "x.x.x", v5: "x.x.x" }, useSdkSuffix: true },
+  react_native: { versions: { v4: "x.x.x", v5: "x.x.x" }, useSdkSuffix: true },
+  cordova: { versions: { v4: "x.x.x", v5: "x.x.x" }, useSdkSuffix: true },
+  flutter: { versions: { v4: "x.x.x", v5: "x.x.x" }, useSdkSuffix: true },
+  cocos2dx: { versions: { v4: "x.x.x", v5: "x.x.x" }, useSdkSuffix: true },
   android_adobe_extension: {
-    v2: "x.x.x",
-    v3: "x.x.x",
+    versions: { v2: "x.x.x", v3: "x.x.x" },
+    useSdkSuffix: false,
   },
-  web: "x.x.x",
-  windows: "x.x.x",
+  web: { versions: "x.x.x", useSdkSuffix: true },
+  windows: { versions: "x.x.x", useSdkSuffix: true },
 };
 
 /**
@@ -45,72 +45,69 @@ export async function fetchVersions() {
     if (import.meta.env.PROD) {
       const fetchPromises = Object.keys(versionReplacements).map(
         async (platform) => {
-          const currentPlatform = versionReplacements[platform];
+          const { versions, useSdkSuffix } = versionReplacements[platform];
+          const repoName = `${platform}${useSdkSuffix ? "_sdk" : ""}`;
 
-          if (typeof currentPlatform === "object") {
-            // Dynamically build query segments for each version (e.g., v2, v3, v4, v5)
-            const versionQueries = Object.keys(currentPlatform)
+          if (typeof versions === "object") {
+            const versionQueries = Object.keys(versions)
               .map(
                 (versionKey) => `
-                ${versionKey}Tags: repository(owner: "adjust", name: "${platform}_sdk") {
-                  refs(
-                    refPrefix: "refs/tags/"
-                    orderBy: { field: TAG_COMMIT_DATE, direction: DESC }
-                    first: 1
-                    query: "${versionKey}"
-                  ) {
-                    edges {
-                      node {
-                        name
-                      }
-                    }
-                  }
-                }
-              `,
+                 ${versionKey}Tags: repository(owner: "adjust", name: "${repoName}") {
+                   refs(
+                     refPrefix: "refs/tags/"
+                     orderBy: { field: TAG_COMMIT_DATE, direction: DESC }
+                     first: 1
+                     query: "${versionKey}"
+                   ) {
+                     edges {
+                       node {
+                         name
+                       }
+                     }
+                   }
+                 }
+               `,
               )
               .join("\n");
 
-            // Build the full query with all versions for this platform
             const query = `
-            query RepositoryTags {
-              ${versionQueries}
-            }
-          `;
+             query RepositoryTags {
+               ${versionQueries}
+             }
+           `;
 
             const response = await octokit.graphql<GraphQLResponse>(query);
 
-            // Extract and store each version's tag name from the response
-            Object.keys(currentPlatform).forEach((versionKey) => {
+            Object.keys(versions).forEach((versionKey) => {
               const tag =
                 response[`${versionKey}Tags`]?.refs.edges[0]?.node.name.replace(
                   "v",
                   "",
                 ) || "Not found";
-              currentPlatform[versionKey] = tag;
+              versions[versionKey] = tag;
             });
           } else {
-            // For non-object platforms, fetch only the latest tag
             const query = `
-            query RepositoryTags {
-              latestTag: repository(owner: "adjust", name: "${platform}_sdk") {
-                refs(
-                  refPrefix: "refs/tags/"
-                  orderBy: { field: TAG_COMMIT_DATE, direction: DESC }
-                  first: 1
-                  query: "v"
-                ) {
-                  edges {
-                    node {
-                      name
-                    }
-                  }
-                }
-              }
-            }
-          `;
+             query RepositoryTags {
+               latestTag: repository(owner: "adjust", name: "${repoName}") {
+                 refs(
+                   refPrefix: "refs/tags/"
+                   orderBy: { field: TAG_COMMIT_DATE, direction: DESC }
+                   first: 1
+                   query: "v"
+                 ) {
+                   edges {
+                     node {
+                       name
+                     }
+                   }
+                 }
+               }
+             }
+           `;
 
             const response = await octokit.graphql<GraphQLResponse>(query);
-            versionReplacements[platform] =
+            versionReplacements[platform].versions =
               response.latestTag?.refs.edges[0]?.node.name.replace("v", "") ||
               "Not found";
           }
