@@ -1,0 +1,112 @@
+---
+title: Send event information
+description: Follow this guide to send events to Adjust from your Adobe Experience app.
+sidebar-position: 2
+---
+
+You can use the Adjust Extension for Adobe Experience SDK to send event information to Adjust's servers in response to actions taken by your users. Adjust records these events and surfaces them in your [Datascape reports](https://help.adjust.com/en/article/datascape), [server callbacks](https://help.adjust.com/en/article/server-callbacks), and [cloud storage uploads](https://help.adjust.com/en/article/cloud-storage-uploads).
+
+For more information on configuring events in Adjust, see the [Add events guide](https://help.adjust.com/en/article/add-events) in the Help Center.
+
+## How it works {% #how-it-works %}
+
+Event information is sent to Adjust when the following information is passed to the `MobileCore.trackAction` API:
+
+1. `AdjustAdobeExtension.ADOBE_ADJUST_ACTION_TRACK_EVENT`: a string value that maps to the Adjust `trackEvent` method.
+1. `contextData`: a HashMap of values used to configure your event.
+
+When you call `MobileCore.trackAction` with these arguments, the Adjust extension creates an event instance and passes it to the `trackEvent` method, sending the information to Adjust.
+
+## Reference {% #reference %}
+
+The `contextData` HashMap is used to hold information about an event. Each event is represented by a unique `contextData` HashMap. Configure your event instance by adding values to the `contextData` HashMap.
+
+### Set your event token {% #set-your-event-token %}
+
+When configuring your event, you MUST set your event token. This token corresponds with an event in Adjust. See [Add events](https://help.adjust.com/en/article/add-events#manage-your-events) for more information.
+
+To set your event token, add the following to your `contextData` HashMap:
+
+- Key: `AdjustAdobeExtension.ADOBE_ADJUST_EVENT_TOKEN`.
+- Value: Your Adjust event token.
+
+```java
+Map<String, String> contextData = new HashMap<String, String>();
+contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_TOKEN, "abc123");
+```
+
+### Add revenue information {% #add-revenue-information %}
+
+To send revenue information with your event, you need to add the revenue amount and currency to your `contextData` HashMap.
+
+To set the event revenue, add the following data to your HashMap:
+
+- Key: `AdjustAdobeExtension.ADOBE_ADJUST_REVENUE`.
+- Value: The amount of revenue associated with the event. This value should be a string representing a numerical value.
+
+To set the currency, add the following data to your HashMap:
+
+- Key: `AdjustAdobeExtension.ADOBE_ADJUST_CURRENCY`.
+- Value: An [ISO 4217](https://www.iban.com/currency-codes) currency code.
+
+```java
+Map<String, String> contextData = new HashMap<String, String>();
+contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_TOKEN, "abc123");
+contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_REVENUE, "0.25");
+contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_CURRENCY, "EUR");
+```
+
+### Add callback parameters {% #add-callback-parameters %}
+
+Add callback parameters by adding key-value pairs to your `contextData` HashMap. When Adjust receives your event instance, all callback parameters are sent to your callback URL.
+
+- Key: `AdjustAdobeExtension.ADOBE_ADJUST_CALLBACK_PARAM_PREFIX` plus your string parameter key.
+- Value: Your parameter value.
+
+```java
+Map<String, String> contextData = new HashMap<String, String>();
+contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_TOKEN, "abc123");
+contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_CALLBACK_PARAM_PREFIX + "key1", "value1");
+```
+
+### Add partner parameters {% #add-partner-parameters %}
+
+Add partner parameters by adding key-value pairs to your `contextData` HashMap. When Adjust receives your event instance, all partner parameters are sent to any external partners you've configured.
+
+- Key: `AdjustAdobeExtension.ADOBE_ADJUST_PARTNER_PARAM_PREFIX` plus your string parameter key.
+- Value: Your parameter value.
+
+```java
+Map<String, String> contextData = new HashMap<String, String>();
+contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_TOKEN, "abc123");
+contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_PARTNER_PARAM_PREFIX + "key1", "value1");
+```
+
+## Tutorial {% #tutorial %}
+
+This tutorial demonstrates how to use the `MobileCore.trackAction` API to send event information to Adjust. You will learn:
+
+1. How to configure your Adjust event.
+1. How to send event information to Adjust using the `MobileCore.trackAction` API.
+
+To send event information to Adjust, follow these steps:
+
+1. Assign `AdjustAdobeExtension.ADOBE_ADJUST_ACTION_TRACK_EVENT` to a new variable called `action`.
+1. Create a HashMap to hold your Adjust event token. In the example below, the following properties are set:
+   - The event token is set to _{% $variables.event.token %}_.
+   - A callback parameter is added with the value _value1_.
+   - A partner parameter is added with the value _value2_.
+   - The event revenue is set to _0.25 EUR_.
+1. Pass the action and HashMap to the `MobileCore.trackAction` method to send the information to Adjust.
+
+```java
+String action = AdjustAdobeExtension.ADOBE_ADJUST_ACTION_TRACK_EVENT;
+Map<String, String> contextData = new HashMap<String, String>();
+contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_TOKEN, "{% $variables.event.token %}");
+contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_CALLBACK_PARAM_PREFIX + "key1", "value1");
+contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_PARTNER_PARAM_PREFIX + "key2", "value2");
+contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_REVENUE, "0.25");
+contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_CURRENCY, "EUR");
+
+MobileCore.trackAction(action, contextData);
+```

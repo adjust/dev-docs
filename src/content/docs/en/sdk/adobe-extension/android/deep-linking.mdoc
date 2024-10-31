@@ -1,0 +1,80 @@
+---
+title: Set up deep linking
+description: Configure your app to handle direct and deferred deep links.
+sidebar-position: 3
+---
+
+Deep links are URIs (Uniform Resource Identifiers) that direct users to specific content within your app, enhancing user experience by guiding them directly to relevant content after they interact with a link.
+
+The Adjust Android Extension for the Adobe Experience SDK supports two types of deep linking, based on whether the user has already installed your app:
+
+- **Direct deep linking**: If the user already has your app installed, the link opens directly to the specified content.
+- **Deferred deep linking**: If the user doesn’t have your app installed, the link directs them to the app store to install it. After installation, the app opens to the specified content.
+
+## Reattribute users with direct deep links {% #reattribute-users-with-direct-deep-links %}
+
+You can reattribute your users by sending deep link information to Adjust. When a user engages with a deep link, you can send the deep link data to Adjust to update their attribution information.
+
+To reattribute users with a direct deep link, first create an `AdjustDeeplink` instance using your deep link URI. The `AdjustDeeplink` class validates that the URI is a properly formatted string to ensure successful processing.
+
+The `AdjustDeeplink` class constructor requires the following argument:
+
+{% deflist %}
+`url`: `Uri`
+
+: The deep link URI that opens your app.
+{% /deflist %}
+
+After creating an `AdjustDeeplink` instance, call the `Adjust.processDeeplink` function to handle the deep link and pass the information to Adjust. The `Adjust.processDeeplink` function requires the following arguments:
+
+{% deflist %}
+`adjustDeeplink`: `AdjustDeeplink`
+
+: The `AdjustDeeplink` instance you created.
+
+`context`: `Context`
+
+: The application context.
+{% /deflist %}
+
+Here is an example of how to initialize and process a direct deep link.
+
+```java
+Intent intent = getIntent();
+Uri data = intent.getData();
+AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
+```
+
+## Deferred deep link callbacks {% #deferred-deep-link-callbacks %}
+
+The Adjust Android Extension for Adobe Experience SDK opens deferred deep links by default. If you want to control this behavior, or perform validation before the deep link is opened, you can configure the extension to call a function when the app is opened via a deferred deep link. To do this:
+
+1. Call `setOnDeferredDeeplinkResponseListener` on your `AdjustAdobeExtensionConfig` instance with the following argument:
+
+  {% deflist %}
+  `onDeferredDeeplinkResponseListener`: `OnDeferredDeeplinkResponseListener`
+
+  : A function that returns a `boolean` value. If the function returns `false`, the extension won't open the deferred deep link.
+  {% /deflist %}
+
+1. Call `AdjustAdobeExtension.setConfiguration` to set your configuration.
+
+Here is an example of a callback function that checks the deep link content using a function (`shouldAdjustSdkLaunchTheDeeplink`) and returns `true` or `false` depending on the outcome.
+
+```java
+AdjustAdobeExtensionConfig config = new AdjustAdobeExtensionConfig(environment);
+
+config.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListener() {
+    @Override
+    public boolean launchReceivedDeeplink(Uri deeplink) {
+        if (shouldAdjustSdkLaunchTheDeeplink(deeplink)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+});
+
+AdjustAdobeExtension.setConfiguration(config);
+```

@@ -1,0 +1,477 @@
+---
+title: Android Adobe Extension integration guide
+description: Follow this guide to integrate the Adjust Android Extension for Adobe Experience SDK.
+sidebar-position: 1
+sidebar-label: Integration guide
+---
+
+Welcome to the integration guide for the Adjust Extension for Adobe Experience SDK. This guide provides a step-by-step process to help you integrate and configure the Adjust extension in your Adobe Experience app for Android. Using this extension, you can seamlessly integrate Adjust with the Adobe Experience SDK to capture and send attribution data and in-app event information to the Adjust platform.
+
+This extension enables you to send data such as installs, sessions, and custom in-app events to Adjust. Follow this guide to set up, configure, and verify your integration.
+
+## Set up your project {% #set-up-your-project %}
+
+Follow these steps to set up your project to support the Adjust Extension for Adobe Experience SDK.
+
+### Install the Adjust Extension {% #install-the-adjust-extension %}
+
+To use the Adjust Extension for Adobe Experience SDK, you need to add it to your project as a dependency. The relevant packages are available on [Maven](https://maven.apache.org).
+
+To add the Adjust Extension for Adobe Experience SDK to your project, add the following to your `build.gradle` file:
+
+{% deflist %}
+`com.adjust.adobeextension:adobeextension`
+
+: The Adjust extension for Adobe Experience.
+
+`com.adjust.sdk:adjust-android`
+
+: The Adjust Android SDK.
+
+`com.android.installreferrer:installreferrer`
+
+: The Android Install Referrer API.
+{% /deflist %}
+
+```groovy
+dependencies {
+  implementation 'com.adjust.adobeextension:adobeextension:{% $versions.android_adobe_extension.v3 %}'
+  implementation 'com.adjust.sdk:adjust-android:{% $versions.android.v5 %}'
+  implementation 'com.adobe.marketing.mobile:core:3.2.0'
+  implementation 'com.android.installreferrer:installreferrer:2.2'
+}
+```
+
+### Add Google Play Services {% #add-google-play-services %}
+
+Apps that target the Google Play Store must use the `gps_adid` (Google Advertising ID) to identify devices. You need to add the `play-services-ads-identifier` AAR to your project to access the `gps_adid`.
+
+If you're using Maven, add the `com.google.android.gms:play-services-ads-identifier` implementation to your `build.gradle` file.
+
+```groovy
+dependencies {
+   implementation 'com.google.android.gms:play-services-ads-identifier:18.0.1'
+}
+```
+
+### Configure permissions {% #configure-permissions %}
+
+The Adjust Extension for Adobe Experience SDK bundles all required permissions by default. You don't need to add any permissions for the extension to work.
+
+If your app needs to be COPPA (Children's Online Privacy Protection Act) compliant or you don't target the Google Play Store, you MUST remove the `com.google.android.gms.permission.AD_ID` permission using a `remove` directive in your `AndroidManifest.xml` file.
+
+```xml
+<uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
+```
+
+## Integration guide {% #integration-guide %}
+
+Once you've completed the project setup steps, follow this guide to set up the Adjust Extension for Adobe Experience SDK. This guide shows you how to:
+
+1. Add the Adjust Extension to your Adobe Experience app.
+1. Configure the Extension to send data to Adjust in **sandbox** mode for testing.
+1. Configure your logging level to **verbose** to retrieve as much detail as possible from the extension.
+1. Set up your app to send session information to Adjust.
+
+By the end of this guide, you will understand how to create the following integration:
+
+```java
+import android.app.Application;
+import android.util.Log;
+
+import com.adjust.adobeextension.AdjustAdobeExtension;
+import com.adjust.adobeextension.AdjustAdobeExtensionConfig;
+import com.adobe.marketing.mobile.Extension;
+import com.adobe.marketing.mobile.Analytics;
+import com.adobe.marketing.mobile.Identity;
+import com.adobe.marketing.mobile.LoggingMode;
+import com.adobe.marketing.mobile.MobileCore;
+
+public class MainApp extends Application {
+   @Override
+   public void onCreate() {
+      super.onCreate();
+
+      MobileCore.setApplication(this);
+      MobileCore.setLogLevel(LoggingMode.VERBOSE);
+
+      try {
+         MobileCore.configureWithAppID("your_adobe_app_id");
+
+         AdjustAdobeExtensionConfig config =
+               new AdjustAdobeExtensionConfig(AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX);
+         AdjustAdobeExtension.setConfiguration(config);
+      } catch (Exception e) {
+         Log.e("example", "Exception occurred during configuration: " + e.getMessage());
+      }
+
+      try {
+         List<Class<? extends Extension>> extensions = Arrays.asList(
+               Analytics.EXTENSION,
+               Identity.EXTENSION,
+               AdjustAdobeExtension.EXTENSION);
+         MobileCore.registerExtensions(extensions, new AdobeCallback<Object>() {
+            @Override
+            public void call(Object o) {
+               Log.d("example", "Adjust Adobe Extension SDK initialized");
+            }
+         });
+      } catch (Exception e) {
+         Log.e("example", "Exception occurred while registering Extension: " + e.getMessage());
+      }
+   }
+}
+```
+
+### Create a global application class {% #create-a-global-application-class %}
+
+The recommended way to register the Adjust Android Extension for Adobe Experience SDK is to use a global Android [Application class](http://developer.android.com/reference/android/app/Application.html). If you've not yet created an Application, follow these steps:
+
+1. Create a new class that extends `Application`
+1. Open your `AndroidManifest.xml` and find the `<application>` element.
+1. Add the name of your new class as an `android:name` attribute. In this example, the new `Application` class is named `MainApp`.
+
+   ```xml
+   <application android:name=".MainApp">
+   </application>
+   ```
+
+1. Within your `Application` class, find or add the `onCreate` method.
+
+   ```java
+   import android.app.Application;
+
+   public class MainApp extends Application {
+      @Override
+      public void onCreate() {
+         super.onCreate();
+      }
+   }
+   ```
+
+### Configure the Adjust Extension {% #configure-the-adjust-extension %}
+
+Once you've created the `Application` class and called `onCreate`, follow these steps to configure the Adjust Android Extension for Adobe Experience SDK:
+
+1. Import the `com.adobe.marketing.mobile.MobileCore` class and call `MobileCore.setApplication(this)` to register the application context.
+
+   ```java
+   import android.app.Application;
+   import android.util.Log;
+
+   import com.adobe.marketing.mobile.MobileCore;
+
+   public class MainApp extends Application {
+      @Override
+      public void onCreate() {
+         super.onCreate();
+
+         MobileCore.setApplication(this);
+      }
+   }
+   ```
+
+1. Import the `com.adobe.marketing.mobile.LoggingMode` class and set your logging level by calling the `MobileCore.setLogLevel` method with the following argument:
+
+   {% deflist %}
+   `logLevel`: `String`
+
+   : The level of logging you want to enable.
+
+   - `LoggingMode.VERBOSE`: enable all logging.
+   - `LoggingMode.DEBUG`: disable verbose logging.
+   - `LoggingMode.WARNING`: log only errors and warnings.
+   - `LoggingMode.ERROR`: log only errors.
+   {% /deflist %}
+
+   ```java
+   import android.app.Application;
+   import android.util.Log;
+
+   import com.adobe.marketing.mobile.LoggingMode;
+   import com.adobe.marketing.mobile.MobileCore;
+
+   public class MainApp extends Application {
+      @Override
+      public void onCreate() {
+         super.onCreate();
+
+         MobileCore.setApplication(this);
+         MobileCore.setLogLevel(LoggingMode.VERBOSE);
+      }
+   }
+   ```
+
+1. Create a new `try...catch` block to configure the Adjust Extension:
+
+   ```java
+   import android.app.Application;
+   import android.util.Log;
+
+   import com.adobe.marketing.mobile.LoggingMode;
+   import com.adobe.marketing.mobile.MobileCore;
+
+   public class MainApp extends Application {
+      @Override
+      public void onCreate() {
+         super.onCreate();
+
+         MobileCore.setApplication(this);
+         MobileCore.setLogLevel(LoggingMode.VERBOSE);
+
+         try {
+         } catch (Exception e) {
+            Log.e("example", "Exception occurred during configuration: " + e.getMessage());
+         }
+      }
+   }
+   ```
+
+1. Within your `try` block, call `MobileCore.configureWithAppID` and pass your Adobe app ID.
+
+   ```java
+   import android.app.Application;
+   import android.util.Log;
+
+   import com.adobe.marketing.mobile.LoggingMode;
+   import com.adobe.marketing.mobile.MobileCore;
+
+   public class MainApp extends Application {
+      @Override
+      public void onCreate() {
+         super.onCreate();
+
+         MobileCore.setApplication(this);
+         MobileCore.setLogLevel(LoggingMode.VERBOSE);
+
+         try {
+            MobileCore.configureWithAppID("your_adobe_app_id");
+         } catch (Exception e) {
+            Log.e("example", "Exception occurred during configuration: " + e.getMessage());
+         }
+      }
+   }
+   ```
+
+1. Import the following classes:
+   - `com.adjust.adobeextension.AdjustAdobeExtension`
+   - `com.adjust.adobeextension.AdjustAdobeExtensionConfig`
+1. Create a new instance of `AdjustAdobeExtensionConfig` with the following argument:
+
+   {% deflist %}
+   `environment`: `String`
+
+   : The environment in which your device is running.
+
+   - Pass `AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX` when testing.
+   - Pass `AdjustAdobeExtensionConfig.ENVIRONMENT_PRODUCTION` when running the app in production.
+   {% /deflist %}
+
+   ```java
+   import android.app.Application;
+   import android.util.Log;
+
+   import com.adjust.adobeextension.AdjustAdobeExtension;
+   import com.adjust.adobeextension.AdjustAdobeExtensionConfig;
+   import com.adobe.marketing.mobile.LoggingMode;
+   import com.adobe.marketing.mobile.MobileCore;
+
+   public class MainApp extends Application {
+      @Override
+      public void onCreate() {
+         super.onCreate();
+
+         MobileCore.setApplication(this);
+         MobileCore.setLogLevel(LoggingMode.VERBOSE);
+
+         try {
+            MobileCore.configureWithAppID("your_adobe_app_id");
+
+            AdjustAdobeExtensionConfig config =
+                     new AdjustAdobeExtensionConfig(AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX);
+         } catch (Exception e) {
+            Log.e("example", "Exception occurred during configuration: " + e.getMessage());
+         }
+      }
+   }
+   ```
+
+1. Call `AdjustAdobeExtension.setConfiguration` with your `AdjustAdobeExtensionConfig` instance as an argument to configure the Adjust SDK extension.
+
+   ```java
+   import android.app.Application;
+   import android.util.Log;
+
+   import com.adjust.adobeextension.AdjustAdobeExtension;
+   import com.adjust.adobeextension.AdjustAdobeExtensionConfig;
+   import com.adobe.marketing.mobile.LoggingMode;
+   import com.adobe.marketing.mobile.MobileCore;
+
+   public class MainApp extends Application {
+      @Override
+      public void onCreate() {
+         super.onCreate();
+
+         MobileCore.setApplication(this);
+         MobileCore.setLogLevel(LoggingMode.VERBOSE);
+
+         try {
+            MobileCore.configureWithAppID("your_adobe_app_id");
+
+            AdjustAdobeExtensionConfig config =
+                  new AdjustAdobeExtensionConfig(AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX);
+            AdjustAdobeExtension.setConfiguration(config);
+         } catch (Exception e) {
+            Log.e("example", "Exception occurred during configuration: " + e.getMessage());
+         }
+      }
+   }
+   ```
+
+### Register the Adjust Extension {% #register-the-adjust-extension %}
+
+Once you've configured the Adjust Extension, you need to register it with the Adobe Experience SDK. To do this:
+
+1. Create a new `try...catch` block underneath your configuration block.
+
+   ```java
+   import android.app.Application;
+   import android.util.Log;
+
+   import com.adjust.adobeextension.AdjustAdobeExtension;
+   import com.adjust.adobeextension.AdjustAdobeExtensionConfig;
+   import com.adobe.marketing.mobile.LoggingMode;
+   import com.adobe.marketing.mobile.MobileCore;
+
+   public class MainApp extends Application {
+      @Override
+      public void onCreate() {
+         super.onCreate();
+
+         MobileCore.setApplication(this);
+         MobileCore.setLogLevel(LoggingMode.VERBOSE);
+
+         try {
+            MobileCore.configureWithAppID("your_adobe_app_id");
+
+            AdjustAdobeExtensionConfig config =
+                  new AdjustAdobeExtensionConfig(AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX);
+            AdjustAdobeExtension.setConfiguration(config);
+         } catch (Exception e) {
+            Log.e("example", "Exception occurred during configuration: " + e.getMessage());
+         }
+
+         try {
+         } catch (Exception e) {
+            Log.e("example", "Exception occurred while registering Extension: " + e.getMessage());
+         }
+      }
+   }
+   ```
+
+1. Import the `com.adobe.marketing.mobile.Extension` class.
+1. Within your `try` block, create a new list of extensions you want to register. In this example, we import the `Analytics` and `Identity` extensions in addition to the `AdjustAdobeExtension`.
+
+   ```java
+   import android.app.Application;
+   import android.util.Log;
+
+   import com.adjust.adobeextension.AdjustAdobeExtension;
+   import com.adjust.adobeextension.AdjustAdobeExtensionConfig;
+   import com.adobe.marketing.mobile.Extension;
+   import com.adobe.marketing.mobile.Analytics;
+   import com.adobe.marketing.mobile.Identity;
+   import com.adobe.marketing.mobile.LoggingMode;
+   import com.adobe.marketing.mobile.MobileCore;
+
+   public class MainApp extends Application {
+      @Override
+      public void onCreate() {
+         super.onCreate();
+
+         MobileCore.setApplication(this);
+         MobileCore.setLogLevel(LoggingMode.VERBOSE);
+
+         try {
+            MobileCore.configureWithAppID("your_adobe_app_id");
+
+            AdjustAdobeExtensionConfig config =
+                  new AdjustAdobeExtensionConfig(AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX);
+            AdjustAdobeExtension.setConfiguration(config);
+         } catch (Exception e) {
+            Log.e("example", "Exception occurred during configuration: " + e.getMessage());
+         }
+
+         try {
+            List<Class<? extends Extension>> extensions = Arrays.asList(
+                  Analytics.EXTENSION,
+                  Identity.EXTENSION,
+                  AdjustAdobeExtension.EXTENSION);
+         } catch (Exception e) {
+            Log.e("example", "Exception occurred while registering Extension: " + e.getMessage());
+         }
+      }
+   }
+   ```
+
+1. Import the `com.adobe.marketing.mobile.AdobeCallback` class and call the `MobileCore.registerExtensions` method with the following arguments:
+
+   {% deflist %}
+   `extensions`: `List<Class<? extends Extension>>`
+
+   : Your list of extensions.
+
+   `completionCallback`: `AdobeCallback`
+
+   : A callback function that fires when registration completes.
+   {% /deflist %}
+
+   ```java
+   import android.app.Application;
+   import android.util.Log;
+
+   import com.adjust.adobeextension.AdjustAdobeExtension;
+   import com.adjust.adobeextension.AdjustAdobeExtensionConfig;
+   import com.adobe.marketing.mobile.Extension;
+   import com.adobe.marketing.mobile.Analytics;
+   import com.adobe.marketing.mobile.Identity;
+   import com.adobe.marketing.mobile.LoggingMode;
+   import com.adobe.marketing.mobile.MobileCore;
+
+   public class MainApp extends Application {
+      @Override
+      public void onCreate() {
+         super.onCreate();
+
+         MobileCore.setApplication(this);
+         MobileCore.setLogLevel(LoggingMode.VERBOSE);
+
+         try {
+            MobileCore.configureWithAppID("your_adobe_app_id");
+
+            AdjustAdobeExtensionConfig config =
+                  new AdjustAdobeExtensionConfig(AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX);
+            AdjustAdobeExtension.setConfiguration(config);
+         } catch (Exception e) {
+            Log.e("example", "Exception occurred during configuration: " + e.getMessage());
+         }
+
+         try {
+            List<Class<? extends Extension>> extensions = Arrays.asList(
+                  Analytics.EXTENSION,
+                  Identity.EXTENSION,
+                  AdjustAdobeExtension.EXTENSION);
+            MobileCore.registerExtensions(extensions, new AdobeCallback<Object>() {
+               @Override
+               public void call(Object o) {
+                  Log.d("example", "Adjust Adobe Extension SDK initialized");
+               }
+            });
+         } catch (Exception e) {
+            Log.e("example", "Exception occurred while registering Extension: " + e.getMessage());
+         }
+      }
+   }
+   ```
+
+Once you've completed these steps, build and run your app. In your `LogCat` viewer, set the filter `tag:Adjust` to show only logs relating to the Adjust Extension. After you launch your app, you should see the following message: `Install tracked`.
