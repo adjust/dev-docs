@@ -1,0 +1,141 @@
+---
+title: Flutter SDK 連携ガイド
+description: Flutter SDKを使用して、FlutterアプリでAdjustの機能にアクセスしましょう。
+category-title: Flutter SDK
+slug: ja/sdk/flutter
+sidebar-position: 5
+versions:
+- label: v5
+  value: v5
+  default: true
+- label: v4
+  value: v4
+redirects:
+  v4: /ja/sdk/flutter/v4
+---
+Adjust Unity SDKを実装することで、アトリビューションやイベントなどのさまざまなデータをUnityアプリで計測できます。Adjust SDKをアプリに実装するには、以下の手順に従ってください。また、[GitHub](https://github.com/adjust/flutter_sdk/tree/master/example)でサンプルアプリも確認できます。
+
+{% callout type="important" %}
+Adjust SDKは、iOS 12以降またはAndroid APIレベル21（Lollipop）以降に対応しています。
+{% /callout %}
+
+## 1\. プロジェクトにSDKを追加する {% #add-the-sdk-to-your-project %}
+
+Flutterアプリで[Adjust Flutter SDK](https://github.com/adjust/flutter_sdk/releases)を使用するには、それをプロジェクトに追加する必要があります。
+
+Adjust SDKをFlutterプロジェクトに連携させるには、次のステップに従ってください。
+
+1. 以下を`pubspec.yaml`ファイルに追加します：
+
+   ```yaml
+   dependencies:
+      adjust_sdk: ^{% $versions.flutter.v5 %}
+   ```
+
+2. プロジェクトに移動して、次のコマンドを実行します。Visual Studioは、`pubspec.yaml`ファイルが編集された後に、このコマンドを自動的に実行します。
+
+   ```console
+   $ flutter packages get
+   ```
+
+## 2\. Androidデバイスを設定する {% #set-up-android-devices %}
+
+### Google Play 開発者サービスを追加する {% #add-google-play-services %}
+
+Google Playストアを対象とするアプリは、[Google広告ID](https://support.google.com/googleplay/android-developer/answer/6048248?hl=en)（`gps_adid`）を使用してデバイスを識別する必要があります。これを行うには、以下のdependencyを`build.gradle`ファイルの `dependencies`セクションに追加してください。
+
+```groovy
+implementation 'com.google.android.gms:play-services-ads-identifier:18.1.0'
+```
+
+{% callout type="note" %}
+Adjust SDKは、`play-services-ads-identifier`dependencyのどのバージョンとも関連付けられていません。Google Play 開発者サービスのライブラリの任意のバージョンを使用できます。
+{% /callout %}
+
+### パーミッションを追加する {% #add-permissions %}
+
+Adjust SDKには以下のパーミッションが必要です。まだ存在しない場合は、`AndroidManifest.xml`ファイルに追加してください。
+
+```xml
+<uses-permission android:name="android.permission.INTERNET" id="sl-md0000000"/>
+```
+
+Adjust SDKには、デフォルトで`com.google.android.gms.AD_ID`パーミッションが含まれています。アプリを児童オンラインプライバシー保護法（COPPA）に準拠させる必要がある場合や、Google Play ストアをターゲットにしていない場合は、`remove`ディレクティブを追加することでこれを削除することができます。
+
+```xml
+<uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" id="sl-md0000000"/>
+```
+
+{% callout type="seealso" %}
+このパーミッションに関する詳細は、Googleの[`AdvertisingIdClient.Info documentation`](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid)をご参照ください。{% /callout %}
+
+### インストールリファラーを設定する {% #set-up-install-referrer %}
+
+インストールリファラーは、アプリインストールをソースにアトリビュートするために使用できる一意の識別子です。Adjust SDKは、アトリビューションを実行するためにこの情報を必要とします。
+
+* [Google Play Referrer API](https://developer.android.com/google/play/installreferrer)を使用する
+
+#### Google Play Referrer API
+
+Google Play Referrer APIをサポートするには、`build.gradle`ファイルに以下を追加します。
+
+```groovy
+implementation 'com.android.installreferrer:installreferrer:2.2'
+```
+
+#### Metaとのリファラー連携
+
+Adjust SDKは、Adjust Metaインストールリファラープラグインを使用して[Metaインストールリファラー](https://developers.facebook.com/docs/app-ads/meta-install-referrer)をサポートしています。[連携の詳細については、Flutter Meta インストール リファラープラグインをご覧ください](/ja/sdk/flutter/plugins/meta-referrer-plugin)。
+
+## 3\. iOS frameworksを追加する {% #add-ios-frameworks %}
+
+特定のiOS frameworksをアプリに実装すると、Adjust SDKは追加の情報を取得できます。これらのframeworksによって特定のSDK機能を有効にできますが、SDKが正常に動作するために必須というわけではありません。 フレームワークを追加し、その後、 **Project Settings --> Build Phases --> Link Binary With Libraries** で **Optional** としてマークすることができます。
+
+|              Framework              |                                     説明                                     |                            注意                             |
+|-------------------------------------|----------------------------------------------------------------------------|-----------------------------------------------------------|
+| `AdSupport.framework`               | デバイスのIDFAにアクセスできるようにします。また、iOS 14以前のデバイスでLAT情報にアクセスできるようになります。             | アプリが「子供向け」カテゴリーをターゲットにしている場合、このフレームワークは追加しないでください。        |
+| `AdServices.framework`              | Apple Search Adsのアトリビューションを処理します。                                          |                                                           |
+| `StoreKit.framework`                | SKAdNetworkフレームワークにアクセスできるようにします。                                          | iOS14以降のデバイスでAdjust SDKがSKAdNetworkとのコミュニケーションを行うために必要です。 |
+| `AppTrackingTransparency.framework` | Adjust SDKがユーザーのATT同意ダイアログをラップし、iOS 14以降のデバイスで同意レスポンスにアクセスできるようにするために必要です。 | アプリが「子供向け」カテゴリーをターゲットにしている場合、このフレームワークは追加しないでください。        |
+
+## 4\. SDKシグネチャーを設定する {% #set-up-sdk-signature %}
+
+Adjust SDKとAdjustのサーバー間の通信を保護するためにSDKシグネチャーライブラリを使用する場合は、[AdjustヘルプセンターのSDKシグネチャーガイド](https://help.adjust.com/ja/article/sdk-signature)の手順に従ってください。
+
+## 5\. Adjust SDKを初期化する {% #initialize-the-adjust-sdk %}
+
+Flutterアプリ内で、出来るだけ早くAdjust SDKを初期化するようにしてください。これを行うには、アプリトークンを使ってConfigオブジェクトとアプリを実行したい環境を初期化します。
+
+{% callout type="important" %}
+テストを実施する際は、環境が`AdjustEnvironment.sandbox`に設定されているようにしてください。アプリをアプリストアに提出する前に、これを`AdjustEnvironment.production`に変更してください。
+{% /callout %}
+
+```dart
+AdjustConfig config = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox);
+Adjust.initSdk(config);
+```
+
+## 6\. アプリをビルドする {% #build-your-app %}
+
+設定が完了しました。これでFlutterアプリのビルドと実行が可能になります。ログを有効化して、問題がないか確認してください。ログに、`Install tracked`メッセージがあるか確認してください。
+
+Adjust SDKを使用してユーザーをアトリビューションできるようになりました。
+
+## 7\. 連携をテストする {% #test-your-integration %}
+
+Adjust SDKは、実装をテストとトラブルシューティングのためのツールを提供します。以下の手順に従って、実装をテストしてください。
+
+* 環境を`AdjustEnvironment.sandbox`に設定します。
+* Adjustダッシュボードにサンドボックスフィルターを追加します。
+* ログレベルを`AdjustLogLevel.verbose`に設定します。
+
+{% callout type="tip" %}
+問題が発生した場合は、全ての詳細情報とログを添付し、[support@adjust.com](mailto:support@adjust.com)までメールをお送りください。
+{% /callout %}
+
+### Google Play 開発者サービスの連携をテストする {% #test-google-play-services-integration %}
+
+Adjust SDKがデバイスのGoogle広告IDを受信できるかどうかテストするには、ログレベルを`AdjustLogLevel.verbose`に、環境を`AdjustEnvironment.sandbox`に設定します。アプリを起動してセッションまたはイベントを計測します。SDKが広告IDを読み取った場合、SDKは`gps_adid`（Google Play開発者サービス広告ID\)パラメーターをログに記録します。
+
+Google広告IDを取得する際に問題が発生した場合は、SDK [Githubリポジトリ](https://github.com/adjust/flutter_sdk)で質問を投稿するか、[support@adjust.com](mailto:support@adjust.com)までお問い合わせください。
+
