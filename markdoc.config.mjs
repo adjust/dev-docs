@@ -117,6 +117,10 @@ export default defineMarkdocConfig({
                required: false,
                default: "medium"
             },
+            link: {
+               type: String,
+               required: false
+            }
          }
       },
       tab: {

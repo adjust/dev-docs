@@ -1,0 +1,122 @@
+---
+title: Cordova SDK 集成指南
+description: 使用 Cordova SDK 在 Cordova 应用中访问 Adjust 功能
+category-title: Cordova SDK
+slug: zh/sdk/cordova
+sidebar-position: 6
+versions:
+- label: v5
+  value: v5
+  default: true
+- label: v4
+  value: v4
+redirects:
+  v4: /zh/sdk/cordova/v4
+---
+通过 Adjust Cordova SDK，您可以在 Cordova 应用中监测归因、事件及更多数据。请按照本指南中说明的步骤操作，在应用内设置 Adjust SDK。您还可以在 [GitHub](https://github.com/adjust/cordova_sdk/tree/master/example-cordova) 上查看示例应用。
+
+## 1\. 添加 SDK 至您的项目{% #add-the-sdk-to-your-project %}
+
+Adjust Cordova SDK 在 npm 中作为插件提供。要将其添加到您的项目中，
+
+### Cordova 插件
+
+如需将 Adjust Cordova SDK 添加至您的 Cordova 插件，请运行以下命令：
+
+```console
+> cordova plugin add com.adjust.sdk
+Fetching plugin "com.adjust.sdk" via npm
+Installing "com.adjust.sdk" for android
+Installing "com.adjust.sdk" for ios
+```
+
+### Ionic
+
+如果您使用 Ionic 构建应用，请运行以下命令从[`awesome-cordova-plugins`库](https://github.com/danielsogl/awesome-cordova-plugins)中添加 SDK 和 TypeScript typing：
+
+```console
+> npm install @awesome-cordova-plugins/adjust --save
+> ionic cordova plugin add com.adjust.sdk
+```
+
+## 2\. 设置安卓设备{% #set-up-android-devices %}
+
+### 添加权限{% #add-permissions %}
+
+Adjust SDK 默认包含 `com.google.android.gms.AD_ID`和`android.permission.INTERNET`权限。如果您的应用需要符合 COPPA 的要求或不针对 Google Play 商店，则可以通过添加`remove`指令将`AD_ID`删除。
+
+```xml
+<config-file target="AndroidManifest.xml" parent="/manifest" id="sl-md0000000">
+  <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" id="sl-md0000000" />
+</config-file>
+```
+
+{% callout type="seealso" %}
+请查看 Google 的[`AdvertisingIdClient.Info documentation`](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid)文档，了解更多与该许可相关的信息。
+{% /callout %}
+
+### 设置 Install Referrer{% #set-up-install-referrer %}
+
+Adjust SDK 默认支持[Google Play Referrer API](https://developer.android.com/google/play/installreferrer)。Meta Install Referrer 可作为安卓插件使用。[要了解集成细节，请参考 Cordova Meta Install Referrer 插件。](/zh/sdk/cordova/plugins/meta-referrer-plugin)
+
+## 3\. 添加 iOS 框架{% #add-ios-frameworks %}
+
+Adjust SDK 会自动在 iOS 设备上关联下列框架。
+
+|                 框架                  |                               描述                                |                             注意事项                             |
+|-------------------------------------|-----------------------------------------------------------------|--------------------------------------------------------------|
+| `AdSupport.framework`               | 允许读取设备 IDFA。对于操作系统为 iOS 14 及更早版本的设备，添加该框架也会允许读取 LAT 信息。         | 如果您的应用属于 "儿童" 类别，那么请勿添加该框架                                   |
+| `AdServices.framework`              | 处理 Apple Search Ads 归因                                          |                                                              |
+| `StoreKit.framework`                | 允许访问 SKAdNetwork 框架                                             | 若要允许 Adjust 处理 iOS 14 或更新操作版本设备上与 SKAdNetwork 的通讯，那么必须添加该框架。 |
+| `AppTrackingTransparency.framework` | 若要允许 Adjust SDK 包装用户跟踪许可对话，并读取 iOS 14 或更新操作版本设备的许可响应，那么必须添加该框架。 | 如果您的应用属于 "儿童" 类别，那么请勿添加该框架                                   |
+
+## 4\. 设置 SDK 签名{% #set-up-sdk-signature %}
+
+如果您想使用 SDK 签名库来保护 Adjust SDK 与 Adjust 服务器之间的通信，请按照[Adjust 帮助中心 SDK 签名指南中的说明](https://help.adjust.com/zh/article/sdk-signature)进行操作。
+
+## 5\. 初始化 Adjust SDK{% #initialize-the-adjust-sdk %}
+
+
+
+{% callout type="important" %}
+在进行测试时，应当确保将环境设置为 `AdjustConfig.EnvironmentSandbox`。请在向应用商店提交应用前将此设为 `AdjustConfig.EnvironmentProduction`。
+{% /callout %}
+
+请确保在 Cordova 应用中尽快初始化 Adjust SDK。为此请进行下列操作：
+
+1. 请使用以下信息实例化一个`AdjustConfig`对象： 
+   * `appToken`: 您的 [Adjust 应用识别码](https://help.adjust.com/zh/article/app-settings#view-your-app-token)。
+   * `environment`: 应用运行的环境。要在本地测试应用，请设置为`AdjustConfig.EnvironmentSandbox`。
+
+2. 将您的`AdjustConfig`实例传递至`Adjust.initSdk`方法来初始化 SDK。
+
+```js
+var adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox,
+);
+Adjust.initSdk(adjustConfig);
+```
+
+## 6\. 构建您的应用{% #build-your-app %}
+
+完成了！您现在可以创建并运行 Cordova 应用了。请启用日志，检查可能存在的问题。请查看日志中的 `Install tracked` 信息。
+
+您现在已经准备就绪，可以使用 Adjust SDK 进行用户归因了。
+
+## 7\. 测试集成{% #test-your-integration %}
+
+采用 Adjust SDK 提供的工具，您可以测试并排除集成出现的问题。要测试集成，请按照下列步骤操作：
+
+* 将您的环境设为 `AdjustConfig.EnvironmentSandbox`
+* 在 Adjust 控制面板结果中添加 sandbox 过滤器。
+* 将日志级别设为 `AdjustConfig.LogLevelVerbose`。
+
+如果遇到任何问题，请发送邮件至 [support@adjust.com](mailto:support@adjust.com)，并在邮件中说明所有详情和日志。
+
+### 测试 Google Play 服务集成{% #test-google-play-services-integration %}
+
+要测试 Adjust SDK 能否接收设备的 Google 广告 ID，请将日志级别设为 **verbose** ，环境设为 **Sandbox** 。启动应用，监测一次会话或事件。如果 SDK 记录了 `gps_adid` \(Google Play 服务广告主 ID\) 参数，就说明已经成功读取广告 ID。
+
+如果您在获取 Google 广告 ID 时遇到任何问题，请在我们的 SDK [GitHub 库](https://github.com/adjust/cordova_sdk)中提问，或联系 [support@adjust.com](mailto:support@adjust.com)。
+
