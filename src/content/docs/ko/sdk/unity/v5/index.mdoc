@@ -1,0 +1,234 @@
+---
+title: Unity SDK 연동 가이드
+description: Unity SDK를 사용하여 Unity 앱의 Adjust 기능에 액세스합니다.
+category-title: Unity SDK
+slug: ko/sdk/unity
+sidebar-position: 3
+versions:
+- label: v5
+  value: v5
+  default: true
+- label: v4
+  value: v4
+redirects:
+  v4: /ko/sdk/unity/v4
+---
+
+Adjust Unity SDK를 사용하면 Unity 앱에서 어트리뷰션, 이벤트 등을 기록할 수 있습니다. 본 가이드의 단계를 수행하여 Adjust SDK와 연동되도록 앱을 설정하시기 바랍니다.
+
+{% callout type="note" %}
+The Adjust SDK supports iOS 12 or later and Android API level 21 (Lollipop) or later.
+{% /callout %}
+
+## 1. Adjust SDK 설치 {% #get-the-adjust-sdk %}
+
+To install the Adjust SDK, choose one of the following methods.
+
+### Unity 패키지 설치 {% #install-unity-package %}
+
+Unity 앱에서 Adjust SDK를 시작하려면 우선 프로젝트에 Adjust SDK를 추가해야 합니다. [GitHub releases 페이지](https://github.com/adjust/adjust_unity_sdk/releases/latest)에서 최신 버전을 다운로드합니다.
+
+To import the Adjust SDK into your Unity project:
+
+1. Unity Editor를 실행합니다.
+1. **Assets --> Import Package --> Custom Package** 를 선택합니다.
+1. 다운로드된 SDK 패키지를 선택합니다.
+
+### Unity 패키지 매니저 사용 {% #use-the-unity-package-manager %}
+
+To install the Adjust SDK with the Unity Package Manager, follow these steps:
+
+1. Unity 에디터에서 **패키지 매니저** 창을 선택합니다.
+1. **git URL에서 패키지 추가** 를 선택합니다.
+1. 다음 URL을 입력합니다. `https://github.com/adjust/unity_sdk.git?path=Assets/Adjust`
+
+## 2. iOS와 Android SDK 설치 {% #install-ios-and-android-sdks %}
+
+SDK v5에서는 더 이상 iOS 및 Android SDK를 바이너리 디펜던시로 사용하지 않습니다. 기본 iOS 및 Android SDK를 설치하려면 [EDM4U(External Dependency Manager for Unity)](https://github.com/googlesamples/unity-jar-resolver)를 사용하여 CocoaPods 및 Maven의 패키지를 설치해야 합니다.
+
+To ensure that the Privacy Manifest and frameworks are loaded correctly for iOS, you need to disable static linking. To do this:
+
+1. Select **Assets -> External Dependency Manager -> iOS Resolver -> Settings** .
+1. Find the **Link frameworks statically** option and uncheck it.
+
+![A screenshot of the resolver settings menu](@images/unity/link-frameworks-statically.png)
+
+## 3. SDK 연동 {% #integrate-the-sdk %}
+
+Adjust SDK는 Unity [프리팹(prefab)](https://docs.unity3d.com/Manual/Prefabs.html)을 포함하며, 프리팹에는 템플릿 게임 객체와 Adjust 스크립트가 있습니다. 이 스크립트를 사용해 SDK를 구성할 수 있습니다. Unity Editor에서 프리팹을 실행하려면 다음을 수행하시기 바랍니다.
+
+1. `Assets/Adjust/Adjust.prefab` 로부터의 프리팹을 첫 화면에 추가합니다.
+1. 프리팹 Inspector Menu를 실행합니다.
+1. 프리팹 메뉴는 Adjust SDK의 동작을 제어하는 편집 가능한 필드를 포함하고 있습니다.
+
+![Unity Editor 내 Adjust SDK 프리팹 구성 스크립트의 스크린샷.](@images/unity/1-prefab.png)
+
+Adjust SDK를 설정하려면 다음의 정보를 입력하시기 바랍니다.
+
+1. **앱 토큰** . 앱 토큰 확인 방법은 앱 설정 페이지를 참조하시기 바랍니다.
+
+1. **앱 환경** .
+
+   * 앱을 테스트 중이며 테스트 데이터를 전송하고자 하는 경우 **샌드박스** 모드를 선택하시기 바랍니다. 테스트 데이터를 보려면 대시보드에서 샌드박스 모드를 활성화해야 합니다.
+   * 테스트를 완료하고 앱 출시 준비가 된 경우 **프로덕션** 모드를 선택하시기 바랍니다.
+
+1. **로그 수준** . 어느 로그를 받는지에 관한 것으로, 자세한 정보는 [로그 수준 설정 페이지](/ko/sdk/unity/configuration#set-your-logging-level)를 참조하시기 바랍니다.
+
+Adjust SDK는 기본값 설정에 따라 앱의 Awake 이벤트가 발생한 경우 시작됩니다. 이 행동을 오버라이드하려면 **START SDK MANUALLY** 옵션을 확인하시기 바랍니다. 이를 통해 config 인스턴스를 인수로 `Adjust.InitSdk`를 호출하여 Adjust SDK를 초기화할 수 있습니다.
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+Adjust.InitSdk(adjustConfig);
+```
+
+## 4. Android 기기 설정 {% #set-up-android-devices %}
+
+### Google Play Services 추가 {% #add-google-play-services %}
+
+Google 플레이 스토어를 타겟으로 하는 앱은 기기 식별을 위해 gps_adid(Google 광고 ID)를 사용해야 합니다. `gps_adid`에 액세스하기 위해 프로젝트에 `play-services-ads-identifier` AAR을 추가합니다.
+
+{% tabs %}
+{% tab title="EDM4U" sync="edm4u" %}
+If you are using the [External Dependency Manager plugin](https://developers.google.com/unity/archive#external_dependency_manager_for_unity), add the following to your `Dependencies.xml` file:
+
+```xml
+<androidpackages id="sl-md0000000">
+   <androidpackage spec="com.google.android.gms:play-services-ads-identifier:18.0.1" id="sl-md0000000" />
+</androidPackages>
+```
+{% /tab %}
+
+{% tab title="Manual installation" sync="manual" %}
+To install the ARR (Android Archive) manually, [download it from Maven](https://maven.google.com/web/index.html#com.google.android.gms:play-services-ads-identifier:18.0.1 "Maven 내 AAR 결과물(artifact) 링크.") and add it to the `Assets/Plugins/Android` directory.
+{% /tab %}
+{% /tabs %}
+
+### App Set ID 수집 {% #collect-app-set-identifier %}
+
+[앱 세트 ID](https://developer.android.com/design-for-safety/privacy-sandbox/reference/adservices/appsetid/AppSetId) 는 사용자가 기기에 설치한 앱 정보를 측정할 수 있도록 해주는 고유한 ID입니다. 동일한 개발자의 모든 앱은 App Set ID를 공유하기 때문에, 모든 앱 사용자로부터 유의미한 인사이트를 수집할 수 있습니다.
+
+{% tabs %}
+{% tab title="EDM4U" sync="edm4u" %}
+To record a device's App Set ID, you need to add the following dependency to your `Dependencies.xml` file:
+
+```xml
+<androidpackages id="sl-md0000000">
+   <androidpackage spec="com.google.android.gms:play-services-appset:16.0.2" id="sl-md0000000" />
+</androidPackages>
+```
+{% /tab %}
+
+{% tab title="Manual installation" sync="manual" %}
+To install the ARR (Android Archive) manually, [download it from Maven](https://maven.google.com/web/index.html#com.google.android.gms:play-services-appset:16.0.2 "Maven 내 AAR 결과물(artifact) 링크.") and add it to the `Assets/Plugins/Android` directory.
+{% /tab %}
+{% /tabs %}
+
+### 설치 리퍼러 설정
+
+설치 리퍼러는 앱 설치를 소스에 어트리뷰션하는 데 사용할 수 있는 고유한 ID입니다. Adjust SDK는 어트리뷰션을 위해 이 정보가 필요합니다. [Google Play 리퍼러 API](https://developer.android.com/google/play/installreferrer) 를 사용하여 이러한 정보를 수집할 수 있습니다.
+
+Google Play Referrer API를 지원하는 방법에는 두 가지가 있습니다.
+
+{% tabs %}
+{% tab title="EDM4U" sync="edm4u" %}
+Add the install referrer library as a dependency in a [custom `build.gradle` file](https://docs.unity3d.com/2023.1/Documentation/Manual/android-gradle-overview.html)
+
+```groovy
+dependencies {
+   implementation 'com.android.installreferrer:installreferrer:2.2'
+}
+```
+{% /tab %}
+
+{% tab title="Manual installation" sync="manual" %}
+Download the install referrer library from [Maven](https://maven.google.com/web/index.html?q=install#com.android.installreferrer:installreferrer) and put the ARR (Android Archive) file in your `Plugins/Android` folder.
+{% /tab %}
+{% /tabs %}
+
+#### Meta 리퍼러 연동
+
+The Adjust SDK supports the [Meta Install Referrer](https://developers.facebook.com/docs/app-ads/meta-install-referrer) using the Adjust Meta Install Referrer plugin. [See the Unity Meta Install Referrer plugin for integration details](/ko/sdk/unity/plugins/meta-referrer-plugin).
+
+## 5. SDK 서명 설정 {% #set-up-sdk-signature %}
+
+Adjust SDK와 Adjust 서버 간 커뮤니케이션의 보안을 위해 SDK 서명 라이브러리를 사용하려면 [Adjust 헬프 센터에 있는 SDK 서명 가이드](https://help.adjust.com/ko/article/sdk-signature)의 지침을 따르시기 바랍니다.
+
+## 6. 앱 빌드 {% #build-your-app %}
+
+Adjust Unity 패키지를 사용하면 앱 빌드 절차를 완료하기 위해 빌드 완료 후 커스텀 작업을 수행하여, Adjust SDK가 앱 내에서 작동하도록 할 수 있습니다. 이 과정은 `OnPostprocessBuild` 메서드에 의해 `AdjustEditor.cs` 내에서 수행됩니다.
+
+빌드 후(post-build) 옵션을 구성하여 앱 빌드를 맞춤화할 수 있습니다.
+
+![Unity Editor 내 Adjust SDK의 빌드 완료 후 구성 스크립의 스크린샷.](@images/unity/2-postbuild.png)
+
+{% tabs %}
+{% tab title="iOS" icon="PlatformIos" %}
+{% callout type="important" %}
+To run the iOS post-build process, make sure that you have **iOS build support** installed in the Unity Editor.
+{% /callout %}
+
+iOS 빌드 후 절차는 생성한 Xcode 프로젝트를 다음과 같이 변경합니다.
+
+* Objective-C exceptions 활성화.
+
+#### Frameworks {% #frameworks %}
+
+iOS 기능에 액세스하기 위해 다음의 프레임워크를 활성화할 수 있습니다.
+
+* `AdServices.framework`: Apple Search Ad 측정에 필요
+* `AdSupport.framework`: 기기의 IDFA를 읽기 위해 필요
+* `AppTrackingTransparency.framework`: 사용자에게 측정 동의 여부를 묻기 위해 필요
+* `StoreKit.framework`: SKAdNetwork 프레임워크와 통신하기 위해 필요
+
+#### App Tracking Transparency 동의 다이얼로그 {% #app-tracking-transparency-consent-dialog %}
+
+ATT(App Tracking Transparency) 래퍼를 사용하는 경우, **User Tracking Description** 메시지를 입력하시기 바랍니다. 이는 사용자 화면에 ATT 동의 다이얼로그를 표시할 때 나타납니다.
+
+#### 딥링크 {% #deep-linking %}
+
+딥링크를 활성화하려면, 다음의 정보를 추가하시기 바랍니다.
+
+* **iOS 유니버설 링크 도메인** : 유니버설 링크에 사용되는 관련 도메인.
+* **iOS URL 식별자** : 앱의 번들 ID.
+* \**iOS URL 스킴*\* : 앱과 관련된 URL 스킴.
+{% /tab %}
+
+{% tab title="Android" icon="PlatformAndroid" %}
+The Android post-build process checks for an `AndroidManifest.xml` file in `Assets/Plugins/Android/`. If this file isn't present, it creates a copy from [`AdjustAndroidManifest.xml`](https://github.com/adjust/unity_sdk/blob/master/Assets/Adjust/Native/Android/AdjustAndroidManifest.xml "GitHub 내 AdjustAndroidManifest 파일 링크").
+
+#### Permissions {% #permissions %}
+
+Android 기능에 액세스하려면 다음의 권한을 활성화하시기 바랍니다.
+
+* `android.permission.INTERNET`: Required to connect to the internet.
+* `android.permission.ACCESS_NETWORK_STATE`: Required to read the type of network the device is connected to.
+* `com.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE` **지원 중단** : Google Play Store 인텐트를 통해 설치 리퍼러 정보를 가져오기 위해 필요.
+* `com.google.android.gms.permission.AD_ID`: Android 12(API 레벨 31) 이상에서 기기의 광고 ID를 읽기 위해 필요. 자세한 정보는 [Google의 `AdvertisingIdClient.info` 문서](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid)를 참조하시기 바랍니다.
+
+#### 딥링크 {% #deep-linking-1 %}
+
+딥링크를 활성화하려면, 다음의 정보를 추가하시기 바랍니다.
+
+**Android URI Schemes** : 딥링크의 목적지.
+{% /tab %}
+{% /tabs %}
+
+The output of the process is shown in the Unity IDE console window.
+
+## 7. 연동 테스트 {% #test-your-integration %}
+
+{% callout type="tip" %}
+If you encounter any issues, email [support@adjust.com](mailto:support@adjust.com) with all details and logs.
+{% /callout %}
+
+Adjust SDK는 연동 테스트와 문제 해결 툴을 제공합니다. 다음과 같이 설정을 테스트하시기 바랍니다.
+
+* 환경을 `AdjustEnvironment.Sandbox`로 설정합니다.
+* Adjust 대시보드 결과에 샌드박스 필터를 추가합니다.
+* [로그 수준](/ko/sdk/unity/configuration#set-your-logging-level)을 `AdjustLogLevel.Verbose`로 설정합니다.
+
+### Google Play Services 연동 테스트 {% #test-google-play-services-integration %}
+
+Adjust SDK가 기기의 Google 광고 ID를 수신할 수 있는지 테스트하려면 [로그 수준](/ko/sdk/unity/configuration#set-your-logging-level)을 `AdjustLogLevel.Verbose`로 설정하고, 환경을 `AdjustEnvironment.Sandbox`로 설정합니다. 앱을 시작하고 `session` 또는 이벤트를 측정합니다. SDK가 광고 ID를 읽으면 gps_adid(Google 플레이 서비스 광고주 ID) 파라미터를 로깅합니다.
+
+Google광고 ID를 읽을 수 없다면 Adjust의 [Github repository](https://github.com/adjust/unity_sdk)에 이슈를 제기하거나 [support@adjust.com](mailto:support@adjust.com)으로 메일 주시기 바랍니다.
