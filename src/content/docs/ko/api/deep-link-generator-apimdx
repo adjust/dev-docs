@@ -1,0 +1,282 @@
+---
+title: "딥링크 생성기 API"
+description: "딥링크 생성기 API를 사용하여 앱에 대한 긴/단축 딥링크를 개별 또는 일괄로 생성할 수 있습니다."
+category-title: "딥링크 생성기 API"
+slug: "en/api/deep-link-generator-api"
+sidebar-position: 8
+---
+딥링크 생성기 API를 사용하여 앱에 대한 긴/단축 딥링크를 개별 또는 일괄로 생성할 수 있습니다. 이러한 맞춤형 딥링크는 다양한 플랫폼에서 사용자 경험을 향상시킵니다.
+
+시작에 앞서 \{\#before\-you\-begin\}
+------------------------------------
+
+시작하기 전에 알아야 할 사항은 다음과 같습니다.
+
+### 가용성 \{\#availability\}
+
+<callout type="important"> 
+
+딥링크 생성기 API는 초당 200개의 요청으로 제한됩니다. 이 제한을 초과하면 429 오류가 발생합니다.
+</Callout> 
+
+* 딥링크 생성기 API에 액세스하려면 TrueLink Base, Core 또는 Enterprise 패키지를 사용해야 합니다.
+* 딥링크 생성기 API를 사용하여 생성된 링크는 [Campaign Lab](https://help.adjust.com/en/article/campaign-setup) 에 표시되지 않습니다.
+* 딥링크 생성기 API를 사용하여 생성된 단축 링크의 TTL\(time\-to\-live\)은 120일입니다.
+
+### 요구 사항 \{\#requirements\}
+
+* 관리자, 편집자 또는 사용자 지정 편집자 [권한](https://help.adjust.com/en/article/permission-levels).
+* iOS와 Android 앱에 대해 [동일한 브랜드 도메인을 설정](https://help.adjust.com/en/article/set-up-branded-domain)합니다. 
+  * iOS 앱의 경우 브랜드 도메인을 [Associated Domain](https://help.adjust.com/en/article/set-up-branded-domain#ios-only-update)으로 추가하시기 바랍니다. 이렇게 하면 도메인이 유니버셜 링크로 구성되도록 설정됩니다.
+  * Android 앱의 경우 브랜드 도메인을 [Android 앱 링크](https://help.adjust.com/en/article/set-up-android-app-links)로 정의하시기 바랍니다.
+
+* 앱에 대한 커스텀 링크. 
+  * 단일 플랫폼 앱, 멀티 플랫폼 앱 \- [Campaign Lab에서 커스텀 링크를 생성](https://help.adjust.com/en/article/custom-link-setup) 하여 단일 링크 토큰을 받을 수 있습니다.
+  * 여러 개의 단일 플랫폼 앱 \- [Campaign Lab](https://help.adjust.com/en/article/custom-link-setup#combined-custom-links) 에서 여러 개의 단일 플랫폼 앱으로부터 결합된 커스텀 링크를 생성하여, 여러 개의 링크 토큰이 '\_'로 구분된 단일 결합된 커스텀 링크를 생성할 수 있습니다. 자세한 정보는 [복합 커스텀 링크에 대한 플랫폼별 링크 토큰](https://help.adjust.com/en/article/manage-custom-link-setup#link-tokens-combined-custom-link)을 참조하시기 바랍니다.
+
+* 단축 링크 해석을 위해 Adjust SDK를 업데이트 하시기 바랍니다. 
+  * [iOS](/en/sdk/ios/features/short-links) \| [Android](/en/sdk/android/features/short-links) \| [Unity](/en/sdk/unity/features/short-links) \| [React Native](/en/sdk/react-native/features/short-links) \| [Flutter](/en/sdk/flutter/features/short-links) \| [Cordova](/en/sdk/cordova/features/short-links) \| [Cocos2d\-x](/en/sdk/cocos2dx/features/short-links)
+
+* [데이터 레지던시를 설정](https://help.adjust.com/en/article/data-residency-setup)한 경우, iOS와 Android 앱에 동일한 지역을 사용해야 합니다.
+
+인증 \{\#authentication\}
+--------------------------
+
+캠페인 API는 인증을 위해 [베어러 토큰](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication) 을 사용합니다. 반드시 캠페인 API에 대한 각 요청과 함께 `Authorization` 헤더에 Adjust API 토큰을 포함해야 합니다.
+
+Single Sign\-On \(SSO\)를 활성화한 경우, Adjust 담당자에게 연락하거나 [support@adjust.com](mailto:support@adjust.com) 으로 이메일을 보내 API를 찾는 데 도움을 받으시기 바랍니다.
+
+비 SSO 계정의 경우, API는 사용자의 **프로필** 에서 확인하실 수 있습니다. Adjust API 토큰을 확인하려면 다음 단계를 따르시기 바랍니다. 
+
+1. 계정\(사용자\) 아이콘을 선택합니다.
+2. **계정 설정** 을 선택합니다.
+3. **내 프로필** 탭을 선택합니다.
+4. **API 토큰** 은 **사용자 세부 사항** 과 함께 표시됩니다. 시스템 클립보드에 토큰을 복사하기 위해 복사를 선택합니다.
+
+### Adjust API 토큰 재설정 \{\#reset\-your\-adjust\-api\-token\}
+
+Adjust API 토큰은 언제든지 재설정할 수 있습니다. 토큰을 재설정하면 이전의 토큰은 무효화됩니다. Adjust API 토큰을 재설정한 경우 기존 토큰이 사용되는 모든 곳에서 교체해야 합니다. 무효화된 토큰에 대한 요청은 Adjust에 의해 거부됩니다.
+
+Adjust API 토큰 재설정
+
+1. 계정\(사용자\) 아이콘을 선택합니다.
+2. **계정 설정** 을 선택합니다.
+3. **내 프로필** 탭을 선택합니다.
+4. **API 토큰** 은 **사용자 세부 사항** 과 함께 표시됩니다. 
+5. **API 토큰 재설정** 을 선택합니다.
+6. 모달에 계정 비밀번호를 입력한 후 API 토큰 재설정을 위해 **재설정** 을 선택합니다. 화면 우측 상단에 확인 메시지가 나타납니다.
+7. 시스템 클립보드에 **API 토큰** 을 복사하기 위해 복사를 선택합니다.
+
+파라미터 \{\#parameters\}
+------------------------
+
+|           파라미터           |       데이터 유형       |  In  |                                                                            설명                                                                             |
+|--------------------------|--------------------|------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `adjust_auth_token`      | `String`           | 헤더   | Adjust API 토큰                                                                                                                                             |
+| `link_token`             | `String`           | Body | 커스텀 링크의 링크 토큰. 결합된 링크에서 딥링크를 생성하는 경우, Campaign Lab에서 결합된 커스텀 링크로부터의 올바른 링크 토큰을 사용해야 합니다.                                                                  |
+| `shorten_url`            | `Boolean`          | Body | 링크 단축 여부. 기본값은 단축하지 않은 링크로 설정되어 있습니다. 기본값 \- false                                                                                                       |
+| `campaign`               | `String` 또는 `null` | Body | 캠페인의 이름                                                                                                                                                   |
+| `adgroup`                | `String` 또는 `null` | Body | 광고그룹 이름                                                                                                                                                   |
+| `creative`               | `String` 또는 `null` | Body | 크리에이티브의 이름                                                                                                                                                |
+| `deep_link_path`         | `String`           | Body | 사용자가 이동되는 인앱 목적지를 지정합니다. 단일 플랫폼 앱에 사용하시기 바랍니다.                                                                                                            |
+| `ios_deep_link_path`     | `String`           | Body | 사용자가 이동되는 iOS 인앱 목적지를 지정합니다. 멀티 플랫폼 iOS 앱 또는 복합 링크에 사용하시기 바랍니다.                                                                                           |
+| `android_deep_link_path` | `String`           | Body | 사용자가 이동되는 Android 인앱 목적지를 지정합니다. 멀티 플랫폼 Android 앱 또는 복합 링크에 사용하시기 바랍니다.                                                                                   |
+| `fallback`               | `String`           | Body | 오프 플랫폼 사용자를 보내는 랜딩 페이지. 폴백 URL을 지정할 때 macOS 사용자에 대해 \`redirect\_macos\`를 지정하는 것을 권장합니다.                                                                  |
+| `redirect_macos`         | `String`           | Body | macOS에 대한 Adjust의 디폴트 리다이렉트를 오버라이드하기 위한 리다이렉트 URL. `fallback`을 지정할 때 macOS 사용자에 대해 이 파라미터를 설정하는 것을 권장합니다.                                                 |
+| `label`                  | `String`           | Body | 링크에 커스텀 데이터를 추가합니다. 이 파라미터를 사용하여 사용자가 앱에서 단축 링크를 공유할 때 자동으로 입력되는 고유한 [사용자 리퍼러 ID](https://help.adjust.com/en/article/set-up-user-referrals) 를 추가할 수 있습니다. |
+| `og_title`               | `String`           | Body | 링크의 소셜 공유 미리보기 제목.                                                                                                                                        |
+| `og_description`         | `String`           | Body | 링크의 소셜 공유 미리보기에 대한 설명.                                                                                                                                    |
+| `og_image`               | `String`           | Body | 링크의 소셜 공유 미리보기를 위한 최소 200 x 200 픽셀 크기의 JPG 또는 PNG 이미지에 대한 URL.                                                                                            |
+
+단일 딥링크 \{\#generate\-a\-single\-deep\-link\} 생성
+------------------------------------------------------
+
+`POST` 요청을 전송하여 단일 또는 멀티 플랫폼 앱에 대해 긴/단축 딥링크를 생성합니다.
+
+### 엔드포인트 \{\#endpoint\-single\}
+
+```http
+https://automate.adjust.com/engage/deep-links
+```
+
+### 예 \{\#examples\-single\}
+
+**단일 플랫폼 앱** 
+<codeblock title="요청 - cURL"> 
+
+```bash
+curl --location 'https://automate.adjust.com/engage/deep-links' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer adjustApiToken' \
+--data '{
+     "link_token": "1c52mluz",
+     "redirect": "https://example.com/redirect",
+     "fallback": "https://example.com/fallback",
+     "deep_link_path": "/custom-path",
+     "shorten_url": true
+   }'
+```
+
+</CodeBlock> <codeblock title="응답"> 
+
+```http
+{"url": "https://insights.go.link/fryYl"}
+```
+
+</CodeBlock> 
+
+**멀티 플랫폼 앱** 
+<codeblock title="요청 - cURL"> 
+
+```bash
+curl --location 'https://automate.adjust.com/engage/deep-links' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer adjustApiToken' \
+--data '{
+     "link_token": "2d41nkvy",
+     "redirect": "https://example.com/redirect",
+     "fallback": "https://example.com/fallback",
+     "android_deep_link_path": "/custom-path",
+     "redirect_macos": "https://www.example.com/redirectmacos",
+     "shorten_url": true
+   }'
+```
+
+</CodeBlock> <codeblock title="응답"> 
+
+```url
+{"url": "https://insights.go.link/jlbKj"}
+```
+
+</CodeBlock> 
+
+**복합 링크** 
+
+딥링크 생성기 API를 사용하여 딥링크를 생성하기 전에 [Campaign Lab에서 복합 커스텀 링크](https://help.adjust.com/en/article/custom-link-setup) 를 생성해야 합니다.
+<codeblock title="요청 - cURL"> 
+
+```bash
+curl --location 'https://automate.adjust.com/engage/deep-links' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer adjustApiToken' \
+--data '{
+     "link_token": "1c2n7ybx_1cjet4nl",
+     "redirect": "https://example.com/redirect",
+     "fallback": "https://example.com/fallback",
+     "ios_deep_link_path": "/custom-path-ios",
+     "android_deep_link_path": "/custom-path-android",
+     "redirect_macos": "https://www.example.com/redirectmacos",
+     "shorten_url": true
+   }'
+```
+
+</CodeBlock> <codeblock title="응답"> 
+
+```http
+{"url": "https://insights.go.link/6JtQx"}
+```
+
+</CodeBlock> 
+
+딥링크 일괄 생성 \{\#generate\-deep\-links\-in\-bulk\}
+------------------------------------------------------
+
+`POST` 요청을 전송하여 단일 또는 멀티 플랫폼 앱에 대해 긴/단축 딥링크를 일괄 생성합니다.
+
+### 엔드포인트 \{\#endpoint\-bulk\}
+
+```http
+https://automate.adjust.com/engage/deep-links/bulk
+```
+
+### 예 \{\#example\-bulk\}
+
+<codeblock title="요청 - cURL"> 
+
+```bash
+curl --location 'https://automate.adjust.com/engage/deep-links/bulk' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer adjustApiToken' \
+--data '{
+"data": [
+    {
+    "link_token": "1doptv0c",
+    "redirect": "https://example.com/redirect",
+    "fallback": "https://example.com/fallback",
+    "campaign": "custom-campaign",
+    "shorten_url": true
+    },
+    {
+      "link_token": "1df3xslh_1dsykkaa",
+      "redirect": "https://example.com/redirect",
+      "fallback": "https://example.com/fallback",
+      "ios_deep_link_path": "/custom-path-ios",
+      "android_deep_link_path": "/custom-path-android",
+      "shorten_url": true
+    },
+    {
+      "link_token": "1dzwtdjt",
+      "redirect": "https://example.com/redirect",
+      "fallback": "https://example.com/fallback",
+      "android_deep_link_path": "/custom-path",
+      "shorten_url": true
+    }
+  ]
+}'
+```
+
+</CodeBlock> <codeblock title="응답"> 
+
+```json
+{
+   "data": [
+      {
+         "url": "https://kapp.go.link/4IlkC"
+      },
+      {
+         "url": "https://kapp.go.link/6KnoE"
+      },
+      {
+         "url": "https://insights.go.link/5JmnD"
+      }
+   ]
+}
+```
+
+</CodeBlock> 
+
+단축 링크 토큰 업데이트 \{\#update\-short\-link\-token\}
+----------------------------------------------------
+
+`PUT` 요청을 전송하여 딥링크의 기존 단축 링크 토큰을 긴 링크로 업데이트합니다.
+
+### 엔드포인트 \{\#endpoint\-update\}
+
+```http
+https://automate.adjust.com/engage/deep-links/{short_token}
+```
+
+### 예 \{\#example\-update\}
+
+<codeblock title="요청 - cURL"> 
+
+```bash
+curl --location --request PUT 'https://automate.adjust.com/engage/deep-links/4IlkC' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer adjustApiToken' \
+--data '{
+  "link_token": "1doptv0c",
+  "redirect": "https://example.com/new-redirect",
+  "fallback": "https://example.com/new-fallback",
+  "deep_link_path": "/new-custom-path"
+}'
+```
+
+</CodeBlock> <codeblock title="응답"> 
+
+```http
+204 No Content
+```
+
+</CodeBlock>
+
