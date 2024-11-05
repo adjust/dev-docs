@@ -1,0 +1,248 @@
+---
+title: "Cocos2d-x SDK 연동 가이드"
+description: "웹 SDK를 사용해 Cocos2d-x 앱의 Adjust 기능에 액세스합니다."
+category-title: "Cocos2d-x SDK"
+slug: "en/sdk/cocos2dx"
+sidebar-position: 7
+versions: 
+    - 
+        label: "v5"
+        value: "v5"
+        default: true
+    - 
+        label: "v4"
+        value: "v4"
+redirects: 
+    v4: "/ko/sdk/cocos2dx/v4"
+---
+Adjust Android SDK를 사용하면 Cocos2d\-x 앱에서의 어트리뷰션, 이벤트 등을 기록할 수 있습니다. 본 가이드의 단계를 수행하여 Adjust SDK와 연동되도록 앱을 설정하시기 바랍니다.
+
+1\. SDK 설치 \{% \#install\-the\-sdk %\}
+--------------------------------------------
+
+SDK v5를 사용하려면 프로젝트에서 디펜던시로 추가해야 합니다. 이를 위해 다음을 수행하시기 바랍니다.
+
+1. [GitHub](https://github.com/adjust/cocos2dx_sdk/releases)에서 SDK 아카이브 다운로드
+
+2. `dist` 디렉토리에서 C\+\+ 파일을 복사하고 Cocos2d\-x 프로젝트에 추가합니다.
+
+3. \( **Android에만 해당** \): C\+\+ 파일의 경로를 `Android.mk` 파일의 `LOCAL_SRC_FILES` 섹션에 추가합니다.
+
+   ```text
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustConfig2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustAttribution2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustProxy2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustEvent2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/Adjust2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustEventFailure2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustEventSuccess2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustSessionFailure2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustSessionSuccess2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustAppStoreSubscription2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustPlayStoreSubscription2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustThirdPartySharing2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustAdRevenue2dx.cpp
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustAppStorePurchase2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustPlayStorePurchase2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustDeeplink2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustPurchaseVerificationResult2dx.cpp \
+   ```
+
+   CMake를 사용하는 경우, 다음의 소스 및 헤더 목록을 `CMakeLists.txt` 파일에 추가합니다.
+
+   ```cmake
+   # add cross-platforms source files and header files
+   list(APPEND GAME_SOURCE
+       Classes/Adjust/AdjustConfig2dx.cpp
+       Classes/Adjust/AdjustAttribution2dx.cpp
+       Classes/Adjust/AdjustProxy2dx.cpp
+       Classes/Adjust/AdjustEvent2dx.cpp
+       Classes/Adjust/AdjustAdRevenue2dx.cpp
+       Classes/Adjust/AdjustAppStoreSubscription2dx.cpp
+       Classes/Adjust/AdjustPlayStoreSubscription2dx.cpp
+       Classes/Adjust/AdjustAppStorePurchase2dx.cpp
+       Classes/Adjust/AdjustPlayStorePurchase2dx.cpp
+       Classes/Adjust/Adjust2dx.cpp
+       Classes/Adjust/AdjustEventFailure2dx.cpp
+       Classes/Adjust/AdjustEventSuccess2dx.cpp
+       Classes/Adjust/AdjustSessionFailure2dx.cpp
+       Classes/Adjust/AdjustSessionSuccess2dx.cpp
+       Classes/Adjust/AdjustThirdPartySharing2dx.cpp
+       Classes/Adjust/AdjustDeeplink2dx.cpp
+       Classes/Adjust/AdjustPurchaseVerificationResult2dx.cpp
+       )
+   list(APPEND GAME_HEADER
+       Classes/Adjust/AdjustConfig2dx.h
+       Classes/Adjust/AdjustAttribution2dx.h
+       Classes/Adjust/AdjustProxy2dx.h
+       Classes/Adjust/AdjustEvent2dx.h
+       Classes/Adjust/AdjustAdRevenue2dx.h
+       Classes/Adjust/AdjustAppStoreSubscription2dx.h
+       Classes/Adjust/AdjustPlayStoreSubscription2dx.h
+       Classes/Adjust/AdjustAppStorePurchase2dx.h
+       Classes/Adjust/AdjustPlayStorePurchase2dx.h
+       Classes/Adjust/Adjust2dx.h
+       Classes/Adjust/AdjustEventFailure2dx.h
+       Classes/Adjust/AdjustEventSuccess2dx.h
+       Classes/Adjust/AdjustSessionFailure2dx.h
+       Classes/Adjust/AdjustSessionSuccess2dx.h
+       Classes/Adjust/AdjustThirdPartySharing2dx.h
+       Classes/Adjust/AdjustDeeplink2dx.h
+       Classes/Adjust/AdjustPurchaseVerificationResult2dx.h
+       )
+   ```
+
+4. \( **Android에만 해당** \): [GitHub 릴리스 페이지](https://github.com/adjust/cocos2dx_sdk/releases/latest) 에서 최신 `adjust-android.aar` 를 다운로드하고 Android Studio 프로젝트로 가져옵니다.
+
+5. \( **iOS에만 해당** \): [GitHub 릴리스 페이지](https://github.com/adjust/cocos2dx_sdk/releases/latest) 에서 최신 `AdjustSdk.framework` 를 다운로드하고 Xcode 프로젝트에 연결합니다.
+
+2\. Signature 라이브러리 설정 \{% \#signature\-setup %\}
+------------------------------------------------------
+
+SDK v5는 [SDK Signature 라이브러리](https://help.adjust.com/en/article/sdk-signature) 를 사용하여 Adjust SDK에서 Adjust 서버로 전송되는 정보를 암호화합니다. SDK v5를 사용하려면 프로젝트에 Signature 라이브러리를 추가해야 합니다.
+
+### Android 앱
+
+1. [Adjust Signature 라이브러리 GitHub 리포지토리](https://github.com/adjust/adjust_signature_sdk/releases/latest) 에서 최신 `adjust-android-signature.aar` 를 다운로드합니다.
+2. Android Studio 프로젝트에 `.aar` 를 추가합니다.
+
+### iOS 앱
+
+1. [Adjust Signature 라이브러리 GitHub 리포지토리](https://github.com/adjust/adjust_signature_sdk/releases/latest) 에서 최신 `AdjustSigSdk-iOS-Static.a` 를 다운로드합니다.
+2. Xcode 프로젝트에서 `.a`를 연결합니다. 
+
+3\. Android 설정 구성 \{% \#android\-settings %\}
+--------------------------------------------------
+
+Android 기기에 대해 Adjust SDK를 구성하려면 다음의 단계를 수행하시기 바랍니다.
+
+### 권한 \{% \#android\-permissions %\}
+
+Adjust Android SDK는 필수 권한이 사전 구성된 상태로 제공됩니다. 이는 `com.google.android.gms.permission.AD_ID` 권한을 포함합니다. 앱이 어린이 온라인 개인정보 보호법\(COPPA\)을 준수해야 하는 경우, `AndroidManifest.xml` 파일에 다음을 추가하여 해당 권한을 반드시 삭제해야 합니다.
+
+```xml
+<uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" id="sl-md0000000"/>
+```
+
+COPPA에 대한 자세한 내용은 [Adjust의 COPPA 준수 문서](https://help.adjust.com/en/article/coppa-compliance)를 참조하시기 바랍니다.
+
+### Google Play Services 추가 \{% \#add\-google\-play\-services %\}
+
+Google Play Store를 타겟팅하는 앱은 기기를 식별하기 위해 반드시 [Google Advertising ID](https://support.google.com/googleplay/android-developer/answer/6048248?hl=en) \(`gps_adid`\)를 사용해야 합니다. 이를 위해 `build.gradle` 파일의 `dependencies` 섹션에 다음의 디펜던시를 추가합니다.
+
+```groovy
+dependencies: {
+   implementation 'com.google.android.gms:play-services-ads-identifier:18.1.0'
+}
+```
+
+### 설치 리퍼러 설정 \{% \#set\-up\-install\-referrer %\}
+
+설치 리퍼러는 앱 설치를 소스에 어트리뷰션하는 데 사용할 수 있는 어트리뷰션 메커니즘입니다. 이는 두 개의 부분으로 구성됩니다.
+
+* 개발자가 앱에서 리퍼러 콘텐츠를 조회할 수 있도록 하는 앱 스토어의 API 세트.
+* Google Play 및 Huawei App Gallery와 같은 앱 스토어가 스토어 웹사이트의 앱 페이지 URL에서 허용하는 `referrer` 파라미터. 리퍼러 파라미터가 입력되는 방식은 다음과 같습니다. 
+  * 사용자가 Adjust 링크를 클릭하면 Adjust 서버는 `reftag`라는 고유 식별자를 전달합니다. 이 식별자는 클릭과 리퍼러 파라미터에 할당됩니다. reftag 에 대한 자세한 내용은 [헬프 센터의 reftag 문서](https://help.adjust.com/en/article/reftag)를 참조하시기 바랍니다.
+  * [Google Ads](https://support.google.com/google-ads/answer/6357635?hl=en) 캠페인을 실행할 때 Google은 `gclid`로 불리는 고유 식별자를 리퍼러 파라미터에 전달합니다. Google Ads 계정에서 **Auto\-tagging** 을 활성화해야 합니다.
+
+#### Google Play Referrer API
+
+[Google Play Referrer API](https://developer.android.com/google/play/installreferrer) 를 지원하려면 다음의 단계를 수행하시기 바랍니다.
+
+1. Google Maven 리포지토리를 `build.gradle` 파일에 추가합니다.
+
+   ```groovy
+   allprojects {
+      repositories {
+         maven {
+            url "https://maven.google.com"
+         }
+      }
+   }
+   ```
+
+2. 설치 리퍼러 라이브러리를 `build.gradle` 파일에 추가합니다.
+
+   ```groovy
+   dependencies {
+      implementation 'com.android.installreferrer:installreferrer:2.2'
+   }
+   ```
+
+#### Meta 설치 리퍼러
+
+Adjust SDK는 Adjust Meta 설치 리퍼러 플러그인을 사용하는 [Meta 설치 리퍼러](https://developers.facebook.com/docs/app-ads/meta-install-referrer)를 지원합니다. [연동에 관한 자세한 내용은 Cocos2d\-x Meta 설치 리퍼러 플러그인을 참조하시기 바랍니다](/en/sdk/cocos2dx/plugins/meta-referrer-plugin).
+
+4\. iOS 설정 구성 \{% \#ios\-settings %\}
+------------------------------------------
+
+iOS 기기에 대해 Adjust SDK를 구성하려면 다음의 단계를 수행하시기 바랍니다.
+
+### 추가 프레임워크 연결 \{% \#link\-frameworks %\}
+
+다음의 프레임워크를 Xcode 프로젝트에 연결하여 Adjust SDK에 기기 수준 정보에 대한 액세스를 부여하시기 바랍니다.
+
+|                프레임워크                |                                        목적                                        |                      참고 사항                       |
+|-------------------------------------|----------------------------------------------------------------------------------|--------------------------------------------------|
+| `AdSupport.framework`               | Adjust SDK가 기기 IDFA를 읽기 위해 필요.                                                   | 앱이 "아동" 카테고리를 타겟으로 하는 경우 이 프레임워크를 추가하지 마시기 바랍니다. |
+| `AdServices.framework`              | Apple Search Ads 처리에 필요                                                          |                                                  |
+| `StoreKit.framework`                | SKAdNetwork 프레임워크에 액세스하고 Adjust SDK가 SKAdNetwork와의 커뮤니케이션을 처리하기 위해 필요합니다.        |                                                  |
+| `AppTrackingTransparency.framework` | iOS 14 및 이후 버전에서 Adjust SDK가 ATT 동의 다이얼로그를 래핑하고 사용자의 동의 응답에 액세스할 수 있도록 하기 위해 필요. | 앱이 "아동" 카테고리를 타겟으로 하는 경우 이 프레임워크를 추가하지 마시기 바랍니다. |
+
+### 추가 소스 파일 복사 \{% \#copy\-source\-files %\}
+
+iOS 설정을 완료하려면 압축을 푼 SDK 아카이브의 `dist` 디렉토리에서 Xcode 프로젝트로 모든 Objective\-C\+\+ \(`.h` 및 `.mm`\) 파일을 복사해야 합니다. 모든 `dist` 파일이 **Build Phases \-\-> Compile Sources** 섹션에 나열되는지 확인합니다.
+
+### 앱의 프라이버시 매니페스트 업데이트 \{% \#update\-privacy\-manifest %\}
+
+앱 스토어에 Adjust SDK 의 프라이버시 요구 사항을 알리려면 프라이버시 매니페스트를 Adjust 의 프라이버시 매니페스트와 병합해야 합니다.
+
+1. 앱의 프라이버시 매니페스트에 [Adjust SDK 프라이버시 매니페스트](https://github.com/adjust/ios_sdk/blob/master/Adjust/PrivacyInfo.xcprivacy) 속성을 추가합니다.
+2. 앱의 프라이버시 매니페스트에 [Signature 라이브러리 프라이버시 매니페스트](https://github.com/adjust/adjust_signature_sdk/blob/main/Resources/iOS/PrivacyInfo.xcprivacy) 속성을 추가합니다.
+
+6\. Adjust SDK 연동 \{% \#integrate\-the\-adjust\-sdk %\}
+--------------------------------------------------------------
+
+프로젝트 설정 업데이트가 완료되면 Adjust SDK를 앱에 연동할 수 있습니다. 이를 위해 다음을 수행하시기 바랍니다.
+
+1. **Project Navigator** 에서 어플리케이션 델리게이트 파일을 찾아 엽니다.
+
+2. 파일 상단에 `Adjust/Adjust2dx.h` 클래스를 포함합니다.
+
+3. 다음 인수를 사용하여 `AdjustConfig2dx` 객체를 인스턴스화합니다.
+
+   \{% deflist %\}
+   `appToken` \(`std::string`\)
+
+   : Adjust 앱 토큰
+
+   `environment` \(`std::string`\)
+
+   :  `AdjustEnvironmentSandbox2dx` 을 전달하여 샌드박스 환경에서 앱을 테스트합니다.
+   \{% /deflist %\}
+4. 선택적으로 [로깅 수준](/en/sdk/cocos2dx/configuration#set-your-logging-level)을 조정하여 로깅의 상세도\(verbosity\)를 조정하시기 바랍니다.
+
+5. 앱이 실행된 후 최대한 빨리 `Adjust2dx::initSdk` 메서드를 호출하고 `AdjustConfig2dx` 인스턴스를 인수로 전달하시기 바랍니다.
+
+\{% callout type="important" %\}
+테스트 시에는 반드시 환경이 `AdjustEnvironmentSandbox2dx`로 설정되어야 합니다. 앱을 앱스토어에 제출하기 전에 이를 `AdjustEnvironmentProduction2dx`로 변경합니다.
+\{% /callout %\}
+
+```cpp
+#include "Adjust/Adjust2dx.h"
+
+std::string appToken = "{% $variables.config.token %}";
+std::string environment = AdjustEnvironmentSandbox2dx;
+
+AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment);
+adjustConfig.setLogLevel(AdjustLogLevel2dxVerbose);
+Adjust2dx::initSdk(adjustConfig);
+```
+
+7\. 앱 빌드 \{% \#build\-your\-app %\}
+-----------------------------------------
+
+이제 Cocos2d\-x 앱을 빌드하고 실행할 수 있을 것입니다. 로깅을 실행하여 문제가 있는지 확인합니다. 로그를 검토하여 `Install tracked` 메시지를 확인합니다.
+
+Adjust SDK를 통해 사용자 어트리뷰션을 시작할 수 있습니다.
+
