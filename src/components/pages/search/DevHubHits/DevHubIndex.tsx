@@ -15,7 +15,7 @@ const DevHubIndex: FC<DevHubIndexProps> = ({ typesenseKeys, lang }) => {
   const { query, page } = getSearchParams();
   const [searchState, setSearchState] = useState({ query, page });
 
-  const typesenseClient = getTypesenseClient(typesenseKeys);
+  const typesenseClient = getTypesenseClient(typesenseKeys, lang);
 
   useEffect(() => {
     const handleSearchChange = () => {
