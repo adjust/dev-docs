@@ -13,14 +13,15 @@ redirects:
    v5: /ja/sdk/ios/features/deep-links/direct
 ---
 
-ディープリンクは、Adjustダッシュボードで設定した後にアプリで設定できます。 **ダイレクトディープリンク** は、ユーザーがアプリをデバイスにインストールしている場合に使用されます。このリンクは、ユーザーをアプリ内の特定のページに誘導します。
+ディープリンクは、Adjust管理画面で設定した後にアプリで設定できます。 **ダイレクトディープリンク** は、ユーザーがアプリをデバイスにインストールしている場合に使用されます。このリンクは、ユーザーをアプリ内の特定のページに誘導します。
 
 ディープリンクを有効化するには、以下を行う必要があります。
 
+-  [ ] AdjustのAppViewで、iOSおよびAndroidアプリに同じ[ブランドドメイン](https://help.adjust.com/ja/article/set-up-branded-domain)を設定すること。
 -  [ ] Associated Domainsをアプリに対して有効にすること。
 -  [ ] Xcodeでディープリンクを設定すること。
 
-## Enable Associated Domains {#enable-associated-domains}
+## Associated Domainsを有効化する {#enable-associated-domains}
 
 最初に、Apple Developer AccountでAssociated Domainsを有効にする必要があります。これにより、アプリでユニバーサルリンクドメインを設定できるようになります。これを行うには、以下の手順に従ってください。
 
@@ -31,11 +32,11 @@ redirects:
 5. **機能（Capabilities）** で、 **Associated Domains** にチェックマークが付いていることを確認します。
 6. **保存（Save）** を選択して変更内容を保存します。
 
-## Configure deep links in Xcode {#configure-deep-links-in-xcode}
+## Xcodeでディープリンクを設定する {#configure-deep-links-in-xcode}
 
 次の手順に従って、ディープリンク設定をXcodeプロジェクトに追加します。
 
-### Adjust universal links domain {#adjust-universal-links-domain}
+### Adjustユニバーサルリンクドメイン {#adjust-universal-links-domain}
 
 1. Xcodeでアプリプロジェクトを開きます。
 2. 左側のメニューからプロジェクトを選択します。
@@ -45,9 +46,15 @@ redirects:
 6. 追加（Add）オプション（ **\+** ）を選択して、機能を追加します。
 7. **Associated Domains** を選択します。
 8. プレフィックスapplinksを含むAdjustユニバーサルリンクドメインを入力します： `applinks:`
+
    -  `example.adj.st`を使用する場合、`applinks:example.adj.st`のようになります。
 
-### Custom URL scheme {#custom-url-scheme}
+9. [Adjustでアプリのブランドドメインを設定](https://help.adjust.com/ja/article/set-up-branded-domain)する際に設定したブランドリンクドメインを入力します。
+   -  `brandedDomain.go.link`を使用する場合、`brandedDomain.go.link`のようになります。
+
+すでに`xxx.adj.st`をユニバーサルリンクのドメインとして使用している場合は、それを削除しないでください。`xxx.adj.st`と`brandedDomain.go.link`の両方を関連ドメインとして保持してください。
+
+### カスタムURLスキーム {#custom-url-scheme}
 
 <Callout type="tip">
 
@@ -68,19 +75,19 @@ redirects:
 
 このスキームは、本番用ビルド **および** デバッグビルドで機能します。
 
-## Modify your iOS app {#modify-your-ios-app}
+## iOSアプリに変更を加える {#modify-your-ios-app}
 
 さまざまなディープリンクシナリオを設定するために、iOSアプリを更新する必要があります。アプリの更新方法は、アプリで[シーン](https://developer.apple.com/documentation/uikit/app_and_environment/scenes)を使用するかどうかによって異なります。
 
-### App doesn't use scenes {#app-doesn-t-use-scenes}
+### アプリでシーンを使用しない {#app-doesn-t-use-scenes}
 
 アプリでシーンを使用しない場合、アプリデリゲートのメソッドを更新する必要があります。
 
-#### Universal links {#universal-links}
+#### ユニバーサルリンク {#universal-links}
 
 Adjust SDKの次のメソッドを呼び出すために、アプリデリゲートの`application(_:continue:restorationHandler:)`メソッドを更新します：
 
--  `ADJLinkResolution.resolveLink`: Call this method only if your marketing team requires the use of Adjust's Link Resolution solution. If the deep link uses a domain that matches an element in the `resolveUrlSuffixArray`, then the method attempts to resolve the deep link, and returns the resolved link. If the deep link doesn't match an element in this array, then the method passes through the original deep link, so you can pass all deep links to this method.
+-  `ADJLinkResolution.resolveLink`: このメソッドは、マーケティングチームでAdjustのリンク解析ソリューションの使用が必須である場合にのみ呼び出します。`resolveUrlSuffixArray`内の要素と一致するドメインをディープリンクで使用する場合、メソッドはディープリンクの解析を試み、解析されたリンクを返します。ディープリンクがこの配列内の要素と一致しない場合、メソッドは元のディープリンクをパススルーするため、全てのディープリンクをこのメソッドにパスすることができます。
 -  `Adjust.appWillOpen` このメソッドを呼び出し、Adjustサーバーにディープリンクを送信して情報を記録します。AdjustのディープリンクとAdjust以外のディープリンクの両方をこのメソッドにパスすることができます。Adjustサーバーは、Adjustパラメーターを持たないディープリンクを計測しません。
 
 ユーザーがユニバーサルリンクをクリックすると、iOSでアプリが開き、ディープリンクが`application(_:continue:restorationHandler:)`に配信されます。これは、ユーザーがアプリを閉じていても、バックグラウンドで実行していても発生します。
@@ -158,7 +165,7 @@ func application(
 </Tab>
 </Tabs>
 
-#### Custom URL scheme {#custom-url-scheme-1}
+#### カスタムURLスキーム {#custom-url-scheme-1}
 
 カスタムURLスキームのディープリンクを設定することをマーケティングチームから求められた場合、アプリデリゲートの`application(_:open:options:)`メソッドを更新して、Adjust SDKの`Adjust.appWillOpen`メソッドを呼び出します。このメソッドは、ディープリンクをAdjustサーバーに送信し、記録します。AdjustのディープリンクとAdjust以外のディープリンクの両方をこのメソッドにパスすることができます。Adjustサーバーは、Adjustパラメーターを持たないディープリンクを計測しません。
 
@@ -209,18 +216,18 @@ func application(
 </Tab>
 </Tabs>
 
-### App uses scenes {#app-uses-scenes}
+### アプリでシーンを使用 {#app-uses-scenes}
 
 アプリでシーンを使用する場合、シーンデリゲートのメソッドを更新する必要があります。
 
-#### Universal links {#universal-links-1}
+#### ユニバーサルリンク {#universal-links-1}
 
 1. シーンデリゲートの`scene(_:willConnectTo:options:)`メソッドを更新します。アプリを閉じている状態でユーザーがユニバーサルリンクをクリックすると、iOSでアプリが開き、このメソッドへのディープリンクが配信されます。
 2. シーンデリゲートの`scene(_:continue:)`メソッドを更新します。バックグラウンドでアプリを実行している状態でユーザーがユニバーサルリンクをクリックすると、iOSでアプリが開き、このメソッドへのディープリンクが配信されます。
 
 上記のメソッドにより、Adjust SDKの次のメソッドが呼び出されます。
 
--  `ADJLinkResolution.resolveLink`: Call this method only if your marketing team requires the use of Adjust's Link Resolution solution. If the deep link uses a domain that matches an element in the `resolveUrlSuffixArray`, then the method attempts to resolve the deep link, and returns the resolved link. If the deep link doesn't match an element in this array, then the method passes through the original deep link, so you can pass all deep links to this method.
+-  `ADJLinkResolution.resolveLink`: このメソッドは、マーケティングチームでAdjustのリンク解析ソリューションの使用が必須である場合にのみ呼び出します。`resolveUrlSuffixArray`内の要素と一致するドメインをディープリンクで使用する場合、メソッドはディープリンクの解析を試み、解析されたリンクを返します。ディープリンクがこの配列内の要素と一致しない場合、メソッドは元のディープリンクをパススルーするため、全てのディープリンクをこのメソッドにパスすることができます。
 -  `Adjust.appWillOpen` \- このメソッドを呼び出し、Adjustサーバーにディープリンクを送信してそれらを記録します。AdjustのディープリンクとAdjust以外のディープリンクの両方をこのメソッドにパスすることができます。Adjustサーバーは、Adjustパラメーターを持たないディープリンクを計測しません。
 
 <Tabs>
@@ -336,7 +343,7 @@ func scene(
 </Tab>
 </Tabs>
 
-#### Custom URL scheme {#custom-url-scheme-2}
+#### カスタムURLスキーム {#custom-url-scheme-2}
 
 1. シーンデリゲートの`scene(_:willConnectTo:options:)`メソッドを更新します。アプリを閉じている状態でユーザーがカスタムURLスキームのディープリンクをクリックすると、iOSでアプリが開き、このメソッドへのディープリンクが配信されます。
 2. シーンデリゲートの`scene(_:openURLContexts:)`メソッドを更新します。バックグラウンドでアプリを実行している状態でユーザーがカスタムURLスキームのディープリンクをクリックすると、iOSでアプリが開き、このメソッドへのディープリンクが配信されます。
