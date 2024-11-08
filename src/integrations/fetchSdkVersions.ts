@@ -2,53 +2,61 @@ import { Octokit } from "@octokit/core";
 
 const octokit = new Octokit({ auth: import.meta.env.VITE_GITHUB_TOKEN });
 
+// Define type for SDK versions with multiple tags (v4, v5, etc.)
+type MultiVersionTags = {
+  [versionKey: string]: string;
+};
+
+// Define the main type for the version replacements
+type VersionReplacements = {
+  [platform: string]: MultiVersionTags | string;
+};
+
+const versionReplacements: VersionReplacements = {
+  android: { v4: "x.x.x", v5: "x.x.x" },
+  ios: { v4: "x.x.x", v5: "x.x.x" },
+  unity: { v4: "x.x.x", v5: "x.x.x" },
+  react_native: { v4: "x.x.x", v5: "x.x.x" },
+  cordova: { v4: "x.x.x", v5: "x.x.x" },
+  flutter: { v4: "x.x.x", v5: "x.x.x" },
+  cocos2dx: { v4: "x.x.x", v5: "x.x.x" },
+  android_adobe_extension: { v2: "x.x.x", v3: "x.x.x" },
+  web: "x.x.x",
+  windows: "x.x.x",
+};
+
 type TagNode = {
   node: {
     name: string;
   };
 };
 
-// Define the shape of a single version tag response
 type VersionTagResponse = {
   refs: {
     edges: TagNode[];
   };
 };
 
-// Make the GraphQL response flexible to handle different version keys (v2, v3, etc.)
+// GraphQL response with dynamic keys for each version query
 type GraphQLResponse = {
   [key: string]: VersionTagResponse;
 };
 
-let versionReplacements: VersionMap = {
-  android: { versions: { v4: "x.x.x", v5: "x.x.x" }, useSdkSuffix: true },
-  ios: { versions: { v4: "x.x.x", v5: "x.x.x" }, useSdkSuffix: true },
-  unity: { versions: { v4: "x.x.x", v5: "x.x.x" }, useSdkSuffix: true },
-  react_native: { versions: { v4: "x.x.x", v5: "x.x.x" }, useSdkSuffix: true },
-  cordova: { versions: { v4: "x.x.x", v5: "x.x.x" }, useSdkSuffix: true },
-  flutter: { versions: { v4: "x.x.x", v5: "x.x.x" }, useSdkSuffix: true },
-  cocos2dx: { versions: { v4: "x.x.x", v5: "x.x.x" }, useSdkSuffix: true },
-  android_adobe_extension: {
-    versions: { v2: "x.x.x", v3: "x.x.x" },
-    useSdkSuffix: false,
-  },
-  web: { versions: "x.x.x", useSdkSuffix: true },
-  windows: { versions: "x.x.x", useSdkSuffix: true },
-};
-
 /**
- * Queries the GitHub GraphQL endpoint for the latest versioned tag of each platform
- * @returns A VersionMap of the latest versions of each SDK
+ * Queries the GitHub GraphQL endpoint for the latest versioned tags of each SDK platform.
+ * @returns A map of SDK platforms and their latest tags for each version.
  */
 export async function fetchVersions() {
   try {
     if (import.meta.env.PROD) {
-      const fetchPromises = Object.keys(versionReplacements).map(
-        async (platform) => {
-          const { versions, useSdkSuffix } = versionReplacements[platform];
+      const fetchPromises = Object.entries(versionReplacements).map(
+        async ([platform, versions]) => {
+          const useSdkSuffix = !["android_adobe_extension"]
+            .includes(platform);
           const repoName = `${platform}${useSdkSuffix ? "_sdk" : ""}`;
 
           if (typeof versions === "object") {
+            // For platforms with multiple versions (v4, v5, etc.)
             const versionQueries = Object.keys(versions)
               .map(
                 (versionKey) => `
@@ -78,15 +86,18 @@ export async function fetchVersions() {
 
             const response = await octokit.graphql<GraphQLResponse>(query);
 
+            // Update each version tag in the output map
             Object.keys(versions).forEach((versionKey) => {
               const tag =
                 response[`${versionKey}Tags`]?.refs.edges[0]?.node.name.replace(
                   "v",
                   "",
                 ) || "Not found";
-              versions[versionKey] = tag;
+              (versionReplacements[platform] as MultiVersionTags)[versionKey] =
+                tag;
             });
           } else {
+            // For platforms with a single latest tag (no version keys like v4, v5)
             const query = `
              query RepositoryTags {
                latestTag: repository(owner: "adjust", name: "${repoName}") {
@@ -107,9 +118,9 @@ export async function fetchVersions() {
            `;
 
             const response = await octokit.graphql<GraphQLResponse>(query);
-            versionReplacements[platform].versions =
+            versionReplacements[platform] =
               response.latestTag?.refs.edges[0]?.node.name.replace("v", "") ||
-              "Not found";
+              "x.x.x";
           }
         },
       );
