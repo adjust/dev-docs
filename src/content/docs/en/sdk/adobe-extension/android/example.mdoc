@@ -1,0 +1,176 @@
+---
+title: Android Adobe Extension example implementation
+description: See a full example of an app using all features of the Adjust Extension.
+sidebar-label: Example
+sidebar-position: 9
+---
+
+This page contains a full example implementation of the Adjust Android Extension for Adobe Experience SDK. This example features every feature supported by the extension.
+
+## Adjust Extension configuration {% #adjust-extension-configuration %}
+
+The Adjust Android Extension is configured in the `MainApp.java` file. Here is a full example containing the following features:
+
+- [A default link token for preinstall measurement](/en/sdk/adobe-extension/android/preinstalled).
+- [An external device ID](/en/sdk/adobe-extension/android/external-device-id).
+- [An attribution callback function](/en/sdk/adobe-extension/android/attribution).
+- [A deferred deep link callback function](/en/sdk/adobe-extension/android/deep-linking).
+
+```java
+// MainApp.java
+import android.app.Application;
+import android.util.Log;
+
+import com.adjust.adobeextension.AdjustAdobeExtension;
+import com.adjust.adobeextension.AdjustAdobeExtensionConfig;
+import com.adobe.marketing.mobile.AdobeCallback;
+import com.adobe.marketing.mobile.Extension;
+import com.adobe.marketing.mobile.Analytics;
+import com.adobe.marketing.mobile.Identity;
+import com.adobe.marketing.mobile.LoggingMode;
+import com.adobe.marketing.mobile.MobileCore;
+
+public class MainApp extends Application {
+   @Override
+   public void onCreate() {
+      super.onCreate();
+
+      MobileCore.setApplication(this);
+      MobileCore.setLogLevel(LoggingMode.VERBOSE);
+
+      // Configure the Adjust Extension
+      try {
+         MobileCore.configureWithAppID("your_adobe_app_id");
+         String environment = AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX;
+
+         AdjustAdobeExtensionConfig config =
+               new AdjustAdobeExtensionConfig(environment);
+
+         config.setExternalDeviceId("{YOUR_EXTERNAL_DEVICE_ID}");
+
+         config.setDefaultTracker("{TOKEN}");
+
+         config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
+            @Override
+            public void onAttributionChanged(AdjustAttribution adjustAttribution) {
+               Log.d("example", "Attribution information updated");
+               Log.d("example", "Attribution: " + attribution.toString());
+            }
+         });
+
+         config.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListener() {
+            @Override
+            public boolean launchReceivedDeeplink(Uri deeplink) {
+               if (deeplink.contains("no_open")) {
+                     return false;
+               } else {
+                     return true;
+               }
+            }
+         });
+
+         AdjustAdobeExtension.setConfiguration(config);
+      } catch (Exception e) {
+         Log.e("example", "Exception occurred during configuration: " + e.getMessage());
+      }
+
+      // Register the Adjust Extension
+      try {
+         List<Class<? extends Extension>> extensions = Arrays.asList(
+               Analytics.EXTENSION,
+               Identity.EXTENSION,
+               AdjustAdobeExtension.EXTENSION);
+         MobileCore.registerExtensions(extensions, new AdobeCallback<Object>() {
+            @Override
+            public void call(Object o) {
+               Log.d("example", "Adjust Adobe Extension SDK initialized");
+            }
+         });
+      } catch (Exception e) {
+         Log.e("example", "Exception occurred while registering Extension: " + e.getMessage());
+      }
+   }
+}
+```
+
+## Adjust Extension feature setup {% #adjust-extension-feature-setup %}
+
+All features that respond to in-app activity are defined in the `MainActivity.java` file. Here is a full example containing the following features:
+
+- [A function to send an event to Adjust](/en/sdk/adobe-extension/android/events).
+- [A function to send the device's push token to Adjust](/en/sdk/adobe-extension/android/push-tokens).
+- [Functions to add and remove global parameters](/en/sdk/adobe-extension/android/global-parameters).
+
+```java
+// MainActivity.java
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.view.View;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustDeeplink;
+import com.adobe.marketing.mobile.MobileCore;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class MainActivity extends AppCompatActivity {
+   @Override
+   protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      setContentView(R.layout.activity_main);
+
+      Intent intent = getIntent();
+      Uri data = intent.getData();
+      AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+      Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
+   }
+
+   public void sendEventToAdjust(View view) {
+      String action = AdjustAdobeExtension.ADOBE_ADJUST_ACTION_TRACK_EVENT;
+      Map<String, String> contextData = new HashMap<String, String>();
+      contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_TOKEN, "g3mfiw");
+      contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_REVENUE, "1.00");
+      contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_CURRENCY, "EUR");
+      contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_CALLBACK_PARAM_PREFIX + "user_id", "855");
+      contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_PARTNER_PARAM_PREFIX + "event_token", "g3mfiw");
+
+      MobileCore.trackAction(action, contextData);
+   }
+
+   public void sendPushTokenToAdjust(View view) {
+      String action = AdjustAdobeExtension.ADOBE_ADJUST_ACTION_SET_PUSH_TOKEN;
+      Map<String, String> contextData = new HashMap<String, String>();
+      contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_PUSH_TOKEN, "de18dbf8-f38a-4962-8f1e-44abcf43055d");
+
+      MobileCore.trackAction(action, contextData);
+   }
+
+   public void addAdjustGlobalCallback(View view) {
+      Adjust.addGlobalCallbackParameter("user_id", "855");
+   }
+
+   public void removeAdjustGlobalCallback(View view) {
+      Adjust.removeGlobalCallbackParameter("user_id");
+   }
+
+   public void removeAllAdjustGlobalCallbacks(View view) {
+      Adjust.removeGlobalPartnerParameters();
+   }
+
+   public void addAdjustGlobalPartnerParam(View view) {
+      Adjust.addGlobalPartnerParameter("user_id", "855");
+   }
+
+   public void removeAdjustGlobalPartnerParam(View view) {
+      Adjust.removeGlobalPartnerParameter("user_id");
+   }
+
+   public void removeAllAdjustGlobalPartnerParams(View view) {
+      Adjust.removeGlobalPartnerParameters();
+   }
+}
+```

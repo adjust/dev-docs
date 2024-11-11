@@ -1,7 +1,7 @@
 ---
 title: Send event information
 description: Follow this guide to send events to Adjust from your Adobe Experience app.
-sidebar-position: 2
+sidebar-position: 5
 ---
 
 You can use the Adjust Extension for Adobe Experience SDK to send event information to Adjust's servers when your users take specific actions. Adjust records these events and surfaces them in your [Datascape reports](https://help.adjust.com/en/article/datascape), [server callbacks](https://help.adjust.com/en/article/server-callbacks), and [cloud storage uploads](https://help.adjust.com/en/article/cloud-storage-uploads).
@@ -47,27 +47,423 @@ The following keys are supported:
 
 ## Example: Send event information {% #example-send-event-information %}
 
-This code sample demonstrates how to use the `MobileCore.trackAction` API to send event information to Adjust.
-
-To configure your event, follow these steps:
-
-1. Create a new variable called `action`.
-1. Assign `AdjustAdobeExtension.ADOBE_ADJUST_ACTION_TRACK_EVENT` to the variable you created.
-1. Create a HashMap to hold your Adjust event token. The example below sets the following properties:
-   - The event token is _abc123_.
-   - A callback parameter with the value _callback\_value_.
-   - A partner parameter with the value _partner\_value_.
-   - The event revenue is _0.25 EUR_.
-1. Send the information to Adjust: Pass the `action` variable and HashMap to the `MobileCore.trackAction` method.
+To send event information, you need to add a function to your main activity. If you followed the [integration guide](/en/sdk/adobe-extension/android/integration), your `MainActivity.java` file should look something like this:
 
 ```java
-String action = AdjustAdobeExtension.ADOBE_ADJUST_ACTION_TRACK_EVENT;
-Map<String, String> contextData = new HashMap<String, String>();
-contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_TOKEN, "abc123");
-contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_CALLBACK_PARAM_PREFIX + "key1", "callback_value");
-contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_PARTNER_PARAM_PREFIX + "key2", "partner_value");
-contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_REVENUE, "0.25");
-contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_CURRENCY, "EUR");
+// MainActivity.java
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.view.View;
 
-MobileCore.trackAction(action, contextData);
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustDeeplink;
+
+public class MainActivity extends AppCompatActivity {
+   @Override
+   protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      setContentView(R.layout.activity_main);
+
+      Intent intent = getIntent();
+      Uri data = intent.getData();
+      AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+      Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
+   }
+}
 ```
+
+Let's add a new function to this file to send event information to Adjust. For the purposes of this tutorial, we'll create new function called `sendEventToAdjust` which will send an event with the following properties:
+
+- An event token: `"g3mfiw"`.
+- 1 Euro of event revenue.
+- A callback parameter with the key `"user_id"` and value `"855"`.
+- A partner parameter with the key `"event_token` and value `"g3mfiw"`.
+
+Let's get started.
+
+1. First, import the following classes:
+
+   - `com.adobe.marketing.mobile.MobileCore`: this class is used to send information to Adobe and Adjust.
+   - `java.util.HashMap`: this class is used to generate our `contextData` HashMap.
+   - `java.util.Map`: this class is used to type our `contextData` HashMap.
+
+   {% codeblock
+      title="MainActivity.java"
+      highlight="{range: 10}, {range: 12-13}" %}
+   ```java
+   import android.content.Intent;
+   import android.net.Uri;
+   import android.os.Bundle;
+   import android.view.View;
+   
+   import androidx.appcompat.app.AppCompatActivity;
+   
+   import com.adjust.sdk.Adjust;
+   import com.adjust.sdk.AdjustDeeplink;
+   import com.adobe.marketing.mobile.MobileCore;
+   
+   import java.util.HashMap;
+   import java.util.Map;
+   
+   public class MainActivity extends AppCompatActivity {
+      @Override
+      protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_main);
+   
+         Intent intent = getIntent();
+         Uri data = intent.getData();
+         AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+         Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
+      }
+   }
+   ```
+   {% /codeblock %}
+
+1. Next, create a new function inside the `MainActivity` class called `sendEventToAdjust`. This function takes [the application `View`](https://developer.android.com/reference/android/view/View) as an argument and returns `void.`
+
+   {% codeblock
+      title="MainActivity.java"
+      highlight="{range: 27}"
+      collapse="1-14, 16-26" %}
+   ```java
+   import android.content.Intent;
+   import android.net.Uri;
+   import android.os.Bundle;
+   import android.view.View;
+   
+   import androidx.appcompat.app.AppCompatActivity;
+   
+   import com.adjust.sdk.Adjust;
+   import com.adjust.sdk.AdjustDeeplink;
+   import com.adobe.marketing.mobile.MobileCore;
+   
+   import java.util.HashMap;
+   import java.util.Map;
+   
+   public class MainActivity extends AppCompatActivity {
+      @Override
+      protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_main);
+   
+         Intent intent = getIntent();
+         Uri data = intent.getData();
+         AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+         Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
+      }
+   
+      public void sendEventToAdjust(View view) {}
+   }
+   ```
+   {% /codeblock %}
+
+1. Inside the `sendEventToAdjust` function, declare a new `String` variable called `action` and assign it the value `AdjustAdobeExtension.ADOBE_ADJUST_ACTION_TRACK_EVENT`. This is used to tell `MobileCore.trackAction` which action we want to handle.
+
+   {% codeblock
+      title="MainActivity.java"
+      highlight="{range: 28}"
+      collapse="1-26" %}
+   ```java
+   import android.content.Intent;
+   import android.net.Uri;
+   import android.os.Bundle;
+   import android.view.View;
+   
+   import androidx.appcompat.app.AppCompatActivity;
+   
+   import com.adjust.sdk.Adjust;
+   import com.adjust.sdk.AdjustDeeplink;
+   import com.adobe.marketing.mobile.MobileCore;
+   
+   import java.util.HashMap;
+   import java.util.Map;
+   
+   public class MainActivity extends AppCompatActivity {
+      @Override
+      protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_main);
+   
+         Intent intent = getIntent();
+         Uri data = intent.getData();
+         AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+         Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
+      }
+   
+      public void sendEventToAdjust(View view) {
+         String action = AdjustAdobeExtension.ADOBE_ADJUST_ACTION_TRACK_EVENT;
+      }
+   }
+   ```
+   {% /codeblock %}
+
+1. Create a new HashMap variable called `contextData`. This is used to hold the properties of the event.
+
+   {% codeblock
+      title="MainActivity.java"
+      highlight="{range: 29}"
+      collapse="1-26" %}
+   ```java
+   import android.content.Intent;
+   import android.net.Uri;
+   import android.os.Bundle;
+   import android.view.View;
+   
+   import androidx.appcompat.app.AppCompatActivity;
+   
+   import com.adjust.sdk.Adjust;
+   import com.adjust.sdk.AdjustDeeplink;
+   import com.adobe.marketing.mobile.MobileCore;
+   
+   import java.util.HashMap;
+   import java.util.Map;
+   
+   public class MainActivity extends AppCompatActivity {
+      @Override
+      protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_main);
+   
+         Intent intent = getIntent();
+         Uri data = intent.getData();
+         AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+         Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
+      }
+   
+      public void sendEventToAdjust(View view) {
+         String action = AdjustAdobeExtension.ADOBE_ADJUST_ACTION_TRACK_EVENT;
+         Map<String, String> contextData = new HashMap<String, String>();
+      }
+   }
+   ```
+   {% /codeblock %}
+
+Now that the `contextData` HashMap is initialized, let's add values to build the event. You can refer back to the [`contextData` reference](#reference) for more information about what each key is used for.
+
+1. Add your Adjust event token to the HashMap using the `AdjustAdobeExtension.ADOBE_ADJUST_EVENT_TOKEN` key. This is required to inform Adjust which event you're trying to send.
+
+   {% codeblock
+      title="MainActivity.java"
+      highlight="{range: 30}"
+      collapse="1-26" %}
+   ```java
+   import android.content.Intent;
+   import android.net.Uri;
+   import android.os.Bundle;
+   import android.view.View;
+   
+   import androidx.appcompat.app.AppCompatActivity;
+   
+   import com.adjust.sdk.Adjust;
+   import com.adjust.sdk.AdjustDeeplink;
+   import com.adobe.marketing.mobile.MobileCore;
+   
+   import java.util.HashMap;
+   import java.util.Map;
+   
+   public class MainActivity extends AppCompatActivity {
+      @Override
+      protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_main);
+   
+         Intent intent = getIntent();
+         Uri data = intent.getData();
+         AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+         Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
+      }
+   
+      public void sendEventToAdjust(View view) {
+         String action = AdjustAdobeExtension.ADOBE_ADJUST_ACTION_TRACK_EVENT;
+         Map<String, String> contextData = new HashMap<String, String>();
+         contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_TOKEN, "g3mfiw");
+      }
+   }
+   ```
+   {% /codeblock %}
+
+1. Add the event revenue amount using `AdjustAdobeExtension.ADOBE_ADJUST_REVENUE` for the amount and `AdjustAdobeExtension.ADOBE_ADJUST_CURRENCY` for the currency. Both values MUST be passed as strings.
+
+   {% codeblock
+      title="MainActivity.java"
+      highlight="{range: 31-32}"
+      collapse="1-26" %}
+   ```java
+   import android.content.Intent;
+   import android.net.Uri;
+   import android.os.Bundle;
+   import android.view.View;
+   
+   import androidx.appcompat.app.AppCompatActivity;
+   
+   import com.adjust.sdk.Adjust;
+   import com.adjust.sdk.AdjustDeeplink;
+   import com.adobe.marketing.mobile.MobileCore;
+   
+   import java.util.HashMap;
+   import java.util.Map;
+   
+   public class MainActivity extends AppCompatActivity {
+      @Override
+      protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_main);
+   
+         Intent intent = getIntent();
+         Uri data = intent.getData();
+         AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+         Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
+      }
+   
+      public void sendEventToAdjust(View view) {
+         String action = AdjustAdobeExtension.ADOBE_ADJUST_ACTION_TRACK_EVENT;
+         Map<String, String> contextData = new HashMap<String, String>();
+         contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_TOKEN, "g3mfiw");
+         contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_REVENUE, "1.00");
+         contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_CURRENCY, "EUR");
+      }
+   }
+   ```
+   {% /codeblock %}
+
+1. Add a callback parameter using the `AdjustAdobeExtension.ADOBE_ADJUST_EVENT_CALLBACK_PARAM_PREFIX` key. Append a callback identifier to the key to match the parameter in your callback URL.
+
+   {% codeblock
+      title="MainActivity.java"
+      highlight="{range: 33}"
+      collapse="1-26" %}
+   ```java
+   import android.content.Intent;
+   import android.net.Uri;
+   import android.os.Bundle;
+   import android.view.View;
+   
+   import androidx.appcompat.app.AppCompatActivity;
+   
+   import com.adjust.sdk.Adjust;
+   import com.adjust.sdk.AdjustDeeplink;
+   import com.adobe.marketing.mobile.MobileCore;
+   
+   import java.util.HashMap;
+   import java.util.Map;
+   
+   public class MainActivity extends AppCompatActivity {
+      @Override
+      protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_main);
+   
+         Intent intent = getIntent();
+         Uri data = intent.getData();
+         AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+         Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
+      }
+   
+      public void sendEventToAdjust(View view) {
+         String action = AdjustAdobeExtension.ADOBE_ADJUST_ACTION_TRACK_EVENT;
+         Map<String, String> contextData = new HashMap<String, String>();
+         contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_TOKEN, "g3mfiw");
+         contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_REVENUE, "1.00");
+         contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_CURRENCY, "EUR");
+         contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_CALLBACK_PARAM_PREFIX + "user_id", "855");
+      }
+   }
+   ```
+   {% /codeblock %}
+
+1. Add a partner parameter using the `AdjustAdobeExtension.ADOBE_ADJUST_EVENT_PARTNER_PARAM_PREFIX` key. Append a callback identifier to the key to map it to your partner's placeholder.
+
+   {% codeblock
+      title="MainActivity.java"
+      highlight="{range: 34}"
+      collapse="1-26" %}
+   ```java
+   import android.content.Intent;
+   import android.net.Uri;
+   import android.os.Bundle;
+   import android.view.View;
+   
+   import androidx.appcompat.app.AppCompatActivity;
+   
+   import com.adjust.sdk.Adjust;
+   import com.adjust.sdk.AdjustDeeplink;
+   import com.adobe.marketing.mobile.MobileCore;
+   
+   import java.util.HashMap;
+   import java.util.Map;
+   
+   public class MainActivity extends AppCompatActivity {
+      @Override
+      protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_main);
+   
+         Intent intent = getIntent();
+         Uri data = intent.getData();
+         AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+         Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
+      }
+   
+      public void sendEventToAdjust(View view) {
+         String action = AdjustAdobeExtension.ADOBE_ADJUST_ACTION_TRACK_EVENT;
+         Map<String, String> contextData = new HashMap<String, String>();
+         contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_TOKEN, "g3mfiw");
+         contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_REVENUE, "1.00");
+         contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_CURRENCY, "EUR");
+         contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_CALLBACK_PARAM_PREFIX + "user_id", "855");
+         contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_PARTNER_PARAM_PREFIX + "event_token", "g3mfiw");
+      }
+   }
+   ```
+   {% /codeblock %}
+
+1. Finally, call `MobileCore.trackAction` with your `action` and `contextData` variables to send the event information to Adjust.
+
+   {% codeblock title="MainActivity.java" highlight="{range: 36}" %}
+   ```java
+   import android.content.Intent;
+   import android.net.Uri;
+   import android.os.Bundle;
+   import android.view.View;
+   
+   import androidx.appcompat.app.AppCompatActivity;
+   
+   import com.adjust.sdk.Adjust;
+   import com.adjust.sdk.AdjustDeeplink;
+   import com.adobe.marketing.mobile.MobileCore;
+   
+   import java.util.HashMap;
+   import java.util.Map;
+   
+   public class MainActivity extends AppCompatActivity {
+      @Override
+      protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_main);
+   
+         Intent intent = getIntent();
+         Uri data = intent.getData();
+         AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+         Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
+      }
+   
+      public void sendEventToAdjust(View view) {
+         String action = AdjustAdobeExtension.ADOBE_ADJUST_ACTION_TRACK_EVENT;
+         Map<String, String> contextData = new HashMap<String, String>();
+         contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_TOKEN, "g3mfiw");
+         contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_REVENUE, "1.00");
+         contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_CURRENCY, "EUR");
+         contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_CALLBACK_PARAM_PREFIX + "user_id", "855");
+         contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_PARTNER_PARAM_PREFIX + "event_token", "g3mfiw");
+   
+         MobileCore.trackAction(action, contextData);
+      }
+   }
+   ```
+   {% /codeblock %}
+
+That's it! When the user performs an action that maps to the `sendEventToAdjust` function, an event is constructed and sent to Adjust.

@@ -1,7 +1,7 @@
 ---
 title: Set up deep linking
 description: Configure your app to handle direct and deferred deep links.
-sidebar-position: 3
+sidebar-position: 6
 ---
 
 Deep links are URIs (Uniform Resource Identifiers) that direct users to specific pages within your app. They enhance user experience by guiding them directly to relevant content after they interact with a link.
@@ -17,7 +17,7 @@ You can reattribute your users by sending deep link information to Adjust. When 
 
 1. First, create an `AdjustDeeplink` instance with your deep link URI. The `AdjustDeeplink` class validates this URI and checks the formatted string to ensure successful processing.
 
-2. Then, call the `Adjust.processDeeplink` function to handle the deep link and pass the information to Adjust.
+1. Then, call the `Adjust.processDeeplink` function to handle the deep link and pass the information to Adjust.
 
 The `AdjustDeeplink` class constructor requires the following argument:
 
@@ -39,49 +39,325 @@ The `Adjust.processDeeplink` function requires the following arguments:
 : The application context.
 {% /deflist %}
 
-### Example: Initialize a direct deep link {% #example-initialize-direct-deep-link %}
-
-Here is an example of how to initialize and process a direct deep link.
-
-```java
-Intent intent = getIntent();
-Uri data = intent.getData();
-AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
-Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
-```
-
 ## Deferred deep link callbacks {% #deferred-deep-link-callbacks %}
 
 The Adjust Android Extension for Adobe Experience SDK opens deferred deep links by default. To control this behavior, or perform validation before the deep link is opened, configure the extension to call a function when the app opens via a deferred deep link.
 
 1. Call `setOnDeferredDeeplinkResponseListener` on your `AdjustAdobeExtensionConfig` instance.
-2. Call `AdjustAdobeExtension.setConfiguration` to set your configuration.
+1. Call `AdjustAdobeExtension.setConfiguration` to set your configuration.
 
 The `OnDeferredDeeplinkResponseListener` function requires the following argument:
 
-  {% deflist %}
-  `onDeferredDeeplinkResponseListener`: `OnDeferredDeeplinkResponseListener`
+{% deflist %}
+`onDeferredDeeplinkResponseListener`: `OnDeferredDeeplinkResponseListener`
 
-  : A function that returns a `boolean` value. If it returns `false`, the extension won't open the deferred deep link.
-  {% /deflist %}
+: A function that returns a `boolean` value. If it returns `false`, the extension won't open the deferred deep link.
+{% /deflist %}
 
 ### Example: Create a deferred deep link function {% #example-deferred-deep-link-function %}
 
-Here is an example of a callback function that checks the deep link content using a function (`shouldAdjustSdkLaunchTheDeeplink`), and returns `true` or `false` depending on the outcome.
+If you followed the [integration guide](/en/sdk/adobe-extension/android/integration), you've already configured the Adjust Extension to process and open deep links. If you haven't done this, refer to [Set up deep link handling](/en/sdk/adobe-extension/android/integration#set-up-deep-link-handling) for instructions.
+
+Here is how your `MainApp.java` file should look after following the integration guide:
 
 ```java
-AdjustAdobeExtensionConfig config = new AdjustAdobeExtensionConfig(environment);
+// MainApp.java
+import android.app.Application;
+import android.util.Log;
 
-config.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListener() {
+import com.adjust.adobeextension.AdjustAdobeExtension;
+import com.adjust.adobeextension.AdjustAdobeExtensionConfig;
+import com.adobe.marketing.mobile.AdobeCallback;
+import com.adobe.marketing.mobile.Extension;
+import com.adobe.marketing.mobile.Analytics;
+import com.adobe.marketing.mobile.Identity;
+import com.adobe.marketing.mobile.LoggingMode;
+import com.adobe.marketing.mobile.MobileCore;
+
+public class MainApp extends Application {
     @Override
-    public boolean launchReceivedDeeplink(Uri deeplink) {
-        if (shouldAdjustSdkLaunchTheDeeplink(deeplink)) {
-            return true;
-        } else {
-            return false;
+    public void onCreate() {
+        super.onCreate();
+
+        MobileCore.setApplication(this);
+        MobileCore.setLogLevel(LoggingMode.VERBOSE);
+
+        try {
+            MobileCore.configureWithAppID("your_adobe_app_id");
+
+            AdjustAdobeExtensionConfig config =
+                    new AdjustAdobeExtensionConfig(AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX);
+            AdjustAdobeExtension.setConfiguration(config);
+        } catch (Exception e) {
+            Log.e("example", "Exception occurred during configuration: " + e.getMessage());
+        }
+
+        try {
+        List<Class<? extends Extension>> extensions = Arrays.asList(
+                Analytics.EXTENSION,
+                Identity.EXTENSION,
+                AdjustAdobeExtension.EXTENSION);
+        MobileCore.registerExtensions(extensions, new AdobeCallback<Object>() {
+            @Override
+            public void call(Object o) {
+                Log.d("example", "Adjust Adobe Extension SDK initialized");
+            }
+        });
+        } catch (Exception e) {
+            Log.e("example", "Exception occurred while registering Extension: " + e.getMessage());
         }
     }
-});
-
-AdjustAdobeExtension.setConfiguration(config);
+}
 ```
+
+In this tutorial, we'll show you how to create a callback function to control whether to open a deep link or not using the `setOnDeferredDeeplinkResponseListener` method. The function will open the link based on the following criteria:
+
+> "If the deep link contains `"no_open"`, the app won't launch the deep link."
+
+Let's get started.
+
+1. Inside the `try...catch` block, call the `setOnDeferredDeeplinkResponseListener` method of your `AdjustAdobeExtensionConfig` instance. Pass an `OnDeferredDeeplinkResponseListener` instance as an argument.
+
+   {% codeblock
+      title="MainApp.java"
+      collapse="1-20, 31-47"
+      highlight="{range: 26}" %}
+   ```java
+   import android.app.Application;
+   import android.util.Log;
+   
+   import com.adjust.adobeextension.AdjustAdobeExtension;
+   import com.adjust.adobeextension.AdjustAdobeExtensionConfig;
+   import com.adobe.marketing.mobile.AdobeCallback;
+   import com.adobe.marketing.mobile.Extension;
+   import com.adobe.marketing.mobile.Analytics;
+   import com.adobe.marketing.mobile.Identity;
+   import com.adobe.marketing.mobile.LoggingMode;
+   import com.adobe.marketing.mobile.MobileCore;
+   
+   public class MainApp extends Application {
+       @Override
+       public void onCreate() {
+           super.onCreate();
+   
+           MobileCore.setApplication(this);
+           MobileCore.setLogLevel(LoggingMode.VERBOSE);
+   
+           try {
+                MobileCore.configureWithAppID("your_adobe_app_id");
+   
+                AdjustAdobeExtensionConfig config =
+                        new AdjustAdobeExtensionConfig(AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX);
+                config.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListener() {});
+                AdjustAdobeExtension.setConfiguration(config);
+           } catch (Exception e) {
+                Log.e("example", "Exception occurred during configuration: " + e.getMessage());
+           }
+   
+           try {
+           List<Class<? extends Extension>> extensions = Arrays.asList(
+                   Analytics.EXTENSION,
+                   Identity.EXTENSION,
+                   AdjustAdobeExtension.EXTENSION);
+           MobileCore.registerExtensions(extensions, new AdobeCallback<Object>() {
+               @Override
+               public void call(Object o) {
+                   Log.d("example", "Adjust Adobe Extension SDK initialized");
+               }
+           });
+           } catch (Exception e) {
+                Log.e("example", "Exception occurred while registering Extension: " + e.getMessage());
+           }
+       }
+   }
+   ```
+   {% /codeblock %}
+
+1. Create a new public function called `launchReceivedDeeplink` inside your `OnDeferredDeeplinkResponseListener` declaration. This method takes a `Uri` argument and returns a `boolean`.
+
+   {% codeblock
+      title="MainApp.java"
+      collapse="1-25, 30-50"
+      highlight="{range: 27-28}" %}
+   ```java
+   import android.app.Application;
+   import android.util.Log;
+   
+   import com.adjust.adobeextension.AdjustAdobeExtension;
+   import com.adjust.adobeextension.AdjustAdobeExtensionConfig;
+   import com.adobe.marketing.mobile.AdobeCallback;
+   import com.adobe.marketing.mobile.Extension;
+   import com.adobe.marketing.mobile.Analytics;
+   import com.adobe.marketing.mobile.Identity;
+   import com.adobe.marketing.mobile.LoggingMode;
+   import com.adobe.marketing.mobile.MobileCore;
+   
+   public class MainApp extends Application {
+       @Override
+       public void onCreate() {
+           super.onCreate();
+   
+           MobileCore.setApplication(this);
+           MobileCore.setLogLevel(LoggingMode.VERBOSE);
+   
+           try {
+                MobileCore.configureWithAppID("your_adobe_app_id");
+   
+                AdjustAdobeExtensionConfig config =
+                        new AdjustAdobeExtensionConfig(AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX);
+                config.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListener() {
+                    @Override
+                    public boolean launchReceivedDeeplink(Uri deeplink) {}
+                });
+                AdjustAdobeExtension.setConfiguration(config);
+           } catch (Exception e) {
+                Log.e("example", "Exception occurred during configuration: " + e.getMessage());
+           }
+   
+           try {
+           List<Class<? extends Extension>> extensions = Arrays.asList(
+                   Analytics.EXTENSION,
+                   Identity.EXTENSION,
+                   AdjustAdobeExtension.EXTENSION);
+           MobileCore.registerExtensions(extensions, new AdobeCallback<Object>() {
+               @Override
+               public void call(Object o) {
+                   Log.d("example", "Adjust Adobe Extension SDK initialized");
+               }
+           });
+           } catch (Exception e) {
+                Log.e("example", "Exception occurred while registering Extension: " + e.getMessage());
+           }
+       }
+   }
+   ```
+   {% /codeblock %}
+
+1. Add an `if` condition to the `launchReceivedDeeplink` to check if the `deeplink` contains the value `"no_open"`. If the string is found, the function returns `false`, meaning that the app shouldn't open the deferred deep link.
+
+   {% codeblock
+      title="MainApp.java"
+      collapse="1-26, 33-54"
+      highlight="{range: 29-31}" %}
+   ```java
+   import android.app.Application;
+   import android.util.Log;
+   
+   import com.adjust.adobeextension.AdjustAdobeExtension;
+   import com.adjust.adobeextension.AdjustAdobeExtensionConfig;
+   import com.adobe.marketing.mobile.AdobeCallback;
+   import com.adobe.marketing.mobile.Extension;
+   import com.adobe.marketing.mobile.Analytics;
+   import com.adobe.marketing.mobile.Identity;
+   import com.adobe.marketing.mobile.LoggingMode;
+   import com.adobe.marketing.mobile.MobileCore;
+   
+   public class MainApp extends Application {
+       @Override
+       public void onCreate() {
+           super.onCreate();
+   
+           MobileCore.setApplication(this);
+           MobileCore.setLogLevel(LoggingMode.VERBOSE);
+   
+           try {
+                MobileCore.configureWithAppID("your_adobe_app_id");
+   
+                AdjustAdobeExtensionConfig config =
+                        new AdjustAdobeExtensionConfig(AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX);
+                config.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListener() {
+                    @Override
+                    public boolean launchReceivedDeeplink(Uri deeplink) {
+                        if (deeplink.contains("no_open")) {
+                            return false;
+                        }
+                    }
+                });
+                AdjustAdobeExtension.setConfiguration(config);
+           } catch (Exception e) {
+                Log.e("example", "Exception occurred during configuration: " + e.getMessage());
+           }
+   
+           try {
+           List<Class<? extends Extension>> extensions = Arrays.asList(
+                   Analytics.EXTENSION,
+                   Identity.EXTENSION,
+                   AdjustAdobeExtension.EXTENSION);
+           MobileCore.registerExtensions(extensions, new AdobeCallback<Object>() {
+               @Override
+               public void call(Object o) {
+                   Log.d("example", "Adjust Adobe Extension SDK initialized");
+               }
+           });
+           } catch (Exception e) {
+                Log.e("example", "Exception occurred while registering Extension: " + e.getMessage());
+           }
+       }
+   }
+   ```
+   {% /codeblock %}
+
+1. Finally, add an `else` block to return `true` if the deep link doesn't contain `"no_open"`.
+
+   {% codeblock title="MainApp.java" highlight="{range: 31-32}" %}
+   ```java
+   import android.app.Application;
+   import android.util.Log;
+   
+   import com.adjust.adobeextension.AdjustAdobeExtension;
+   import com.adjust.adobeextension.AdjustAdobeExtensionConfig;
+   import com.adobe.marketing.mobile.AdobeCallback;
+   import com.adobe.marketing.mobile.Extension;
+   import com.adobe.marketing.mobile.Analytics;
+   import com.adobe.marketing.mobile.Identity;
+   import com.adobe.marketing.mobile.LoggingMode;
+   import com.adobe.marketing.mobile.MobileCore;
+   
+   public class MainApp extends Application {
+       @Override
+       public void onCreate() {
+           super.onCreate();
+   
+           MobileCore.setApplication(this);
+           MobileCore.setLogLevel(LoggingMode.VERBOSE);
+   
+           try {
+                MobileCore.configureWithAppID("your_adobe_app_id");
+   
+                AdjustAdobeExtensionConfig config =
+                        new AdjustAdobeExtensionConfig(AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX);
+                config.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListener() {
+                    @Override
+                    public boolean launchReceivedDeeplink(Uri deeplink) {
+                        if (deeplink.contains("no_open")) {
+                            return false;
+                        } else {
+                            return true;
+                        }
+                    }
+                });
+                AdjustAdobeExtension.setConfiguration(config);
+           } catch (Exception e) {
+                Log.e("example", "Exception occurred during configuration: " + e.getMessage());
+           }
+   
+           try {
+           List<Class<? extends Extension>> extensions = Arrays.asList(
+                   Analytics.EXTENSION,
+                   Identity.EXTENSION,
+                   AdjustAdobeExtension.EXTENSION);
+           MobileCore.registerExtensions(extensions, new AdobeCallback<Object>() {
+               @Override
+               public void call(Object o) {
+                   Log.d("example", "Adjust Adobe Extension SDK initialized");
+               }
+           });
+           } catch (Exception e) {
+                Log.e("example", "Exception occurred while registering Extension: " + e.getMessage());
+           }
+       }
+   }
+   ```
+   {% /codeblock %}
+
+That's it! When a user opens your app with a deferred deep link, the Adjust Extension will check to see if the link contains the string `"no_open"` and won't open the deep link if it finds the string.

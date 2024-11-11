@@ -1,33 +1,343 @@
 ---
-title: Configure push tokens
-description: Configure push tokens for audiences and uninstall and reinstall measurement.
-sidebar-position: 7
+title: Send push tokens
+description: Send push tokens to Adjust to inform audiences and uninstall and reinstall measurement.
+sidebar-position: 8
 ---
 
 Push notifications enable you to deliver personalized content to your users. You can use deep links to direct users to specific pages in your app, and measure reattributions.
 
-Each device generates a unique push token that's used to target it. To communicate a device's push token with Adjust, add it to your `AdjustAdobeExtensionConfig` instance.
-
 - The push token is a unique identifier that can be used to sort [Audiences](https://help.adjust.com/en/article/audiences) and client callbacks.
 - Push tokens are also required for [uninstall and reinstall measurement](https://help.adjust.com/en/article/uninstalls-reinstalls).
 
+## How it works {% #how-it-works %}
+
+Each device generates a unique push token that's used to target it. The push token is sent to Adjust when the following information is passed to the `MobileCore.trackAction` API:
+
+1. `AdjustAdobeExtension.ADOBE_ADJUST_ACTION_SET_PUSH_TOKEN`: a string constant that maps to the `setPushToken` method.
+1. `contextData`: a HashMap of values used to configure your push token.
+
+When you call `MobileCore.trackAction` with these arguments, the Adjust extension the token to the `setPushToken` method  and sends the information to Adjust.
+
+## Reference {% #reference %}
+
+The `contextData` HashMap holds information about an action. To configure your push token, add the following key-value pair to your HashMap.
+
+{% deflist %}
+`AdjustAdobeExtension.ADOBE_ADJUST_PUSH_TOKEN`
+
+: The device's push token.
+{% /deflist %}
+
 ## Example: Send a push token {% #example-send-push-token %}
 
-This code sample demonstrates how to use the `MobileCore.trackAction` API to send your push token to Adjust.
-
-To configure your event, follow these steps:
-
-1. Create a new variable called `action`.
-1. Assign `AdjustAdobeExtension.ADOBE_ADJUST_ACTION_SET_PUSH_TOKEN` to the variable you created.
-1. Create a HashMap to hold your Adjust push token. The example below sets the following `contextData`:
-   - Key: `AdjustAdobeExtension.ADOBE_ADJUST_PUSH_TOKEN`
-   - Value: `"your_push_token"`
-1. Send the information to Adjust: Pass the `action` variable and HashMap to the `MobileCore.trackAction` method.
+To send a push token to Adjust, you need to add a function to your main activity. If you followed the [integration guide](/en/sdk/adobe-extension/android/integration), your `MainActivity.java` file should look something like this:
 
 ```java
-String action = AdjustAdobeExtension.ADOBE_ADJUST_ACTION_SET_PUSH_TOKEN;
-Map<String, String> contextData= new HashMap<String, String>();
-contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_PUSH_TOKEN, "your_push_token");
+// MainActivity.java
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.view.View;
 
-MobileCore.trackAction(action, contextData);
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustDeeplink;
+
+public class MainActivity extends AppCompatActivity {
+   @Override
+   protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      setContentView(R.layout.activity_main);
+
+      Intent intent = getIntent();
+      Uri data = intent.getData();
+      AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+      Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
+   }
+}
 ```
+
+Let's add a new function to this file to send a push token to Adjust. For the purposes of this tutorial, we'll create new function called `sendPushTokenToAdjust` which will send a push token whenever it's called.
+
+1. First, import the following classes:
+
+   - `com.adobe.marketing.mobile.MobileCore`: this class is used to send information to Adobe and Adjust.
+   - `java.util.HashMap`: this class is used to generate our `contextData` HashMap.
+   - `java.util.Map`: this class is used to type our `contextData` HashMap.
+
+   {% codeblock
+      title="MainActivity.java"
+      highlight="{range: 10}, {range: 12-13}" %}
+   ```java
+   import android.content.Intent;
+   import android.net.Uri;
+   import android.os.Bundle;
+   import android.view.View;
+   
+   import androidx.appcompat.app.AppCompatActivity;
+   
+   import com.adjust.sdk.Adjust;
+   import com.adjust.sdk.AdjustDeeplink;
+   import com.adobe.marketing.mobile.MobileCore;
+   
+   import java.util.HashMap;
+   import java.util.Map;
+   
+   public class MainActivity extends AppCompatActivity {
+      @Override
+      protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_main);
+   
+         Intent intent = getIntent();
+         Uri data = intent.getData();
+         AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+         Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
+      }
+   }
+   ```
+   {% /codeblock %}
+
+1. First, import the following classes:
+
+   - `com.adobe.marketing.mobile.MobileCore`: this class is used to send information to Adobe and Adjust.
+   - `java.util.HashMap`: this class is used to generate our `contextData` HashMap.
+   - `java.util.Map`: this class is used to type our `contextData` HashMap.
+
+   {% codeblock
+      title="MainActivity.java"
+      highlight="{range: 10}, {range: 12-13}" %}
+   ```java
+   import android.content.Intent;
+   import android.net.Uri;
+   import android.os.Bundle;
+   import android.view.View;
+   
+   import androidx.appcompat.app.AppCompatActivity;
+   
+   import com.adjust.sdk.Adjust;
+   import com.adjust.sdk.AdjustDeeplink;
+   import com.adobe.marketing.mobile.MobileCore;
+   
+   import java.util.HashMap;
+   import java.util.Map;
+   
+   public class MainActivity extends AppCompatActivity {
+      @Override
+      protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_main);
+   
+         Intent intent = getIntent();
+         Uri data = intent.getData();
+         AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+         Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
+      }
+   }
+   ```
+   {% /codeblock %}
+
+1. Next, create a new function inside the `MainActivity` class called `sendPushTokenToAdjust`. This function takes [a `View`](https://developer.android.com/reference/android/view/View) as an argument and returns `void.`
+
+   {% codeblock
+      title="MainActivity.java"
+      highlight="{range: 27}"
+      collapse="1-14, 16-26" %}
+   ```java
+   import android.content.Intent;
+   import android.net.Uri;
+   import android.os.Bundle;
+   import android.view.View;
+   
+   import androidx.appcompat.app.AppCompatActivity;
+   
+   import com.adjust.sdk.Adjust;
+   import com.adjust.sdk.AdjustDeeplink;
+   import com.adobe.marketing.mobile.MobileCore;
+   
+   import java.util.HashMap;
+   import java.util.Map;
+   
+   public class MainActivity extends AppCompatActivity {
+      @Override
+      protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_main);
+   
+         Intent intent = getIntent();
+         Uri data = intent.getData();
+         AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+         Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
+      }
+   
+      public void sendPushTokenToAdjust(View view) {}
+   }
+   ```
+   {% /codeblock %}
+
+1. Inside the `sendPushTokenToAdjust` function, declare a new `String` variable called `action` and assign it the value `AdjustAdobeExtension.ADOBE_ADJUST_ACTION_SET_PUSH_TOKEN`. This is used to tell `MobileCore.trackAction` which action we want to handle.
+
+   {% codeblock
+      title="MainActivity.java"
+      highlight="{range: 28}"
+      collapse="1-26" %}
+   ```java
+   import android.content.Intent;
+   import android.net.Uri;
+   import android.os.Bundle;
+   import android.view.View;
+   
+   import androidx.appcompat.app.AppCompatActivity;
+   
+   import com.adjust.sdk.Adjust;
+   import com.adjust.sdk.AdjustDeeplink;
+   import com.adobe.marketing.mobile.MobileCore;
+   
+   import java.util.HashMap;
+   import java.util.Map;
+   
+   public class MainActivity extends AppCompatActivity {
+      @Override
+      protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_main);
+   
+         Intent intent = getIntent();
+         Uri data = intent.getData();
+         AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+         Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
+      }
+   
+      public void sendPushTokenToAdjust(View view) {
+         String action = AdjustAdobeExtension.ADOBE_ADJUST_ACTION_SET_PUSH_TOKEN;
+      }
+   }
+   ```
+   {% /codeblock %}
+
+1. Create a new HashMap variable called `contextData`. This is used to hold the properties of the action.
+
+   {% codeblock
+      title="MainActivity.java"
+      highlight="{range: 29}"
+      collapse="1-26" %}
+   ```java
+   import android.content.Intent;
+   import android.net.Uri;
+   import android.os.Bundle;
+   import android.view.View;
+   
+   import androidx.appcompat.app.AppCompatActivity;
+   
+   import com.adjust.sdk.Adjust;
+   import com.adjust.sdk.AdjustDeeplink;
+   import com.adobe.marketing.mobile.MobileCore;
+   
+   import java.util.HashMap;
+   import java.util.Map;
+   
+   public class MainActivity extends AppCompatActivity {
+      @Override
+      protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_main);
+   
+         Intent intent = getIntent();
+         Uri data = intent.getData();
+         AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+         Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
+      }
+   
+      public void sendPushTokenToAdjust(View view) {
+         String action = AdjustAdobeExtension.ADOBE_ADJUST_ACTION_SET_PUSH_TOKEN;
+         Map<String, String> contextData = new HashMap<String, String>();
+      }
+   }
+   ```
+   {% /codeblock %}
+
+1. Add your push token to the HashMap using the `AdjustAdobeExtension.ADOBE_ADJUST_PUSH_TOKEN` key. In this example, we set the push token to `"de18dbf8-f38a-4962-8f1e-44abcf43055d"`.
+
+   {% codeblock
+      title="MainActivity.java"
+      highlight="{range: 30}"
+      collapse="1-26" %}
+   ```java
+   import android.content.Intent;
+   import android.net.Uri;
+   import android.os.Bundle;
+   import android.view.View;
+   
+   import androidx.appcompat.app.AppCompatActivity;
+   
+   import com.adjust.sdk.Adjust;
+   import com.adjust.sdk.AdjustDeeplink;
+   import com.adobe.marketing.mobile.MobileCore;
+   
+   import java.util.HashMap;
+   import java.util.Map;
+   
+   public class MainActivity extends AppCompatActivity {
+      @Override
+      protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_main);
+   
+         Intent intent = getIntent();
+         Uri data = intent.getData();
+         AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+         Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
+      }
+   
+      public void sendPushTokenToAdjust(View view) {
+         String action = AdjustAdobeExtension.ADOBE_ADJUST_ACTION_TRACK_EVENT;
+         Map<String, String> contextData = new HashMap<String, String>();
+         contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_PUSH_TOKEN, "de18dbf8-f38a-4962-8f1e-44abcf43055d");
+      }
+   }
+   ```
+   {% /codeblock %}
+
+1. Finally, call `MobileCore.trackAction` with your `action` and `contextData` variables to send the push token to Adjust.
+
+   {% codeblock title="MainActivity.java" highlight="{range: 32}" %}
+   ```java
+   import android.content.Intent;
+   import android.net.Uri;
+   import android.os.Bundle;
+   import android.view.View;
+   
+   import androidx.appcompat.app.AppCompatActivity;
+   
+   import com.adjust.sdk.Adjust;
+   import com.adjust.sdk.AdjustDeeplink;
+   import com.adobe.marketing.mobile.MobileCore;
+   
+   import java.util.HashMap;
+   import java.util.Map;
+   
+   public class MainActivity extends AppCompatActivity {
+      @Override
+      protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_main);
+   
+         Intent intent = getIntent();
+         Uri data = intent.getData();
+         AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+         Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
+      }
+   
+      public void sendPushTokenToAdjust(View view) {
+         String action = AdjustAdobeExtension.ADOBE_ADJUST_ACTION_TRACK_EVENT;
+         Map<String, String> contextData = new HashMap<String, String>();
+         contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_PUSH_TOKEN, "de18dbf8-f38a-4962-8f1e-44abcf43055d");
+   
+         MobileCore.trackAction(action, contextData);
+      }
+   }
+   ```
+   {% /codeblock %}
+
+That's it! When the user performs an action that maps to the `sendPushTokenToAdjust` function, your push token is sent to Adjust.
