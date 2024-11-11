@@ -9,16 +9,16 @@ interface Props {
 const { child } = Astro.props;
 const childVersion = child?.version ?? "0";
 const childCategory = child?.slug?.includes("/sdk") ? "sdk" : "api";
-const categoryId = `category-${childCategory}-${childVersion}`;
+const categoryClass = `category-${childCategory}-${childVersion}`;
 ---
 
 <div
-  id={categoryId}
   class={classNames(
     "xs:w-full lg:w-[calc(33.3%-8px)] h-auto min-h-[144px] group",
     {
       hidden: !!child.version,
     },
+    categoryClass,
   )}
 >
   <a class="!no-underline !text-black" href={`/${child.slug}`}>
@@ -37,19 +37,38 @@ const categoryId = `category-${childCategory}-${childVersion}`;
 
 <script>
   import { $versions as $sdkVersions } from "@store/sdkVersionsStore";
-  import { $versions as $apiVersions } from "@store/apiVersionsStore";
 
   document.addEventListener("DOMContentLoaded", () => {
-    const currentSdkVersion = $sdkVersions.get()?.currentVersion?.value || "0";
-    const currentApiVersion = $apiVersions.get()?.currentVersion?.value || "0";
+    const currentSdkVersion = $sdkVersions.get().currentVersion.value || "v5";
+    // Helper function to hide all versioned items initially
+    const hideAllVersionedItems = () => {
+      const versionedItems = document.querySelectorAll(
+        "[class*='category-sdk']",
+      );
+      versionedItems.forEach((item) => {
+        if (!item.classList.contains("hidden")) item.classList.add("hidden");
+      });
+    };
 
-    const categories = document.querySelectorAll(
-      `#category-sdk-${currentSdkVersion}, #category-api-${currentApiVersion}, #category-version-0`,
-    );
+    // Helper function to show items for the current versions
+    const showCurrentVersionItems = (sdkVersion: string) => {
+      hideAllVersionedItems();
+      // Select and show items for the current SDK versions
+      const versionedItems = document.querySelectorAll(
+        `.category-sdk-${sdkVersion}, .category-sdk-0`,
+      );
+      versionedItems.forEach((item) => {
+        item.classList.remove("hidden");
+        item.classList.add("block");
+      });
+    };
 
-    categories.forEach((item) => {
-      item.classList.remove("hidden");
-      item.classList.add("block");
+    // Subscribe to version changes in the Nanostores
+    $sdkVersions.subscribe((store) => {
+      const sdkVersion = store.currentVersion?.value;
+      if (sdkVersion) {
+        showCurrentVersionItems(sdkVersion);
+      }
     });
   });
 </script>

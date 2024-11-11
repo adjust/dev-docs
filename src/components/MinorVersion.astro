@@ -10,9 +10,10 @@ interface Props {
   changed?: string;
   removed?: string;
   size?: "medium" | "large";
+  link?: string;
 }
 
-const { added, changed, removed, size = "medium" } = Astro.props;
+const { added, changed, removed, size = "medium", link } = Astro.props;
 
 let version: string | undefined;
 let color = "neutral";
@@ -27,21 +28,39 @@ if (added) {
   version = t("minorversion.removed").replace("${version}", removed);
   color = "negative";
 }
-
-let content = "";
-if (Astro.slots.has("default")) {
-  content = await Astro.slots.render("default");
-}
 ---
 
-<div class=`mb-4 badge ${size}-badge ${color}-badge`>
-  <div class="inline-flex align-middle">
-    <svg><use href=`#${size}-${color}-badge-icon`></use></svg>
-  </div>
-  <span
-    class="max-w-[12em] w-auto overflow-hidden whitespace-nowrap overflow-ellipsis"
-    set:html={version}
-  />
-</div>
-
+{
+  link ? (
+    <a href={link} title={t("minorversion.release-notes")}>
+      <div class={`mb-4 badge ${size}-badge ${color}-badge`}>
+        <div class="inline-flex align-middle">
+          <svg>
+            <use href={`#${size}-${color}-badge-icon`} />
+          </svg>
+        </div>
+        <span
+          class="max-w-[12em] w-auto overflow-hidden whitespace-nowrap overflow-ellipsis"
+          set:html={
+            link
+              ? `${version} <svg class="inline mb-1"><use href="#external-link"></use></svg>`
+              : version
+          }
+        />
+      </div>
+    </a>
+  ) : (
+    <div class={`mb-4 badge ${size}-badge ${color}-badge`}>
+      <div class="inline-flex align-middle">
+        <svg>
+          <use href={`#${size}-${color}-badge-icon`} />
+        </svg>
+      </div>
+      <span
+        class="max-w-[12em] w-auto overflow-hidden whitespace-nowrap overflow-ellipsis"
+        set:html={version}
+      />
+    </div>
+  )
+}
 <slot />

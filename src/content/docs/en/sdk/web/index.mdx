@@ -6,15 +6,24 @@ slug: en/sdk/web
 sidebar-position: 8
 ---
 
-The Adjust Web SDK enables you to record attribution, events, and more in your web app. This guide shows you how to integrate the Adjust SDK with your app.
+The Adjust Web SDK enables you to record attribution, events, and other data in your web app. This guide shows you how to integrate the SDK with your app.
+
+<Callout type="important">
+
+To use the Web SDK, you must create a dedicated web app in the Adjust dashboard, and connect the two. Don't integrate the Web SDK with a mobile app that already includes the Mobile App SDK.
+
+</Callout>
 
 ## 1. Add the SDK to your project {#add-the-sdk-to-your-project}
 
-To get started, you need to add the SDK to your web app. The Adjust SDK works in both CommonJS and AMD (Asynchronous Module Definition) environments and can be accessed through a global `Adjust` namespace when loaded through a CDN (Content Delivery Network).
+To get started, add the SDK to your web app. The Adjust SDK works in both CommonJS and AMD (Asynchronous Module Definition) environments. You can access it through the global `Adjust` namespace when loaded through a CDN (Content Delivery Network).
 
 ### Using a CDN {#using-a-cdn}
 
-When loading the SDK through a CDN, you should use a minified version in your production build. You can specify a version by adding it to the CDN target like this: `https://cdn.adjust.com/adjust-5.6.0.min.js`. You can get the latest version by targeting the `adjust-latest` package like this: `https://cdn.adjust.com/adjust-latest.min.js`. This package updates automatically so you don't need to change the target file.
+When loading the SDK through a CDN, you should use a minified version in your production build.
+
+-  To load a specific version, add it to the CDN target, like this: `https://cdn.adjust.com/adjust-5.7.0.min.js`.
+-  To load the latest version, use the `adjust-latest` package, like this: `https://cdn.adjust.com/adjust-latest.min.js`. This package updates automatically so you don't need to change the target file.
 
 <Callout type="tip">
 
@@ -22,59 +31,12 @@ The SDK files are cached to enable fast service. This cache updates every 30 min
 
 </Callout>
 
-To load the SDK through a CDN, add the following snippet between your web app's `<head>` tags:
+To load the SDK through a CDN, add the following snippet inside your web app's `<head>` element:
 
+{/* prettier-ignore */}
 ```html
 <script type="application/javascript">
-   !(function (t, e, a, r, n, s, d, l, o, i, u) {
-      (t.Adjust = t.Adjust || {}), (t.Adjust_q = t.Adjust_q || []);
-      for (var c = 0; c < l.length; c++) o(t.Adjust, t.Adjust_q, l[c]);
-      (i = e.createElement(a)),
-         (u = e.getElementsByTagName(a)[0]),
-         (i.async = !0),
-         (i.src = "https://cdn.adjust.com/adjust-latest.min.js"),
-         (i.onload = function () {
-            for (var e = 0; e < t.Adjust_q.length; e++)
-               t.Adjust[t.Adjust_q[e][0]].apply(t.Adjust, t.Adjust_q[e][1]);
-            t.Adjust_q = [];
-         }),
-         u.parentNode.insertBefore(i, u);
-   })(
-      window,
-      document,
-      "script",
-      0,
-      0,
-      0,
-      0,
-      [
-         "initSdk",
-         "getAttribution",
-         "getWebUUID",
-         "setReferrer",
-         "trackEvent",
-         "addGlobalCallbackParameters",
-         "addGlobalPartnerParameters",
-         "removeGlobalCallbackParameter",
-         "removeGlobalPartnerParameter",
-         "clearGlobalCallbackParameters",
-         "clearGlobalPartnerParameters",
-         "switchToOfflineMode",
-         "switchBackToOnlineMode",
-         "stop",
-         "restart",
-         "gdprForgetMe",
-         "disableThirdPartySharing",
-         "initSmartBanner",
-         "showSmartBanner",
-         "hideSmartBanner",
-      ],
-      function (t, e, a) {
-         t[a] = function () {
-            e.push([a, arguments]);
-         };
-      },
-   );
+!function(t,r,e,a,n,o,i,l,c,s,d,h,u){var f=i+"_q",m=i+"_c";t[i]=t[i]||{},t[f]=t[f]||[],t[m]=t[m]||[];for(let r=0;r<l.length;r++)d(t[i],t[f],l[r]);for(let r=0;r<c.length;r++){var g,b=c[r][0],p=c[r][1];t[i][b]=function(...r){return g=this,t[m].push((function(){g[s]=new t[i][b](...r)})),g};for(let r=0;r<p.length;r++){const e=p[r];t[i][b].prototype[e]=function(...r){t[m].push((function(){g[s][e](...r)}))}}}h=r.createElement(e),u=r.getElementsByTagName(e)[0],h.async=!0,h.src="https://cdn.adjust.com/adjust-latest.min.js",h.onload=function(){for(var r=0;r<t[m].length;r++)t[m][r]();t[m]=[];for(r=0;r<t[f].length;r++)t[f][r][1][0][s]?t[i][t[f][r][0]](t[f][r][1][0][s]):t[i][t[f][r][0]].apply(t[i],t[f][r][1]);t[f]=[]},u.parentNode.insertBefore(h,u)}(window,document,"script",0,0,0,"Adjust",["initSdk","getAttribution","getWebUUID","waitForAttribution","waitForWebUUID","setReferrer","trackEvent","addGlobalCallbackParameters","addGlobalPartnerParameters","removeGlobalCallbackParameter","removeGlobalPartnerParameter","clearGlobalCallbackParameters","clearGlobalPartnerParameters","switchToOfflineMode","switchBackToOnlineMode","stop","restart","gdprForgetMe","disableThirdPartySharing","trackThirdPartySharing","initSmartBanner","showSmartBanner","hideSmartBanner"],[["ThirdPartySharing",["addGranularOption","addPartnerSharingSetting"]]],"__realObj",(function(t,r,e){t[e]=function(){r.push([e,arguments])}}));
 </script>
 ```
 
@@ -82,61 +44,12 @@ The Adjust SDK loads on each page and initiates once per page load.
 
 #### Subresource Integrity {#subresource-integrity}
 
-If you want to use [Subresource Integrity](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity) checks to mitigate against XSS (Cross-Site Scripting) attacks, you can validate the package before running it by using the following call:
+You want to use [Subresource Integrity](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity) checks to mitigate XSS (Cross-Site Scripting) attacks. To validate the package before running it, use the following call (note the additional `crossOrigin`, `integrity`, and encoded hash):
 
+{/* prettier-ignore */}
 ```html
 <script type="application/javascript">
-   !(function (t, e, a, r, n, s, o, d, l, i, u) {
-      (t.Adjust = t.Adjust || {}), (t.Adjust_q = t.Adjust_q || []);
-      for (var c = 0; c < d.length; c++) l(t.Adjust, t.Adjust_q, d[c]);
-      (i = e.createElement(a)),
-         (u = e.getElementsByTagName(a)[0]),
-         (i.async = !0),
-         (i.src = "https://cdn.adjust.com/adjust-latest.min.js"),
-         (i.crossOrigin = "anonymous"),
-         (i.integrity = s),
-         (i.onload = function () {
-            for (var e = 0; e < t.Adjust_q.length; e++)
-               t.Adjust[t.Adjust_q[e][0]].apply(t.Adjust, t.Adjust_q[e][1]);
-            t.Adjust_q = [];
-         }),
-         u.parentNode.insertBefore(i, u);
-   })(
-      window,
-      document,
-      "script",
-      0,
-      0,
-      "sha384-BqbTn9xyk5DPznti1ZP8ksxKiOFhKufLBFWm5eNMCnZABFSG1eqQfcu5dsiZJHu5",
-      0,
-      [
-         "initSdk",
-         "getAttribution",
-         "getWebUUID",
-         "setReferrer",
-         "trackEvent",
-         "addGlobalCallbackParameters",
-         "addGlobalPartnerParameters",
-         "removeGlobalCallbackParameter",
-         "removeGlobalPartnerParameter",
-         "clearGlobalCallbackParameters",
-         "clearGlobalPartnerParameters",
-         "switchToOfflineMode",
-         "switchBackToOnlineMode",
-         "stop",
-         "restart",
-         "gdprForgetMe",
-         "disableThirdPartySharing",
-         "initSmartBanner",
-         "showSmartBanner",
-         "hideSmartBanner",
-      ],
-      function (t, e, a) {
-         t[a] = function () {
-            e.push([a, arguments]);
-         };
-      },
-   );
+!function(t,r,e,a,n,o,i,l,s,c,d,h,u){var f=i+"_q",g=i+"_c";t[i]=t[i]||{},t[f]=t[f]||[],t[g]=t[g]||[];for(let r=0;r<l.length;r++)d(t[i],t[f],l[r]);for(let r=0;r<s.length;r++){var m,b=s[r][0],p=s[r][1];t[i][b]=function(...r){return m=this,t[g].push((function(){m[c]=new t[i][b](...r)})),m};for(let r=0;r<p.length;r++){const e=p[r];t[i][b].prototype[e]=function(...r){t[g].push((function(){m[c][e](...r)}))}}}h=r.createElement(e),u=r.getElementsByTagName(e)[0],h.async=!0,h.src="https://cdn.adjust.com/adjust-latest.min.js",o&&(h.crossOrigin="anonymous",h.integrity=o),h.onload=function(){for(var r=0;r<t[g].length;r++)t[g][r]();t[g]=[];for(r=0;r<t[f].length;r++)t[f][r][1][0][c]?t[i][t[f][r][0]](t[f][r][1][0][c]):t[i][t[f][r][0]].apply(t[i],t[f][r][1]);t[f]=[]},u.parentNode.insertBefore(h,u)}(window,document,"script",0,0,"sha384-WE6fJqvcE0mjcC/fPYooIQAOhsHpTDVYjC52i6Asn3LECEpjHyI5zUwD8/5esthg","Adjust",["initSdk","getAttribution","getWebUUID","waitForAttribution","waitForWebUUID","setReferrer","trackEvent","addGlobalCallbackParameters","addGlobalPartnerParameters","removeGlobalCallbackParameter","removeGlobalPartnerParameter","clearGlobalCallbackParameters","clearGlobalPartnerParameters","switchToOfflineMode","switchBackToOnlineMode","stop","restart","gdprForgetMe","disableThirdPartySharing","trackThirdPartySharing","initSmartBanner","showSmartBanner","hideSmartBanner"],[["ThirdPartySharing",["addGranularOption","addPartnerSharingSetting"]]],"__realObj",(function(t,r,e){t[e]=function(){r.push([e,arguments])}}));
 </script>
 ```
 
@@ -171,12 +84,14 @@ $ pnpm add @adjustcom/adjust-web-sdk
 
 ## 2. Initialize the SDK {#initialize-the-sdk}
 
-Once you've installed the SDK, you need to initialize it. To do this, call the `initSdk` method. This method takes a number of arguments that customize how the SDK works in your app.
+Once you've installed the SDK, you need to initialize it. To do this, call the `initSdk` method. This method has arguments that you can use to customize how the SDK works in your app.
 
-You must add the following arguments to your `initSdk` call to initialize the SDK:
+To initialize the SDK, you must add the following arguments to your `initSdk` call:
 
 -  `appToken` (`string`): Your [Adjust app token](https://help.adjust.com/en/article/app-token-and-reporting-currency#view-your-app-details).
--  `environment` (`string`): The environment you want to run the SDK in. Pass `sandbox` to run the SDK in sandbox mode for testing. Pass `production` to run the SDK in production mode for release.
+-  `environment` (`string`): The environment you want to run the SDK in:
+   -  Pass `sandbox` to run the SDK in testing mode.
+   -  Pass `production` to run the SDK in production mode for release.
 
 ```js
 Adjust.initSdk({
@@ -187,6 +102,6 @@ Adjust.initSdk({
 
 <Callout type="seealso">
 
-To customize your Adjust SDK setup, check out the [configuration guide](/en/sdk/web/configuration).
+You can find the complete list of arguments and properties of Adjust's Web SDK in the [configuration guide](/en/sdk/web/configuration).
 
 </Callout>

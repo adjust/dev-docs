@@ -17,10 +17,11 @@ redirects:
 
 要启用深度链接，请进行下列操作：
 
+-  [ ] 在 Adjust 控制面板的 AppView 中为您的 iOS 和安卓应用设置[相同的品牌化域名](https://help.adjust.com/zh/article/set-up-branded-domain)。
 -  [ ] 为您的应用启用 Associated Domain \(关联域\)
 -  [ ] 在 Xcode 中配置您的深度链接
 
-## Enable Associated Domains {#enable-associated-domains}
+## 启用 Associated Domain{#enable-associated-domains}
 
 开始设置时，请在 Apple Developer 账户中启用 Associated Domain \(关联域\)，这样，您就能在应用中设置通用链接域了。为此，请按照以下步骤操作：
 
@@ -31,11 +32,11 @@ redirects:
 5. 确保勾选 **Capabilities** 下的 **Associated Domains** 。
 6. 点击 **保存** ，保存变更。
 
-## Configure deep links in Xcode {#configure-deep-links-in-xcode}
+## 在 XCode 中设置深度链接{#configure-deep-links-in-xcode}
 
 按照下方步骤操作，在您的 Xcode 项目中添加深度链接配置。
 
-### Adjust universal links domain {#adjust-universal-links-domain}
+### Adjust 通用链接和品牌化域名{#adjust-universal-links-domain}
 
 1. 使用 XCode 打开您的应用项目。
 2. 从左侧菜单中选择您的项目。
@@ -45,9 +46,15 @@ redirects:
 6. 选择添加选项 \( **\+** 图标\) 添加功能。
 7. 选择 **Associated Domains** 。
 8. 填写带有前缀的 Adjust 通用链接域名 `applinks:`
+
    -  `example.adj.st` 域使用示例：`applinks:example.adj.st`。
 
-### Custom URL scheme {#custom-url-scheme}
+9. 输入您[在 Adjust 中为应用设置品牌化域名](https://help.adjust.com/zh/article/set-up-branded-domain)时设置的品牌化链接域名。
+   -  `brandedDomain.go.link` 域使用示例：`brandedDomain.go.link`。
+
+如果您已经在使用`xxx.adj.st`作为通用链接域名，请不要将其移除。请将`xxx.adj.st`和`brandedDomain.go.link`继续保持为关联域名。
+
+### 自定义 URL 方案{#custom-url-scheme}
 
 <Callout type="tip">
 
@@ -68,19 +75,19 @@ redirects:
 
 该方案适用于您的生产版本 **和** 调试版本。
 
-## Modify your iOS app {#modify-your-ios-app}
+## 修改 iOS 应用{#modify-your-ios-app}
 
 要设置不同的深度链接场景，您需要先更新 iOS 应用。具体应用更新方式取决于您的应用是否使用[场景](https://developer.apple.com/documentation/uikit/app_and_environment/scenes)。
 
-### App doesn't use scenes {#app-doesn-t-use-scenes}
+### 不使用场景的应用{#app-doesn-t-use-scenes}
 
 如果您的应用不使用场景，请在应用委托中更新方法。
 
-#### Universal links {#universal-links}
+#### 通用链接{#universal-links}
 
 请在应用委托中更新 `application(_:continue:restorationHandler:)` 方法，调用 Adjust SDK 中的下列方法：
 
--  `ADJLinkResolution.resolveLink`: Call this method only if your marketing team requires the use of Adjust's Link Resolution solution. If the deep link uses a domain that matches an element in the `resolveUrlSuffixArray`, then the method attempts to resolve the deep link, and returns the resolved link. If the deep link doesn't match an element in this array, then the method passes through the original deep link, so you can pass all deep links to this method.
+-  `ADJLinkResolution.resolveLink`: 仅在营销团队需要使用 Adjust 链接解析解决方案时调用。如果深度链接使用的域与`resolveUrlSuffixArray`中的某一元素相匹配，那么方法将会尝试解析深度链接，并返回已解析的链接；如果没有匹配，那么方法就会通过最初的深度链接，您可以将所有深度链接传送至该方法。
 -  `Adjust.processDeeplink` 调用该方法，向 Adjust 服务器发送深度链接，用于记录信息。Adjust 和非 Adjust 深度链接均可以发送给该方法。Adjust 服务器会忽略不包含 Adjust 参数的所有深度链接。
 
 无论用户是否已经关闭应用，或应用是否在后台运行，只要用户点击您的通用链接，iOS 就会打开您的应用，将深度链接传送至 `application(_:continue:restorationHandler:)`。
@@ -96,22 +103,23 @@ func application(
     -> Bool {
 
     if userActivity.activityType == NSUserActivityTypeBrowsingWeb {
-        let incomingURL = userActivity.webpageURL
-
-        // call the below method to resolve deep link
-        ADJLinkResolution.resolveLink(
-        withUrl: incomingURL,
-        resolveUrlSuffixArray: ["email.example.com", "short.example.com"],
-        callback: { resolvedURL in
-            // add your code below to handle deep link
-            // (for example, open deep link content)
-            // resolvedURL object contains the deep link
-
-
-            // call the below method to send deep link to Adjust's servers
-            let deeplink = ADJDeeplink(deeplink: resolvedURL)!
-            Adjust.processDeeplink(deeplink)
-        })
+        if let incomingURL = userActivity.webpageURL {
+            // call the below method to resolve deep link
+            ADJLinkResolution.resolveLink(
+                with: incomingURL,
+                resolveUrlSuffixArray: ["email.example.com", "short.example.com"],
+                callback: { resolvedURL in
+                    // add your code below to handle deep link
+                    // (for example, open deep link content)
+                    // resolvedURL object contains the deep link
+                    if let resolvedDeeplink = resolvedURL {
+                        // call the below method to send deep link to Adjust's servers
+                        if let deeplink = ADJDeeplink(deeplink: resolvedDeeplink) {
+                            Adjust.processDeeplink(deeplink)
+                        }
+                    }
+                })
+        }
       } else {
           return false
       }
@@ -160,7 +168,7 @@ func application(
 </Tab>
 </Tabs>
 
-#### Custom URL scheme {#custom-url-scheme-1}
+#### 自定义 URL 方案{#custom-url-scheme-1}
 
 如果营销团队要求您设置自定义 URL 方案深度链接，请更新应用委托中的 `application(_:open:options:)` 方法，在 Adjust SDK 中调用 `Adjust.processDeeplink` 方法。该方法会将深度链接发送至 Adjust 后台用于记录。Adjust 和非 Adjust 深度链接均可以发送给该方法。Adjust 会忽略不包含 Adjust 参数的所有深度链接。
 
@@ -182,8 +190,9 @@ func application(
 
 
     // call the below method to send deep link to Adjust's servers
-    Adjust.processDeeplink(ADJDeeplink(deeplink: incomingURL))
-
+    if let deeplink = ADJDeeplink(deeplink: incomingURL) {
+        Adjust.processDeeplink(deeplink)
+    }
     return true
 }
 ```
@@ -211,19 +220,19 @@ func application(
 </Tab>
 </Tabs>
 
-### App uses scenes {#app-uses-scenes}
+### 使用场景的应用{#app-uses-scenes}
 
 如果您的应用使用场景，请在场景委托中更新方法。
 
-#### Universal links {#universal-links-1}
+#### 通用链接{#universal-links-1}
 
 1. 在 scene delegate \(场景委托\) 中更新 `scene(_:willConnectTo:options:)` 方法。如果用户在已关闭应用的前提下点击通用链接，那么 iOS 就会打开应用，将深度链接传递给该方法。
 2. 在 scene delegate \(场景委托\) 中更新 `scene(_:continue:)` 方法。如果用户在应用后台运行的前提下点击通用链接，那么 iOS 就会打开应用，将深度链接传递给该方法。
 
 上述方法会调用 Adjust SDK 中的下列方法：
 
--  `ADJLinkResolution.resolveLink`: Call this method only if your marketing team requires the use of Adjust's Link Resolution solution. If the deep link uses a domain that matches an element in the `resolveUrlSuffixArray`, then the method attempts to resolve the deep link, and returns the resolved link. If the deep link doesn't match an element in this array, then the method passes through the original deep link, so you can pass all deep links to this method.
--  `Adjust.processDeeplink` \- 调用该方法，向 Adjust 服务器发送深度链接，用于记录信息。Adjust 和非 Adjust 深度链接均可以发送给该方法。Adjust 服务器会忽略不包含 Adjust 参数的所有深度链接。
+-  `ADJLinkResolution.resolveLink`: 仅在营销团队需要使用 Adjust 链接解析解决方案时调用。如果深度链接使用的域与`resolveUrlSuffixArray`中的某一元素相匹配，那么方法将会尝试解析深度链接，并返回已解析的链接；如果没有匹配，那么方法就会通过最初的深度链接，您可以将所有深度链接传送至该方法。
+-  `Adjust.processDeeplink` \- 调用该方法，向 Adjust 服务器发送深度链接，用于记录信息。Adjust 和非 Adjust 深度链接均可以发送给该方法。Adjust 会忽略不包含 Adjust 参数的所有深度链接。
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -251,8 +260,9 @@ func scene(
 
 
         // call the below method to send deep link to Adjust's servers
-        let deeplink = ADJDeeplink(deeplink: resolvedURL)!
-         Adjust.processDeeplink(deeplink)
+        if let deeplink = ADJDeeplink(deeplink: resolvedURL) {
+            Adjust.processDeeplink(deeplink)
+        }
       })
 }
 
@@ -274,8 +284,9 @@ func scene(
 
 
             // call the below method to send deep link to Adjust's servers
-            let deeplink = ADJDeeplink(deeplink: resolvedURL)!
-            Adjust.processDeeplink(deeplink)
+            if let deeplink = ADJDeeplink(deeplink: resolvedURL) {
+                Adjust.processDeeplink(deeplink)
+            }
         })
     }
 }
@@ -342,12 +353,12 @@ func scene(
 </Tab>
 </Tabs>
 
-#### Custom URL scheme {#custom-url-scheme-2}
+#### 自定义 URL 方案{#custom-url-scheme-2}
 
 1. 在 scene delegate \(场景委托\) 中更新 `scene(_:willConnectTo:options:)` 方法。如果用户在已关闭应用的前提下点击自定义 URL 方案深度链接，那么 iOS 就会打开应用，将深度链接传递给该方法。
 2. 在 scene delegate \(场景委托\) 中更新 `scene(_:openURLContexts:)` 方法。如果用户在应用后台运行的前提下点击自定义 URL 方案深度链接，那么 iOS 就会打开应用，将深度链接传递给该方法。
 
-这些方法会在 Adjust SDK 中调用 `Adjust.appWillOpen` 方法。该方法会将深度链接发送至 Adjust 后台用于记录。Adjust 和非 Adjust 深度链接均可以发送给该方法。Adjust 会忽略不包含 Adjust 参数的所有深度链接。
+这些方法会在 Adjust SDK 中调用 `Adjust.processDeeplink` 方法。该方法会将深度链接发送至 Adjust 后台用于记录。Adjust 和非 Adjust 深度链接均可以发送给该方法。Adjust 会忽略不包含 Adjust 参数的所有深度链接。
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -368,7 +379,9 @@ func scene(
 
 
     // call the below method to send deep link to Adjust's servers
-    Adjust.processDeeplink(incomingURL)
+    if let deeplink = ADJDeeplink(deeplink: incomingURL) {
+        Adjust.processDeeplink(deeplink)
+    }
 }
 ```
 
@@ -388,7 +401,8 @@ func scene(
 
 
         // call the below method to send deep link to Adjust's servers
-        [Adjust processDeeplink:incomingURL];
+        ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:incomingURL];
+        [Adjust processDeeplink:deeplink];
     }
 }
 ```
