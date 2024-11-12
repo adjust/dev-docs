@@ -22,7 +22,7 @@ Here's what you need to do before updating to Adobe Air SDK v5:
 
 To start using Adobe Air SDK v5, you need to add it as a dependency in your project. To do this, follow these steps:
 
-```
+```actionscript
 package {
     import com.adjust.sdk.Adjust;
     import com.adjust.sdk.AdjustConfig;
@@ -31,9 +31,11 @@ package {
     }
 ```
 
-### Android permissions
+### Android permissions {%#android-permissions%}
 
 In Adobe Air SDK v4, you needed to declare several permissions so that your Adobe Air app for Android could access device information via the Adjust SDK for Android.
+
+{% codeblock title="AndroidManifest.xml"%}
 
 ```xml
 <uses-permission android:name="android.permission.INTERNET"/>
@@ -41,25 +43,21 @@ In Adobe Air SDK v4, you needed to declare several permissions so that your Adob
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 <uses-permission android:name="com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE" />
 ```
+{%/codeblock%}
 
-In Adobe Air SDK v5, you might not need to declare these permissions, depending on your setup.
+In Adobe Air SDK v5, you can delete some or all, depending on your setup.
 
-First, take advantage of two permissions included in the Adjust SDK for Android by default:
-- `android.permission.INTERNET`
-- `com.google.android.gms.permission.AD_ID`
+- `android.permission.INTERNET` is bundled in the Adjust SDK for Android.
+- `android.permission.ACCESS_WIFI_STATE` is no longer required.
+- `android.permission.ACCESS_NETWORK_STATE` is optional. This allows the SDK to access information about the network a device is connected to, and send callbacks parameters.
 
-{% callout type="tip" %}
+#### COPPA (Children's Online Privacy Protection Act) or third-party stores
 
-you can [remove the](https://dev.adjust.com/en/sdk/android#add-permissions) `com.google.android.gms.AD_ID` permission from your Android manifest file with the following snippet:
+- `com.google.android.gms.permission.AD_ID` is bundled in the Adjust SDK for Android. You can [remove it](https://dev.adjust.com/en/sdk/android#add-permissions) with the following snippet:
 
 ```xml
 <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
 ```
-
-{%/callout%}
-
-- `android.permission.ACCESS_WIFI_STATE` is no longer required.
-- `android.permission.ACCESS_NETWORK_STATE` is optional. Use it to allow the SDK to access information about the network to which a device is connected and send callbacks parameters.
 
 ### Update the initialization method {%#init-method%}
 
@@ -69,7 +67,7 @@ In Adobe Air SDK v5, the initialization method has changed to `Adjust.initSdk(ad
 
 {% codeblock useDiffSyntax=true%}
 
-```
+```actionscript
 -Adjust.start(adjustConfig); // v4
 +Adjust.initSdk(adjustConfig); // v5
 ```
@@ -78,9 +76,9 @@ In Adobe Air SDK v5, the initialization method has changed to `Adjust.initSdk(ad
 
 #### Environment enumeration
 
-The environment enumeration has been renamed from `Environment` to `AdjustEnvironment`.
+In Adobe Air SDK v5, the environment enumeration has been renamed from `Environment` to `AdjustEnvironment`.
 
-```
+```actionscript
 var environment:String = AdjustEnvironment.SANDBOX;
 ```
 
@@ -95,9 +93,9 @@ var environment:String = AdjustEnvironment.SANDBOX;
 
 #### Log level enumeration
 
-The log level enumeration has been renamed from `LogLevel` to `AdjustLogLevel`.
+In Adobe Air SDK v5, the log level enumeration has been renamed from `LogLevel` to `AdjustLogLevel`.
 
-```
+```actionscript
 adjustConfig.setLogLevel(AdjustLogLevel.VERBOSE);
 ```
 
@@ -107,11 +105,11 @@ adjustConfig.setLogLevel(AdjustLogLevel.VERBOSE);
    : The level of logging you want to enable.
 
    - `adjustConfig.setLogLevel(LogLevel.VERBOSE)`: enable all logging
-   - `adjustConfig.setLogLevel(LogLevel.DEBUG)`: enable more logging.
+   - `adjustConfig.setLogLevel(LogLevel.DEBUG)`: disable verbose logging.
    - `adjustConfig.setLogLevel(LogLevel.INFO)`: the default.
-   - `adjustConfig.setLogLevel(LogLevel.WARN)`: disable info logging.
-   - `adjustConfig.setLogLevel(LogLevel.ERROR)`: disable warnings as well.
-   - `adjustConfig.setLogLevel(LogLevel.ASSERT);`: disable errors as well.
+   - `adjustConfig.setLogLevel(LogLevel.WARN)`: log only errors and warnings.
+   - `adjustConfig.setLogLevel(LogLevel.ERROR)`: log only errors.
+   - `adjustConfig.setLogLevel(LogLevel.ASSERT);`: disable errors.
    - `adjustConfig.setLogLevel(LogLevel.SUPPRESS);`: disable all log output.
 {% /deflist %}
 
@@ -130,7 +128,7 @@ Adobe Air SDK v5 introduces two separate methods, for clarity:
 - Call `Adjust.disable` to disable the SDK.
 - Call `Adjust.enable` to enable the SDK.
 
-```
+```actionscript
 Adjust.disable(); // disable SDK
 Adjust.enable(); // enable SDK
 ```
@@ -141,7 +139,7 @@ The `setSendInBackground` method has been renamed to `enableSendingInBackground`
 
 To enable the Adobe Air SDK v5 to send information to Adjust while your app is running in the background, call the `enableSendingInBackground` method on your `adjustConfig` instance. The default state is `false`.
 
-```
+```actionscript
 adjustConfig.enableSendingInBackground();
 ```
 
@@ -163,7 +161,7 @@ The following properties have been added to the `attribution` parameter:
 
 Below is a sample snippet that implements these changes:
 
-```
+```actionscript
 adjustConfig.setAttributionCallback(function (attribution:AdjustAttribution): void {
     trace("Tracker token = " + attribution.getTrackerToken());
     trace("Tracker name = " + attribution.getTrackerName());
@@ -188,7 +186,7 @@ Adobe Air SDK v5 introduces two separate methods, for clarity:
 - Call `Adjust.switchToOfflineMode` to set the SDK to offline mode.
 - Call `Adjust.switchBackToOnlineMode` to set the SDK back to online mode.
 
-```
+```actionscript
 Adjust.switchToOfflineMode(); // Put the SDK in offline mode
 Adjust.switchBackToOnlineMode(); // Put the SDK back in online mode
 ```
@@ -211,7 +209,7 @@ To add global callbacks to your sessions, call the `Adjust.addGlobalCallbackPara
 
  > TODO: Learn how to set up global callback.
 
-```
+```actionscript
 Adjust.addGlobalCallbackParameter("callbackKey", "value");
 Adjust.removeGlobalCallbackParameter("callbackKey");
 Adjust.removeGlobalCallbackParameters();
@@ -235,7 +233,7 @@ To add global partner to your sessions, call the `Adjust.addGlobalPartnerParamet
 
 > TODO: Learn how to set up global partner parameters.
 
-```
+```actionscript
 Adjust.addGlobalPartnerParameter("partnerKey", "value");
 Adjust.removeGlobalPartnerParameter("partnerKey");
 Adjust.removeGlobalPartnerParameters();
@@ -249,7 +247,7 @@ The `getTimeStamp()` method has been renamed to `getTimestamp()`.
 
 To register a successful session recording by the SDK, call the `setSessionSuccessCallback` with any of the following properties:
 
-```
+```actionscript
 adjustConfig.setSessionSuccessCallback(function (sessionSuccess:AdjustSessionSuccess):void {
 
 // All session success properties.
@@ -269,7 +267,7 @@ The `getTimeStamp()` method has been renamed to `getTimestamp()`.
 
 To register a failed session recording by the SDK, call the `setSessionFailureCallback` with any of the following properties:
 
-```
+```actionscript
 adjustConfig.setSessionFailureCallback(function (sessionFailure:AdjustSessionFailure):void {
 
 // All session failure properties.
@@ -290,7 +288,7 @@ The `getTimeStamp()` method has been renamed to `getTimestamp()`.
 
 To register a successful event recording by the SDK, call the `setEventSuccessCallback` with any of the following properties:
 
-```
+```actionscript
 adjustConfig.setEventSuccessCallback(function (eventSuccess:AdjustEventSuccess):void {
 
 // All event success properties.
@@ -312,7 +310,7 @@ The `getTimeStamp()` method has been renamed to `getTimestamp()`.
 
 To register a failed event recording by the SDK, call the `setEventFailureCallback` with any of the following properties:
 
-```
+```actionscript
 adjustConfig.setEventFailureCallback(function (eventFailure:AdjustEventFailure):void {
 
 // All event failure properties.
@@ -331,7 +329,7 @@ adjustConfig.setEventFailureCallback(function (eventFailure:AdjustEventFailure):
 
 In Adobe Air SDK v5, event deduplication is decoupled from the event `transaction ID`. A new ID field called `deduplicationId` has been added for event deduplication.
 
-```
+```actionscript
 adjustEvent.setDeduplicationId("deduplicationId");
 ```
 
@@ -339,22 +337,24 @@ adjustEvent.setDeduplicationId("deduplicationId");
 
 In Adobe Air SDK v5, the `setDeviceToken` method has been renamed to `setPushToken`.
 
-```
+```actionscript
 Adjust.setPushToken("push-token");
 ```
 
-### Reattribution using deep links {%#reattribution-using-deep-links%}
+### Reattribution using direct deep links {%#reattribution-using-deep-links%}
 
 In Adobe Air SDK v5, the `appWillOpenUrl` method has been renamed to `processDeeplink`.
 
-A new `AdjustDeeplink` class has been added for constructing deep links. To process a deep link, instantiate an `AdjustDeeplink` object with your deep link URL and pass it to the `Adjust.processDeeplink` method.
+To open a direct deep link, create a new `AdjustDeeplink` instance with the deep link URL, and pass it to the `Adjust.processDeeplink` method.
 
-```
+```actionscript
 var deeplink:String = event.arguments[0];
     trace("Deep link = " + deeplink);
     var adjustDeeplink:AdjustDeeplink = new AdjustDeeplink("url");
     Adjust.processDeeplink(adjustDeeplink);
 ```
+
+> TODO: Learn how to reattribute users with direct deep links.
 
 ### Disable opening deferred deep links {%#launch-deferred-deep-links%}
 
@@ -363,43 +363,43 @@ In Adobe Air SDK v5, the `setShouldLaunchDeeplink` method has been renamed to `d
 
 To disable opening deferred deep links, call the renamed method:
 
-```
+```actionscript
 adjustConfig.disableDeferredDeeplinkOpening();
 ```
 
-### Deep link callback listener {%#deep-link-callback-listener%}
+### Deferref deep link callback listener {%#deffered-deep-link-callback-listener%}
 
 In Adobe Air SDK v5, the `setDeferredDeeplinkDelegate` method has been renamed to `setDeferredDeeplinkCallback`.
 
 
 To set a deferred deep link callback, call the `setDeferredDeeplinkCallback` method on your `AdjustConfig` instance:
 
-```
+```actionscript
 adjustConfig.setDeferredDeeplinkCallback(function (deeplink:String):void {
     trace("Received deferred deep link");
     trace("Deep link = " + deeplink);
 });
 ```
 
-### SKAdNetwork handling (iOS only)
+> TODO: Learn how to work with deferred deep link callbacks.
+
+### SKAdNetwork handling (iOS only) {%#skadnetwork-handling%}
 
 In Adobe Air SDK v5, the `deactivateSKAdNetworkHandling` method has been renamed to `disableSkanAttribution`. The default state is `true`.
 
 To disable the SKAdNetwork communication, call the `disableSkanAttribution` method on your `adjustConfig` instance.
 
-```
+```actionscript
 adjustConfig.disableSkanAttribution();
 ```
 
-### App Tracking Transparency authorization wrapper {%#att-wrapper%}
-
-**(iOS only)**
+### App Tracking Transparency authorization wrapper (iOS only) {%#att-wrapper%}
 
 In Adobe Air SDK v5, the `requestTrackingAuthorizationWithCompletionHandler` method has been renamed to `requestAppTrackingAuthorization` for clarity.
 
 The renamed method is invoked like so:
 
-```
+```actionscript
 Adjust.requestAppTrackingAuthorization(function (status:String):void {
     trace("Status = " + status);
 });
@@ -412,7 +412,7 @@ In Adobe Air SDK v4, all device information getter methods run synchronously. In
 #### Apple's Identifier for Advertisers (IDFA)
 
 {% codeblock title="IDFA getter"%}
-```
+```actionscript
 Adjust.getIdfa(function (idfa:String): void {
     trace("IDFA = " + idfa);
 });
@@ -422,7 +422,7 @@ Adjust.getIdfa(function (idfa:String): void {
 #### Amazon Advertising ID
 
 {% codeblock title="Amazon ADID getter"%}
-```
+```actionscript
 Adjust.getAmazonAdId(function (amazonAdId:String):void {
     trace("Amazon Advertising ID = " + amazonAdId);
 });
@@ -432,7 +432,7 @@ Adjust.getAmazonAdId(function (amazonAdId:String):void {
 #### Adjust ID
 
 {% codeblock title="Adjust ID getter"%}
-```
+```actionscript
 Adjust.getAdid(function (adid:String):void {
     trace("Adjust ID = " + adid);
 });
@@ -442,7 +442,7 @@ Adjust.getAdid(function (adid:String):void {
 #### Attribution
 
 {% codeblock title="Attribution getter"%}
-```
+```actionscript
 Adjust.getAttribution(function (attribution:AdjustAttribution): void {
     trace("Tracker token = " + attribution.getTrackerToken());
     trace("Tracker name = " + attribution.getTrackerName());
@@ -475,7 +475,7 @@ The `disableThirdPartySharing` method has been removed.
 
 To enable or disable all third-party sharing in Adobe Air SDK v5, use the `trackThirdPartySharing` method.
 
-```
+```actionscript
 var adjustThirdPartySharing:AdjustThirdPartySharing = new AdjustThirdPartySharing("false");
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
