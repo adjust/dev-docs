@@ -11,6 +11,7 @@ interface Props {
   del?: string;
   useDiffSyntax?: boolean;
   showLineNumbers?: boolean;
+  startLineNumber: Number;
 }
 
 const {
@@ -20,66 +21,47 @@ const {
   del,
   collapse,
   useDiffSyntax = false,
-  showLineNumbers = true,
+  showLineNumbers = false,
+  startLineNumber = undefined,
 } = Astro.props as Props;
 
-let content = "";
-
-if (Astro.slots.has("default")) {
-  // Get the raw content of the slot without transformations
-  content = await Astro.slots.render("default");
-}
-
-const parseHighlight = (
-  highlight: string,
-): MarkerDefinition | MarkerDefinition[] => {
+const parseHighlight = (highlight: string): MarkerDefinition[] => {
   return highlight.split(",").map((item) => {
     const trimmedItem = item.trim();
-
-    if (trimmedItem.startsWith("{") && trimmedItem.endsWith("}")) {
+    if (/^\{.*\}$/.test(trimmedItem)) {
       const innerContent = trimmedItem.slice(1, -1).trim();
-
-      // Check if the inner content contains a colon
       if (innerContent.includes(":")) {
         const [key, value] = innerContent.split(":").map((part) => part.trim());
-        return { [key]: value.replace(/"/g, "") } as MarkerDefinition;
+        return { [key]: value.replace(/['"]/g, "") } as MarkerDefinition;
       }
-
-      // If no colon, treat it as a regular string token
-      return trimmedItem;
-    }
-
-    if (trimmedItem.startsWith("/") && trimmedItem.endsWith("/")) {
+    } else if (/^\/.*\/$/.test(trimmedItem)) {
       return new RegExp(trimmedItem.slice(1, -1), "g") as MarkerDefinition;
     }
-
-    return trimmedItem.replace(/'/g, "");
+    return trimmedItem.replace(/['"]/g, "") as MarkerDefinition;
   }) as MarkerDefinition[];
 };
 
-const parseCollapse = (collapse?: string | string[]): string[] => {
-  if (typeof collapse === "string") {
-    return collapse.split(",").map((item) => item.trim());
-  }
+const parseCollapse = (collapse?: string | string[]): string[] =>
+  typeof collapse === "string"
+    ? collapse.split(",").map((item) => item.trim())
+    : collapse || [];
 
-  return Array.isArray(collapse) ? collapse : [];
+const { code, lang } = await extractCodeFromHTML(
+  await Astro.slots.render("default"),
+);
+
+const codeAttributes = {
+  title,
+  lang,
+  code,
+  collapse: collapse ? parseCollapse(collapse) : [],
+  mark: highlight ? parseHighlight(highlight) : [],
+  ins: ins ? parseHighlight(ins) : [],
+  del: del ? parseHighlight(del) : [],
+  useDiffSyntax,
+  showLineNumbers,
+  ...(startLineNumber && { startLineNumber }),
 };
-
-const { code, lang } = await extractCodeFromHTML(content);
-const parsedHighlight = highlight ? parseHighlight(highlight) : undefined;
-const parsedIns = ins ? parseHighlight(ins) : undefined;
-const parsedDel = del ? parseHighlight(del) : undefined;
-const parsedCollapse = collapse ? parseCollapse(collapse) : undefined;
 ---
 
-<ExpressiveCode
-  title={title}
-  lang={lang}
-  collapse={parsedCollapse}
-  mark={parsedHighlight}
-  ins={parsedIns}
-  del={parsedDel}
-  code={code}
-  useDiffSyntax={useDiffSyntax}
-  showLineNumbers={showLineNumbers}
-/>
+<ExpressiveCode {...codeAttributes} />

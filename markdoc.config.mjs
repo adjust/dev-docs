@@ -77,6 +77,15 @@ export default defineMarkdocConfig({
                type: Boolean,
                required: false,
                default: false
+            },
+            showLineNumbers: {
+               type: Boolean,
+               required: false,
+               default: true,
+            },
+            startLineNumber: {
+               type: Number,
+               required: false,
             }
          }
       },

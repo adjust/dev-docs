@@ -1,6 +1,6 @@
 import { unified } from "unified";
 import rehypeParse from "rehype-parse";
-import { selectAll, select } from "hast-util-select";
+import { select, selectAll } from "hast-util-select";
 import { toString } from "hast-util-to-string";
 
 interface CodeExtractionResult {
@@ -8,12 +8,16 @@ interface CodeExtractionResult {
    lang?: string;
 }
 
-export const extractCodeFromHTML = async (htmlString: string): Promise<CodeExtractionResult> => {
+export const extractCodeFromHTML = async (
+   htmlString: string,
+): Promise<CodeExtractionResult> => {
    const processor = unified().use(rehypeParse, { fragment: true });
    const ast = processor.parse(htmlString);
 
    const preElement = select("pre[data-language]", ast);
-   const lang = preElement ? preElement.properties["dataLanguage"] as string : "";
+   const lang = preElement
+      ? preElement.properties["dataLanguage"] as string
+      : "";
 
    const codeBlocks = selectAll(".ec-line .code", ast);
 
