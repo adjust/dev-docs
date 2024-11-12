@@ -64,9 +64,9 @@ If your app needs to be COPPA (Children's Online Privacy Protection Act) complia
 <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
 ```
 
-## Integration guide {% #integration-guide %}
+## Integrate the Adjust Extension {% #integrate-the-adjust-extension %}
 
-Once you've completed the project setup steps, continue to integrate the Adjust Extension for Adobe Experience SDK. The following guide shows you how to:
+Once you've completed the project setup steps, you can integrate the Adjust SDK The following guide shows you how to:
 
 1. Add the Adjust Extension to your Adobe Experience app.
 1. Set your logging level to **verbose** to retrieve as much detail as possible from the extension.
@@ -74,11 +74,128 @@ Once you've completed the project setup steps, continue to integrate the Adjust 
 1. Enable your app to open deep links.
 1. Register with the Adobe Experience SDK.
 
+To do this, we'll create two files:
+
+- `MainApp.java`: you'll configure and register the Adjust SDK in this file.
+- `MainActivity.java`: you'll configure deep link handling in this file.
+
+### Import classes {% #import-classes %}
+
+First, you need to import some classes into your application files. Import the following classes into your `MainApp.java` file:
+
+{% deflist %}
+`android.app.Application`
+
+: Used to create the main application.
+
+`android.util.Log`
+
+: Used to output logs.
+
+`com.adjust.adobeextension.AdjustAdobeExtension`
+
+: Used to register the Adjust Extension.
+
+`com.adjust.adobeextension.AdjustAdobeExtensionConfig`
+
+: Used to configure the Adjust Extension.
+
+`com.adobe.marketing.mobile.AdobeCallback`
+
+: Used when registering your extensions.
+
+`com.adobe.marketing.mobile.Extension`
+
+: Used to build a list of extensions.
+
+`com.adobe.marketing.mobile.Analytics`
+
+: Used to enable analytics in the Adobe Experience SDK.
+
+`com.adobe.marketing.mobile.Identity`
+
+: Used to manage user identities in the Adobe Experience SDK
+
+`com.adobe.marketing.mobile.LoggingMode`
+
+: Used to configure logging in the Adobe Experience SDK.
+
+`com.adobe.marketing.mobile.MobileCore`
+
+: Used to communicate with the Adobe Experience SDK.
+{% /deflist %}
+
+```java
+// MainApp.java
+import android.app.Application;
+import android.util.Log;
+
+import com.adjust.adobeextension.AdjustAdobeExtension;
+import com.adjust.adobeextension.AdjustAdobeExtensionConfig;
+import com.adobe.marketing.mobile.AdobeCallback;
+import com.adobe.marketing.mobile.Extension;
+import com.adobe.marketing.mobile.Analytics;
+import com.adobe.marketing.mobile.Identity;
+import com.adobe.marketing.mobile.LoggingMode;
+import com.adobe.marketing.mobile.MobileCore;
+```
+
+Import the following classes into your `MainActivity.java` file:
+
+{% deflist %}
+`android.content.Intent`
+
+: Used to get the [operation intent from Android](https://developer.android.com/reference/android/content/Intent).
+
+`android.net.Uri`
+
+: Used to type deep links.
+
+`android.os.Bundle`
+
+: Used to type the app's saved instance state.
+
+`android.view.View`
+
+: Used to type your app's view.
+
+`androidx.appcompat.app.AppCompatActivity`
+
+: Used to create your main activity. See the [`AppCompatActivity` documentation](https://developer.android.com/reference/androidx/appcompat/app/AppCompatActivity) for reference.
+
+`com.adjust.sdk.Adjust`
+
+: Used to access Adjust APIs.
+
+`com.adjust.sdk.AdjustDeeplink`
+
+: Used to create Adjust deep links.
+{% /deflist %}
+
+```java
+// MainActivity.java
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.view.View;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustDeeplink;
+```
+
 ### Create a global application class {% #create-a-global-application-class %}
 
 The recommended way to register the Adjust Android Extension for Adobe Experience SDK is to use a global Android [Application class](http://developer.android.com/reference/android/app/Application.html). If you've not yet created an Application, follow these steps:
 
-1. Create a new class that extends `Application`
+1. Create a new class that extends `Application` in your `MainApp.java` file.
+
+   {% codeblock title="MainApp.java" startLineNumber=13 %}
+   ```java
+   public class MainApp extends Application {}
+   ```
+   {% /codeblock %}
 
 1. Open your `AndroidManifest.xml` and find the `<application>` element.
 
@@ -91,10 +208,11 @@ The recommended way to register the Adjust Android Extension for Adobe Experienc
 
 1. Within your `Application` class, find or add the `onCreate` method.
 
-   {% codeblock title="MainApp.java" highlight="{range: 5-7}" %}
+   {% codeblock
+      title="MainApp.java"
+      highlight="{range: 2-5}"
+      startLineNumber=13 %}
    ```java
-   import android.app.Application;
-   
    public class MainApp extends Application {
       @Override
       public void onCreate() {
@@ -108,27 +226,22 @@ The recommended way to register the Adjust Android Extension for Adobe Experienc
 
 Once you've created the `Application` class and called `onCreate`, follow these steps to configure the Adjust Android Extension for Adobe Experience SDK:
 
-1. Import the `com.adobe.marketing.mobile.MobileCore` class, and call `MobileCore.setApplication(this)` to register the application context.
+1. Inside your `onCreate` function, call `MobileCore.setApplication(this)` to register the application context.
 
-   {% codeblock title="MainApp.java" highlight="{range: 11}" %}
+   {% codeblock
+      title="MainApp.java"
+      highlight="{range: 4}, {range: 11}"
+      startLineNumber=15 %}
    ```java
-   import android.app.Application;
-   import android.util.Log;
+   public void onCreate() {
+      super.onCreate();
    
-   import com.adobe.marketing.mobile.MobileCore;
-   
-   public class MainApp extends Application {
-      @Override
-      public void onCreate() {
-         super.onCreate();
-   
-         MobileCore.setApplication(this);
-      }
+      MobileCore.setApplication(this);
    }
    ```
    {% /codeblock %}
 
-1. Import the `com.adobe.marketing.mobile.LoggingMode` class, and set your logging level by calling the `MobileCore.setLogLevel` method with the following argument:
+1. Set your logging level by calling the `MobileCore.setLogLevel` method with the following argument:
 
    {% deflist %}
    `logLevel`: `String`
@@ -141,48 +254,36 @@ Once you've created the `Application` class and called `onCreate`, follow these 
    - `LoggingMode.ERROR`: log only errors.
    {% /deflist %}
 
-   {% codeblock title="MainApp.java" highlight="{range:12-13}" %}
+   {% codeblock
+      title="MainApp.java"
+      highlight="{range:4-5}"
+      startLineNumber=15 %}
    ```java
-   import android.app.Application;
-   import android.util.Log;
+   public void onCreate() {
+      super.onCreate();
    
-   import com.adobe.marketing.mobile.LoggingMode;
-   import com.adobe.marketing.mobile.MobileCore;
-   
-   public class MainApp extends Application {
-      @Override
-      public void onCreate() {
-         super.onCreate();
-   
-         MobileCore.setApplication(this);
-         MobileCore.setLogLevel(LoggingMode.VERBOSE);
-      }
+      MobileCore.setApplication(this);
+      MobileCore.setLogLevel(LoggingMode.VERBOSE);
    }
    ```
    {% /codeblock %}
 
 1. Create a new `try...catch` block to configure the Adjust Extension:
 
-   {% codeblock title="MainApp.java" highlight="{range: 15-18}" %}
+   {% codeblock
+      title="MainApp.java"
+      highlight="{range: 7-10}"
+      startLineNumber=15 %}
    ```java
-   import android.app.Application;
-   import android.util.Log;
+   public void onCreate() {
+      super.onCreate();
    
-   import com.adobe.marketing.mobile.LoggingMode;
-   import com.adobe.marketing.mobile.MobileCore;
+      MobileCore.setApplication(this);
+      MobileCore.setLogLevel(LoggingMode.VERBOSE);
    
-   public class MainApp extends Application {
-      @Override
-      public void onCreate() {
-         super.onCreate();
-   
-         MobileCore.setApplication(this);
-         MobileCore.setLogLevel(LoggingMode.VERBOSE);
-   
-         try {
-         } catch (Exception e) {
-            Log.e("example", "Exception occurred during configuration: " + e.getMessage());
-         }
+      try {
+      } catch (Exception e) {
+         Log.e("example", "Exception occurred during configuration: " + e.getMessage());
       }
    }
    ```
@@ -190,38 +291,20 @@ Once you've created the `Application` class and called `onCreate`, follow these 
 
 1. Within your `try` block, call `MobileCore.configureWithAppID` and pass your Adobe app ID.
 
-   {% codeblock title="MainApp.java" highlight="{range: 16}" %}
+   {% codeblock
+      title="MainApp.java"
+      highlight="{range: 2}"
+      startLineNumber=21 %}
    ```java
-   import android.app.Application;
-   import android.util.Log;
-   
-   import com.adobe.marketing.mobile.LoggingMode;
-   import com.adobe.marketing.mobile.MobileCore;
-   
-   public class MainApp extends Application {
-      @Override
-      public void onCreate() {
-         super.onCreate();
-   
-         MobileCore.setApplication(this);
-         MobileCore.setLogLevel(LoggingMode.VERBOSE);
-   
-         try {
-            MobileCore.configureWithAppID("your_adobe_app_id");
-         } catch (Exception e) {
-            Log.e("example", "Exception occurred during configuration: " + e.getMessage());
-         }
-      }
+   try {
+      MobileCore.configureWithAppID("your_adobe_app_id");
+   } catch (Exception e) {
+      Log.e("example", "Exception occurred during configuration: " + e.getMessage());
    }
    ```
    {% /codeblock %}
 
-1. Import the following classes:
-
-   - `com.adjust.adobeextension.AdjustAdobeExtension`
-   - `com.adjust.adobeextension.AdjustAdobeExtensionConfig`
-
-1. Create a new instance of `AdjustAdobeExtensionConfig` with the following argument:
+1. Within your `try` block, create a new instance of `AdjustAdobeExtensionConfig` with the following argument:
 
    {% deflist %}
    `environment`: `String`
@@ -232,67 +315,37 @@ Once you've created the `Application` class and called `onCreate`, follow these 
    - Pass `AdjustAdobeExtensionConfig.ENVIRONMENT_PRODUCTION` when running the app in production.
    {% /deflist %}
 
-   {% codeblock title="MainApp.java" highlight="{range: 20-21}" %}
+   {% codeblock
+      title="MainApp.java"
+      highlight="{range: 4-5}"
+      startLineNumber=21 %}
    ```java
-   import android.app.Application;
-   import android.util.Log;
+   try {
+      MobileCore.configureWithAppID("your_adobe_app_id");
    
-   import com.adjust.adobeextension.AdjustAdobeExtension;
-   import com.adjust.adobeextension.AdjustAdobeExtensionConfig;
-   import com.adobe.marketing.mobile.LoggingMode;
-   import com.adobe.marketing.mobile.MobileCore;
-   
-   public class MainApp extends Application {
-      @Override
-      public void onCreate() {
-         super.onCreate();
-   
-         MobileCore.setApplication(this);
-         MobileCore.setLogLevel(LoggingMode.VERBOSE);
-   
-         try {
-            MobileCore.configureWithAppID("your_adobe_app_id");
-   
-            AdjustAdobeExtensionConfig config =
-                     new AdjustAdobeExtensionConfig(AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX);
-         } catch (Exception e) {
-            Log.e("example", "Exception occurred during configuration: " + e.getMessage());
-         }
-      }
+      AdjustAdobeExtensionConfig config =
+               new AdjustAdobeExtensionConfig(AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX);
+   } catch (Exception e) {
+      Log.e("example", "Exception occurred during configuration: " + e.getMessage());
    }
    ```
    {% /codeblock %}
 
 1. Call `AdjustAdobeExtension.setConfiguration` with your `AdjustAdobeExtensionConfig` instance as an argument.
 
-   {% codeblock title="MainApp.java" highlight="{range: 22}" %}
+   {% codeblock
+      title="MainApp.java"
+      highlight="{range: 6}"
+      startLineNumber=21 %}
    ```java
-   import android.app.Application;
-   import android.util.Log;
+   try {
+      MobileCore.configureWithAppID("your_adobe_app_id");
    
-   import com.adjust.adobeextension.AdjustAdobeExtension;
-   import com.adjust.adobeextension.AdjustAdobeExtensionConfig;
-   import com.adobe.marketing.mobile.LoggingMode;
-   import com.adobe.marketing.mobile.MobileCore;
-   
-   public class MainApp extends Application {
-      @Override
-      public void onCreate() {
-         super.onCreate();
-   
-         MobileCore.setApplication(this);
-         MobileCore.setLogLevel(LoggingMode.VERBOSE);
-   
-         try {
-            MobileCore.configureWithAppID("your_adobe_app_id");
-   
-            AdjustAdobeExtensionConfig config =
-                  new AdjustAdobeExtensionConfig(AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX);
-            AdjustAdobeExtension.setConfiguration(config);
-         } catch (Exception e) {
-            Log.e("example", "Exception occurred during configuration: " + e.getMessage());
-         }
-      }
+      AdjustAdobeExtensionConfig config =
+            new AdjustAdobeExtensionConfig(AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX);
+      AdjustAdobeExtension.setConfiguration(config);
+   } catch (Exception e) {
+      Log.e("example", "Exception occurred during configuration: " + e.getMessage());
    }
    ```
    {% /codeblock %}
@@ -303,16 +356,11 @@ Once you've configured the Adjust Extension, you need to register it with the Ad
 
 1. Create a new `try...catch` block below your configuration block.
 
-   {% codeblock title="MainApp.java" highlight="{range: 27-30}" %}
+   {% codeblock
+      title="MainApp.java"
+      highlight="{range: 19-22}"
+      startLineNumber=9 %}
    ```java
-   import android.app.Application;
-   import android.util.Log;
-   
-   import com.adjust.adobeextension.AdjustAdobeExtension;
-   import com.adjust.adobeextension.AdjustAdobeExtensionConfig;
-   import com.adobe.marketing.mobile.LoggingMode;
-   import com.adobe.marketing.mobile.MobileCore;
-   
    public class MainApp extends Application {
       @Override
       public void onCreate() {
@@ -339,8 +387,6 @@ Once you've configured the Adjust Extension, you need to register it with the Ad
    }
    ```
    {% /codeblock %}
-
-1. Import the `com.adobe.marketing.mobile.Extension` class.
 
 1. Within your `try` block, create a new list of the extensions you want to register. The example in this guide imports the `Analytics` and `Identity` extensions in addition to the `AdjustAdobeExtension`.
 
@@ -350,51 +396,23 @@ Once you've configured the Adjust Extension, you need to register it with the Ad
    : Your list of extensions.
    {% /deflist %}
 
-   {% codeblock title="MainApp.java" highlight="{range: 31-34}" %}
+   {% codeblock
+      title="MainApp.java"
+      highlight="{range: 2-5}"
+      startLineNumber=27 %}
    ```java
-   import android.app.Application;
-   import android.util.Log;
-   
-   import com.adjust.adobeextension.AdjustAdobeExtension;
-   import com.adjust.adobeextension.AdjustAdobeExtensionConfig;
-   import com.adobe.marketing.mobile.Extension;
-   import com.adobe.marketing.mobile.Analytics;
-   import com.adobe.marketing.mobile.Identity;
-   import com.adobe.marketing.mobile.LoggingMode;
-   import com.adobe.marketing.mobile.MobileCore;
-   
-   public class MainApp extends Application {
-      @Override
-      public void onCreate() {
-         super.onCreate();
-   
-         MobileCore.setApplication(this);
-         MobileCore.setLogLevel(LoggingMode.VERBOSE);
-   
-         try {
-            MobileCore.configureWithAppID("your_adobe_app_id");
-   
-            AdjustAdobeExtensionConfig config =
-                  new AdjustAdobeExtensionConfig(AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX);
-            AdjustAdobeExtension.setConfiguration(config);
-         } catch (Exception e) {
-            Log.e("example", "Exception occurred during configuration: " + e.getMessage());
-         }
-   
-         try {
-            List<Class<? extends Extension>> extensions = Arrays.asList(
-                  Analytics.EXTENSION,
-                  Identity.EXTENSION,
-                  AdjustAdobeExtension.EXTENSION);
-         } catch (Exception e) {
-            Log.e("example", "Exception occurred while registering Extension: " + e.getMessage());
-         }
-      }
+   try {
+      List<Class<? extends Extension>> extensions = Arrays.asList(
+            Analytics.EXTENSION,
+            Identity.EXTENSION,
+            AdjustAdobeExtension.EXTENSION);
+   } catch (Exception e) {
+      Log.e("example", "Exception occurred while registering Extension: " + e.getMessage());
    }
    ```
    {% /codeblock %}
 
-1. Import the `com.adobe.marketing.mobile.AdobeCallback` class and call the `MobileCore.registerExtensions` method with your list of extensions and the following callback argument:
+1. Inside your `try` block, call the `MobileCore.registerExtensions` method with your list of extensions and the following callback argument:
 
    {% deflist %}
    `completionCallback`: `AdobeCallback`
@@ -402,53 +420,24 @@ Once you've configured the Adjust Extension, you need to register it with the Ad
    : A callback function that fires when registration completes.
    {% /deflist %}
 
-   {% codeblock title="MainApp.java" highlight="{range: 36-41}" %}
+   {% codeblock
+      title="MainApp.java"
+      highlight="{range: 6-10}"
+      startLineNumber=27 %}
    ```java
-   import android.app.Application;
-   import android.util.Log;
-   
-   import com.adjust.adobeextension.AdjustAdobeExtension;
-   import com.adjust.adobeextension.AdjustAdobeExtensionConfig;
-   import com.adobe.marketing.mobile.AdobeCallback;
-   import com.adobe.marketing.mobile.Extension;
-   import com.adobe.marketing.mobile.Analytics;
-   import com.adobe.marketing.mobile.Identity;
-   import com.adobe.marketing.mobile.LoggingMode;
-   import com.adobe.marketing.mobile.MobileCore;
-   
-   public class MainApp extends Application {
-      @Override
-      public void onCreate() {
-         super.onCreate();
-   
-         MobileCore.setApplication(this);
-         MobileCore.setLogLevel(LoggingMode.VERBOSE);
-   
-         try {
-            MobileCore.configureWithAppID("your_adobe_app_id");
-   
-            AdjustAdobeExtensionConfig config =
-                  new AdjustAdobeExtensionConfig(AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX);
-            AdjustAdobeExtension.setConfiguration(config);
-         } catch (Exception e) {
-            Log.e("example", "Exception occurred during configuration: " + e.getMessage());
+   try {
+      List<Class<? extends Extension>> extensions = Arrays.asList(
+            Analytics.EXTENSION,
+            Identity.EXTENSION,
+            AdjustAdobeExtension.EXTENSION);
+      MobileCore.registerExtensions(extensions, new AdobeCallback<Object>() {
+         @Override
+         public void call(Object o) {
+            Log.d("example", "Adjust Adobe Extension SDK initialized");
          }
-   
-         try {
-            List<Class<? extends Extension>> extensions = Arrays.asList(
-                  Analytics.EXTENSION,
-                  Identity.EXTENSION,
-                  AdjustAdobeExtension.EXTENSION);
-            MobileCore.registerExtensions(extensions, new AdobeCallback<Object>() {
-               @Override
-               public void call(Object o) {
-                  Log.d("example", "Adjust Adobe Extension SDK initialized");
-               }
-            });
-         } catch (Exception e) {
-            Log.e("example", "Exception occurred while registering Extension: " + e.getMessage());
-         }
-      }
+      });
+   } catch (Exception e) {
+      Log.e("example", "Exception occurred while registering Extension: " + e.getMessage());
    }
    ```
    {% /codeblock %}
@@ -457,64 +446,21 @@ Once you've configured the Adjust Extension, you need to register it with the Ad
 
 Next, you need to set up your `MainActivity.java` file. You'll use this file to set up your Adjust features later. For the purposes of this guide, you're only going to set up the `onCreate` function to handle application startup.
 
-1. Create a new file called `MainActivity.java` in the same directory as your `MainApp.java`, if you haven't already.
-
-1. Import the `androidx.appcompat.app.AppCompatActivity` class at the top of your file. You'll use this as teh basis for your `MainActivity` class. See the [`AppCompatActivity` documentation](https://developer.android.com/reference/androidx/appcompat/app/AppCompatActivity) for reference.
-
-   {% codeblock title="MainActivity.java" highlight="{range: 1}" %}
-   ```java
-   import androidx.appcompat.app.AppCompatActivity;
-   ```
-   {% /codeblock %}
-
 1. Create a new public class called `MainActivity`. This class should extend the `AppCompatActivity` class.
 
-   {% codeblock title="MainActivity.java" highlight="{range: 3}" %}
+   {% codeblock title="MainActivity.java" startLineNumber=11 %}
    ```java
-   import androidx.appcompat.app.AppCompatActivity;
-   
-   public class MainActivity extends AppCompatActivity {}
-   ```
-   {% /codeblock %}
-
-1. Import the `com.adjust.adobeextension.AdjustAdobeExtension` class. You'll use this to configure features from the Adjust Extension.
-
-   {% codeblock title="MainActivity.java" highlight="{range: 3}" %}
-   ```java
-   import androidx.appcompat.app.AppCompatActivity;
-   
-   import adjust.adobeextension.AdjustAdobeExtension;
-   
-   public class MainActivity extends AppCompatActivity {}
-   ```
-   {% /codeblock %}
-
-1. Import the `android.os.Bundle` and `android.view.View` classes. You'll use these to type your function arguments.
-
-   {% codeblock title="MainActivity.java" highlight="{range: 1-2}" %}
-   ```java
-   import android.os.Bundle;
-   import android.view.View;
-   
-   import androidx.appcompat.app.AppCompatActivity;
-   
-   import adjust.adobeextension.AdjustAdobeExtension;
-   
    public class MainActivity extends AppCompatActivity {}
    ```
    {% /codeblock %}
 
 1. Create a new protected override function called `onCreate`. This function receives the `savedInstanceState` and returns `void`.
 
-   {% codeblock title="MainActivity.java" highlight="{range: 9-10}" %}
+   {% codeblock
+      title="MainActivity.java"
+      highlight="{range: 2-3}"
+      startLineNumber=11 %}
    ```java
-   import android.os.Bundle;
-   import android.view.View;
-   
-   import androidx.appcompat.app.AppCompatActivity;
-   
-   import adjust.adobeextension.AdjustAdobeExtension;
-   
    public class MainActivity extends AppCompatActivity {
       @Override
       protected void onCreate(Bundle savedInstanceState) {}
@@ -524,41 +470,29 @@ Next, you need to set up your `MainActivity.java` file. You'll use this file to 
 
 1. Within your `onCreate` function, call `super.onCreate` with the `savedInstanceState` to create your activity.
 
-   {% codeblock title="MainActivity.java" highlight="{range: 11}" %}
+   {% codeblock
+      title="MainActivity.java"
+      highlight="{range: 3}"
+      startLineNumber=12 %}
    ```java
-   import android.os.Bundle;
-   import android.view.View;
-   
-   import androidx.appcompat.app.AppCompatActivity;
-   
-   import adjust.adobeextension.AdjustAdobeExtension;
-   
-   public class MainActivity extends AppCompatActivity {
-      @Override
-      protected void onCreate(Bundle savedInstanceState) {
-         super.onCreate(savedInstanceState);
-      }
+   @Override
+   protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
    }
    ```
    {% /codeblock %}
 
 1. Next, call `setContentView` to map your activity to your app layout. In this example, the layout file is called `activity_main.xml`.
 
-   {% codeblock title="MainActivity.java" highlight="{range: 12}" %}
+   {% codeblock
+      title="MainActivity.java"
+      highlight="{range: 4}"
+      startLineNumber=12 %}
    ```java
-   import android.os.Bundle;
-   import android.view.View;
-   
-   import androidx.appcompat.app.AppCompatActivity;
-   
-   import adjust.adobeextension.AdjustAdobeExtension;
-   
-   public class MainActivity extends AppCompatActivity {
-      @Override
-      protected void onCreate(Bundle savedInstanceState) {
-         super.onCreate(savedInstanceState);
-         setContentView(R.layout.activity_main);
-      }
+   @Override
+   protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      setContentView(R.layout.activity_main);
    }
    ```
    {% /codeblock %}
@@ -567,193 +501,101 @@ Next, you need to set up your `MainActivity.java` file. You'll use this file to 
 
 To handle deep links with the Adjust Android Extension for Adobe Experience SDK, follow these steps:
 
-1. In your `MainActivity.java` file, import the `android.content.Intent` and `android.net.Uri` classes.
+1. Create a new `Intent` variable called `intent` inside your `onCreate` function and assign it the output of `getIntent()`.
 
-   {% codeblock title="MainActivity.java" highlight="{range: 1-2}" %}
+   {% codeblock
+      title="MainActivity.java"
+      highlight="{range: 6}"
+      startLineNumber=12 %}
    ```java
-   import android.content.Intent;
-   import android.net.Uri;
-   import android.os.Bundle;
-   import android.view.View;
+   @Override
+   protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      setContentView(R.layout.activity_main);
    
-   import androidx.appcompat.app.AppCompatActivity;
-   
-   import adjust.adobeextension.AdjustAdobeExtension;
-   
-   public class MainActivity extends AppCompatActivity {
-      @Override
-      protected void onCreate(Bundle savedInstanceState) {
-         super.onCreate(savedInstanceState);
-         setContentView(R.layout.activity_main);
-      }
-   }
-   ```
-   {% /codeblock %}
-
-1. Create a new `Intent` variable called `intent` and assign it the output of `getIntent()`.
-
-   {% codeblock title="MainActivity.java" highlight="{range: 16}" %}
-   ```java
-   import android.content.Intent;
-   import android.net.Uri;
-   import android.os.Bundle;
-   import android.view.View;
-   
-   import androidx.appcompat.app.AppCompatActivity;
-   
-   import adjust.adobeextension.AdjustAdobeExtension;
-   
-   public class MainActivity extends AppCompatActivity {
-      @Override
-      protected void onCreate(Bundle savedInstanceState) {
-         super.onCreate(savedInstanceState);
-         setContentView(R.layout.activity_main);
-   
-         Intent intent = getIntent();
-      }
+      Intent intent = getIntent();
    }
    ```
    {% /codeblock %}
 
 1. Create a new `Uri` variable called `data` and assign it the output of `intent.getData()`.
 
-   {% codeblock title="MainActivity.java" highlight="{range: 17}" %}
+   {% codeblock
+      title="MainActivity.java"
+      highlight="{range: 7}"
+      startLineNumber=12 %}
    ```java
-   import android.content.Intent;
-   import android.net.Uri;
-   import android.os.Bundle;
-   import android.view.View;
+   @Override
+   protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      setContentView(R.layout.activity_main);
    
-   import androidx.appcompat.app.AppCompatActivity;
-   
-   import adjust.adobeextension.AdjustAdobeExtension;
-   
-   public class MainActivity extends AppCompatActivity {
-      @Override
-      protected void onCreate(Bundle savedInstanceState) {
-         super.onCreate(savedInstanceState);
-         setContentView(R.layout.activity_main);
-   
-         Intent intent = getIntent();
-         Uri data = intent.getData();
-      }
-   }
-   ```
-   {% /codeblock %}
-
-1. Import the `com.adjust.sdk.Adjust` and `com.adjust.sdk.AdjustDeeplink` classes. You'll use these to create and send your deep link.
-
-   {% codeblock title="MainActivity.java" highlight="{range: 8-9}" %}
-   ```java
-   import android.content.Intent;
-   import android.net.Uri;
-   import android.os.Bundle;
-   import android.view.View;
-   
-   import androidx.appcompat.app.AppCompatActivity;
-   
-   import com.adjust.sdk.Adjust;
-   import com.adjust.sdk.AdjustDeeplink;
-   
-   public class MainActivity extends AppCompatActivity {
-      @Override
-      protected void onCreate(Bundle savedInstanceState) {
-         super.onCreate(savedInstanceState);
-         setContentView(R.layout.activity_main);
-   
-         Intent intent = getIntent();
-         Uri data = intent.getData();
-      }
+      Intent intent = getIntent();
+      Uri data = intent.getData();
    }
    ```
    {% /codeblock %}
 
 1. Construct a new `AdjustDeeplink` instance with your `data` variable.
 
-   {% codeblock title="MainActivity.java" highlight="{range: 18}" %}
+   {% codeblock
+      title="MainActivity.java"
+      highlight="{range: 8}"
+      startLineNumber=12 %}
    ```java
-   import android.content.Intent;
-   import android.net.Uri;
-   import android.os.Bundle;
-   import android.view.View;
+   @Override
+   protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      setContentView(R.layout.activity_main);
    
-   import androidx.appcompat.app.AppCompatActivity;
-   
-   import adjust.adobeextension.AdjustAdobeExtension;
-   
-   public class MainActivity extends AppCompatActivity {
-      @Override
-      protected void onCreate(Bundle savedInstanceState) {
-         super.onCreate(savedInstanceState);
-         setContentView(R.layout.activity_main);
-   
-         Intent intent = getIntent();
-         Uri data = intent.getData();
-         AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
-      }
+      Intent intent = getIntent();
+      Uri data = intent.getData();
+      AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
    }
    ```
    {% /codeblock %}
 
 1. To open the URL, pass your `AdjustDeeplink` instance and `getApplicationContext()` to the `Adjust.processDeeplink` method.
 
-   {% codeblock title="MainActivity.java" highlight="{range: 20}" %}
+   {% codeblock
+      title="MainActivity.java"
+      highlight="{range: 9}"
+      startLineNumber=12 %}
    ```java
-   import android.content.Intent;
-   import android.net.Uri;
-   import android.os.Bundle;
-   import android.view.View;
+   @Override
+   protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      setContentView(R.layout.activity_main);
    
-   import androidx.appcompat.app.AppCompatActivity;
-   
-   import com.adjust.sdk.Adjust;
-   import com.adjust.sdk.AdjustDeeplink;
-   
-   public class MainActivity extends AppCompatActivity {
-      @Override
-      protected void onCreate(Bundle savedInstanceState) {
-         super.onCreate(savedInstanceState);
-         setContentView(R.layout.activity_main);
-   
-         Intent intent = getIntent();
-         Uri data = intent.getData();
-         AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
-         Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
-      }
+      Intent intent = getIntent();
+      Uri data = intent.getData();
+      AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+      Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
    }
    ```
    {% /codeblock %}
 
    If you use [short branded links](https://help.adjust.com/en/article/short-branded-links), you can alternatively use the `Adjust.processAndResolveDeeplink` method to resolve your shortened link and return it to a callback function.
 
-   {% codeblock title="MainActivity.java" highlight="{range: 20-25}" %}
+   {% codeblock
+      title="MainActivity.java"
+      highlight="{range: 9-14}"
+      startLineNumber=12 %}
    ```java
-   import android.content.Intent;
-   import android.net.Uri;
-   import android.os.Bundle;
-   import android.view.View;
+   @Override
+   protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      setContentView(R.layout.activity_main);
    
-   import androidx.appcompat.app.AppCompatActivity;
-   
-   import com.adjust.sdk.Adjust;
-   import com.adjust.sdk.AdjustDeeplink;
-   
-   public class MainActivity extends AppCompatActivity {
-      @Override
-      protected void onCreate(Bundle savedInstanceState) {
-         super.onCreate(savedInstanceState);
-         setContentView(R.layout.activity_main);
-   
-         Intent intent = getIntent();
-         Uri data = intent.getData();
-         AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
-         Adjust.processAndResolveDeeplink(adjustDeeplink, getApplicationContext(), new OnDeeplinkResolvedListener() {
-            @Override
-            public void onDeeplinkResolved(String s) {
-               Log.d("example", "Unwrapped short link: " + s);
-            }
-         });
-      }
+      Intent intent = getIntent();
+      Uri data = intent.getData();
+      AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+      Adjust.processAndResolveDeeplink(adjustDeeplink, getApplicationContext(), new OnDeeplinkResolvedListener() {
+         @Override
+         public void onDeeplinkResolved(String s) {
+            Log.d("example", "Unwrapped short link: " + s);
+         }
+      });
    }
    ```
    {% /codeblock %}
