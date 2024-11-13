@@ -10,10 +10,9 @@ interface Props {
 }
 
 const { lang, currentPage } = Astro.props;
-
 const t = useTranslations(lang as keyof Locales);
 
-// Find the current page data and any redirects from the frontmatter
+// Get current page data and redirects from frontmatter
 const pageData = findEntryBySlug(currentPage);
 const redirects = pageData?.redirects || {};
 const defaultVersion =
@@ -25,7 +24,6 @@ const defaultVersion =
   class="flex flex-col w-full min-h-90px justify-start gap-y-4 bg-slate-100 p-6 rounded-lg mb-14"
   data-redirects={JSON.stringify(redirects)}
   data-default-version={defaultVersion}
-  data-lang={lang}
 >
   <label for="combobox">{t("sdkversionswitch.label")}</label>
   <div class="relative w-full">
@@ -58,83 +56,82 @@ const defaultVersion =
 <script>
   import { $versions, changeVersionValue } from "@store/sdkVersionsStore";
 
-  document.addEventListener("DOMContentLoaded", function () {
+  document.addEventListener("DOMContentLoaded", () => {
     const versionSelect = document.getElementById(
       "combobox",
     ) as HTMLSelectElement | null;
     const comboboxHolder = document.getElementById("combobox-holder");
     const defaultVersion =
       comboboxHolder?.getAttribute("data-default-version") || "";
+    const redirects = comboboxHolder?.getAttribute("data-redirects");
+    const redirectsMap = redirects ? JSON.parse(redirects) : {};
 
-    if (versionSelect && comboboxHolder) {
-      const redirectsAttribute = comboboxHolder.getAttribute("data-redirects");
-      const lang = comboboxHolder.getAttribute("data-lang");
-      let redirects = redirectsAttribute ? JSON.parse(redirectsAttribute) : {};
-      for (const key in redirects) {
-        if (redirects.hasOwnProperty(key)) {
-          // Check if the value starts with the required string
-          if (!redirects[key].startsWith(`/${lang}/`)) {
-            // Prepend the required string if it doesn't start with it
-            redirects[key] = redirects[key].replace("/en/", `/${lang}/`);
-          }
-        }
-      }
+    // Utility functions
+    const isVersionedPath = (path: string) => /\/sdk\/.+\/v\d/.test(path);
+    const currentPath = window.location.pathname;
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlVersionParam = urlParams.get("version");
+    const pathRegex = /^\/[a-z]{2}\/sdk\/?$/;
 
-      const urlParams = new URLSearchParams(window.location.search);
-      const urlVersion = urlParams.get("version");
-
-      // Wait for the store to be ready before displaying the select text
-      $versions.subscribe((store) => {
-        const currentVersion = store.currentVersion;
-
-        // Set the select input value from URL param, store, or default
-        if (urlVersion && versionSelect.options.namedItem(urlVersion)) {
-          versionSelect.value = urlVersion;
-        } else if (currentVersion) {
-          versionSelect.value = currentVersion.value;
-        } else {
-          versionSelect.value = defaultVersion;
-        }
-
-        // Show the select text once version is loaded
+    // 1. Initialize version select input from store and URL
+    $versions.subscribe((store) => {
+      const currentVersion = store.currentVersion.value;
+      if (versionSelect) {
+        versionSelect.value =
+          urlVersionParam || currentVersion || defaultVersion;
         versionSelect.classList.remove("text-transparent");
-      });
-
-      // Handle version change and redirect logic
-      versionSelect.addEventListener("change", function () {
-        const selectedVersion = versionSelect.value;
-        const selection = { label: selectedVersion, value: selectedVersion };
-        changeVersionValue(selection);
-        const currentUrl = window.location.href;
-
-        // Check if there's a redirect for the selected version
-        if (redirects[selectedVersion]) {
-          window.location.href = redirects[selectedVersion];
-        } else {
-          // Fallback logic for changing version in the URL
-          const defaultVersionReg = /\/(\w*)v\d/gi;
-          const versionReg = /\/sdk\/(\w*)(\/|$)/gi;
-
-          if (selectedVersion === defaultVersion) {
-            // Redirect to default version URL by removing version part
-            window.location.href = currentUrl.replace(defaultVersionReg, "$1");
-          } else {
-            // Redirect to the selected version
-            window.location.href = currentUrl.replace(
-              versionReg,
-              `/sdk/$1/${selectedVersion}/`,
-            );
-          }
-        }
-      });
-
-      // Check for version in URL query params
-      if (urlVersion && redirects[urlVersion]) {
-        changeVersionValue({ label: urlVersion, value: urlVersion });
-        window.location.href = redirects[urlVersion];
       }
-    } else {
-      console.warn("Version select or combobox holder element not found.");
+    });
+
+    // 2. Handle URL and version synchronization
+    const syncVersion = (targetVersion: string) => {
+      // If redirect for version exists, navigate to it
+      if (redirectsMap[targetVersion]) {
+        window.location.href = redirectsMap[targetVersion];
+      } else if (!pathRegex.test(currentPath)) {
+        // Otherwise, modify path to include the version in URL if needed
+        const updatedUrl = isVersionedPath(currentPath)
+          ? currentPath.replace(/\/v\d/, `/${targetVersion}`)
+          : `${currentPath}/v${targetVersion}`;
+        window.location.href = updatedUrl;
+      }
+    };
+
+    // 3. Handle page load cases
+    if (
+      !urlVersionParam &&
+      isVersionedPath(currentPath) &&
+      !pathRegex.test(currentPath)
+    ) {
+      // Case 1: Page is versioned, no ?version param
+      const pathVersionMatch = currentPath.match(/\/v(\d+)/);
+      const pathVersion = pathVersionMatch
+        ? pathVersionMatch[1]
+        : defaultVersion;
+      changeVersionValue({
+        label: `v${pathVersion}`,
+        value: `v${pathVersion}`,
+      });
+    } else if (
+      !isVersionedPath(currentPath) &&
+      !urlVersionParam &&
+      !pathRegex.test(currentPath)
+    ) {
+      // Case 2: Non-versioned page, no ?version param
+      changeVersionValue({ label: defaultVersion, value: defaultVersion });
+    } else if (urlVersionParam) {
+      // Case 3: ?version param present
+      const isParamVersion = urlVersionParam.match(/^v\d+$/);
+      if (isParamVersion && redirectsMap[urlVersionParam]) {
+        syncVersion(urlVersionParam);
+      }
     }
+
+    // 4. Change event for version select dropdown
+    versionSelect?.addEventListener("change", (event) => {
+      const selectedVersion = (event.target as HTMLSelectElement).value;
+      changeVersionValue({ label: selectedVersion, value: selectedVersion });
+      syncVersion(selectedVersion);
+    });
   });
 </script>

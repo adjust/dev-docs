@@ -22,20 +22,18 @@ const sidebar = languageTree[lang as Languages];
 ---
 
 <aside
+  id="sidebar-navigation"
   class="h-screen xs:hidden xs:absolute xs:z-30 xs:w-full lg:max-w-[294px] lg:flex lg:sticky top-0 flex flex-col border-r-[1.5px] bg-white border-[#E0EAFF] sidebar-open:flex"
   title="Site Navigation"
 >
-  {/* Header with audience switch */}
   <SidebarHeader
     homeUrl={homeUrl}
     lang={lang}
     redirects={redirects}
     versions={versions}
   />
-  {/* Search input */}
   <SidebarSearch />
   <NavigationTree sidebar={sidebar} currentSlug={currentSlug} />
-  {/* Language switcher */}
   <div class="h-[63px] border-t-[1px] border-[#CDD0E0]">
     <LanguageSwitch
       lang={lang}
@@ -47,28 +45,51 @@ const sidebar = languageTree[lang as Languages];
 
 <script>
   import { $versions as $sdkVersions } from "@store/sdkVersionsStore";
-  import { $versions as $apiVersions } from "@store/apiVersionsStore";
   import { toggleCollapse } from "./utils/toggleCollapse";
 
   document.addEventListener("DOMContentLoaded", () => {
-    // versioning logic
-    const showItems = (items: NodeListOf<Element>) => {
-      items.forEach((item) => {
-        item.className = item.className.replace("hidden", "");
+    // Helper function to hide all versioned items initially
+    const hideAllVersionedItems = () => {
+      const versionedItems = document.querySelectorAll(
+        "[class*='item-version-sdk']",
+      );
+      versionedItems.forEach((item) => {
+        if (!item.classList.contains("hidden")) item.classList.add("hidden");
       });
     };
 
-    const currentSdkVersion = $sdkVersions.get()?.currentVersion;
-    const currentApiVersion = $apiVersions.get()?.currentVersion;
-    // need to unhide SDK/API items that match the current version, also need to unhide unversioned items
-    const sidebarItems = document.querySelectorAll(
-      `.item-version-sdk-${currentSdkVersion.value}, .item-version-api-${currentApiVersion.value}`,
-    );
+    // Helper function to show items for the current versions
+    const showCurrentVersionItems = (sdkVersion: string) => {
+      hideAllVersionedItems();
+      // Select and show items for the current SDK versions
+      const versionedItems = document.querySelectorAll(
+        `.item-version-sdk-${sdkVersion}`,
+      );
+      versionedItems.forEach((item) => {
+        item.classList.remove("hidden");
+      });
+    };
 
-    showItems(sidebarItems);
+    // Initial setup: Get current versions from stores and display relevant items
+    const setupSidebar = () => {
+      const currentSdkVersion =
+        $sdkVersions.get()?.currentVersion?.value || "v5";
+      showCurrentVersionItems(currentSdkVersion);
+    };
 
+    // Run the initial setup on page load
+    setupSidebar();
+
+    // Subscribe to version changes in the Nanostore
+    $sdkVersions.subscribe((store) => {
+      const sdkVersion = store.currentVersion?.value;
+      if (sdkVersion) {
+        showCurrentVersionItems(sdkVersion);
+      }
+    });
+
+    // Expandable/collapsible item logic
     const items = document.querySelectorAll(".toggle-collapse");
-
     items.forEach((item) => {
       item.addEventListener("click", () => {
         const slug = item!
@@ -80,20 +101,16 @@ const sidebar = languageTree[lang as Languages];
       });
     });
 
-    // Scroll the active item into the center of the sidebar
+    // Scroll the active item into view
     const activeItem = document.querySelector(".text-link-active");
     const sidebar = document.getElementById("sidebar-navigation");
-
     if (activeItem && sidebar) {
       const { top: itemTop, height: itemHeight } =
         activeItem.getBoundingClientRect();
       const { top: sidebarTop, height: sidebarHeight } =
         sidebar.getBoundingClientRect();
-
       const offset = itemTop - sidebarTop - (sidebarHeight - itemHeight) / 2;
-      sidebar.scrollBy({
-        top: offset,
-      });
+      sidebar.scrollBy({ top: offset });
     }
   });
 </script>
