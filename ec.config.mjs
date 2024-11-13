@@ -8,7 +8,7 @@ export default defineEcConfig({
    // This is where you can pass your plugin options
    plugins: [pluginCollapsibleSections()],
    frames: {
-      extractFileNameFromCode: false
+      extractFileNameFromCode: true
    },
    styleOverrides: {
       textMarkers: {
