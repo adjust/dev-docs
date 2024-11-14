@@ -1,0 +1,224 @@
+---
+title: Set up deep links
+description: Configure your app to handle direct and deferred deep links.
+sidebar-position: 6
+---
+
+[Deep links](https://help.adjust.com/en/article/deep-links) are URIs (Uniform Resource Identifiers) that direct users to specific pages within your app. They improve the user experience by guiding them directly to relevant content after they interact with a link.
+
+Adobe AIR SDK supports two types of deep links, based on whether the user has already installed your app:
+
+- **Direct deep links**: If the user already has your app installed, the link opens the specified page.
+- **Deferred deep links**: If the user doesn’t have your app installed, the link directs them to the app store to install it. After installation, the app opens in the specified page.
+
+## Configure your app {% #configure-deep-link-android %}
+
+To enable your Android app to support deep link, you need to configure your Android app.
+
+Add the following <intent-filter> to the activity you want to launch after deep linking. Replace `adjust-example` with your scheme name:
+
+```xml
+<!-- ... -->
+<activity>
+    <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+    </intent-filter>
+    <intent-filter>
+        <data android:scheme="adjust-example" />
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+    </intent-filter>
+</activity>
+<!-- ... -->
+```
+
+## Reattribution with direct deep links {% #reattribution-with-deep-links %}
+
+You can reattribute your users by sending deep link information to Adjust. When a user interacts with the deep link, the SDK sends this data to Adjust to update their attribution information.
+
+1. First, create a new `AdjustDeeplink` instance with your deep link URI. The `AdjustDeeplink` class validates this URI and checks the formatted string to ensure successful processing.
+
+1. Then, call the `Adjust.processDeeplink` method to handle the deep link and pass the information to Adjust.
+
+The `AdjustDeeplink` class constructor requires the following argument:
+
+<!-- Correct? -->
+{% deflist %}
+`deeplink`: `Uri`
+
+: The deep link URI that opens your app.
+{% /deflist %}
+
+The `Adjust.processDeeplink` method requires the following argument:
+
+{% deflist %}
+`adjustDeeplink`: `AdjustDeeplink`
+
+: The `AdjustDeeplink` instance you created.
+{% /deflist %}
+
+To get information via a direct deep link, subscribe to the `InvokeEvent.INVOKE` event and set up a callback method that's triggered once this event happens. You can access the URL of the deep link that opened your app inside that callback method:
+
+```actionscript-3
+var app:NativeApplication = NativeApplication.nativeApplication;
+app.addEventListener(InvokeEvent.INVOKE, onInvoke);
+
+// ...
+
+private static function onInvoke(event:InvokeEvent):void {
+   if (event.arguments.length == 0) {
+      return;
+   }
+
+   var deeplink:String = event.arguments[0];
+   trace("Deeplink = " + deeplink);
+   var adjustDeeplink:AdjustDeeplink = new AdjustDeeplink(deeplink);
+   Adjust.processDeeplink(adjustDeeplink);
+}
+```
+
+## Deferred deep link callbacks {% #deffered-deep-link-callbacks %}
+
+To get information via a deferred deep link, you set a callback method on the `AdjustConfig` instance. This receives a `String` parameter where the content of the URL will be delivered.
+
+1. Call `setDeferredDeeplinkCallback` method on your `adjustConfig` instance.
+2. Pass the deep link as a `String`.
+
+The `setDeferredDeeplinkCallback` method requires the following arguments:
+
+<!-- Correct? -->
+{% deflist %}
+`setDeferredDeeplinkCallback`: `setDeferredDeeplinkCallback`
+
+: A function that sets a deferred deep link callback.
+
+`deeplink`: `String`
+
+: The deferred deep link you want to pass.
+{% /deflist %}
+
+```actionscript-3
+var appToken:String = "{YourAppToken}";
+var environment:String = AdjustEnvironment.SANDBOX;
+
+var adjustConfig:AdjustConfig = new AdjustConfig(appToken, environment);
+adjustConfig.setDeferredDeeplinkCallback(DeferredDeeplinkCallback);
+Adjust.initSdk(adjustConfig);
+
+// ...
+
+private static function DeferredDeeplinkCallback(deeplink:String):void {
+    trace("Received deferred deep link");
+    trace("Deep link = " + deeplink);
+};
+```
+
+## Disable opening deferred deep links {% #launch-deferred-deep-links %}
+
+The SDK opens deferred deep links by default. You can disable this behavior with the `disableDeferredDeeplinkOpening` method.
+
+1. Call `disableDeferredDeeplinkOpening` on your `adjustConfig` instance.
+
+```actionscript-3
+adjustConfig.disableDeferredDeeplinkOpening();
+```
+
+
+> **Adapat and add snippets**
+> **See template: [Adobe Extension tutorial](https://dev-docs-hcfx9x6by-product-content.vercel.app/en/sdk/adobe-extension/android/deep-linking#tutorial)**
+
+
+
+## Tutorial: Create a deferred deep link function {% #tutorial %}
+
+If you followed the [integration guide](/en/sdk/adobe-air/android/integration), you've already configured the Adjust AIR SDK to process and open deep links. If you haven't done this, refer to [set up deep link handling](/en/sdk/adobe-air/android/integration#set-up-deep-link-handling) for instructions.
+
+In this tutorial, you'll learn how to create a callback function that controls deep linking functionality using the `setDeferredDeeplinkCallback` method. The function will open the link depending on the following condition:
+
+"If the deep link contains `"no_open"`, the app won't open it."
+
+The result looks like this:
+
+```actionscript-3
+package {
+  import com.adjust.sdk.Adjust;
+  import com.adjust.sdk.AdjustConfig;
+  import com.adjust.sdk.AdjustEnvironment;
+  import com.adjust.sdk.AdjustLogLevel;
+
+  public class Example extends Sprite {
+      public function Example() {
+        var appToken:String = "{YourAppToken}";
+        var environment:String = AdjustEnvironment.SANDBOX;
+
+          var adjustConfig:AdjustConfig = new AdjustConfig(appToken, environment);
+          adjustConfig.setLogLevel(AdjustLogLevel.VERBOSE);
+
+          adjustConfig.setDeferredDeeplinkCallback(DeferredDeeplinkCallback);
+
+          Adjust.initSdk(adjustConfig);
+      }
+  }
+
+   private static function deferredDeeplinkDelegate(uri:String):void {
+            trace("Received deferred deeplink");
+            trace("URI = " + uri);
+        }
+
+}
+
+```
+
+Here's what you need to do:
+
+1. Inside the `try...catch` block, call the `setDeferredDeeplinkCallback` method of your `adjustConfig` instance. Pass an `OnDeferredDeeplinkResponseListener` instance as an argument.
+
+   {% codeblock
+      title="Main.as"
+      highlight="{range: 6}"
+       %}
+   ```actionscript-3
+    // add snippet
+
+   ```
+   {% /codeblock %}
+
+1. Create a new public function called `launchReceivedDeeplink` inside your `OnDeferredDeeplinkResponseListener` declaration. This method takes a `Uri` argument and returns a `boolean`.
+
+   {% codeblock
+      title="Main.as"
+      highlight="{range: 3}"
+       %}
+   ```actionscript-3
+   // add snippet
+
+   ```
+   {% /codeblock %}
+
+1. Add an `if` condition to the `launchReceivedDeeplink` to check if the `deeplink` contains the value `"no_open"`. If the string is found, the function returns `false`, and the app shouldn't open the deferred deep link.
+
+   {% codeblock
+      title="Main.as"
+      highlight="{range: 3-5}"
+       %}
+   ```actionscript-3
+    // add snippet
+
+   ```
+   {% /codeblock %}
+
+1. Finally, add an `else` block to return `true` if the deep link doesn't contain `"no_open"`.
+
+   {% codeblock
+      title="Main.as"
+      highlight="{range: 5-7}"
+       %}
+   ```actionscript-3
+   // add snippet
+
+   ```
+   {% /codeblock %}
+
+That's it! When a user opens your app with a deferred deep link, the Adobe AIR SDK will check if the link contains the string `"no_open"`. If it does, the app won't open the deep link.
