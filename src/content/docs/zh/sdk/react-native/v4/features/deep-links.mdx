@@ -20,7 +20,7 @@ redirects:
 
 用户通过链接打开应用后，SDK 就可以读取深度链接数据了。
 
-## 设置深度链接 {#set-up-deep-linking}
+## 设置深度链接{#set-up-deep-linking}
 
 如果用户已经安装了您的应用，那么在与包含深度链接信息的链接互动时，应用就会打开。Adjust SDK 中包含的工具能够解析深度链接信息，在应用中使用。
 
@@ -37,9 +37,9 @@ redirects:
 
 3. 在 JavaScript 代码中使用获得的深度链接 URL。
 
-## 延迟深度链接 {#deferred-deep-linking}
+## 延迟深度链接{#deferred-deep-linking}
 
-### 禁用延迟深度链接 {#disable-deferred-deep-linking}
+### 禁用延迟深度链接{#disable-deferred-deep-linking}
 
 <CodeBlock title="方法签名">
 
@@ -56,13 +56,13 @@ const adjustConfig = new AdjustConfig(
    "{YourAppToken}",
    AdjustConfig.EnvironmentSandbox,
 );
-//...
+
 adjustConfig.setShouldLaunchDeeplink(true);
-//...
+
 Adjust.create(adjustConfig);
 ```
 
-### 设置延迟深度链接委托 {#set-up-a-deferred-deep-link-delegate}
+### 设置延迟深度链接委托{#set-up-a-deferred-deep-link-delegate}
 
 <CodeBlock title="方法签名">
 
@@ -79,11 +79,11 @@ const adjustConfig = new AdjustConfig(
    "{YourAppToken}",
    AdjustConfig.EnvironmentSandbox,
 );
-//...
+
 adjustConfig.setDeferredDeeplinkCallbackListener(function (deeplink) {
    console.log("Deferred deep link URL content: " + deeplink);
 });
-//...
+
 Adjust.create(adjustConfig);
 ```
 
@@ -95,17 +95,50 @@ Adjust.create(adjustConfig);
 var LogDeepLink = function (deeplinkURL) {
    console.log("Deeplink URL: " + deeplinkURL);
 };
-//...
+
 const adjustConfig = new AdjustConfig(
    "{YourAppToken}",
    AdjustConfig.EnvironmentSandbox,
 );
 adjustConfig.setDeferredDeeplinkCallbackListener(LogDeepLink);
-//...
+
 Adjust.create(adjustConfig);
 ```
 
-### 启用 LinkMe {#enable-linkme}
+## 通过深度链接进行再归因{#reattribution-via-deep-links}
+
+<CodeBlock title="方法签名">
+
+```ts
+appWillOpenUrl: (url: string) => void
+```
+
+</CodeBlock>
+
+Adjust 支持您使用深度链接开展再交互推广活动。要了解更多信息，请查看如何[在 Campaign Lab 中设置深度链接](https://help.adjust.com/zh/article/deep-links)。
+
+要对用户进行再归因，请在应用收到深度链接内容时调用 `Adjust.appWillOpenUrl` 方法。这样，Adjust SDK 就会在深度链接中寻找新的归因信息。如果 SDK 找到新信息，就会将其转发至 Adjust 服务器进行再归因。
+
+```jsx
+componentDidMount() {
+    Linking.addEventListener('url', this.handleDeepLink);
+    Linking.getInitialURL().then((url) => {
+        if (url) {
+            this.handleDeepLink({ url });
+        }
+    })
+}
+
+componentWillUnmount() {
+    Linking.removeEventListener('url', this.handleDeepLink);
+}
+
+handleDeepLink(event) {
+    Adjust.appWillOpenUrl(event.url);
+}
+```
+
+## 启用 LinkMe {#enable-linkme}
 
 <CodeBlock title="方法签名">
 
@@ -132,8 +165,8 @@ const adjustConfig = new AdjustConfig(
    "{YourAppToken}",
    AdjustConfig.EnvironmentSandbox,
 );
-//...
+
 adjustConfig.setLinkMeEnabled(true);
-//...
+
 Adjust.create(adjustConfig);
 ```
