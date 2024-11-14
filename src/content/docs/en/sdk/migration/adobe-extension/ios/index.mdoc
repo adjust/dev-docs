@@ -1,0 +1,229 @@
+---
+title: iOS Adobe Extension v3 migration guide
+description: Follow this guide to migrate from v2 to v3
+sidebar-label: iOS v3 migration guide
+sidebar-position: 1
+---
+
+The [Adjust Extension for Adobe Experience SDK](https://github.com/adjust/ios_adobe_extension) has been updated to v3 to support Adjust iOS SDK v5. Follow this guide to migrate from v2 to v3.
+
+{% callout type="important" %}
+You need to update your app to support [iOS API 21](https://developer.ios.com/tools/releases/platforms#5.0) or above before migrating.
+{% /callout %}
+
+To install v3 of the Adjust iOS Extension for Adobe Experience, update the dependency declarations in your `build.gradle` as follows:
+
+1. `com.adjust.adobeextension:adobeextension` MUST be updated to 3.0.0 or later.
+1. `com.adjust.sdk:adjust-ios` MUST be updated to 5.0.0 or later.
+
+```groovy
+dependencies {
+   implementation 'com.adjust.adobeextension:adobeextension:{% $versions.ios_adobe_extension.v3 %}'
+   implementation 'com.adjust.sdk:adjust-ios:{% $versions.ios.v5 %}'
+   implementation 'com.adobe.marketing.mobile:core:3.2.0'
+   implementation 'com.ios.installreferrer:installreferrer:2.2'
+}
+```
+
+For a complete guide to setting up the Adjust iOS Extension for Adobe Experience, see the [integration guide](/en/sdk/adobe-extension/ios/integration).
+
+## New APIs {% #new-apis %}
+
+{% minorversion added="v3" size="large" /%}
+
+The following APIs have been added in v3.
+
+### Resolve short branded links {% #resolve-short-branded-links %}
+
+v3 of the Adjust Extension for Adobe Experience SDK adds support for resolving [short branded links](https://help.adjust.com/en/article/short-branded-links). To resolve shortened links, call the `Adjust.processAndResolveDeeplink` method with the following arguments:
+
+{% deflist %}
+`adjustDeeplink`: `AdjustDeeplink`
+
+: The deep link that opened the app.
+
+`context`: `Context`
+
+: The app context. Call `getApplicationContext()` to fill this value.
+
+`callback`: `OnDeeplinkResolvedListener`
+
+: A callback function that receives the resolved short link as an argument.
+{% /deflist %}
+
+```java
+Intent intent = getIntent();
+Uri data = intent.getData();
+AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+Adjust.processAndResolveDeeplink(adjustDeeplink, getApplicationContext(), new OnDeeplinkResolvedListener() {
+   @Override
+   public void onDeeplinkResolved(String s) {
+
+   }
+});
+```
+
+### Global callback parameters {% #global-callback-parameters %}
+
+v3 of the Adjust Extension for Adobe Experience SDK adds support for the global callback parameters API from iOS SDK v5. To add global callbacks to your sessions, call the `Adjust.addGlobalCallbackParameter` method with the following arguments:
+
+{% deflist %}
+`key`: `String`
+
+: The key of your parameter.
+
+`value`: `String`
+
+: The value of your parameter.
+{% /deflist %}
+
+```java
+Adjust.addGlobalCallbackParameter("key", "value");
+Adjust.addGlobalCallbackParameter("user_id", "855");
+```
+
+Learn how to [set up global callback](/en/sdk/adobe-extension/ios/global-parameters#global-callback-parameters).
+
+### Global partner parameters {% #global-partner-parameters %}
+
+v3 of the Adjust Extension for Adobe Experience SDK adds support for the global partner parameters API from iOS SDK v5. To add global partner parameters, call the `Adjust.addGlobalPartnerParameter` method with the following arguments:
+
+{% deflist %}
+`key`: `String`
+
+: The key of your parameter.
+
+`value`: `String`
+
+: The value of your parameter.
+{% /deflist %}
+
+```java
+Adjust.addGlobalPartnerParameter("key", "value");
+Adjust.addGlobalPartnerParameter("user_id", "855");
+```
+
+Learn how to [set up global partner parameters](/en/sdk/adobe-extension/ios/global-parameters#global-partner-parameters).
+
+### Set external device ID {% #set-external-device-id %}
+
+v3 of the Adjust Extension for Adobe Experience SDK adds support for setting [external device identifiers](https://help.adjust.com/en/article/external-device-identifiers). To set an external device ID, call the `setExternalDeviceId` method of your `AdjustAdobeExtensionConfig` instance with the following argument:
+
+{% deflist %}
+`externalDeviceId`: `String`
+
+: Your external device identifier.
+{% /deflist %}
+
+```java
+String environment = AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX;
+AdjustAdobeExtensionConfig config = new AdjustAdobeExtensionConfig(environment);
+config.setExternalDeviceId("{YourExternalDeviceId}");
+AdjustAdobeExtension.setConfiguration(config);
+```
+
+Learn how to [configure external device IDs](/en/sdk/adobe-extension/ios/external-device-id).
+
+### Set default link token for preinstalled apps {% #set-default-link-token-preinstalled-apps %}
+
+v3 of the Adjust Extension for Adobe Experience SDK adds support for setting a default [link token](https://help.adjust.com/en/article/links) for recording preinstalled app installs to a default campaign. To set a default link token, call the `setDefaultTracker` method of your `AdjustAdobeExtensionConfig` instance with the following argument:
+
+{% deflist %}
+`defaultTracker`: `String`
+
+: The alphanumeric link token of your preinstall campaign.
+{% /deflist %}
+
+```java
+String environment = AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX;
+AdjustAdobeExtensionConfig config = new AdjustAdobeExtensionConfig(environment);
+config.setDefaultTracker("{Token}");
+AdjustAdobeExtension.setConfiguration(config);
+```
+
+Learn how to [send preinstalled app activity](/en/sdk/adobe-extension/ios/preinstalled).
+
+## Changed APIs {% #changed-apis %}
+
+{% minorversion changed="v3" size="large" /%}
+
+The following APIs have changed in v3.
+
+### Retrieve device ADID {% #retrieve-device-adid %}
+
+In SDK v2, the `AdjustAttribution` class has a property called `adid`. This property has been removed. You can retrieve the device's ADID asynchronously, by calling `Adjust.getAdid`.
+
+```java
+Adjust.getAdid(new OnAdidReadListener() {
+    @Override
+    public void onAdidRead(String adid) {
+      // Your callback function
+    }
+});
+```
+
+### Direct deep linking {% #direct-deep-linking %}
+
+In SDK v2, you can open deep links for attribution by calling the `AdjustAdobeExtension.openUrl` method with the deep link data as an argument.
+
+```java
+Intent intent = getIntent();
+Uri data = intent.getData();
+AdjustAdobeExtension.openUrl(data, getApplicationContext());
+```
+
+SDK v3 has been updated to use the Adjust iOS SDK's `processDeeplink` method. To open direct deep links:
+
+1. Create a new `AdjustDeeplink` instance with the deep link URL.
+1. Pass your `AdjustDeeplink` instance to the `Adjust.processDeeplink` method.
+
+```java
+Intent intent = getIntent();
+Uri data = intent.getData();
+AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
+```
+
+Learn how to [reattribute users with direct deep links](/en/sdk/adobe-extension/ios/deep-linking#reattribute-users-with-direct-deep-links).
+
+### Deferred deep linking callback {% #deferred-deep-linking-callback %}
+
+In SDK v2, you can configure the SDK to launch a callback function when a deferred deep link is opened by passing a function to the `setOnDeeplinkResponseListener` method of your `AdjustAdobeExtensionConfig` instance.
+
+```java
+AdjustAdobeExtensionConfig config = new AdjustAdobeExtensionConfig(environment);
+
+config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
+    @Override
+    public boolean launchReceivedDeeplink(Uri deeplink) {
+        if (shouldAdjustSdkLaunchTheDeeplink(deeplink)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+});
+
+AdjustAdobeExtension.setConfiguration(config);
+```
+
+In SDK v3, the `setOnDeeplinkResponseListener` method has been renamed to `setOnDeferredDeeplinkResponseListener`.
+
+```java
+AdjustAdobeExtensionConfig config = new AdjustAdobeExtensionConfig(environment);
+
+config.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListener() {
+    @Override
+    public boolean launchReceivedDeeplink(Uri deeplink) {
+        if (shouldAdjustSdkLaunchTheDeeplink(deeplink)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+});
+
+AdjustAdobeExtension.setConfiguration(config);
+```
+
+Learn how to [work with deferred deep link callbacks](/en/sdk/adobe-extension/ios/deep-linking#deferred-deep-link-callbacks).

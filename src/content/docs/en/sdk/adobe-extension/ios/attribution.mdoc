@@ -1,0 +1,133 @@
+---
+title: Set up an attribution callback
+description: Set up an attribution callback to respond to attribution changes.
+sidebar-position: 2
+---
+
+When Adjust receives install data from the Adjust Android Extension for Adobe Experience SDK, the device is attributed to the source of the install. This attribution information can change if the user is retargeted or interacts with another campaign.
+
+You can configure a callback function to respond to attribution changes. When Adjust receives new attribution information, it sends the data asynchronously back to the device. The callback function receives the device's attribution data as an argument.
+
+Read Adjust's [attribution data policies](https://github.com/adjust/sdks/blob/master/doc/attribution-data.md) for more information about attribution data.
+
+## Reference {% #reference %}
+
+To set a callback function to listen for attribution changes, call the `setOnAttributionChangedListener` method of your `AdjustAdobeExtensionConfig` instance with the following argument:
+
+{% deflist %}
+`onAttributionChangedListener`: `OnAttributionChangedListener`
+
+: A function that returns `void` and receives device attribution information as a serialized JSON object.
+{% /deflist %}
+
+## Tutorial: Create an attribution callback {% #tutorial %}
+
+To configure an attribution callback, you need to create a function and assign it to your `AdjustAdobeExtensionConfig` instance. In this tutorial, you'll build on `MainApp.java` from the [integration guide](/en/sdk/adobe-extension/android/integration) and add an `onAttributionChanged` callback function that outputs the user's attribution information to logs as a string. The final result looks like this:
+
+```java
+import android.app.Application;
+import android.util.Log;
+
+import com.adjust.adobeextension.AdjustAdobeExtension;
+import com.adjust.adobeextension.AdjustAdobeExtensionConfig;
+import com.adobe.marketing.mobile.AdobeCallback;
+import com.adobe.marketing.mobile.Extension;
+import com.adobe.marketing.mobile.Analytics;
+import com.adobe.marketing.mobile.Identity;
+import com.adobe.marketing.mobile.LoggingMode;
+import com.adobe.marketing.mobile.MobileCore;
+
+public class MainApp extends Application {
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        MobileCore.setApplication(this);
+        MobileCore.setLogLevel(LoggingMode.VERBOSE);
+
+        try {
+            MobileCore.configureWithAppID("your_adobe_app_id");
+
+            AdjustAdobeExtensionConfig config =
+                new AdjustAdobeExtensionConfig(AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX);
+            config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
+                @Override
+                public void onAttributionChanged(AdjustAttribution adjustAttribution) {
+                    Log.d("example", "Attribution information updated");
+                    Log.d("example", "Attribution: " + attribution.toString());
+                }
+            });
+            AdjustAdobeExtension.setConfiguration(config);
+        } catch (Exception e) {
+            Log.e("example", "Exception occurred during configuration: " + e.getMessage());
+        }
+
+        try {
+            List<Class<? extends Extension>> extensions = Arrays.asList(
+                Analytics.EXTENSION,
+                Identity.EXTENSION,
+                AdjustAdobeExtension.EXTENSION);
+            MobileCore.registerExtensions(extensions, new AdobeCallback<Object>() {
+                @Override
+                public void call(Object o) {
+                Log.d("example", "Adjust Adobe Extension SDK initialized");
+                }
+            });
+        } catch (Exception e) {
+            Log.e("example", "Exception occurred while registering Extension: " + e.getMessage());
+        }
+    }
+}
+```
+
+Here's what you need to do:
+
+1. Inside the `try...catch` block, call the `setOnAttributionChangedListener` method of your `AdjustAdobeExtensionConfig` instance. Pass an `OnAttributionChangedListener` instance as an argument.
+
+   {% codeblock highlight="{range: 6}" startLineNumber=21 %}
+   ```java
+   try {
+       MobileCore.configureWithAppID("your_adobe_app_id");
+   
+       AdjustAdobeExtensionConfig config =
+           new AdjustAdobeExtensionConfig(AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX);
+       config.setOnAttributionChangedListener(new OnAttributionChangedListener() {});
+       AdjustAdobeExtension.setConfiguration(config);
+   } catch (Exception e) {
+       Log.e("example", "Exception occurred during configuration: " + e.getMessage());
+   }
+   ```
+   {% /codeblock %}
+
+1. Create a new public function called `onAttributionChanged` inside your `setOnAttributionChangedListener` declaration. This method takes an `AdjustAttribution` argument and returns `void`.
+
+   {% codeblock
+      title="MainApp.java"
+      highlight="{range: 3}"
+      startLineNumber=26 %}
+   ```java
+   config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
+       @Override
+       public void onAttributionChanged(AdjustAttribution adjustAttribution) {}
+   });
+   ```
+   {% /codeblock %}
+
+1. Inside the `onAttributionChanged` function body, log the `AdjustAttribution` object by converting it to a string.
+
+   {% codeblock
+      title="MainApp.java"
+      highlight="{range: 4-5}"
+      startLineNumber=26 %}
+   ```java
+   config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
+       @Override
+       public void onAttributionChanged(AdjustAttribution adjustAttribution) {
+           Log.d("example", "Attribution information updated");
+           Log.d("example", "Attribution: " + attribution.toString());
+       }
+   });
+   ```
+   {% /codeblock %}
+
+That's it! When a user's attribution information changes, this callback function writes out the updated attribution information to the system log.
