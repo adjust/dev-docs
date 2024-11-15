@@ -1,0 +1,140 @@
+---
+title: Manage attribution callbacks
+description: Set up an attribution callback to respond to attribution changes.
+sidebar-position: 2
+---
+
+When Adjust receives install data from the SDK, the device is attributed to the source of the install. This attribution information can change if the user is retargeted or interacts with another campaign.
+
+You can configure a callback function to respond to attribution changes. When Adjust receives new attribution information, it sends the data asynchronously back to the device. The callback function receives the device's attribution data as an argument.
+
+Read Adjust's [attribution data policies](https://github.com/adjust/sdks/blob/master/doc/attribution-data.md) to learn more about attribution data.
+
+## Trigger a function when attribution changes {% #trigger-a-function-when-attribution-changes %}
+
+The SDK can listen for attribution changes and call a function when it detects an update. To configure your callback function, assign it to the `attributionCallback` property of your `adjustConfig` instance.
+
+{% callout type="note" %}
+**Note**: You must call the `attributionCallback` method **before** you initialize the Adjust SDK in your app.
+{% /callout %}
+
+Follow these steps to implement the optional callback in your application:
+
+1. Create a `void` method that receives an `AdjustAttribution` parameter type.
+1. Create an `AdjustConfig` instance.
+1. Call the `adjustConfig.setAttributionCallback` with the method you created.
+
+Within the callback function you have access to the `attribution` parameter.
+
+### Reference {% #reference %}
+
+The callback function requires the following argument:
+
+{% deflist %}
+`setAttributionCallback`: `attributionCallback`
+
+: A function that receives device attribution information asynchronously.
+{% /deflist %}
+
+The `attribution` parameter supports the following properties:
+
+{% deflist %}
+`trackerToken`: `String`
+
+: The token of the link to which the device is currently attributed.
+
+`trackerName`: `String`
+
+: The name of the link to which the device is currently attributed.
+
+`network`: `String`
+
+: The name of the network to which the device is currently attributed.
+
+`campaign`: `String`
+
+: The name of the campaign to which the device is currently attributed.
+
+`adgroup`: `String`
+
+: The name of the adgroup to which the device is currently attributed.
+
+`creative`: `String`
+
+: The name of the creative to which the device is currently attributed.
+
+`clickLabel`: `String`
+
+: The [click label](https://help.adjust.com/en/article/user-rewards) that the install is tagged with.
+
+`costType`: `String`
+
+: The campaign pricing model (for example, CPI).
+
+`costAmount`: `Number`
+
+: The cost of the install.
+
+`costCurrency`: `String`
+
+: The [3 character ISO 4217 code](https://www.iban.com/currency-codes) of the currency associated with the cost.
+
+`fbInstallReferrer`: `String`
+
+: The [Facebook install referrer](https://developers.facebook.com/docs/app-ads/install-referrer/) of the current attribution.
+{% /deflist %}
+
+### Attribution callback snippet
+
+```actionscript-3
+import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustConfig;
+import com.adjust.sdk.AdjustEnvironment;
+import com.adjust.sdk.AdjustLogLevel;
+import com.adjust.sdk.AdjustAttribution;
+
+public class Example extends Sprite {
+	public function Example() {
+	  var appToken:String = "{YourAppToken}";
+	  var environment:String = AdjustEnvironment.SANDBOX;
+
+		var adjustConfig:AdjustConfig = new AdjustConfig(appToken, environment);
+		adjustConfig.setLogLevel(AdjustLogLevel.VERBOSE);
+		adjustConfig.setAttributionCallback(attributionCallback);
+
+		Adjust.initSdk(adjustConfig);
+	}
+
+	// …
+
+	private static function attributionCallback(attribution:AdjustAttribution):void {
+		trace("Tracker token = " + attribution.getTrackerToken());
+		trace("Tracker name = " + attribution.getTrackerName());
+		trace("Campaign = " + attribution.getCampaign());
+		trace("Network = " + attribution.getNetwork());
+		trace("Creative = " + attribution.getCreative());
+		trace("Adgroup = " + attribution.getAdgroup());
+		trace("Click label = " + attribution.getClickLabel());
+		trace("Cost type = " + attribution.getCostType());
+		trace("Cost amount = " + isNaN(attribution.getCostAmount()) ? "NaN" : attribution.getCostAmount().toString());
+		trace("Cost currency = " + attribution.getCostCurrency());
+		trace("FB install referrer = " + attribution.getFbInstallReferrer());
+	}
+}
+```
+
+## Get current attribution information {% #get-current-attribution-information %}
+
+When a user installs your app, Adjust attributes the install to a campaign. The Adjust SDK gives you access to campaign attribution details for your install. To return this information, call the `getAttribution` method .
+
+{% codeblock title="Attribution getter" %}
+```actionscript-3
+
+Adjust.getAttribution(function (attribution:AdjustAttribution):void {
+// process attribution
+});
+
+```
+{% /codeblock %}
+
+## Tutorial {% #tutorial %}
