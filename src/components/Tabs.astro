@@ -1,9 +1,6 @@
 ---
-import BuildTabs from "@components/atlas/BuildTabs.tsx";
 import { extractTabProps } from "./utils/extractTabProps";
-
-// Store the content contained within the Accordion as a string.
-// This string is converted to HTML inside the atlas/BuildAccordion.jsx file.
+import { randomUUID } from "crypto";
 
 let content = "";
 
@@ -12,8 +9,132 @@ if (Astro.slots.has("default")) {
 }
 
 const { tabs, updatedContent } = await extractTabProps(content);
+const uniqueId = randomUUID();
 ---
 
-<BuildTabs client:only="react" items={tabs}>
-  <Fragment set:html={updatedContent} slot="content" />
-</BuildTabs>
+<div id={uniqueId} class="tab-group">
+  <ul class="tab-row" role="tablist">
+    {
+      tabs.map((tab) => (
+        <li
+          role="tab"
+          class="tab-header"
+          data-id={tab.id}
+          data-sync={tab.sync}
+          aria-label={tab.label}
+        >
+          <a class="tab-link">
+            <span class="tab-icon">
+              <div style="display:inline-flex">
+                <svg class="tab-svg">
+                  <use href={`#${tab.iconName}-tab-icon`} />
+                </svg>
+              </div>
+            </span>
+            <span class="tab-label">{tab.label}</span>
+            <span class="focus-ring" />
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+  <div class="tab-content-block" set:html={updatedContent} />
+</div>
+
+<style>
+  .tab-group {
+    max-width: 100%;
+    position: relative;
+    width: 100%;
+  }
+
+  .tab-row {
+    position: relative;
+    display: inline-flex;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    white-space: nowrap;
+    border-bottom: 1px solid #cdd0e0;
+  }
+
+  .tab-header {
+    display: inline-flex;
+    list-style: none;
+    color: #0b0d18;
+  }
+
+  .tab-header.active {
+    color: #255eee;
+  }
+
+  .tab-link {
+    color: inherit;
+    text-decoration: none;
+    font:
+      500 16px/24px BlinkMacSystemFont,
+      -apple-system,
+      "Segoe UI",
+      Roboto,
+      Arial,
+      sans-serif;
+    letter-spacing: 0;
+    position: relative;
+    display: inline-flex;
+    max-width: 280px;
+    margin: 0;
+    padding: 8px 16px 7px;
+    cursor: pointer;
+    transition: color 120ms ease-out;
+  }
+
+  .tab-icon {
+    display: inline-flex;
+    align-self: center;
+  }
+
+  .tab-svg {
+    width: 24px;
+    height: 24px;
+    color: #0b0d18;
+  }
+
+  .tab-header.active .tab-svg {
+    color: #255eee;
+  }
+
+  .tab-label {
+    margin-left: 8px;
+  }
+
+  .focus-ring {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    z-index: 10;
+    width: 100%;
+    height: 1px;
+    background-color: transparent;
+    transition: background-color 120ms ease-out;
+    content: "";
+  }
+
+  .tab-header.active .focus-ring {
+    background-color: #255eee;
+    height: 2px;
+  }
+
+  .tab-content-block {
+    margin-top: 1rem;
+  }
+</style>
+
+<script>
+  import { TabGroup } from "@components/utils/TabGroup";
+
+  document.addEventListener("DOMContentLoaded", () => {
+    document
+      .querySelectorAll(".tab-group")
+      .forEach((element) => new TabGroup(element as HTMLElement));
+  });
+</script>
