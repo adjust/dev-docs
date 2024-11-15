@@ -666,17 +666,20 @@ To configure the Adjust iOS Extension for Adobe Experience SDK to open deep link
    {% /tab %}
    {% /tabs %}
 
-1. Inside this function, return a call to `AdjustAdobeExtension.application` with each parameter passed in the parent function.
+1. Inside this function, call the `processDeeplink` method of the `Adjust` class to open the deep link and return a true value.
 
    {% tabs %}
    {% tab title="Swift" sync="swift" %}
    {% codeblock
       title="AppDelegate.swift"
-      highlight="{range: 2}"
+      highlight="{range: 2-5}"
       startLineNumber=25 %}
    ```swift
    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-      return AdjustAdobeExtension.application(app, open: url, options: options)
+      if let deeplink = ADJDeeplink(deeplink: url) {
+         Adjust.processDeeplink(deeplink)
+      }
+      return true
    }
    ```
    {% /codeblock %}
@@ -685,11 +688,12 @@ To configure the Adjust iOS Extension for Adobe Experience SDK to open deep link
    {% tab title="Objective-C" sync="objc" %}
    {% codeblock
       title="AppDelegate.m"
-      highlight="{range: 2}"
+      highlight="{range: 2-3}"
       startLineNumber=27 %}
    ```objc
    - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
-      return [AdjustAdobeExtension application:app openURL:url options:options];
+      [Adjust processDeeplink: [[ADJDeeplink alloc] initWithDeeplink:url]];
+      return YES;
    }
    ```
    {% /codeblock %}
@@ -717,7 +721,7 @@ To configure the Adjust iOS Extension for Adobe Experience SDK to open deep link
    {% codeblock
       title="AppDelegate.swift"
       highlight="{range: 1}"
-      startLineNumber=29 %}
+      startLineNumber=32 %}
    ```swift
    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {}
    ```
@@ -728,7 +732,7 @@ To configure the Adjust iOS Extension for Adobe Experience SDK to open deep link
    {% codeblock
       title="AppDelegate.m"
       highlight="{range: 1}"
-      startLineNumber=31 %}
+      startLineNumber=32 %}
    ```objc
    - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler {}
    ```
@@ -736,17 +740,24 @@ To configure the Adjust iOS Extension for Adobe Experience SDK to open deep link
    {% /tab %}
    {% /tabs %}
 
-1. Inside this function, return a call to `AdjustAdobeExtension.application` with each parameter passed in the parent function.
+1. Inside this function, add a check to see if the app was opened by a link and call `processDeeplink` if it is.
 
    {% tabs %}
    {% tab title="Swift" sync="swift" %}
    {% codeblock
       title="AppDelegate.swift"
-      highlight="{range: 2}"
-      startLineNumber=29 %}
+      highlight="{range: 2-9}"
+      startLineNumber=32 %}
    ```swift
    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
-      return AdjustAdobeExtension.application(application, continue: userActivity)
+      if userActivity.activityType == NSUserActivityTypeBrowsingWeb {
+         if let incomingUrl = userActivity.webpageUrl {
+            if let deeplink = ADJDeeplink(deeplink: incomingUrl) {
+               Adjust.processDeeplink(deeplink)
+            }
+         }
+      }
+      return true
    }
    ```
    {% /codeblock %}
@@ -755,11 +766,60 @@ To configure the Adjust iOS Extension for Adobe Experience SDK to open deep link
    {% tab title="Objective-C" sync="objc" %}
    {% codeblock
       title="AppDelegate.m"
-      highlight="{range: 2}"
-      startLineNumber=31 %}
+      highlight="{range: 2-5}"
+      startLineNumber=32 %}
    ```objc
    - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler {
-      return [AdjustAdobeExtension application:application continueUserActivity:userActivity];
+      if ([[userActivity activityType] isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+        [Adjust proceessDeeplink:[[ADJDeeplink alloc] initWithDeeplink:[userActivity webpageURL]]];
+      }
+      return YES;
+   }
+   ```
+   {% /codeblock %}
+   {% /tab %}
+   {% /tabs %}
+
+   If you use [short branded links](https://help.adjust.com/en/article/short-branded-links), you can alternatively use the `Adjust.processAndResolveDeeplink` method to resolve your shortened link and return it to a callback function.
+
+   {% tabs %}
+   {% tab title="Swift" sync="swift" %}
+   {% codeblock
+      title="AppDelegate.swift"
+      highlight="{range: 4-8}"
+      startLineNumber=32 %}
+   ```swift
+   func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+      if userActivity.activityType == NSUserActivityTypeBrowsingWeb {
+         if let incomingUrl = userActivity.webpageUrl {
+            if let deeplink = ADJDeeplink(deeplink: incomingUrl) {
+               Adjust.processAndResolveDeeplink(deeplink) { resolveDeeplink in
+                  print("[\(resolveDeeplink)]")
+               }
+            }
+         }
+      }
+      return true
+   }
+   ```
+   {% /codeblock %}
+   {% /tab %}
+
+   {% tab title="Objective-C" sync="objc" %}
+   {% codeblock
+      title="AppDelegate.m"
+      highlight="{range: 4-7}"
+      startLineNumber=32 %}
+   ```objc
+   - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler {
+      if ([[userActivity activityType] isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+         ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:[userActivity webpageURL]];
+         [Adjust processAndResolveDeeplink:deeplink
+                  withCompletionHandler:^(NSString * _Nullable resolvedLink) {
+                     NSLog(@"[%@]", resolvedLink);
+         }];
+      }
+      return YES;
    }
    ```
    {% /codeblock %}

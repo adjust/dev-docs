@@ -10,44 +10,44 @@ For more information on configuring events in Adjust, visit the [Add events guid
 
 ## How it works {% #how-it-works %}
 
-Event information is sent to Adjust when the following information is passed to the `MobileCore.trackAction` API:
+Event information is sent to Adjust when the following information is passed to the `MobileCore.track` API:
 
-1. `AdjustAdobeExtension.ADOBE_ADJUST_ACTION_TRACK_EVENT`: a string value that maps to the Adjust `trackEvent` method.
-1. `contextData`: a HashMap of values used to configure your event.
+1. `ADJAdobeAdjustActionTrackEvent`: a string value that maps to the Adjust `trackEvent` method.
+1. `data`: a dictionary of values used to configure your event.
 
-When you call `MobileCore.trackAction` with these arguments, the Adjust extension creates an event instance, passes it to the `trackEvent` method, and sends the information to Adjust.
+When you call `MobileCore.track` with these arguments, the Adjust extension creates an event instance, passes it to the `trackEvent` method, and sends the information to Adjust.
 
 ## Reference {% #reference %}
 
-The `contextData` HashMap holds information about an event. Each event is represented by a unique `contextData` HashMap. To configure your event instance, add values to HashMap.
+The `data` dictionary holds information about an event. Each event is represented by a unique `data` dictionary. To configure your event instance, add values to dictionary.
 
 The following keys are supported:
 
 {% deflist %}
-`AdjustAdobeExtension.ADOBE_ADJUST_EVENT_TOKEN`
+`ADJAdobeAdjustEventToken`
 
 : Your Adjust event token. You MUST set this value to send event information to Adjust. Check out [add events](https://help.adjust.com/en/article/add-events#manage-your-events) for more information.
 
-`AdjustAdobeExtension.ADOBE_ADJUST_REVENUE`
+`ADJAdobeAdjustEventRevenue`
 
 : The amount of revenue associated with the event. This value should be a string that represents a numerical value.
 
-`AdjustAdobeExtension.ADOBE_ADJUST_CURRENCY`.
+`ADJAdobeAdjustEventCurrency`.
 
 : An [ISO 4217](https://www.iban.com/currency-codes) currency code.
 
-`AdjustAdobeExtension.ADOBE_ADJUST_EVENT_CALLBACK_PARAM_PREFIX`
+`ADJAdobeAdjustEventCallbackParamPrefix`
 
 : Append a callback parameter key to this prefix and add your callback parameter value to send callbacks to Adjust.
 
-`AdjustAdobeExtension.ADOBE_ADJUST_EVENT_PARTNER_PARAM_PREFIX`
+`ADJAdobeAdjustEventPartnerParamPrefix`
 
 : Append a partner parameter key to this prefix and add your partner parameter value to send callbacks to third parties.
 {% /deflist %}
 
 ## Tutorial: Send an event {% #tutorial %}
 
-To send event information, you need to add a function to your main activity. In this tutorial, you'll build on `MainActivity.java` from the [integration guide](/en/sdk/adobe-extension/android/integration) and add a new function called `sendEventToAdjust` which will send an event with the following properties:
+To send event information, you need to add a function to your main activity. In this tutorial, you'll build on your View Controller from the [integration guide](/en/sdk/adobe-extension/ios/integration) and send a new event to Adjust with the following properties
 
 - An event token: `"g3mfiw"`.
 - 1 Euro of event revenue.
@@ -56,204 +56,302 @@ To send event information, you need to add a function to your main activity. In 
 
 The final result looks like this:
 
-```java
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
-import android.view.View;
+{% tabs %}
+{% tab title="Swift" sync="swift" %}
+```swift
+// ViewController.swift
+import AEPCore
+import AdjustAdobeExtension
 
-import androidx.appcompat.app.AppCompatActivity;
+class ViewController: UIViewController {
 
-import com.adjust.sdk.Adjust;
-import com.adjust.sdk.AdjustDeeplink;
-import com.adobe.marketing.mobile.MobileCore;
+   override func viewDidLoad() {
+      super.viewDidLoad()
 
-import java.util.HashMap;
-import java.util.Map;
-
-public class MainActivity extends AppCompatActivity {
-   @Override
-   protected void onCreate(Bundle savedInstanceState) {
-      super.onCreate(savedInstanceState);
-      setContentView(R.layout.activity_main);
-
-      Intent intent = getIntent();
-      Uri data = intent.getData();
-      AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
-      Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
-   }
-
-   public void sendEventToAdjust(View view) {
-      String action = AdjustAdobeExtension.ADOBE_ADJUST_ACTION_TRACK_EVENT;
-      Map<String, String> contextData = new HashMap<String, String>();
-      contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_TOKEN, "g3mfiw");
-      contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_REVENUE, "1.00");
-      contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_CURRENCY, "EUR");
-      contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_CALLBACK_PARAM_PREFIX + "user_id", "855");
-      contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_PARTNER_PARAM_PREFIX + "event_token", "g3mfiw");
-
-      MobileCore.trackAction(action, contextData);
+      var dataDict: Dictionary = [String : String]()
+      dataDict[ADJAdobeAdjustEventToken] = "g3mfiw"
+      dataDict[ADJAdobeAdjustEventRevenue] = "0.01"
+      dataDict[ADJAdobeAdjustEventCurrency] = "EUR"
+      dataDict[ADJAdobeAdjustEventCallbackParamPrefix.appending("user_id")] = "855"
+      dataDict[ADJAdobeAdjustEventPartnerParamPrefix.appending("event_token")] = "g3mfiw"
+      MobileCore.track(action: ADJAdobeAdjustActionTrackEvent, data: dataDict)
    }
 }
 ```
+{% /tab %}
+
+{% tab title="Objective-C" sync="objc" %}
+```objc
+// ViewController.m
+#import "ViewController.h"
+@import AEPCore;
+#import <AdjustAdobeExtension/AdjustAdobeExtension.h>
+
+@implementation ViewController
+
+- (void)viewDidLoad {
+   [super viewDidLoad];
+
+   NSMutableDictionary * dataDict = [NSMutableDictionary dictionary];
+   [dataDict setValue:@"g3mfiw" forKey:ADJAdobeAdjustEventToken];
+   [dataDict setValue:@"1.0" forKey:ADJAdobeAdjustEventRevenue];
+   [dataDict setValue:@"EUR" forKey:ADJAdobeAdjustEventCurrency];
+   [dataDict setValue:@"855" forKey:[ADJAdobeAdjustEventCallbackParamPrefix stringByAppendingString:@"user_id"]];
+   [dataDict setValue:@"855" forKey:[ADJAdobeAdjustEventPartnerParamPrefix stringByAppendingString:@"event_token"]];
+   [AEPMobileCore trackAction:ADJAdobeAdjustActionTrackEvent
+                        data:dataDict];
+   [dataDict removeAllObjects];
+}
+
+@end
+```
+{% /tab %}
+{% /tabs %}
 
 Here's what you need to do:
 
-1. First, import the following classes:
+1. Inside your `viewDidLoad` function block, create a new dictionary called `dataDict`. This is used to hold the properties of the event.
 
-   - `com.adobe.marketing.mobile.MobileCore`: this class is used to send information to Adobe and Adjust.
-   - `java.util.HashMap`: this class is used to generate the `contextData` HashMap.
-   - `java.util.Map`: this class is used to type the `contextData` HashMap.
-
-   ```java
-   // MainActivity.java
-   import com.adobe.marketing.mobile.MobileCore;
+   {% tabs %}
+   {% tab title="Swift" sync="swift" %}
+   {% codeblock
+      title="ViewController.swift"
+      startLineNumber=6
+      highlight="{range: 4}" %}
+   ```swift
+   override func viewDidLoad() {
+      super.viewDidLoad()
    
-   import java.util.HashMap;
-   import java.util.Map;
+      var dataDict: Dictionary = [String : String]()
+   }
    ```
+   {% /codeblock %}
+   {% /tab %}
 
-1. Next, create a new function inside the `MainActivity` class called `sendEventToAdjust`. This function takes [the application `View`](https://developer.android.com/reference/android/view/View) as an argument and returns `void.`
-
+   {% tab title="Objective-C" sync="objc" %}
    {% codeblock
-      title="MainActivity.java"
-      highlight="{range: 13}"
-      startLineNumber=15 %}
-   ```java
-   public class MainActivity extends AppCompatActivity {
-      @Override
-      protected void onCreate(Bundle savedInstanceState) {
-         super.onCreate(savedInstanceState);
-         setContentView(R.layout.activity_main);
+      title="ViewController.m"
+      startLineNumber=6
+      highlight="{range: 4}" %}
+   ```objc
+   - (void)viewDidLoad {
+      [super viewDidLoad];
    
-         Intent intent = getIntent();
-         Uri data = intent.getData();
-         AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
-         Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
-      }
+      NSMutableDictionary * dataDict = [NSMutableDictionary dictionary];
+   }
+   ```
+   {% /codeblock %}
+   {% /tab %}
+   {% /tabs %}
+
+1. Add your Adjust event token to the dictionary using the `ADJAdobeAdjustEventToken` key. This is required to inform Adjust which event you're trying to send.
+
+   {% tabs %}
+   {% tab title="Swift" sync="swift" %}
+   {% codeblock
+      title="ViewController.swift"
+      startLineNumber=6
+      highlight="{range: 5}" %}
+   ```swift
+   override func viewDidLoad() {
+      super.viewDidLoad()
    
-      public void sendEventToAdjust(View view) {}
+      var dataDict: Dictionary = [String : String]()
+      dataDict[ADJAdobeAdjustEventToken] = "g3mfiw"
    }
    ```
    {% /codeblock %}
+   {% /tab %}
 
-1. Inside the `sendEventToAdjust` function, declare a new `String` variable called `action` and assign it the value `AdjustAdobeExtension.ADOBE_ADJUST_ACTION_TRACK_EVENT`. This is used to tell `MobileCore.trackAction` which action to handle.
-
+   {% tab title="Objective-C" sync="objc" %}
    {% codeblock
-      title="MainActivity.java"
-      highlight="{range: 2}"
-      startLineNumber=27 %}
-   ```java
-   public void sendEventToAdjust(View view) {
-      String action = AdjustAdobeExtension.ADOBE_ADJUST_ACTION_TRACK_EVENT;
-   }
-   ```
-   {% /codeblock %}
-
-1. Create a new HashMap variable called `contextData`. This is used to hold the properties of the event.
-
-   {% codeblock
-      title="MainActivity.java"
-      highlight="{range: 3}"
-      startLineNumber=27 %}
-   ```java
-   public void sendEventToAdjust(View view) {
-      String action = AdjustAdobeExtension.ADOBE_ADJUST_ACTION_TRACK_EVENT;
-      Map<String, String> contextData = new HashMap<String, String>();
-   }
-   ```
-   {% /codeblock %}
-
-Now that the `contextData` HashMap is initialized, add values to build the event. You can refer back to the [`contextData` reference](#reference) for more information about the uses of each key.
-
-1. Add your Adjust event token to the HashMap using the `AdjustAdobeExtension.ADOBE_ADJUST_EVENT_TOKEN` key. This is required to inform Adjust which event you're trying to send.
-
-   {% codeblock
-      title="MainActivity.java"
-      highlight="{range: 4}"
-      startLineNumber=27 %}
-   ```java
-   public void sendEventToAdjust(View view) {
-      String action = AdjustAdobeExtension.ADOBE_ADJUST_ACTION_TRACK_EVENT;
-      Map<String, String> contextData = new HashMap<String, String>();
-      contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_TOKEN, "g3mfiw");
-   }
-   ```
-   {% /codeblock %}
-
-1. Add the event revenue amount using `AdjustAdobeExtension.ADOBE_ADJUST_REVENUE` for the amount and `AdjustAdobeExtension.ADOBE_ADJUST_CURRENCY` for the currency. Both values MUST be passed as strings.
-
-   {% codeblock
-      title="MainActivity.java"
-      highlight="{range: 5-6}"
-      startLineNumber=27 %}
-   ```java
-   public void sendEventToAdjust(View view) {
-      String action = AdjustAdobeExtension.ADOBE_ADJUST_ACTION_TRACK_EVENT;
-      Map<String, String> contextData = new HashMap<String, String>();
-      contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_TOKEN, "g3mfiw");
-      contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_REVENUE, "1.00");
-      contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_CURRENCY, "EUR");
-   }
-   ```
-   {% /codeblock %}
-
-1. Add a callback parameter using the `AdjustAdobeExtension.ADOBE_ADJUST_EVENT_CALLBACK_PARAM_PREFIX` key. Append a callback identifier to the key to match the parameter in your callback URL.
-
-   {% codeblock
-      title="MainActivity.java"
-      highlight="{range: 7}"
-      startLineNumber=27 %}
-   ```java
-   public void sendEventToAdjust(View view) {
-      String action = AdjustAdobeExtension.ADOBE_ADJUST_ACTION_TRACK_EVENT;
-      Map<String, String> contextData = new HashMap<String, String>();
-      contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_TOKEN, "g3mfiw");
-      contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_REVENUE, "1.00");
-      contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_CURRENCY, "EUR");
-      contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_CALLBACK_PARAM_PREFIX + "user_id", "855");
-   }
-   ```
-   {% /codeblock %}
-
-1. Add a partner parameter using the `AdjustAdobeExtension.ADOBE_ADJUST_EVENT_PARTNER_PARAM_PREFIX` key. Append a callback identifier to the key to map it to your partner's placeholder.
-
-   {% codeblock
-      title="MainActivity.java"
-      highlight="{range: 8}"
-      startLineNumber=27 %}
-   ```java
-   public void sendEventToAdjust(View view) {
-      String action = AdjustAdobeExtension.ADOBE_ADJUST_ACTION_TRACK_EVENT;
-      Map<String, String> contextData = new HashMap<String, String>();
-      contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_TOKEN, "g3mfiw");
-      contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_REVENUE, "1.00");
-      contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_CURRENCY, "EUR");
-      contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_CALLBACK_PARAM_PREFIX + "user_id", "855");
-      contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_PARTNER_PARAM_PREFIX + "event_token", "g3mfiw");
-   }
-   ```
-   {% /codeblock %}
-
-1. Finally, to send the event information to Adjust, call `MobileCore.trackAction` with your `action` and `contextData` variables.
-
-   {% codeblock
-      title="MainActivity.java"
-      highlight="{range: 10}"
-      startLineNumber=27 %}
-   ```java
-   public void sendEventToAdjust(View view) {
-      String action = AdjustAdobeExtension.ADOBE_ADJUST_ACTION_TRACK_EVENT;
-      Map<String, String> contextData = new HashMap<String, String>();
-      contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_TOKEN, "g3mfiw");
-      contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_REVENUE, "1.00");
-      contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_CURRENCY, "EUR");
-      contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_CALLBACK_PARAM_PREFIX + "user_id", "855");
-      contextData.put(AdjustAdobeExtension.ADOBE_ADJUST_EVENT_PARTNER_PARAM_PREFIX + "event_token", "g3mfiw");
+      title="ViewController.m"
+      startLineNumber=6
+      highlight="{range: 5}" %}
+   ```objc
+   - (void)viewDidLoad {
+      [super viewDidLoad];
    
-      MobileCore.trackAction(action, contextData);
+      NSMutableDictionary * dataDict = [NSMutableDictionary dictionary];
+      [dataDict setValue:@"g3mfiw" forKey:ADJAdobeAdjustEventToken];
    }
    ```
    {% /codeblock %}
+   {% /tab %}
+   {% /tabs %}
 
-That's it! When the user performs an action that maps to the `sendEventToAdjust` function, an event is constructed and sent to Adjust.
+1. Add the event revenue amount using `ADJAdobeAdjustEventRevenue` for the amount and `ADJAdobeAdjustEventCurrency` for the currency. Both values MUST be passed as strings.
+
+   {% tabs %}
+   {% tab title="Swift" sync="swift" %}
+   {% codeblock
+      title="ViewController.swift"
+      startLineNumber=6
+      highlight="{range: 6-7}" %}
+   ```swift
+   override func viewDidLoad() {
+      super.viewDidLoad()
+   
+      var dataDict: Dictionary = [String : String]()
+      dataDict[ADJAdobeAdjustEventToken] = "g3mfiw"
+      dataDict[ADJAdobeAdjustEventRevenue] = "0.01"
+      dataDict[ADJAdobeAdjustEventCurrency] = "EUR"
+   }
+   ```
+   {% /codeblock %}
+   {% /tab %}
+
+   {% tab title="Objective-C" sync="objc" %}
+   {% codeblock
+      title="ViewController.m"
+      startLineNumber=6
+      highlight="{range: 6-7}" %}
+   ```objc
+   - (void)viewDidLoad {
+      [super viewDidLoad];
+   
+      NSMutableDictionary * dataDict = [NSMutableDictionary dictionary];
+      [dataDict setValue:@"g3mfiw" forKey:ADJAdobeAdjustEventToken];
+      [dataDict setValue:@"1.0" forKey:ADJAdobeAdjustEventRevenue];
+      [dataDict setValue:@"EUR" forKey:ADJAdobeAdjustEventCurrency];
+   }
+   ```
+   {% /codeblock %}
+   {% /tab %}
+   {% /tabs %}
+
+1. Add a callback parameter using the `ADJAdobeAdjustEventCallbackParamPrefix` key. Append a callback identifier to the key to match the parameter in your callback URL.
+
+   {% tabs %}
+   {% tab title="Swift" sync="swift" %}
+   {% codeblock
+      title="ViewController.swift"
+      startLineNumber=6
+      highlight="{range: 8}" %}
+   ```swift
+   override func viewDidLoad() {
+      super.viewDidLoad()
+   
+      var dataDict: Dictionary = [String : String]()
+      dataDict[ADJAdobeAdjustEventToken] = "g3mfiw"
+      dataDict[ADJAdobeAdjustEventRevenue] = "0.01"
+      dataDict[ADJAdobeAdjustEventCurrency] = "EUR"
+      dataDict[ADJAdobeAdjustEventCallbackParamPrefix.appending("user_id")] = "855"
+   }
+   ```
+   {% /codeblock %}
+   {% /tab %}
+
+   {% tab title="Objective-C" sync="objc" %}
+   {% codeblock
+      title="ViewController.m"
+      startLineNumber=6
+      highlight="{range: 8}" %}
+   ```objc
+   - (void)viewDidLoad {
+      [super viewDidLoad];
+   
+      NSMutableDictionary * dataDict = [NSMutableDictionary dictionary];
+      [dataDict setValue:@"g3mfiw" forKey:ADJAdobeAdjustEventToken];
+      [dataDict setValue:@"1.0" forKey:ADJAdobeAdjustEventRevenue];
+      [dataDict setValue:@"EUR" forKey:ADJAdobeAdjustEventCurrency];
+      [dataDict setValue:@"855" forKey:[ADJAdobeAdjustEventCallbackParamPrefix stringByAppendingString:@"user_id"]];
+   }
+   ```
+   {% /codeblock %}
+   {% /tab %}
+   {% /tabs %}
+
+1. Add a partner parameter using the `ADJAdobeAdjustEventPartnerParamPrefix` key. Append a callback identifier to the key to map it to your partner's placeholder.
+
+   {% tabs %}
+   {% tab title="Swift" sync="swift" %}
+   {% codeblock
+      title="ViewController.swift"
+      startLineNumber=6
+      highlight="{range: 9}" %}
+   ```swift
+   override func viewDidLoad() {
+      super.viewDidLoad()
+   
+      var dataDict: Dictionary = [String : String]()
+      dataDict[ADJAdobeAdjustEventToken] = "g3mfiw"
+      dataDict[ADJAdobeAdjustEventRevenue] = "0.01"
+      dataDict[ADJAdobeAdjustEventCurrency] = "EUR"
+      dataDict[ADJAdobeAdjustEventCallbackParamPrefix.appending("user_id")] = "855"
+      dataDict[ADJAdobeAdjustEventPartnerParamPrefix.appending("event_token")] = "g3mfiw"
+   }
+   ```
+   {% /codeblock %}
+   {% /tab %}
+
+   {% tab title="Objective-C" sync="objc" %}
+   {% codeblock
+      title="ViewController.m"
+      startLineNumber=6
+      highlight="{range: 9}" %}
+   ```objc
+   - (void)viewDidLoad {
+      [super viewDidLoad];
+   
+      NSMutableDictionary * dataDict = [NSMutableDictionary dictionary];
+      [dataDict setValue:@"g3mfiw" forKey:ADJAdobeAdjustEventToken];
+      [dataDict setValue:@"1.0" forKey:ADJAdobeAdjustEventRevenue];
+      [dataDict setValue:@"EUR" forKey:ADJAdobeAdjustEventCurrency];
+      [dataDict setValue:@"855" forKey:[ADJAdobeAdjustEventCallbackParamPrefix stringByAppendingString:@"user_id"]];
+      [dataDict setValue:@"855" forKey:[ADJAdobeAdjustEventPartnerParamPrefix stringByAppendingString:@"event_token"]];
+   }
+   ```
+   {% /codeblock %}
+   {% /tab %}
+   {% /tabs %}
+
+1. Finally, to send the event information to Adjust, call `MobileCore.track` with `ADJAdobeAdjustActionTrackEvent` and your `dataDict` dictionary. If you're using Objective-C, call `removeAllObjects` on your `dataDict` dictionary to deallocate it.
+
+   {% tabs %}
+   {% tab title="Swift" sync="swift" %}
+   {% codeblock
+      title="ViewController.swift"
+      startLineNumber=6
+      highlight="{range: 10}" %}
+   ```swift
+   override func viewDidLoad() {
+      super.viewDidLoad()
+   
+      var dataDict: Dictionary = [String : String]()
+      dataDict[ADJAdobeAdjustEventToken] = "g3mfiw"
+      dataDict[ADJAdobeAdjustEventRevenue] = "0.01"
+      dataDict[ADJAdobeAdjustEventCurrency] = "EUR"
+      dataDict[ADJAdobeAdjustEventCallbackParamPrefix.appending("user_id")] = "855"
+      dataDict[ADJAdobeAdjustEventPartnerParamPrefix.appending("event_token")] = "g3mfiw"
+      MobileCore.track(action: ADJAdobeAdjustActionTrackEvent, data: dataDict)
+   }
+   ```
+   {% /codeblock %}
+   {% /tab %}
+
+   {% tab title="Objective-C" sync="objc" %}
+   {% codeblock
+      title="ViewController.m"
+      startLineNumber=6
+      highlight="{range: 10-12}" %}
+   ```objc
+   - (void)viewDidLoad {
+      [super viewDidLoad];
+   
+      NSMutableDictionary * dataDict = [NSMutableDictionary dictionary];
+      [dataDict setValue:@"g3mfiw" forKey:ADJAdobeAdjustEventToken];
+      [dataDict setValue:@"1.0" forKey:ADJAdobeAdjustEventRevenue];
+      [dataDict setValue:@"EUR" forKey:ADJAdobeAdjustEventCurrency];
+      [dataDict setValue:@"855" forKey:[ADJAdobeAdjustEventCallbackParamPrefix stringByAppendingString:@"user_id"]];
+      [dataDict setValue:@"855" forKey:[ADJAdobeAdjustEventPartnerParamPrefix stringByAppendingString:@"event_token"]];
+      [AEPMobileCore trackAction:ADJAdobeAdjustActionTrackEvent
+                     data:dataDict];
+      [dataDict removeAllObjects];
+   }
+   ```
+   {% /codeblock %}
+   {% /tab %}
+   {% /tabs %}
+
+That's it! Your View Controller constructs an event and sends to Adjust.
