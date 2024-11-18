@@ -50,9 +50,13 @@ export class TabGroup {
       }));
 
       // Add an event listener to each header to facilitate switching
-      this.headers.forEach((header) => {
+      this.headers.forEach((header, index) => {
          header.element.addEventListener("click", () => {
             TabGroup.syncTabs(this, header.tabId, header.syncKey);
+         });
+
+         header.element.addEventListener("keydown", (event) => {
+            this.handleKeydown(event, index);
          });
       });
 
@@ -69,6 +73,7 @@ export class TabGroup {
    activateFirstTab(): void {
       if (this.headers.length > 0) {
          this.headers[0].element.classList.add("active");
+         this.headers[0].element.setAttribute("aria-selected", "true");
       }
       if (this.tabs.length > 0) {
          this.tabs[0].element.classList.remove("hidden");
@@ -103,17 +108,22 @@ export class TabGroup {
                syncFound = true;
 
                // Update headers in this group
-               for (const header of group.headers) {
+               group.headers.forEach((header) => {
+                  const isActive = header === matchedHeader;
                   header.element.classList.toggle(
                      "active",
-                     header === matchedHeader,
+                     isActive,
                   );
-               }
+                  header.element.setAttribute(
+                     "aria-selected",
+                     String(isActive),
+                  );
+               });
 
                // Update tabs in this group
-               for (const tab of group.tabs) {
+               group.tabs.forEach((tab) => {
                   tab.element.classList.toggle("hidden", tab !== matchedTab);
-               }
+               });
             }
          }
 
@@ -133,13 +143,47 @@ export class TabGroup {
     */
    private updateTabsByTabId(tabId: string): void {
       // Update headers in this group
-      for (const header of this.headers) {
-         header.element.classList.toggle("active", header.tabId === tabId);
-      }
+      this.headers.forEach((header) => {
+         const isActive = header.tabId === tabId;
+         header.element.classList.toggle("active", isActive);
+         header.element.setAttribute("aria-selected", String(isActive));
+      });
 
       // Update tabs in this group
-      for (const tab of this.tabs) {
+      this.tabs.forEach((tab) => {
          tab.element.classList.toggle("hidden", tab.id !== tabId);
+      });
+   }
+
+   /**
+    * Enables using arrow keys to select tabs
+    * @param event The keyboard event (key)
+    * @param currentIndex The currently selected tab
+    */
+   private handleKeydown(event: KeyboardEvent, currentIndex: number): void {
+      const { headers } = this;
+      let newIndex = currentIndex;
+
+      switch (event.key) {
+         case "ArrowRight":
+            newIndex = (currentIndex + 1) % headers.length;
+            headers[newIndex].element.focus();
+            break;
+
+         case "ArrowLeft":
+            newIndex = (currentIndex - 1 + headers.length) % headers.length;
+            headers[newIndex].element.focus();
+            break;
+
+         case "Enter":
+         case " ":
+            event.preventDefault();
+            TabGroup.syncTabs(
+               this,
+               headers[currentIndex].tabId,
+               headers[currentIndex].syncKey,
+            );
+            break;
       }
    }
 }
