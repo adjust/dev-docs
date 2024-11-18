@@ -1,22 +1,29 @@
 import { rehype } from "rehype";
 import { visit } from "unist-util-visit";
 import type { Node } from "unist";
-import type { TabItem } from "@components/atlas/BuildTabs";
-import type { IconName } from "@adjust/components";
 
 interface TreeNode extends Node {
   tagName: string;
   properties: {
     id: string;
     dataSync: string;
-    dataIcon: IconName;
+    dataIcon: string;
     title: string;
     [key: string]: any;
   };
   children: { type: string; value: string }[];
 }
 
-export const extractTabProps = async (content: string): Promise<{ tabs: TabItem[], updatedContent: string }> => {
+interface TabItem {
+  id: string;
+  sync: string;
+  iconName: string;
+  label: string;
+}
+
+export const extractTabProps = async (
+  content: string,
+): Promise<{ tabs: TabItem[]; updatedContent: string }> => {
   const tabItems: TabItem[] = [];
 
   const data = await rehype()
