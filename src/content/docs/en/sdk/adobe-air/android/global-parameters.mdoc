@@ -1,0 +1,160 @@
+---
+title: Set up global callback and partner parameters
+description: Send information to your callback URL and to network partners with each session.
+sidebar-label: Set up global parameters
+sidebar-position: 7
+---
+
+The Adjust SDK enables you to send additional information to Adjust to forward to your callback URL and network partners. Global parameters are string key-value pairs that you can use to communicate more information about a device or user.
+
+> Is this correct?
+The Adjust SDK merges session callback parameters with event callback parameters. Event callback parameters take priority over session callback parameters. This means that if you add a parameter key to both an event and a session, the SDK sends the event parameter.
+
+Learn more about [event callbacks](/en/sdk/adobe-air/android/events).
+
+## Global callback parameters {% #global-callback-parameters %}
+
+If you [register a callback URL](https://help.adjust.com/en/article/recommended-placeholders-callbacks) in the Adjust dashboard, Adjust sends a `GET` request to your callback URL when the SDK sends session data. To append parameters to this callback request, set the global parameters in your code.
+
+{% callout type="tip" %}
+Adjust doesn’t store your custom callback parameters. Custom parameters are only appended to your callback URL.
+
+If you use CSV uploads, make sure to add the parameters to your CSV definition.
+{% /callout %}
+
+### Reference {% #global-callback-parameters-reference %}
+
+The `Adjust` class methods manage the global callback parameters. You can add and remove individual parameters, or reset all parameters at once.
+
+### Add a global callback parameter {% #add-global-callback-parameter %}
+
+To add a global callback parameter, call the `Adjust.addGlobalCallbackParameter` method with the following arguments:
+
+{% deflist %}
+`key`: `String`
+
+: The parameter key.
+
+`value`: `String`
+
+: The parameter value.
+{% /deflist %}
+
+You can add multiple parameters by calling the `Adjust.addGlobalCallbackParameter` method multiple times.
+
+```actionscript-3
+Adjust.addGlobalCallbackParameter("key", "value");
+Adjust.addGlobalCallbackParameter("user_id", "855");
+```
+
+### Remove a global callback parameter {% #remove-global-callback-parameter %}
+
+You can remove specific global callback parameters. To do that, call the `Adjust.removeGlobalCallbackParameter` method with the following argument:
+
+{% deflist %}
+`key`: `String`
+
+: The key of the parameter you want to remove.
+{% /deflist %}
+
+```actionscript-3
+Adjust.removeGlobalCallbackParameter("user_id");
+```
+
+### Remove all global callback parameters {% #remove-all-global-callback-parameter %}
+
+To remove all global callback parameters at once, call the `Adjust.removeGlobalCallbackParameters` method.
+
+This method removes all active global callback parameters, meaning you won't receive any parameters in callbacks from Adjust.
+
+```actionscript-3
+Adjust.removeGlobalCallbackParameters();
+```
+
+## Global partner parameters {% #global-partner-parameters %}
+
+You can send extra information to your network partners by adding partner parameters. Sharing additional parameters with your external partners enables more granular analysis and facilitates retargeting.
+
+When the Adjust SDK sends session data, Adjust's servers forward any global partner parameters to the partners you've configured.
+
+> Is this correct?
+Partner parameters don't appear in raw data by default. You can add the `{partner_parameters}` placeholder to receive them as a single string.
+
+Read [choose data sharing options](https://help.adjust.com/en/article/data-sharing-ad-network) to learn how to configure what data you share with external partners.
+
+### Reference {% #global-partner-parameters-reference %}
+
+The `Adjust` class methods manage the global partner parameters. You can add and remove individual parameters, or reset all parameters at once.
+
+### Add a global partner parameter {% #add-global-partner-parameter %}
+
+To add a global partner parameter, call the `Adjust.addGlobalPartnerParameter` method with the following arguments:
+
+{% deflist %}
+`key`: `String`
+
+: The parameter key.
+
+`value`: `String`
+
+: The parameter value.
+{% /deflist %}
+
+You can add multiple parameters by calling the `Adjust.addGlobalPartnerParameter` method multiple times.
+
+```actionscript-3
+Adjust.addGlobalPartnerParameter("key", "value");
+Adjust.addGlobalPartnerParameter("user_id", "855");
+```
+
+### Remove a global partner parameter {% #remove-global-partner-parameter %}
+
+To remove a global partner parameter, call the `Adjust.removeGlobalPartnerParameter` method with the following argument:
+
+{% deflist %}
+`key`: `String`
+
+: The key of the parameter you want to remove.
+{% /deflist %}
+
+```actionscript-3
+Adjust.removeGlobalPartnerParameter("key");
+```
+
+### Remove all global partner parameters {% #remove-all-global-partner-parameter %}
+
+To remove all global partner parameters at once, call the `Adjust.removeGlobalPartnerParameters` method.
+
+This method removes all active global partner parameters, meaning no parameters will be sent to network partners.
+
+```actionscript-3
+Adjust.removeGlobalPartnerParameters();
+```
+
+## Tutorial: Add and remove global parameters {% #tutorial %}
+
+> From the `README`:
+
+## Callback parameters
+
+For example, suppose you have registered the URL `http://www.adjust.com/callback` for your event with event token `abc123` and execute the following lines:
+
+```actionscript-3
+var adjustEvent:AdjustEvent = new AdjustEvent("abc123");
+adjustEvent.addCallbackParameter("key", "value");
+adjustEvent.addCallbackParameter("foo", "bar");
+Adjust.trackEvent(adjustEvent);
+```
+
+The Adjust SDK measures the event and sends a request to your URL with the callback parameters. For example, if you register the URL https://www.mydomain.com/callback, your callback looks like this:
+
+`https://www.mydomain.com/callback?key=value&user_id=855`
+
+## Partner parameters
+
+```actionscript-3
+var adjustEvent:AdjustEvent = new AdjustEvent("abc123");
+adjustEvent.addPartnerParameter("key", "value");
+adjustEvent.addPartnerParameter("foo", "bar");
+Adjust.trackEvent(adjustEvent);
+```
