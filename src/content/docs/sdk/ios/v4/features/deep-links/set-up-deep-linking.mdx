@@ -17,7 +17,7 @@ Please follow the steps in the section that corresponds to the type of app you h
 
 -  [UIKit apps using AppDelegate lifecycle](#uikit-apps-using-appdelegate-lifecycle)
 -  [UIKit apps using SceneDelegate lifecycle](#uikit-apps-using-scenedelegate-lifecycle)
--  [SwiftUI apps not using SceneDelegate lifecycle](#swiftui-apps-not-using-scenedelegate-lifecycle)
+-  [SwiftUI apps using AppDelegate lifecycle](#swiftui-apps-using-appdelegate-lifecycle)
 -  [SwiftUI apps using SceneDelegate lifecycle](#swiftui-apps-using-scenedelegate-lifecycle)
 
 In addition, implement deep link handling logic:
@@ -86,9 +86,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
   }
 
   // Receive universal link when app is installed,
-  // and app is in one of these states:
-  // not running, background, or foreground,
-  // and user clicks link to open app.
+  // and app is in "not running" or background state,
+  // and user clicks link or another app opens link using
+  // UIApplication.open(_:options:completionHandler:).
   func application(
     _ application: UIApplication,
     continue userActivity: NSUserActivity,
@@ -104,21 +104,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
     return true
   }
 
-  // Receive app scheme deep link when app is installed,
-  // and app is in one of these states:
-  // not running, background, or foreground,
-  // and link opens app when either:
-  //
-  // - User clicks link, or
-  // - Your app/another app programmatically opens link
-  //   using UIApplication.shared.open.
+  // Receive app scheme deep link when app is installed, and either:
+  // - App is in "not running" or background state, and user clicks link or
+  //   another app opens link using UIApplication.open(_:options:completionHandler:), or
+  // - App is in foreground state and opens its own link using
+  //   UIApplication.open(_:options:completionHandler:).
   func application(
     _ application: UIApplication,
     open incomingLink: URL,
     options: [UIApplication.OpenURLOptionsKey: Any] = [:]
   ) -> Bool {
-      // Handle incoming deep link
-      DeeplinkHandler.handleDeeplink(incomingLink)
+    // Handle incoming app scheme deep link
+    DeeplinkHandler.handleDeeplink(incomingLink)
     return true
   }
 
@@ -192,9 +189,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
 }
 
 // Receive universal link when app is installed,
-// and app is in one of these states:
-// not running, background, or foreground,
-// and user clicks link to open app.
+// and app is in "not running" or background state,
+// and user clicks link or another app opens link using
+// [UIApplication openURL:options:completionHandler:].
 - (BOOL)application:(UIApplication *)application
     continueUserActivity:(NSUserActivity *)userActivity
       restorationHandler:
@@ -209,14 +206,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
   return YES;
 }
 
-// Receive app scheme deep link when app is installed,
-// and app is in one of these states:
-// not running, background, or foreground,
-// and link opens app when either:
-//
-// - User clicks link, or
-// - Your app/another app programmatically opens link
-//   using [[UIApplication sharedApplication] openURL:].
+// Receive app scheme deep link when app is installed, and either:
+// - App is in "not running" or background state, and user clicks link or
+//   another app opens link using [UIApplication openURL:options:completionHandler:], or
+// - App is in foreground state and opens its own link using
+//   [UIApplication openURL:options:completionHandler:].
 - (BOOL)application:(UIApplication *)app
             openURL:(NSURL *)incomingLink
             options:
@@ -256,60 +250,59 @@ For deferred deep linking, this is the sequence for most apps:
 4. After the ATT prompt response or timeout, the Adjust SDK sends session and attribution requests to Adjust's servers.
 5. Adjust's servers respond with attribution data, including the deep link the user clicked on ("deferred deep link").
 6. The Adjust SDK triggers a deferred deep link callback in your app, which stores the deferred deep link (shown in the AppDelegate implementation above).
-7. Once onboarding completes, the app retrieves the stored deep link and navigates the user accordingly (shown in the ContentViewController example class below).
+7. Once onboarding completes, the app retrieves the stored deep link and navigates the user accordingly (shown in the ViewController example class below).
 
 <Tabs>
 <Tab title="Swift" sync="swift">
 
-<CodeBlock title="ContentViewController.swift">
+<CodeBlock title="ViewController.swift">
 
 ```swift
 import Adjust
 import Foundation
 import UIKit
 
-class ContentViewController: UIViewController {
+class ViewController: UIViewController {
 
-    var hasCompletedOnboarding: Bool {
-        get {
-            UserDefaults.standard.bool(forKey: "HasCompletedOnboarding")
-        }
-        set {
-            UserDefaults.standard.set(
-                newValue, forKey: "HasCompletedOnboarding")
-        }
+  var hasCompletedOnboarding: Bool {
+    get {
+      UserDefaults.standard.bool(forKey: "HasCompletedOnboarding")
+    }
+    set {
+      UserDefaults.standard.set(
+        newValue, forKey: "HasCompletedOnboarding")
+    }
+  }
+
+  override func viewDidAppear() {
+    super.viewDidAppear()
+
+    // Check if onboarding has been completed
+    if !hasCompletedOnboarding {
+      // Show ATT dialog
+      Adjust.requestTrackingAuthorization(completionHandler: nil)
+
+      // Show onboarding screens and login prompt
+
+      // On completion, set hasCompletedOnboarding to true
+      hasCompletedOnboarding = true
     }
 
-    override func viewDidAppear() {
-        super.viewDidAppear()
+    // Check if there's a stored deferred deep link
+    if let deferredLinkString = UserDefaults.standard.string(
+      forKey: "lastDeferredLink"),
+      let deferredLink = URL(string: deferredLinkString)
+    {
+      // Remove the stored deferred deep link
+      // to avoid handling it again later
+      UserDefaults.standard.removeObject(forKey: "lastDeferredLink")
 
-        // Check if onboarding has been completed
-        if !hasCompletedOnboarding {
-            // Show ATT dialog
-            Adjust.requestTrackingAuthorization(completionHandler: nil)
-
-            // Show onboarding screens and login prompt
-
-            // On completion, set hasCompletedOnboarding to true
-            hasCompletedOnboarding = true
-        }
-
-        // Check if there's a stored deferred deep link
-        if let deferredLinkString = UserDefaults.standard.string(
-            forKey: "lastDeferredLink"),
-            let deferredLink = URL(string: deferredLinkString)
-        {
-            // Remove the stored deferred deep link
-            // to avoid handling it again later
-            UserDefaults.standard.removeObject(forKey: "lastDeferredLink")
-
-            // Handle deferred deep link
-            DeeplinkHandler.handleDeeplink(deferredLink)
-        }
-        else {
-            // Show main content
-        }
+      // Handle deferred deep link
+      DeeplinkHandler.handleDeeplink(deferredLink)
+    } else {
+      // Show main content
     }
+  }
 }
 ```
 
@@ -318,7 +311,7 @@ class ContentViewController: UIViewController {
 </Tab>
 <Tab title="Objective-C" sync="objc">
 
-<CodeBlock title="ContentViewController.m">
+<CodeBlock title="ViewController.m">
 
 ```objc
 #import <Adjust/Adjust.h>
@@ -327,57 +320,58 @@ class ContentViewController: UIViewController {
 
 @class DeeplinkHandler;
 
-@interface ContentViewController : UIViewController
+@interface ViewController : UIViewController
 
 @end
 
-@interface ContentViewController ()
+@interface ViewController ()
 
 @property(nonatomic, assign) BOOL hasCompletedOnboarding;
 
 @end
 
-@implementation ContentViewController
+@implementation ViewController
 
 - (BOOL)hasCompletedOnboarding {
-    return [[NSUserDefaults standardUserDefaults]
-        boolForKey:@"HasCompletedOnboarding"];
+  return [[NSUserDefaults standardUserDefaults]
+      boolForKey:@"HasCompletedOnboarding"];
 }
 
 - (void)setHasCompletedOnboarding:(BOOL)hasCompletedOnboarding {
-    [[NSUserDefaults standardUserDefaults] setBool:hasCompletedOnboarding
-                                            forKey:@"HasCompletedOnboarding"];
+  [[NSUserDefaults standardUserDefaults] setBool:hasCompletedOnboarding
+                                          forKey:@"HasCompletedOnboarding"];
 }
 
 - (void)viewDidAppear {
-    [super viewDidAppear];
+  [super viewDidAppear];
 
-    // Check if onboarding has been completed
-    if (!self.hasCompletedOnboarding) {
-        // Show ATT prompt
-        [Adjust requestTrackingAuthorizationWithCompletionHandler:nil];
+  // Check if onboarding has been completed
+  if (!self.hasCompletedOnboarding) {
+    // Show ATT dialog
+    [Adjust requestTrackingAuthorizationWithCompletionHandler:nil];
 
-        // Show onboarding screens and login prompt
-        // On completion, set hasCompletedOnboarding to true
-        self.hasCompletedOnboarding = YES;
-    }
+    // Show onboarding screens and login prompt
 
-    // Check if there's a stored deferred deep link
-    NSString *deferredLinkString = [[NSUserDefaults standardUserDefaults]
-        stringForKey:@"lastDeferredLink"];
-    NSURL *deferredLink = [NSURL URLWithString:deferredLinkString];
+    // On completion, set hasCompletedOnboarding to true
+    self.hasCompletedOnboarding = YES;
+  }
 
-    if (deferredLink) {
-        // Remove the stored deferred deep link
-        // to avoid handling it again later
-        [[NSUserDefaults standardUserDefaults]
-            removeObjectForKey:@"lastDeferredLink"];
+  // Check if there's a stored deferred deep link
+  NSString *deferredLinkString =
+      [[NSUserDefaults standardUserDefaults] stringForKey:@"lastDeferredLink"];
+  NSURL *deferredLink = [NSURL URLWithString:deferredLinkString];
 
-        // Handle deferred deep link
-        [DeeplinkHandler handleDeeplink:deferredLink];
-    } else {
-        // Show main content
-    }
+  if (deferredLink) {
+    // Remove the stored deferred deep link
+    // to avoid handling it again later
+    [[NSUserDefaults standardUserDefaults]
+        removeObjectForKey:@"lastDeferredLink"];
+
+    // Handle deferred deep link
+    [DeeplinkHandler handleDeeplink:deferredLink];
+  } else {
+    // Show main content
+  }
 }
 
 @end
@@ -406,36 +400,36 @@ import Foundation
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-  // Receive deep link when creating new scene, when either:
-  // - Launching app from "not running" state, or
-  // - Creating additional scene while app is
-  //   in background or foreground state.
-  //
-  // Receive universal link when user clicks link.
-  // Receive app scheme deep link when user clicks link or
-  // your app/another app programmatically opens link
-  // using UIApplication.shared.open.
+  // Receive universal link or app scheme deep link
+  // when app is installed, and app is in "not running" state, and either:
+  // - User clicks link, or
+  // - Another app opens link using
+  //   UIApplication.open(_:options:completionHandler:).
   func scene(
-     _ scene: UIScene,
-     willConnectTo session: UISceneSession,
-     options connectionOptions: UIScene.ConnectionOptions
+    _ scene: UIScene,
+    willConnectTo session: UISceneSession,
+    options connectionOptions: UIScene.ConnectionOptions
   ) {
-     // Handle incoming universal link
-     if let userActivity = connectionOptions.userActivities.first,
-        userActivity.activityType == NSUserActivityTypeBrowsingWeb,
-        let incomingLink = userActivity.webpageURL {
-         DeeplinkHandler.handleDeeplink(incomingLink)
-     }
-     // Handle incoming app scheme deep link
-     else if let urlContext = connectionOptions.urlContexts.first,
-               let incomingLink = urlContext.url {
-         DeeplinkHandler.handleDeeplink(incomingLink)
-     }
+    // Handle incoming universal link
+    if let userActivity = connectionOptions.userActivities.first,
+      userActivity.activityType == NSUserActivityTypeBrowsingWeb,
+      let incomingLink = userActivity.webpageURL
+    {
+      DeeplinkHandler.handleDeeplink(incomingLink)
+    }
+
+    // Handle incoming app scheme deep link
+    else if let urlContext = connectionOptions.urlContexts.first {
+      let incomingLink = urlContext.url
+      DeeplinkHandler.handleDeeplink(incomingLink)
+    }
   }
 
   // Receive universal link when app is installed,
-  // and app is in background or foreground state,
-  // and user clicks link to open app to existing scene.
+  // and app is in background state, and either:
+  // - User clicks link, or
+  // - Another app opens link using
+  //   UIApplication.open(_:options:completionHandler:).
   func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
     if userActivity.activityType == NSUserActivityTypeBrowsingWeb,
       let incomingLink = userActivity.webpageURL
@@ -445,19 +439,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
   }
 
-  // Receive app scheme deep link when app is installed,
-  // and app is in background or foreground state,
-  // and link opens app to existing scene when either:
-  // - User clicks link, or
-  // - Your app/another app programmatically opens link
-  //   using UIApplication.shared.open.
+  // Receive app scheme deep link when app is installed, and either:
+  // - App is in background state, and user clicks link or another app opens link using
+  //   UIApplication.open(_:options:completionHandler:), or
+  // - App is in foreground and opens its own link using
+  //   UIApplication.open(_:options:completionHandler:).
   func scene(
     _ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>
   ) {
     if let urlContext = URLContexts.first {
       let incomingLink = urlContext.url
 
-      // Handle incoming deep link
+      // Handle incoming app scheme deep link
       DeeplinkHandler.handleDeeplink(incomingLink)
     }
   }
@@ -480,31 +473,39 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 @implementation SceneDelegate
 
-// Receive deep link when creating new scene, when either:
-// - Launching app from "not running" state, or
-// - Creating additional scene while app is
-//   in background or foreground state.
-//
-// Receive universal link when user clicks link.
-// Receive app scheme deep link when user clicks link or
-// your app/another app programmatically opens link
-// using [[UIApplication sharedApplication] openURL:].
+// Receive universal link or app scheme deep link
+// when app is installed, and app is in "not running" state, and either:
+// - User clicks link, or
+// - Another app opens link using
+//   [UIApplication openURL:options:completionHandler:].
 - (void)scene:(UIScene *)scene
     willConnectToSession:(UISceneSession *)session
                  options:(UISceneConnectionOptions *)connectionOptions {
-  if (connectionOptions.URLContexts.count > 0) {
+  // Handle incoming universal link
+  if (connectionOptions.userActivities.count > 0) {
+    NSUserActivity *userActivity =
+        connectionOptions.userActivities.allObjects.firstObject;
+    if ([userActivity.activityType
+            isEqualToString:NSUserActivityTypeBrowsingWeb] &&
+        userActivity.webpageURL) {
+      NSURL *incomingLink = userActivity.webpageURL;
+      [DeeplinkHandler handleDeeplink:incomingLink];
+    }
+  }
+  // Handle incoming app scheme deep link
+  else if (connectionOptions.URLContexts.count > 0) {
     UIOpenURLContext *urlContext =
         connectionOptions.URLContexts.allObjects.firstObject;
     NSURL *incomingLink = urlContext.URL;
-
-    // Handle incoming deep link
     [DeeplinkHandler handleDeeplink:incomingLink];
   }
 }
 
 // Receive universal link when app is installed,
-// and app is in background or foreground state,
-// and user clicks link to open app to existing scene.
+// and app is in background state, and either:
+// - User clicks link, or
+// - Another app opens link using
+//   [UIApplication openURL:options:completionHandler:].
 - (void)scene:(UIScene *)scene
     continueUserActivity:(NSUserActivity *)userActivity {
   if ([userActivity.activityType
@@ -516,19 +517,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
 }
 
-// Receive app scheme deep link when app is installed,
-// and app is in background or foreground state,
-// and link opens app to existing scene when either:
-// - User clicks link, or
-// - Your app/another app programmatically opens link
-//   using [[UIApplication sharedApplication] openURL:].
+// Receive app scheme deep link when app is installed, and either:
+// - App is in background state, and user clicks link or another app opens link
+//   using [UIApplication openURL:options:completionHandler:], or
+// - App is in foreground and opens its own link using
+//   [UIApplication openURL:options:completionHandler:].
 - (void)scene:(UIScene *)scene
     openURLContexts:(NSSet<UIOpenURLContext *> *)URLContexts {
   UIOpenURLContext *urlContext = URLContexts.allObjects.firstObject;
   if (urlContext) {
     NSURL *incomingLink = urlContext.URL;
 
-    // Handle incoming deep link
+    // Handle incoming app scheme deep link
     [DeeplinkHandler handleDeeplink:incomingLink];
   }
 }
@@ -541,9 +541,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 </Tab>
 </Tabs>
 
-## SwiftUI apps not using SceneDelegate lifecycle
+## SwiftUI apps using AppDelegate lifecycle
 
-If you haven't already done so, create an `AppDelegate.swift` file in your project's main directory and reference it in your main application file (for example: `App.swift` as shown below). This is required to handle app lifecycle events and Adjust SDK integration.
+If you haven't already done so, create an `AppDelegate.swift` file in your project's main directory and reference it in your main application file (for example: `App.swift` as shown below). This is required to handle app lifecycle events and Adjust SDK integration. Also implement `onOpenURL`, which receives all direct deep links.
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -560,6 +560,18 @@ struct MyApp: App {
   var body: some Scene {
     WindowGroup {
       ContentView()
+        // Receive universal link or app scheme deep link
+        // when app is installed, and app is in "not running" or background state, and either:
+        // - User clicks link, or
+        // - Another app opens link using
+        //   UIApplication.open(_:options:completionHandler:) or SwiftUI's openURL.
+        //
+        // Receive app scheme deep link when app is installed,
+        // and app is in foreground and opens its own link using
+        // UIApplication.open(_:options:completionHandler:) or SwiftUI's openURL.
+        .onOpenURL { incomingLink in
+          DeeplinkHandler.handleDeeplink(incomingLink)
+        }
     }
   }
 }
@@ -643,11 +655,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, AdjustDelegate {
 </Tab>
 </Tabs>
 
-Below is an example `ContentView.swift` implementation that does the following:
-
--  Receives direct deep links.
--  Handles onboarding flow and deferred deep linking.
-
 For deferred deep linking, this is the sequence for most apps:
 
 1. A user who doesn't have the app installed clicks an Adjust deep link, which redirects them to the app store.
@@ -680,6 +687,7 @@ struct ContentView: View {
         }
 
         // Show onboarding screens and login prompt
+
         // On completion, set hasCompletedOnboarding to true
         UserDefaults.standard.set(true, forKey: "HasCompletedOnboarding")
         hasCompletedOnboarding = true
@@ -699,17 +707,6 @@ struct ContentView: View {
         // Show main content
       }
     }
-    // Receive deep link when app is installed,
-    // and app is in one of these states:
-    // not running, background, or foreground.
-    //
-    // Receive universal link when user clicks link.
-    // Receive app scheme deep link when user clicks link or
-    // your app/another app programmatically opens link
-    // using UIApplication.shared.open or SwiftUI's openURL.
-    .onOpenURL { incomingLink in
-      DeeplinkHandler.handleDeeplink(incomingLink)
-    }
   }
 }
 ```
@@ -725,7 +722,7 @@ Lastly, implement your deep link handling logic:
 
 ## SwiftUI apps using SceneDelegate lifecycle
 
-Follow the steps in the [SwiftUI apps not using SceneDelegate lifecycle](#swiftui-apps-not-using-scenedelegate-lifecycle). In addition, implement the following method in your SceneDelegate.
+Follow the steps in the [SwiftUI apps using AppDelegate lifecycle](#swiftui-apps-using-appdelegate-lifecycle). In addition, implement the following method in your SceneDelegate.
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -736,15 +733,11 @@ Follow the steps in the [SwiftUI apps not using SceneDelegate lifecycle](#swiftu
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-  // Receive deep link when creating new scene, when either:
-  // - Launching app from "not running" state, or
-  // - Creating additional scene while app is
-  //   in background or foreground state.
-  //
-  // Receive universal link when user clicks link.
-  // Receive app scheme deep link when user clicks link or
-  // your app/another app programmatically opens link
-  // using UIApplication.shared.open or SwiftUI's openURL.
+  // Receive universal link or app scheme deep link
+  // when app is installed, and app is in "not running" state, and either:
+  // - User clicks link, or
+  // - Another app opens link using
+  //   UIApplication.open(_:options:completionHandler:) or SwiftUI's openURL.
   func scene(
     _ scene: UIScene,
     willConnectTo session: UISceneSession,
@@ -758,9 +751,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       DeeplinkHandler.handleDeeplink(incomingLink)
     }
     // Handle incoming app scheme deep link
-    else if let urlContext = connectionOptions.urlContexts.first,
+    else if let urlContext = connectionOptions.urlContexts.first {
       let incomingLink = urlContext.url
-    {
       DeeplinkHandler.handleDeeplink(incomingLink)
     }
   }
@@ -809,88 +801,97 @@ import Foundation
 // import UIKit and/or SwiftUI
 
 class DeeplinkHandler {
-    static func handleDeeplink(_ incomingLink: URL) {
-        // Send incoming deep link to Adjust's servers for attribution
-        // and retrieve full URL if short branded link.
-        // If not, return original link.
-        Adjust.processDeeplink(incomingLink) { processedLinkString in
-            guard let processedLink = URL(string: processedLinkString) else {
-                print("Invalid processed link")
-                return
-            }
+  static func handleDeeplink(_ incomingLink: URL) {
+    // Send incoming deep link to Adjust's servers for attribution
+    // and retrieve full URL if short branded link.
+    // If not, retrieve original link.
+    Adjust.processDeeplink(incomingLink) { processedLinkString in
+      guard let processedLink = URL(string: processedLinkString) else { return }
+    }
 
-            // Extract path, query items, and fragment from the processed link.
-            let components = URLComponents(
-                url: processedLink,
-                resolvingAgainstBaseURL: true
-            )
-            let path = components?.path ?? ""
-            let queryItems = components?.queryItems ?? []
+    // Extract path, query items, and fragment from the processed link.
+    let components = URLComponents(
+      url: processedLink,
+      resolvingAgainstBaseURL: true
+    )
 
-            // Parse query parameters into a dictionary for easier access
-            let params = queryItems.reduce(into: [String: String]()) { result, item in
-                result[item.name] = item.value
-            }
+    // For app scheme deep links, set path = host + path
+    var path: String
+    if let scheme = processedLink.scheme, scheme == "http" || scheme == "https"
+    {
+      path = components.path
+    } else {
+      path = (components.host ?? "") + components.path
+      if !path.isEmpty && !path.hasPrefix("/") {
+        path = "/" + path
+      }
+    }
 
-            let fragment = components?.fragment
+    let queryItems = components?.queryItems ?? []
 
-            // Implement the navigation or other app-specific logic based on
-            // the deep link components.
-            DispatchQueue.main.async {
-                // Example of navigating based on the path or other components.
-                // Replace with your actual navigation logic.
-                switch path {
-                case "/product":
-                    if let productId = params["id"] {
-                        handleProduct(productId: productId)
-                    }
-                case "/category":
-                    if let categoryName = params["name"] {
-                        handleCategory(category: categoryName)
-                    }
-                case "/search":
-                    if let query = params["q"] {
-                        handleSearch(query: query)
-                    }
-                default:
-                    print("Unhandled deep link path: \(path)")
-                }
-            }
+    // Parse query parameters into a dictionary for easier access
+    let params = queryItems.reduce(into: [String: String]()) { result, item in
+      result[item.name] = item.value
+    }
+
+    let fragment = components?.fragment
+
+    // Implement the navigation or other app-specific logic based on
+    // the deep link components.
+    DispatchQueue.main.async {
+      // Example of navigating based on the path or other components.
+      // Replace with your actual navigation logic.
+      switch path {
+      case "/product":
+        if let productId = params["id"] {
+          handleProduct(productId: productId)
         }
+      case "/category":
+        if let categoryName = params["name"] {
+          handleCategory(category: categoryName)
+        }
+      case "/search":
+        if let query = params["q"] {
+          handleSearch(query: query)
+        }
+      default:
+        print("Unhandled deep link path: \(path)")
+      }
     }
+  }
 
-    private static func handleProduct(productId: String) {
-        // Example UIKit implementation:
-        // let productVC = ProductViewController(productId: productId)
-        // navigationController.pushViewController(productVC, animated: true)
+  private static func handleProduct(productId: String) {
+    // Example UIKit implementation:
+    // let productVC = ProductViewController(productId: productId)
+    // navigationController.pushViewController(productVC, animated: true)
 
-        // Example SwiftUI implementation:
-        // let productView = ProductView(productId: productId)
-        // navigationPath.append(productView)
-        // or: router.navigate(to: productView)
-    }
+    // Example SwiftUI implementation:
+    // let productView = ProductView(productId: productId)
+    // navigationPath.append(productView)
+    // or: router.navigate(to: productView)
+  }
 
-    private static func handleCategory(category: String) {
-        // Example UIKit implementation:
-        // let categoryVC = CategoryViewController(category: category)
-        // navigationController.pushViewController(categoryVC, animated: true)
+  private static func handleCategory(category: String) {
+    // Example UIKit implementation:
+    // let categoryVC = CategoryViewController(category: category)
+    // navigationController.pushViewController(categoryVC, animated: true)
 
-        // Example SwiftUI implementation:
-        // let categoryView = CategoryView(category: category)
-        // navigationPath.append(categoryView)
-        // or: router.navigate(to: categoryView)
-    }
+    // Example SwiftUI implementation:
+    // let categoryView = CategoryView(category: category)
+    // navigationPath.append(categoryView)
+    // or: router.navigate(to: categoryView)
+  }
 
-    private static func handleSearch(query: String) {
-        // Example UIKit implementation:
-        // let searchVC = SearchViewController(searchQuery: query)
-        // navigationController.pushViewController(searchVC, animated: true)
+  private static func handleSearch(query: String) {
+    // Example UIKit implementation:
+    // let searchVC = SearchViewController(searchQuery: query)
+    // navigationController.pushViewController(searchVC, animated: true)
 
-        // Example SwiftUI implementation:
-        // let searchView = SearchView(searchQuery: query)
-        // navigationPath.append(searchView)
-        // or: router.navigate(to: searchView)
-    }
+    // Example SwiftUI implementation:
+    // let searchView = SearchView(searchQuery: query)
+    // navigationPath.append(searchView)
+    // or: router.navigate(to: searchView)
+  }
 }
 ```
 
@@ -913,70 +914,81 @@ class DeeplinkHandler {
 @implementation DeeplinkHandler
 
 + (void)handleDeeplink:(NSURL *)incomingLink {
-    // Send incoming deep link to Adjust's servers for attribution
-    // and retrieve full URL if short branded link.
-    // If not, return original link.
-    [Adjust processDeeplink:incomingLink
-         completionHandler:^(NSString *_Nonnull processedLinkString) {
-        NSURL *processedLink = [NSURL URLWithString:processedLinkString];
-        if (!processedLink) {
-            NSLog(@"Invalid processed link");
-            return;
-        }
+  // Send incoming deep link to Adjust's servers for attribution
+  // and retrieve full URL if short branded link.
+  // If not, retrieve original link.
+  [Adjust processDeeplink:incomingLink
+        completionHandler:^(NSString *_Nonnull processedLinkString) {
+          NSURL *processedLink = [NSURL URLWithString:processedLinkString];
+          if (!processedLink) return;
+        }];
 
-        // Extract path, query items, and fragment from the processed link.
-        NSURLComponents *components =
-            [NSURLComponents componentsWithURL:processedLink
-                    resolvingAgainstBaseURL:YES];
-        NSString *path = components.path ?: @"";
-        NSArray<NSURLQueryItem *> *queryItems = components.queryItems ?: @[];
+  // Extract path, query items, and fragment from the processed link.
+  NSURLComponents *components = [NSURLComponents componentsWithURL:processedLink
+                                           resolvingAgainstBaseURL:YES];
 
-        // Parse query parameters into a dictionary for easier access
-        NSMutableDictionary<NSString *, NSString *> *params =
-            [NSMutableDictionary dictionary];
-        for (NSURLQueryItem *item in queryItems) {
-            params[item.name] = item.value;
-        }
+  // For app scheme deep links, set path = host + path
+  NSString *path;
+  if ([processedLink.scheme isEqualToString:@"http"] ||
+      [processedLink.scheme isEqualToString:@"https"]) {
+    path = components.path;
+  } else {
+    path = [NSString
+        stringWithFormat:@"%@%@", components.host ?: @"", components.path];
+    if (path.length > 0 && ![path hasPrefix:@"/"]) {
+      path = [@"/" stringByAppendingString:path];
+    }
+  }
 
-        NSString *fragment = components.fragment;
+  NSArray<NSURLQueryItem *> *queryItems = components.queryItems ?: @[];
 
-        // Implement the navigation or other app-specific logic based on
-        // the deep link components.
-        dispatch_async(dispatch_get_main_queue(), ^{
-            // Example of navigating based on the path or other components.
-            // Replace with your actual navigation logic.
-            if ([path isEqualToString:@"/product"]) {
-                NSString *productId = params[@"id"];
-                if (productId) {
-                    ProductViewController *productVC =
-                        [[ProductViewController alloc] initWithProductId:productId];
-                    [self navigateToViewController:productVC];
-                }
-            } else if ([path isEqualToString:@"/category"]) {
-                NSString *categoryName = params[@"name"];
-                if (categoryName) {
-                    CategoryViewController *categoryVC =
-                        [[CategoryViewController alloc] initWithCategory:categoryName];
-                    [self navigateToViewController:categoryVC];
-                }
-            } else if ([path isEqualToString:@"/search"]) {
-                NSString *query = params[@"q"];
-                if (query) {
-                    SearchViewController *searchVC =
-                        [[SearchViewController alloc] initWithSearchQuery:query];
-                    [self navigateToViewController:searchVC];
-                }
-            } else {
-                NSLog(@"Unhandled deep link path: %@", path);
-            }
-        });
-    }];
+  // Parse query parameters into a dictionary for easier access
+  NSMutableDictionary<NSString *, NSString *> *params =
+      [NSMutableDictionary dictionary];
+  for (NSURLQueryItem *item in queryItems) {
+    params[item.name] = item.value;
+  }
+
+  NSString *fragment = components.fragment;
+
+  // Implement the navigation or other app-specific logic based on
+  // the deep link components.
+  dispatch_async(dispatch_get_main_queue(), ^{
+    // Example of navigating based on the path or other components.
+    // Replace with your actual navigation logic.
+    if ([path isEqualToString:@"/product"]) {
+      NSString *productId = params[@"id"];
+      if (productId) {
+        ProductViewController *productVC =
+            [[ProductViewController alloc] initWithProductId:productId];
+        [self navigateToViewController:productVC];
+      }
+    } else if ([path isEqualToString:@"/category"]) {
+      NSString *categoryName = params[@"name"];
+      if (categoryName) {
+        CategoryViewController *categoryVC =
+            [[CategoryViewController alloc] initWithCategory:categoryName];
+        [self navigateToViewController:categoryVC];
+      }
+    } else if ([path isEqualToString:@"/search"]) {
+      NSString *query = params[@"q"];
+      if (query) {
+        SearchViewController *searchVC =
+            [[SearchViewController alloc] initWithSearchQuery:query];
+        [self navigateToViewController:searchVC];
+      }
+    } else {
+      NSLog(@"Unhandled deep link path: %@", path);
+    }
+  });
+}];
 }
 
 + (void)navigateToViewController:(UIViewController *)viewController {
-    // Example navigation implementation:
-    // UINavigationController *navigationController = [self getNavigationController];
-    // [navigationController pushViewController:viewController animated:YES];
+  // Example navigation implementation:
+  // UINavigationController *navigationController = [self
+  // getNavigationController]; [navigationController
+  // pushViewController:viewController animated:YES];
 }
 
 @end
