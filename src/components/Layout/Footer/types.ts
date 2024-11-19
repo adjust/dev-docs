@@ -1,5 +1,4 @@
 import type { Locales } from "@i18n/locales";
-import type { IWithLanguage } from "src/types/WithLanguage";
 
 export interface LanguageSwitchProps {
   lang: string;

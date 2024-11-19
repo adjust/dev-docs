@@ -36,12 +36,16 @@ if (type === "category") {
 
 <article
   id="article"
-  class=`${headings && headings.length > 0 ? "lg:w-toc-open-article" : "w-full"} sidebar-open:hidden text-black xs:px-8 lg:pr-4 lg:pl-12 pb-16 xxxl:w-full`
+  class=`${(headings && headings.length > 0) ? "lg:w-toc-open-article" : "w-full"} sidebar-open:hidden text-black xs:px-8 lg:pr-4 lg:pl-12 pb-16 xxxl:w-full`
 >
   {
     headings && headings.length > 0 && type !== "category" && (
       <aside title={t("toc.header")}>
-        <TableOfContents title={title} headings={headings} lang={currentLang} />
+        <TableOfContents
+          title={title}
+          headings={headings}
+          lang={currentLang || "en"}
+        />
       </aside>
     )
   }
@@ -51,7 +55,6 @@ if (type === "category") {
     </h1>
     <div class="article-content" id="article-content">
       <slot />
-      <!-- Category cards for the entry with "category" type and childs -->
       {
         sortedLinks && sortedLinks.length ? (
           <div class="w-full flex flex-wrap gap-x-2 gap-y-4">
@@ -66,25 +69,41 @@ if (type === "category") {
 </article>
 
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const headerLinks = document.querySelectorAll(".copy-link");
+  class HeaderLinkController {
+    private headerLinks: NodeListOf<Element>;
 
-    headerLinks.forEach((link) => {
-      link.addEventListener("click", (event) => {
-        event.preventDefault();
-        const url = link.getAttribute("href");
-        const fullUrl = `${window.location.href.split("#")[0]}${url}`;
+    constructor(className: string) {
+      this.headerLinks = document.querySelectorAll(`.${className}`);
+    }
 
-        navigator.clipboard
-          .writeText(fullUrl)
-          .then(() => {
-            location.href = `${url}`;
-            console.log(`Copied to clipboard: ${fullUrl}`);
-          })
-          .catch((err) => {
-            console.error("Failed to copy:", err);
-          });
+    private linkCopyHandler = (event: Event, header: Element): void => {
+      event.preventDefault();
+      const url = header.getAttribute("href");
+      const fullUrl = `${window.location.href.split("#")[0]}${url}`;
+
+      navigator.clipboard
+        .writeText(fullUrl)
+        .then(() => {
+          location.href = url || location.href;
+          console.log(`Copied to clipboard: ${fullUrl}`);
+        })
+        .catch((err) => {
+          console.error("Failed to copy: ", err);
+        });
+    };
+
+    public initialize = () => {
+      this.headerLinks.forEach((header) => {
+        header.addEventListener("click", (event) =>
+          this.linkCopyHandler(event, header),
+        );
       });
-    });
+    };
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const controller = new HeaderLinkController("copy-link");
+
+    controller.initialize();
   });
 </script>
