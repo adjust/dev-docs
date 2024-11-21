@@ -77,6 +77,15 @@ export default defineMarkdocConfig({
                type: Boolean,
                required: false,
                default: false
+            },
+            showLineNumbers: {
+               type: Boolean,
+               required: false,
+               default: true,
+            },
+            startLineNumber: {
+               type: Number,
+               required: false,
             }
          }
       },
@@ -133,5 +142,19 @@ export default defineMarkdocConfig({
       tabs: {
          render: component("src/components/Tabs.astro"),
       },
+      exampleapp: {
+         render: component("src/components/ExampleApp.astro"),
+         attributes: {
+            permalink: {
+               type: String,
+               required: true,
+            },
+            lang: {
+               type: String,
+               required: false,
+               default: "txt",
+            }
+         }
+      }
    }
 })
