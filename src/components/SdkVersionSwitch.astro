@@ -1,0 +1,180 @@
+---
+import type { Locales } from "@i18n/locales";
+import { useTranslations } from "@i18n/utils";
+import { findEntryBySlug } from "@utils/helpers/navigation/findEntryBySlug";
+import { uniqueSdkVersions } from "@utils/helpers/navigation/getUniqueVersions";
+
+interface Props {
+  lang: string;
+  currentPage: string;
+}
+
+const { lang, currentPage } = Astro.props;
+const t = useTranslations(lang as keyof Locales);
+
+// Get current page data and redirects from frontmatter
+const pageData = findEntryBySlug(currentPage);
+const redirects = pageData?.redirects || {};
+const defaultVersion =
+  (uniqueSdkVersions && uniqueSdkVersions.find((v) => v.default)?.value) || "";
+---
+
+<div
+  id="combobox-holder"
+  class="flex flex-col w-full min-h-90px justify-start gap-y-4 bg-slate-100 p-6 rounded-lg mb-14"
+  data-redirects={JSON.stringify(redirects)}
+  data-default-version={defaultVersion}
+>
+  <label for="combobox">{t("sdkversionswitch.label")}</label>
+  <div class="relative w-full">
+    <select
+      id="combobox"
+      name="combobox"
+      class="rounded-md w-full bg-white px-3 border border-gray-80 text-sm min-h-8 appearance-none text-transparent shadow-sm"
+    >
+      {
+        uniqueSdkVersions &&
+          uniqueSdkVersions.map((sdkVersion) => (
+            <option value={sdkVersion.value}>{sdkVersion.label}</option>
+          ))
+      }
+    </select>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none"
+      width="16"
+      height="16"
+      fill="none"
+      viewBox="0 0 16 16"
+      aria-hidden="true"
+    >
+      <path stroke="currentColor" d="M3.5 6L8 10l4.5-4"></path>
+    </svg>
+  </div>
+</div>
+
+<script>
+  import { $versions, changeVersionValue } from "@store/sdkVersionsStore";
+
+  class VersionSwitchController {
+    private versionSelector: HTMLSelectElement | null;
+    private comboboxHolder: HTMLElement | null;
+    private defaultVersion: string;
+    private redirects: string | null;
+    private redirectsMap: Record<string, string>;
+    private currentPath: string;
+    private urlVersionParam: string | null;
+
+    constructor(versionSelectorId: string, comboboxHolderId: string) {
+      this.versionSelector = document.getElementById(
+        versionSelectorId,
+      ) as HTMLSelectElement | null;
+      this.comboboxHolder = document.getElementById(comboboxHolderId);
+      this.defaultVersion =
+        this.comboboxHolder?.getAttribute("data-default-version") || "";
+      this.redirects =
+        this.comboboxHolder?.getAttribute("data-redirects") || null;
+      this.redirectsMap = this.redirects ? JSON.parse(this.redirects) : {};
+      this.currentPath = window.location.pathname;
+      this.urlVersionParam = new URLSearchParams(window.location.search).get(
+        "version",
+      );
+    }
+
+    private isVersionedPath(path: string): boolean {
+      return /\/sdk\/.+\/v\d/.test(path);
+    }
+
+    private isValidBasePath(path: string): boolean {
+      return /^\/[a-z]{2}\/sdk\/?$/.test(path);
+    }
+
+    private syncVersion(targetVersion: string): void {
+      if (this.redirectsMap[targetVersion]) {
+        // Redirect to mapped URL
+        window.location.href = this.redirectsMap[targetVersion];
+      } else if (!this.isValidBasePath(this.currentPath)) {
+        // Modify URL to include the version
+        const updatedUrl = this.isVersionedPath(this.currentPath)
+          ? this.currentPath.replace(/\/v\d/, `/${targetVersion}`)
+          : `${this.currentPath}/v${targetVersion}`;
+        window.location.href = updatedUrl;
+      }
+    }
+
+    private handleVersionChange = (): void => {
+      const selectedVersion =
+        this.versionSelector?.value || this.defaultVersion;
+      changeVersionValue({ label: selectedVersion, value: selectedVersion });
+      this.syncVersion(selectedVersion);
+    };
+
+    private handlePageLoad(): void {
+      if (this.urlVersionParam) {
+        this.handleVersionParam(this.urlVersionParam);
+        return;
+      }
+
+      if (!this.isValidBasePath(this.currentPath)) {
+        if (this.isVersionedPath(this.currentPath)) {
+          this.handleVersionedPath();
+        } else {
+          this.handleNonVersionedPath();
+        }
+      }
+    }
+
+    private handleVersionParam(param: string): void {
+      const isParamVersion = /^v\d+$/.test(param);
+      if (isParamVersion && this.redirectsMap[param]) {
+        this.syncVersion(param);
+      }
+    }
+
+    private handleVersionedPath(): void {
+      const pathVersionMatch = this.currentPath.match(/\/v(\d+)/);
+      const pathVersion = pathVersionMatch
+        ? `v${pathVersionMatch[1]}`
+        : this.defaultVersion;
+      changeVersionValue({ label: pathVersion, value: pathVersion });
+    }
+
+    private handleNonVersionedPath(): void {
+      changeVersionValue({
+        label: this.defaultVersion,
+        value: this.defaultVersion,
+      });
+    }
+
+    public initialize(): void {
+      if (!this.versionSelector) return;
+      // Subscribe to store changes to sync version selector
+      $versions.subscribe((store) => {
+        const currentVersion = store.currentVersion.value;
+        if (this.versionSelector) {
+          this.versionSelector.value =
+            this.urlVersionParam || currentVersion || this.defaultVersion;
+          this.versionSelector.classList.remove("text-transparent");
+        }
+      });
+
+      // Handle page load scenarios
+      this.handlePageLoad();
+
+      // Attach event listener to version selector
+      this.versionSelector?.addEventListener(
+        "change",
+        this.handleVersionChange,
+      );
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const controller = new VersionSwitchController(
+      "combobox",
+      "combobox-holder",
+    );
+
+    controller.initialize();
+  });
+</script>

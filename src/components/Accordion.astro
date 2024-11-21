@@ -39,19 +39,35 @@ const { title, badge } = Astro.props;
 </details>
 
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const detailsElements = document.querySelectorAll("details");
+  class AccordionController {
+    private detailsElements: NodeListOf<HTMLDetailsElement>;
+    private toggleListeners: Map<HTMLDetailsElement, EventListener>;
 
-    detailsElements.forEach((details) => {
-      const chevron = details.querySelector(".chevron") as HTMLElement;
+    constructor() {
+      this.detailsElements = document.querySelectorAll("details");
+      this.toggleListeners = new Map();
+    }
 
-      details.addEventListener("toggle", () => {
-        if (details.open) {
-          chevron!.style.transform = "rotate(90deg)";
-        } else {
-          chevron!.style.transform = "rotate(0deg)";
-        }
+    private toggleDetails = (open: boolean, chevron: HTMLElement) => {
+      if (!chevron) return;
+      chevron.style.transform = open ? "rotate(90deg)" : "rotate(0deg)";
+    };
+
+    public initialize = () => {
+      this.detailsElements.forEach((details) => {
+        const chevron = details.querySelector(".chevron") as HTMLElement;
+
+        const toggleHandler = () => this.toggleDetails(details.open, chevron);
+        this.toggleListeners.set(details, toggleHandler);
+
+        details.addEventListener("toggle", toggleHandler);
       });
-    });
+    };
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const controller = new AccordionController();
+
+    controller.initialize();
   });
 </script>
