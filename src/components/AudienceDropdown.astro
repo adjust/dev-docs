@@ -75,24 +75,38 @@ const audiences = [
 </div>
 
 <script>
-  const wrapper = document.getElementById("audience-picker-wrapper");
-  const menu = document.getElementById("audience-picker-menu");
+  class AudienceController {
+    private container: HTMLElement;
+    private menu: HTMLElement;
 
-  const toggleMenu = () => {
-    if (menu) {
-      menu.classList.toggle("hidden");
+    constructor(container: string, menu: string) {
+      this.container = document.getElementById(container)!;
+      this.menu = document.getElementById(menu)!;
     }
-  };
 
-  const closeMenu = (event: any) => {
-    if (menu && wrapper && !wrapper.contains(event.target)) {
-      menu.classList.add("hidden");
+    private toggleMenu = (event: MouseEvent): void => {
+      event.stopPropagation();
+      this.menu.classList.toggle("hidden");
+    };
+
+    private closeMenu = (event: MouseEvent): void => {
+      if (!this.container.contains(event.target as Node)) {
+        this.menu.classList.add("hidden");
+      }
+    };
+
+    public initialize(): void {
+      this.container.addEventListener("click", this.toggleMenu);
+      document.addEventListener("click", this.closeMenu);
     }
-  };
-
-  if (wrapper) {
-    wrapper.addEventListener("click", toggleMenu);
   }
 
-  document.addEventListener("click", closeMenu);
+  document.addEventListener("DOMContentLoaded", () => {
+    const controller = new AudienceController(
+      "audience-picker-wrapper",
+      "audience-picker-menu",
+    );
+
+    controller.initialize();
+  });
 </script>
