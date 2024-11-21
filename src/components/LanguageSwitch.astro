@@ -56,30 +56,38 @@ const getLanguageUrl = (newLang: string) => {
 </div>
 
 <script>
-  const languageSwitchContainer = document.getElementById(
-    "language-switch-container",
-  );
-  const menu = document.getElementById("language-menu");
+  class LanguageSwitchController {
+    private container: HTMLElement;
+    private menu: HTMLElement;
 
-  const toggleMenu = () => {
-    if (menu) {
-      menu.classList.toggle("hidden");
+    constructor(container: string, menu: string) {
+      this.container = document.getElementById(container)!;
+      this.menu = document.getElementById(menu)!;
     }
-  };
 
-  const closeMenu = (event: any) => {
-    if (
-      menu &&
-      languageSwitchContainer &&
-      !languageSwitchContainer.contains(event.target)
-    ) {
-      menu.classList.add("hidden");
+    private toggleVisibility = (event: MouseEvent): void => {
+      event.stopPropagation();
+      this.menu.classList.toggle("hidden");
+    };
+
+    private closeMenu = (event: MouseEvent): void => {
+      if (!this.container.contains(event.target as Node)) {
+        this.menu.classList.add("hidden");
+      }
+    };
+
+    public initialize(): void {
+      this.container.addEventListener("click", this.toggleVisibility);
+      document.addEventListener("click", this.closeMenu);
     }
-  };
-
-  if (languageSwitchContainer) {
-    languageSwitchContainer.addEventListener("click", toggleMenu);
   }
 
-  document.addEventListener("click", closeMenu);
+  document.addEventListener("DOMContentLoaded", () => {
+    const controller = new LanguageSwitchController(
+      "language-switch-container",
+      "language-menu",
+    );
+
+    controller.initialize();
+  });
 </script>

@@ -4,17 +4,12 @@ import yaml
 
 # Define MDX tags and locales
 MDX_TAGS = [
-    "Abbr",
     "Accordion",
-    "ApiVersion",
-    "SdkVersion",
     "Callout",
     "CodeBlock",
     "MinorVersion",
-    "Table",
     "Tabs",
     "Tab",
-    "Tile",
     "ListColumns",
 ]
 locales = ["ja", "ko", "zh"]

@@ -1,5 +1,4 @@
 ---
-import classNames from "classnames";
 import ChevronToggle from "./ChevronToggle.astro";
 import type { SidebarItem } from "@utils/helpers/navigation/types";
 
@@ -16,41 +15,24 @@ const initialOpen = currentSlug.startsWith(sidebarData.slug);
 const itemVersion = version;
 const itemCategory = slug?.includes("/sdk") ? "sdk" : "api";
 const itemName = label ? label : categoryTitle ? categoryTitle : title;
+const categoryClass = itemVersion
+  ? `item-version-${itemCategory}-${itemVersion}`
+  : "item-version-0";
 ---
 
 <ul
   id={`sidebar-item-${slug}`}
-  class={classNames(
-    `${itemVersion ? `item-version-${itemCategory}-${itemVersion}` : "item-version-0"}`,
-    "list-none flex-col items-start gap-y-[8px] flex",
-    {
-      hidden: !!itemVersion,
-      "pl-0": level === 0,
-      "ml-3": level > 0,
-    },
-  )}
+  class={`${categoryClass} ${!!itemVersion && "hidden"} ${level === 0 && "pl-0"} ${level > 0 && "ml-3"} list-none flex-col items-start gap-y-[8px] flex`}
 >
   <li
-    class={classNames("relative hover:text-link-active min-h-[31px] text-sm", {
-      "text-link-active": currentSlug === slug,
-      "pl-2": level > 0,
-      active: currentSlug === slug,
-    })}
+    class={`relative hover:text-link-active min-h-[31px] text-sm ${currentSlug === slug && "text-link-active"} ${level > 0 && "pl-2"} ${currentSlug === slug && "active"}`}
   >
     <div class="flex flex-row items-center cursor-pointer gap-x-[5px]">
       {hasChildren && <ChevronToggle slug={slug} initialOpen={initialOpen} />}
       <a
         id={level > 0 ? `link-${slug}` : ""}
         href={`/${slug}`}
-        class={classNames(
-          "inline-block w-full text-sm hover:no-underline text-inherit",
-          {
-            "text-link-active": currentSlug?.slice(1) === slug,
-            "font-medium": initialOpen || level === 0,
-            "font-normal": level > 0 && !initialOpen,
-            "ml-[21px]": level > 0 && !hasChildren,
-          },
-        )}
+        class={`inline-block w-full text-sm hover:no-underline text-inherit ${currentSlug?.slice(1) === slug && "text-link-active"} ${(initialOpen || level === 0) && "font-medium"} ${level > 0 && !initialOpen && "font-normal"} ${level > 0 && !hasChildren && "ml-[21px]"}`}
       >
         {itemName}
       </a>
@@ -59,10 +41,7 @@ const itemName = label ? label : categoryTitle ? categoryTitle : title;
   {
     children && (
       <li>
-        <ul
-          id={`children-${slug}`}
-          class={classNames({ hidden: !initialOpen })}
-        >
+        <ul id={`children-${slug}`} class={`${!initialOpen && "hidden"}`}>
           {children.map((child) => (
             <Astro.self currentSlug={currentSlug} sidebarData={child} />
           ))}
