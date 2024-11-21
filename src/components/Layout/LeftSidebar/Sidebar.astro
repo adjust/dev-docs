@@ -17,7 +17,7 @@ interface Props {
 }
 
 const { homeUrl, lang, redirects, currentSlug, languageTree, versions } =
-  Astro.props;
+  Astro.props as Props;
 const sidebar = languageTree[lang as Languages];
 ---
 
@@ -45,72 +45,121 @@ const sidebar = languageTree[lang as Languages];
 
 <script>
   import { $versions as $sdkVersions } from "@store/sdkVersionsStore";
-  import { toggleCollapse } from "./utils/toggleCollapse";
 
-  document.addEventListener("DOMContentLoaded", () => {
-    // Helper function to hide all versioned items initially
-    const hideAllVersionedItems = () => {
+  class CollapseToggle {
+    private slug: string;
+
+    constructor(slug: string) {
+      this.slug = slug;
+    }
+
+    public toggle(): void {
+      const chevronRightDiv = document.getElementById(
+        `chevron-right-${this.slug}`,
+      );
+      const chevronDownDiv = document.getElementById(
+        `chevron-down-${this.slug}`,
+      );
+      const childrenDiv = document.getElementById(`children-${this.slug}`);
+      const linkElement = document.getElementById(`link-${this.slug}`);
+
+      if (chevronRightDiv && chevronDownDiv && childrenDiv) {
+        const isHidden = childrenDiv.classList.toggle("hidden");
+
+        // Toggle chevron visibility
+        chevronRightDiv.classList.toggle("hidden", !isHidden);
+        chevronDownDiv.classList.toggle("hidden", isHidden);
+
+        if (linkElement) {
+          // Toggle link element's font weight
+          linkElement.classList.toggle("font-medium", !isHidden);
+          linkElement.classList.toggle("font-normal", isHidden);
+        }
+      }
+    }
+  }
+
+  // SidebarController class for managing versioned items and collapsible sections
+  class SidebarController {
+    private sdkVersionsStore: typeof $sdkVersions;
+
+    constructor(sdkVersionsStore: typeof $sdkVersions) {
+      this.sdkVersionsStore = sdkVersionsStore;
+    }
+
+    private hideAllVersionedItems(): void {
       const versionedItems = document.querySelectorAll(
         "[class*='item-version-sdk']",
       );
       versionedItems.forEach((item) => {
         if (!item.classList.contains("hidden")) item.classList.add("hidden");
       });
-    };
+    }
 
-    // Helper function to show items for the current versions
-    const showCurrentVersionItems = (sdkVersion: string) => {
-      hideAllVersionedItems();
-      // Select and show items for the current SDK versions
+    private showCurrentVersionItems(sdkVersion: string): void {
+      this.hideAllVersionedItems();
       const versionedItems = document.querySelectorAll(
         `.item-version-sdk-${sdkVersion}`,
       );
       versionedItems.forEach((item) => {
         item.classList.remove("hidden");
       });
-    };
-
-    // Initial setup: Get current versions from stores and display relevant items
-    const setupSidebar = () => {
-      const currentSdkVersion =
-        $sdkVersions.get()?.currentVersion?.value || "v5";
-      showCurrentVersionItems(currentSdkVersion);
-    };
-
-    // Run the initial setup on page load
-    setupSidebar();
-
-    // Subscribe to version changes in the Nanostore
-    $sdkVersions.subscribe((store) => {
-      const sdkVersion = store.currentVersion?.value;
-      if (sdkVersion) {
-        showCurrentVersionItems(sdkVersion);
-      }
-    });
-
-    // Expandable/collapsible item logic
-    const items = document.querySelectorAll(".toggle-collapse");
-    items.forEach((item) => {
-      item.addEventListener("click", () => {
-        const slug = item!
-          .parentElement!.parentElement!.querySelector("a")!
-          .getAttribute("href")!
-          .slice(1);
-
-        toggleCollapse(slug);
-      });
-    });
-
-    // Scroll the active item into view
-    const activeItem = document.querySelector(".text-link-active");
-    const sidebar = document.getElementById("sidebar-navigation");
-    if (activeItem && sidebar) {
-      const { top: itemTop, height: itemHeight } =
-        activeItem.getBoundingClientRect();
-      const { top: sidebarTop, height: sidebarHeight } =
-        sidebar.getBoundingClientRect();
-      const offset = itemTop - sidebarTop - (sidebarHeight - itemHeight) / 2;
-      sidebar.scrollBy({ top: offset });
     }
+
+    private setupSidebar(): void {
+      const currentSdkVersion =
+        this.sdkVersionsStore.get()?.currentVersion?.value || "v5";
+      this.showCurrentVersionItems(currentSdkVersion);
+
+      this.sdkVersionsStore.subscribe((store) => {
+        const sdkVersion = store.currentVersion?.value;
+        if (sdkVersion) {
+          this.showCurrentVersionItems(sdkVersion);
+        }
+      });
+    }
+
+    private initializeToggleHandlers(): void {
+      const items = document.querySelectorAll(".toggle-collapse");
+      items.forEach((item) => {
+        item.addEventListener("click", () => {
+          const slug = item!
+            .parentElement!.parentElement!.querySelector("a")!
+            .getAttribute("href")!
+            .slice(1);
+
+          const toggler = new CollapseToggle(slug);
+          toggler.toggle();
+        });
+      });
+    }
+
+    private scrollActiveItemIntoView(): void {
+      const activeItem = document.querySelector(".text-link-active");
+      const sidebar = document.getElementById("sidebar-navigation");
+      if (activeItem && sidebar) {
+        const { top: itemTop, height: itemHeight } =
+          activeItem.getBoundingClientRect();
+        const { top: sidebarTop, height: sidebarHeight } =
+          sidebar.getBoundingClientRect();
+        const offset = itemTop - sidebarTop - (sidebarHeight - itemHeight) / 2;
+        sidebar.scrollBy({ top: offset });
+      }
+    }
+
+    /**
+     * Initializes the sidebar controller and attaches handlers
+     */
+    public initialize = () => {
+      this.setupSidebar();
+      this.initializeToggleHandlers();
+      this.scrollActiveItemIntoView();
+    };
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const controller = new SidebarController($sdkVersions);
+
+    controller.initialize();
   });
 </script>
