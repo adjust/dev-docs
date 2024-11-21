@@ -1,10 +1,11 @@
 ---
-import classNames from "classnames";
 import { getCurrentPage } from "@utils/helpers/navigation/getCurrentPage";
 import { getBreadcrumbs } from "@utils/helpers/navigation/getBreadcrumbs";
 
 const currentPage = getCurrentPage(Astro.url.pathname);
 const breadcrumbs = getBreadcrumbs(currentPage);
+const separatorClasses =
+  "after:absolute after:content-['•'] after:font-medium after:-top-[5px] after:-right-4 after:text-xl";
 ---
 
 <div aria-label="breadcrumbs" class="xs:px-8 lg:pr-4 lg:pl-12 mb-8">
@@ -13,19 +14,14 @@ const breadcrumbs = getBreadcrumbs(currentPage);
       {
         breadcrumbs.map((breadcrumb, i) => (
           <li
-            class={classNames("relative leading-none", {
-              "breadcrumbs-item":
-                breadcrumbs.length > 1 && i !== breadcrumbs.length - 1,
-            })}
+            class={`relative leading-none ${
+              breadcrumbs.length > 1 &&
+              i !== breadcrumbs.length - 1 &&
+              separatorClasses
+            }`}
           >
             <a
-              class={classNames(
-                "cursor-pointer text-sm hover:text-link-active",
-                {
-                  "text-black font-semibold": currentPage === breadcrumb.url,
-                  "text-secondary font-medium": currentPage !== breadcrumb.url,
-                },
-              )}
+              class={`cursor-pointer text-sm hover:text-link-active ${currentPage === breadcrumb.url && "text-black font-semibold"} ${currentPage !== breadcrumb.url && "text-secondary font-medium"}`}
               href={`/${breadcrumb.url}`}
             >
               {breadcrumb.title}
@@ -36,9 +32,3 @@ const breadcrumbs = getBreadcrumbs(currentPage);
     </ul>
   </nav>
 </div>
-
-<style>
-  .breadcrumbs-item::after {
-    @apply absolute content-["\2022"] font-medium -top-[5px] -right-4 text-xl;
-  }
-</style>

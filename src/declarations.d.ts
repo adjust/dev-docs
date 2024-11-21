@@ -28,12 +28,18 @@ declare interface VersionProps {
   version: string;
 }
 
-declare interface VersionMap {
-  [key: string]: string | {
-    v4: string;
-    v5: string;
-  };
+interface VersionTag {
+  [versionKey: string]: string;
 }
+
+interface PlatformVersion {
+  versions: VersionTag | string;
+  useSdkSuffix: boolean;
+}
+
+type VersionMap = {
+  [platform: string]: PlatformVersion;
+};
 
 declare type BadgeColor =
   | "neutral"

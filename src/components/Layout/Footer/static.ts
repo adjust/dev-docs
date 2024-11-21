@@ -3,20 +3,26 @@ import { ui } from "@i18n/ui";
 
 interface FooterLinks {
   id: keyof (typeof ui)[typeof defaultLang];
-  url: string
+  url: string;
 }
 
 export const footerLinks = (language: string): FooterLinks[] => {
-  let lang = "";
+  let langPath = "";
   if (language !== "en") {
-    lang = language
+    langPath = `/${language}`;
   }
   return [
-    { id: "footer.about-us", url: `https://www.adjust.com/${lang}/company/` },
-    { id: "footer.security", url: `https://www.adjust.com/${lang}/security/` },
+    {
+      id: "footer.about-us",
+      url: `https://www.adjust.com${langPath}/company/`,
+    },
+    {
+      id: "footer.security",
+      url: `https://www.adjust.com${langPath}/security/`,
+    },
     {
       id: "footer.privacy-policy",
-      url: `https://www.adjust.com/${lang}/terms/privacy-policy/`,
+      url: `https://www.adjust.com${langPath}/terms/privacy-policy/`,
     },
     {
       id: "footer.terms",
@@ -25,10 +31,10 @@ export const footerLinks = (language: string): FooterLinks[] => {
     { id: "footer.ccpa-gdpr", url: `https://www.adjust.com/terms/ccpa/` },
     {
       id: "footer.legal-notice",
-      url: `https://www.adjust.com/${lang}/terms/impressum/`,
+      url: `https://www.adjust.com${langPath}/terms/impressum/`,
     },
   ];
-}
+};
 
 export const footerIcons = [
   {
@@ -36,9 +42,21 @@ export const footerIcons = [
     readableName: "WeChat",
     link: "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzIzODg5ODQwMg==",
   },
-  { name: "facebook-icon", readableName: "Facebook", link: "https://www.facebook.com/adjustcom" },
-  { name: "twitter-icon", readableName: "Twitter", link: "https://twitter.com/adjustcom" },
-  { name: "instagram-icon", readableName: "Instagram", link: "https://www.instagram.com/adjustcom/" },
+  {
+    name: "facebook-icon",
+    readableName: "Facebook",
+    link: "https://www.facebook.com/adjustcom",
+  },
+  {
+    name: "twitter-icon",
+    readableName: "Twitter",
+    link: "https://twitter.com/adjustcom",
+  },
+  {
+    name: "instagram-icon",
+    readableName: "Instagram",
+    link: "https://www.instagram.com/adjustcom/",
+  },
   {
     name: "linkedin-icon",
     readableName: "LinkedIn",
