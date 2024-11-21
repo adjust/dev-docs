@@ -1,6 +1,8 @@
 name: Fix translations
 on:
   pull_request:
+    types: [opened, synchronize, reopened] # Trigger when a PR is opened or updated
+
 jobs:
   i18n-fixes:
     name: Fix translated files
@@ -10,11 +12,12 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       NODE_AUTH_TOKEN: ${{ secrets.ADJUST_NPM_TOKEN }}
     steps:
-      - name: Checkout the full PR history
+      # Checkout the full PR history
+      - name: Checkout the PR branch
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.ref }}
-          fetch-depth: 0
+          fetch-depth: 0 # Ensure full history is fetched
 
       # Set up Node.js environment
       - name: Set up Node.js
@@ -28,20 +31,39 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # Run the .mjs script to fix translations and format modified files
-      - name: Run translation fixes script
-        run: node .github/scripts/fixTranslations.mjs
+      # Get a list of all files modified in the PR (against the base branch)
+      - name: Get modified files in the PR
+        id: files
+        run: |
+          git fetch origin ${{ github.event.pull_request.base.ref }}:refs/remotes/origin/${{ github.event.pull_request.base.ref }}
+          modified_files=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...${{ github.event.pull_request.head.ref }})
+          echo "modified_files=$modified_files" >> $GITHUB_ENV
 
-      # Check for modified files
-      - name: Check for modified files
+      # Run the translation fix script only on relevant files (.mdx and .mdoc)
+      - name: Run translation fixes script
+        run: |
+          # Get all modified MDX and MDOC files
+          modified_files=$(echo "$modified_files" | grep -E '\.mdx$|\.mdoc$')
+
+          if [ -n "$modified_files" ]; then
+            echo "Files to process: $modified_files"
+            node .github/scripts/fixTranslations.mjs $modified_files
+          else
+            echo "No MDX or MDOC files modified. Skipping translation fixes."
+          fi
+
+      # Check for modified files (after running the script)
+      - name: Check for modified files after script
         id: git-check
-        run: echo "MODIFIED=$(if [ -n "$(git status --porcelain)" ]; then echo "true"; else echo "false"; fi)" >> "$GITHUB_OUTPUT"
+        run: |
+          MODIFIED=$(if [ -n "$(git status --porcelain)" ]; then echo "true"; else echo "false"; fi)
+          echo "MODIFIED=$MODIFIED" >> $GITHUB_ENV
 
       # Commit and push changes if any files were modified
       - name: Commit changes
-        if: ${{ steps.git-check.outputs.MODIFIED == 'true' }}
+        if: ${{ env.MODIFIED == 'true' }}
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -am "Fix translated and formatted files"
-          git push
+          git push origin ${{ github.head_ref }}
