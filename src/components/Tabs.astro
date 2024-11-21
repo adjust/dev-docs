@@ -1,9 +1,6 @@
 ---
-import BuildTabs from "@components/atlas/BuildTabs.tsx";
 import { extractTabProps } from "./utils/extractTabProps";
-
-// Store the content contained within the Accordion as a string.
-// This string is converted to HTML inside the atlas/BuildAccordion.jsx file.
+import { v4 as uuidv4 } from "uuid";
 
 let content = "";
 
@@ -12,8 +9,311 @@ if (Astro.slots.has("default")) {
 }
 
 const { tabs, updatedContent } = await extractTabProps(content);
+const uniqueId = uuidv4();
 ---
 
-<BuildTabs client:only="react" items={tabs}>
-  <Fragment set:html={updatedContent} slot="content" />
-</BuildTabs>
+<div id={uniqueId} class="tab-group">
+  <ul class="tab-row" role="tablist">
+    {
+      tabs.map((tab) => (
+        <li
+          role="tab"
+          class="tab-header"
+          data-id={tab.id}
+          data-sync={tab.sync}
+          tabindex="0"
+          aria-label={tab.label}
+          aria-selected="false"
+        >
+          <a class="tab-link">
+            <span class="tab-icon">
+              <div style="display:inline-flex">
+                <svg class="tab-svg">
+                  <use href={`#${tab.iconName}-tab-icon`} />
+                </svg>
+              </div>
+            </span>
+            <span class="tab-label">{tab.label}</span>
+            <span class="focus-ring" />
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+  <div class="tab-content-block" set:html={updatedContent} />
+</div>
+
+<style>
+  .tab-group {
+    max-width: 100%;
+    position: relative;
+    width: 100%;
+  }
+
+  .tab-row {
+    position: relative;
+    display: inline-flex;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    white-space: nowrap;
+    border-bottom: 1px solid #cdd0e0;
+  }
+
+  .tab-header {
+    display: inline-flex;
+    list-style: none;
+    color: #0b0d18;
+  }
+
+  .tab-header.active {
+    color: #255eee;
+  }
+
+  .tab-link {
+    color: inherit;
+    text-decoration: none;
+    font:
+      500 16px/24px BlinkMacSystemFont,
+      -apple-system,
+      "Segoe UI",
+      Roboto,
+      Arial,
+      sans-serif;
+    letter-spacing: 0;
+    position: relative;
+    display: inline-flex;
+    max-width: 280px;
+    margin: 0;
+    padding: 8px 16px 7px;
+    cursor: pointer;
+    transition: color 120ms ease-out;
+  }
+
+  .tab-icon {
+    display: inline-flex;
+    align-self: center;
+  }
+
+  .tab-svg {
+    width: 24px;
+    height: 24px;
+    color: #0b0d18;
+  }
+
+  .tab-header.active .tab-svg {
+    color: #255eee;
+  }
+
+  .tab-label {
+    margin-left: 8px;
+  }
+
+  .focus-ring {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: transparent;
+    transition: background-color 120ms ease-out;
+    content: "";
+  }
+
+  .tab-header.active .focus-ring {
+    background-color: #255eee;
+    height: 2px;
+  }
+
+  .tab-content-block {
+    margin-top: 1rem;
+  }
+</style>
+
+<script>
+  interface TabHeader {
+    syncKey?: string;
+    tabId: string;
+    element: HTMLElement;
+  }
+
+  interface TabContent {
+    id: string;
+    syncKey?: string;
+    element: HTMLElement;
+  }
+
+  /**
+   * Contains tab groups for synchronized and non-synchronized content
+   */
+  class TabController {
+    // To make syncing easier, store all TabController instances in an array
+    static TabControllers: TabController[] = [];
+
+    id: string;
+    element: HTMLElement;
+    headers: TabHeader[];
+    tabs: TabContent[];
+
+    /**
+     * Create a TabController by passing a .tab-group element
+     * @param element The tab group parent element
+     */
+    constructor(element: HTMLElement) {
+      this.id = element.id;
+      this.element = element;
+
+      // Initialize headers and tabs
+      this.headers = Array.from(
+        element.querySelectorAll(":scope > .tab-row > .tab-header"),
+      ).map((tab) => ({
+        element: tab as HTMLElement,
+        tabId: tab.getAttribute("data-id")!,
+        syncKey: tab.getAttribute("data-sync") || "",
+      }));
+
+      this.tabs = Array.from(
+        element.querySelectorAll(":scope > .tab-content-block > .tab-content"),
+      ).map((content) => ({
+        element: content as HTMLElement,
+        id: content.id,
+        syncKey: content.getAttribute("data-sync") || "",
+      }));
+
+      // Add an event listener to each header to facilitate switching
+      this.headers.forEach((header, index) => {
+        header.element.addEventListener("click", () => {
+          TabController.syncTabs(this, header.tabId, header.syncKey);
+        });
+
+        header.element.addEventListener("keydown", (event) => {
+          this.handleKeydown(event, index);
+        });
+      });
+
+      // Automatically activate the first tab
+      this.activateFirstTab();
+
+      // Add this instance to the static list of TabControllers
+      TabController.TabControllers.push(this);
+    }
+
+    /**
+     * Sets the first tab in each tab group to active by default
+     */
+    activateFirstTab(): void {
+      if (this.headers.length > 0) {
+        this.headers[0].element.classList.add("active");
+        this.headers[0].element.setAttribute("aria-selected", "true");
+      }
+      if (this.tabs.length > 0) {
+        this.tabs[0].element.classList.remove("hidden");
+      }
+    }
+
+    /**
+     * Synchronizes tabs with a matching syncKey
+     * @param activeGroup The current TabController
+     * @param tabId The ID of the selected tab
+     * @param syncKey The syncKey of the selected tab
+     */
+    static syncTabs(
+      activeGroup: TabController,
+      tabId: string,
+      syncKey?: string,
+    ): void {
+      if (syncKey) {
+        // Track if any matching syncKey was found in other groups
+        let syncFound = false;
+
+        // Loop through all TabControllers to apply syncing based on syncKey
+        for (const group of TabController.TabControllers) {
+          const matchedHeader = group.headers.find(
+            (header) => header.syncKey === syncKey,
+          );
+          const matchedTab = group.tabs.find((tab) => tab.syncKey === syncKey);
+
+          if (matchedHeader && matchedTab) {
+            syncFound = true;
+
+            // Update headers in this group
+            group.headers.forEach((header) => {
+              const isActive = header === matchedHeader;
+              header.element.classList.toggle("active", isActive);
+              header.element.setAttribute("aria-selected", String(isActive));
+            });
+
+            // Update tabs in this group
+            group.tabs.forEach((tab) => {
+              tab.element.classList.toggle("hidden", tab !== matchedTab);
+            });
+          }
+        }
+
+        // If no matching syncKey was found in any other group, fall back to updating only the active group
+        if (!syncFound) {
+          activeGroup.updateTabsByTabId(tabId);
+        }
+      } else {
+        // No syncKey provided, so update only the clicked group based on tabId
+        activeGroup.updateTabsByTabId(tabId);
+      }
+    }
+
+    /**
+     * Update tab appearance by tab ID
+     * @param tabId The ID of the selected tab
+     */
+    private updateTabsByTabId(tabId: string): void {
+      // Update headers in this group
+      this.headers.forEach((header) => {
+        const isActive = header.tabId === tabId;
+        header.element.classList.toggle("active", isActive);
+        header.element.setAttribute("aria-selected", String(isActive));
+      });
+
+      // Update tabs in this group
+      this.tabs.forEach((tab) => {
+        tab.element.classList.toggle("hidden", tab.id !== tabId);
+      });
+    }
+
+    /**
+     * Enables using arrow keys to select tabs
+     * @param event The keyboard event (key)
+     * @param currentIndex The currently selected tab
+     */
+    private handleKeydown(event: KeyboardEvent, currentIndex: number): void {
+      const { headers } = this;
+      let newIndex = currentIndex;
+
+      switch (event.key) {
+        case "ArrowRight":
+          newIndex = (currentIndex + 1) % headers.length;
+          headers[newIndex].element.focus();
+          break;
+
+        case "ArrowLeft":
+          newIndex = (currentIndex - 1 + headers.length) % headers.length;
+          headers[newIndex].element.focus();
+          break;
+
+        case "Enter":
+        case " ":
+          event.preventDefault();
+          TabController.syncTabs(
+            this,
+            headers[currentIndex].tabId,
+            headers[currentIndex].syncKey,
+          );
+          break;
+      }
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    document
+      .querySelectorAll(".tab-group")
+      .forEach((element) => new TabController(element as HTMLElement));
+  });
+</script>
