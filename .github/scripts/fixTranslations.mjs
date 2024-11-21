@@ -129,14 +129,6 @@ function fixMdocContent(content, locale) {
    return content;
 }
 
-const modifiedFiles = [];
-
-// Get the list of modified files in the current PR
-function getModifiedFiles() {
-   const output = execSync("git diff --name-only HEAD~1", { encoding: "utf-8" });
-   return output.split("\n").filter((file) => file.trim() !== "");
-}
-
 // Format MDX files using Prettier
 async function formatMdxFile(file) {
    return new Promise((resolve, reject) => {
@@ -179,7 +171,6 @@ async function processFile(file, locale) {
 
    if (finalContent !== originalContent) {
       await fs.writeFile(file, finalContent, "utf-8");
-      modifiedFiles.push(file);
 
       // Format the file after writing changes
       if (file.endsWith(".mdx")) {
@@ -190,9 +181,9 @@ async function processFile(file, locale) {
    }
 }
 
-// Main function to process only modified files
+// Main function to process only modified files passed from the GitHub Actions workflow
 async function main() {
-   const files = getModifiedFiles();
+   const files = process.argv.slice(2);
    console.log("Modified files:", files);
 
    for (const locale of locales) {
@@ -205,8 +196,8 @@ async function main() {
       }
    }
 
-   if (modifiedFiles.length > 0) {
-      console.log("Processed files:", modifiedFiles.join(", "));
+   if (files.length > 0) {
+      console.log("Processed files:", files.join(", "));
    } else {
       console.log("No relevant files were modified.");
    }
