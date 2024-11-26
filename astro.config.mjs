@@ -16,15 +16,14 @@ import {
   defListHastHandlers,
 } from "remark-definition-list";
 import { writeFile } from "fs";
-import markdoc from "@astrojs/markdoc";
 
 console.log(
   `${import.meta.env.VITE_GITHUB_TOKEN ? "Token found" : "No token found"}`,
 );
 
 const versions = await fetchVersions();
-const versionJSON = JSON.stringify(versions, null, 2)
-await writeFile("src/versionMap.json", versionJSON, (err) => { });
+const versionJSON = JSON.stringify(versions, null, 2);
+await writeFile("src/versionMap.json", versionJSON, (err) => {});
 
 const locales = ["en", "ja", "ko", "zh"];
 
@@ -58,28 +57,34 @@ export default defineConfig({
     fallback: {
       ja: "en",
       ko: "en",
-      zh: "en"
+      zh: "en",
     },
   },
   experimental: {
-    contentCollectionCache: true
+    contentCollectionCache: true,
   },
-  integrations: [AutoImport({
-    imports: [
-      "@components/Accordion.astro",
-      "@components/Callout.astro",
-      "@components/CodeBlock.astro",
-      "@components/ListColumns.astro",
-      "@components/MinorVersion.astro",
-      "@components/Tab.astro",
-      "@components/Tabs.astro",
-    ],
-  }), // Enable React for the Algolia search component.
-  react({
-    experimentalReactChildren: true,
-  }), expressiveCode(), mdx({
-    optimize: true,
-  }), tailwind(), sitemap(), markdoc()],
+  integrations: [
+    AutoImport({
+      imports: [
+        "@components/Accordion.astro",
+        "@components/Callout.astro",
+        "@components/CodeBlock.astro",
+        "@components/ListColumns.astro",
+        "@components/MinorVersion.astro",
+        "@components/Tab.astro",
+        "@components/Tabs.astro",
+      ],
+    }), // Enable React for the Algolia search component.
+    react({
+      experimentalReactChildren: true,
+    }),
+    expressiveCode(),
+    mdx({
+      optimize: true,
+    }),
+    tailwind(),
+    sitemap(),
+  ],
   site: "https://dev.adjust.com/",
   markdown: {
     remarkPlugins: [
