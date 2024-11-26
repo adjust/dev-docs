@@ -1,8 +1,10 @@
 import type { FC } from "react";
 import { useHits } from "react-instantsearch";
+
 import DevHubSearchResultCard from "./DevHubSearchResultCard";
 import SearchNoResults from "../SearchNoResults";
 import { useTranslations } from "@i18n/utils";
+
 import type { Locales } from "@i18n/locales";
 
 const DevHubHits: FC<{ lang: string }> = ({ lang }) => {
