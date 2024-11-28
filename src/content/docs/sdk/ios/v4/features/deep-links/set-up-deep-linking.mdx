@@ -24,12 +24,6 @@ In addition, implement deep link handling logic:
 
 -  [Deep Link Handler](#deep-link-handler)
 
-<Callout type="tip">
-
-If you're using the Facebook SDK for deferred deep linking, disable or remove its [deferred deep linking code](https://developers.facebook.com/docs/ios/deep-linking#deferred-deep-linking) to avoid conflicts with Adjust SDK's deferred deep link handling.
-
-</Callout>
-
 ## UIKit apps using AppDelegate lifecycle
 
 Update your AppDelegate to implement direct and deferred deep linking.
@@ -41,7 +35,6 @@ Update your AppDelegate to implement direct and deferred deep linking.
 
 ```swift
 import Adjust
-import Foundation
 import UIKit
 
 @UIApplicationMain
@@ -132,7 +125,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
       NotificationCenter.default.post(name: .deferredLinkReceived, object: nil)
     }
 
-    // Return true to let Adjust SDK immediately attempt to open deep link
+    // Return true to let Adjust SDK attempt to open deep link immediately
     // upon receipt (for example: app has no ATT, onboarding screens, or login).
     // Otherwise, return false.
     return false
@@ -149,13 +142,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
 
 ```objc
 #import <Adjust/Adjust.h>
-#import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
-
-@class DeeplinkHandler;
-
-@interface AppDelegate : UIResponder <UIApplicationDelegate, AdjustDelegate>
-@end
+#import "AppDelegate.h"
+#import "DeeplinkHandler.h"
 
 @implementation AppDelegate
 
@@ -203,17 +191,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
   if ([userActivity.activityType
           isEqualToString:NSUserActivityTypeBrowsingWeb]) {
     NSURL *incomingLink = userActivity.webpageURL;
-    // Handle incoming universal link
-    [DeeplinkHandler handleDeeplink:incomingLink];
+    if (incomingLink) {
+      // Handle incoming universal link
+      [DeeplinkHandler handleDeeplink:incomingLink];
+    }
   }
   return YES;
 }
 
 // Receive app scheme deep link when app is installed, and either:
 // - App is in "not running" or background state, and user clicks link or
-//   another app opens link using [UIApplication openURL:options:completionHandler:], or
+// another app opens link using [UIApplication
+// openURL:options:completionHandler:], or
 // - App is in foreground state and opens its own link using
-//   [UIApplication openURL:options:completionHandler:].
+// [UIApplication openURL:options:completionHandler:].
 - (BOOL)application:(UIApplication *)app
             openURL:(NSURL *)incomingLink
             options:
@@ -230,8 +221,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
     // onboarding screens and login.
     [[NSUserDefaults standardUserDefaults] setObject:[deeplink absoluteString]
                                               forKey:@"lastDeferredLink"];
+
+    // Post notification for app to handle deferred deep link
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:@"DeferredLinkReceived"
+                      object:nil];
   }
-  // Return YES to try to open deep link immediately
+
+  // Return YES to let Adjust SDK attempt to open deep link immediately
   // upon receipt (for example: app has no ATT, onboarding screens, or login).
   // Otherwise, return NO.
   return NO;
@@ -253,7 +250,7 @@ For deferred deep linking, this is the sequence for most apps:
 4. After the ATT prompt response or timeout, the Adjust SDK sends session and attribution requests to Adjust's servers.
 5. Adjust's servers respond with attribution data, including the deep link the user clicked on ("deferred deep link").
 6. The Adjust SDK triggers a deferred deep link callback in your app, which stores the deferred deep link (shown in the AppDelegate implementation above).
-7. The app handles the deferred deep link in one of two ways (shown in the ContentView example class below):
+7. The app handles the deferred deep link in one of two ways (shown in the ViewController example class below):
    -  Once onboarding completes, the app checks for and handles any stored deferred deep link.
    -  If a deferred deep link arrives after onboarding, a notification triggers the same check and handling.
 8. The app navigates the user to the deep link screen.
@@ -265,7 +262,6 @@ For deferred deep linking, this is the sequence for most apps:
 
 ```swift
 import Adjust
-import Foundation
 import UIKit
 
 class ViewController: UIViewController {
@@ -291,8 +287,8 @@ class ViewController: UIViewController {
     )
   }
 
-  override func viewDidAppear() {
-    super.viewDidAppear()
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
     // Check if onboarding has been completed
     if !hasCompletedOnboarding {
       // Show onboarding screens and login prompt
@@ -354,20 +350,8 @@ extension Notification.Name {
 
 ```objc
 #import <Adjust/Adjust.h>
-#import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
-
-@class DeeplinkHandler;
-
-@interface ViewController : UIViewController
-
-@end
-
-@interface ViewController ()
-
-@property(nonatomic, assign) BOOL hasCompletedOnboarding;
-
-@end
+#import "DeeplinkHandler.h"
+#import "ViewController.h"
 
 @implementation ViewController
 
@@ -381,40 +365,67 @@ extension Notification.Name {
                                           forKey:@"HasCompletedOnboarding"];
 }
 
-- (void)viewDidAppear {
-  [super viewDidAppear];
+- (void)viewDidLoad {
+  [super viewDidLoad];
+
+  // Observe deferred deep link notifications
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(onDeferredLinkReceived)
+             name:@"deferredLinkReceived"
+           object:nil];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
 
   // Check if onboarding has been completed
   if (!self.hasCompletedOnboarding) {
-    // Show ATT prompt after delay to ensure app is active
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)),
-                   dispatch_get_main_queue(), ^{
-                     [Adjust
-                         requestTrackingAuthorizationWithCompletionHandler:nil];
-                   });
-
     // Show onboarding screens and login prompt
 
-    // On completion, set hasCompletedOnboarding to true
-    self.hasCompletedOnboarding = YES;
-  }
+    // Show ATT prompt after delay to ensure app is active
+    dispatch_after(
+        dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)),
+        dispatch_get_main_queue(), ^{
+          [Adjust requestTrackingAuthorizationWithCompletionHandler:nil];
+        });
 
-  // Check if there's a stored deferred deep link
+    // After onboarding, set hasCompletedOnboarding to true
+    // and check for stored deferred deep link
+    self.hasCompletedOnboarding = YES;
+    [self checkForDeferredLink];
+  } else {
+    // Show main content
+  }
+}
+
+- (void)onDeferredLinkReceived {
+  // Check for deferred deep link that may arrive after onboarding
+  if (self.hasCompletedOnboarding) {
+    [self checkForDeferredLink];
+  }
+}
+
+- (void)checkForDeferredLink {
+  // Check for stored deferred deep link before handling
   NSString *deferredLinkString =
       [[NSUserDefaults standardUserDefaults] stringForKey:@"lastDeferredLink"];
   NSURL *deferredLink = [NSURL URLWithString:deferredLinkString];
 
-  if (deferredLink) {
-    // Remove the stored deferred deep link
-    // to avoid handling it again later
-    [[NSUserDefaults standardUserDefaults]
-        removeObjectForKey:@"lastDeferredLink"];
-
-    // Handle deferred deep link
-    [DeeplinkHandler handleDeeplink:deferredLink];
-  } else {
-    // Show main content
+  if (!deferredLink) {
+    return;
   }
+
+  // Remove stored deferred deep link to avoid handling again later
+  [[NSUserDefaults standardUserDefaults]
+      removeObjectForKey:@"lastDeferredLink"];
+
+  // Handle deferred deep link
+  [DeeplinkHandler handleDeeplink:deferredLink];
+}
+
+- (void)dealloc {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 @end
@@ -439,7 +450,6 @@ Follow the steps in the [UIKit apps using AppDelegate lifecycle section](#uikit-
 <CodeBlock title="SceneDelegate.swift">
 
 ```swift
-import Foundation
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
@@ -508,11 +518,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 <CodeBlock title="SceneDelegate.m">
 
 ```objc
-#import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
-
-@interface SceneDelegate : UIResponder <UIWindowSceneDelegate>
-@end
+#import "DeeplinkHandler.h"
+#import "SceneDelegate.h"
 
 @implementation SceneDelegate
 
@@ -634,7 +641,6 @@ Update your AppDelegate to implement deferred deep linking.
 
 ```swift
 import Adjust
-import Foundation
 import UIKit
 
 class AppDelegate: UIResponder, UIApplicationDelegate, AdjustDelegate {
@@ -688,7 +694,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, AdjustDelegate {
       NotificationCenter.default.post(name: .deferredLinkReceived, object: nil)
     }
 
-    // Return true to let Adjust SDK immediately attempt to open deep link
+    // Return true to let Adjust SDK attempt to open deep link immediately
     // upon receipt (for example: app has no ATT, onboarding screens, or login).
     // Otherwise, return false.
     return false
@@ -868,7 +874,6 @@ The class performs the following tasks:
 
 ```swift
 import Adjust
-import Foundation
 // import UIKit and/or SwiftUI
 
 class DeeplinkHandler {
@@ -975,12 +980,8 @@ class DeeplinkHandler {
 
 ```objc
 #import <Adjust/Adjust.h>
-#import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
-
-@interface DeeplinkHandler : NSObject
-+ (void)handleDeeplink:(NSURL *)incomingLink;
-@end
+#import "DeeplinkDetailViewController.h"
+#import "DeeplinkHandler.h"
 
 @implementation DeeplinkHandler
 
