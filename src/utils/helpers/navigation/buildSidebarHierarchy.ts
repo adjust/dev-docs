@@ -66,6 +66,19 @@ export const buildSidebarHierarchy = (entries: ContentCollectionEntry[]): [Langu
       });
    };
 
+   // Sort function for sidebar items
+   const sortSidebarItems = (a: SidebarItem, b: SidebarItem) => {
+      // If both have positions, sort by position
+      if (a.position !== undefined && b.position !== undefined) {
+         return a.position - b.position;
+      }
+      // If only one has position, positioned items come first
+      if (a.position !== undefined) return -1;
+      if (b.position !== undefined) return 1;
+      // If neither has position, sort alphabetically by title
+      return a.title.localeCompare(b.title);
+   };
+
    // Build the parent-child relationships
    sortedEntries.forEach(entry => {
       // Fetch the entry from the slug map
@@ -100,12 +113,8 @@ export const buildSidebarHierarchy = (entries: ContentCollectionEntry[]): [Langu
             // Set the parent for the child
             potentialChild.parent = entry.slug;
 
-            // Insert the child in the correct position or alphabetically
-            if (potentialChild.position) {
-               structuredEntry.children?.splice(potentialChild.position - 1, 0, potentialChild);
-            } else {
-               structuredEntry.children?.push(potentialChild);
-            }
+            // Add child to the children array
+            structuredEntry.children?.push(potentialChild);
 
             // Remove the entry from the root array since it's now in a child array
             if (type === "sdk") {
@@ -116,22 +125,8 @@ export const buildSidebarHierarchy = (entries: ContentCollectionEntry[]): [Langu
          }
       });
 
-      // Sort the children alphabetically if they have no position
-      structuredEntry.children?.sort((a, b) => {
-         if (a.position && b.position) {
-            return 0;
-         }
-         if (a.position) {
-            return -1;
-         }
-         if (b.position) {
-            return 1;
-         }
-         // Sort alphabetically by file name (last part of the id)
-         const aFileName = a.id.split('/').pop()?.toLowerCase();
-         const bFileName = b.id.split('/').pop()?.toLowerCase();
-         return aFileName?.localeCompare(bFileName!);
-      });
+      // Sort children by position
+      structuredEntry.children?.sort(sortSidebarItems);
 
       // If the entry has no parent, nest it directly under the type array
       if (!structuredEntry.parent) {
@@ -146,5 +141,9 @@ export const buildSidebarHierarchy = (entries: ContentCollectionEntry[]): [Langu
       setChildLevels(structuredEntry, structuredEntry.level);
    });
 
-   return [hierarchy, slugMap]; // Return sdk and api arrays inside the hierarchy object
+   // Sort top-level entries by position
+   hierarchy.sdk.sort(sortSidebarItems);
+   hierarchy.api.sort(sortSidebarItems);
+
+   return [hierarchy, slugMap];
 };
