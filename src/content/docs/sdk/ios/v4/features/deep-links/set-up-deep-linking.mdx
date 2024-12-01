@@ -874,7 +874,8 @@ The class performs the following tasks:
 
 ```swift
 import Adjust
-// import UIKit and/or SwiftUI
+import UIKit
+// import SwiftUI - if applicable
 
 class DeeplinkHandler {
   static func handleDeeplink(_ incomingLink: URL) {
@@ -883,55 +884,53 @@ class DeeplinkHandler {
     // If not, retrieve original link.
     Adjust.processDeeplink(incomingLink) { processedLinkString in
       guard let processedLink = URL(string: processedLinkString) else { return }
-    }
 
-    // Extract path, query items, and fragment from the processed link.
-    let components = URLComponents(
-      url: processedLink,
-      resolvingAgainstBaseURL: true
-    )
+      // Extract path, query items, and fragment from the processed link.
+      guard let components = URLComponents(
+        url: processedLink,
+        resolvingAgainstBaseURL: true
+      ) else { return }
 
-    // For app scheme deep links, set path = host + path
-    var path: String
-    if let scheme = processedLink.scheme, scheme == "http" || scheme == "https"
-    {
-      path = components.path
-    } else {
-      path = (components.host ?? "") + components.path
-      if !path.isEmpty && !path.hasPrefix("/") {
-        path = "/" + path
+      // For app scheme deep links, set path = host + path
+      var path: String
+      if let scheme = processedLink.scheme, scheme == "http" ||
+          scheme == "https" {
+        path = components.path
+      } else {
+        path = (components.host ?? "") + components.path
+        if !path.isEmpty && !path.hasPrefix("/") {
+          path = "/" + path
+        }
       }
-    }
 
-    let queryItems = components?.queryItems ?? []
+      let queryItems = components.queryItems ?? []
+      // Parse query parameters into a dictionary for easier access
+      let params = queryItems.reduce(into: [String: String]()) { result, item in
+        result[item.name] = item.value
+      }
+      let fragment = components.fragment
 
-    // Parse query parameters into a dictionary for easier access
-    let params = queryItems.reduce(into: [String: String]()) { result, item in
-      result[item.name] = item.value
-    }
-
-    let fragment = components?.fragment
-
-    // Implement the navigation or other app-specific logic based on
-    // the deep link components.
-    DispatchQueue.main.async {
-      // Example of navigating based on the path or other components.
-      // Replace with your actual navigation logic.
-      switch path {
-      case "/product":
-        if let productId = params["id"] {
-          handleProduct(productId: productId)
+      // Implement the navigation or other app-specific logic based on
+      // the deep link components.
+      DispatchQueue.main.async {
+        // Example of navigating based on the path or other components.
+        // Replace with your actual navigation logic.
+        switch path {
+        case "/product":
+          if let productId = params["id"] {
+            handleProduct(productId: productId)
+          }
+        case "/category":
+          if let categoryName = params["name"] {
+            handleCategory(category: categoryName)
+          }
+        case "/search":
+          if let query = params["q"] {
+            handleSearch(query: query)
+          }
+        default:
+          print("Unhandled deep link path: \(path)")
         }
-      case "/category":
-        if let categoryName = params["name"] {
-          handleCategory(category: categoryName)
-        }
-      case "/search":
-        if let query = params["q"] {
-          handleSearch(query: query)
-        }
-      default:
-        print("Unhandled deep link path: \(path)")
       }
     }
   }
@@ -940,7 +939,6 @@ class DeeplinkHandler {
     // Example UIKit implementation:
     // let productVC = ProductViewController(productId: productId)
     // navigationController.pushViewController(productVC, animated: true)
-
     // Example SwiftUI implementation:
     // let productView = ProductView(productId: productId)
     // navigationPath.append(productView)
@@ -951,7 +949,6 @@ class DeeplinkHandler {
     // Example UIKit implementation:
     // let categoryVC = CategoryViewController(category: category)
     // navigationController.pushViewController(categoryVC, animated: true)
-
     // Example SwiftUI implementation:
     // let categoryView = CategoryView(category: category)
     // navigationPath.append(categoryView)
@@ -962,11 +959,10 @@ class DeeplinkHandler {
     // Example UIKit implementation:
     // let searchVC = SearchViewController(searchQuery: query)
     // navigationController.pushViewController(searchVC, animated: true)
-
     // Example SwiftUI implementation:
     // let searchView = SearchView(searchQuery: query)
     // navigationPath.append(searchView)
-    // or: router.navigate(to: searchView)
+    // or: router.navigate(to: productView)
   }
 }
 ```
@@ -980,7 +976,6 @@ class DeeplinkHandler {
 
 ```objc
 #import <Adjust/Adjust.h>
-#import "DeeplinkDetailViewController.h"
 #import "DeeplinkHandler.h"
 
 @implementation DeeplinkHandler
@@ -990,70 +985,71 @@ class DeeplinkHandler {
   // and retrieve full URL if short branded link.
   // If not, retrieve original link.
   [Adjust processDeeplink:incomingLink
-        completionHandler:^(NSString *_Nonnull processedLinkString) {
-          NSURL *processedLink = [NSURL URLWithString:processedLinkString];
-          if (!processedLink) return;
-        }];
+       completionHandler:^(NSString *_Nonnull processedLinkString) {
+    NSURL *processedLink = [NSURL URLWithString:processedLinkString];
+    if (!processedLink) return;
 
-  // Extract path, query items, and fragment from the processed link.
-  NSURLComponents *components = [NSURLComponents componentsWithURL:processedLink
-                                           resolvingAgainstBaseURL:YES];
+    // Extract path, query items, and fragment from the processed link.
+    NSURLComponents *components =
+        [NSURLComponents componentsWithURL:processedLink
+                  resolvingAgainstBaseURL:YES];
 
-  // For app scheme deep links, set path = host + path
-  NSString *path;
-  if ([processedLink.scheme isEqualToString:@"http"] ||
-      [processedLink.scheme isEqualToString:@"https"]) {
-    path = components.path;
-  } else {
-    path = [NSString
-        stringWithFormat:@"%@%@", components.host ?: @"", components.path];
-    if (path.length > 0 && ![path hasPrefix:@"/"]) {
-      path = [@"/" stringByAppendingString:path];
-    }
-  }
-
-  NSArray<NSURLQueryItem *> *queryItems = components.queryItems ?: @[];
-
-  // Parse query parameters into a dictionary for easier access
-  NSMutableDictionary<NSString *, NSString *> *params =
-      [NSMutableDictionary dictionary];
-  for (NSURLQueryItem *item in queryItems) {
-    params[item.name] = item.value;
-  }
-
-  NSString *fragment = components.fragment;
-
-  // Implement the navigation or other app-specific logic based on
-  // the deep link components.
-  dispatch_async(dispatch_get_main_queue(), ^{
-    // Example of navigating based on the path or other components.
-    // Replace with your actual navigation logic.
-    if ([path isEqualToString:@"/product"]) {
-      NSString *productId = params[@"id"];
-      if (productId) {
-        ProductViewController *productVC =
-            [[ProductViewController alloc] initWithProductId:productId];
-        [self navigateToViewController:productVC];
-      }
-    } else if ([path isEqualToString:@"/category"]) {
-      NSString *categoryName = params[@"name"];
-      if (categoryName) {
-        CategoryViewController *categoryVC =
-            [[CategoryViewController alloc] initWithCategory:categoryName];
-        [self navigateToViewController:categoryVC];
-      }
-    } else if ([path isEqualToString:@"/search"]) {
-      NSString *query = params[@"q"];
-      if (query) {
-        SearchViewController *searchVC =
-            [[SearchViewController alloc] initWithSearchQuery:query];
-        [self navigateToViewController:searchVC];
-      }
+    // For app scheme deep links, set path = host + path
+    NSString *path;
+    if ([processedLink.scheme isEqualToString:@"http"] ||
+        [processedLink.scheme isEqualToString:@"https"]) {
+      path = components.path;
     } else {
-      NSLog(@"Unhandled deep link path: %@", path);
+      path = [NSString stringWithFormat:@"%@%@",
+          components.host ?: @"",
+          components.path];
+      if (path.length > 0 && ![path hasPrefix:@"/"]) {
+        path = [@"/" stringByAppendingString:path];
+      }
     }
-  });
-}];
+
+    NSArray<NSURLQueryItem *> *queryItems = components.queryItems ?: @[];
+
+    // Parse query parameters into a dictionary for easier access
+    NSMutableDictionary<NSString *, NSString *> *params =
+        [NSMutableDictionary dictionary];
+    for (NSURLQueryItem *item in queryItems) {
+      params[item.name] = item.value;
+    }
+
+    NSString *fragment = components.fragment;
+
+    // Implement the navigation or other app-specific logic based on
+    // the deep link components.
+    dispatch_async(dispatch_get_main_queue(), ^{
+      // Example of navigating based on the path or other components.
+      // Replace with your actual navigation logic.
+      if ([path isEqualToString:@"/product"]) {
+        NSString *productId = params[@"id"];
+        if (productId) {
+          ProductViewController *productVC =
+              [[ProductViewController alloc] initWithProductId:productId];
+          [self navigateToViewController:productVC];
+        }
+      } else if ([path isEqualToString:@"/category"]) {
+        NSString *categoryName = params[@"name"];
+        if (categoryName) {
+          CategoryViewController *categoryVC =
+              [[CategoryViewController alloc] initWithCategory:categoryName];
+          [self navigateToViewController:categoryVC];
+        }
+      } else if ([path isEqualToString:@"/search"]) {
+        NSString *query = params[@"q"];
+        if (query) {
+          SearchViewController *searchVC =
+              [[SearchViewController alloc] initWithSearchQuery:query];
+          [self navigateToViewController:searchVC];
+        }
+      } else {
+        NSLog(@"Unhandled deep link path: %@", path);
+      }
+    });
+  }];
 }
 
 + (void)navigateToViewController:(UIViewController *)viewController {
