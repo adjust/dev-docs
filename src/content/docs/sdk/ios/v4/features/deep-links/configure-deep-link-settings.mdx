@@ -14,13 +14,25 @@ redirects:
 ---
 
 <br />
-## Set up a branded domain
-<br />
-In the Adjust dashboard, [set up a branded
-domain](https://help.adjust.com/en/article/set-up-branded-domain) using Adjust's
-go.link domain (for example: `example.go.link`).
+## Create an app [Create an app](https://help.adjust.com/en/article/app-setup)
+in the Adjust dashboard.
 
-Copy your branded domain to configure it in Xcode in the section below.
+Please note that the Adjust dashboard only supports one bundle ID (`com.example.app`) and app scheme (`example://`) for each app. If your app uses different bundle IDs and/or app schemes for your release and debug builds, create a separate debug app.
+
+## Add iOS platform
+
+Add iOS in the platform settings for your app. This step requires entering the bundle ID. If you're not sure of the bundle ID for your app build, enter a temporary value (`com.example.app`) to save the platform settings. Follow the rest of this guide to collect all required data points, then return to platform settings in the dashboard to finish the configuration.
+
+<br />
+## Set up a branded domain In the Adjust dashboard, [set up a branded
+domain](https://help.adjust.com/en/article/set-up-branded-domain) using Adjust's
+go.link domain (for example: `brandname.go.link`).
+
+If your iOS app and Android app use separate apps in Adjust, ensure that you select the same branded domain (`brandname.go.link`) for both apps in the Adjust dashboard. This allows you to use the same branded domain for both platforms.
+
+If you use separate apps for release and debug builds, create a separate branded domain for your debug app (`brandnamedebug.go.link`). If your debug apps use separate apps for iOS and Android in Adjust, ensure that you also select this same branded domain for both debug apps in the Adjust dashboard.
+
+Make note of your branded domains to configure in Xcode in the next section.
 
 <br />
 ## Configure settings in Xcode
@@ -33,10 +45,10 @@ Copy your branded domain to configure it in Xcode in the section below.
 4. Select the **Signing & Capabilities** tab.
 5. Complete these steps for both the **Release** and **Debug** sub-tabs:
 
-   -  Note the value in the **Bundle Identifier** field. This is your app's Bundle ID ("Release Bundle ID" or "Debug Bundle ID," respectively), which you'll need to add to the Adjust dashboard later.
-   -  In the **Associated Domains** section, add an entry for your branded domain. Here is an example using the branded domain `example.go.link`:
+   -  Make note of the value in the **Bundle Identifier** field. This is your app's bundle ID ("Release Bundle ID" or "Debug Bundle ID," respectively), which you need to configure in the iOS platform settings in the Adjust dashboard.
+   -  In the **Associated Domains** section, add an entry for each of your branded domains. Here is an example entry using the branded domain `brandname.go.link`:
 
-      `applinks:example.go.link`
+      `applinks:brandname.go.link`
 
 **Troubleshoot missing or problematic Associated Domains settings**
 
@@ -49,31 +61,31 @@ Copy your branded domain to configure it in Xcode in the section below.
       1. Go to the Apple Developer portal and [enable the Associated Domains capability](https://developer.apple.com/help/account/manage-identifiers/enable-app-capabilities) for your app.
       2. [Download and import](https://help.apple.com/xcode/mac/current/#/dev1bf96f17e) the updated provisioning profile into Xcode.
 
-### Configure app scheme
+### Retrieve or configure app scheme
 
 App scheme is required for certain use cases where iOS doesn’t support universal links. You can reuse an existing app scheme for Adjust deep linking.
 
-1. In Xcode, select the **Info** tab.
-2. Expand the **URL Types** section.
+1. In the Xcode navigator pane, select the project name to access the project settings.
+2. Under Targets, select the appropriate target (usually your app’s name).
+3. Select the **Info** tab.
+4. Expand the **URL Types** section.
 
-If your app already has an app scheme, determine which of the below configurations you have and retrieve it:
+If your app already has an app scheme, there will be URL Type entries, each of which has a single value for **URL Schemes**. Use the table below to determine your app schemes based on your URL Types configuration. Make note of the app schemes to configure them in the Adjust dashboard later.
 
-| **URL Schemes** field                                                 | **Identifier** field                                                           | App Scheme                                                                                                                                          |
-| --------------------------------------------------------------------- | ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Static value, such as `example`                                       | Static value, such as `com.example.app`                                        | `example://` is the "Release App Scheme"                                                                                                            |
-| Static value, such as `example`                                       | Build setting variable, such as `$(PRODUCT_BUNDLE_IDENTIFIER)`                 | `example://` is the "Release App Scheme"                                                                                                            |
-| Two static values, such as `example` and `exampleDebug`, respectively | Static values, such as `com.example.app` and `com.example.debug`, respectively | `example://` is the "Release App Scheme" and `exampleDebug://` is the "Debug App Scheme"                                                            |
-| Build setting variable, such as `$(APP_SCHEME)`                       | Static values, such as `com.example.app` and `com.example.debug`, respectively | **Build Settings** tab -> search for "APP_SCHEME" -> values for Release and Debug are the "Release App Scheme" and "Debug App Scheme," respectively |
-| Build setting variable, such as `$(APP_SCHEME)`                       | Build setting variable, such as `$(PRODUCT_BUNDLE_IDENTIFIER)`                 | **Build Settings** tab -> search for "APP_SCHEME" -> values for Release and Debug are the "Release App Scheme" and "Debug App Scheme," respectively |
+| **URL Schemes** field                                                          | App Scheme                                                                                                                                                                       |
+| ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Static value, such as `example`                                                | `example://` is the "Release App Scheme"                                                                                                                                         |
+| Static values, such as `example`, `exampleDebug` in separate URL Types entries | `example://` is the "Release App Scheme"<br />`exampleDebug://` is the "Debug App Scheme"                                                                                        |
+| Dynamic build setting variable, such as `$(APP_SCHEME)`                        | Go to **Build Settings** tab -> search for variable name, such as "APP_SCHEME" -> values for Release and Debug are the "Release App Scheme" and "Debug App Scheme," respectively |
 
-If you need to set up an app scheme, follow these steps:
+If you need to create an app scheme, follow these steps:
 
 -  Select the **+** button to add a new URL Type.
 -  Fill in the following fields:
    -  **Identifier**: `$(PRODUCT_BUNDLE_IDENTIFIER)`
    -  **Role**: Editor
-   -  **URL Schemes**: Enter your desired app scheme (for example: enter `example` to represent `example://`). Don't use `http`, `https`, or reserved iOS schemes like `mailto`, `tel`, `sms`, or `facetime`. Entering a static value here will create a single app scheme used for both release and debug builds.
--  Once created, remember to note the app scheme for configuration in the Adjust dashboard later.
+   -  **URL Schemes**: Enter your desired app scheme value (enter `example`, not `example://`). Don't use `http`, `https`, or reserved iOS schemes like `mailto`, `tel`, `sms`, or `facetime`. Entering a static value here will create a single app scheme used for both release and debug builds.
+-  Once created, make note of the app scheme for configuration in the Adjust dashboard later.
 
 <br />
 ## Retrieve App ID Prefix from Apple Developer Portal
@@ -81,17 +93,17 @@ If you need to set up an app scheme, follow these steps:
 1. Log into the [Apple Developer portal](https://developer.apple.com/account/).
 2. Under **Certificates, IDs & Profiles**, select **Identifiers**.
 3. Select your app.
-4. Near the top of the page, copy the **App ID Prefix** to configure in the Adjust dashboard below.
+4. Near the top of the page, make note of the **App ID Prefix** to configure in the Adjust dashboard in the next section.
    <br />
 
-## Configure settings in Adjust dashboard
+## Finish configuring iOS platform settings
 
-In the Adjust dashboard, [create an app](https://help.adjust.com/en/article/app-setup) if you haven't already done so. Then, configure its [iOS platform settings](https://help.adjust.com/en/article/platforms-ios-android-amazon-microsoft) using the previously collected data points, detailed below. Note that the Adjust dashboard only supports one bundle ID and one app scheme per app. If you need to test with a Debug Bundle ID or Debug App Scheme, create a separate test app and corresponding branded domain.
+In the Adjust dashboard, finish configuring [iOS platform settings](https://help.adjust.com/en/article/platforms-ios-android-amazon-microsoft) for your apps using the below data points that you collected.
 
-| Data Point         | Example           | Requirement                                                                                           |
-| ------------------ | ----------------- | ----------------------------------------------------------------------------------------------------- |
-| Release Bundle ID  | com.example.app   | Required.                                                                                             |
-| Debug Bundle ID    | com.example.debug | Required if Debug Bundle ID is different than Release Bundle ID, and you are testing a debug build.   |
-| Release App Scheme | example://        | Required for use cases where iOS doesn't support universal links.                                     |
-| Debug App Scheme   | exampleDebug://   | Required if Debug App Scheme is different than Release App Scheme, and you are testing a debug build. |
-| App ID Prefix      | ABCDE12345        | Required.                                                                                             |
+| Data Point         | Example           | Requirement                                                        |
+| ------------------ | ----------------- | ------------------------------------------------------------------ |
+| Release Bundle ID  | com.example.app   | Required.                                                          |
+| Debug Bundle ID    | com.example.debug | Required if Debug Bundle ID is different than Release Bundle ID.   |
+| Release App Scheme | example://        | Required for use cases where iOS doesn't support universal links.  |
+| Debug App Scheme   | exampleDebug://   | Required if Debug App Scheme is different than Release App Scheme. |
+| App ID Prefix      | ABCDE12345        | Required.                                                          |
