@@ -1,28 +1,29 @@
 ---
-title: サブスクリプション情報の送信
-description: Adjustにサブスクリプション情報を送信するには、これらのメソッドを使用してください。
-slug: ja/sdk/ios/v4/features/subscriptions
-versions:
-   - label: v5
-     value: v5
-     default: true
-   - label: v4
-     value: v4
-redirects:
-   v5: /ja/sdk/ios/features/subscriptions
+title: "Send subscription information"
+description: "Use these methods send subscription information to Adjust."
+slug: "en/sdk/ios/v4/features/subscriptions"
+versions: 
+    - 
+        label: "v5"
+        value: "v5"
+        default: true
+    - 
+        label: "v4"
+        value: "v4"
+redirects: 
+    v5: "/en/sdk/ios/features/subscriptions"
 ---
+<callout type="important"> 
 
-<Callout type="important">
+以下の手順は、Adjust SDK内でサブスクリプション計測を行う場合にのみ有効です。この機能を有効化するには、[アプリにサブスクリプションを設定](https://help.adjust.com/en/article/set-up-subscriptions-for-your-app)の手順に従ってください。
+</Callout> 
 
-以下の手順は、Adjust SDK内でサブスクリプション計測を行う場合にのみ有効です。この機能を有効化するには、アプリ固有の情報を別途追加する必要があります。設定のサポートをいたしますので、[support@adjust.com](mailto:support@adjust.com)または担当のテクニカルアカウントマネージャーまでお問い合わせください。
+You can record App Store subscriptions and verify their validity with the Adjust SDK. After the user purchases a subscription, create an `ADJSubscription` instance containing the details.
 
-</Callout>
+1\. Instantiate a subscription object \{\#instantiate\-a\-subscription\-object\}
+---------------------------------------------------------------------------------------
 
-App Storeのサブスクリプションを記録し、それぞれの有効性をAdjust SDKで確認できます。ユーザーがサブスクリプションの購入を完了したら、その詳細を含む`ADJSubscription`インスタンスを作成します。
-
-## 1\. Instantiate a subscription object {#1-instantiate-a-subscription-object}
-
-<CodeBlock title="メソッドシグネチャー">
+<codeblock title="Method signature"> 
 
 ```objc
 - (nullable id)initWithPrice:(nonnull NSDecimalNumber *)price
@@ -31,19 +32,18 @@ App Storeのサブスクリプションを記録し、それぞれの有効性�
 
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-開始するには、サブスクリプション購入の詳細を含むサブスクリプションオブジェクトを作成する必要があります。これを行うには、`initWithPrice`メソッドを使用して`ADJSubscription`オブジェクトを初期化します。さらに、以下の引数をパスします。
+To get started, you need to create a subscription object containing details of the subscription purchase. To do this, initialize an `ADJSubscription` object using the `initWithPrice` method. Pass the following arguments:
 
-| パラメーター    | データタイプ      | 説明                                                                                                                                                                                                                                                                                              |
-| --------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `price`         | `NSDecimalNumber` | サブスクリプションの価格                                                                                                                                                                                                                                                                          |
-| `currency`      | `NSString`        | サブスクリプションの通貨。[`priceLocale`](https://developer.apple.com/documentation/foundation/nslocale/1642836-currencycode?language=objc)オブジェクトの[`currencyCode`](https://developer.apple.com/documentation/storekit/skproduct/1506145-pricelocale?language=objc)としてフォーマットされる |
-| `transactionId` | `NSString`        | トランザクションID                                                                                                                                                                                                                                                                                |
-| `receipt`       | `NSString`        | レシート情報                                                                                                                                                                                                                                                                                      |
+|    Parameter    |     Data type     |                                                                                                                                             Description                                                                                                                                             |
+|-----------------|-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `price`         | `NSDecimalNumber` | The price of the subscription                                                                                                                                                                                                                                                                       |
+| `currency`      | `NSString`        | The currency of the subscription. Formatted as the [`currencyCode`](https://developer.apple.com/documentation/foundation/nslocale/1642836-currencycode?language=objc) of the [`priceLocale`](https://developer.apple.com/documentation/storekit/skproduct/1506145-pricelocale?language=objc) object |
+| `transactionId` | `NSString`        | Your ID for the transaction                                                                                                                                                                                                                                                                         |
+| `receipt`       | `NSString`        | The receipt information                                                                                                                                                                                                                                                                             |
 
-<Tabs>
-<Tab title="Swift" sync="swift">
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 let subscription = ADJSubscription(
@@ -52,8 +52,7 @@ let subscription = ADJSubscription(
     transactionId: transactionId)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:price
@@ -61,23 +60,20 @@ ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:price
                                                          transactionId:transactionId];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-### Record the purchase date {#record-the-purchase-date}
+### Record the purchase date \{\#record\-the\-purchase\-date\}
 
-<CodeBlock title="メソッドシグネチャー">
+<codeblock title="Method signature"> 
 
 ```objc
 - (void)setTransactionDate:(nonnull NSDate *)transactionDate;
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-ユーザーがサブスクリプションを購入した日を記録することができます。SDKはこのデータを返して、レポートします。タイムスタンプを使用して`setTransactionDate`メソッドを呼び出し、この情報を記録します。
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+You can record the date on which the user purchased a subscription. The SDK returns this data for you to report on. Call the `setTransactionDate` method with a timestamp to record this information.
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 let subscription = ADJSubscription(
@@ -88,8 +84,7 @@ let subscription = ADJSubscription(
 subscription.setTransactionDate(transactionDate)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:price
@@ -99,23 +94,20 @@ ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:price
 [subscription setTransactionDate:transactionDate];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-### Record the purchase region {#record-the-purchase-region}
+### Record the purchase region \{\#record\-the\-purchase\-region\}
 
-<CodeBlock title="メソッドシグネチャー">
+<codeblock title="Method signature"> 
 
 ```objc
 - (void)setSalesRegion:(nonnull NSString *)salesRegion;
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-ユーザーがサブスクリプションを購入した地域を記録することができます。これを行うには、subscriptionオブジェクトの`setSalesRegion`メソッドを呼び、国コードを`NSString`としてパスします。これは、[`priceLocale`](https://developer.apple.com/documentation/storekit/skproduct/1506145-pricelocale?language=swift)オブジェクトの[`countryCode`](https://developer.apple.com/documentation/foundation/nslocale/1643060-countrycode?language=swift)としてフォーマットされる必要があります。
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+You can record the region in which the user purchased a subscription. To do this, call the `setSalesRegion` method on your subscription object and pass the country code as an `NSString`. This needs to be formatted as the [`countryCode`](https://developer.apple.com/documentation/foundation/nslocale/1643060-countrycode?language=swift) of the [`priceLocale`](https://developer.apple.com/documentation/storekit/skproduct/1506145-pricelocale?language=swift) object.
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 let subscription = ADJSubscription(
@@ -126,8 +118,7 @@ let subscription = ADJSubscription(
 subscription.setSalesRegion(salesRegion)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:price
@@ -137,23 +128,20 @@ ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:price
 [subscription setSalesRegion:salesRegion];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-### Add callback parameters {#add-callback-parameters}
+### Add callback parameters \{\#add\-callback\-parameters\}
 
-<CodeBlock title="メソッドシグネチャー">
+<codeblock title="Method signature"> 
 
 ```objc
 - (void)addCallbackParameter:(nonnull NSString *)key value:(nonnull NSString *)value;
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-コールバックパラメーターをサブスクリプションオブジェクトに追加することができます。Adjustは、これらのパラメーターをコールバックURLに追加します。コールバックパラメーターを追加するには、サブスクリプションオブジェクトの`addCallbackParameter`メソッドを呼び出してください。このメソッドを複数回呼び出すことで、複数のコールバックパラメーターを追加できます。
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+You can add callback parameters to your subscription object. The SDK appends these parameters to your callback URL. To add callback parameters, call the `addCallbackParameter` method on your subscription object. You can add multiple callback parameters by calling this method multiple times.
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 let subscription = ADJSubscription(
@@ -165,8 +153,7 @@ subscription.addCallbackParameter("key1", value: "value1")
 subscription.addCallbackParameter("key2", value: "value2")
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:price
@@ -177,23 +164,20 @@ ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:price
 [subscription addCallbackParameter:@"key2" value:@"value2"];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-### Add partner parameters {#add-partner-parameters}
+### Add partner parameters \{\#add\-partner\-parameters\}
 
-<CodeBlock title="メソッドシグネチャー">
+<codeblock title="Method signature"> 
 
 ```objc
 - (void)addPartnerParameter:(nonnull NSString *)key value:(nonnull NSString *)value;
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-パートナーパラメーターをサブスクリプションオブジェクトに追加することができます。SDKは、ユーザーがサブスクリプションを購入した時に、Adjustサーバーへこれらを送信します。Adjustサーバーは、その情報をネットワークパートナーに転送します。パラメーターパラメーターを追加するには、サブスクリプションオブジェクトの`addPartnerParameter`メソッドを呼び出してください。このメソッドを複数回呼び出すことで、複数のコールバックパラメーターを追加できます。
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+You can add partner parameters to your subscription object. The SDK sends these to Adjust's servers when the user purchases a subscription. Adjust's servers forward the information on to your network partner. To add partner parameters, call the `addPartnerParameter` method on your subscription object. You can add multiple partner parameters by calling this method multiple times.
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 let subscription = ADJSubscription(
@@ -205,8 +189,7 @@ subscription.addParameterParameter("key1", value: "value1")
 subscription.addParameterParameter("key2", value: "value2")
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:price
@@ -217,23 +200,21 @@ ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:price
 [subscription addParameterParameter:@"key2" value:@"value2"];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-## 2\. Send subscription information {#2-send-subscription-information}
+2\. Send subscription information \{\#send\-subscription\-information\}
+-----------------------------------------------------------------------------
 
-<CodeBlock title="メソッドシグネチャー">
+<codeblock title="Method signature"> 
 
 ```objc
 + (void)trackSubscription:(nonnull ADJSubscription *)subscription;
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-サブスクリプションオブジェクトを設定したら、Adjust SDKを使用してそれをAdjustに送信できます。完了したオブジェクトを `trackSubscription`メソッドにパスして、ユーザーのサブスクリプション購入を記録します。
-
-<Tabs>
-<Tab title="Swift" sync="swift">
+Once you have set up your subscription object, you can send it to Adjust using the Adjust SDK. Pass your completed object to the `trackSubscription` method to record the user's subscription purchase.
+<tabs> <tab title="Swift" sync="swift"> 
 
 ```swift
 let subscription = ADJSubscription(
@@ -257,8 +238,7 @@ subscription.addCallbackParameter("key2", value: "value2")
 Adjust.trackSubscription(subscription)
 ```
 
-</Tab>
-<Tab title="Objective-C" sync="objc">
+</Tab> <tab title="Objective-C" sync="objc"> 
 
 ```objc
 ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:price
@@ -278,5 +258,5 @@ ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:price
 [Adjust trackSubscription:subscription];
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs>
+
