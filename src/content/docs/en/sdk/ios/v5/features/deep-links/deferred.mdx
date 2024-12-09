@@ -2,7 +2,7 @@
 title: Set up deferred deep linking
 description: Configure deferred deep linking for your app.
 slug: en/sdk/ios/features/deep-links/deferred
-sidebar-position: 4
+sidebar-position: 3
 versions:
    - label: v5
      value: v5
@@ -13,116 +13,250 @@ redirects:
    v4: /en/sdk/ios/v4/features/deep-links/deferred
 ---
 
-A deferred deep link sends a user to a place in your app after routing them via the App Store to install the app first.
+When users without your app click an Adjust link, deferred deep linking preserves
+their intended destination while they install from the App Store. Once they open
+your app, you can direct them to that content.
 
 ## How it works {#how-it-works}
 
-This is how a deferred deep link works:
+The basic flow of deferred deep linking is:
 
-1. The user clicks on an Adjust deep link.
-2. Adjust's servers redirect the user to the App Store.
-3. The user installs your app and opens it.
-4. Adjust's servers perform attribution and send the deep link to the Adjust SDK.
-5. Your app displays its preliminary content, such as onboarding screens and user login, if applicable.
-6. Your app retrieves the deep link from the Adjust SDK and handles the deep link.
+1. A user who doesn't have your app installed clicks an Adjust deep link
+2. Adjust's servers redirect the user to the App Store
+3. The user installs and opens your app
+4. Adjust's servers perform attribution and send the deep link to the Adjust SDK
+5. Your app receives the deep link through the Adjust SDK and can handle it as
+   needed
 
 ## Setup {#setup}
 
-<Callout type="important">
-
-When you set up Adjust deferred deep linking, you need to disable deferred deep linking in other SDKs in your app. You also need to disable any deep linking setup from other MMPs.
-
-</Callout>
-
-<Callout type="seealso">
-
-Check out the [Facebook deferred deep linking documentation](https://developers.facebook.com/docs/ios/deep-linking#deferred-deep-linking) for information about how to configure deep linking with your Facebook campaigns.
-
-</Callout>
-
-There are 2 approaches to set up deferred deep linking in your app:
-
-1. Adjust's servers automatically pass the deferred deep link to the Adjust SDK. When the user opens your app, the Adjust SDK automatically calls the `open(_:options:completionHandler:)` method with the deep link. If your app doesn't have preliminary content (for example: onboarding screens and user login), or if your app already handles this content before opening the deep link, then no further configuration is required, and you can skip the rest of this section.
-2. If your app has preliminary content (for example: onboarding screens and user login), but your app doesn't already handle this before handling the deep link, then you can add a deferred deep link listener.
-
-### Set up a deferred deep link listener {#set-up-a-deferred-deep-link-listener}
-
-1. Set up a delegate callback for deferred deep linking. If you have already configured attribution callbacks, you can skip this step.
+To implement deferred deep linking, update your AppDelegate with the following:
 
 <Tabs>
 <Tab title="Swift" sync="swift">
 
-<CodeBlock title="AppDelegate.swift">
+```swift {7,37-38,46-65}
+// AppDelegate.swift
 
-```swift
+import Adjust
+import UIKit
+
+@UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, AdjustDelegate {
+  func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions:
+      [UIApplication.LaunchOptionsKey: Any]?
+  ) -> Bool {
+    // Configure Adjust SDK
+    // Replace {YourAppToken} with your Adjust app token
+    let appToken = "{YourAppToken}"
+    var adjustConfig: ADJConfig?
+
+    // Enable verbose logging for testing deep linking
+    #if DEBUG
+      adjustConfig = ADJConfig(
+        appToken: appToken,
+        environment: ADJEnvironmentSandbox)
+      adjustConfig?.logLevel = ADJLogLevelVerbose
+    #else
+      adjustConfig = ADJConfig(
+        appToken: appToken,
+        environment: ADJEnvironmentProduction,
+        allowSuppressLogLevel: true)
+      adjustConfig?.logLevel = ADJLogLevelSuppress
+    #endif
+
+    // Wait up to 360 seconds after app open for user to respond to ATT
+    // before sending install session to Adjust's servers.
+    // Ensure this interval is long enough for user to respond.
+    adjustConfig?.attConsentWaitingInterval = 360
+
+    // Create delegate for deferred deep linking
+    adjustConfig?.delegate = self
+
+    // Initialize Adjust SDK
+    Adjust.initSdk(adjustConfig)
+
+    return true
+  }
+
+  // Receive deferred deep link via AdjustDelegate method
+  func adjustDeferredDeeplinkReceived(_ deeplink: URL?) -> Bool {
+    if let incomingLink = deeplink {
+      if UserDefaults.standard.bool(forKey: "HasCompletedOnboarding") {
+        // If onboarding is complete, handle deferred deep link immediately
+        // TO DO: Parse the deferredLink URL components
+        // (example: path, query params) and
+        // navigate to the appropriate screen in your app
+      } else {
+        // Store deferred deep link to invoke after onboarding screens and login
+        UserDefaults.standard.set(incomingLink.absoluteString,
+                                forKey: "lastDeferredLink")
+      }
+    }
+    // Return true to let Adjust SDK attempt to open deep link immediately
+    // upon receipt (for example: app has no ATT, onboarding screens, or login).
+    // Otherwise, return false to prevent SDK from opening the deep link
+    // immediately.
+    return false
+  }
 }
 ```
-
-</CodeBlock>
 
 </Tab>
 <Tab title="Objective-C" sync="objc">
 
-<CodeBlock title="AppDelegate.h">
+```objc {32-33,41-63,67}
+// AppDelegate.m
 
-```objc
+#import <Adjust/Adjust.h>
+#import "AppDelegate.h"
+
+@implementation AppDelegate
+
+- (BOOL)application:(UIApplication *)application
+    didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+  // Configure Adjust SDK
+  // Replace {YourAppToken} with your Adjust app token
+  NSString *appToken = @"{YourAppToken}";
+  ADJConfig *adjustConfig;
+
+// Enable verbose logging for testing deep linking
+#ifdef DEBUG
+  adjustConfig = [ADJConfig configWithAppToken:appToken
+                                 environment:ADJEnvironmentSandbox];
+  [adjustConfig setLogLevel:ADJLogLevelVerbose];
+#else
+  adjustConfig = [ADJConfig configWithAppToken:appToken
+                                 environment:ADJEnvironmentProduction
+                       allowSuppressLogLevel:YES];
+  [adjustConfig setLogLevel:ADJLogLevelSuppress];
+#endif
+
+  // Wait up to 360 seconds after app open for user to respond to ATT
+  // before sending install session to Adjust's servers.
+  // Ensure this interval is long enough for user to respond.
+  adjustConfig.attConsentWaitingInterval = 360;
+
+  // Create delegate for deferred deep linking
+  adjustConfig.delegate = self;
+
+  // Initialize Adjust SDK
+  [Adjust initSdk:adjustConfig];
+
+  return YES;
+}
+
+// Receive deferred deep link via AdjustDelegate method
+- (BOOL)adjustDeferredDeeplinkReceived:(nullable NSURL *)deeplink {
+  if (deeplink) {
+    if ([[NSUserDefaults standardUserDefaults]
+        boolForKey:@"HasCompletedOnboarding"]) {
+      // If onboarding is complete, handle deferred deep link immediately
+      // TO DO: Parse the deferredLink URL components
+      // (example: path, query params) and
+      // navigate to the appropriate screen in your app
+    } else {
+      // Store deferred deep link to invoke after onboarding screens and login
+      [[NSUserDefaults standardUserDefaults]
+          setObject:deeplink.absoluteString
+          forKey:@"lastDeferredLink"];
+    }
+  }
+  // Return YES to let Adjust SDK attempt to open deep link immediately
+  // upon receipt (for example: app has no ATT, onboarding screens, or login).
+  // Otherwise, return NO to prevent SDK from opening the deep link immediately.
+  return NO;
+}
+
+@end
+
+// AppDelegate.h
+
 @interface AppDelegate : UIResponder <UIApplicationDelegate, AdjustDelegate>
-```
-
-</CodeBlock>
-
-</Tab>
-</Tabs>
-
-2. If you haven’t already done so, create an instance of the `ADJConfig` class and set a delegate on the `ADJConfig` object in your app delegate. You need to set the delegate in `ADJConfig` before initializing the SDK.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
-
-```swift
-let yourAppToken = "{YourAppToken}"
-let environment = ADJEnvironmentSandbox
-let adjustConfig = ADJConfig(
-    appToken: yourAppToken,
-    environment: environment)
-adjustConfig?.delegate = self
-
-// ...
-
-Adjust.initSdk(adjustConfig)
-```
-
-</Tab>
-<Tab title="Objective-C" sync="objc">
-
-```objc
-ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:@"{YourAppToken}"
-                                            environment:ADJEnvironmentSandbox];
-[adjustConfig setDelegate:self];
-
-// ...
-
-[Adjust initSdk:adjustConfig];
+@end
 ```
 
 </Tab>
 </Tabs>
 
-3. Add the `adjustDeferredDeeplinkReceived` deferred deep link callback method to the delegate. The Adjust SDK calls this method after receiving a deferred deep link.
-   1. Set your deep link handling code.
-   2. Set the return value of the `adjustDeferredDeeplinkReceived` method to true or false. This indicates whether you want the Adjust SDK to call the `open(_:options:completionHandler:)` method to open the deep link after your deep link handling code runs.
+Most apps have some kind of onboarding process (for example: ATT prompt,
+onboarding screens, login prompt). When setting up deferred deep linking, you have
+to ensure that onboarding and launching deferred deep links don't interfere with
+each other. One approach is to wait until after onboarding to launch deferred deep
+links. Here's how it works in the code examples:
+
+1. A user who doesn't have the app installed clicks an Adjust deep link, which
+   redirects them to the app store.
+2. The user installs and opens the app.
+3. The app begins its onboarding process.
+4. After the ATT prompt response or timeout, the Adjust SDK sends session and
+   attribution requests to Adjust's servers.
+5. Adjust's servers respond with attribution data, including the deep link the
+   user clicked on ("deferred deep link").
+6. The Adjust SDK triggers a deferred deep link callback in the app (shown in the
+   AppDelegate implementation above). The callback checks whether onboarding is
+   complete:
+   - If onboarding is complete, it handles the deep link immediately.
+   - If onboarding isn't complete, it stores the deep link.
+7. Once onboarding completes, the app checks for and handles any stored deferred
+   deep link (shown in the ViewController and ContentView examples below).
+8. The app navigates the user to the deep link screen.
+
+### UIKit {#uikit}
+
+Example ViewController handling deferred deep linking:
 
 <Tabs>
 <Tab title="Swift" sync="swift">
 
 ```swift
-func adjustDeferredDeeplinkReceived(_ deeplink: URL?) -> Bool {
-   // add your code below to handle deep link
-   // (for example, show onboarding screens, then open deep link content)
-   // deeplink object contains the deep link
+// ViewController.swift
 
-   return false
+import Adjust
+import UIKit
+
+class ViewController: UIViewController {
+  var hasCompletedOnboarding: Bool {
+    get {
+      UserDefaults.standard.bool(forKey: "HasCompletedOnboarding")
+    }
+    set {
+      UserDefaults.standard.set(newValue, forKey: "HasCompletedOnboarding")
+    }
+  }
+
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+
+    // Check if onboarding has been completed
+    if !hasCompletedOnboarding {
+      // Show onboarding screens and login prompt
+
+      // Show ATT prompt after delay to ensure app is active
+      DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+        Adjust.requestTrackingAuthorizationWithCompletionHandler { _ in }
+      }
+
+      // After onboarding, set hasCompletedOnboarding to true
+      hasCompletedOnboarding = true
+
+      // Check for deferred deep link that arrived during onboarding
+      if let deferredLinkString = UserDefaults.standard.string(
+        forKey: "lastDeferredLink"
+      ),
+        let deferredLink = URL(string: deferredLinkString) {
+        // Remove stored deferred deep link to avoid handling again later
+        UserDefaults.standard.removeObject(forKey: "lastDeferredLink")
+        // TO DO: Parse the deferredLink URL components
+        // (example: path, query params) and
+        // navigate to the appropriate screen in your app
+      }
+    } else {
+      // Show main content
+    }
+  }
 }
 ```
 
@@ -130,70 +264,122 @@ func adjustDeferredDeeplinkReceived(_ deeplink: URL?) -> Bool {
 <Tab title="Objective-C" sync="objc">
 
 ```objc
-- (BOOL)adjustDeferredDeeplinkReceived:(NSURL *)deeplink {
-      // add your code below to handle deep link
-      // (for example, show onboarding screens, then open deep link content)
-      // deeplink object contains the deep link
+// ViewController.m
 
-      return NO;
+#import <Adjust/Adjust.h>
+#import "ViewController.h"
+
+@implementation ViewController
+
+- (BOOL)hasCompletedOnboarding {
+  return [[NSUserDefaults standardUserDefaults]
+    boolForKey:@"HasCompletedOnboarding"];
+}
+
+- (void)setHasCompletedOnboarding:(BOOL)hasCompletedOnboarding {
+  [[NSUserDefaults standardUserDefaults] setBool:hasCompletedOnboarding
+    forKey:@"HasCompletedOnboarding"];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+
+  // Check if onboarding has been completed
+  if (!self.hasCompletedOnboarding) {
+    // Show onboarding screens and login prompt
+
+    // Show ATT prompt after delay to ensure app is active
+    dispatch_after(
+      dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)),
+      dispatch_get_main_queue(), ^{
+        [Adjust requestTrackingAuthorizationWithCompletionHandler:nil];
+    });
+
+    // After onboarding, set hasCompletedOnboarding to true
+    self.hasCompletedOnboarding = YES;
+
+    // Check for deferred deep link that arrived during onboarding
+    NSString *deferredLinkString =
+      [[NSUserDefaults standardUserDefaults] stringForKey:@"lastDeferredLink"];
+    NSURL *deferredLink = [NSURL URLWithString:deferredLinkString];
+    if (deferredLink) {
+      // Remove stored deferred deep link to avoid handling again later
+      [[NSUserDefaults standardUserDefaults]
+        removeObjectForKey:@"lastDeferredLink"];
+      // TO DO: Parse the deferredLink URL components
+      // (example: path, query params) and
+      // navigate to the appropriate screen in your app
+    }
+  } else {
+    // Show main content
+  }
+}
+
+@end
+```
+
+</Tab>
+</Tabs>
+
+### SwiftUI {#swiftui}
+
+Example ContentView handling deferred deep linking:
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+// ContentView.swift
+
+import Adjust
+import SwiftUI
+
+struct ContentView: View {
+  var body: some View {
+    NavigationStack {
+      VStack {
+        // Check if onboarding has been completed
+        if !UserDefaults.standard.bool(forKey: "HasCompletedOnboarding") {
+          // Show onboarding screens and login prompt
+          .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+              Adjust.requestTrackingAuthorizationWithCompletionHandler { _ in }
+            }
+
+            // After onboarding, set hasCompletedOnboarding to true
+            UserDefaults.standard.set(true, forKey: "HasCompletedOnboarding")
+
+            // Check for deferred deep link that arrived during onboarding
+            if let deferredLinkString = UserDefaults.standard.string(
+              forKey: "lastDeferredLink"
+            ),
+              let deferredLink = URL(string: deferredLinkString) {
+              // Remove stored deferred deep link to avoid handling again later
+              UserDefaults.standard.removeObject(forKey: "lastDeferredLink")
+              // TO DO: Parse the deferredLink URL components
+              // (example: path, query params) and
+              // navigate to the appropriate screen in your app
+            }
+          }
+        } else {
+          // Show main content
+        }
+      }
+    }
+  }
 }
 ```
 
 </Tab>
 </Tabs>
 
-## Set up Adjust LinkMe {#set-up-adjust-linkme}
+## Important Implementation Notes {#important-implementation-notes}
 
-<CodeBlock title="Method signature">
+When implementing deferred deep linking, keep these key points in mind:
 
-```objc
-- (void)enableLinkMe;
-```
-
-</CodeBlock>
-
-<Callout type="note">
-
-Discuss with your marketing team whether you need to implement LinkMe in your app.
-
-</Callout>
-
-[Adjust’s LinkMe solution](https://help.adjust.com/en/article/linkme) is an optional feature that ensures robust deferred deep linking performance by enabling your app to read deep link information from the device pasteboard.
-
-<Callout type="important">
-
-The Adjust SDK checks the pasteboard when a user opens the app for the first time. The device displays a dialog asking if the user wants to allow the app to read the pasteboard.
-
-</Callout>
-
-When a user clicks on a LinkMe URL they have the option to copy the link information to their system pasteboard. You can use the Adjust SDK to read the system pasteboard for deep link information. If deep link information is present, the Adjust SDK forwards the user to the correct page in your app.
-
-To enable pasteboard checking in your app, call the `[ADJConfig enableLinkMe]` method.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
-
-```swift
-let yourAppToken = "{YourAppToken}"
-let environment = ADJEnvironmentSandbox
-let adjustConfig = ADJConfig(
-    appToken: yourAppToken,
-    environment: environment)
-// ...
-adjustConfig.enableLinkMe()
-```
-
-</Tab>
-<Tab title="Objective-C" sync="objc">
-
-```objc
-NSString *yourAppToken = @"{YourAppToken}";
-NSString *environment = ADJEnvironmentSandbox;
-ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:@"{YourAppToken}"
-                                            environment:ADJEnvironmentSandbox];
-/// ...
-[adjustConfig enableLinkMe];
-```
-
-</Tab>
-</Tabs>
+1. Enable verbose logging in debug builds to help troubleshoot deep linking issues.
+2. Handle the ATT prompt appropriately, as it affects attribution.
+3. Store the deep link if it arrives during onboarding.
+4. Handle the stored deep link after onboarding completes.
+5. Return `false` from `adjustDeferredDeeplinkReceived` if you want to prevent automatic deep
+   link handling.

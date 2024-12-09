@@ -13,41 +13,51 @@ redirects:
    v4: /en/sdk/ios/v4/features/deep-links/direct
 ---
 
-<br />
-## Overview
+When users with your app installed click an Adjust link, direct deep linking opens specific content in the app.
 
-Direct deep links send users to specific content in your app when they already have the app installed on their device.
+## Setup {#setup}
 
-iOS provides several methods for receiving deep links depending on your app's lifecycle and architecture.
+iOS provides several methods for receiving direct deep links depending on your app's implementation.
 
-Within these methods, you'll use Adjust's `processAndResolve(_:callback:)` method to do the following:
+Within these methods, you'll use Adjust's `processAndResolve(_:callback:)` method, which does the following:
 
-- Record attribution from deep link clicks
-- Resolve [short branded links](https://help.adjust.com/en/article/short-branded-links) to their full URLs
-- Pass through all other links as is
+- Records attribution from deep link clicks
+- Resolves [short branded links](https://help.adjust.com/en/article/short-branded-links) to their long branded link equivalent
+- Passes through all other links as is (Adjust long branded links, other universal links, app scheme deep links)
+
+Your app can then parse the processed link and navigate to the appropriate screen.
 
 <CodeBlock title="Method signature">
    ```objc + (void)processAndResolveDeeplink:(nonnull ADJDeeplink *)deeplink
    withCompletionHandler:(nonnull ADJResolvedDeeplinkBlock)completion; ```
 </CodeBlock>
 
-Your app needs to handle the processed links using its own navigation logic, which has to meet two key requirements:
+## Important Implementation Notes {#important-implementation-notes}
 
-1. Handle Adjust branded links (`example.go.link`) and your universal links (`example.com`) equivalently. If using a domain allowlist, add your Adjust branded domain.
-2. Handle universal links and app scheme deep links equivalently, as Adjust converts universal links to app scheme format when iOS doesn't support them. For example, these links should navigate to the same screen:
+When implementing direct deep linking, keep these key points in mind:
 
-- Adjust branded link: https://example.go.link/summer-clothes?promo=beach
-- App scheme deep link: example://summer-clothes?promo=beach
+1. **Link Handling Requirements**
 
-Please follow the steps in the section that corresponds to the type of app you have:
+   - Handle Adjust branded links (`brandname.go.link`) and universal links (`example.com`) equivalently. If using a domain allowlist, add your Adjust branded domain.
+   - Handle universal links and app scheme deep links equivalently, as Adjust converts universal links to app scheme format when iOS doesn't support them. For example, these links should navigate to the same screen:
+      - Adjust branded link: `https://brandname.go.link/summer-clothes?promo=beach`
+      - App scheme deep link: `example://summer-clothes?promo=beach`
+
+2. **App State Considerations**
+   - Handle links appropriately whether your app is in "not running," background, or foreground state.
+   - Consider storing deep links if they arrive during app initialization or before the user is authenticated.
+   - Process stored links after your app is ready to handle navigation.
+
+## Implementation {#implementation}
+
+Use the implementation that matches your app:
 
 - [UIKit apps using AppDelegate lifecycle](#uikit-apps-using-appdelegate-lifecycle)
 - [UIKit apps using SceneDelegate lifecycle](#uikit-apps-using-scenedelegate-lifecycle)
 - [SwiftUI apps using AppDelegate lifecycle](#swiftui-apps-using-appdelegate-lifecycle)
 - [SwiftUI apps using SceneDelegate lifecycle](#swiftui-apps-using-scenedelegate-lifecycle)
-   <br />
 
-## UIKit apps using AppDelegate lifecycle {#uikit-apps-using-appdelegate-lifecycle}
+### UIKit apps using AppDelegate lifecycle {#uikit-apps-using-appdelegate-lifecycle}
 
 Update your AppDelegate to implement iOS direct deep linking methods.
 
@@ -169,7 +179,7 @@ func application(
 </Tab>
 </Tabs>
 
-## UIKit apps using SceneDelegate lifecycle {#uikit-apps-using-scenedelegate-lifecycle}
+### UIKit apps using SceneDelegate lifecycle {#uikit-apps-using-scenedelegate-lifecycle}
 
 Update your SceneDelegate to implement iOS direct deep linking methods.
 
@@ -380,7 +390,7 @@ func scene(
 </Tab>
 </Tabs>
 
-## SwiftUI apps using AppDelegate lifecycle {#swiftui-apps-using-appdelegate-lifecycle}
+### SwiftUI apps using AppDelegate lifecycle {#swiftui-apps-using-appdelegate-lifecycle}
 
 If you haven't already done so, create an `AppDelegate.swift` file in your project's main directory and reference it in your main application file (for example: `App.swift` as shown below). This is required to handle app lifecycle events and Adjust SDK integration. Also implement the below iOS method, which receives all direct deep links.
 
@@ -429,7 +439,7 @@ struct MyApp: App {
 </Tab>
 </Tabs>
 
-## SwiftUI apps using SceneDelegate lifecycle {#swiftui-apps-using-scenedelegate-lifecycle}
+### SwiftUI apps using SceneDelegate lifecycle {#swiftui-apps-using-scenedelegate-lifecycle}
 
 Follow the instructions in the [SwiftUI apps using AppDelegate lifecycle](#swiftui-apps-using-appdelegate-lifecycle) section. In addition, implement the following iOS direct deep linking method in your SceneDelegate.
 
