@@ -1,55 +1,60 @@
 ---
-title: SDKシグネチャーライブラリの実装
-description: Adjust SDKとAdjustサーバー間の通信を保護するために、Unityアプリにシグネチャーライブラリを追加してください。
-slug: ja/sdk/unity/v4/integrations/signature-library
-versions:
-   - label: v5
-     value: v5
-     default: true
-   - label: v4
-     value: v4
-redirects:
-   v5: /ja/sdk/unity/integrations/signature-library
+title: "SDKシグネチャーライブラリの実装"
+description: "Adjust SDKとAdjustサーバー間の通信を保護するために、Unityアプリにシグネチャーライブラリを追加してください。"
+slug: "en/sdk/unity/v4/integrations/signature-library"
+versions: 
+    - 
+        label: "v5"
+        value: "v5"
+        default: true
+    - 
+        label: "v4"
+        value: "v4"
+redirects: 
+    v5: "/en/sdk/unity/integrations/signature-library"
 ---
-
 AdjustのSDKシグネチャーライブラリは、Adjust SDKのスタンドアローンプラグインとして設計されています。つまり、コードを変更したり、アプリでAdjust SDKを使用する方法を変更したりする必要はありません。プラグインをインストールすると、Adjust SDKによって作成された全てのリクエストが引き続き正常に機能します。
 
-## Before you begin {#before-you-begin}
+事前準備 \{\#before\-you\-begin\}
+----------------------------------
+
+<callout type="note"> 
+
+SDK Signatureライブラリは、[16KBのページサイズ](https://developer.android.com/guide/practices/page-sizes)を使用するように設定されており、[バージョン3\.32\.0以降](https://github.com/adjust/adjust_signature_sdk/releases/tag/v3.32.0)で利用可能です。
+</Callout> 
 
 シグネチャーライブラリをUnityアプリに実装する前に、以下を確認してください。
 
--  使用中のAndroid APIバージョンが **21以降** であること。
--  お使いのAdjust SDKバージョンが **4\.37\.2以降** であること。この要件は、Adjust SDKが間接的に使用されている場合でも適用されます。
--  Proguardを使用している場合、シグネチャーライブラリとAdjust SDKの両方で全く同じProguard設定を使用する必要があります。
--  [16KBのページサイズに揃えたシグネチャーライブラリ](https://developer.android.com/guide/practices/page-sizes)にご興味がある場合は、Adjustの担当者にお問い合わせいただくか、[support@adjust.com](mailto:support@adjust.com)までご連絡ください。
+* 使用中のAndroid APIバージョンが **21以降** であること。
+* お使いのAdjust SDKバージョンが **4\.37\.2以降** であること。この要件は、Adjust SDKが間接的に使用されている場合でも適用されます。
+* Proguardを使用している場合、シグネチャーライブラリとAdjust SDKの両方で全く同じProguard設定を使用する必要があります。
 
-<Callout type="important">
+<callout type="important"> 
 
 Adjust SDKまたはシグネチャーライブラリで外部の暗号化ツールを使用すると、シグネチャーライブラリの機能に影響を与える可能性があります。 外部ツールを使用するかどうか不明な場合は、Adjustの担当者または[support@adjust.comまで](mailto:support@adjust.com)お問い合わせいただき、機能に影響がないか確認してください。
+</Callout> 
 
-</Callout>
-
-### Migrating from Signature v1 or v2 library {#migrating-from-signature-v1-or-v2-library}
+### シグネチャーv1またはv2ライブラリから移行 \{\#migrating\-from\-signature\-v1\-or\-v2\-library\}
 
 以前にシグネチャーv1またはシグネチャーv2を使用していた場合は、シグネチャーライブラリを連携する前に以前のバージョンを削除する必要があります。これを行うには、以下の手順に従ってください。
 
--  以前シグネチャーv1を実装したことがある場合は、プロジェクト内のシグネチャー機能を呼び出すコードを削除してください。
--  以前シグネチャーv2を実施したことがある場合は、シグネチャーv2のライブラリをプロジェクトから削除してください。
+* 以前シグネチャーv1を実装したことがある場合は、プロジェクト内のシグネチャー機能を呼び出すコードを削除してください。
+* 以前シグネチャーv2を実施したことがある場合は、シグネチャーv2のライブラリをプロジェクトから削除してください。
 
-### Updating the Signature Library {#updating-the-signature-library}
+### シグネチャーライブラリの更新 \{\#updating\-the\-signature\-library\}
 
-Adjustシグネチャーライブラリを更新するには、既存のシグネチャーライブラリを新しいバージョンに置き換え、テストを再度実行してください。[証明書が設定済みで変更されていない](https://help.adjust.com/ja/article/sdk-signature#manage-your-certificate-fingerprints)限り、Adjustのアプリロジックや設定をすぐに変更する必要はありません。[シークレットIDが以下の基準を満たす場合は、必ず無効化してください](https://help.adjust.com/ja/article/sdk-signature#manage-your-secret-ids)。
+Adjustシグネチャーライブラリを更新するには、既存のシグネチャーライブラリを新しいバージョンに置き換え、テストを再度実行してください。[証明書が設定済みで変更されていない](https://help.adjust.com/en/article/sdk-signature#manage-your-certificate-fingerprints)限り、Adjustのアプリロジックや設定をすぐに変更する必要はありません。[シークレットIDが以下の基準を満たす場合は、必ず無効化してください](https://help.adjust.com/en/article/sdk-signature#manage-your-secret-ids)。
 
--  インストールレポートに役立たなくなった。
--  アプリの新バージョンを（全てのアプリのプラットフォームとストアで）リリースした。
+* インストールのレポーティングに貢献していない。
+* アプリの新バージョンを（全てのアプリのプラットフォームとストアで）リリースしている。
 
-## Integrate the signature library \(SDK v4 only\) {#integrate-the-signature-library}
+シグネチャーライブラリを実装する（SDK v4のみ） \{\#integrate\-the\-signature\-library\}
+-------------------------------------------------------------------------
 
-<Callout type="note">
+<callout type="note"> 
 
 Adjust SDK v5は、 SDKシグネチャーの検証をネイティブでサポートしています。以前にSDKシグネチャーライブラリを連携した場合は、アンインストールし、関連するコードを全て削除する必要があります。
-
-</Callout>
+</Callout> 
 
 Unityプロジェクトにシグネチャーライブラリを実装するには、以下の手順に従ってください。
 
@@ -59,27 +64,25 @@ Unityプロジェクトにシグネチャーライブラリを実装するには
 
 これで、シグネチャーライブラリがプロジェクトに実装されました。デジタル証明書を設定するには、次のセクションの手順に従ってください。
 
-## Set up your certificates in the Adjust suite {#set-up-your-certificates-in-the-adjust-suite}
+Adjustで証明書を設定する \{\#set\-up\-your\-certificates\-in\-the\-adjust\-suite\}
+-----------------------------------------------------------------------------------
 
-<Callout type="note">
+<callout type="note"> 
 
 このステップは、アプリが **Android** をターゲットにしている場合にのみ必要です。
-
-</Callout>
+</Callout> 
 
 アプリにシグネチャーライブラリを実装すると、Adjust SDKからAdjustに送信される全てのリクエストが署名されます。また、Adjust SDKは、署名証明書のフィンガープリントなどの関連情報をAdjustのサーバーに送信します。
 
 証明書フィンガープリントは、証明書内に保持される公開情報の暗号化ハッシュです。これはアプリの信頼性を検証するために使用できます。
 
 シグネチャーライブラリでは、証明書フィンガープリントの信頼性を検証できません。フィンガープリントを含むリクエストをAdjustが信頼性のあるものとして受理するには、フィンガープリントをAdjustの許可リストに追加する必要があります。これを行うには、証明書フィンガープリントを取得し、Adjustに送信する必要があります。
-
-<Callout type="important">
+<callout type="important"> 
 
 署名証明書のフィンガープリントを許可リストに追加する必要があります。フィンガープリントが許可リストに追加されていない場合、アプリからのトラフィックがスプーフィングされる可能性があります。
+</Callout> 
 
-</Callout>
-
-#### From a keystore {#from-a-keystore}
+#### キーストアから取得する \{\#from\-a\-keystore\}
 
 独自のキーストアを使用している場合、またはAndroid Studioが生成したキーストアの場合は、以下の手順に従って証明書フィンガープリントを取得できます。
 
@@ -88,7 +91,7 @@ Unityプロジェクトにシグネチャーライブラリを実装するには
 2. 以下のコマンドを実行して、キーをリストアップします。角括弧内の部分をお客様の情報に置き換えてください。
 
    ```console
-   $ keytool -list -v -keystore <path/to/keystore.jks> -alias <your_key_alias>
+   $ keytool -list -v -keystore <path/to/keystore.jks> -alias <your_key_alias id="sl-md0000000">
    ```
 
    このコマンドを実行すると、キーストアのパスワードが要求されます。これは、キーストアの生成時に定義したパスワードです。
@@ -120,7 +123,7 @@ Unityプロジェクトにシグネチャーライブラリを実装するには
 
 3. SHA\-1フィンガープリントを保存し、[Adjustの許可リストに追加](#add-your-digital-certificate-fingerprints-to-adjusts-allowlist)します。
 
-#### From Google Play Internal App Sharing {#from-google-play-internal-app-sharing}
+#### Google Play Internal App Sharingから取得 \{\#from\-google\-play\-internal\-app\-sharing\}
 
 [Google Play Internal App Sharing](https://support.google.com/googleplay/android-developer/answer/9303479?hl=en)を使用している場合、組織のSHA\-1証明書フィンガープリントと内部テスト証明書フィンガープリントの両方をAdjustに送信し、許可リストに登録する必要があります。
 
@@ -133,7 +136,7 @@ Unityプロジェクトにシグネチャーライブラリを実装するには
 
 ![Google Play Consoleの証明書ページのスクリーンショット](@images/sig-v3/google-play-internal-sharing.png)
 
-#### From Google Play App Signing {#from-google-play-app-signing}
+#### Google Play App Signingから取得 \{\#from\-google\-play\-app\-signing\}
 
 [Google Play App Signing](https://support.google.com/googleplay/android-developer/answer/7384423?hl=en)を使用している場合、組織のSHA\-1証明書フィンガープリントと内部テスト用の証明書フィンガープリントの両方をAdjustに送信し、許可リストに登録する必要があります。
 
@@ -146,15 +149,13 @@ Unityプロジェクトにシグネチャーライブラリを実装するには
 
 ![Google Play ConsoleのApp Signingページのスクリーンショット](@images/sig-v3/google-play-signing.png)
 
-#### From Huawei AppGallery App Signing {#from-huawei-appgallery-app-signing}
+#### Huawei AppGallery App Signingから取得 \{\#from\-huawei\-appgallery\-app\-signing\}
 
 Huawei AppGallery App Signingを使用している場合、組織のSHA\-1証明書フィンガープリントと内部テスト用証明書フィンガープリントの両方をAdjustに送信し、許可リストに登録する必要があります。
-
-<Callout type="note">
+<callout type="note"> 
 
 Huawei AppGalleryで独自の署名証明書を使用している場合、[キーストアから証明書フィンガープリントを取得する手順](#from-a-keystore)に従ってください。
-
-</Callout>
+</Callout> 
 
 フィンガープリントを抽出する方法：
 
@@ -176,13 +177,12 @@ Huawei AppGalleryで独自の署名証明書を使用している場合、[キ�
 
 3. フィンガープリントを保存して、[Adjustの許可リストに追加](#add-your-digital-certificate-fingerprints-to-adjusts-allowlist)します。
 
-### Add your digital certificate fingerprints to Adjust’s allowlist {#add-your-digital-certificate-fingerprints-to-adjust-s-allowlist}
+### デジタル証明書フィンガープリントをAdjustの許可リストに追加する \{\#add\-your\-digital\-certificate\-fingerprints\-to\-adjust\-s\-allowlist\}
 
-<Callout type="note">
+<callout type="note"> 
 
 使用する全ての証明書フィンガープリントをAdjustに追加するようにしてください。これには、デバッグバージョンや異なるストアのバージョンが含まれる場合があります。
-
-</Callout>
+</Callout> 
 
 証明書のフィンガープリントを取得したら、以下を実行して許可リスト（ホワイトリスト）に追加してください。
 
@@ -195,21 +195,20 @@ Huawei AppGalleryで独自の署名証明書を使用している場合、[キ�
 
 これで、フィンガープリントがアプリで許可リストに登録されました。
 
-## Test your app {#test-your-app}
+アプリをテストする \{\#test\-your\-app\}
+------------------------------------
 
-[Adjustテストコンソール](https://help.adjust.com/ja/article/testing-console)を使用して、アプリにシグネチャーライブラリが実装されていることを確認できます。
-
-<Callout type="important">
+[Adjustテストコンソール](https://help.adjust.com/en/article/testing-console)を使用して、アプリにシグネチャーライブラリが実装されていることを確認できます。
+<callout type="important"> 
 
 Adjust SDKが **サンドボックス** モードで実行されていることを確認してください。
-
-</Callout>
+</Callout> 
 
 シグネチャーライブラリの実装をテストするには、以下の手順に従ってください。
 
 1. インストール情報が送信されるようにするには、テストデバイスからアプリを完全に削除します。
 
-2. デバイスに関する全ての情報を消去するには、テストコンソールを使用してデバイスに関する情報を削除します。 また、 Adjust Insightsアプリ（[iOS](https://apps.apple.com/us/app/adjust-insights/id1125517808)と[Android](https://play.google.com/store/apps/details?id=com.adjust.insights)でご利用可能）で取得したアプリの広告IDをパスすることで、forget_deviceエンドポイントを使用することも可能です。 次の広告IDはいずれも使用できます：`adid` 、 `android_id` 、 `gps_adid` 、 `idfa` 、 `idfv` 、 `imei` 、 `oaid` 。
+2. デバイスに関する全ての情報を消去するには、テストコンソールを使用してデバイスに関する情報を削除します。また、 Adjust Insightsアプリ（[iOS](https://apps.apple.com/us/app/adjust-insights/id1125517808)と[Android](https://play.google.com/store/apps/details?id=com.adjust.insights)でご利用可能）で取得したアプリの広告IDをパスすることで、forget\_deviceエンドポイントを使用することも可能です。 次の広告IDはいずれも使用できます：`adid` 、 `android_id` 、 `gps_adid` 、 `idfa` 、 `idfv` 、 `imei` 、 `oaid` 。
 
    コールは以下のようになります。
 
@@ -226,12 +225,18 @@ Adjust SDKが **サンドボックス** モードで実行されていること�
 
 これらのフィールドが存在し、正しい情報が含まれている場合、シグネチャーライブラリは正常に実装されています。これらのフィールドに他の値が表示されている場合は、実装手順を再度確認するか、[support@adjust.com](mailto:support@adjust.com)までお問い合わせください。
 
-これで、シグネチャーライブラリがアプリに連携されました。 [2回のアトリビューション期間が経過](https://help.adjust.com/ja/article/attribution-windows)したら、 [SDKシグネチャーの検証](https://help.adjust.com/ja/article/sdk-signature#enforce-signature-validation)を有効化して、署名されたリクエストのみがAdjustで受理されるようにしてください。
+これで、シグネチャーライブラリがアプリに連携されました。 [2回のアトリビューション期間が経過](https://help.adjust.com/en/article/attribution-windows)したら、 [SDKシグネチャーの検証](https://help.adjust.com/en/article/sdk-signature#enforce-signature-validation)を有効化して、署名されたリクエストのみがAdjustで受理されるようにしてください。
 
-## Troubleshooting {#troubleshooting}
+トラブルシューティング \{\#troubleshooting\}
+------------------------------------
 
-### AdjustSigSdk.aでの不明なCPUアーキテクチャー {#unknown-cpu-architecture-in-adjustsigsdk-a}
+### Upload symbols failed
+
+Xcode 16で構築されたアプリを検証または提出すると、シグネチャーライブラリに関連する`Upload symbols failed`警告が表示される場合があります。シンボルが欠落した状態は意図的なものであり、機能性には影響しないため、無視しても問題ありません。
+
+### AdjustSigSdk.aでの不明なCPUアーキテクチャー \{\#unknown\-cpu\-architecture\-in\-adjustsigsdk\-a\}
 
 Unity Editor 2018以降では、 **Unknown CPU Architecture** というエラーメッセージが表示される場合があります。このエラーメッセージは、UnityエディターがiOS static framework（`.a`）をiOS以外のプラットフォームに適用しようとする場合に表示されます。この問題を解決するには、 `AdjustSigSdk.a`ファイルを選択し、 **Import Settings** メニューで **iOS** を除く全てのプラットフォームの選択を解除してください。
 
 ![UnityエディターのAdjustSdk Import Settingsのスクリーンショット](@images/sig-v3/unity-import-settings.png)
+
