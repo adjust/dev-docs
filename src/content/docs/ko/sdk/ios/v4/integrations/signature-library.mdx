@@ -1,104 +1,112 @@
 ---
-title: SDK Signature(SDK 서명) 라이브러리 연동
-description: Adjust SDK와 Adjust 서버 간 커뮤니케이션의 보안을 위해 iOS 앱에 Signature 라이브러리를 추가합니다.
-slug: ko/sdk/ios/v4/integrations/signature-library
-versions:
-   - label: v5
-     value: v5
-     default: true
-   - label: v4
-     value: v4
-redirects:
-   v5: /ko/sdk/ios/integrations/signature-library
+title: "SDK Signature library integration"
+description: "Add the Signature library to your iOS app to secure communications between the Adjust SDK and Adjust's servers."
+slug: "en/sdk/ios/v4/integrations/signature-library"
+versions: 
+    - 
+        label: "v5"
+        value: "v5"
+        default: true
+    - 
+        label: "v4"
+        value: "v4"
+redirects: 
+    v5: "/en/sdk/ios/integrations/signature-library"
 ---
+Adjust's SDK Signature library is designed to be a standalone plugin for the Adjust SDK. This means you don’t need to change any of your code or change how you use the Adjust SDK in your app. Once you install the plugin, all requests made by the Adjust SDK will continue to work as expected.
 
-Adjust의 SDK Signature\(SDK 서명\) 라이브러리는 Adjust SDK의 독립형 플러그인으로 설계되었습니다. 따라서 코드를 변경하거나 앱에서 Adjust SDK를 사용하는 방법을 변경할 필요가 없습니다. 플러그인 설치 후에는 Adjust SDK에서 생성된 모든 요청이 계속 정상적으로 작동합니다.
+Before you begin \{\#before\-you\-begin\}
+----------------------------------------------
 
-## Before you begin {#before-you-begin}
+To integrate the Adjust Signature library into your iOS app, ensure the following:
 
-Adjust Signature 라이브러리를 iOS 앱에 연동하려면 다음을 확인하시기 바랍니다.
+* The Adjust SDK version in use is **4\.35\.2 or greater** . This requirement applies even when the Adjust SDK is used indirectly.
+* iOS or tvOS version **12 or greater** is supported.
 
--  사용 중인 Adjust SDK 버전이 **4\.35\.2 이상** 이어야 합니다. 이 요건은 Adjust SDK가 간접적으로 사용되는 경우에도 적용됩니다.
--  iOS 또는 tvOS 버전 **12 이상** 이 지원됩니다.
+<callout type="important"> 
 
-<Callout type="important">
+Using external obfuscation tools with the Adjust SDK or Signature library can impact the functionality of the Signature library. If you're unsure about using an external tool, reach out to your Adjust representative or email [support@adjust.com](mailto:support@adjust.com) to check if functionality is impacted.
+</Callout> 
 
-외부 난독화 툴을 Adjust SDK나 Signature 라이브러리와 함께 사용하면 Signature 라이브러리의 기능에 영향을 줄 수 있습니다. 외부 툴 사용에 대한 확신이 없는 경우 Adjust 담당자 또는 [support@adjust.com](mailto:support@adjust.com) 으로 이메일을 보내 해당 기능이 영향을 받는지 확인하시기 바랍니다.
+### Migrating from Signature v1 or v2 library \{\#migrating\-from\-signature\-v1\-or\-v2\-library\}
 
-</Callout>
+If you previously used Signature v1 or Signature v2, you first need to remove the previous version before integrating the Signature library. To do this:
 
-### Migrating from Signature v1 or v2 library {#migrating-from-signature-v1-or-v2-library}
+* If you previously integrated Signature v1, remove any code that calls to signature functions in your project.
+* If you previously integrated Signature v2, remove the Signature v2 library from your project.
 
-이전에 Signature v1 또는 Signature v2를 사용한 적이 있다면 Signature 라이브러리를 연동하기 전에 이전 버전을 제거해야 합니다. 다음 조치를 수행하시기 바랍니다.
+### Updating the Signature Library \{\#updating\-the\-signature\-library\}
 
--  이전에 Signature v1을 연동한 경우 프로젝트에서 서명 함수를 호출하는 모든 코드를 제거합니다.
--  이전에 Signature v2를 연동한 경우 프로젝트에서 Signature v2 라이브러리를 제거합니다.
+To update the Adjust Signature library, replace the existing Signature library with a new version and rerun your tests. You don't need to make any immediate changes to your app logic or settings in Adjust. Remember to [deactivate your secret IDs if they meet the following criteria](https://help.adjust.com/en/article/sdk-signature#manage-your-secret-ids):
 
-### Updating the Signature Library {#updating-the-signature-library}
+* They're no longer contributing to your install reporting.
+* You've fully released a new version of your app \(across all app platforms and stores\).
 
-Adjust Signature 라이브러리를 업데이트하려면 기존의 Signature 라이브러리를 새 버전으로 교체하고 테스트를 다시 실행하시기 바랍니다. Adjust에서 앱 로직이나 설정을 즉시 변경할 필요는 없습니다. [시크릿 ID가 다음 기준에 부합하는 경우 반드시 비활성화하시기 바랍니다](https://help.adjust.com/ko/article/sdk-signature#manage-your-secret-ids).
+Integrate the signature library \(SDK v4 only\) \{\#integrate\-the\-signature\-library\}
+------------------------------------------------------------------------------------------------
 
--  더 이상 설치 리포트에 필요하지 않는 경우.
--  모든 앱 플랫폼 및 스토어에서 새로운 앱 버전을 출시
+<callout type="note"> 
 
-## Integrate the signature library \(SDK v4 only\) {#integrate-the-signature-library}
+Adjust SDK v5 supports SDK signature verification natively. If you previously integrated the SDK signature library, you should uninstall it and remove all related code.
+</Callout> 
 
-<Callout type="note">
+Follow these steps to integrate the Signature library in your iOS project.
 
-Adjust SDK v5는 SDK 서명 검증을 지원합니다. 이전에 SDK Signature 라이브러리를 연동한 적이 있다면, 이를 삭제하고 모든 관련 코드를 삭제해야 합니다.
+1. Download the [`AdjustSigSdk-iOS-tvOS-Dynamic.xcframework.zip` archive from GitHub](https://github.com/adjust/adjust_signature_sdk/releases/latest).
+2. Unzip the archive and copy the `AdjustSigSdk.xcframework` into your project’s directory.
+3. In Xcode, select your project in the **Project Navigator** .
+4. Select your target on the left\-hand side.
+5. Select the **General** tab and expand the **Frameworks, Libraries and Embedded Content** group.
+6. Select the **\+** button at the bottom of the group.
 
-</Callout>
+![A screenshot of the Frameworks page in Xcode](@images/sig-v3/xcode-frameworks.png)
 
-다음 단계에 따라 iOS 프로젝트에서 서명 라이브러리를 연동하십시오.
+7. Select **Add Other \-\-> Add Files** and select the `AdjustSigSdk.xcframework` file from the project directory.
 
-1. [GitHub에서`AdjustSigSdk-iOS-tvOS-Dynamic.xcframework.zip` 아카이브](https://github.com/adjust/adjust_signature_sdk/releases/latest)를 다운로드합니다.
-2. 아카이브를 압축 해제하고 `AdjustSigSdk.xcframework`를 프로젝트의 디렉터리에 복사합니다.
-3. Xcode의 **Project Navigator** 에서 프로젝트를 선택합니다.
-4. 왼쪽에서 타겟을 선택합니다.
-5. **General\(일반\)** 탭을 선택하고 **Frameworks, Libraries\(프레임워크, 라이브러리\) 및 Embedded Content\(삽입 콘텐츠\)** 그룹을 확장합니다.
-6. 그룹 아래쪽의 **\+** 버튼을 선택합니다.
+![A screenshot of the framework selector in Xcode](@images/sig-v3/xcode-select-framework.png)
 
-![Xcode의 프레임워크 페이지 스크린샷](@images/sig-v3/xcode-frameworks.png)
+8. Select the **Embed & Sign** option for the `AdjustSigSdk.xcframework`.
 
-7. **Add Other\(기타 추가\) \-\-> Add Files\(파일 추가\)** 를 선택한 다음 프로젝트 디렉터리에서 `AdjustSigSdk.xcframework` 파일을 선택합니다.
+![A screenshot of the Embed & Sign option in Xcode](@images/sig-v3/xcode-embed-sign.png)
 
-![Xcode의 프레임워크 셀렉터 스크린샷](@images/sig-v3/xcode-select-framework.png)
+That’s it\! The Signature library is now integrated into your project.
 
-8. `AdjustSigSdk.xcframework`에 대해 **Embed & Sign\(삽입 및 서명\)** 옵션을 선택합니다.
+Test your app \{\#test\-your\-app\}
+----------------------------------------
 
-![Xcode의 Embed & Sign(삽입 및 서명) 옵션 스크린샷](@images/sig-v3/xcode-embed-sign.png)
+You can verify you have integrated the Signature library into your app using the [Adjust Testing Console](https://help.adjust.com/en/article/testing-console).
+<callout type="important"> 
 
-이제 끝입니다\! Signature 라이브러리가 프로젝트에 연동되었습니다.
+You must ensure that the Adjust SDK is running in **Sandbox mode** .
+</Callout> 
 
-## Test your app {#test-your-app}
+To test your Signature library integration:
 
-[Adjust 테스팅 콘솔](https://help.adjust.com/ko/article/testing-console)을 사용하여 Signature 라이브러리가 앱에 연동되었는지 확인할 수 있습니다.
+1. Fully delete your app from the test device to ensure the install information is sent.
 
-<Callout type="important">
+2. Forget the device using the Testing Console to clear out all information relating to the device. You can also use the forget\_device endpoint by passing your app token and the advertising ID you obtained from the [Adjust Insights app](https://apps.apple.com/us/app/adjust-insights/id1125517808). You can use any of the following advertising IDs: `adid`, `idfa`, `idfv`, `imei`, `oaid`.
 
-Adjust SDK가 **샌드박스 모드** 에서 실행 중이어야 합니다.
-
-</Callout>
-
-다음과 같이 서명 라이브러리 연동을 테스트합니다.
-
-1. 설치 정보가 전송되도록 테스트 기기에서 앱을 완전히 삭제합니다.
-
-2. 테스팅 콘솔을 사용하여 해당 기기의 정보를 삭제하시기 바랍니다. 앱 토큰과 [Adjust InSights 앱](https://apps.apple.com/us/app/adjust-insights/id1125517808)에서 얻은 광고 ID를 전달하여 forget_device 엔드포인트를 사용할 수도 있습니다. 다음의 광고 ID 또한 사용이 가능합니다. `adid`, `idfa`, `idfv`, `imei`, `oaid`
-
-   호출은 다음과 같습니다.
+   The call looks like this:
 
    ```console
    $ curl -X POST 'https://app.adjust.com/forget_device?app_token={yourAppToken}&id={adid}'
    ```
 
-3. 테스팅 콘솔에서 기기를 삭제한 후에 테스트 기기에 앱을 설치한 다음 실행하여 Adjust로 설치 정보를 전송합니다.
+3. Once you’ve cleared the device from the Testing Console, install the app on your test device and launch it to send install information to Adjust.
 
-4. 테스팅 콘솔에 테스트 기기의 광고 ID를 입력하여 설치 이벤트 정보를 불러옵니다. 다음 내용을 확인하시기 바랍니다.
+4. Input the test device’s advertising ID into the Testing Console to fetch the install event information. Check the following:
 
-   1. `SignatureVerificationResult` 필드에 다음 값이 표시되어야 합니다. `Valid Signature`
-   2. `SignatureVersion` 필드에 다음 값이 표시되어야 합니다. `3`
+   1. The `SignatureVerificationResult` field should show a value of `Valid Signature`
+   2. The `SignatureVersion` field should show a value of `3`
 
-이러한 필드가 있고 올바른 정보를 포함하고 있다면 서명 라이브러리가 성공적으로 연동된 것입니다. 필드에 다른 값이 표시되는 경우, 연동 단계를 다시 검토하거나 [support@adjust.com](mailto:support@adjust.com)에 연락하시기 바랍니다.
+If these fields are present and contain the correct information, you have successfully integrated the Signature library. If the fields display any other values, review the integration steps again or contact [support@adjust.com](mailto:support@adjust.com) for further assistance.
 
-이제 끝입니다\! 서명 라이브러리가 앱에 성공적으로 연동되었습니다. [어트리뷰션 윈도우 2개가 완료](https://help.adjust.com/ko/article/attribution-windows)되면 [SDK Signature\(SDK 서명\) 검증을 시행](https://help.adjust.com/ko/article/sdk-signature#enforce-signature-validation)하여 서명된 요청만 Adjust에서 수락하도록 할 수 있습니다.
+That’s it\! You’ve successfully integrated the Signature library into your app. Once [two attribution windows have passed](https://help.adjust.com/en/article/attribution-windows), you can [enforce SDK signature validation](https://help.adjust.com/en/article/sdk-signature#enforce-signature-validation) to make sure that only signed requests are accepted by Adjust.
+
+\{\#troubleshooting\} 트러블슈팅
+------------------------------
+
+### 심볼 업로드 실패
+
+Xcode 16으로 빌드된 앱을 검증하거나 제출할 때 Signature 라이브러리와 관련된 `Upload symbols failed` 경고가 표시될 수 있습니다. 누락된 심볼 상황은 의도적인 것이며 기능에는 영향을 미치지 않으므로 무시해도 됩니다.
+
