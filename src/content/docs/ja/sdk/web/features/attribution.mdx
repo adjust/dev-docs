@@ -1,14 +1,12 @@
 ---
-title: アトリビューション情報の取得
-description: Adjust SDKを使ってアトリビューションの変更を受信します。
-slug: ja/sdk/web/features/attribution
+title: "Get attribution information"
+description: "Listen for attribution changes using the Adjust SDK"
+slug: "en/sdk/web/features/attribution"
 ---
+When a user interacts with an Adjust link, their attribution information updates. This can happen if the user interacts with a [deep link](https://help.adjust.com/en/article/deep-links). Information about a user's attribution is represented in an Attribution object.
 
-ユーザーがAdjustリンクをクリックすると、そのアトリビューション情報が更新されます。これは、ユーザーが[ディープリンク](https://help.adjust.com/ja/article/deep-links)をクリックした場合に発生します。ユーザーのアトリビューションについての情報は、アトリビューションオブジェクトに表示されます。
-
-アトリビューションオブジェクトは以下の情報を含んでいます。
-
-<CodeBlock title="インターフェイス宣言">
+The Attribution object contains the following information:
+<codeblock title="Interface declaration"> 
 
 ```js
 export type AttributionMapT = $ReadOnly<{|
@@ -24,31 +22,32 @@ export type AttributionMapT = $ReadOnly<{|
 |}>;
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-| 値              | データタイプ | 説明                                                                                                    |
-| --------------- | ------------ | ------------------------------------------------------------------------------------------------------- |
-| `adid`          | `string`     | デバイス固有のAdjust識別子                                                                              |
-| `tracker_token` | `string`     | アトリビューションに関連付けられているリンクトークン                                                    |
-| `tracker_name`  | `string`     | キャンペーンリンクの名前                                                                                |
-| `network`       | `string`     | キャンペーンに関連付けられているネットワーク                                                            |
-| `campaign`      | `string`     | アトリビューションに関連付けられているキャンペーンの名前                                                |
-| `adgroup`       | `string`     | アトリビューションに関連付けられているアドグループ                                                      |
-| `creative`      | `string`     | アトリビューションに関連付けられているクリエイティブ                                                    |
-| `click_label`   | `string`     | アトリビューションに関連付けられている[クリックラベル](https://help.adjust.com/ja/article/user-rewards) |
-| `state`         | `string`     | アトリビューションの現在のステータス。`installed`または `reattributed`                                  |
+|     Values      | Data type |                                             Description                                             |
+|-----------------|-----------|-----------------------------------------------------------------------------------------------------|
+| `adid`          | `string`  | The device's unique Adjust identifier.                                                              |
+| `tracker_token` | `string`  | The link token associated with the attribution.                                                     |
+| `tracker_name`  | `string`  | The name of the campaign link.                                                                      |
+| `network`       | `string`  | The network associate with the campaign.                                                            |
+| `campaign`      | `string`  | The name of the campaign associated with the attribution.                                           |
+| `adgroup`       | `string`  | The adgroup associated with the attribution.                                                        |
+| `creative`      | `string`  | The creative associated with the attribution.                                                       |
+| `click_label`   | `string`  | The [click label](https://help.adjust.com/en/article/user-rewards) associated with the attribution. |
+| `state`         | `string`  | The current state of the attribution. Either `installed` or `reattributed`                          |
 
-## アトリビューションの変更時にコールバックをトリガーする {#trigger-a-callback-when-attribution-changes}
+Trigger a callback when attribution changes \{\#trigger\-a\-callback\-when\-attribution\-changes\}
+----------------------------------------------------------------------------------------------------------
 
-<CodeBlock title="プロパティ宣言">
+<codeblock title="Property declaration"> 
 
 ```js
 attributionCallback: (string, Object) => mixed;
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-SDKはアトリビューションの変更を受信し、更新を検出したときに関数を呼び出すことができます。アトリビューションコールバックメソッドを設定するには、`initSdk`メソッドで`attributionCallback`関数を指定します。関数内で、ユーザーのアトリビューション情報にアクセスすることができます。
+The SDK can listen for attribution changes and call a function when it detects an update. You can set an attribution callback method by specifying an `attributionCallback` function in the `initSdk` method. Within your function, you have access to the user's attribution information.
 
 ```js
 Adjust.initSdk({
@@ -68,46 +67,42 @@ Adjust.initSdk({
 });
 ```
 
-## 現在のアトリビューション情報を取得する {#get-current-attribution-information}
+Get current attribution information \{\#get\-current\-attribution\-information\}
+--------------------------------------------------------------------------------------
 
-<CodeBlock title="メソッドシグネチャー">
+<minorversion changed="5.7.0" link="https://github.com/adjust/web_sdk/releases/tag/v5.7.0" /> 
 
-```js
-function getAttribution(): Attribution | undefined;
-```
-
-</CodeBlock>
-
-ユーザーがアプリをインストールすると、Adjustはそのインストールをキャンペーンにアトリビュートします。Adjust SDKでは、インストールのキャンペーンアトリビューションの詳細にアクセスすることができます。この情報を返すには、`getAttribution`メソッドを呼び出します。
+ユーザーがアプリをインストールすると、Adjustはそのインストールをキャンペーンにアトリビュートします。Adjust SDKを実装することで、インストールのキャンペーンアトリビューションの詳細にアクセスすることが可能です。`waitForAttribution`メソッドは、SDKがサーバーからアトリビューションデータを正常に受信すると解析される`promise`を返します。
 
 ```js
-const attribution = Adjust.getAttribution();
+Adjust.waitForAttribution().then((attr) =>
+   console.log(JSON.stringify(attr, undefined, 2)),
+);
 ```
 
-## リファラーを設定する {#set-a-referrer}
+Set a referrer \{\#set\-a\-referrer\}
+------------------------------------------
 
-<CodeBlock title="メソッドシグネチャー">
+<codeblock title="Method signature"> 
 
 ```js
 function setReferrer(referrer: string): void;
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-SDKの開始時にカスタムクリックIDでSDKクリックのトリガーとなるリファラーを設定することができます。SDKは、アトリビューションの目的でカスタムクリックIDをAdjustのサーバーに送信します。
+You can set a referrer to trigger an SDK click with a custom click ID when the SDK starts. The SDK sends your custom click ID to Adjust's servers for attribution purposes.
+<callout type="important"> 
 
-<Callout type="important">
+Call this method as close to initializing the SDK as possible to ensure your referrer is used for attribution.
+</Callout> 
 
-アトリビューションにリファラーが使用されるように、SDKの初期化時にできる限り近い時点でこのメソッドを呼び出してください。
-
-</Callout>
-
-リファラーを設定するには、`setReferrer`メソッドを呼び出し、URLエンコードされた`string`引数としてリファラーをパスします。
-
-<CodeBlock highlight="adjust_external_click_id%3DEXTERNAL_CLICK_ID\">
+To set your referrer, call the `setReferrer` method and pass your referrer as a URL\-encoded `string` argument.
+<codeblock highlight="adjust_external_click_id%3DEXTERNAL_CLICK_ID\"> 
 
 ```js
 Adjust.setReferrer("adjust_external_click_id%3DEXTERNAL_CLICK_ID");
 ```
 
 </CodeBlock>
+
