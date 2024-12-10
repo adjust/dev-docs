@@ -1,27 +1,27 @@
 ---
-title: 链接解析
-description: 对于通过电邮、短信、二维码和短链接生成平台的深度链接，请设置链接解析。
-slug: zh/sdk/ios/features/deep-links/resolution
+title: "链接解析"
+description: "对于通过电邮、短信、二维码和短链接生成平台的深度链接，请设置链接解析。"
+slug: "en/sdk/ios/features/deep-links/resolution"
 sidebar-position: 5
-versions:
-   - label: v5
-     value: v5
-     default: true
-   - label: v4
-     value: v4
-redirects:
-   v4: /zh/sdk/ios/v4/features/deep-links/resolution
+versions: 
+    - 
+        label: "v5"
+        value: "v5"
+        default: true
+    - 
+        label: "v4"
+        value: "v4"
+redirects: 
+    v4: "/en/sdk/ios/v4/features/deep-links/resolution"
 ---
-
-对于通过电邮、短信、二维码和短链接生成平台的深度链接，请务必设置链接解析，否则，通用链接重定向会将所有用户转到 App Store，其中包括已安装应用的用户。设置连接解析后，通用链接重定向会在您的应用内发生，现有用户不会被转到 App Store。
-
-<Callout type="note">
+对于通过电邮、短信、二维码和短链接生成平台的深度链接，请务必设置链接解析，否则，通用链接重定向会将所有用户转到 App Store，其中包括已安装应用的用户。设置链接解析后，通用链接重定向会在您的应用内发生，现有用户不会被转到 App Store。
+<callout type="note"> 
 
 请咨询您的营销团队，决定应用是否需要链接解析。随后，您就可以针对不同用例设置链接解析域了。
+</Callout> 
 
-</Callout>
-
-## 工作原理 {#how-it-works}
+工作原理\{\#how\-it\-works\}
+-----------------------------
 
 仅在已安装应用的用户点击重定向 URL 时，链接解析才适用。请在应用中将重定向 URL 域配置为通用链接域。
 
@@ -31,46 +31,43 @@ redirects:
 
 2. 您的应用会将重定向 URL 传送至 Adjust SDK 中的 `resolveLinkWithUrl` 链接解析方法 。
 
-3. Adjust SDK 中的连接解析方法会参考开发者在 Adjust SDK 中设置的链接解析域，对比重定向 URL 中的域。对比结果分两种：
+3. Adjust SDK 中的链接解析方法会参考开发者在 Adjust SDK 中设置的链接解析域，对比重定向 URL 中的域。对比结果分两种：
 
-   -  域不匹配 \- 方法会按原样转发深度链接 URL。
-   -  域匹配 \- 方法解析链接并返回解析所得的深度链接
+   * 域不匹配 \- 方法会按原样转发深度链接 URL。
+   * 域匹配 \- 方法解析链接并返回解析所得的深度链接。
 
-   在尝试解析 URL 时，Adjust SDK 会追溯最多 10 个重定向 \(redirect\)，也就是说，如果要追溯的重定向超过 10 个，那么 SDK 就会返回第 10 个重定向 URL。
+   在尝试解析 URL 时，Adjust SDK 会追溯最多 10 个重定向，也就是说，如果要追溯的重定向超过 10 个，那么 SDK 就会返回第 10 个重定向 URL。
+4. 应用收到返回的 URL，打开展示深度链接内容并将其展示给用户。您的应用也会使用返回的 URL 调用 Adjust SDK 中的 `processDeeplink` 方法 。此操作会将已解析的 URL 发送给 Adjust 服务器用于记录。
 
-4. 应用收到返回的 URL，打开展示深度链接内容并将其展示给用户。您的应用也会使用返回的 URL 调用 Adjust SDK 中的 `appWillOpenUrl` 方法 。此操作会将已解析的 URL 发送给 Adjust 服务器用于记录。
-
-<Callout type="note">
+<callout type="note"> 
 
 如果未安装应用的用户点击了重定向 URL，那么 iOS 就会以正常网页 URL 方式进行处理，将用户重定向至 App Store。链接解析不适用这种情况。
+</Callout> 
 
-</Callout>
-
-## 使用案例 {#use-cases}
+使用案例\{\#use\-cases\}
+------------------------
 
 下列情况中适用链接解析：
 
--  [电子邮件营销](#email-marketing)
--  [短 URL 生成平台](#url-shorteners)
+* [电子邮件营销](#email-marketing)
+* [短 URL 生成平台](#url-shorteners)
 
-### 电子邮件营销 {#email-marketing}
+### 电子邮件营销\{\#email\-marketing\}
 
 电邮营销人员开展推广时，电邮营销平台会通过其自有的点击监测重定向 URL 包装邮件中的所有链接。这样，电邮营销人员就能在平台上看到点击数据。不过，如果电邮中包含通用链接，那么重定向 URL 会导致 iOS 无法解析通用链接。
 
--  电子邮件营销平台：电邮营销人员用来打造推广活动的软件，其中包括电邮模板、受众定向等功能。 **示例：** Braze，Iterable，SendGrid
--  电邮服务提供商 \(ESP\)：能发送电邮、管理对互联网服务提供商 \(ISP\) 电邮服务器交付活动的底层基础架构。 **示例：** SendGrid，SparkPost。
--  电子邮件合作伙伴：用来指代电子邮件营销平台或电子邮件服务提供商 \(ESP\) 的一般术语。电子邮件合作伙伴可以是电邮营销平台或 ESP，也可以两者皆是。 **示例：** SendGrid 既是电邮营销平台，也是ESP。电邮营销可能使用其他 ESP 合作伙伴。 **示例：** Graze 和 Iterable 的 ESP 都是 SendGrid 和 SparkPost。
+* 电子邮件营销平台：电邮营销人员用来打造推广活动的软件，其中包括电邮模板、受众定向等功能。 **示例：** Braze，Iterable，SendGrid
+* 电邮服务提供商 \(ESP\)：能发送电邮、管理对互联网服务提供商 \(ISP\) 电邮服务器交付活动的底层基础架构。 **示例：** SendGrid，SparkPost。
+* 电子邮件合作伙伴：用来指代电子邮件营销平台或电子邮件服务提供商 \(ESP\) 的一般术语。电子邮件合作伙伴可以是电邮营销平台或 ESP，也可以两者皆是。 **示例：** SendGrid 既是电邮营销平台，也是ESP。电邮营销可能使用其他 ESP 合作伙伴。 **示例：** Graze 和 Iterable 的 ESP 都是 SendGrid 和 SparkPost。
 
-#### 设置 {#setup}
+#### 设置 \{\#setup\}
 
 1. 在您的域上创建专门用于电子邮件监测的域或子域。如果您已经拥有专门用于电子邮件监测的域或子域，您应当重新创建，以求在不干扰现有推广活动的前提下完成实装。完成并测试该实装后，您就可以换用自己现有的电邮重定向域。
 
    **示例：** `email.example.com`
-
 2. 在 Xcode 中向您的 **Associated Domain** \(关联域\) 配置添加电邮重定向域。
 
    **示例：** `applinks:email.example.com`
-
 3. 设置您的通用链接。
 
 4. 确保已将您的电邮重定向域添加到 `resolveLinkWithUrl` 链接解析方法的 `resolveUrlSuffixArray` 中。
@@ -82,38 +79,35 @@ redirects:
    1. **SSL 证书** ：iOS 要求所有通用链接只能使用 HTTPS。因此，您的电邮重定向域必须拥有 SSL 证书。
    2. **AASA \(Apple\-App\-Site\-Association\) 文件** ：您需要自行托管 AASA 文件，或将 AASA 文件上传至电邮合作伙伴的系统中，具体视您的电邮合作伙伴情况而定。请查看电邮合作伙伴的文档，了解 AASA 文件托管信息。
 
-   您可以为托管在路径 \- `https://example.go.link/.well-known/apple-app-site-association`\-上的通用链接下载 AASA 文件。请将该路径的域名变更为您的通用链接域名。您可以复制 Adjust 通用链接 AASA 文件并将其用于电邮重定向域 AASA 文件。如果您的电邮服务合作伙伴要求您自行托管 AASA 文件，那么您的 CDN 要从电邮重定向域的相应路径上提供该文件 \- `https://email.example.com/.well-known/apple-app-site-association` 3. 将电邮重定向域的所有传入请求 \(适用情况下 AASA 文件除外\) 导向电邮合作伙伴的重定向服务器。
+   您可以为托管在路径 \- `https://example.go.link/.well-known/apple-app-site-association`\-上的通用链接下载 AASA 文件。请将该路径的域名变更为您的通用链接域名。您可以复制 Adjust 通用链接 AASA 文件并将其用于电邮重定向域 AASA 文件。如果您的电邮服务合作伙伴要求您自行托管 AASA 文件，那么您的 CDN 要从电邮重定向域的相应路径上提供该文件 \-  `https://email.example.com/.well-known/apple-app-site-association`
+   3. 将电邮重定向域的所有传入请求 \(适用情况下 AASA 文件除外\) 导向电邮合作伙伴的重定向服务器。
 
    **示例：** `redirect.example.net`
-
 7. 进行 DNS 配置，让电邮重定向域指向 CDN。
 
-<Callout>
+<callout> 
 
-请访问帮助中心的 [ESP 集成](https://help.adjust.com/zh/marketer/esp-integrations)版面，了解与上述操作对应的具体合作伙伴操作说明。
+请访问帮助中心的 [ESP 集成](https://help.adjust.com/en/marketer/esp-integrations)版面，了解与上述操作对应的具体合作伙伴操作说明。
+</Callout> 
 
-</Callout>
-
-##### 电邮服务合作伙伴支持 {#support-for-email-partners}
+##### 电邮服务合作伙伴支持\{\#support\-for\-email\-partners\}
 
 要使用链接解析，您的电邮服务合作伙伴需要允许您将通用链接域设为重定向域 \(或子域\)。在这种情况下，您可以将合作伙伴的重定向服务指向您自己的自定义域。
 
-**示例：**
+**示例：** 
 
--  Braze：根据 Braze 指定的 ESP，设置 SendGrid 或 SparkPost 的重定向域，并将您的自定义域指向该重定向域。随后就可以将自定义域设置为通用链接域了。
--  Iterable：Iterable 的 URL 重定向服务支持自定义域。
--  Mailchimp：Mailchimp 不允许您将其重定向域配置为通用链接，因此您无法采用链接解析。
+* Braze：根据 Braze 指定的 ESP，设置 SendGrid 或 SparkPost 的重定向域，并将您的自定义域指向该重定向域。随后就可以将自定义域设置为通用链接域了。
+* Iterable：Iterable 的 URL 重定向服务支持自定义域。
+* Mailchimp：Mailchimp 不允许您将其重定向域配置为通用链接，因此您无法采用链接解析。
 
-#### 示例 {#example}
+#### 示例 \{\#example\}
 
 1. 电邮营销人员使用模板创建电子邮件。该模板包含链接或带有通用链接的图片。
 
    **示例：** `https://example.go.link/summer-clothes?promo=beach&adj_t=abc123`
-
 2. 电邮营销人员将邮件发送给收件人。在发送邮件前，电邮营销平台会用自己的重定向 URL 包装通用链接。
 
    **示例：** `https://email.example.com/2wuTnQvU`
-
 3. 已安装应用的用户点击电子邮件中的重定向 URL。
 
 4. iOS 打开您的应用，将重定向 URL 发送至应用。
@@ -124,25 +118,23 @@ redirects:
 
    因此，`https://email.example.com/2wuTnQvU` 会重定向至
    `https://example.go.link/summer-clothes?promo=beach&adj_t=abc123` 。
-
 7. 链接解析方法返回已解析的 URL。
 
 8. 您的应用处理返回的 URL。在这种情况下，您的应用将在应用中显示 `summer-clothes` 页面，用户会看到 `beach promo` 弹窗。
 
-9. 您的应用也会使用返回的 URL 调用 Adjust SDK 中的 `appWillOpenUrl` 方法 。
+9. 您的应用也会使用返回的 URL 调用 Adjust SDK 中的 `processDeeplink` 方法 。
 
-### URL 缩短服务 {#url-shorteners}
+### URL 缩短服务\{\#url\-shorteners\}
 
-有时，营销人员需要在特定类型的推广活动用到短 URL。例如：短信文本长度上限为 160 个字符。有时，客户需要缩短链接，好在 Slack 等团队通讯平台上分享。不过，如果短 URL 重定向到通用链接，那么 iOS 就不会解析通用链接。
+有时，营销人员需要在特定类型的推广活动中用到短 URL。例如：短信文本长度上限为 160 个字符。有时，客户需要缩短链接，以便在 Slack 等团队通讯平台上分享。不过，如果短 URL 重定向到通用链接，那么 iOS 就不会解析通用链接。
 
-#### 设置 {#setup-1}
+#### 设置 \{\#setup\-1\}
 
-1. 在您的域上创建专门用于缩短 URL 的域或子域。如果您已经拥有专门用于缩短 URL 的域或子域，您还是应当重新创建，以求在不干扰现有推广活动的前提下完成实装。完成并测试该实装后，您就可以换用自己现有的 URL 缩短域。
+1. 在您的域上创建专门用于缩短 URL 的域或子域。如果您已经拥有专门用于缩短 URL 的域或子域，也还是应当重新创建，以求在不干扰现有推广活动的前提下完成实装。完成并测试该实装后，您就可以换用自己现有的 URL 缩短域。
 
 2. 在 Xcode 中向您的 **Associated Domain** \(关联域\) 配置添加短 URL 域。
 
    **示例：** `applinks:short.example.com`
-
 3. 设置您的通用链接。
 
 4. 确保已将您的电邮重定向域添加到 `resolveLinkWithUrl` 链接解析方法的 `resolveUrlSuffixArray` 中。
@@ -150,21 +142,18 @@ redirects:
 5. 设置支持通用链接的 URL 缩短服务。请注意：Adjust 不提供任何 URL 缩短服务。
 
    **示例** ：[`short.io`](http://short.io)
-
 6. 在短 URL 生成服务平台上，将短 URL 生成域配置为自定义域。您需要进行 DNS 配置，才能让短 URL 生成域指向短 URL 生成服务的服务器。\([在 short.io 中添加自定义域的参考文档](https://help.short.io/en/articles/9991681-how-can-i-add-a-domain)\)。
 
 7. 在 URL 缩短服务中配置通用链接。\([在 short.io 中设置通用链接的参考文档](https://help.short.io/en/articles/4065870-how-to-set-up-deep-links-for-ios)\)。
 
-#### 示例 {#example-1}
+#### 示例 \{\#example\-1\}
 
 1. 营销人员创建通用链接。
 
    **示例：** `https://example.go.link/summer-clothes?promo=beach&adj_t=abc123`
-
 2. 营销人员使用 URL 缩短服务生成短链接。
 
    **示例：** `https://short.example.com/2wuTnQvU`
-
 3. 营销人员在推广活动中使用短链接，例如短信推广活动。
 
 4. 已安装应用的用户点击短信中的短 URL。
@@ -177,9 +166,9 @@ redirects:
 
    因此，`https://short.example.com/2wuTnQvU` 会重定向至
    `https://example.go.link/summer-clothes?promo=beach&adj_t=abc123` 。
-
 8. 链接解析方法返回已解析的 URL。
 
 9. 您的应用处理返回的 URL。在这种情况下，您的应用将在应用中显示 `summer-clothes` 页面，用户会看到 `beach promo` 弹窗。
 
-10.   您的应用也会使用返回的 URL 调用 Adjust SDK 中的 `appWillOpenUrl` 方法 。
+10. 您的应用也会使用返回的 URL 调用 Adjust SDK 中的 `processDeeplink` 方法 。
+
