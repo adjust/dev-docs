@@ -1,0 +1,231 @@
+---
+title: "Android Adobe Extension v3 迁移指南"
+description: "按照本指南说明操作，从 v2 迁移至 v3"
+sidebar-label: "Android v3 迁移指南"
+sidebar-position: 1
+---
+[针对 Adobe Experience SDK 的 Adjust Extension](https://github.com/adjust/android_adobe_extension) 已更新至版本 v3。该版本加入了针对 Adjust Android SDK v5 的支持。请按照本指南说明操作，从 v2 迁移至 v3。
+
+\{% callout type="important" %\}
+请在迁移前更新您的应用，以支持 [Android API 21](https://developer.android.com/tools/releases/platforms#5.0)以及更高版本。
+\{% /callout %\}
+
+要按照版本 v3 的针对 Adobe Experience SDK 的 Adjust Android Extension，请按照下列方式更新您 `build.gradle` 中的依赖声明：
+
+1. `com.adjust.adobeextension:adobeextension` 必须至少更新到版本 3\.0\.0。
+2. `com.adjust.sdk:adjust-android` 必须至少更新刀版本 5\.0\.0。
+
+```groovy
+dependencies {
+   implementation 'com.adjust.adobeextension:adobeextension:{% $versions.android_adobe_extension.v3 %}'
+   implementation 'com.adjust.sdk:adjust-android:{% $versions.android.v5 %}'
+   implementation 'com.adobe.marketing.mobile:core:3.2.0'
+   implementation 'com.android.installreferrer:installreferrer:2.2'
+}
+```
+
+要查看针对 Adobe Experience SDK 的 Adjust Android Extension 设置完整指南，请参阅[集成指南](/en/sdk/adobe-extension/android/integration)。
+
+新 API \{% \#new\-apis %\}
+-----------------------------
+
+\{% minorversion added="v3" size="large" /%\}
+
+版本 v3 中添加了下列 API。
+
+### 解析品牌化短链接 \{% \#resolve\-short\-branded\-links %\}
+
+针对 Adobe Experience SDK 的 Adjust Extension 版本 v3 加入了[品牌化短链接](https://help.adjust.com/en/article/short-branded-links)的解析支持。要解析短链接，请使用下列参数调用 `Adjust.processAndResolveDeeplink` 方法：
+
+\{% deflist %\}
+`adjustDeeplink`: `AdjustDeeplink`
+
+: 打开应用的深度链接。
+
+`context`: `Context`
+
+: 应用 context。调用 `getApplicationContext()` 以填充该值。
+
+`callback`: `OnDeeplinkResolvedListener`
+
+: 以参数形式接收已解析短链接的回传函数。
+\{% /deflist %\}
+
+```java
+Intent intent = getIntent();
+Uri data = intent.getData();
+AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+Adjust.processAndResolveDeeplink(adjustDeeplink, getApplicationContext(), new OnDeeplinkResolvedListener() {
+   @Override
+   public void onDeeplinkResolved(String s) {
+
+   }
+});
+```
+
+### 统一回传参数\{% \#global\-callback\-parameters %\}
+
+针对 Adobe Experience SDK 的 Adjust Extension 版本 v3 加入了对来自 Android SDK v5 的统一回传参数 API 支持。要向会话添加统一回传，请使用下列参数调用 `Adjust.addGlobalCallbackParameter`：
+
+\{% deflist %\}
+`key`: `String`
+
+: 参数的键。
+
+`value`: `String`
+
+: 参数值。
+\{% /deflist %\}
+
+```java
+Adjust.addGlobalCallbackParameter("key", "value");
+Adjust.addGlobalCallbackParameter("user_id", "855");
+```
+
+了解[统一回传设置方法](/en/sdk/adobe-extension/android/global-parameters#global-callback-parameters)。
+
+### 统一合作伙伴参数\{% \#global\-partner\-parameters %\}
+
+针对 Adobe Experience SDK 的 Adjust Extension 版本 v3 加入了对来自 Android SDK v5 的全局合作伙伴参数 API 支持。要添加全局合作伙伴参数，请使用下列参数调用 `Adjust.addGlobalPartnerParameter`方法：
+
+\{% deflist %\}
+`key`: `String`
+
+: 参数的键。
+
+`value`: `String`
+
+: 参数值。
+\{% /deflist %\}
+
+```java
+Adjust.addGlobalPartnerParameter("key", "value");
+Adjust.addGlobalPartnerParameter("user_id", "855");
+```
+
+了解[全局合作伙伴参数设置方法](/en/sdk/adobe-extension/android/global-parameters#global-partner-parameters)。
+
+### 设置外部设备 ID \{% \#set\-external\-device\-id %\}
+
+针对 Adobe Experience SDK 的 Adjust Extension 版本 v3 加入了[外部设备标识符](https://help.adjust.com/en/article/external-device-identifiers)设置的支持。要设置外部设备 ID，请使用下列参数调用 `AdjustAdobeExtensionConfig` 实例上的 `setExternalDeviceId` 方法：
+
+\{% deflist %\}
+`externalDeviceId`: `String`
+
+: 您的外部设备标识符。
+\{% /deflist %\}
+
+```java
+String environment = AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX;
+AdjustAdobeExtensionConfig config = new AdjustAdobeExtensionConfig(environment);
+config.setExternalDeviceId("{YourExternalDeviceId}");
+AdjustAdobeExtension.setConfiguration(config);
+```
+
+了解[外部设备 ID 配置方法](/en/sdk/adobe-extension/android/external-device-id)。
+
+### 为预安装应用设置默认链接识别码 \{% \#set\-default\-link\-token\-preinstalled\-apps %\}
+
+针对 Adobe Experience SDK 的 Adjust Extension 版本 v3 拓展了支持功能，现在允许您设置默认[链接识别码](https://help.adjust.com/en/article/links)，以便将预安装应用的安装记录到默认推广活动中。要设置默认链接识别码，请使用下列参数调用 `AdjustAdobeExtensionConfig` 实例上的 `setDefaultTracker` 方法：
+
+\{% deflist %\}
+`defaultTracker`: `String`
+
+: 预安装推广活动的、由英文字母和数字组成的链接识别码
+\{% /deflist %\}
+
+```java
+String environment = AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX;
+AdjustAdobeExtensionConfig config = new AdjustAdobeExtensionConfig(environment);
+config.setDefaultTracker("{Token}");
+AdjustAdobeExtension.setConfiguration(config);
+```
+
+了解[发送预安装应用活动信息的方法](/en/sdk/adobe-extension/android/preinstalled)。
+
+变更 API \{% \#changed\-apis %\}
+----------------------------------
+
+\{% minorversion changed="v3" size="large" /%\}
+
+版本 v3 中的以下 API 发生了变更。
+
+### 调取设备 ADID \{% \#retrieve\-device\-adid %\}
+
+在 SDK v2 中，`AdjustAttribution` 类包含一个名为 `adid` 的属性。该属性已被移除。您可以调用 `Adjust.getAdid` 以异步调取设备 ADID。
+
+```java
+Adjust.getAdid(new OnAdidReadListener() {
+    @Override
+    public void onAdidRead(String adid) {
+      // Your callback function
+    }
+});
+```
+
+### 直接深度链接\{% \#direct\-deep\-linking %\}
+
+在 SDK v2 中，您可将深度链接数据座位参数调用 `AdjustAdobeExtension.openUrl` 方法，以此打开归因深度链接。
+
+```java
+Intent intent = getIntent();
+Uri data = intent.getData();
+AdjustAdobeExtension.openUrl(data, getApplicationContext());
+```
+
+SDK v3 已更新，可以使用 Adjust Android SDK 的 `processDeeplink` 方法。要打开直接深度链接，请按照下列步骤操作：
+
+1. 使用深度链接 URL 创建新的 `AdjustDeeplink` 实例。
+2. 将您的 `AdjustDeeplink` 实例传递至 `Adjust.processDeeplink` 方法。
+
+```java
+Intent intent = getIntent();
+Uri data = intent.getData();
+AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
+```
+
+了解如何[使用直接深度链接进行用户再归因](/en/sdk/adobe-extension/android/deep-linking#reattribute-users-with-direct-deep-links)。
+
+### 延迟深度链接回传 \{% \#deferred\-deep\-linking\-callback %\}
+
+在 SDK v2 中，您可以对 SDK 进行配置，向 `AdjustAdobeExtensionConfig` 实例的 `setOnDeeplinkResponseListener` 方法传递函数，以便在延迟深度链接被打开时启用回传函数。
+
+```java
+AdjustAdobeExtensionConfig config = new AdjustAdobeExtensionConfig(environment);
+
+config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
+    @Override
+    public boolean launchReceivedDeeplink(Uri deeplink) {
+        if (shouldAdjustSdkLaunchTheDeeplink(deeplink)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+});
+
+AdjustAdobeExtension.setConfiguration(config);
+```
+
+在 SDK v5 中，`setOnDeeplinkResponseListener` 方法已重命名为 `setOnDeferredDeeplinkResponseListener`。
+
+```java
+AdjustAdobeExtensionConfig config = new AdjustAdobeExtensionConfig(environment);
+
+config.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListener() {
+    @Override
+    public boolean launchReceivedDeeplink(Uri deeplink) {
+        if (shouldAdjustSdkLaunchTheDeeplink(deeplink)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+});
+
+AdjustAdobeExtension.setConfiguration(config);
+```
+
+学习如何[使用延迟深度链接回传](/en/sdk/adobe-extension/android/deep-linking#deferred-deep-link-callbacks)
+
