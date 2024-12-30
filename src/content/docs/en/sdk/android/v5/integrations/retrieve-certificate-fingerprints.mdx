@@ -1,0 +1,201 @@
+---
+title: Retrieve Android certificate fingerprints
+description: Retrieve Android certificate fingerprints to configure Adjust features
+slug: en/sdk/android/integrations/retrieve-certificate-fingerprints
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v4: /en/sdk/android/v4/integrations/retrieve-certificate-fingerprints
+---
+
+A certificate fingerprint is a cryptographic hash of the public information held within a certificate. As described in [Google's documentation](https://developer.android.com/studio/publish/app-signing#api-providers), certificate fingerprints are public information designed to be used by third-parties for Android app verification. Adjust never requests private app signing keys.
+
+Adjust uses certificate fingerprints for the following features:
+
+| Feature                                                                                              | Hashing algorithm | Example                                                                                         |
+| ---------------------------------------------------------------------------------------------------- | ----------------- | ----------------------------------------------------------------------------------------------- |
+| [SDK Signature](https://help.adjust.com/en/article/sdk-signature#add-signatures-in-the-adjust-suite) | SHA-1             | C4:BD:07:91:BC:09:F8:B6:15:CD:BC:A3:3F:BC:68:8B:C2:EF:4F:F5                                     |
+| [Android App Links](https://help.adjust.com/en/article/set-up-android-app-links#set-up-in-appview)   | SHA-256           | 55:FB:97:0F:46:0F:94:EC:07:EA:01:69:50:5A:20:3F:A0:91:60:A4:F1:33:58:EA:76:DC:54:9E:A7:6A:B9:1A |
+
+Check the table below for the best way to get certificate fingerprints based on your app's distribution methods. When configuring the Adjust dashboard, be sure to add all certificate fingerprints that are applicable for your builds.
+
+| Hosting service                                                                                                  | Recommended approach                                                                           |
+| ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Google Play                                                                                                      | [Google Play Console](#from-google-play-console)                                               |
+| Google Play test track                                                                                           | [Google Play Console - Internal app sharing](#from-google-play-console---internal-app-sharing) |
+| Huawei AppGallery - App Signing Enabled                                                                          | [AppGallery Connect](#from-appgallery-connect)                                                 |
+| • Huawei AppGallery - App Signing Disabled <br />• Other store, or direct APK download <br />• Local debug build | [Keystore](#from-a-keystore) or [APK](#from-an-apk)                                            |
+
+#### From Google Play Console {#from-google-play-console}
+
+<Callout type="note">
+   If both the **App signing key certificate** and **Upload key certificate**
+   sections are present, then you have to retrieve and configure certificate
+   fingerprints for both in the Adjust dashboard.
+</Callout>
+
+1. In [Google Play Console](https://play.google.com/console), go to your app.
+2. On the menu on the left side, select **Test and release** > select **Setup** > **App signing**.
+3. If you're using Play App Signing, the **App signing key certificate** section will be present. In this section, copy the **SHA-1 certificate fingerprint** and/or **SHA-256 certificate fingerprint**.
+
+   ![Screenshot of the app signing key certificate page in Google Play Console](@images/sig-v3/google-play-app-signing.png)
+
+4. Under **Upload key certificate**, copy the **SHA-1 certificate fingerprint** and/or **SHA-256 certificate fingerprint**.
+
+   ![Screenshot of the upload key certificate page in Google Play Console](@images/sig-v3/google-play-upload.png)
+
+#### From Google Play Console - Internal app sharing {#from-google-play-console---internal-app-sharing}
+
+1. In [Google Play Console](https://play.google.com/console), go to your app.
+2. On the menu on the left side, select **Test and release** > select **Testing** > **Internal app sharing**.
+3. Under **Internal test certificate**, copy the **SHA-1 certificate fingerprint** and/or **SHA-256 certificate fingerprint**.
+
+   ![Screenshot of the internal app sharing key certificate page in Google Play Console](@images/sig-v3/google-play-internal-app-sharing.png)
+
+#### From AppGallery Connect {#from-appgallery-connect}
+
+If you use Huawei App Signing, follow the below instructions. If you don't use Huawei App Signing, retrieve your certificate fingerprints [from a keystore](#from-a-keystore) or [from an APK](#from-an-apk).
+
+<Callout type="note">
+   Retrieve and configure certificate fingerprints in the Adjust dashboard for
+   both the **App Signature Certificate** and **Upload Certificate**.
+</Callout>
+
+<Tabs>
+<Tab title="SHA-1" sync="sha-1">
+1. In [AppGallery Connect](https://developer.huawei.com/consumer/en/service/josp/agc/index.html), select **My Apps**.
+2. Select your app.
+3. Under **Services**, go to **App Signing**.
+4. Under **App Signature Certificate** and **Upload Certificate**, respectively, select **Download Certificate**.
+
+![Screenshot of the certificate page in Huawei AppGallery](@images/sig-v3/huawei-sha1.png)
+
+5. If needed, install OpenSSL:
+
+   - macOS: `brew install openssl`
+   - Linux: Usually pre-installed or use your package manager
+   - Windows: Use Microsoft's vcpkg package manager or Windows Subsystem for Linux (WSL)
+
+6. Run the below `openssl` command on each certificate file `<certificate.pem>`:
+
+   ```bash
+   openssl x509 -fingerprint -in <certificate.pem> -noout -SHA1
+   ```
+
+7. Retrieve each SHA1 from the output:
+
+   ```
+   SHA1 Fingerprint=C4:BD:07:91:BC:09:F8:B6:15:CD:BC:A3:3F:BC:68:8B:C2:EF:4F:F5
+   ```
+
+</Tab>
+<Tab title="SHA-256" sync="sha-256">
+1. In [AppGallery Connect](https://developer.huawei.com/consumer/en/service/josp/agc/index.html), select **My Apps**.
+2. Select your app.
+3. Under **Services**, go to **App Signing**.
+4. Under **App Signature Certificate** and **Upload Certificate**, respectively, copy each SHA-256 certificate fingerprint.
+
+![Screenshot of the certificate page in Huawei AppGallery](@images/sig-v3/huawei-sha256.png)
+
+</Tab>
+</Tabs>
+
+#### From a keystore {#from-a-keystore}
+
+<Callout type="note">
+   - The below steps require Java to be installed.
+   - If your build has the Adjust SDK set to the sandbox environment, then SDK Signature 
+   will always pass, so it's not necessary to retrieve the certificate fingerprint for that 
+   build. However, setting up Android App Links requires certificate fingerprints for all builds.
+</Callout>
+
+To retrieve certificate fingerprints from your keystore, follow these steps:
+
+1. Locate your keystore:
+   - Self-managed keystore: path to the folder containing your .jks file
+   - Android default debug keystore:
+      - macOS/Linux: `~/.android/debug.keystore`
+      - Windows: `%USERPROFILE%\.android\debug.keystore`
+2. Run the below `keytool` command, replacing the parameter values:
+
+   ```bash
+   # For a self-managed keystore (replace with path to your .jks file):
+   keytool -list -v -keystore </path/to/keystore.jks> -alias <your_key_alias>
+
+   # For the Android default debug keystore:
+   keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey
+   ```
+
+3. When prompted for the password, do the following:
+   - For a self-managed keystore, enter the password you set during keystore generation.
+   - For the Android default debug keystore, enter `android`.
+4. Retrieve the SHA1 and/or SHA256 values from the output:
+
+   ```
+   [...]
+
+   SHA1: C4:BD:07:91:BC:09:F8:B6:15:CD:BC:A3:3F:BC:68:8B:C2:EF:4F:F5
+   SHA256: 55:FB:97:0F:46:0F:94:EC:07:EA:01:69:50:5A:20:3F:A0:91:60:A4:F1:33:58:EA:76:DC:54:9E:A7:6A:B9:1A
+
+   [...]
+   ```
+
+#### From an APK {#from-an-apk}
+
+<Callout type="note">
+   If your build has the Adjust SDK set to the sandbox environment, then SDK
+   Signature will always pass, so it's not necessary to retrieve the certificate
+   fingerprint for that build. However, setting up Android App Links requires
+   certificate fingerprints for all builds.
+</Callout>
+
+To retrieve certificate fingerprints used to sign your APK, follow these steps:
+
+1. If needed, install [Android Studio](https://developer.android.com/studio) to get the [apksigner](https://developer.android.com/tools/apksigner) command.
+   - During Android Studio installation, ensure the Android SDK is installed (it's included by default).
+   - The Android SDK build-tools will be installed in the below locations:
+      - macOS/Linux: `~/Library/Android/sdk/build-tools/<version>/`
+      - Windows: `%LOCALAPPDATA%\Android\Sdk\build-tools\<version>\`
+2. Run the below `apksigner` command, replacing the parameter value:
+   ```bash
+   apksigner verify -v --print-certs <app.apk>
+   ```
+3. Retrieve the SHA-1 and/or SHA-256 values from the output. Apps may show a single signature:
+
+   ```
+   [...]
+
+   Signer #1 certificate SHA-1 digest: c4bd0791bc09f8b615cdbca33fbc688bc2ef4ff5
+   Signer #1 certificate SHA-256 digest: 55fb970f460f94ec07ea0169505a203fa09160a4f13358ea76dc549ea76ab91a
+
+   [...]
+   ```
+
+   Or multiple signatures:
+
+   ```
+   [...]
+
+   Signer (minSdkVersion=24, maxSdkVersion=32) certificate SHA-1 digest: c4bd0791bc09f8b615cdbca33fbc688bc2ef4ff5
+   Signer (minSdkVersion=24, maxSdkVersion=32) certificate SHA-256 digest: 55fb970f460f94ec07ea0169505a203fa09160a4f13358ea76dc549ea76ab91a
+
+   [...]
+
+   Signer (minSdkVersion=33, maxSdkVersion=2147483647) certificate SHA-1 digest: 9a3237ad99a97e8ea72df4fb096f28d544d5b8
+   Signer (minSdkVersion=33, maxSdkVersion=2147483647) certificate SHA-256 digest: 92e961bf8b67043d1af6061b4a926f6a94e2bb78b46a096639e8e2c2fb7784b0
+
+   [...]
+   ```
+
+   If multiple signatures are present, you'll need to configure all of them in the Adjust dashboard.
+
+<Callout type="note">
+   The Adjust dashboard requires SHA-256 certificate fingerprints for Android
+   App Links to be entered with colons separating each pair of characters (for
+   example:
+   55:fb:97:0f:46:0f:94:ec:07:ea:01:69:50:5a:20:3f:a0:91:60:a4:f1:33:58:ea:76:dc:54:9e:a7:6a:b9:1a).
+</Callout>
