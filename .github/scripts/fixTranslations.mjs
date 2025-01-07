@@ -134,7 +134,7 @@ const modifiedFiles = [];
 
 // Get the list of modified files in the current PR
 function getModifiedFiles() {
-   const output = execSync("git diff --name-only HEAD~6", { encoding: "utf-8" });
+   const output = execSync("git diff --name-only HEAD~1", { encoding: "utf-8" });
    return output.split("\n").filter((file) => file.trim() !== "");
 }
 
