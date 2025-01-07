@@ -30,7 +30,8 @@ const TAG_LIST = MDX_TAGS.join("|");
 
 // Helper function to split the front matter (YAML) from content
 function splitFrontMatter(content) {
-   const match = content.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)/);
+   const match = content.match(/^---\r?\n([\s\S]*?)\n---\r?\n([\s\S]*)/);
+
    if (match) {
       return [match[1], match[2]];
    }
@@ -140,7 +141,7 @@ function getModifiedFiles() {
 // Format MDX files using Prettier
 async function formatMdxFile(file) {
    return new Promise((resolve, reject) => {
-      exec(`npx prettier --write ${file}`, (error, stdout, stderr) => {
+      exec(`npx prettier --write ../../${file}`, (error, stdout, stderr) => {
          if (error) return reject(stderr);
          console.log(stdout);
          resolve();
@@ -151,7 +152,7 @@ async function formatMdxFile(file) {
 // Format MDOC files using the custom formatter
 async function formatMdocFile(file) {
    return new Promise((resolve, reject) => {
-      exec(`node ../../markdoc-formatter.mjs ${file}`, (error, stdout, stderr) => {
+      exec(`node ../../markdoc-formatter.mjs ../../${file}`, (error, stdout, stderr) => {
          if (error) return reject(stderr);
          console.log(stdout);
          resolve();
@@ -162,7 +163,7 @@ async function formatMdocFile(file) {
 // Process a single file
 async function processFile(file, locale) {
    console.log(`Processing ${file} for ${locale}`);
-   const originalContent = await fs.readFile(file, "utf-8");
+   const originalContent = await fs.readFile(`../../${file}`, "utf-8");
    const [frontMatterYaml, fileContent] = splitFrontMatter(originalContent);
 
    const frontMatter = yaml.load(frontMatterYaml);
@@ -178,7 +179,7 @@ async function processFile(file, locale) {
    const finalContent = `---\n${yaml.dump(updatedFrontMatter, { noRefs: true })}---\n${updatedContent}`;
 
    if (finalContent !== originalContent) {
-      await fs.writeFile(file, finalContent, "utf-8");
+      await fs.writeFile(`../../${file}`, finalContent, "utf-8");
       modifiedFiles.push(file);
 
       // Format the file after writing changes
