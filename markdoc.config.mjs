@@ -18,7 +18,7 @@ export default defineMarkdocConfig({
     paragraph,
     fence: {
       attributes: { ...nodes.fence.attributes },
-      render: component("/src/components/SimpleCode.astro"),
+      render: component("src/components/SimpleCode.astro"),
     },
   },
   tags: {
