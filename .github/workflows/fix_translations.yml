@@ -38,11 +38,14 @@ jobs:
         id: git-check
         run: echo "MODIFIED=$(if [ -n "$(git status --porcelain)" ]; then echo "true"; else echo "false"; fi)" >> "$GITHUB_OUTPUT"
 
-      # Commit and push changes if any files were modified
-      - name: Commit changes
+      # Need to checkout to the current PR branch
+      - name: Checkout the full PR history
         uses: actions/checkout@v4
         with:
           ref: ${{ github.ref_name }}
+
+      # Commit and push changes if any files were modified
+      - name: Commit changes
         if: ${{ steps.git-check.outputs.MODIFIED == 'true' }}
         run: |
           git config --global user.name "github-actions"
