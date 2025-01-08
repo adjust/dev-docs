@@ -1,67 +1,179 @@
 ---
-title: 设置隐私功能
-description: 配置处理应用用户隐私的功能。
-slug: zh/sdk/web/features/privacy
+title: "Set up privacy features"
+description: "Configure features that you can use to handle user privacy in your app."
+slug: "en/sdk/web/features/privacy"
 ---
+The Adjust SDK contains features that you can use to handle user privacy in your app.
 
-Adjust SDK 包含处理应用用户隐私的功能。
+Send erasure request \{\#send\-erasure\-request\}
+------------------------------------------------------
 
-## 发送删除请求{#send-erasure-request}
-
-<CodeBlock title="方法签名">
+<codeblock title="Method signature"> 
 
 ```js
 function gdprForgetMe(): void;
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-在处理个人数据方面，欧盟的《通用数据保护条例》\(GDPR\) 和全球类似的隐私法律 \(CCPA、LGPD 等\) 授予数据主体完全权利，其中包括删除权 \([参见 GDPR 第 17](https://gdpr.eu/article-17-right-to-be-forgotten/)条\)\( [1](https://help.adjust.com/zh/article/gdpr#ref-1) \)。作为数据处理方，Adjust 有义务支持您 \(数据控制方\) 处理来自应用用户的此类请求。
+The EU’s General Data Protection Regulation \(GDPR\) and similar privacy laws worldwide \(CCPA, LGPD, etc.\) grant data subjects comprehensive rights when it comes to the processing of their personal data. These rights include, among others, the right to erasure \(see [Art. 17 GDPR](https://gdpr.eu/article-17-right-to-be-forgotten/)\)\([1](https://help.adjust.com/en/article/gdpr#ref-1)\). As a data processor, Adjust is obliged to support you \(the data controller\) in the processing of such requests from your \(app\) users.
 
-您可以通过调用 `gdprForgetMe` 方法来将用户的删除请求发送至 Adjust 服务器。Adjust 在收到通知后：
+You can send the user's erasure request to Adjust by calling the `gdprForgetMe` method. Once Adjust has been notified:
 
--  我们将从内部系统和数据库中永久删除用户的所有历史个人数据；
--  此外，Adjust 将不再通过 Adjust SDK 接收来自该用户/设备的数据。 \( [2](https://help.adjust.com/zh/article/gdpr#ref-2) \)
+* Adjust will permanently delete all of the user’s historical personal data from its internal systems and database.
+* Adjust will no longer receive data from this user/device via the Adjust SDK.\([2](https://help.adjust.com/en/article/gdpr#ref-2)\)
 
 ```js
 Adjust.gdprForgetMe();
 ```
 
-## 禁用第三方分享 {#disable-third-party-sharing}
+针对特定用户的第三方分享\{\#third\-party\-sharing\-for\-specific\-users\}
+---------------------------------------------------------------------
 
-<CodeBlock title="方法签名">
+<minorversion added="5.7.0" link="https://github.com/adjust/web_sdk/releases/tag/v5.7.0" /> 
 
-```js
-function disableThirdPartySharing(): void;
+您可以使用 Adjust SDK 来记录用户对第三方数据分享设置的变更。请使用 `ThirdPartySharing` 类配置第三方数据分享。
+
+### 实例化 AdjustThirdPartySharing 对象\{\#instantiate\-an\-adjustthirdpartysharing\-object\}
+
+<codeblock title="Method signature"> 
+
+```ts
+class ThirdPartySharing {
+   constructor(isEnabled: boolean) {}
+   // ...
+}
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-要为所有用户禁用第三方数据分享，请调用 `disableThirdPartySharing` 方法。Adjust 服务器收到此信息后，会停止向第三方分享该用户的数据，而 Adjust SDK 将会继续如常运行。
+要启用或禁用 Adjust SDK 第三方数据分享，请实例化 `ThirdPartySharing` 对象。该对象包含控制 Adjust 如何处理第三方分享的变量。
 
-```js
-Adjust.disableThirdPartySharing();
+要进行实例化，请创建新的 `ThirdPartySharing` 实例，并传递下列参数：
+
+* `isEnabled` \( `boolean` \): 传递`true`来启用第三方分享或传递`false`来禁用第三方分享。
+
+```ts
+const adjustThirdPartySharing = new Adjust.ThirdPartySharing(true);
 ```
 
-## 数据驻留{#data-residency}
+设置为`false`时，Adjust 会停止与第三方分享用户数据。Adjust SDK 将会继续如常运行。
 
-<CodeBlock title="属性声明">
+要向 Adjust 发送信息，请使用`ThirdPartySharing`实例作为参数调用`Adjust.trackThirdPartySharing`方法。
 
-```js
-dataResidency: "EU" | "TR" | "US";
+```ts
+const adjustThirdPartySharing = new Adjust.ThirdPartySharing(true);
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
-</CodeBlock>
+### 禁用第三方分享 \(已弃用\) \{\#disable\-third\-party\-sharing\}
 
-通过数据驻留 \(data residency\) 功能，您可以选择 Adjust 将您的数据存储在哪个国家。当应用运营的国家拥有严格的隐私规定时，此功能会非常有用。设置数据驻留后，Adjust 会将您的数据存储在所选地区的数据中心。
+<minorversion removed="5.7.0" link="https://github.com/adjust/web_sdk/releases/tag/v5.7.0" /> 
 
-要设置数据驻留国家，请在 `initSdk` 方法 `dataResidency` 属性中传送选定国家/地区的代码。
+如需在之前版本的 SDK 中禁用第三方数据分享，请调用`disableThirdPartySharing`方法。此方法已被弃用。如果您仍在使用，请注意它会直接调用基础方法。
 
-| 地区   | 代码 |
-| ------ | ---- |
-| 欧盟   | `EU` |
-| 土耳其 | `TR` |
-| 美国   | `US` |
+```ts
+const adjustThirdPartySharing = new Adjust.ThirdPartySharing(false);
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+```
+
+### 发送精细信息\{\#send\-granular\-information\}
+
+<codeblock title="Method signature"> 
+
+```ts
+public addGranularOption(partnerName: string,
+                         key: string,
+                         value: string)
+```
+
+</CodeBlock> 
+
+当用户更新第三方数据分享设置时，您可以附加较精细的信息，以此发送用户决定的更多细节。
+
+使用下列参数调用`addGranularOption`方法：
+
+* `partnerName` \(`string`\)：使用精细设置的合作伙伴的名称。
+* `key` \(`string`\)：选项 key。
+* `value` \(`string`\)：选项值。
+
+```ts
+const adjustThirdPartySharing = new Adjust.ThirdPartySharing(true);
+options.addGranularOption("PartnerA", "foo", "bar");
+Adjust.trackThirdPartySharing(options);
+```
+
+URL strategy \{\#url\-strategy\}
+------------------------------------
+
+<minorversion changed="5.7.0" link="https://github.com/adjust/web_sdk/releases/tag/v5.7.0" /> 
+
+通过 URL 策略功能，您可以进行下列设置：
+
+* Adjust 储存您数据的国家/地区 \(即数据驻留\)。
+* 接收 Adjust SDK 所发送流量的终端 \(自定义 URL \)。
+
+当应用运营的国家拥有严格的隐私规定时，此功能会非常有用。在您设置 URL 策略时，Adjust 会将数据储存在指定数据驻留地区，或将流量发送至选定域名。
+
+要配置 URL 策略，请在`Adjust.initSdk`实例中设置`urlStrategy`的以下属性：
+
+* `domains` \(`Array<string id="sl-md0000000">`\)：接收您所发送 SDK 流量的数据驻留国家/地区或终端。默认情况下，Adjust SDK 会将所有数据都发送至 Adjust 终端。如果您想设置自定义终端，请在`urlStrategy`的`domains`属性中传递。
+* `useSubdomains` \(`boolean`\): 域名是否应被视为 Adjust 域名。 
+  * 如果为`true`，则 SDK 会在域名中添加 Adjust 特定子域作为前缀。
+  * 如果为`false`，SDK 会按原样使用所提供的域名，不包含前缀。
+
+* `isDataResidency` \( `boolean` \)：可选。域名是否应被用于数据驻留。
+
+下表展示了一系列配置。
+
+|   URL 策略   |           默认和自定义域名            |  使用子域名  |  数据驻留   |
+|------------|-------------------------------|---------|---------|
+| 欧盟数据驻留     | `"eu.adjust.com"`             | `true`  | `true`  |
+| 中国 URL 策略  | `"adjust.cn"`, `"adjust.com"` | `true`  | `false` |
+| 自定义 URL 策略 | `"my.custom.domain"`          | `false` | `false` |
+
+```js
+Adjust.initSdk({
+   appToken: "YOUR_APP_TOKEN",
+   environment: "production",
+   logLevel: "verbose",
+   urlStrategy: {
+      domains: ["adjust.cn", "adjust.com"],
+      useSubdomains: true,
+      isDataResidency: false,
+   },
+});
+```
+
+### 设置自定义终端 \(已弃用\) \{\#set\-custom\-endpoint\}
+
+<minorversion removed="5.7.0" link="https://github.com/adjust/web_sdk/releases/tag/v5.7.0" /> 
+
+之前版本的 SDK 使用`customUrl`属性传递终端，该属性已被弃用。请改用`urlStrategy`配置。
+<codeblock del="{range: 5}" ins="{range: 6-10}"> 
+
+```js
+Adjust.initSdk({
+   appToken: "YOUR_APP_TOKEN",
+   environment: "production",
+   logLevel: "verbose",
+   customUrl: "my.custom.domain.com",
+   urlStrategy: {
+      domains: ["my.custom.domain"],
+      useSubdomains: false,
+      isDataResidency: false,
+   },
+});
+```
+
+</CodeBlock> 
+
+### 数据驻留 \(已弃用\) \{\#data\-residency\}
+
+<minorversion removed="5.7.0" link="https://github.com/adjust/web_sdk/releases/tag/v5.7.0" /> 
+
+之前版本的 SDK 使用的是`dataResidency`属性，该属性已被弃用。请改用`urlStrategy`配置。
+<codeblock del="{range: 5}" ins="{range: 6-10}"> 
 
 ```js
 Adjust.initSdk({
@@ -69,51 +181,13 @@ Adjust.initSdk({
    environment: "production",
    logLevel: "verbose",
    dataResidency: "EU",
+   urlStrategy: {
+      domains: ["eu.adjust.com"],
+      useSubdomains: true,
+      isDataResidency: true,
+   },
 });
-```
-
-## URL 策略{#url-strategy}
-
-<CodeBlock title="属性声明">
-
-```js
-urlStrategy: "india" | "china";
 ```
 
 </CodeBlock>
 
-您可以设置 URL 策略来优先将 Adjust SDK 的数据发送到某些地区终端。为此，请在 `initSdk` 方法 `urlStrategy` 属性中传送选定国家/地区的代码。
-
-| 地区 | 代码    |
-| ---- | ------- |
-| 中国 | `china` |
-| 印度 | `india` |
-
-```js
-Adjust.initSdk({
-   appToken: "YOUR_APP_TOKEN",
-   environment: "production",
-   logLevel: "verbose",
-   urlStrategy: "china",
-});
-```
-
-## 设置自定义终端{#set-custom-endpoint}
-
-<CodeBlock title="属性声明">
-
-```js
-customUrl: string;
-```
-
-</CodeBlock>
-
-默认情况下，Adjust SDK 会将所有数据都发送至 Adjust 终端。要指定自定义终端，请在 `initSdk` 方法 `customUrl` 函数中传送该终端。
-
-```js
-Adjust.initSdk({
-   appToken: "YOUR_APP_TOKEN",
-   environment: "sandbox",
-   customUrl: "https://my-custom-url.com/",
-});
-```
