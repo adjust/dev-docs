@@ -13,6 +13,7 @@ jobs:
       - name: Checkout the full PR history
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.ref }}
           fetch-depth: 0
 
       # Set up Node.js environment
@@ -42,7 +43,9 @@ jobs:
       - name: Commit changes
         if: ${{ steps.git-check.outputs.MODIFIED == 'true' }}
         run: |
+          BRANCH_NAME=${GITHUB_HEAD_REF}
           git config --global user.name "github-actions"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$BRANCH_NAME"
           git commit -am "Fix translated and formatted files"
-          git push
+          git push origin "$BRANCH_NAME"
