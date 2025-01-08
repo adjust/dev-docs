@@ -1,108 +1,110 @@
 ---
-title: "服务器到服务器 (S2S) 会话"
-description: "服务器到服务器 (S2S) 会话 API 使 Adjust 可以通过 HTTP 请求记录您的会话。"
-slug: "en/api/s2s-api/sessions"
+title: 服务器到服务器 (S2S) 会话
+description: 服务器到服务器 (S2S) 会话 API 使 Adjust 可以通过 HTTP 请求记录您的会话。
+slug: zh/api/s2s-api/sessions
 sidebar-position: 4
-sidebar-label: "S2S 会话"
+sidebar-label: S2S 会话
 ---
+
 在 Adjust 中，会话是所有归因和监测的基础。当用户打开应用或从后台恢复使用应用时，就会触发会话。您可以通过 S2S 会话 API 记录应用中的每一次会话。
-<callout type="important"> 
+
+<Callout type="important">
 
 Adjust 需要为您启用该功能。请联系您的技术客户经理或发送邮件至 [support@adjust.com](mailto:support@adjust.com) 来完成此步骤。
-</Callout> 
 
-操作前须知 \{\#before\-you\-begin\}
------------------------------------
+</Callout>
 
-### 认证\{\#authentication\}
+## 操作前须知 \{\#before\-you\-begin\}
 
-[设置 S2S 安全](/en/api/s2s-api/security)来保护 S2S 会话的安全，抵御欺诈请求的侵害。设置认证后，每个传入的请求都必须带有您在 Adjust 控制面板中生成的认证识别码。缺失识别码或识别码不正确的请求会被 Adjust 服务器拒绝。
+### 认证{#authentication}
 
-记录会话\{\#record\-sessions\}
-------------------------------
+[设置 S2S 安全](/zh/api/s2s-api/security)来保护 S2S 会话的安全，抵御欺诈请求的侵害。设置认证后，每个传入的请求都必须带有您在 Adjust 控制面板中生成的认证识别码。缺失识别码或识别码不正确的请求会被 Adjust 服务器拒绝。
+
+## 记录会话\{\#record\-sessions\}
 
 Adjust 将会话归为组，以节省资源。也就是说，在一次会话后，必须有至少 30 分钟的间隔，Adjust 服务器才会将下一次触发的会话计为新会话。
-<codeblock title="终端" highlight="/session"> 
+
+<CodeBlock title="终端" highlight="/session">
 
 ```text
 https://s2s.adjust.com/session
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
-### 标头\{\#headers\}
+### 标头{#headers}
 
-|            参数            |               描述               |                 示例                  |
-|--------------------------|--------------------------------|-------------------------------------|
-| `Content-Type`           | 硬编码 POST payload 格式            | `application/x-www-form-urlencoded` |
-| `X-Adjust-Forwarded-For` | 设备 IP 地址                       | `180.220.253.39`                    |
+| 参数                     | 描述                                         | 示例                                |
+| ------------------------ | -------------------------------------------- | ----------------------------------- |
+| `Content-Type`           | 硬编码 POST payload 格式                     | `application/x-www-form-urlencoded` |
+| `X-Adjust-Forwarded-For` | 设备 IP 地址                                 | `180.220.253.39`                    |
 | `Authorization`          | 您的 Adjust 验证识别码，作为`Bearer`识别码。 | `Bearer authentication_token`       |
 
-### Payload \{\#payload\}
+### Payload {#payload}
 
 请在下方查看完整参数列表。
 
-|          参数           |                                描述                                 |                        示例                         |
-|-----------------------|-------------------------------------------------------------------|---------------------------------------------------|
-| `s2s`\*              | 服务器到服务器的参数：允许 Adjust 服务器识别服务器端的活动。 必须始终未`1`。                      | `1`                                               |
-| `app_token`           | 应用的唯一认证识别码                                                        | `pezwd5bre2xb`                                    |
-| `vida`                | Vizio 广告标识符，仅限 Vizio                                              | `dca2365e-0d78-47c6-aaac-9567846c6c9e`            |
-| `rida`                | Roku 广告标识符，仅限 Roku 设备                                             |                                                   |
-| `tifa`                | Tizen 操作系统广告标识符，仅限 Samsung                                        |                                                   |
-| `idfa`                | iOS 广告标识符，仅限 iOS 设备                                               | `29DDE430-CE81-4F00-A50C-689595AAD142`            |
-| `idfv`                | iOS 供应商标识符，仅限 iOS 设备                                              | `59E27F41-A86B-4560-B585-63161F871C4B`            |
-| `gps_adid`            | Google Play 广告标识符，仅在已添加 Google Play 服务库时发送。仅限安卓设备                 | `6cf94580-46c2-490c-b882-2f6ae269b579`            |
-| `oaid`                | 匿名设备标识符                                                           | `ed799bac-2537-6122-377a-edebce5db5a5`            |
-| `imei`                | 国际移动设备识别码 \(IMEI\)                                              | `490154203237518`                                 |
-| `android_id`          | 安卓标识符，仅在缺失 `gps_adid` 的情况下发送。仅限安卓设备                               | `e11a8c233efb29f3`                                |
-| `persistent_ios_uuid` | 与 ios\_uuid 相同，但存储在 Keychain 中，以便重装的应用拥有相同的值，仅限 iOS 设备           | `3b35fcfb-6115-4cff-830f-e32a248c487d`            |
-| `app_version`         | 该参数代表 iOS 中的版本号码和安卓中的实际应用版本。                                      | `1.0`                                             |
-| `app_version_short`   | 代表 iOS 中的实际应用版本号。仅限 iOS                                           | `1.0`                                             |
-| `session_count`       | 包括当前会话的已记录会话总数。                                                   | `1`                                               |
-| `subsession_count`    | 已记录的子会话数量。记录到的首次会话 \(即安装\) 不包含该参数。<br/>其后的所有会话都包含前一次会话的子会话数量。   | `1`                                               |
-| `session_length`      | 会话时长 \(以秒计\)。记录到的首次会话 \(即安装\) 不包含该参数。<br/>其后的所有会话都包含前一次会话的时长。 | `123`                                             |
-| `time_spent`          | 前次会话中活跃状态时长                                                       | `123`                                             |
-| `tracking_enabled`    | 说明用户是否启用了限制广告跟踪 \(LAT\)                                         | `1`                                               |
-| `bundle_id`           | Bundle ID，仅限 iOS 设备。                                              | `com.adjust.example`                              |
-| `package_name`        | 包名，仅限安卓设备。                                                        | `com.adjust.example`                              |
-| `environment`         | `sandbox` 用于测试，`production`用于真实流量                                 | `sandbox`                                         |
-| `country`             | 国家/地区代码                                                           | `de`                                              |
-| `language`            | 本地语言代码                                                            | `en`                                              |
-| `os_name`             | `ios` 或 `android`                                                 | `ios`                                             |
-| `os_version`          | 当前操作系统版本                                                          | `11.0`                                            |
-| `cpu_type`            | CPU 处理器系列                                                         | `arm64-v8a`                                       |
-| `created_at`          | 本地设备创建包的时间戳 \(带时区\)。                                            | `2024-03-23T09:46:47.288Z-0400`                   |
-| `sent_at`             | 本地设备发送包的时间戳 \(带时区\)。                                            | `2024-03-23T09:47:47.288Z-0400`                   |
-| `device_type`         | 设备型号                                                              | `Phone (android), iphone`                         |
-| `device_name`         | URL 编码模型识别码                                                       | `Moto G (5) Plus, iPhone10,5`                     |
-| `hardware_name`       | 设备主板配置                                                            | `N66AP`                                           |
-| `install_receipt`     | 来自 App Store 的加密签名安装收据，仅限 iOS                                     | `Super long string representation of the receipt` |
-| `ip_address`          | 设备 IP 地址`ip_address`参数仅接受 IPv4 地址。当前不支持 IPv6。                     | `ip_address=192.0.0.1`                            |
+| 参数                  | 描述                                                                                                            | 示例                                              |
+| --------------------- | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| `s2s`\*               | 服务器到服务器的参数：允许 Adjust 服务器识别服务器端的活动。 必须始终未`1`。                                    | `1`                                               |
+| `app_token`           | 应用的唯一认证识别码                                                                                            | `pezwd5bre2xb`                                    |
+| `vida`                | Vizio 广告标识符，仅限 Vizio                                                                                    | `dca2365e-0d78-47c6-aaac-9567846c6c9e`            |
+| `rida`                | Roku 广告标识符，仅限 Roku 设备                                                                                 |                                                   |
+| `tifa`                | Tizen 操作系统广告标识符，仅限 Samsung                                                                          |                                                   |
+| `idfa`                | iOS 广告标识符，仅限 iOS 设备                                                                                   | `29DDE430-CE81-4F00-A50C-689595AAD142`            |
+| `idfv`                | iOS 供应商标识符，仅限 iOS 设备                                                                                 | `59E27F41-A86B-4560-B585-63161F871C4B`            |
+| `gps_adid`            | Google Play 广告标识符，仅在已添加 Google Play 服务库时发送。仅限安卓设备                                       | `6cf94580-46c2-490c-b882-2f6ae269b579`            |
+| `oaid`                | 匿名设备标识符                                                                                                  | `ed799bac-2537-6122-377a-edebce5db5a5`            |
+| `imei`                | 国际移动设备识别码 \(IMEI\)                                                                                     | `490154203237518`                                 |
+| `android_id`          | 安卓标识符，仅在缺失 `gps_adid` 的情况下发送。仅限安卓设备                                                      | `e11a8c233efb29f3`                                |
+| `persistent_ios_uuid` | 与 ios_uuid 相同，但存储在 Keychain 中，以便重装的应用拥有相同的值，仅限 iOS 设备                               | `3b35fcfb-6115-4cff-830f-e32a248c487d`            |
+| `app_version`         | 该参数代表 iOS 中的版本号码和安卓中的实际应用版本。                                                             | `1.0`                                             |
+| `app_version_short`   | 代表 iOS 中的实际应用版本号。仅限 iOS                                                                           | `1.0`                                             |
+| `session_count`       | 包括当前会话的已记录会话总数。                                                                                  | `1`                                               |
+| `subsession_count`    | 已记录的子会话数量。记录到的首次会话 \(即安装\) 不包含该参数。<br/>其后的所有会话都包含前一次会话的子会话数量。 | `1`                                               |
+| `session_length`      | 会话时长 \(以秒计\)。记录到的首次会话 \(即安装\) 不包含该参数。<br/>其后的所有会话都包含前一次会话的时长。      | `123`                                             |
+| `time_spent`          | 前次会话中活跃状态时长                                                                                          | `123`                                             |
+| `tracking_enabled`    | 说明用户是否启用了限制广告跟踪 \(LAT\)                                                                          | `1`                                               |
+| `bundle_id`           | Bundle ID，仅限 iOS 设备。                                                                                      | `com.adjust.example`                              |
+| `package_name`        | 包名，仅限安卓设备。                                                                                            | `com.adjust.example`                              |
+| `environment`         | `sandbox` 用于测试，`production`用于真实流量                                                                    | `sandbox`                                         |
+| `country`             | 国家/地区代码                                                                                                   | `de`                                              |
+| `language`            | 本地语言代码                                                                                                    | `en`                                              |
+| `os_name`             | `ios` 或 `android`                                                                                              | `ios`                                             |
+| `os_version`          | 当前操作系统版本                                                                                                | `11.0`                                            |
+| `cpu_type`            | CPU 处理器系列                                                                                                  | `arm64-v8a`                                       |
+| `created_at`          | 本地设备创建包的时间戳 \(带时区\)。                                                                             | `2024-03-23T09:46:47.288Z-0400`                   |
+| `sent_at`             | 本地设备发送包的时间戳 \(带时区\)。                                                                             | `2024-03-23T09:47:47.288Z-0400`                   |
+| `device_type`         | 设备型号                                                                                                        | `Phone (android), iphone`                         |
+| `device_name`         | URL 编码模型识别码                                                                                              | `Moto G (5) Plus, iPhone10,5`                     |
+| `hardware_name`       | 设备主板配置                                                                                                    | `N66AP`                                           |
+| `install_receipt`     | 来自 App Store 的加密签名安装收据，仅限 iOS                                                                     | `Super long string representation of the receipt` |
+| `ip_address`          | 设备 IP 地址`ip_address`参数仅接受 IPv4 地址。当前不支持 IPv6。                                                 | `ip_address=192.0.0.1`                            |
 
-向 Google 提供许可数据 \(《数字市场法案》合规\)\{\#provide\-consent\-data\-to\-google\-digital\-markets\-act\-compliance\}
-----------------------------------------------------------------------------------------------------------------------
+## 向 Google 提供许可数据 \(《数字市场法案》合规\)\{\#provide\-consent\-data\-to\-google\-digital\-markets\-act\-compliance\}
 
-要[符合欧盟的《数字市场法案》\(Digital Markets Act，简称 DMA\)](https://help.adjust.com/en/article/google-compliancy-with-the-dma)，Google Ads 和 Google Marketing Platform 需要获得明确的用户许可，才能接收 Adjust 向其 API 发送的归因请求。
-<callout type="important"> 
+要[符合欧盟的《数字市场法案》\(Digital Markets Act，简称 DMA\)](https://help.adjust.com/zh/article/google-compliancy-with-the-dma)，Google Ads 和 Google Marketing Platform 需要获得明确的用户许可，才能接收 Adjust 向其 API 发送的归因请求。
+
+<Callout type="important">
 
 如果您使用 Google Ads 或 Google Marketing Platform，且拥有位于欧洲经济区 \(EEA\) 内的用户，则必须发送这些选项。
-</Callout> 
+
+</Callout>
 
 对于 S2S 会话和安装请求，Adjust 支持下列 DMA 参数。请将参数添加至请求表格中。
 
 请注意，如果您正在使用 Google Ads，则需要发送`ad_personalization`参数；如果您正在使用 Google Marketing Platform，则需要发送`npa`参数。
 
-|          密钥          |                                     值                                     |                                                     描述                                                     |
-|----------------------|---------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------|
-| `eea`                | <ul><li>`1`: 用户位于 EEA 且 DMA 适用</li><li>`0`: 用户不位于 EEA 且 DMA 不适用</li></ul> | 告知 Google 用户是否位于 EEA，即包含 DMA 在内的欧洲法律法规是否适用于该用户和转化，                                                         |
-| `ad_personalization` | <ul><li>`1`: 用户已授权</li><li>`0`: 用户未授权</li></ul>                           | 表明用户是否同意在安装应用后通过 Google Ads 被投放个性化广告。                                                                      |
-| `ad_user_data`       | <ul><li>`1`: 用户已授权</li><li>`0`: 用户未授权</li></ul>                           | 告知 Google 用户是否同意分享个人数据用于监测目的。该许可适用于广告主在 Google Ads 和 Google Marketing Platform 用户界面中指定的所有核心平台服务 \(CPS\)。 |
-| `npa`                | <ul><li>`1`: 用户已授权</li><li>`0`: 用户未授权</li></ul>                           | 表明用户是否同意在安装应用后通过 Google Marketing Platform 被投放个性化广告。                                                       |
+| 密钥                 | 值                                                                                        | 描述                                                                                                                                                      |
+| -------------------- | ----------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `eea`                | <ul><li>`1`: 用户位于 EEA 且 DMA 适用</li><li>`0`: 用户不位于 EEA 且 DMA 不适用</li></ul> | 告知 Google 用户是否位于 EEA，即包含 DMA 在内的欧洲法律法规是否适用于该用户和转化，                                                                       |
+| `ad_personalization` | <ul><li>`1`: 用户已授权</li><li>`0`: 用户未授权</li></ul>                                 | 表明用户是否同意在安装应用后通过 Google Ads 被投放个性化广告。                                                                                            |
+| `ad_user_data`       | <ul><li>`1`: 用户已授权</li><li>`0`: 用户未授权</li></ul>                                 | 告知 Google 用户是否同意分享个人数据用于监测目的。该许可适用于广告主在 Google Ads 和 Google Marketing Platform 用户界面中指定的所有核心平台服务 \(CPS\)。 |
+| `npa`                | <ul><li>`1`: 用户已授权</li><li>`0`: 用户未授权</li></ul>                                 | 表明用户是否同意在安装应用后通过 Google Marketing Platform 被投放个性化广告。                                                                             |
 
-示例 \{\#example\}
--------------------
+## 示例 \{\#example\}
 
-<codeblock title="请求"> 
+<CodeBlock title="请求">
 
 ```sh
 curl -X "POST" \
@@ -113,7 +115,8 @@ curl -X "POST" \
 
 ```
 
-</CodeBlock> <codeblock title="响应"> 
+</CodeBlock>
+<CodeBlock title="响应">
 
 ```json
 {
@@ -142,4 +145,3 @@ curl -X "POST" \
 ```
 
 </CodeBlock>
-
