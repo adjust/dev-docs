@@ -1,0 +1,353 @@
+---
+title: "iOS Adobe Extension v3移行ガイド"
+description: "Extensionをv2からv3に移行するには、このガイドの手順に従ってください。"
+sidebar-label: "iOS v3移行ガイド"
+sidebar-position: 1
+---
+[Adobe Experience SDKのAdjust Extension](https://github.com/adjust/ios_adobe_extension)がv3にアップデートされ、Adjust iOS SDK v5のサポートが追加されました。Extensionをv2からv3に移行するには、このガイドの手順に従ってください。
+
+\{% callout type="important" %\} 
+移行する前に、iOS 12以降をサポートするようにアプリを更新してください。
+\{% /callout %\}
+
+Swift Package Managerを使用して、Adobe ExperienceのAdjust iOS Extension v3をインストールするには、次のURLを入力します。
+
+```txt
+https://github.com/adjust/ios_adobe_extension.git
+```
+
+CocoaPodsを使用している場合は、以下の行を`Podfile`に追加します。
+
+\{% codeblock title="Podfile" showLineNumbers=false %\}
+
+```rb
+pod 'AdjustAdobeExtension'
+```
+
+\{% /codeblock %\}
+
+Adobe ExperienceのAdjust iOS Extensionを設定する方法については、 [連携ガイド](/en/sdk/adobe-extension/ios/integration)を参照してください。
+
+新規API \{% \#new\-apis %\}
+-----------------------------
+
+\{% minorversion added="v3" size="large" /%\}
+
+Extension v3では、以下のAPIが追加されました。
+
+### ショートブランドリンクの解析\{% \#resolve\-short\-branded\-links %\}
+
+Adobe Experience SDKのAdjust Extension v3では、[ショートブランドリンク](https://help.adjust.com/en/article/short-branded-links)の解析に対するサポートが追加されます。短縮リンクを解析するには、以下の引数を使用して `Adjust.processAndResolveDeeplink` メソッドを呼び出します。
+
+\{% deflist %\}
+`deeplink`: `NSURL`
+
+:  アプリを起動するディープリンク。
+
+`withCompletionHandler`: `ADJResolvedDeeplinkBlock`
+
+:  解析されたショートリンクを引数として受け取る完了関数。
+\{% /deflist %\}
+
+\{% tabs %\}\{% tab title="Swift" sync="swift" %\}
+
+```swift
+func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+    if userActivity.activityType == NSUserActivityTypeBrowsingWeb {
+        if let incomingUrl = userActivity.webpageUrl {
+        if let deeplink = ADJDeeplink(deeplink: incomingUrl) {
+            Adjust.processAndResolveDeeplink(deeplink) { resolveDeeplink in
+                print("[\(resolveDeeplink)]")
+            }
+        }
+        }
+    }
+    return true
+}
+```
+
+\{% /tab %\}
+
+\{% tab title="Objective\-C" sync="objc" %\}
+
+```objc
+- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray<id<uiuseractivityrestoring id="sl-md0000000">> * _Nullable))restorationHandler {
+    if ([[userActivity activityType] isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+        ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:[userActivity webpageURL]];
+        [Adjust processAndResolveDeeplink:deeplink
+                withCompletionHandler:^(NSString * _Nullable resolvedLink) {
+                    NSLog(@"[%@]", resolvedLink);
+        }];
+    }
+    return YES;
+}
+```
+
+\{% /tab %\}\{% /tabs %\}
+
+### グローバルコールバックパラメーター \{% \#global\-callback\-parameters %\}
+
+Adobe Experience SDKのAdjust Extension v3では、iOS SDK v5によるグローバルコールバックパラメーターAPIのサポートが追加されます。セッションにグローバルコールバックを追加するには、次の引数を指定して `Adjust.addGlobalCallbackParameter` メソッドを呼び出します。
+
+\{% deflist %\}
+`key`: `NSString`
+
+:  パラメーターのキー。
+
+`value`: `NSString`
+
+:  パラメーターの値。\{% /deflist %\}
+
+\{% tabs %\}\{% tab title="Swift" sync="swift" %\}
+
+```swift
+Adjust.addGlobalCallbackParameter("value", forKey: "key")
+Adjust.addGlobalCallbackParameter("855", forKey: "user_id")
+```
+
+\{% /tab %\}
+
+\{% tab title="Objective\-C" sync="objc" %\}
+
+```objc
+[Adjust addGlobalCallbackParameter:@"value" forKey:@"key"];
+[Adjust addGlobalCallbackParameter:@"855" forKey:@"user_id"];
+```
+
+\{% /tab %\}\{% /tabs %\}
+
+[グローバルコールバックの設定方法](/en/sdk/adobe-extension/ios/global-parameters#global-callback-parameters)をご確認ください。
+
+### グローバルパートナーパラメーター \{% \#global\-partner\-parameters %\}
+
+Adobe Experience SDKのAdjust Extension v3では、iOS SDK v5によるグローバルパートナーパラメーターAPIのサポートが追加されます。グローバルパートナーパラメーターを追加するには、以下の引数を使用して`Adjust.addGlobalPartnerParameter`メソッドを呼び出します。
+
+\{% deflist %\}
+`key`: `String`
+
+:  パラメーターのキー。
+
+`value`: `String`
+
+:  パラメーターの値。\{% /deflist %\}
+
+\{% tabs %\}\{% tab title="Swift" sync="swift" %\}
+
+```swift
+Adjust.addGlobalPartnerParameter("value", forKey: "key")
+Adjust.addGlobalPartnerParameter("855", forKey: "user_id")
+```
+
+\{% /tab %\}
+
+\{% tab title="Objective\-C" sync="objc" %\}
+
+```objc
+[Adjust addGlobalPartnerParameter:@"value" forKey:@"key"];
+[Adjust addGlobalPartnerParameter:@"855" forKey:@"user_id"];
+```
+
+\{% /tab %\}\{% /tabs %\}
+
+[グローバルパートナーパラメーターの設定方法](/en/sdk/adobe-extension/ios/global-parameters#global-partner-parameters)をご確認ください。
+
+### 外部デバイスIDを設定する \{% \#set\-external\-device\-id %\}
+
+Adobe Experience SDKのAdjust Extension v3では、[外部デバイスID](https://help.adjust.com/en/article/external-device-identifiers)設定のサポートが追加されます。外部デバイスIDを設定するには、以下の引数で `AdjustAdobeExtensionConfig` の `setExternalDeviceId` メソッドを呼び出します。
+
+\{% deflist %\}
+`externalDeviceId`: `NSString`
+
+: 外部デバイスID。\{% /deflist %\}
+
+\{% tabs %\}\{% tab title="Swift" sync="swift" %\}
+
+```swift
+if let config = AdjustAdobeExtensionConfig(environment: ADJEnvironmentSandbox) {
+   config.setExternalDeviceId("{% $variables.config.externalDeviceId %}")
+   AdjustAdobeExtension.setConfiguration(config)
+}
+```
+
+\{% /tab %\}
+
+\{% tab title="Objective\-C" sync="objc" %\}
+
+```objc
+AdjustAdobeExtensionConfig *config = [AdjustAdobeExtensionConfig configWithEnvironment:ADJEnvironmentSandbox];
+[config setExternalDeviceId:@"{% $variables.config.externalDeviceId %}"];
+[AdjustAdobeExtension setConfiguration:config];
+```
+
+\{% /tab %\}\{% /tabs %\}
+
+[外部デバイスIDの設定方法](/en/sdk/adobe-extension/ios/external-device-id)をご確認ください。
+
+### プリインストールアプリのデフォルトリンクトークンの設定\{% \#set\-default\-link\-token\-preinstalled\-apps %\}
+
+Adobe Experience SDKのAdjust Extension v3では、プレインストールされたアプリインストールをデフォルトキャンペーンに記録するため、デフォルトの[リンクトークン](https://help.adjust.com/en/article/links)を設定することができます。デフォルトのリンクトークンを設定するには、以下の引数を使用して `AdjustAdobeExtensionConfig` インスタンスの `setDefaultTracker` メソッドを呼び出します。
+
+\{% deflist %\}
+`defaultTracker`: `NSString`
+
+:  プリインストールキャンペーン用の英数字のリンクトークン。\{% /deflist %\}
+
+\{% tabs %\}\{% tab title="Swift" sync="swift" %\}
+
+```swift
+if let config = AdjustAdobeExtensionConfig(environment: ADJEnvironmentSandbox) {
+   config.setDefaultTracker("abc123")
+   AdjustAdobeExtension.setConfiguration(config)
+}
+```
+
+\{% /tab %\}
+
+\{% tab title="Objective\-C" sync="objc" %\}
+
+```objc
+AdjustAdobeExtensionConfig *config = [AdjustAdobeExtensionConfig configWithEnvironment:ADJEnvironmentSandbox];
+[config setDefaultTracker:@"abc123"];
+[AdjustAdobeExtension setConfiguration:config];
+```
+
+\{% /tab %\}\{% /tabs %\}
+
+[プリインストールアプリのアクティビティを送信する方法](/en/sdk/adobe-extension/ios/preinstalled)をご確認ください。
+
+変更されたAPI \{% \#changed\-apis %\}
+------------------------------------
+
+\{% minorversion changed="v3" size="large" /%\}
+
+Extension v3では、以下のAPIが変更されました。
+
+### ダイレクトディープリンク\{% \#direct\-deep\-linking %\}
+
+SDK v2では、ディープリンクデータを引数として`AdjustAdobeExtension.application`メソッドを呼び出すことで、アトリビューションのディープリンクを開くことができます。
+
+\{% tabs %\}\{% tab title="Swift" sync="swift" %\}
+
+```swift
+func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+    return AdjustAdobeExtension.application(app, open: url, options: options)
+}
+```
+
+\{% /tab %\}
+
+\{% tab title="Objective\-C" sync="objc" %\}
+
+```objc
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+    return [AdjustAdobeExtension application:app openURL:url options:options];
+}
+```
+
+\{% /tab %\}\{% /tabs %\}
+
+SDK v3では、Adjust iOS SDKの`processDeeplink`メソッドを使用するように更新されました。ダイレクトディープリンクを開くには、以下の手順に従ってください。
+
+1. ディープリンクURLを使用して新しい`ADJDeeplink`インスタンスを作成します。
+
+2. `Adjust.processDeeplink` メソッドに`ADJDeeplink`インスタンスをパスします。
+
+   \{% tabs %\}\{% tab title="Swift" sync="swift" %\}
+
+   ```swift
+   func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+      if let deeplink = ADJDeeplink(deeplink: url) {
+         Adjust.processDeeplink(deeplink)
+      }
+      return true
+   }
+   ```
+
+   \{% /tab %\}
+
+   \{% tab title="Objective\-C" sync="objc" %\}
+
+   ```objc
+   - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+      [Adjust processDeeplink: [[ADJDeeplink alloc] initWithDeeplink:url]];
+      return YES;
+   }
+   ```
+
+   \{% /tab %\}\{% /tabs %\}
+
+[ダイレクトディープリンクでユーザーをリアトリビュートする方法](/en/sdk/adobe-extension/ios/deep-linking#reattribute-users-with-direct-deep-links)をご確認ください。
+
+### ディファードディープリンクのコールバック \{% \#deferred\-deep\-linking\-callback %\}
+
+SDK v2では、`AdjustAdobeExtensionConfig`インスタンスの`setDeeplinkResponseBlock`メソッドに関数をパスするように設定することで、ディファードディープリンクが開いた時にコールバック関数を起動させることができます。
+
+\{% tabs %\}\{% tab title="Swift" sync="swift" %\}
+
+```swift
+if let config = AdjustAdobeExtensionConfig(environment: ADJEnvironmentSandbox) {
+    config.setDeeplinkResponseBlock { deepLink in
+        // Deep link response received
+        // Apply your logic to determine whether the Adjust SDK should try to open the deep link
+        return true;
+        // or
+        // return false;
+    }
+    AdjustAdobeExtension.setConfiguration(config)
+}
+```
+
+\{% /tab %\}
+
+\{% tab title="Objective\-C" sync="objc" %\}
+
+```objc
+AdjustAdobeExtensionConfig *config = [AdjustAdobeExtensionConfig configWithEnvironment:ADJEnvironmentSandbox];
+[config setDeeplinkResponseBlock:^BOOL(NSURL * _Nullable deeplink) {
+    // Deep link response received
+    // Apply your logic to determine whether the Adjust SDK should try to open the deep link
+    return YES;
+    // or
+    // return NO;
+}];
+[AdjustAdobeExtension setConfiguration:config];
+```
+
+\{% /tab %\}\{% /tabs %\}
+
+SDK v3では、このメソッドの名前が`setDeeplinkResponseBlock`から`setDeferredDeeplinkReceivedBlock`に変更されました。
+
+\{% tabs %\}\{% tab title="Swift" sync="swift" %\}
+
+```swift
+if let config = AdjustAdobeExtensionConfig(environment: ADJEnvironmentSandbox) {
+    config.setDeferredDeeplinkReceivedBlock { (deeplink: URL?) -> Bool in
+        if let deeplinkString = deeplink?.absoluteString.lowercased(),
+        deeplinkString.contains("no_open") {
+            return false
+        }
+        return true
+    }
+    AdjustAdobeExtension.setConfiguration(config)
+}
+```
+
+\{% /tab %\}
+
+\{% tab title="Objective\-C" sync="objc" %\}
+
+```objc
+AdjustAdobeExtensionConfig *config = [AdjustAdobeExtensionConfig configWithEnvironment:ADJEnvironmentSandbox];
+[config setDeferredDeeplinkReceivedBlock:^BOOL(NSURL * _Nullable deeplink) {
+    if (deeplink && [[deeplink.absoluteString lowercaseString] containsString:@"no_open"]) {
+        return NO;
+    }
+    return YES;
+}];
+[AdjustAdobeExtension setConfiguration:config];
+```
+
+\{% /tab %\}\{% /tabs %\}
+
+[ディファードディープリンクコールバックとの利用方法](/en/sdk/adobe-extension/ios/deep-linking#deferred-deep-link-callbacks)をご確認ください。
+
