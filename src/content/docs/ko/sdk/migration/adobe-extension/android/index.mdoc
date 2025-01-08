@@ -1,0 +1,231 @@
+---
+title: "Android Adobe Extension v3 마이그레이션 가이드"
+description: "이 가이드에 따라 v2에서 v3로 마이그레이션"
+sidebar-label: "Android v3 마이그레이션 가이드"
+sidebar-position: 1
+---
+[Adobe Experience SDK용 Adjust 확장판](https://github.com/adjust/android_adobe_extension)이 v3로 업데이트되어 Adjust Android SDK v5를 지원합니다. 이 가이드에 따라 v2에서 v3로 마이그레이션하시기 바랍니다.
+
+\{% callout type="important" %\}
+마이그레이션하기 전에 [Android API 21](https://developer.android.com/tools/releases/platforms#5.0) 이상을 지원하도록 앱을 업데이트해야 합니다.
+\{% /callout %\}
+
+Adobe Experience용 Adjust Android 확장판 v3를 설치하려면 다음과 같이 `build.gradle`의 디펜던시 선언을 업데이트합니다.
+
+1. `com.adjust.adobeextension:adobeextension` 3\.0\.0 이상으로 업데이트해야 합니다.
+2. `com.adjust.sdk:adjust-android` 5\.0\.0 이상으로 업데이트해야 합니다.
+
+```groovy
+dependencies {
+   implementation 'com.adjust.adobeextension:adobeextension:{% $versions.android_adobe_extension.v3 %}'
+   implementation 'com.adjust.sdk:adjust-android:{% $versions.android.v5 %}'
+   implementation 'com.adobe.marketing.mobile:core:3.2.0'
+   implementation 'com.android.installreferrer:installreferrer:2.2'
+}
+```
+
+Adobe Experience용 Adjust Android Extension 설정 통합 가이드는 [연동 가이드](/en/sdk/adobe-extension/android/integration)를 참조하시기 바랍니다.
+
+새 API \{% \#new\-apis %\}
+-----------------------------
+
+\{% minorversion added="v3" size="large" /%\}
+
+다음 API가 v3에 추가되었습니다.
+
+### 숏 브랜드 링크 해석 \{% \#resolve\-short\-branded\-links %\}
+
+Adobe Experience SDK용 Adjust Extension v3는 [숏 브랜드 링크](https://help.adjust.com/en/article/short-branded-links) 해석 지원이 추가되었습니다. 단축된 링크를 해석하려면 다음 인수로 `Adjust.processAndResolveDeeplink` 메서드를 호출합니다.
+
+\{% deflist %\}
+`adjustDeeplink`: `AdjustDeeplink`
+
+: 앱을 연 딥링크
+
+`context`: `Context`
+
+: 앱 컨텍스트입니다. `getApplicationContext()`를 호출하여 이 값을 입력합니다.
+
+`callback`: `OnDeeplinkResolvedListener`
+
+: 해석된 단축 링크를 인수로 수신하는 콜백 함수입니다.
+\{% /deflist %\}
+
+```java
+Intent intent = getIntent();
+Uri data = intent.getData();
+AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+Adjust.processAndResolveDeeplink(adjustDeeplink, getApplicationContext(), new OnDeeplinkResolvedListener() {
+   @Override
+   public void onDeeplinkResolved(String s) {
+
+   }
+});
+```
+
+### 글로벌 콜백 파라미터 \{% \#global\-callback\-parameters %\}
+
+Adobe Experience SDK용 Adjust Extension v3에 Android SDK v5의 글로벌 콜백 파라미터 API 지원이 추가되었습니다. 세션에 글로벌 콜백을 추가하려면 다음 인수로 `Adjust.addGlobalCallbackParameter` 메서드를 호출합니다.
+
+\{% deflist %\}
+`key`: `String`
+
+: 파라미터의 키
+
+`value`: `String`
+
+: 파라미터의 값
+\{% /deflist %\}
+
+```java
+Adjust.addGlobalCallbackParameter("key", "value");
+Adjust.addGlobalCallbackParameter("user_id", "855");
+```
+
+[글로벌 콜백 설정](/en/sdk/adobe-extension/android/global-parameters#global-callback-parameters) 방법을 알아보시기 바랍니다.
+
+### 글로벌 파트너 파라미터 \{% \#global\-partner\-parameters %\}
+
+Adobe Experience SDK용 Adjust Extension v3에 Android SDK v5의 글로벌 파트너 파라미터 API 지원이 추가되었습니다. 글로벌 파트너 파라미터를 추가하려면 다음 인수로 `Adjust.addGlobalPartnerParameter` 메서드를 호출합니다.
+
+\{% deflist %\}
+`key`: `String`
+
+: 파라미터의 키
+
+`value`: `String`
+
+: 파라미터의 값
+\{% /deflist %\}
+
+```java
+Adjust.addGlobalPartnerParameter("key", "value");
+Adjust.addGlobalPartnerParameter("user_id", "855");
+```
+
+[글로벌 파트너 파라미터 설정](/en/sdk/adobe-extension/android/global-parameters#global-partner-parameters) 방법을 알아보시기 바랍니다.
+
+### 외부 기기 ID 전송 \{% \#set\-external\-device\-id %\}
+
+Adobe Experience SDK용 Adjust Extension v3는 [외부 기기 식별자](https://help.adjust.com/en/article/external-device-identifiers) 설정 지원이 추가되었습니다. 외부 기기 ID를 설정하려면 다음 인수로 `AdjustAdobeExtensionConfig` 인스턴스의 `setExternalDeviceId` 메서드를 호출합니다.
+
+\{% deflist %\}
+`externalDeviceId`: `String`
+
+: 외부 기기 식별자
+\{% /deflist %\}
+
+```java
+String environment = AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX;
+AdjustAdobeExtensionConfig config = new AdjustAdobeExtensionConfig(environment);
+config.setExternalDeviceId("{YourExternalDeviceId}");
+AdjustAdobeExtension.setConfiguration(config);
+```
+
+[외부 기기 ID 설정](/en/sdk/adobe-extension/android/external-device-id) 방법을 알아보시기 바랍니다.
+
+### 사전 설치 앱에 대한 기본 링크 토큰 설정 \{% \#set\-default\-link\-token\-preinstalled\-apps %\}
+
+Adobe Experience SDK용 Adjust Extension v3는 기본 캠페인에 사전 설치 앱의 설치를 기혹하기 위한 기본 [링크 토큰](https://help.adjust.com/en/article/links) 설정 지원이 추가되었습니다. 기본 링크 토큰을 설정하려면 다음 인수로 `AdjustAdobeExtensionConfig` 인스턴스의 `setDefaultTracker` 메서드를 호출합니다.
+
+\{% deflist %\}
+`defaultTracker`: `String`
+
+: 사전 설치 캠페인의 영숫자 링크 토큰
+\{% /deflist %\}
+
+```java
+String environment = AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX;
+AdjustAdobeExtensionConfig config = new AdjustAdobeExtensionConfig(environment);
+config.setDefaultTracker("{Token}");
+AdjustAdobeExtension.setConfiguration(config);
+```
+
+[사전 설치된 앱 활동 전송](/en/sdk/adobe-extension/android/preinstalled) 방법을 알아보시기 바랍니다.
+
+변경된 API \{% \#changed\-apis %\}
+-----------------------------------
+
+\{% minorversion changed="v3" size="large" /%\}
+
+다음 API가 v3에서 변경되었습니다.
+
+### 기기 ADID 조회 \{% \#retrieve\-device\-adid %\}
+
+SDK v2에서는 `AdjustAttribution` 클래스에 `adid`라는 속성이 있습니다. 이 속성이 제거되었습니다. `Adjust.getAdid`를 호출하여 기기의 ADID를 비동기적으로 조회할 수 있습니다.
+
+```java
+Adjust.getAdid(new OnAdidReadListener() {
+    @Override
+    public void onAdidRead(String adid) {
+      // Your callback function
+    }
+});
+```
+
+### 다이렉트 딥링크 \{% \#direct\-deep\-linking %\}
+
+SDK v2에서는 딥링크 데이터를 인수로 `AdjustAdobeExtension.openUrl` 메서드를 호출하여 어트리뷰션에 대한 딥링크를 열 수 있습니다.
+
+```java
+Intent intent = getIntent();
+Uri data = intent.getData();
+AdjustAdobeExtension.openUrl(data, getApplicationContext());
+```
+
+SDK v3가 Adjust Android SDK의 `processDeeplink` 메서드를 사용하도록 업데이트되었습니다. 다이렉트 딥링크를 여는 방법은 다음과 같습니다.
+
+1. 딥링크 URL로 새로운 `AdjustDeeplink` 인스턴스를 생성합니다.
+2. `AdjustDeeplink` 인스턴스를 `Adjust.processDeeplink` 메서드에 전달합니다.
+
+```java
+Intent intent = getIntent();
+Uri data = intent.getData();
+AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
+```
+
+[다이렉트 딥링크를 사용하여 사용자 리어트리뷰션](/en/sdk/adobe-extension/android/deep-linking#reattribute-users-with-direct-deep-links) 방법을 알아보시기 바랍니다.
+
+### 디퍼드 딥링크 콜백 \{% \#deferred\-deep\-linking\-callback %\}
+
+SDK v2에서는 `AdjustAdobeExtensionConfig` 인스턴스의 `setOnDeeplinkResponseListener` 메서드에 함수를 전달하여 디퍼드 딥링크가 열릴 때 콜백 함수를 실행하도록 SDK를 구성할 수 있습니다.
+
+```java
+AdjustAdobeExtensionConfig config = new AdjustAdobeExtensionConfig(environment);
+
+config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
+    @Override
+    public boolean launchReceivedDeeplink(Uri deeplink) {
+        if (shouldAdjustSdkLaunchTheDeeplink(deeplink)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+});
+
+AdjustAdobeExtension.setConfiguration(config);
+```
+
+SDK v3에서는 `setOnDeeplinkResponseListener` 메서드의 이름이 `setOnDeferredDeeplinkResponseListener`으로 변경되었습니다.
+
+```java
+AdjustAdobeExtensionConfig config = new AdjustAdobeExtensionConfig(environment);
+
+config.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListener() {
+    @Override
+    public boolean launchReceivedDeeplink(Uri deeplink) {
+        if (shouldAdjustSdkLaunchTheDeeplink(deeplink)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+});
+
+AdjustAdobeExtension.setConfiguration(config);
+```
+
+[디퍼드 딥링크 콜백 처리](/en/sdk/adobe-extension/android/deep-linking#deferred-deep-link-callbacks) 방법을 알아보시기 바랍니다.
+
