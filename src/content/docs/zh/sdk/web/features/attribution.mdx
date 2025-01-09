@@ -1,14 +1,12 @@
 ---
-title: 获取归因信息
-description: 使用 Adjust SDK 监听归因变化
-slug: zh/sdk/web/features/attribution
+title: "获取归因信息"
+description: "使用 Adjust SDK 监听归因变化"
+slug: "en/sdk/web/features/attribution"
 ---
-
-用户与 Adjust 链接交互时，其归因信息会发生更新。用户与[深度链接](https://help.adjust.com/zh/article/deep-links)交互时可能会发生这种情况。用户归因相关信息会在归因对象中展现。
+用户与 Adjust 链接交互时，其归因信息会发生更新。用户与[深度链接](https://help.adjust.com/en/article/deep-links)交互时可能会发生这种情况。用户归因相关信息会在归因对象中展现。
 
 归因对象包含下列信息：
-
-<CodeBlock title="接口声明">
+<codeblock title="接口声明"> 
 
 ```js
 export type AttributionMapT = $ReadOnly<{|
@@ -24,29 +22,30 @@ export type AttributionMapT = $ReadOnly<{|
 |}>;
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-| 值              | 数据类型 | 描述                                                                          |
-| --------------- | -------- | ----------------------------------------------------------------------------- |
-| `adid`          | `string` | 设备的唯一 Adjust 标识符。                                                    |
-| `tracker_token` | `string` | 与归因关联的链接识别码。                                                      |
-| `tracker_name`  | `string` | 推广活动链接名称                                                              |
-| `network`       | `string` | 与推广活动关联的渠道。                                                        |
-| `campaign`      | `string` | 与归因关联的推广活动名称。                                                    |
-| `adgroup`       | `string` | 与归因关联的广告组。                                                          |
-| `creative`      | `string` | 与归因关联的素材。                                                            |
-| `click_label`   | `string` | 与归因关联的 [click label](https://help.adjust.com/zh/article/user-rewards)。 |
-| `state`         | `string` | 当前归因状态。`installed` 或 `reattributed`                                   |
+|        值        |   数据类型   |                                   描述                                   |
+|-----------------|----------|------------------------------------------------------------------------|
+| `adid`          | `string` | 设备的唯一 Adjust 标识符。                                                      |
+| `tracker_token` | `string` | 与归因关联的链接识别码。                                                           |
+| `tracker_name`  | `string` | 推广活动链接名称                                                               |
+| `network`       | `string` | 与推广活动关联的渠道。                                                            |
+| `campaign`      | `string` | 与归因关联的推广活动名称。                                                          |
+| `adgroup`       | `string` | 与归因关联的广告组。                                                             |
+| `creative`      | `string` | 与归因关联的素材。                                                              |
+| `click_label`   | `string` | 与归因关联的 [click label](https://help.adjust.com/en/article/user-rewards)。 |
+| `state`         | `string` | 当前归因状态。`installed` 或 `reattributed`                                    |
 
-## 发生归因变化时触发回传{#trigger-a-callback-when-attribution-changes}
+发生归因变化时触发回传\{\#trigger\-a\-callback\-when\-attribution\-changes\}
+-------------------------------------------------------------------------
 
-<CodeBlock title="属性声明">
+<codeblock title="属性声明"> 
 
 ```js
 attributionCallback: (string, Object) => mixed;
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 SDK 可监听归因变更并在发现更新时调用一个函数。您可以在 `initSdk` 方法中指定一个 `attributionCallback` 函数，来设置归因回传方法。在函数内，您可以访问用户归因信息。
 
@@ -68,46 +67,42 @@ Adjust.initSdk({
 });
 ```
 
-## 获取当前归因信息{#get-current-attribution-information}
+获取当前归因信息\{\#get\-current\-attribution\-information\}
+----------------------------------------------------------
 
-<CodeBlock title="方法签名">
+<minorversion changed="5.7.0" link="https://github.com/adjust/web_sdk/releases/tag/v5.7.0" /> 
 
-```js
-function getAttribution(): Attribution | undefined;
-```
-
-</CodeBlock>
-
-用户安装您的应用时，Adjust 会将该安装归因至一个推广活动。Adjust SDK 可提供赢得安装归因的推广活动细节。要返回此信息，请调用 `getAttribution` 方法。
+用户安装您的应用时，Adjust 会将该安装归因至一个推广活动。Adjust SDK 可提供赢得安装归因的推广活动细节。`waitForAttribution`方法会返回一个`promise`，当 SDK 成功从服务器接收到归因数据时，该 promise 会被完成。
 
 ```js
-const attribution = Adjust.getAttribution();
+Adjust.waitForAttribution().then((attr) =>
+   console.log(JSON.stringify(attr, undefined, 2)),
+);
 ```
 
-## 设置 referrer {#set-a-referrer}
+设置 referrer \{\#set\-a\-referrer\}
+---------------------------------------
 
-<CodeBlock title="方法签名">
+<codeblock title="方法签名"> 
 
 ```js
 function setReferrer(referrer: string): void;
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
 您可以创建一个 referrer，来在 SDK 启动后触发带有自定义点击 ID 的 SDK 点击。SDK 会将您的自定义点击 ID 发送到 Adjust 服务器用于归因。
-
-<Callout type="important">
+<callout type="important"> 
 
 在尽可能靠近 SDK 初始化的节点调用此方法，确保您的 referrer 被用于归因。
-
-</Callout>
+</Callout> 
 
 要设置 referrer，请调用 `setReferrer` 方法并以 URL 编码 `string` 参数的形式传递 referrer。
-
-<CodeBlock highlight="adjust_external_click_id%3DEXTERNAL_CLICK_ID\">
+<codeblock highlight="adjust_external_click_id%3DEXTERNAL_CLICK_ID\"> 
 
 ```js
 Adjust.setReferrer("adjust_external_click_id%3DEXTERNAL_CLICK_ID");
 ```
 
 </CodeBlock>
+

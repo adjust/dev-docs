@@ -1,67 +1,179 @@
 ---
-title: 프라이버시 기능 설정
-description: 앱에서 사용자 프라이버시를 관리할 수 있는 기능을 구성합니다.
-slug: ko/sdk/web/features/privacy
+title: "프라이버시 기능 설정"
+description: "앱에서 사용자 프라이버시를 관리할 수 있는 기능을 구성합니다."
+slug: "en/sdk/web/features/privacy"
 ---
-
 Adjust SDK에는 앱에서 사용자 프라이버시를 관리할 수 있는 기능이 포함되어 있습니다.
 
-## 삭제 요청 전송 {#send-erasure-request}
+삭제 요청 전송 \{\#send\-erasure\-request\}
+------------------------------------------
 
-<CodeBlock title="메서드 서명">
+<codeblock title="메서드 서명"> 
 
 ```js
 function gdprForgetMe(): void;
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-EU의 개인정보 보호 규정\(GDPR\) 및 유사한 전 세계 개인정보 보호법\(CCPA, LGPD 등\)은 데이터 주체에게 개인 데이터 처리와 관련하여 포괄적인 권리를 부여합니다. 이러한 권리에는 삭제 권리\( [GDPR 17조](https://gdpr.eu/article-17-right-to-be-forgotten/) 참조\)\([1](https://help.adjust.com/ko/article/gdpr#ref-1)\)가 포함됩니다. 데이터 처리자로서 Adjust는 귀하의 \(앱\) 사용자의 이러한 요청을 처리하는 데 있어 귀하\(데이터 컨트롤러\)를 지원할 의무가 있습니다.
+EU의 개인정보 보호 규정\(GDPR\) 및 기타 개인정보 보호법\(CCPA, LGPD 등\)은 데이터 주체에게 개인 데이터 처리와 관련하여 포괄적인 권리를 부여합니다. 이러한 권리에는 삭제 권리\([GDPR 17조](https://gdpr.eu/article-17-right-to-be-forgotten/)\)\([1](https://help.adjust.com/en/article/gdpr#ref-1)\)가 포함됩니다. 데이터 처리자로서 Adjust는 귀하의 \(앱\) 사용자의 이러한 요청을 처리하는 데 있어 귀하\(데이터 컨트롤러\)를 지원할 의무가 있습니다.
 
-`gdprForgetMe` 메서드를 호출하여 사용자의 삭제 요청을 Adjust로 전송할 수 있습니다. Adjust가 알림을 받은 경우:
+`gdprForgetMe` 메서드를 호출하여 사용자의 삭제 요청을 Adjust로 전송할 수 있습니다. 삭제 요청 수신 시 Adjust는 다음의 조치를 취합니다:
 
--  Adjust는 내부 시스템과 데이터베이스에서 해당 사용자의 모든 과거 개인 정보를 영구적으로 삭제합니다.
--  Adjust는 더 이상 Adjust SDK를 통해 해당 사용자/기기로부터 데이터를 수신하지 않습니다.\([2](https://help.adjust.com/ko/article/gdpr#ref-2)\)
+* Adjust 내부 시스템과 데이터베이스에서 해당 사용자의 모든 개인 정보 기록을 영구적으로 삭제합니다.
+* Adjust는 더 이상 Adjust SDK를 통해 해당 사용자/기기로부터 데이터를 수신하지 않습니다.\([2](https://help.adjust.com/en/article/gdpr#ref-2)\)
 
 ```js
 Adjust.gdprForgetMe();
 ```
 
-## 서드파티 공유 비활성화 {#disable-third-party-sharing}
+특정 사용자에 대한 서드파티 공유 \{\#third\-party\-sharing\-for\-specific\-users\}
+----------------------------------------------------------------------------
 
-<CodeBlock title="메서드 서명">
+<minorversion added="5.7.0" link="https://github.com/adjust/web_sdk/releases/tag/v5.7.0" /> 
 
-```js
-function disableThirdPartySharing(): void;
+Adjust SDK를 사용하여 사용자의 서드파티 공유 설정 변경 내용을 기록할 수 있습니다. 이러한 설정은 `ThirdPartySharing` 클래스를 사용하여 구성됩니다.
+
+### AdjustThirdPartySharing 객체 인스턴스화 \{\#instantiate\-an\-adjustthirdpartysharing\-object\}
+
+<codeblock title="메서드 서명"> 
+
+```ts
+class ThirdPartySharing {
+   constructor(isEnabled: boolean) {}
+   // ...
+}
 ```
 
-</CodeBlock>
+</CodeBlock> 
 
-모든 사용자의 서드파티 공유를 비활성화하려면 `disableThirdPartySharing` 메서드를 호출합니다. Adjust 서버가 이 정보를 수신하면 Adjust는 해당 사용자의 데이터를 서드파티와 공유하는 것을 중단합니다. Adjust SDK의 작동에는 문제가 없습니다.
+Adjust SDK와의 서드파트 공유를 활성화 또는 비활성화하려면 `ThirdPartySharing` 객체를 인스턴스화합니다. 이 객체에 Adjust의 서드파티 공유 처리 방식을 제어하는 변수가 포함됩니다.
 
-```js
-Adjust.disableThirdPartySharing();
+이를 인스턴스화하려면 새로운 `ThirdPartySharing` 인스턴스를 생성하고 다음 파라미터를 전달합니다.
+
+* `isEnabled` \(`boolean`\):`true` 전달로 서드파티 공유를 활성화하거나 `false` 전달로 서드파티 공유를 비활성화합니다.
+
+```ts
+const adjustThirdPartySharing = new Adjust.ThirdPartySharing(true);
 ```
 
-## 데이터 레지던시 {#data-residency}
+`false`로 설정하면 Adjust는 사용자의 데이터를 서드파티와 공유하는 것을 중단합니다. Adjust SDK의 작동에는 문제가 없습니다.
 
-<CodeBlock title="속성 선언">
+Adjust로 정보를 전송하려면 `ThirdPartySharing` 인스턴스를 인수로 사용하여 `Adjust.trackThirdPartySharing` 메서드를 호출합니다.
 
-```js
-dataResidency: "EU" | "TR" | "US";
+```ts
+const adjustThirdPartySharing = new Adjust.ThirdPartySharing(true);
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
-</CodeBlock>
+### 서드파티 공유 비활성화\(지원 중단\) \{\#disable\-third\-party\-sharing\}
 
-데이터 레지던시를 사용하면 Adjust가 데이터를 저장할 국가를 선택할 수 있습니다. 본 기능은 프라이버시 요건이 엄격한 나라에서 앱을 운영하는 경우에 유용합니다. 데이터 레지던시를 설정하면 Adjust는 선택한 지역의 데이터 센터에 고객의 데이터를 저장합니다.
+<minorversion removed="5.7.0" link="https://github.com/adjust/web_sdk/releases/tag/v5.7.0" /> 
 
-데이터 레지던시 국가를 설정하려면 `initSdk` 메서드의 `dataResidency` 속성 내 선호하는 국가의 지역 코드를 전송하십시오.
+이전 버전의 SDK에서 서드파티 공유를 비활성화하려면 `disableThirdPartySharing` 메서드를 호출합니다. 이 메서드는 지원 중단되었습니다. 계속 사용할 경우 기본 메서드를 직접 호출하게 됩니다.
 
-| 지역      | 코드 |
-| --------- | ---- |
-| 유럽 연합 | `EU` |
-| 터키      | `TR` |
-| 미국      | `US` |
+```ts
+const adjustThirdPartySharing = new Adjust.ThirdPartySharing(false);
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+```
+
+### 세분화된 정보 전송 \{\#send\-granular\-information\}
+
+<codeblock title="메서드 서명"> 
+
+```ts
+public addGranularOption(partnerName: string,
+                         key: string,
+                         value: string)
+```
+
+</CodeBlock> 
+
+서드파티 공유 설정 변경 시 세부 정보를 추가할 수 있습니다. 이를 통해 사용자의 결정에 대한 더욱 자세한 정보를 전달할 수 있습니다.
+
+다음 파라미터와 함께 `addGranularOption` 메서드를 호출합니다.
+
+* `partnerName` \(`string`\): 세분화 옵션을 적용할 파트너의 이름
+* `key` \(`string`\): 옵션 키
+* `value` \(`string`\): 옵션 값
+
+```ts
+const adjustThirdPartySharing = new Adjust.ThirdPartySharing(true);
+options.addGranularOption("PartnerA", "foo", "bar");
+Adjust.trackThirdPartySharing(options);
+```
+
+URL 전략 \{\#url\-strategy\}
+------------------------------
+
+<minorversion changed="5.7.0" link="https://github.com/adjust/web_sdk/releases/tag/v5.7.0" /> 
+
+URL 전략 기능을 사용하여 다음을 설정할 수 있습니다.
+
+* Adjust가 귀하의 데이터를 저장하는 국가\(데이터 레지던시\).
+* Adjust SDK가 트래픽을 전송하는 엔드포인트\(맞춤 URL\).
+
+본 기능은 프라이버시 요건이 엄격한 나라에서 앱을 운영하는 경우에 유용합니다. URL 전략을 설정하면 Adjust가 선택된 데이터 레지던시 지역에 데이터를 저장하거나 선택된 도메인으로 트래픽을 전송합니다.
+
+URL 전략을 구성하려면 `Adjust.initSdk` 인스턴스에 `urlStrategy` 의 다음 속성을 설정합니다.
+
+* `domains` \(`Array<string id="sl-md0000000">`\): SDK 트래픽을 전송할 데이터 레지던스 국가 또는 엔드포인트. 기본 설정에 따라 Adjust SDK는 모든 데이터를 Adjust의 엔드포인트로 전송합니다. 커스텀 엔드포인트를 설정하려면 `urlStrategy`의 `domains` 속성에 엔드포인트를 전달합니다.
+* `useSubdomains` \(`boolean`\): 도메인을 Adjust 도메인으로 취급할지 여부. 
+  * `true`인 경우 SDK는 도메인의 접두사로 Adjust에 특화된 하위 도메인을 사용합니다.
+  * `false`인 경우 SDK는 접두사 없이 제공된 도메인을 그대로 사용합니다.
+
+* `isDataResidency` \(`boolean`\): 선택 사항으로, 도메인을 데이터 레지던시에 사용해야 하는지 여부입니다.
+
+다음 표는 구성 목록을 보여줍니다.
+
+|   URL 전략    |       기본 도메인 및 커스텀 도메인        | 하위 도메인 사용 | 데이터 레지던시 |
+|-------------|-------------------------------|-----------|----------|
+| EU 데이터 레지던시 | `"eu.adjust.com"`             | `true`    | `true`   |
+| 중국 URL 전략   | `"adjust.cn"`, `"adjust.com"` | `true`    | `false`  |
+| 맞춤 URL 전략   | `"my.custom.domain"`          | `false`   | `false`  |
+
+```js
+Adjust.initSdk({
+   appToken: "YOUR_APP_TOKEN",
+   environment: "production",
+   logLevel: "verbose",
+   urlStrategy: {
+      domains: ["adjust.cn", "adjust.com"],
+      useSubdomains: true,
+      isDataResidency: false,
+   },
+});
+```
+
+### 커스텀 엔드포인트 설정\(지원 중단\) \{\#set\-custom\-endpoint\}
+
+<minorversion removed="5.7.0" link="https://github.com/adjust/web_sdk/releases/tag/v5.7.0" /> 
+
+이전 버전의 SDK는 지원 중단된 `customUrl` 속성을 사용하여 엔드포인트를 전달했습니다. 대신 `urlStrategy` 구성을 사용하시기 바랍니다.
+<codeblock del="{range: 5}" ins="{range: 6-10}"> 
+
+```js
+Adjust.initSdk({
+   appToken: "YOUR_APP_TOKEN",
+   environment: "production",
+   logLevel: "verbose",
+   customUrl: "my.custom.domain.com",
+   urlStrategy: {
+      domains: ["my.custom.domain"],
+      useSubdomains: false,
+      isDataResidency: false,
+   },
+});
+```
+
+</CodeBlock> 
+
+### 데이터 레지던시\(지원 중단\) \{\#data\-residency\}
+
+<minorversion removed="5.7.0" link="https://github.com/adjust/web_sdk/releases/tag/v5.7.0" /> 
+
+이전 버전의 SDK는 지원 중단된 `dataResidency` 속성을 사용했습니다. 대신 `urlStrategy` 구성을 사용하시기 바랍니다.
+<codeblock del="{range: 5}" ins="{range: 6-10}"> 
 
 ```js
 Adjust.initSdk({
@@ -69,51 +181,13 @@ Adjust.initSdk({
    environment: "production",
    logLevel: "verbose",
    dataResidency: "EU",
+   urlStrategy: {
+      domains: ["eu.adjust.com"],
+      useSubdomains: true,
+      isDataResidency: true,
+   },
 });
-```
-
-## URL 전략 {#url-strategy}
-
-<CodeBlock title="속성 선언">
-
-```js
-urlStrategy: "india" | "china";
 ```
 
 </CodeBlock>
 
-URL 전략을 설정하면 Adjust SDK에서 데이터를 보낼 지역별 엔드포인트의 우선 순위를 지정할 수 있습니다. 이 작업을 위해서는 `initSdk` 메서드의 `urlStrategy` 속성 내에 선호하는 국가 코드 지역을 전송하십시오.
-
-| 지역 | 코드    |
-| ---- | ------- |
-| 중국 | `china` |
-| 인도 | `india` |
-
-```js
-Adjust.initSdk({
-   appToken: "YOUR_APP_TOKEN",
-   environment: "production",
-   logLevel: "verbose",
-   urlStrategy: "china",
-});
-```
-
-## 커스텀 엔드포인트 설정 {#set-custom-endpoint}
-
-<CodeBlock title="속성 선언">
-
-```js
-customUrl: string;
-```
-
-</CodeBlock>
-
-기본 설정에 따라 Adjust SDK는 모든 데이터를 Adjust의 엔드포인트로 전송합니다. 커스텀 엔드포인트를 지정하고 싶으시다면 `initSdk` 메서드의 `customUrl` 속성의 엔드포인트를 전송하십시오.
-
-```js
-Adjust.initSdk({
-   appToken: "YOUR_APP_TOKEN",
-   environment: "sandbox",
-   customUrl: "https://my-custom-url.com/",
-});
-```
