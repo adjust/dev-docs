@@ -1,112 +1,112 @@
 ---
-title: SDK Signature library integration
-description: >-
-   Add the Signature library to your iOS app to secure communications between the
-   Adjust SDK and Adjust's servers.
-slug: ja/sdk/ios/integrations/signature-library
-versions:
-   - label: v5
-     value: v5
-     default: true
-   - label: v4
-     value: v4
-redirects:
-   v4: /ja/sdk/ios/v4/integrations/signature-library
+title: "SDKシグネチャーライブラリの実装"
+description: "Adjust SDKとAdjustサーバー間の通信を保護するために、iOSアプリにシグネチャーライブラリを追加します。"
+slug: "en/sdk/ios/integrations/signature-library"
+versions: 
+    - 
+        label: "v5"
+        value: "v5"
+        default: true
+    - 
+        label: "v4"
+        value: "v4"
+redirects: 
+    v4: "/en/sdk/ios/v4/integrations/signature-library"
 ---
+AdjustのSDKシグネチャーライブラリは、Adjust SDKのスタンドアローンプラグインとして設計されています。つまり、コードを変更したり、アプリでAdjust SDKを使用する方法を変更したりする必要はありません。プラグインをインストールすると、Adjust SDKによって作成された全てのリクエストが引き続き正常に機能します。
 
-Adjust's SDK Signature library is designed to be a standalone plugin for the Adjust SDK. This means you don’t need to change any of your code or change how you use the Adjust SDK in your app. Once you install the plugin, all requests made by the Adjust SDK will continue to work as expected.
+事前準備 \{\#before\-you\-begin\}
+----------------------------------
 
-## Before you begin {#before-you-begin}
+AdjustシグネチャーライブラリをiOSアプリに実装する前に、以下を確認してください。
 
-To integrate the Adjust Signature library into your iOS app, ensure the following:
+* お使いのAdjust SDKバージョンが **4\.35\.2以降** であること。この要件は、Adjust SDKが間接的に使用されている場合でも適用されます。
+* iOSまたはtvOSのバージョン **12以降** に対応していること。
 
-- The Adjust SDK version in use is **4\.35\.2 or greater** . This requirement applies even when the Adjust SDK is used indirectly.
-- iOS or tvOS version **12 or greater** is supported.
+<callout type="important"> 
 
-<Callout type="important">
+Adjust SDKまたはシグネチャーライブラリで外部の暗号化ツールを使用すると、シグネチャーライブラリの機能に影響を与える可能性があります。 外部ツールを使用するかどうか不明な場合は、Adjustの担当者または[support@adjust.comまで](mailto:support@adjust.com)お問い合わせいただき、機能に影響がないか確認してください。
+</Callout> 
 
-Using external obfuscation tools with the Adjust SDK or Signature library can impact the functionality of the Signature library. If you're unsure about using an external tool, reach out to your Adjust representative or email [support@adjust.com](mailto:support@adjust.com) to check if functionality is impacted.
+### シグネチャーv1またはv2ライブラリから移行 \{\#migrating\-from\-signature\-v1\-or\-v2\-library\}
 
-</Callout>
+以前にシグネチャーv1またはシグネチャーv2を使用していた場合は、シグネチャーライブラリを連携する前に以前のバージョンを削除する必要があります。これを行うには、以下の手順に従ってください。
 
-### Migrating from Signature v1 or v2 library {#migrating-from-signature-v1-or-v2-library}
+* 以前シグネチャーv1を実装したことがある場合は、プロジェクト内のシグネチャー機能を呼び出すコードを削除してください。
+* 以前シグネチャーv2を実施したことがある場合は、シグネチャーv2のライブラリをプロジェクトから削除してください。
 
-If you previously used Signature v1 or Signature v2, you first need to remove the previous version before integrating the Signature library. To do this:
+### シグネチャーライブラリの更新 \{\#updating\-the\-signature\-library\}
 
-- If you previously integrated Signature v1, remove any code that calls to signature functions in your project.
-- If you previously integrated Signature v2, remove the Signature v2 library from your project.
+Adjustシグネチャーライブラリを更新するには、既存のシグネチャーライブラリを新しいバージョンに置き換え、テストを再度実行してください。Adjustでアプリのロジックや設定をすぐに変更する必要はありません。[シークレットIDが以下の基準を満たす場合は、必ず無効化してください](https://help.adjust.com/en/article/sdk-signature#manage-your-secret-ids)。
 
-### Updating the Signature Library {#updating-the-signature-library}
+* インストールのレポーティングに貢献していない。
+* アプリの新バージョンを（全てのアプリのプラットフォームとストアで）リリースしている。
 
-To update the Adjust Signature library, replace the existing Signature library with a new version and rerun your tests. You don't need to make any immediate changes to your app logic or settings in Adjust. Remember to [deactivate your secret IDs if they meet the following criteria](https://help.adjust.com/ja/article/sdk-signature#manage-your-secret-ids):
+シグネチャーライブラリを実装する（SDK v4のみ） \{\#integrate\-the\-signature\-library\}
+-------------------------------------------------------------------------
 
-- They're no longer contributing to your install reporting.
-- You've fully released a new version of your app \(across all app platforms and stores\).
+<callout type="note"> 
 
-## Integrate the signature library \(SDK v4 only\) {#integrate-the-signature-library}
+Adjust SDK v5は、 SDKシグネチャーの検証をネイティブでサポートしています。以前にSDKシグネチャーライブラリを連携した場合は、アンインストールし、関連するコードを全て削除する必要があります。
+</Callout> 
 
-<Callout type="note">
+iOSプロジェクトにシグネチャーライブラリを実装するには、以下の手順に従ってください。
 
-Adjust SDK v5 supports SDK signature verification natively. If you previously integrated the SDK signature library, you should uninstall it and remove all related code.
+1. [GitHubから](https://github.com/adjust/adjust_signature_sdk/releases/latest)`AdjustSigSdk-iOS-tvOS-Dynamic.xcframework.zip`アーカイブをダウンロードします。
+2. アーカイブを解凍し、 `AdjustSigSdk.xcframework`をプロジェクトのディレクトリにコピーします。
+3. Xcodeの **プロジェクトナビゲーター** でプロジェクトを選択します。
+4. 左側のターゲットを選択します。
+5. **General** タブを選択し、 **Frameworks, Libraries and Embedded Content** グループを開きます。
+6. グループの下部にある **\+** ボタンを選択します。
 
-</Callout>
+![XcodeのFrameworksページのスクリーンショット](@images/sig-v3/xcode-frameworks.png)
 
-Follow these steps to integrate the Signature library in your iOS project.
+7. **Add Other \-\-> Add Files** を選択し、プロジェクトディレクトリから`AdjustSigSdk.xcframework`ファイルを選択します。
 
-1. Download the [`AdjustSigSdk-iOS-tvOS-Dynamic.xcframework.zip` archive from GitHub](https://github.com/adjust/adjust_signature_sdk/releases/latest).
-2. Unzip the archive and copy the `AdjustSigSdk.xcframework` into your project’s directory.
-3. In Xcode, select your project in the **Project Navigator** .
-4. Select your target on the left\-hand side.
-5. Select the **General** tab and expand the **Frameworks, Libraries and Embedded Content** group.
-6. Select the **\+** button at the bottom of the group.
+![Xcodeのフレームワークセレクターのスクリーンショット](@images/sig-v3/xcode-select-framework.png)
 
-![A screenshot of the Frameworks page in Xcode](@images/sig-v3/xcode-frameworks.png)
+8. `AdjustSigSdk.xcframework`の **Embed & Sign** オプションを選択します。
 
-7. Select **Add Other \-\-> Add Files** and select the `AdjustSigSdk.xcframework` file from the project directory.
+![XcodeのEmbed & Signオプションのスクリーンショット](@images/sig-v3/xcode-embed-sign.png)
 
-![A screenshot of the framework selector in Xcode](@images/sig-v3/xcode-select-framework.png)
+これで、シグネチャーライブラリがプロジェクトに実装されました。
 
-8. Select the **Embed & Sign** option for the `AdjustSigSdk.xcframework`.
+アプリをテストする \{\#test\-your\-app\}
+------------------------------------
 
-![A screenshot of the Embed & Sign option in Xcode](@images/sig-v3/xcode-embed-sign.png)
+[Adjustテストコンソール](https://help.adjust.com/en/article/testing-console)を使用して、アプリにシグネチャーライブラリが実装されていることを確認できます。
+<callout type="important"> 
 
-That’s it\! The Signature library is now integrated into your project.
+Adjust SDKが **サンドボックス** モードで実行されていることを確認してください。
+</Callout> 
 
-## Test your app {#test-your-app}
+シグネチャーライブラリの実装をテストするには、以下の手順に従ってください。
 
-You can verify you have integrated the Signature library into your app using the [Adjust Testing Console](https://help.adjust.com/ja/article/testing-console).
+1. インストール情報が送信されるようにするには、テストデバイスからアプリを完全に削除します。
 
-<Callout type="important">
+2. デバイスに関する全ての情報を消去するには、テストコンソールを使用してデバイスに関する情報を削除します。[Adjust Insightsアプリ](https://apps.apple.com/us/app/adjust-insights/id1125517808)で取得したアプリのアルゴリズムと広告IDをパスすることで、forget\_deviceエンドポイントを使用することも可能です。次の広告IDはいずれも使用できます：`adid`、`idfa`、`idfv`、`imei`、`oaid`。
 
-You must ensure that the Adjust SDK is running in **Sandbox mode** .
-
-</Callout>
-
-To test your Signature library integration:
-
-1. Fully delete your app from the test device to ensure the install information is sent.
-
-2. Forget the device using the Testing Console to clear out all information relating to the device. You can also use the forget_device endpoint by passing your app token and the advertising ID you obtained from the [Adjust Insights app](https://apps.apple.com/us/app/adjust-insights/id1125517808). You can use any of the following advertising IDs: `adid`, `idfa`, `idfv`, `imei`, `oaid`.
-
-   The call looks like this:
+   コールは以下のようになります。
 
    ```console
    $ curl -X POST 'https://app.adjust.com/forget_device?app_token={yourAppToken}&id={adid}'
    ```
 
-3. Once you’ve cleared the device from the Testing Console, install the app on your test device and launch it to send install information to Adjust.
+3. テストコンソールからデバイスのデータを削除したら、テストデバイスにアプリをインストールして起動し、インストール情報をAdjustに送信します。
 
-4. Input the test device’s advertising ID into the Testing Console to fetch the install event information. Check the following:
+4. テストデバイスの広告IDをテストコンソールに入力し、インストールイベント情報を取得します。以下の点を確認してください。
 
-   1. The `SignatureVerificationResult` field should show a value of `Valid Signature`
-   2. The `SignatureVersion` field should show a value of `3`
+   1. `SignatureVerificationResult`フィールドに次の値が表示されている： `Valid Signature`
+   2. `SignatureVersion`フィールドに次の値が表示されている： `3`
 
-If these fields are present and contain the correct information, you have successfully integrated the Signature library. If the fields display any other values, review the integration steps again or contact [support@adjust.com](mailto:support@adjust.com) for further assistance.
+これらのフィールドが存在し、正しい情報が含まれている場合、シグネチャーライブラリは正常に実装されています。これらのフィールドに他の値が表示されている場合は、実装手順を再度確認するか、[support@adjust.com](mailto:support@adjust.com)までお問い合わせください。
 
-That’s it\! You’ve successfully integrated the Signature library into your app. Once [two attribution windows have passed](https://help.adjust.com/ja/article/attribution-windows), you can [enforce SDK signature validation](https://help.adjust.com/ja/article/sdk-signature#enforce-signature-validation) to make sure that only signed requests are accepted by Adjust.
+これで、シグネチャーライブラリがアプリに連携されました。 [2回のアトリビューション期間が経過](https://help.adjust.com/en/article/attribution-windows)したら、 [SDKシグネチャーの検証](https://help.adjust.com/en/article/sdk-signature#enforce-signature-validation)を有効化して、署名されたリクエストのみがAdjustで受理されるようにしてください。
 
-## トラブルシューティング {#troubleshooting}
+トラブルシューティング \{\#troubleshooting\}
+------------------------------------
 
 ### Upload symbols failed
 
 Xcode 16で構築されたアプリを検証または提出すると、シグネチャーライブラリに関連する`Upload symbols failed`警告が表示される場合があります。シンボルが欠落した状態は意図的なものであり、機能性には影響しないため、無視しても問題ありません。
+
