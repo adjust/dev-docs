@@ -45,22 +45,62 @@ If you previously used Signature v1 or Signature v2, you first need to remove th
 
 ### Updating the Signature Library {#updating-the-signature-library}
 
-To update the Adjust Signature library, replace the existing Signature library with a new version and rerun your tests. You don't need to make any immediate changes to your app logic or settings in Adjust as long as your [certificates are configured and haven't been altered](https://help.adjust.com/en/article/sdk-signature#manage-your-certificate-fingerprints). Remember to [deactivate your secret IDs if they meet the following criteria](https://help.adjust.com/en/article/sdk-signature#manage-your-secret-ids):
+To update the Adjust Signature library, replace the existing Signature library with a new version by integrating a new version or updating SDK v5's version and rerun your tests. You don't need to make any immediate changes to your app logic or settings in Adjust as long as your [certificates are configured and haven't been altered](https://help.adjust.com/en/article/sdk-signature#manage-your-certificate-fingerprints). Remember to [deactivate your secret IDs if they meet the following criteria](https://help.adjust.com/en/article/sdk-signature#manage-your-secret-ids):
 
 -  They're no longer contributing to your install reporting.
 -  You've fully released a new version of your app (across all app platforms and stores).
 
-## Integrate the signature library (SDK v4 only) {#integrate-the-signature-library}
+## Integrate the Signature library {#integrate-the-signature-library}
 
 <Callout type="note">
 
-Adjust SDK v5 supports SDK signature verification natively. If you previously integrated the SDK signature library, you should uninstall it and remove all related code.
+This step can be skipped if using SDK v5, as the Signature library is bundled by default for the majority of cases. Proceed only if prompted by the SDK or if a specific version is required.
 
 </Callout>
 
-Follow these steps to integrate the Signature library in your Android project.
+<Tabs>
+<Tab title="Maven" sync="maven">
 
-1. Fetch the [Signature library content from GitHub](https://github.com/adjust/adjust_signature_sdk/releases/latest).
+The Signature libraries are released on [GitHub](https://github.com/adjust/adjust_signature_sdk/releases/) and are propagated to Maven from version `3.20.1` onwards. To add the Signature library to your project, append the following to your app-level `build.gradle` (change the version with the [latest available](https://github.com/adjust/adjust_signature_sdk/releases/latest)):
+
+   ```groovy
+   dependencies {
+      // If using SDK v5
+      implementation('com.adjust.sdk:adjust-android:5.x.x') {
+          exclude group: 'com.adjust.signature', module: 'adjust-android-signature'
+      }
+
+      implementation 'com.adjust.signature:adjust-android-signature:x.x.x'
+   }
+   ```
+
+Alternatively, the Beta releases are available on Maven from version `3.24.1` onwards. To add the Signature library to your project, append the following to your project-level and app-level `build.gradle` respectively (change the version with the [latest available](https://github.com/adjust/adjust_signature_sdk/releases)):
+
+   ```groovy
+   repositories {
+           maven {
+               url "https://oss.sonatype.org/content/repositories/snapshots/"
+           }
+   ...
+   ```
+
+   ```groovy
+   dependencies {
+      // If using SDK v5
+      implementation('com.adjust.sdk:adjust-android:5.x.x') {
+          exclude group: 'com.adjust.signature', module: 'adjust-android-signature'
+      }
+
+      implementation 'com.adjust.signature:adjust-android-signature:x.x.x-SNAPSHOT'
+   }
+   ```
+
+That’s it! The Signature library is now integrated into your project. Follow the steps in the next section to configure your digital certificates in the Adjust suite.
+
+</Tab>
+<Tab title="Manual integration" sync="manual-integration">
+
+1. Fetch from GitHub the [latest Stable](https://github.com/adjust/adjust_signature_sdk/releases/latest) or [Beta](https://github.com/adjust/adjust_signature_sdk/releases) version.
 2. Create a new `libs` directory inside your app module directory.
 3. Copy the provided AAR library into the `libs` directory.
 
@@ -83,6 +123,9 @@ Follow these steps to integrate the Signature library in your Android project.
 5. Select **Sync Now** in the Android Studio popup to synchronize your changes.
 
 That’s it! The Signature library is now integrated into your project. Follow the steps in the next section to configure your digital certificates in the Adjust suite.
+
+</Tab>
+</Tabs>
 
 ## Set up your certificates in the Adjust suite {#set-up-your-certificates-in-the-adjust-suite}
 
