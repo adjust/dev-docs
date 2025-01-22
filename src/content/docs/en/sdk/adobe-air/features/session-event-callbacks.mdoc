@@ -1,0 +1,218 @@
+---
+title: Set up session and event callbacks
+description: Configure session and event callbacks from your app to Adjust.
+sidebar-position: 5
+---
+
+Set up callbacks to trigger functions when the SDK sends information to Adjust. You can set up callbacks for successful and failed sessions and events.
+
+{% callout type="important" %}
+You must [register your callbacks](https://help.adjust.com/en/article/set-up-callbacks) before initializing the SDK.
+{% /callout %}
+
+## Reference {% #reference %}
+
+The callback function is called after the SDK tries to send a package to the server. Within the callback, you have access to a response data object. These are the session and event response data properties:
+
+{% deflist %}
+`message`: `String`
+
+: The message from the server or the error logged by the SDK.
+
+`timestamp`: `String`
+
+: The timestamp from Adjust’s servers.
+
+`adid`: `String`
+
+: A unique device identifier provided by Adjust.
+
+`jsonResponse`: `String`
+
+: The JSON string with the response from the server.
+
+`willRetry`: `Boolean`
+
+: Indicates whether there will be an attempt to resend a failed package.
+{% /deflist %}
+
+Eevent response data objects also support the following properties:
+
+{% deflist %}
+`eventToken`: `String`
+
+: The event token.
+
+`callbackId`: `String`
+
+: The [custom callback ID](/en/sdk/adobe-air/events#callback-identifier) set on the event object.
+{% /deflist %}
+
+## Session callbacks {% #session-callbacks %}
+
+You can set up session callbacks to trigger functions when the SDK sends session information.
+
+Adjust supports success and failure callbacks:
+
+- Success callbacks trigger when the SDK sends information to Adjust’s servers.
+- Failure callbacks trigger when the SDK encounters a problem while sending the information.
+
+### Session success callbacks {% #session-success %}
+
+Set up success callbacks to trigger functions when the SDK records a session.
+
+To register a successful session recording by the SDK, call the `setSessionSuccessCallback` with any of the following properties:
+
+```actionscript-3
+adjustConfig.setSessionSuccessCallback(function (sessionSuccess:AdjustSessionSuccess):void {
+   // All session success properties.
+   trace("Session tracking succeeded");
+   trace("Message = " + sessionSuccess.getMessage());
+   trace("Timestamp = " + sessionSuccess.getTimestamp());
+   trace("Adid = " + sessionSuccess.getAdid());
+   trace("Json Response = " + sessionSuccess.getJsonResponse());
+});
+```
+
+#### Successfully tracked session snippet:
+
+This example demonstrates how to register a `sessionSuccessCallback` that outputs a JSON object with the timestamp at which the SDK sent the session data to Adjust, as well as the device `ADID`.
+
+```actionscript-3
+package {
+    import com.adjust.sdk.Adjust;
+    import com.adjust.sdk.AdjustConfig;
+    import com.adjust.sdk.AdjustEnvironment;
+    import com.adjust.sdk.AdjustLogLevel;
+    import com.adjust.sdk.AdjustSessionSuccess;
+
+        public class Example extends Sprite {
+            public function Example() {
+                var appToken:String = "{YourAppToken}";
+                var environment:String = AdjustEnvironment.SANDBOX;
+
+                var adjustConfig:AdjustConfig = new AdjustConfig(appToken, environment);
+                adjustConfig.setLogLevel(AdjustLogLevel.VERBOSE);
+
+                adjustConfig.setSessionSuccessCallback(sessionSuccessCallback);
+
+                Adjust.initSdk(adjustConfig);
+            }
+
+        // ...
+
+            private static function sessionSuccessCallback(sessionSuccess:AdjustSessionSuccess):void {
+                trace("Session tracking succeeded");
+                trace("Message = " + sessionSuccess.getMessage());
+                trace("Timestamp = " + sessionSuccess.getTimestamp());
+                trace("Adid = " + sessionSuccess.getAdid());
+                trace("Json Response = " + sessionSuccess.getJsonResponse());
+            }
+        }
+}
+```
+
+### Session failure callbacks {% #session-failure %}
+
+Set up failure callbacks to trigger functions when the SDK fails to record a session.
+
+To register a failed session recording by the SDK, call the `setSessionFailureCallback` with any of the following properties:
+
+```actionscript-3
+adjustConfig.setSessionFailureCallback(function (sessionFailure:AdjustSessionFailure):void {
+   // All session failure properties.
+   trace("Session tracking failed");
+   trace("Message = " + sessionFailure.getMessage());
+   trace("Timestamp = " + sessionFailure.getTimestamp());
+   trace("Adid = " + sessionFailure.getAdid());
+   trace("Will Retry = " + sessionFailure.getWillRetry().toString());
+   trace("Json Response = " + sessionFailure.getJsonResponse());
+});
+```
+
+#### Failed tracked session snippet:
+
+This example demonstrates how to register a `sessionFailureCallback` that outputs a JSON object with the reason the SDK failed to send the session data, as well as the timestamp at which the SDK sent the session data to Adjust and the device `ADID`.
+
+```actionscript-3
+package {
+    import com.adjust.sdk.Adjust;
+    import com.adjust.sdk.AdjustConfig;
+    import com.adjust.sdk.AdjustEnvironment;
+    import com.adjust.sdk.AdjustLogLevel;
+    import com.adjust.sdk.AdjustSessionFailure;
+
+        public class Example extends Sprite {
+            public function Example() {
+                var appToken:String = "{YourAppToken}";
+                var environment:String = AdjustEnvironment.SANDBOX;
+
+                var adjustConfig:AdjustConfig = new AdjustConfig(appToken, environment);
+                adjustConfig.setLogLevel(AdjustLogLevel.VERBOSE);
+
+                adjustConfig.setSessionFailureCallback(sessionFailureCallback);
+
+                Adjust.initSdk(adjustConfig);
+            }
+
+        // ...
+
+            private static function sessionFailureCallback(sessionFailure:AdjustSessionFailure):void {
+                trace("Session tracking Failed");
+                trace("Message = " + sessionFailure.getMessage());
+                trace("Timestamp = " + sessionFailure.getTimestamp());
+                trace("Adid = " + sessionFailure.getAdid());
+                trace("Will Retry = " + sessionFailure.getWillRetry().toString());
+                trace("Json Response = " + sessionFailure.getJsonResponse());
+            }
+        }
+}
+```
+
+## Event callbacks {% #event-callbacks %}
+
+You can set up event callbacks to trigger functions when the SDK sends event information.
+
+Adjust supports success and failure callbacks:
+
+- Success callbacks trigger when the SDK sends information to Adjust’s servers.
+- Failure callbacks trigger when the SDK encounters a problem while sending the information.
+
+> TODO: Add sample snippets
+`import com.adjust.sdk.AdjustEventSuccess;`
+`import com.adjust.sdk.AdjustEventFailure;`
+
+### Event success callbacks {% #event-success %}
+
+To register a successful event recording by the SDK, call the `setEventSuccessCallback` with any of the following properties:
+
+```actionscript-3
+adjustConfig.setEventSuccessCallback(function (eventSuccess:AdjustEventSuccess):void {
+   // All event success properties.
+trace("Event tracking succeeded");
+trace("Message = " + eventSuccess.getMessage());
+trace("Timestamp = " + eventSuccess.getTimestamp());
+trace("Adid = " + eventSuccess.getAdid());
+trace("Event Token = " + eventSuccess.getEventToken());
+trace("Callback Id = " + eventSuccess.getCallbackId());
+trace("Json Response = " + eventSuccess.getJsonResponse());
+});
+```
+
+### Event failure callbacks {% #event-failure %}
+
+To register a failed event recording by the SDK, call the `setEventFailureCallback` with any of the following properties:
+
+```actionscript-3
+adjustConfig.setEventFailureCallback(function (eventFailure:AdjustEventFailure):void {
+   // All event failure properties.
+   trace("Event tracking failed");
+   trace("Message = " + eventFailure.getMessage());
+   trace("Timestamp = " + eventFailure.getTimestamp());
+   trace("Adid = " + eventFailure.getAdid());
+   trace("Event Token = " + eventFailure.getEventToken());
+   trace("Callback Id = " + eventFailure.getCallbackId());
+   trace("Will Retry = " + eventFailure.getWillRetry().toString());
+   trace("Json Response = " + eventFailure.getJsonResponse());
+});
+```
