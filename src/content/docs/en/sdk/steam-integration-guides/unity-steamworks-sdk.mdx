@@ -1,0 +1,122 @@
+---
+title: "Steamworks SDK integration guide for Unity apps"
+description: "This guide outlines the steps for integrating Adjust Steamworks module in Unity apps."
+category-title: "Steamworks SDK integration guides"
+slug: "en/sdk/adjust-steamworks"
+sidebar-position: 14
+---
+
+The Adjust Steamworks SDK allows you to integrate Adjust tracking into your Unity-based Steam games. This guide will walk you through the integration, initialization, and usage of the SDK.
+
+## 1. Prerequisites {#prerequisites}
+
+Before starting the integration, ensure you have the following:
+
+- **Unity Environment**: Unity Engine installed on your system (2020.3 LTS or higher recommended).
+- **Steamworks Unity SDK**: Integrated and configured `SteamManager`.
+- **Steamworks SDK**: Installed and set up.
+- **Steam Client**: Installed with an active user and running during testing.
+- **Newtonsoft.Json Library**: Ensure it is installed. Follow the [installation guide](https://www.newtonsoft.com/json) for more details.
+
+## 2. Adding the Adjust SDK {#adding-the-adjust-sdk}
+
+Extract the provided Adjust SDK package and move the `Adjust` directory to a suitable location in your Unity project, such as `Assets/Scripts/`.
+
+## 3. Initialize the SDK {#initialize-the-sdk}
+
+To initialize the Adjust SDK, provide the required arguments:
+
+- `appToken` (string, required): Your unique Adjust app token, available on the Adjust dashboard.
+- `environment` (string, required): Choose `AdjustConfig.EnvironmentSandbox` for testing or `AdjustConfig.EnvironmentProduction` for production.
+- `monoBehaviour` (MonoBehaviour, required): A MonoBehaviour instance to handle coroutines.
+
+### Example Initialization {#example-initialization}
+
+```csharp
+using UnityEngine;
+
+public class AdjustIntegration : MonoBehaviour
+{
+    void Start()
+    {
+        AdjustConfig adjustConfig = new AdjustConfig("your_app_token", AdjustConfig.EnvironmentSandbox, this);
+        
+        // Initialize Adjust SDK
+        Adjust.InitSdk(adjustConfig, response =>
+        {
+            if (response != null)
+            {
+                Debug.Log($"Adjust SDK Initialized. Response Code: {response.ResponseCode}, Response: {response.ResponseBody}, JsonResponse: {response.GetSerializedJsonResponse()}");
+            }
+            else
+            {
+                Debug.LogError("Adjust SDK initialization failed.");
+            }
+        });
+    }
+}
+```
+
+## 4. Track Events {#track-events}
+
+To track events, use the `TrackEvent` method.
+
+### Example Event Tracking {#example-event-tracking}
+
+```csharp
+void TrackEvent()
+{
+    AdjustEvent adjustEvent = new AdjustEvent("34vgg9");
+    adjustEvent.SetRevenue(150, "USD");
+    adjustEvent.AddCallbackParameter("foo", "bar");
+    adjustEvent.AddPartnerParameter("john", "doe");
+    
+    Adjust.TrackEvent(adjustEvent, response =>
+    {
+        if (response != null)
+        {
+            Debug.Log($"Event Tracking Response: Response Code: {response.ResponseCode}, Response: {response.ResponseBody}, JsonResponse: {response.GetSerializedJsonResponse()}");
+        }
+        else
+        {
+            Debug.LogError("Event tracking failed or returned no response.");
+        }
+    });
+}
+```
+
+## 5. Retrieve Attribution Information {#retrieve-attribution-information}
+
+You can retrieve attribution data using the `GetAttribution` method.
+
+### Example Attribution Retrieval {#example-attribution-retrieval}
+
+```csharp
+void GetAttribution()
+{
+    Adjust.GetAttribution(response =>
+    {
+        if (response != null)
+        {
+            Debug.Log($"Attribution Response: Response Code: {response.ResponseCode}, Response: {response.ResponseBody}, JsonResponse: {response.GetSerializedJsonResponse()}");
+            
+            if (response.AttributionData != null)
+            {
+                Debug.Log($"Tracker Token: {response.AttributionData.TrackerToken}");
+                Debug.Log($"Tracker Name: {response.AttributionData.TrackerName}");
+                Debug.Log($"Network: {response.AttributionData.Network}");
+                Debug.Log($"Campaign: {response.AttributionData.Campaign}");
+                Debug.Log($"AdGroup: {response.AttributionData.Adgroup}");
+                Debug.Log($"Creative: {response.AttributionData.Creative}");
+                Debug.Log($"ClickLabel: {response.AttributionData.ClickLabel}");
+            }
+        }
+        else
+        {
+            Debug.LogError("GetAttribution failed or returned no response.");
+        }
+    });
+}
+```
+
+That's it! The Adjust Steamworks SDK is now integrated into your Unity project. Refer to the other guides for advanced usage and configurations.
