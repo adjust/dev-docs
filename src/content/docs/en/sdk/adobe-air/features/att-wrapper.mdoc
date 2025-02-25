@@ -1,0 +1,84 @@
+---
+title: Set up App Tracking Transparency
+description: Configure your iOS app to use Apple's App Tracking Transparency framework.
+sidebar-position: 2
+---
+
+If you want to record an iOS device's ID for Advertisers (IDFA), you must display a prompt to get your user's consent.
+
+To do this, you need to include Apple's App Tracking Transparency (ATT) framework in your app. The SDK stores the user's authorization status and sends it to Adjust's servers with each request.
+
+## Authorization statuses {% #authorization-statuses %}
+
+0: `ATTrackingManagerAuthorizationStatusNotDetermined`
+The user hasn’t responded to the access prompt yet.
+
+1: `ATTrackingManagerAuthorizationStatusRestricted`
+Access to app-related data is blocked at the device level.
+
+2: `ATTrackingManagerAuthorizationStatusDenied`
+The user has denied access to app-related data for device measurement.
+
+3: `ATTrackingManagerAuthorizationStatusAuthorized`
+The user has granted access to app-related data for device measurement.
+
+## ATT authorization wrapper {% #att-wrapper %}
+
+The Adobe AIR SDK contains a wrapper around [Apple’s `requestTrackingAuthorizationWithCompletionHandler` method](https://developer.apple.com/documentation/AppTrackingTransparency/ATTrackingManager/requestTrackingAuthorization\(completionHandler:\)). You can use this wrapper to customize the ATT prompt.
+
+The callback method triggers when your user responds to the consent dialog. This method sends the user’s consent status code to Adjust’s servers. You can define responses to each status code within the callback function.
+
+You must specify text content for the ATT request dialog. To do this, add your text to the `NSUserTrackingUsageDescription` key in your `Info.plist` file.
+
+1. Call the `requestAppTrackingAuthorization` method.
+1. Pass the status as a `String`.
+
+The `requestAppTrackingAuthorization` method requires the following argument:
+
+{% deflist %}
+`requestAppTrackingAuthorization`: `requestAppTrackingAuthorization`
+
+: A function that requests the user's consent.
+
+`status`: `String`
+
+: The user's authorization status.
+{% /deflist %}
+
+```actionscript-3
+Adjust.requestAppTrackingAuthorization(function (status:String):void {
+   trace("Status = " + status);
+});
+```
+
+```actionscript-3
+import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustConfig;
+import com.adjust.sdk.AdjustEnvironment;
+import com.adjust.sdk.AdjustLogLevel;
+
+public class Example extends Sprite {
+	public function Example() {
+	  var appToken:String = "{YourAppToken}";
+	  var environment:String = AdjustEnvironment.SANDBOX;
+
+		var adjustConfig:AdjustConfig = new AdjustConfig(appToken, environment);
+		adjustConfig.setLogLevel(AdjustLogLevel.VERBOSE);
+		adjustConfig.setAttributionCallback(attributionCallback);
+
+		Adjust.initSdk(adjustConfig);
+
+      Adjust.requestAppTrackingAuthorization(authorizationStatus);
+   }
+
+   // ...
+
+   private static function authorizationStatus(status:String):void {
+      trace("Status = " + status);
+   }
+}
+```
+
+> Anything else relevant? See [Flutter](https://dev.adjust.com/en/sdk/flutter/features/att) **AND** [iOS](https://dev.adjust.com/en/sdk/ios/features/att)
+
+## Tutorial {% #tutorial %}

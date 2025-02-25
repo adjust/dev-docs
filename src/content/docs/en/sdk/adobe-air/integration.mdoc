@@ -1,0 +1,575 @@
+---
+title: Integration guide
+description: Follow this guide to integrate the Adjust Adobe AIR SDK in your Android app.
+sidebar-position: 1
+---
+
+This is a step-by-step guide to help you integrate and configure the Adjust Adobe AIR SDK in your Android app. With this SDK, you can seamlessly integrate Adjust with your app, to capture and send attribution data and in-app event information.
+
+Follow this guide to set up and configure the SDK to send installs, sessions, custom in-app events, and other types of data to Adjust.
+
+## Set up your project {% #set-up-your-project %}
+
+Follow these steps to set up your project to support the Adjust Extension for Adobe Experience SDK.
+
+### Install the Adjust Extension {% #install-the-sdk %}
+
+Add the Adjust SDK extension to your app's descriptor file:
+
+```xml
+<extensions>
+    <!-- ... -->
+    <extensionID>com.adjust.sdk</extensionID>
+    <!-- ... -->
+</extensions>
+```
+
+## Initialize the SDK {% #initialize-the-sdk %}
+
+To initialize the Adobe AIR SDK v5, add the following code sample to your main `Sprite`:
+
+```actionscript-3
+package {
+  import com.adjust.sdk.Adjust;
+  import com.adjust.sdk.AdjustConfig;
+  import com.adjust.sdk.AdjustEnvironment;
+  import com.adjust.sdk.AdjustLogLevel;
+
+  public class Example extends Sprite {
+      public function Example() {
+        var appToken:String = "{YourAppToken}";
+        var environment:String = AdjustEnvironment.SANDBOX;
+
+          var adjustConfig:AdjustConfig = new AdjustConfig(appToken, environment);
+          adjustConfig.setLogLevel(AdjustLogLevel.VERBOSE);
+
+          Adjust.initSdk(adjustConfig);
+      }
+  }
+}
+
+```
+
+### Configure permissions {% #configure-permissions %}
+
+The Adjust SDK bundles all required permissions by default. You don't need to add any permissions for it to work.
+
+#### COPPA (Children's Online Privacy Protection Act) compliance
+
+`com.google.android.gms.permission.AD_ID` is bundled in the Adjust SDK for Android. You can [remove it](/en/sdk/android#add-permissions) with the following snippet:
+
+{% codeblock title="YOURAPP-app.xml" %}
+```xml
+<android>
+  <manifestAdditions>
+    <![CDATA[
+      <manifest android:installLocation="auto">
+        <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
+      </manifest>
+    ]]>
+  </manifestAdditions>
+</android>
+```
+{% /codeblock %}
+
+Check the [Apps for children](/en/sdk/apps-for-children) guide for more information about COPPA compliance.
+
+### Add Google Play Services {% #add-google-play-services %}
+
+Apps that target the Google Play Store must use the `gps_adid` ([Google Advertising ID](https://support.google.com/googleplay/android-developer/answer/6048248?hl=en)) to identify devices. To access the `gps_adid`, you need to integrate the Google Play Services.
+
+1. Add the Google Play Services extension to your app's descriptor file:
+
+   ```xml
+   <extensions>
+       <!-- ... -->
+       <extensionID>com.adjust.gps</extensionID>
+       <!-- ... -->
+   </extensions>
+   ```
+
+1. Add the following lines inside the `<manifest>` tag body of your app's Android manifest file:
+
+   ```xml
+   <meta-data
+       android:name="com.google.android.gms.version"
+       android:value="@integer/google_play_services_version"/>
+   ```
+
+### Set up Google Play Install Referrer API {% #set-up-install-referrer %}
+
+The install referrer is a unique identifier which you can use to attribute an app install to a source. The Adjust SDK requires this information to perform attribution.
+
+To support the Google Play Install Referrer API, follow these steps:
+
+1. Add the ANE extension to your app's XML descriptor file:
+
+   ```xml
+   <extensions>
+       <!-- ... -->
+       <extensionID>com.adjust.installref</extensionID>
+       <!-- ... -->
+   </extensions>
+   ```
+
+1. Add Android permission to allow the install referrer ANE to fetch install referrer data:
+
+   ```xml
+   <android>
+       <manifestAdditions>
+           <![CDATA[
+               <manifest>
+                   <uses-permission android:name="com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE" />
+                   <application>
+                       <! -- ... -- >
+                   </application>
+               </manifest>
+           ]]>
+       </manifestAdditions>
+   </android>
+   ```
+
+## Integration guide {% #integration-guide %}
+
+> TODO: Adapt the tutorial to Adobe AIR
+
+Once you've completed the project setup steps, you can integrate the Adjust SDK. The following guide shows you how to:
+
+1. Add the Adjust Adobe AIR app.
+1. Set your logging level to **verbose** to retrieve as much detail as possible from the extension.
+1. Test the SDK in **sandbox** mode to ensure it sends data to Adjust.
+1. Enable your app to open deep links.
+1. Register with the Adobe Experience SDK.
+
+To do this, you need to create two files:
+
+- `Main.as`: you'll configure and register the Adjust SDK in this file.
+- `Main-app.xml`: your app's descriptor file.
+
+### Import classes {% #import-classes %}
+
+First, you need to import some classes into your application files. Import the following classes into your `Main.as` file:
+
+{% deflist %}
+`com.adjust.sdk.Adjust;`
+
+: Used to
+
+`com.adjust.sdk.AdjustConfig;`
+
+: Used to
+
+`com.adjust.sdk.AdjustEvent;`
+
+: Used to
+
+`com.adjust.sdk.AdjustEventSuccess;`
+
+: Used to
+
+`com.adjust.sdk.AdjustEventFailure;`
+
+: Used to
+
+`com.adjust.sdk.AdjustSessionSuccess;`
+
+: Used to
+
+`com.adjust.sdk.AdjustSessionFailure;`
+
+: Used to
+
+`com.adjust.sdk.AdjustAttribution;`
+
+: Used to
+
+`com.adjust.sdk.Environment;`
+
+: Used to
+
+`import com.adjust.sdk.LogLevel;`
+
+: Used to
+
+`import com.adjust.sdk.UrlStrategy;`
+
+: Used to
+{% /deflist %}
+
+```actionscript-3
+// Main.as
+import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustConfig;
+import com.adjust.sdk.AdjustEvent;
+import com.adjust.sdk.AdjustEventSuccess;
+import com.adjust.sdk.AdjustEventFailure;
+import com.adjust.sdk.AdjustSessionSuccess;
+import com.adjust.sdk.AdjustSessionFailure;
+import com.adjust.sdk.AdjustAttribution;
+import com.adjust.sdk.Environment;
+import com.adjust.sdk.LogLevel;
+import com.adjust.sdk.UrlStrategy;
+```
+
+### Create a global application class {% #create-a-global-application-class %}
+
+The recommended way to register the Adjust Android Extension for Adobe Experience SDK is to use a global Android [Application class](http://developer.android.com/reference/android/app/Application.html). If you've not yet created an Application, follow these steps:
+
+1. Create a new class that extends `Application` in your `Main.as` file.
+
+   {% codeblock title="Main.as" %}
+   ```java
+   public class MainApp extends Application {}
+   ```
+   {% /codeblock %}
+
+1. Open your `AndroidManifest.xml` and find the `<application>` element.
+
+1. Add the name of your new class as an `android:name` attribute. In this example, the new `Application` class is named `MainApp`.
+
+   ```xml
+   <application android:name=".MainApp">
+   </application>
+   ```
+
+1. Within your `Application` class, find or add the `onCreate` method.
+
+   {% codeblock title="Main.as" highlight="{range: 2-5}" %}
+   ```java
+   public class MainApp extends Application {
+      @Override
+      public void onCreate() {
+         super.onCreate();
+      }
+   }
+   ```
+   {% /codeblock %}
+
+### Configure the Adjust Extension {% #configure-the-adjust-extension %}
+
+Once you've created the `Application` class and called `onCreate`, follow these steps to configure the Adjust Android Extension for Adobe Experience SDK:
+
+1. Inside your `onCreate` function, call `MobileCore.setApplication(this)` to register the application context.
+
+   {% codeblock title="Main.as" highlight="{range: 4}, {range: 11}" %}
+   ```java
+   public void onCreate() {
+      super.onCreate();
+   
+      MobileCore.setApplication(this);
+   }
+   ```
+   {% /codeblock %}
+
+1. Set your logging level by calling the `MobileCore.setLogLevel` method with the following argument:
+
+   {% deflist %}
+   `logLevel`: `String`
+
+   : The level of logging you want to enable.
+
+   - `LoggingMode.VERBOSE`: enable all logging.
+   - `LoggingMode.DEBUG`: disable verbose logging.
+   - `LoggingMode.WARNING`: log only errors and warnings.
+   - `LoggingMode.ERROR`: log only errors.
+   {% /deflist %}
+
+   {% codeblock title="Main.as" highlight="{range:4-5}" %}
+   ```java
+   public void onCreate() {
+      super.onCreate();
+   
+      MobileCore.setApplication(this);
+      MobileCore.setLogLevel(LoggingMode.VERBOSE);
+   }
+   ```
+   {% /codeblock %}
+
+1. Create a new `try...catch` block to configure the Adjust Extension:
+
+   {% codeblock title="Main.as" highlight="{range: 7-10}" %}
+   ```java
+   public void onCreate() {
+      super.onCreate();
+   
+      MobileCore.setApplication(this);
+      MobileCore.setLogLevel(LoggingMode.VERBOSE);
+   
+      try {
+      } catch (Exception e) {
+         Log.e("example", "Exception occurred during configuration: " + e.getMessage());
+      }
+   }
+   ```
+   {% /codeblock %}
+
+1. Within your `try` block, call `MobileCore.configureWithAppID` and pass your Adobe app ID.
+
+   {% codeblock title="Main.as" highlight="{range: 2}" %}
+   ```java
+   try {
+      MobileCore.configureWithAppID("your_adobe_app_id");
+   } catch (Exception e) {
+      Log.e("example", "Exception occurred during configuration: " + e.getMessage());
+   }
+   ```
+   {% /codeblock %}
+
+1. Within your `try` block, create a new instance of `AdjustAdobeExtensionConfig` with the following argument:
+
+   {% deflist %}
+   `environment`: `String`
+
+   : The environment in which your device is running.
+
+   - Pass `AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX` when testing.
+   - Pass `AdjustAdobeExtensionConfig.ENVIRONMENT_PRODUCTION` when running the app in production.
+   {% /deflist %}
+
+   {% codeblock title="Main.as" highlight="{range: 4-5}" %}
+   ```java
+   try {
+      MobileCore.configureWithAppID("your_adobe_app_id");
+   
+      AdjustAdobeExtensionConfig config =
+               new AdjustAdobeExtensionConfig(AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX);
+   } catch (Exception e) {
+      Log.e("example", "Exception occurred during configuration: " + e.getMessage());
+   }
+   ```
+   {% /codeblock %}
+
+1. Call `AdjustAdobeExtension.setConfiguration` with your `AdjustAdobeExtensionConfig` instance as an argument.
+
+   {% codeblock title="Main.as" highlight="{range: 6}" %}
+   ```java
+   try {
+      MobileCore.configureWithAppID("your_adobe_app_id");
+   
+      AdjustAdobeExtensionConfig config =
+            new AdjustAdobeExtensionConfig(AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX);
+      AdjustAdobeExtension.setConfiguration(config);
+   } catch (Exception e) {
+      Log.e("example", "Exception occurred during configuration: " + e.getMessage());
+   }
+   ```
+   {% /codeblock %}
+
+### Register the Adjust Extension {% #register-the-adjust-extension %}
+
+Once you've configured the Adjust Extension, you need to register it with the Adobe Experience SDK. To do this:
+
+1. Create a new `try...catch` block below your configuration block.
+
+   {% codeblock title="Main.as" highlight="{range: 19-22}" %}
+   ```java
+   public class MainApp extends Application {
+      @Override
+      public void onCreate() {
+         super.onCreate();
+   
+         MobileCore.setApplication(this);
+         MobileCore.setLogLevel(LoggingMode.VERBOSE);
+   
+         try {
+            MobileCore.configureWithAppID("your_adobe_app_id");
+   
+            AdjustAdobeExtensionConfig config =
+                  new AdjustAdobeExtensionConfig(AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX);
+            AdjustAdobeExtension.setConfiguration(config);
+         } catch (Exception e) {
+            Log.e("example", "Exception occurred during configuration: " + e.getMessage());
+         }
+   
+         try {
+         } catch (Exception e) {
+            Log.e("example", "Exception occurred while registering Extension: " + e.getMessage());
+         }
+      }
+   }
+   ```
+   {% /codeblock %}
+
+1. Within your `try` block, create a new list of the extensions you want to register. The example in this guide imports the `Analytics` and `Identity` extensions in addition to the `AdjustAdobeExtension`.
+
+   {% deflist %}
+   `extensions`: `List<Class<? extends Extension>>`
+
+   : Your list of extensions.
+   {% /deflist %}
+
+   {% codeblock title="Main.as" highlight="{range: 2-5}" %}
+   ```java
+   try {
+      List<Class<? extends Extension>> extensions = Arrays.asList(
+            Analytics.EXTENSION,
+            Identity.EXTENSION,
+            AdjustAdobeExtension.EXTENSION);
+   } catch (Exception e) {
+      Log.e("example", "Exception occurred while registering Extension: " + e.getMessage());
+   }
+   ```
+   {% /codeblock %}
+
+1. Inside your `try` block, call the `MobileCore.registerExtensions` method with your list of extensions and the following callback argument:
+
+   {% deflist %}
+   `completionCallback`: `AdobeCallback`
+
+   : A callback function that fires when registration completes.
+   {% /deflist %}
+
+   {% codeblock title="Main.as" highlight="{range: 6-10}" %}
+   ```java
+   try {
+      List<Class<? extends Extension>> extensions = Arrays.asList(
+            Analytics.EXTENSION,
+            Identity.EXTENSION,
+            AdjustAdobeExtension.EXTENSION);
+      MobileCore.registerExtensions(extensions, new AdobeCallback<Object>() {
+         @Override
+         public void call(Object o) {
+            Log.d("example", "Adjust Adobe Extension SDK initialized");
+         }
+      });
+   } catch (Exception e) {
+      Log.e("example", "Exception occurred while registering Extension: " + e.getMessage());
+   }
+   ```
+   {% /codeblock %}
+
+### Set up your activity file {% #set-up-your-activity-file %}
+
+Next, you need to set up your `MainActivity.java` file. You'll use this file to set up your Adjust features later. For the purposes of this guide, you're only going to set up the `onCreate` function to handle application startup.
+
+1. Create a new public class called `MainActivity`. This class should extend the `AppCompatActivity` class.
+
+   {% codeblock title="MainActivity.java" %}
+   ```java
+   public class MainActivity extends AppCompatActivity {}
+   ```
+   {% /codeblock %}
+
+1. Create a new protected override function called `onCreate`. This function receives the `savedInstanceState` and returns `void`.
+
+   {% codeblock title="MainActivity.java" highlight="{range: 2-3}" %}
+   ```java
+   public class MainActivity extends AppCompatActivity {
+      @Override
+      protected void onCreate(Bundle savedInstanceState) {}
+   }
+   ```
+   {% /codeblock %}
+
+1. Within your `onCreate` function, call `super.onCreate` with the `savedInstanceState` to create your activity.
+
+   {% codeblock title="MainActivity.java" highlight="{range: 3}" %}
+   ```java
+   @Override
+   protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+   }
+   ```
+   {% /codeblock %}
+
+1. Next, call `setContentView` to map your activity to your app layout. In this example, the layout file is called `activity_main.xml`.
+
+   {% codeblock title="MainActivity.java" highlight="{range: 4}" %}
+   ```java
+   @Override
+   protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      setContentView(R.layout.activity_main);
+   }
+   ```
+   {% /codeblock %}
+
+### Set up deep link handling {% #set-up-deep-link-handling %}
+
+To configure the Adjust Android Extension for Adobe Experience SDK to open deep links, follow these steps:
+
+1. Create a new `Intent` variable called `intent` inside your `onCreate` function and assign it the output of `getIntent()`.
+
+   {% codeblock title="MainActivity.java" highlight="{range: 6}" %}
+   ```java
+   @Override
+   protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      setContentView(R.layout.activity_main);
+   
+      Intent intent = getIntent();
+   }
+   ```
+   {% /codeblock %}
+
+1. Create a new `Uri` variable called `data` and assign it the output of `intent.getData()`.
+
+   {% codeblock title="MainActivity.java" highlight="{range: 7}" %}
+   ```java
+   @Override
+   protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      setContentView(R.layout.activity_main);
+   
+      Intent intent = getIntent();
+      Uri data = intent.getData();
+   }
+   ```
+   {% /codeblock %}
+
+1. Construct a new `AdjustDeeplink` instance with your `data` variable.
+
+   {% codeblock title="MainActivity.java" highlight="{range: 8}" %}
+   ```java
+   @Override
+   protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      setContentView(R.layout.activity_main);
+   
+      Intent intent = getIntent();
+      Uri data = intent.getData();
+      AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+   }
+   ```
+   {% /codeblock %}
+
+1. To open the URL, pass your `AdjustDeeplink` instance and `getApplicationContext()` to the `Adjust.processDeeplink` method.
+
+   {% codeblock title="MainActivity.java" highlight="{range: 9}" %}
+   ```java
+   @Override
+   protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      setContentView(R.layout.activity_main);
+   
+      Intent intent = getIntent();
+      Uri data = intent.getData();
+      AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+      Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
+   }
+   ```
+   {% /codeblock %}
+
+   If you use [short branded links](https://help.adjust.com/en/article/short-branded-links), you can alternatively use the `Adjust.processAndResolveDeeplink` method to resolve your shortened link and return it to a callback function.
+
+   {% codeblock title="MainActivity.java" highlight="{range: 9-14}" %}
+   ```java
+   @Override
+   protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      setContentView(R.layout.activity_main);
+   
+      Intent intent = getIntent();
+      Uri data = intent.getData();
+      AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+      Adjust.processAndResolveDeeplink(adjustDeeplink, getApplicationContext(), new OnDeeplinkResolvedListener() {
+         @Override
+         public void onDeeplinkResolved(String s) {
+            Log.d("example", "Unwrapped short link: " + s);
+         }
+      });
+   }
+   ```
+   {% /codeblock %}
+
+Once you've completed these steps, build and run your app. In your log viewer, set the filter `tag:Adjust` to show only logs relating to the Adjust SDK. After you launch your app, you should see the message `Install tracked`.
