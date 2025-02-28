@@ -139,41 +139,26 @@ https://insights.go.link/login?adj_t=abc123
 
 ## Deferred deep linking {#deferred-deep-linking}
 
-### Disable opening deferred deep links {#disable-opening-deferred-deep-links}
-
-<CodeBlock title="Property declaration">
-
-```cs
-public bool? IsDeferredDeeplinkOpeningEnabled { get; set; }
-```
-
-</CodeBlock>
-
-The Adjust SDK opens deferred deep links by default. You can disable this by assigning a `false` value to the `IsDeferredDeeplinkOpeningEnabled` property of your `AdjustConfig` instance.
-
-```cs
-AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
-//...
-adjustConfig.IsDeferredDeeplinkOpeningEnabled = false;
-//...
-Adjust.InitSdk(adjustConfig);
-```
+The Adjust SDK opens deferred deep links by default. No additional setup is required. If you want to disable this behavior, you need to set up a deferred deep link callback.
 
 ### Set up a deferred deep link delegate {#set-up-a-deferred-deep-link-delegate}
 
 <CodeBlock title="Property declaration">
 
 ```cs
-public Action<string> DeferredDeeplinkDelegate { get; set; }
+public Func<string, bool>? DeferredDeeplinkDelegate { get; set; }
 ```
 
 </CodeBlock>
 
 You can configure the Adjust SDK to call a delegate function when it receives a deferred deep link. This delegate function receives the deep link as a `string` argument.
 
+If you want to open the deep link, return `true` in your delegate function. If you don't want to open it, return `false`.
+
 ```cs
-private void DeferredDeeplinkCallback(string deeplinkURL) {
+private bool DeferredDeeplinkCallback(string deeplinkURL) {
    //...
+   return openDeeplinkDecision;
 }
 
 AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
@@ -187,7 +172,8 @@ This example shows how to log a deep link address when the user opens a deferred
 
 ```cs
 private void LogDeepLink(string deepLinkURL) {
- Debug.Log("Deeplink URL: " + deeplinkURL);
+   Debug.Log("Deeplink URL: " + deeplinkURL);
+   return true;
 }
 //...
 AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
