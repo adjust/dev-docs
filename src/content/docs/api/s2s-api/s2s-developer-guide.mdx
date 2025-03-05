@@ -1,20 +1,14 @@
 ---
 title: "S2S developer guide"
-description: "Implement Adjust 100% S2S"
+description: "Implement Adjust Full S2S"
 slug: en/api/s2s-api/s2s-developer-guide
 sidebar-position: 6
 ---
 
 Adjust offers a server-to-server (S2S) interface for mobile, console, and Connected TV (CTV) apps. If you choose to implement Adjust through S2S, you need to modify your app to replicate the Adjust SDK's functions. This guide provides step-by-step instructions for the following:
 
--  How to make the necessary updates to your app.
--  How to send S2S requests to Adjust.
-
-<Callout type="important">
-
-If your app needs to comply with COPPA, use the Adjust SDK and leverage its built-in COPPA features. Don't send non-compliant data using the S2S interface.
-
-</Callout>
+- How to make the necessary updates to your app.
+- How to send S2S requests to Adjust.
 
 ## [Before you begin](before-you-begin)
 
@@ -50,9 +44,9 @@ To implement a local event queue with persistence:
 
 This approach helps mitigate data loss in the following scenarios:
 
--  Brief network interruptions (for example: 5G to WiFi handovers).
--  Extended periods without connectivity.
--  App crashes or force closes before transmission.
+- Brief network interruptions (for example: 5G to WiFi handovers).
+- Extended periods without connectivity.
+- App crashes or force closes before transmission.
 
 Without local queuing, you risk losing 10–20% of install data, which can significantly impact attribution accuracy. By implementing this queuing system, you ensure that Adjust receives a complete and accurate picture of user activity, enabling precise attribution even for events that occur offline.
 
@@ -69,12 +63,12 @@ You must link frameworks to your project to support certain iOS features. To add
 
 <Table>
 
-| Framework                           | Description                                                                                                 |
-| ----------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| `AdSupport.framework`               | Required to collect IDFA. Also required to collect Limit Ad Tracking status for pre-ATT iOS versions.       |
-| `AppTrackingTransparency.framework` | Required to show the AppTrackingTransparency prompt and collect IDFA on devices running iOS 14.5 and later. |
-| `AdServices.framework`              | Required for Adjust to perform attribution for Apple Search Ads campaigns.                                  |
-| `StoreKit.framework`                | Required to run SKAdNetwork campaigns.                                                                      |
+| Framework                           | Description                                                                                                    |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `AdSupport.framework`               | Required to collect IDFA. Also required to collect Limit Ad Tracking status for pre-ATT iOS versions.          |
+| `AppTrackingTransparency.framework` | Required to show the AppTrackingTransparency prompt and to collect IDFA on devices running iOS 14.5 and later. |
+| `AdServices.framework`              | Required for Adjust to attribute to Apple Search Ads campaigns.                                                |
+| `StoreKit.framework`                | Required to run SKAdNetwork campaigns.                                                                         |
 
 </Table>
 
@@ -94,31 +88,31 @@ The following parameters are required in each S2S request.
 
 <ListColumns>
 
--  `android`
--  `android-tv`
--  `apple-tv`
--  `bada`
--  `blackberry`
--  `fire-tv`
--  `ios`
--  `linux`
--  `macos`
--  `nintendo`
--  `playstation`
+- `android`
+- `android-tv`
+- `apple-tv`
+- `bada`
+- `blackberry`
+- `fire-tv`
+- `ios`
+- `linux`
+- `macos`
+- `nintendo`
+- `playstation`
 
 ---
 
--  `roku-os`
--  `server`
--  `smart-cast`
--  `steamos`
--  `symbian`
--  `tizen`
--  `unknown`
--  `webos`
--  `windows`
--  `windows-phone`
--  `xbox`
+- `roku-os`
+- `server`
+- `smart-cast`
+- `steamos`
+- `symbian`
+- `tizen`
+- `unknown`
+- `webos`
+- `windows`
+- `windows-phone`
+- `xbox`
 
 </ListColumns>
 
@@ -197,19 +191,19 @@ params.put("app_token", "4w565xzmb54d");
 
 ### [Device IDs and tracking statuses](device-ids-and-tracking-statuses)
 
-Every S2S request must include **at least one** device identifier. Due to privacy measures implemented by mobile operating systems, the advertising ID may not always be available. Therefore, you should include the advertising ID when available and must always include backup identifiers.
+Every S2S request must include **at least one** device identifier. Due to privacy measures implemented by mobile operating systems, the advertising ID may not always be available. Therefore, you should include the advertising ID when available and always include backup identifiers.
 
-Adjust also requires tracking statuses in each request.
-
-#### [PC and Console/CTV device IDs](pc-console-ctv-device-ids)
+#### [PC and Console / CTV device IDs](pc-console-ctv-device-ids)
 
 For PC and Console and CTV measurement, you can pass a unique `external_device_id` parameter with each call to use as a device identifier. This value can be any unique string that identifies the device.
 
 #### [iOS device IDs](ios-device-ids)
 
-##### IDFA
+##### IDFA and tracking status
 
-The ID for Advertisers (IDFA) is available only for iOS devices where users have opted to share it with your app via the App Tracking Transparency (ATT) prompt. Follow these steps if you choose to show the ATT prompt and collect IDFA in your app:
+The ID for Advertisers (IDFA) is available only for iOS devices where users have opted to share it. Some apps collect IDFA, other apps don't. Regardless of whether an app collects IDFA, Adjust requires the tracking status in each request. Use the code below that corresponds to your implementation.
+
+**Apps that collect IDFA**
 
 1. Add ATT description in Xcode.
    1. Open your project's `Info.plist` file.
@@ -220,11 +214,13 @@ The ID for Advertisers (IDFA) is available only for iOS devices where users have
 
 ATT has the following requirements:
 
--  While ATT support begins with iOS 14, user consent for IDFA retrieval is only required from iOS 14.5 onwards. Therefore, Adjust recommends targeting the ATT prompt specifically to users on iOS 14.5 and later versions.
--  The ATT prompt requires an active app state to display. Showing it immediately after other system prompts may fail unless you first confirm the app state is again active.
--  The earliest places to show the prompt are in `applicationDidBecomeActive` (App Delegate) or `sceneDidBecomeActive` (Scene Delegate). It's not possible to show the ATT prompt in `didFinishLaunchingWithOptions` (App Delegate).
+- While ATT support begins with iOS 14, user consent for IDFA retrieval is only required from iOS 14.5 onwards. Therefore, Adjust recommends targeting the ATT prompt specifically to users on iOS 14.5 and later versions.
+- The ATT prompt requires an active app state to display. Showing it immediately after other system prompts may fail unless you first wait for the app state to be active again.
+- The earliest places to show the prompt are in `applicationDidBecomeActive` (App Delegate) or `sceneDidBecomeActive` (Scene Delegate). It's not possible to show the ATT prompt in `didFinishLaunchingWithOptions` (App Delegate).
 
-The following code example addresses all of these requirements:
+The below code example meets all of these requirements.
+
+For accurate attribution, include the IDFA in the first session request and all subsequent requests whenever it is available.
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -232,7 +228,6 @@ The following code example addresses all of these requirements:
 ```swift
 import AppTrackingTransparency
 import AdSupport
-import UIKit
 
 struct IDFAInfo {
     let idfa: UUID?
@@ -241,60 +236,27 @@ struct IDFAInfo {
 }
 
 func getIDFAInfo(completion: @escaping (IDFAInfo) -> Void) {
-    // Show ATT prompt to get IDFA and updated ATT status
+    // For iOS 14.5+, show ATT prompt to attempt to retrieve IDFA and retrieve ATT
+    // status afterwards
     if #available(iOS 14.5, *) {
-        ATTrackingManager.requestTrackingAuthorization { status in
-            DispatchQueue.main.async {
+        // Wait briefly to ensure app is active
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            ATTrackingManager.requestTrackingAuthorization { status in
                 let idfa = (status == .authorized) ?
                     ASIdentifierManager.shared().advertisingIdentifier : nil
-                completion(IDFAInfo(idfa: idfa, attStatus: status, trackingEnabled:
-                    nil))
+                completion(IDFAInfo(idfa: idfa, attStatus: status,
+                    trackingEnabled: nil))
             }
         }
-    // Don't show ATT prompt. Just get IDFA and tracking status.
+    // For earlier versions, don't show ATT prompt. Just get IDFA and tracking
+    // enabled status.
     } else {
         let manager = ASIdentifierManager.shared()
+        let idfa = manager.isAdvertisingTrackingEnabled ?
+            manager.advertisingIdentifier : nil
         let trackingEnabled = manager.isAdvertisingTrackingEnabled
-        let idfa = trackingEnabled ? manager.advertisingIdentifier : nil
-        completion(IDFAInfo(idfa: idfa, attStatus: nil, trackingEnabled:
-            trackingEnabled))
-    }
-}
-
-private func requestTrackingAuthorization(
-    completion: @escaping (ATTrackingManager.AuthorizationStatus) -> Void) {
-    let trackingStatus = ATTrackingManager.trackingAuthorizationStatus
-    switch trackingStatus {
-
-    // Only show ATT prompt if status isn't determined
-    case .notDetermined:
-        // If app state is active, show ATT prompt
-        if UIApplication.shared.applicationState == .active {
-            ATTrackingManager.requestTrackingAuthorization { status in
-                completion(status)
-            }
-        // Wait until app state is active, then show ATT prompt
-        } else {
-            NotificationCenter.default.addObserver(
-                forName: UIApplication.didBecomeActiveNotification,
-                object: nil,
-                queue: .main
-            ) { [weak self] _ in
-                guard let self = self else { return }
-                NotificationCenter.default.removeObserver(
-                    self,
-                    name: UIApplication.didBecomeActiveNotification,
-                    object: nil
-                )
-                ATTrackingManager.requestTrackingAuthorization { status in
-                    completion(status)
-                }
-            }
-        }
-
-    // For all other statuses, return existing status
-    default:
-        completion(trackingStatus)
+        completion(IDFAInfo(idfa: idfa, attStatus: nil,
+            trackingEnabled: trackingEnabled))
     }
 }
 
@@ -305,7 +267,8 @@ getIDFAInfo { info in
         params["idfa"] = idfa
     }
 
-    // Include either ATT status or tracking status, never both
+    // Include ATT status if available,
+    // otherwise include tracking enabled status, never both
     if let attStatus = info.attStatus {
         params["att_status"] = String(attStatus.rawValue)
     } else if let trackingEnabled = info.trackingEnabled {
@@ -320,7 +283,6 @@ getIDFAInfo { info in
 ```objc
 #import <AppTrackingTransparency/AppTrackingTransparency.h>
 #import <AdSupport/AdSupport.h>
-#import <UIKit/UIKit.h>
 
 @interface IDFAInfo : NSObject
 @property (nonatomic, strong) NSUUID *idfa;
@@ -332,70 +294,33 @@ getIDFAInfo { info in
 @end
 
 void getIDFAInfo(void (^completion)(IDFAInfo *)) {
-    // Show ATT prompt to get IDFA and updated ATT status
+    // For iOS 14.5+, show ATT prompt to attempt to retrieve IDFA and retrieve ATT
+    // status afterwards
     if (@available(iOS 14.5, *)) {
-        [ATTrackingManager requestTrackingAuthorizationWithCompletionHandler:
-            ^(ATTrackingManagerAuthorizationStatus status) {
-                dispatch_async(dispatch_get_main_queue(), ^{
+        // Wait briefly to ensure app is active
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC),
+            dispatch_get_main_queue(), ^{
+            [ATTrackingManager requestTrackingAuthorizationWithCompletionHandler:
+                ^(ATTrackingManagerAuthorizationStatus status) {
                     IDFAInfo *info = [[IDFAInfo alloc] init];
-                    info.attStatus = status;
                     if (status == ATTrackingManagerAuthorizationStatusAuthorized) {
                         info.idfa = [[ASIdentifierManager sharedManager]
                             advertisingIdentifier];
                     }
+                    info.attStatus = status;
                     completion(info);
-                });
-            }];
-    // Don't show ATT prompt. Just get IDFA and tracking status.
+                }];
+        });
+    // For earlier versions, don't show ATT prompt. Just get IDFA and tracking
+    // enabled status.
     } else {
         ASIdentifierManager *manager = [ASIdentifierManager sharedManager];
         IDFAInfo *info = [[IDFAInfo alloc] init];
-        info.trackingEnabled = @(manager.isAdvertisingTrackingEnabled);
         if (manager.isAdvertisingTrackingEnabled) {
             info.idfa = manager.advertisingIdentifier;
         }
+        info.trackingEnabled = @(manager.isAdvertisingTrackingEnabled);
         completion(info);
-    }
-}
-
-void requestTrackingAuthorization(void (^completion)
-    (ATTrackingManagerAuthorizationStatus)) {
-    ATTrackingManagerAuthorizationStatus trackingStatus =
-        ATTrackingManager.trackingAuthorizationStatus;
-
-    switch (trackingStatus) {
-        // Only show ATT prompt if status isn't determined
-        case ATTrackingManagerAuthorizationStatusNotDetermined:
-            // If app state is active, show ATT prompt
-            if ([UIApplication sharedApplication].applicationState ==
-                UIApplicationStateActive) {
-                [ATTrackingManager requestTrackingAuthorizationWithCompletionHandler:
-                    ^(ATTrackingManagerAuthorizationStatus status) {
-                        completion(status);
-                    }];
-            // Wait until app state is active, then show ATT prompt
-            } else {
-                [[NSNotificationCenter defaultCenter]
-                    addObserverForName:UIApplicationDidBecomeActiveNotification
-                    object:nil
-                    queue:[NSOperationQueue mainQueue]
-                    usingBlock:^(NSNotification *note) {
-                        [[NSNotificationCenter defaultCenter]
-                            removeObserver:self
-                            name:UIApplicationDidBecomeActiveNotification
-                            object:nil];
-                        [ATTrackingManager
-                            requestTrackingAuthorizationWithCompletionHandler:
-                            ^(ATTrackingManagerAuthorizationStatus status) {
-                                completion(status);
-                            }];
-                    }];
-            }
-            break;
-        // For all other statuses, return existing status
-        default:
-            completion(trackingStatus);
-            break;
     }
 }
 
@@ -406,7 +331,90 @@ getIDFAInfo(^(IDFAInfo *info) {
         params[@"idfa"] = [info.idfa UUIDString];
     }
 
-    // Include either ATT status or tracking status, never both
+    // Include ATT status if available, otherwise tracking enabled status, never both
+    if (info.attStatus != nil) {
+        params[@"att_status"] = [NSString stringWithFormat:@"%ld",
+            (long)info.attStatus];
+    } else if (info.trackingEnabled != nil) {
+        params[@"tracking_enabled"] = [info.trackingEnabled boolValue] ?
+            @"1" : @"0";
+    }
+});
+```
+
+</Tab>
+</Tabs>
+
+**Apps that don't collect IDFA**
+
+Use the below code to get tracking status.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+import AdSupport
+
+struct TrackingInfo {
+    let attStatus: ATTrackingManager.AuthorizationStatus?
+    let trackingEnabled: Bool?
+}
+
+func getTrackingInfo(completion: @escaping (TrackingInfo) -> Void) {
+    // For iOS 14.5+, get ATT status without showing prompt
+    if #available(iOS 14.5, *) {
+        let status = ATTrackingManager.trackingAuthorizationStatus
+        completion(TrackingInfo(attStatus: status, trackingEnabled: nil))
+    // For earlier versions, get tracking enabled status
+    } else {
+        let trackingEnabled = ASIdentifierManager.shared().isAdvertisingTrackingEnabled
+        completion(TrackingInfo(attStatus: nil, trackingEnabled: trackingEnabled))
+    }
+}
+
+// Usage example
+getTrackingInfo { info in
+    // Include ATT status if available, otherwise tracking enabled status, never both
+    if let attStatus = info.attStatus {
+        params["att_status"] = String(attStatus.rawValue)
+    } else if let trackingEnabled = info.trackingEnabled {
+        params["tracking_enabled"] = trackingEnabled ? "1" : "0"
+    }
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import <AdSupport/AdSupport.h>
+
+@interface TrackingInfo : NSObject
+@property (nonatomic, assign) ATTrackingManagerAuthorizationStatus attStatus;
+@property (nonatomic, strong) NSNumber *trackingEnabled;
+@end
+
+@implementation TrackingInfo
+@end
+
+void getTrackingInfo(void (^completion)(TrackingInfo *)) {
+    // For iOS 14.5+, get ATT status without showing prompt
+    if (@available(iOS 14.5, *)) {
+        TrackingInfo *info = [[TrackingInfo alloc] init];
+        info.attStatus = ATTrackingManager.trackingAuthorizationStatus;
+        completion(info);
+    // For earlier versions, get tracking enabled status
+    } else {
+        TrackingInfo *info = [[TrackingInfo alloc] init];
+        BOOL enabled = [ASIdentifierManager sharedManager].isAdvertisingTrackingEnabled;
+        info.trackingEnabled = @(enabled);
+        completion(info);
+    }
+}
+
+// Usage example
+getTrackingInfo(^(TrackingInfo *info) {
+    // Include ATT status if available, otherwise tracking enabled status, never both
     if (info.attStatus != nil) {
         params[@"att_status"] = [NSString stringWithFormat:@"%ld",
             (long)info.attStatus];
@@ -854,7 +862,7 @@ params["created_at_unix"] = (System.currentTimeMillis() / 1000).toString()
 
 ### Probabilistic modeling data points
 
-To use probabilistic matching as an attribution method, you need to include the following parameters on all S2S requests:
+To use probabilistic modeling as an attribution method, you need to include the following parameters on all S2S requests:
 
 <Table>
 
@@ -875,8 +883,6 @@ Adjust strongly recommends adding these parameters as it enables more comprehens
 ```swift
 import UIKit
 
-// Device name
-// Example value: "iPhone10,5"
 // Device name
 // Example value: "iPhone10,5"
 var systemInfo = utsname()
@@ -956,8 +962,8 @@ params["ip_address"] = "192.0.0.1"  // Example value
 
 You can specify the environment that requests are being sent in by passing an `environment` parameter. Requests from different environments are kept separate in Adjust to enable testing. The following values are available:
 
--  `sandbox`: use this while testing to keep your requests separate from your production data.
--  `production`: use this when you release your app.
+- `sandbox`: use this while testing to keep your requests separate from your production data.
+- `production`: use this when you release your app.
 
 If you don't pass this parameter, the default value is `production`.
 
@@ -1044,20 +1050,20 @@ Ensure all parameter values are URL encoded before sending requests.
 
 Sessions form the foundation of Adjust implementation and are the only required activity. A session typically represents an app open. Adjust's servers log successful session requests as follows:
 
--  It records the first session for a device as an "install" activity.
--  It records subsequent sessions as "session" activities.
--  It records a "reattribution" or "reattribution reinstall" activity if [reattribution criteria](https://help.adjust.com/en/article/reattribution) are satisfied.
+- It records the first session for a device as an "install" activity.
+- It records subsequent sessions as "session" activities.
+- It records a "reattribution" or "reattribution reinstall" activity if [reattribution criteria](https://help.adjust.com/en/article/reattribution) are satisfied.
 
-    <Callout type="info">
+<Callout type="info">
 
-   For reference, the Adjust SDK sends a session request to Adjust's servers when either of the following occurs:
+For reference, the Adjust SDK sends a session request to Adjust's servers when either of the following occurs:
 
-   -  The user opens the app for the first time after install or reinstall.
-   -  The user reopens the app after it has been closed or in the background for at least 30 minutes.
+- The user opens the app for the first time after install or reinstall.
+- The user reopens the app after it has been closed or in the background for at least 30 minutes.
 
-    </Callout>
+</Callout>
 
-   When sending S2S session requests with the `created_at_unix` parameter, Adjust's servers require this value to be at least 20 minutes later than the `created_at_unix` time of the last successfully logged session.
+When sending S2S session requests with the `created_at_unix` parameter, Adjust's servers require this value to be at least 20 minutes later than the `created_at_unix` time of the last successfully logged session.
 
 <CodeBlock title="Request - cURL">
 
@@ -1120,437 +1126,6 @@ HTTP Status Code: 200
 ```
 
 </CodeBlock>
-
-### Attribution
-
-After sending a session request, you may need to send an attribution request to Adjust's servers. The session response includes an `ask_in` parameter, indicating how many milliseconds to wait before making the attribution request.
-
-Attribution requests serve three main purposes for developers:
-
--  Obtain the attribution source for installs or reinstalls, allowing you to personalize the user experience.
--  Retrieve deferred deep links for users who clicked an Adjust deep link before installation.
--  Get updated attribution information in case of reattribution.
-
-There are two options for sending attribution requests:
-
--  Send after every session (covers all use cases)
--  Send only after install or reinstall (covers the first two use cases, which are most common)
-
-To implement the second option, follow these steps:
-
-1. Create a flag in your app.
-2. Use this flag to determine if the first session has been recorded.
-3. Send the attribution request only when this flag indicates it's the first session.
-
-<Tabs>
-<Tab title="Swift" sync="swift">
-
-```swift
-import Foundation
-
-// Helps to manage app-wide persistent settings and states
-class UserDefaultsManager {
-static let shared = UserDefaultsManager()
-private let userDefaults = UserDefaults.standard
-
-    // ...
-
-    private let FIRST_SESSION_RECORDED_KEY = "first_session_recorded"
-
-    var firstSessionRecorded: Bool {
-        get {
-            return userDefaults.bool(forKey: FIRST_SESSION_RECORDED_KEY)
-        }
-        set {
-            userDefaults.set(newValue, forKey: FIRST_SESSION_RECORDED_KEY)
-        }
-    }
-
-    // ...
-
-}
-
-// Usage example
-let userDefaultsManager = UserDefaultsManager.shared
-
-if !userDefaultsManager.firstSessionRecorded {
-// Send first session request
-// If the request is successful:
-userDefaultsManager.firstSessionRecorded = true
-// Wait according to "ask_in" time
-// Send attribution request for first session
-} else {
-// Send subsequent session requests
-}
-
-```
-
-</Tab>
-<Tab title="Kotlin" sync="kotlin">
-
-```kotlin
-import android.content.Context
-import android.content.SharedPreferences
-
-/* Helps to manage app-wide persistent settings and states */
-class SharedPreferencesManager private constructor(context: Context) {
-private val sharedPreferences: SharedPreferences =
-context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-
-    companion object {
-        private const val PREFS_NAME = "AppPrefs"
-        private const val FIRST_SESSION_RECORDED_KEY = "first_session_recorded"
-
-        // ...
-
-        @Volatile
-        private var instance: SharedPreferencesManager? = null
-
-        fun getInstance(context: Context): SharedPreferencesManager {
-            return instance ?: synchronized(this) {
-                instance ?: SharedPreferencesManager(context.applicationContext).also {
-                    instance = it
-                }
-            }
-        }
-    }
-
-    var firstSessionRecorded: Boolean
-        get() = sharedPreferences.getBoolean(FIRST_SESSION_RECORDED_KEY, false)
-        set(value) = sharedPreferences.edit().putBoolean(
-            FIRST_SESSION_RECORDED_KEY, value).apply()
-
-    // ...
-
-}
-
-// Usage example
-
-val userDefaultsManager = UserDefaultsManager.getInstance(context)
-
-if (!userDefaultsManager.firstSessionRecorded) {
-// Send first session request
-// If the request is successful:
-userDefaultsManager.firstSessionRecorded = true
-// Wait according to "ask_in" time
-// Send attribution request for first session
-} else {
-// Send subsequent session requests
-}
-
-```
-
-</Tab>
-</Tabs>
-
-Send an attribution request.
-
-<CodeBlock title="Request - cURL">
-
-```sh
-curl -X POST "https://app.adjust.com/attribution" \
--H "Authorization: Bearer ADD_YOUR_AUTH_TOKEN_HERE" \
--H "Content-Type:application/x-www-form-urlencoded" \
--d "s2s=1\
-&os_name=ios\
-&app_token=4w565xzmb54d\
-&idfa=29DDE430-CE81-4F00-A50C-689595AAD142\
-&att_status=3\
-&idfv=59E27F41-A86B-4560-B585-63161F871C4B\
-&primary_dedupe_token=3b35fcfb-6115-4cff-830f-e32a248c487d\
-&created_at_unix=1484085154\
-&device_name=iPhone16%2C2\
-&device_type=iPhone\
-&os_version=17.5.1\
-&ip_address=192.0.0.1\
-&environment=sandbox\
-&callback_params=%7B%22user_id%22%3A%20%222696775149%22%2C%20%22user_category%22%3A%20%22high%20value%22%7D\
-&partner_params=%7B%22analytics_user_id%22%3A%20%223913132433%22%2C%20%22analytics_session_id%22%3A%20%22nzFC9LKSqM%22%7D"\
--w "\n\nHTTP Status Code: %{http_code}\n" \
--s
-```
-
-</CodeBlock>
-
-Below is an example attribution response that contains a deferred deep link.
-
-<CodeBlock title="Response">
-
-```json
-{
-   "app_token": "4w565xzmb54d",
-   "adid": "df6c5653080670612cd2f9766ddc0814",
-   "timestamp": "2024-07-10T23:48:27.244Z+0000",
-   "message": "Attribution found",
-   "attribution": {
-      "tracker_token": "18msd3tn",
-      "tracker_name": "Test",
-      "network": "Test",
-      "deeplink": "example://summer-clothes?promo=beach\u0026adj_t=18msd3tn\u0026adjust_no_sdkclick=1"
-   }
-}
-```
-
-</CodeBlock>
-
-Please note that sometimes an attribution response may also contain an `ask_in` parameter. This means that Adjust's servers haven't yet completed the attribution process, and you should send another attribution request after the `ask_in` time elapses.
-
-If the attribution response contains a deferred deep link, here is a suggested approach to handle it:
-
-1. Store the deep link persistently in the app (for example: in `UserDefaults` for iOS or `SharedPreferences` for Android) for later use. This is often necessary because many apps have onboarding screens and login processes that need to be completed before handling the deferred deep link.
-
-2. When ready to process the deep link, do the following:
-   -  Retrieve and parse the stored link.
-   -  Implement domain-agnostic handling to treat all links equivalently:
-      -  Adjust universal links (for example: `example.go.link`)
-      -  Other universal links (for example: `example.com`)
-      -  App scheme deep links (for example: `example://`)
-   -  Extract relevant information (path, query parameters, fragment) regardless of link type.
-   -  Navigate to the deep link screen based on the extracted information.
-
-Example equivalence:
-
--  `https://example.go.link/summer-clothes?promo=beach`
--  `https://example.com/summer-clothes?promo=beach`
--  `example://summer-clothes?promo=beach`
-
-These should all lead to the same destination in your app.
-
-<Callout type="important">
-
-Adjust's servers returns all deferred deep links in app scheme format (for example: `example://`), regardless of their original format.
-
-</Callout>
-
-Here's a reference implementation demonstrating these concepts:
-
-<Tabs>
-<Tab title="Swift" sync="swift">
-
-```swift
-import Foundation
-import UIKit
-
-/// Handles the storage and retrieval of the deferred deep link and onboarding status
-class UserDefaultsManager {
-static let shared = UserDefaultsManager()
-private let userDefaults = UserDefaults.standard
-
-    // ...
-
-    private let DEFERRED_LINK_KEY = "deferredLink"
-    private let HAS_COMPLETED_ONBOARDING_KEY = "hasCompletedOnboarding"
-
-    // ...
-
-    func getDeferredLink() -> String? {
-        return userDefaults.string(forKey: DEFERRED_LINK_KEY)
-    }
-
-    func setDeferredLink(_ value: String) {
-        userDefaults.set(value, forKey: DEFERRED_LINK_KEY)
-    }
-
-    func removeDeferredLink() {
-        userDefaults.removeObject(forKey: DEFERRED_LINK_KEY)
-    }
-
-    func getHasCompletedOnboarding() -> Bool {
-        return userDefaults.bool(forKey: HAS_COMPLETED_ONBOARDING_KEY)
-    }
-
-    func setHasCompletedOnboarding(_ value: Bool) {
-        userDefaults.set(value, forKey: HAS_COMPLETED_ONBOARDING_KEY)
-    }
-
-}
-
-/// Demonstrates how to handle onboarding and deferred deep links
-class ViewController: UIViewController {
-let userDefaultsManager = UserDefaultsManager.shared
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        if !userDefaultsManager.getHasCompletedOnboarding() {
-            // Show onboarding screens and login
-            // On completion, set hasCompletedOnboarding to true
-            userDefaultsManager.setHasCompletedOnboarding(true)
-        }
-
-        // Check if there's a stored deferred deep link
-        if let deferredLinkString = userDefaultsManager.getDeferredLink(),
-           let deferredLink = URL(string: deferredLinkString) {
-            // Remove the stored URL to avoid handling it again later
-            userDefaultsManager.removeDeferredLink()
-            // Handle deferred deep link
-            DeeplinkHandler.handleDeeplink(deferredLink, navigationController: self.navigationController)
-        } else {
-            // Show main content
-        }
-    }
-
-}
-
-/// Handles the logic for processing and navigating to deep links
-class DeeplinkHandler {
-    static func handleDeeplink(_ incomingLink: URL,
-        navigationController: UINavigationController?) {
-        // Extract path, query items, and fragment from the link
-        let components = URLComponents(url: incomingLink,
-            resolvingAgainstBaseURL: true)
-        let path = components?.path ?? ""
-        let queryItems = components?.queryItems
-        let fragment = components?.fragment
-
-        // Implement navigation or other app-specific
-        // logic based on the deep link components.
-        DispatchQueue.main.async {
-            if path == "/summer-clothes" {
-                let promoCode = queryItems?.first(where: {
-                    $0.name == "promo"
-                })?.value
-                let summerClothesVC = SummerClothesViewController(
-                    promoCode: promoCode)
-                navigationController?.pushViewController(
-                    summerClothesVC, animated: true)
-            }
-        }
-    }
-
-}
-
-// Usage example when receiving the attribution response
-
-if let deeplink = attributionResponse["attribution"]["deeplink"]
-    as? String {
-    UserDefaultsManager.shared.setDeferredLink(deeplink)
-}
-
-```
-
-</Tab>
-<Tab title="Kotlin" sync="kotlin">
-
-```kotlin
-import android.content.Context
-import android.content.SharedPreferences
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentActivity
-
-/* Helps to manage app-wide persistent settings and states /
-class SharedPreferencesManager private constructor(context: Context) {
-private val sharedPreferences: SharedPreferences =
-context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-
-    companion object {
-        private const val PREFS_NAME = "AppPrefs"
-
-        // ...
-
-        private const val DEFERRED_LINK_KEY = "deferredLink"
-        private const val HAS_COMPLETED_ONBOARDING_KEY = "hasCompletedOnboarding"
-
-        @Volatile
-        private var instance: SharedPreferencesManager? = null
-
-        fun getInstance(context: Context): SharedPreferencesManager {
-            return instance ?: synchronized(this) {
-                instance ?: SharedPreferencesManager(context.applicationContext).also {
-                    instance = it
-                }
-            }
-        }
-    }
-
-    // ...
-
-    fun getDeferredLink(): String? {
-        return sharedPreferences.getString(DEFERRED_LINK_KEY, null)
-    }
-
-    fun setDeferredLink(value: String) {
-        sharedPreferences.edit().putString(DEFERRED_LINK_KEY, value).apply()
-    }
-
-    fun removeDeferredLink() {
-        sharedPreferences.edit().remove(DEFERRED_LINK_KEY).apply()
-    }
-
-    fun getHasCompletedOnboarding(): Boolean {
-        return sharedPreferences.getBoolean(HAS_COMPLETED_ONBOARDING_KEY, false)
-    }
-
-    fun setHasCompletedOnboarding(value: Boolean) {
-        sharedPreferences.edit().putBoolean(HAS_COMPLETED_ONBOARDING_KEY, value).apply()
-    }
-
-}
-
-/* Demonstrates how to handle onboarding and deferred deep links */
-class MainActivity : AppCompatActivity() {
-private lateinit var sharedPreferencesManager: SharedPreferencesManager
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        sharedPreferencesManager = SharedPreferencesManager.getInstance(this)
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        if (!sharedPreferencesManager.getHasCompletedOnboarding()) {
-            // Show onboarding screens and login
-            // On completion, set hasCompletedOnboarding to true
-            sharedPreferencesManager.setHasCompletedOnboarding(true)
-        }
-
-        // Check if there's a stored deferred deep link
-        sharedPreferencesManager.getDeferredLink()?.let { deferredLinkString ->
-            // Remove the stored URL to avoid handling it again later
-            sharedPreferencesManager.removeDeferredLink()
-            // Handle deferred deep link
-            DeeplinkHandler.handleDeeplink(deferredLinkString, supportFragmentManager)
-        } ?: run {
-            // Show main content
-        }
-    }
-
-}
-
-/* Handles the logic for processing and navigating to deep links */
-object DeeplinkHandler {
-fun handleDeeplink(incomingLink: String, fragmentManager: androidx.fragment.app.FragmentManager) {
-// Extract path, query items, and fragment from the link
-val uri = android.net.Uri.parse(incomingLink)
-val path = uri.path ?: ""
-val queryParams = uri.queryParameterNames.associateWith { uri.getQueryParameter(it) }
-val fragment = uri.fragment
-
-        // Implement navigation or other app-specific
-        // logic based on the deep link components.
-        if (path == "/summer-clothes") {
-            val promoCode = queryParams["promo"]
-            val summerClothesFragment = SummerClothesFragment.newInstance(promoCode)
-            fragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, summerClothesFragment)
-                .addToBackStack(null)
-                .commit()
-        }
-    }
-
-}
-
-// Usage example
-attributionResponse["attribution"]?.get("deeplink")?.asString?.let { deeplink ->
-   SharedPreferencesManager.getInstance(context).setDeferredLink(deeplink)
-}
-```
-
-</Tab>
-</Tabs>
 
 ### Post-install event
 
