@@ -1,0 +1,189 @@
+---
+title: 스마트 배너 SDK 초기화 옵션
+description: 스마트 배너 SDK의 동작을 제어하기 위해 초기화 옵션을 구성합니다.
+slug: ko/sdk/smart-banner/init-options
+sidebar-label: 초기화 옵션
+sidebar-position: 1
+---
+
+다음 파라미터를 설정하여 스마트 배너 SDK의 작동 방식을 제어합니다.
+
+## 필수 파라미터 {#required-parameters}
+
+### 앱 토큰 설정 {#set-your-app-token}
+
+스마트 배너 SDK를 초기화하려면 `AdjustSmartBanner.init` 메서드를 호출합니다.
+
+```js
+AdjustSmartBanner.init({
+   appToken: "APP_TOKEN",
+});
+```
+
+이 메서드를 호출하면 SDK는 기기 플랫폼을 감지합니다. 모바일 플랫폼 기기인 경우 SDK는 사용 가능한 스마트 배너를 로딩하고, 초기화 이후 대상 배너가 즉시 표시됩니다.
+
+프로젝트가 단일 플랫폼 앱을 타겟팅하는 경우, 각 플랫폼 토큰을 `appToken` 객체의 키로 전달합니다.
+
+```js
+AdjustSmartBanner.init({
+   appToken: {
+      ios: "IOS_APP_TOKEN",
+      android: "ANDROID_APP_TOKEN",
+   },
+});
+```
+
+## 선택적 파라미터 {#optional-parameters}
+
+### 로그 수준 설정 {#set-your-log-level}
+
+SDK가 수행하는 로깅의 verbosity를 구성합니다.
+
+<Callout type="tip">
+
+테스트 시 `verbose` 로깅을 사용하여 잠재적인 문제에 대한 자세한 정보를 확인하시기 바랍니다.
+
+</Callout>
+
+| logLevel  | 설명                              |
+| --------- | --------------------------------- |
+| `verbose` | SDK 작업에 대한 상세 메시지 인쇄  |
+| `info`    | 기본 정보 메시지, 경고, 오류 출력 |
+| `warning` | 경고 및 오류 메시지만 출력        |
+| `error`   | 오류 메시지만 인쇄                |
+| `none`    | 아무것도 출력하지 않음            |
+
+```js
+AdjustSmartBanner.init({
+   logLevel: "verbose",
+});
+```
+
+### 배너 언어 설정 {#set-your-banner-locale}
+
+배너 표시 시 사용되는 언어를 설정하려면 `language` 파라미터를 설정합니다.
+
+<Callout type="tip">
+
+자세한 내용은 ['배너 로켤라이제이션'](/ko/sdk/smart-banner#3-localize-your-banners)를 참조하시기 바랍니다.
+
+</Callout>
+
+```js
+AdjustSmartBanner.init({
+   language: "fr",
+});
+```
+
+### 딥링크 구성 {#configure-deep-links}
+
+딥링크 설정을 통해 사용자가 스마트 배너를 클릭할 때 앱의 어느 위치로 랜딩할지 지정할 수 있습니다.
+
+<Callout type="tip">
+
+자세한 내용은 [딥링크 페이지](/ko/sdk/smart-banner/deep-linking)를 참조하시기 바랍니다.
+
+</Callout>
+
+스마트 배너와의 딥링크를 제어하려면 다음의 파라미터를 사용하시기 바랍니다.
+
+- `context` \(객체\): 딥링크 경로에서 플레이스홀더\(`{}`\)를 채우기 위한 데이터를 포함하는 객체.
+- `androidDeepLinkPath` \(String\): Android 기기에서 사용자가 리디렉션되는 앱 내 위치.
+- `iosDeepLinkPath` \(String\): iOS 기기에서 사용자가 리디렉션되는 앱 내 위치.
+- `context` \(객체\): `androidDeepLinkPath` 및 `iosDeepLinkPath` 경로에서 보간된 값을 포함하는 객체.
+
+#### 예: {#examples}
+
+본 예시에서는 배너는 `context` 객체로부터 `item_id` 를 보간하여 iOS 사용자를 `products/product=cool_jeans_123` 의 딥링크 path로 리디렉션합니다.
+
+```js
+AdjustSmartBanner.init({
+   // other initialisation parameters including mandatory ones
+   iosDeepLinkPath: "products/product={item_id}",
+   context: {
+      item_id: "cool_jeans_123",
+   },
+});
+```
+
+본 예시에서는 배너는 `context` 객체로부터 `item_id` 를 보간하여 Android 사용자를 `products/product=cool_jeans_123` 의 딥링크 path로 리디렉션합니다.
+
+```js
+AdjustSmartBanner.init({
+   // other initialisation parameters including mandatory ones
+   androidDeepLinkPath: "products/{item_id}",
+   context: {
+      item_id: "cool_jeans_123",
+   },
+});
+```
+
+본 예시에서 배너는 `context` 객체로부터 `item_id` 를 보간하여 iOS 사용자와 Android 사용자 모두를 `products/product=cool_jeans_123` 에 있는 딥링크 path로 리디렉션합니다.
+
+```js
+AdjustSmartBanner.init({
+   // other initialisation parameters including mandatory ones
+   androidDeepLinkPath: "products/{item_id}",
+   iosDeepLinkPath: "products/product={item_id}",
+   context: {
+      item_id: "cool_jeans_123",
+   },
+});
+```
+
+`context` 객체를 사용하여 플랫폼별로 각기 다른 컨텍스트 변수를 정의할 수 있습니다. 예시:
+
+- Android 사용자는 `promo/new_user` 으로 이동됩니다.
+- iOS 사용자는 `main/registrationFinished` 으로 이동됩니다.
+- `unused_variable` 는 무시됩니다.
+
+```js
+AdjustSmartBanner.init({
+   // other initialisation parameters including mandatory ones
+   androidDeepLinkPath: "promo/{android_promo}",
+   iosDeepLinkPath: "main/{ios_promo}",
+   context: {
+      android_promo: "new_user",
+      ios_promo: "registrationFinished",
+      unused_variable: "this will be ignored",
+   },
+});
+```
+
+### 배너 상위 요소 설정 {#set-the-banner-parent-element}
+
+상위 요소를 지정하여 스마트 배너의 위치를 지정할 수 있습니다. 기본 설정에 따라 배너는 `document.body`에 첨부되어 있습니다. 기존의 `HTMLElement`를 지정하여 이를 재정의할 수 있습니다.
+
+아래의 예시에서는 스마트 배너가 ID가 `root-for-banner`인 요소에 첨부되어 있습니다.
+
+```js
+const element = document.querySelector("#root-for-banner");
+
+AdjustSmartBanner.init({
+   bannerParent: element,
+});
+```
+
+### 배너 종료 시 함수 실행 {#run-a-function-when-the-banner-is-created}
+
+`onCreated` 파라미터를 사용하여 스마트 배너가 생성된 즉시 실행되는 함수를 구성할 수 있습니다.
+
+이 예시에서는 배너가 생성될 때 콘솔에 로그가 출력됩니다.
+
+```js
+AdjustSmartBanner.init({
+   onCreated: () => console.log("Smart banner shown"),
+});
+```
+
+### 배너 종료 시 함수 실행 {#run-a-function-when-the-banner-is-dismissed}
+
+스마트 배너가 닫힐 때마다 실행되는 함수를 구성하려면 `onDismissed` 파라미터를 사용합니다.
+
+이 예시에서는 배너가 닫혔을 때 콘솔에 로그가 출력됩니다.
+
+```js
+AdjustSmartBanner.init({
+   onDismissed: () => console.log("Smart banner dismissed"),
+});
+```

@@ -1,0 +1,95 @@
+---
+title: 파트너 광고 비용 푸시 API
+description: 파트너 광고 비용 API를 사용하면 캠페인과 관련된 광고 비용 정보를 Adjust에 전송할 수 있습니다.
+category-title: 파트너 광고 비용 API
+slug: ko/api/ad-spend-api
+sidebar-position: 2
+---
+
+파트너 광고 비용 API를 사용하면 캠페인과 관련된 광고 비용 정보를 Adjust에 전송할 수 있습니다. Adjust는 인게이지먼트 발생 이후 **최대 7일** 까지의 인게이지먼트 데이터를 허용합니다.
+
+## 비용 ID 설정 {#cost-id}
+
+**비용 ID**
+
+: **12~256자 길이** 의 고유한 광고 비용 인게이지먼트 식별자.
+
+파트너 광고 비용 API를 호출할 때마다 캠페인과 관련된 고유한 **비용 ID** 를 포함해야 합니다. Adjust는 비용 ID를 사용하여 클릭 또는 노출과 함께 전송된 광고 비용 데이터를 매칭합니다.
+
+비용 ID는 반드시 고유해야 합니다. Universally Unique Identifier \(UUID\) 사용하거나 ID 앞에 회사명을 붙여 사용하는 것을 권장드립니다. 예: `network_name_848dsf4939fgwjn028erg4`
+
+기존의 `click_id` 또는 `impression_id`도 사용이 가능합니다. 고유의 클릭 또는 노출 ID를 생성하지 않은 경우, 2개 이상의 플레이스홀더를 조합하여 ID를 만들 수 있습니다. 예를 들어 CPI의 경우, 사용자의 IDFA\(광고주용 ID\)와 앱 ID를 조합할 수 있습니다.
+
+### Adjust를 통한 CPM 측정 {#measure-cpm-with-adjust}
+
+CPM \(1000회당 비용\) 데이터를 Adjust로 전송하려면 노출 URL에 파트너 광고 API 콜에서 전송하는 `cost_id` 와 동일한 값으로 `cost_id` 를 추가하시기 바랍니다. CPM을 측정할 때는 **각** 노출과 함께 CPM을 전송해야 합니다\(MUST\).
+
+## 광고 비용 데이터 전송 {#send-ad-spend-data}
+
+<CodeBlock title="엔드포인트" highlight="/cost">
+
+```http
+POST https://app.adjust.com/cost
+```
+
+</CodeBlock>
+
+Adjust에 광고 비용 정보를 보내려면 `/cost` 엔드포인트에 POST 요청을 전송합니다.
+
+### 파라미터 {#parameters}
+
+각 요청과 함께 반드시 다음의 파라미터를 전송해야 합니다. 모든 파라미터는 반드시 소문자 **쿼리 파라미터** 여야 합니다.
+
+`cost_type` \(`String`\)
+
+: 요금제 모델. 예: `cpc`, `cpi`, `cpe`.
+
+`cost_currency` \(`String`\)
+
+: 광고 비용의 통화 코드. [ISO 4217](https://www.iban.com/currency-codes) 통화 코드 형식이어야 합니다. [지원되는 통화 목록](https://help.adjust.com/ko/article/supported-currencies)을 참조하시기 바랍니다.
+
+`cost_amount` \(`Float`\)
+: 비용 값. 최대 소수점 5자리.
+
+`cost_id` \(`String`\)
+
+: 고유한 비용 ID. 자세한 정보는 [위의 비용 ID 섹션](#cost-id)을 참조하시기 바랍니다.
+
+`tag` \(`String`\)
+
+: 로그와 디버그에 사용한 레이블. 이 값은 최대 128자여야 합니다.
+
+### 예 {#example}
+
+<CodeBlock title="cURL" highlight="cost_type, cost_currency, cost_amount, cost_id, tag">
+
+```console
+$ curl -X POST https://app.adjust.com/cost \
+-d "cost_type=cpi&cost_currency=usd&cost_amount=2&cost_id=abc123_company_name_test_1&tag=company_name_test"
+```
+
+</CodeBlock>
+
+## 응답 {#responses}
+
+`200 Success`
+
+: 광고 비용 정보가 Adjust에 전송되었습니다.
+
+`400 Bad request`
+
+: 요청의 형식이 적절하지 않습니다. [모든 필수 파라미터](#parameters)가 포함되었는지 확인하시기 바랍니다.
+
+`401 Unauthorized`
+
+: 필수 인증 정보가 제공되지 않아 요청을 처리할 수 없습니다. 파트너 인증 정보 설정을 위해 [wizards@adjust.com](mailto:wizards@adjust.com) 으로 연락주시기 바랍니다.
+
+`403 Forbidden`
+
+: 입력하신 인증 정보는 전송한 정보를 게시할 수 있는 권한이 없습니다. 문제 해결을 위해 [Wizards@adjust.com](mailto:wizards@adjust.com)으로 연락주시기 바랍니다.
+
+## 연동 테스트 {#test-your-integration}
+
+필수 파라미터를 보낼 수 있도록 서버 구성이 완료되면 [wizards@adjust.com](mailto:wizards@adjust.com)으로 연락하시기 바랍니다. Adjust는 여러 차례의 테스트를 제공하여, 연동을 라이브로 설정하기에 앞서 여러 광고 비용 유형 간의 데이터 불일치를 확인하고 문제를 해결할 수 있습니다. Adjust는 또한 Adjust API 테스트를 통해 API 연동이 올바르게 작동하는지 확인합니다.
+
+테스트가 완료되면 Adjust의 연동 광고 비용 파트너 목록에 파트너로 추가됩니다.

@@ -1,0 +1,101 @@
+---
+title: アトリビューション情報の取得
+description: Adjust SDKを使ってアトリビューションの変更を受信する
+slug: ja/sdk/cordova/v4/features/attribution
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v5: /ja/sdk/cordova/features/attribution
+---
+
+ユーザーがAdjustリンクをクリックすると、そのアトリビューション情報が更新されます。これは、ユーザーが[ディープリンク](https://help.adjust.com/ja/article/deep-links)をクリックした場合に発生します。ユーザーのアトリビューションについての情報は、`AdjustAttribution`クラスに表示されます。
+
+## AdjustAttributionクラスのプロパティ {#adjustattribution-class-properties}
+
+`AdjustAttribution`クラスには、デバイスの現在のアトリビューションステータスに関する詳細が含まれています。ユーザーの入力されていない値は全て`null`値として返されます。
+
+<Callout type="note">
+
+以下の値は、[`AdjustConfig`インスタンスの`needsCost`プロパティ](/ja/sdk/cordova/configuration#enable-cost-data-sending)が`true`になっている場合にのみアクセスできます：
+
+- `costType`
+- `costAmount`
+- `costCurrency`
+
+</Callout>
+
+| 値                  | データタイプ | 説明                                                                                             |
+| ------------------- | ------------ | ------------------------------------------------------------------------------------------------ |
+| `trackerToken`      | 文字列       | デバイスが現在アトリビュートされているトラッカーのトークン                                       |
+| `trackerName`       | 文字列       | デバイスが現在アトリビュートされているトラッカーの名前                                           |
+| `network`           | 文字列       | デバイスが現在アトリビュートされているネットワークの名前                                         |
+| `campaign`          | 文字列       | デバイスが現在アトリビュートされているキャンペーンの名前                                         |
+| `adgroup`           | 文字列       | デバイスが現在アトリビュートされているアドグループの名前                                         |
+| `creative`          | 文字列       | デバイスが現在アトリビュートされているクリエイティブの名前                                       |
+| `clickLabel`        | 文字列       | インストールがタグされている[クリックラベル](https://help.adjust.com/ja/article/user-rewards)    |
+| `adid`              | 文字列       | デバイスに割り当てられた一意のAdjust ID                                                          |
+| `costType`          | 文字列       | キャンペーン価格モデル（例：cpi）                                                                |
+| `costAmount`        | 数値         | インストールのコスト                                                                             |
+| `costCurrency`      | 文字列       | コストに関連する[3文字のISO 4217通貨コード](https://www.iban.com/currency-codes)                 |
+| `fbInstallReferrer` | 文字列       | [Facebookインストールリファラー](https://developers.facebook.com/docs/app-ads/install-referrer/) |
+
+## アトリビューションが変更されたときに関数をトリガーする {#trigger-a-function-when-attribution-changes}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```js
+setAttributionCallbackListener(attributionCallback: (attribution: AdjustAttribution) => void)
+```
+
+</CodeBlock>
+
+SDKはアトリビューションの変更を受信し、更新を検出したときに関数を呼び出すことができます。コールバック関数を設定するには、configインスタンスの`setAttributionCallbackListener`プロパティに関数を割り当てます。
+
+<Callout type="important">
+
+アプリ内でAdjust SDKを初期化する **前** に、`setAttributionCallbackListener`メソッドを呼び出す必要があります。
+
+</Callout>
+
+```js
+var adjustConfig = new AdjustConfig(appToken, environment);
+
+adjustConfig.setAttributionCallbackListener(function (attribution) {
+   console.log("Attribution changed!");
+   console.log(attribution.trackerToken);
+   console.log(attribution.trackerName);
+   console.log(attribution.network);
+   console.log(attribution.campaign);
+   console.log(attribution.adgroup);
+   console.log(attribution.creative);
+   console.log(attribution.clickLabel);
+   console.log(attribution.adid);
+   console.log(attribution.costType);
+   console.log(attribution.costAmount);
+   console.log(attribution.costCurrency);
+});
+
+Adjust.create(adjustConfig);
+```
+
+## 現在のアトリビューション情報を取得 {#get-current-attribution-information}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```js
+getAttribution(): Promise<adjustattribution >
+```
+
+</CodeBlock>
+
+ユーザーがアプリをインストールすると、Adjustはそのインストールをキャンペーンにアトリビュートします。Adjust SDKでは、インストールのキャンペーンアトリビューションの詳細にアクセスすることができます。この情報を返すには、`getAttribution`メソッドを呼び出して、アトリビューション情報を`AdjustAttribution`オブジェクトとして返します。
+
+```js
+Adjust.getAttribution(function (attribution) {
+   // Access attribution properties within this function
+});
+```

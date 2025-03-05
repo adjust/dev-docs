@@ -1,0 +1,63 @@
+---
+title: Unity SDK連携
+description: Unityとの連携を使用して、Unityの情報をAdjustサーバーにパスします。
+slug: ja/sdk/android/v4/integrations/unity
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v5: /ja/sdk/android/integrations/unity
+---
+
+Unity SDKで広告収益を計測したい場合は、SDK間連携の機能を使用することで、Adjustサーバーにこの情報をパスすることができます。
+
+<Callout type="note">
+
+Unityとの連携による広告収益計測についてご質問がございましたら、担当のテクニカルアカウントマネージャーもしくは[support@adjust.com](mailto:support@adjust.com)までお問い合わせください。
+
+</Callout>
+
+## 事前準備 {#before-you-begin}
+
+この機能を利用するには、まずAdjust Android SDKをダウンロードしてアプリ向けに設定してください。
+
+### 要件 {#requirements}
+
+- Android SDKバージョン4\.29\.1以降
+
+詳細については、ご利用のUnity [Mediation API](https://docs.unity.com/mediation/APIReferenceAndroid.html)と[インプレッションイベント](https://docs.unity.com/mediation/SDKIntegrationAndroidImpressionEvents.html)に関するドキュメントを参照してください。
+
+## 例 {#examples}
+
+<Tabs>
+<Tab title="Java">
+
+```java
+// implement an impression listener
+final IImpressionListener impressionListener = new IImpressionListener() {
+    @Override
+    public void onImpression(@NonNull String adUnitId, @Nullable ImpressionData impressionData) {
+        // send impression data to Adjust
+        AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue(AdjustConfig.AD_REVENUE_UNITY);
+        adjustAdRevenue.setRevenue(impressionData.getPublisherRevenuePerImpression(), impressionData.getCurrency());
+        // optional fields
+        adjustAdRevenue.setAdRevenueNetwork(impressionData.getAdSourceName());
+        adjustAdRevenue.setAdRevenueUnit(impressionData.getAdUnitId());
+        adjustAdRevenue.setAdRevenuePlacement(impressionData.getAdSourceInstance());
+        // Send Adjust ad revenue
+        Adjust.trackAdRevenue(adjustAdRevenue);
+    }
+};
+
+// subscribe the impression listener to the impression event publisher
+ImpressionEventPublisher.subscribe(impressionListener);
+
+// unsubscribe the impression listener from the impression event publisher
+ImpressionEventPublisher.unsubscribe(impressionListener);
+```
+
+</Tab>
+</Tabs>

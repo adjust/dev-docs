@@ -1,0 +1,67 @@
+---
+title: 상태 엔드포인트
+description: 상태 엔드포인트를 사용하면 새 앱의 상태를 확인할 수 있습니다.
+slug: ko/api/app-automation-api/status-endpoint
+sidebar-position: 4
+---
+
+`/status` 엔드포인트를 사용하면 새 앱의 상태를 확인할 수 있습니다. 이 엔드포인트는 `_Template` 앱에서 새 앱으로 설정을 복사하는 과정의 상태를 반환합니다.
+
+<CodeBlock title="엔드포인트" highlight="/status, {ticket_token}">
+
+```http
+GET https://settings.adjust.com/api/status/{ticket_token}
+```
+
+</CodeBlock>
+
+## 복사 과정 불러오기 {#fetch-copy-process}
+
+이 엔드포인트는 설정 복사 과정의 상태를 반환합니다. [`/app` 엔드포인트](/ko/api/app-automation-api/app-endpoint)를 사용해 앱을 생성하면 `ticket_token`을 수신할 수 있습니다.
+
+| 이름             | 데이터 유형 | In   | 설명                                                                             |
+| ---------------- | ----------- | ---- | -------------------------------------------------------------------------------- |
+| `ticket_token`\* | `String`    | Path | 확인하고자 하는 티켓의 토큰. <br />`/app` 엔드포인트가 앱을 생성할 때 이를 반환. |
+
+```json
+{
+   "status": "String"
+}
+```
+
+### 상태 {#statuses}
+
+- `NEW`: 티켓이 생성되었으나 마이그레이션 작업이 아직 시작되지 않음.
+- `OPENED`: 이 티켓에 대한 작업이 시작됨.
+- `FAILED`: 작업이 실패함.
+- `COMPLETED`: 작업이 성공적으로 완료됨.
+
+## 예: {#example}
+
+<CodeBlock title="cURL" highlight="<ticket_token>">
+
+```console
+$ curl \
+--header "AdjustAuthorization: Token <adjust api token>" \
+--header "SignatureAuthorization: Token <adjust signature token>" \
+-X GET https://settings.adjust.com/api/status/<ticket_token>
+```
+
+</CodeBlock>
+<CodeBlock title="성공적인 응답">
+
+```json
+{
+   "status": "OPENED",
+   "events": {
+      "successes": [],
+      "failures": []
+   },
+   "partners": {
+      "section": "partners",
+      "detail": "Could not be start, because {events} sections has failed"
+   }
+}
+```
+
+</CodeBlock>

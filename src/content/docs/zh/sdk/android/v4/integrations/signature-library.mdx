@@ -1,0 +1,241 @@
+---
+title: SDK 签名库集成
+description: 将签名库添加到您的安卓应用，确保 Adjust SDK 和 Adjust 服务器之间通讯的安全。
+slug: zh/sdk/android/v4/integrations/signature-library
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v5: /zh/sdk/android/integrations/signature-library
+---
+
+Adjust 的 SDK 签名库是 Adjust SDK 的一款独立插件，也就是说，您无需变更代码或改变在应用中使用 Adjust SDK 的方式，即可使用 SDK 签名库。安装插件后，Adjust SDK 发出的所有请求都将继续如常运行。
+
+## Before you begin {#before-you-begin}
+
+要将签名库集成到您的安卓应用，请确保满足下列条件：
+
+- 正在使用的安卓API 为 **21 或更高版本** 。
+- 正在使用的 Adjust SDK 为 **4\.38\.2 或更高版本** 。即使是间接使用 Adjust SDK 的情况，此要求也同样适用。
+- 如果您使用了 ProGuard，那么签名库和 Adjust SDK 须使用完全相同的 ProGuard 配置。
+- 如需[16KB 页面尺寸对齐的签名库](https://developer.android.com/guide/practices/page-sizes)，请联系您的 Adjust 代表或发送邮件至 [support@adjust.com](mailto:support@adjust.com)。
+
+<Callout type="important">
+
+在 Adjust SDK 或签名库中使用外部模糊处理工具可能会影响签名库的功能。如果您不确定是否要使用外部工具，请联系您的 Adjust 代表或发送电子邮件至[support@adjust.com](mailto:support@adjust.com)，确认相关功能是否受到影响。
+
+</Callout>
+
+### Migrating from Signature v1 or v2 library {#migrating-from-signature-v1-or-v2-library}
+
+如果您之前使用的是 Signature v1 或 Signature v2，请先移除旧版本，然后再集成签名库。 为此请进行下列操作：
+
+- 如果您之前已经集成了 Signature V1，请移除项目中所有会调用签名功能的代码。
+- 如果您之前已经集成了 Signature V2，请从您的项目中移除 Signature V2 库。
+
+### Updating the Signature Library {#updating-the-signature-library}
+
+要更新 Adjust 签名库，请用新版本替换现有的签名库，然后重新运行测试。只要您的[证书已配置且未被更改](https://help.adjust.com/zh/article/sdk-signature#manage-your-certificate-fingerprints)，就无需立即在 Adjust 中对应用逻辑或设置进行任何更改。[如果密钥 ID 满足以下条件，请务必停用](https://help.adjust.com/zh/article/sdk-signature#manage-your-secret-ids)：
+
+- 应用密钥已不再适用于安装报告。
+- 您已经在所有应用平台和商店中全面发布了应用的新版本。
+
+## Integrate the signature library \(SDK v4 only\) {#integrate-the-signature-library}
+
+<Callout type="note">
+
+Adjust SDK v5 原生支持 SDK 签名验证。如果您之前集成了 SDK 签名库，请将其卸载并移除所有相关代码。
+
+</Callout>
+
+请按照下列步骤操作，将签名库集成入您的安卓项目中。
+
+1. [从 GitHub 调取](https://github.com/adjust/adjust_signature_sdk/releases/latest)签名库内容。
+2. 在您的应用模块目录中创建新的 `libs` 目录。
+3. 将收到的 AAR 库复制到 `libs` 目录。
+
+![A screenshot of the directory in Android studio](@images/sig-v3/aar-in-studio.png)
+
+4. 打开应用级别的 `build.gradle` 文件并添加以下内容：
+
+   ```groovy
+   android {
+      defaultConfig {
+         ndk.abiFilters 'armeabi-v7a','arm64-v8a','x86','x86_64'
+      }
+   }
+
+   dependencies {
+      implementation files('libs/adjust-lib.aar')
+   }
+   ```
+
+5. 在 Android Studio 弹窗中选择 **Sync Now** ，立即同步变更。
+
+一切就绪！签名库现已集成到您的项目中。请按照下一节说明的步骤操作，在 Adjust suite 中配置您的数字证书。
+
+## Set up your certificates in the Adjust suite {#set-up-your-certificates-in-the-adjust-suite}
+
+将签名库集成到应用中后，Adjust SDK 向 Adjust 发送的所有请求都会带有签名。Adjust SDK 还会向 Adjust 服务器发送相关信息，包括您的签名证书指纹。
+
+证书指纹是证书中公开信息的加密哈希值，可以用来验证应用的真实性。
+
+签名库无法验证证书指纹的真实性。请在 Adjust suite 中将指纹加入许可名单，这样，Adjust 才会认定包含指纹的请求真实，并接受这些请求。为此，您需要调取证书指纹，将其发送给 Adjust。
+
+<Callout type="important">
+
+您必须将签名证书的指纹添加至许可名单。如果未将任何指纹添加至许可名单，则来自应用的流量可能会被伪造。
+
+</Callout>
+
+#### From a keystore {#from-a-keystore}
+
+如果您使用了自己的密钥库，或 Android Studio 为您生成了密钥库，则可以按下列步骤操作，提取证书指纹。
+
+1. 请找到您用于对 **应用的发布版本** 进行签名的密钥库文件 \(`.jks`\)。该密钥库必须是用来为发送到 Google Play 商店的发布版本签名的文件。如果您使用了不同的密钥库文件，那么 SDK 请求就会被拒绝。
+
+2. 运行以下指令，以列出密钥。请用您的信息替换尖括号中的内容。
+
+   ```console
+   $ keytool -list -v -keystore <path/to/keystore.jks> -alias <your_key_alias>
+   ```
+
+   该命令会提示您输入密钥库密码。这是您在生成密钥库时定义的密码。
+
+   最终输出结果将如下：
+
+   ```text
+   Alias name: Key0
+   Creation date: May 15, 2018
+   Entry type: PrivateKeyEntry
+   Certificate chain length: 1
+   Certificate[1]:
+   Owner: CN=[Adjust, GmbH.]
+   Issuer: CN=[Adjust, GmbH.]
+   Serial number: 642f1b62
+   Valid from: Tue May 15 09:46:06 CEST 2018 until: Sat May 09
+   09:46:06 CEST 2043
+   Certificate fingerprints:
+   MD5: E7:88:9F:8C:9D:F4:14:C1:CF:E8:4C:97:F3:F2:3A:E3
+   SHA1:
+   C4:BD:07:91:BC:09:F8:B6:15:CD:BC:A3:3F:BC:68:8B:C2:EF:4F:F5
+   SHA256:
+   55:FB:97:0F:46:0F:94:EC:07:EA:01:69:50:5A:20:3F:A0:91:60:A4:F
+   1:33:58:EA:76:DC:54:9E:A7:6A:B9:1A
+   Signature algorithm name: SHA256withRSA
+   Subject Public Key Algorithm: 2048-bit RSA key
+   Version: 3
+   ```
+
+3. 保存 SHA\-1 指纹，[添加到 Adjust suite 中的许可名单中](#add-your-digital-certificate-fingerprints-to-adjusts-allowlist)。
+
+#### From Google Play Internal App Sharing {#from-google-play-internal-app-sharing}
+
+如果您使用的是 [Google Play 内部应用分享](https://support.google.com/googleplay/android-developer/answer/9303479?hl=en)，则需要将您所在机构的 SHA\-1 证书指纹和内部测试证书指纹发送给 Adjust ，以将其加入许可名单。
+
+要提取指纹，请按照下列步骤操作：
+
+1. 登录 Google Play Console
+2. 选择您的应用。
+3. 进入 **版本管理 \(Release management\) \-\-> 应用发布 \(App Releases\) \-> 管理内部应用分享 \(Manage internal app sharing\) > 应用证书 \(App certificates\)**
+4. 保存 **内部测试证书** 和您所在机构密钥库的 **SHA\-1 证书指纹** ，[将其添加入 Adjust suite 许可名单中](#add-your-digital-certificate-fingerprints-to-adjusts-allowlist)。
+
+![A screenshot of the certficate page in Google Play Console](@images/sig-v3/google-play-internal-sharing.png)
+
+#### From Google Play App Signing {#from-google-play-app-signing}
+
+如果您使用的是 [Google Play 应用签名](https://support.google.com/googleplay/android-developer/answer/7384423?hl=en)，则需要将所在机构的 SHA\-1 证书指纹和内部测试证书指纹发送给 Adjust ，以将其加入许可名单。
+
+要提取指纹，请按照下列步骤操作：
+
+1. 登录 Google Play Console
+2. 选择您的应用。
+3. 选择 **版本管理 \(Release management\) > 应用签名 \(App Signing\)** 。
+4. 保存 **应用签名证书** 和 **上传证书** 的 **SHA\-1 证书指纹，** 并将两者都发送给 Adjust。
+
+![A screenshot of the App signing page in the Google Play Console](@images/sig-v3/google-play-signing.png)
+
+#### From Huawei AppGallery App Signing {#from-huawei-appgallery-app-signing}
+
+如果您使用的是 Huawei AppGallery 应用签名，则需要将所在机构的 SHA\-1 证书指纹和内部测试证书指纹发送给 Adjust ，以将其加入许可名单。
+
+<Callout type="note">
+
+如果您在 Huawei AppGallery 中使用自己的签名证书，请按照[从密钥库提取证书指纹的步骤](#from-a-keystore)操作。
+
+</Callout>
+
+要提取指纹，请按照下列步骤操作：
+
+1. 打开 AppGallery Connect，找到应用签名 \(App Signing\) 页面，下载应用签名证书 \(`certificate.pem`\)。
+
+![A screenshot of the App Signing page in AppGallery Connect](@images/sig-v3/huawei-appgallery-signing.png)
+
+2. 证书下载完毕后，请运行下列命令，输出证书的 SHA\-1 指纹。
+
+   ```console
+   $ openssl x509 -fingerprint -in certificate.pem -noout -SHA1
+   ```
+
+   输出结果如下：
+
+   ```text
+   SHA1 Fingerprint=C4:BD:07:91:BC:09:F8:B6:15:CD:BC:A3:3F:BC:68:8B:C2:EF:4F:F5
+   ```
+
+3. 保存指纹，[添加到 Adjust suite 中的许可名单中](#add-your-digital-certificate-fingerprints-to-adjusts-allowlist)。
+
+### Add your digital certificate fingerprints to Adjust’s allowlist {#add-your-digital-certificate-fingerprints-to-adjust-s-allowlist}
+
+<Callout type="note">
+
+请务必将要使用的所有证书指纹添加进 Adjust suite，包括调试版本和针对不同商店的版本。
+
+</Callout>
+
+获得证书指纹后，请按照下列步骤操作，将证书指纹加入许可名单：
+
+1. 在 AppView 中选中您的应用，打开应用详情界面。
+2. 选择 **数据保护** 标签页。
+3. 点击 **可疑安装** 部分的 **编辑** 按钮。
+4. 找到 **安卓指纹** 部分，选择 **新指纹** 。
+5. 将复制好的 SHA\-1 指纹粘贴入弹出的文本框中。
+6. 选择 **添加** 。
+
+一切就绪！您的指纹现已加入应用许可名单。
+
+## Test your app {#test-your-app}
+
+您可以使用 [Adjust 测试控制台](https://help.adjust.com/zh/article/testing-console)验证签名库是否已正确集成进应用。
+
+<Callout type="important">
+
+请务必确保 Adjust SDK 处于 **sandbox 模式** 。
+
+</Callout>
+
+要测试您的签名库集成情况，请按照下列步骤操作。
+
+1. 从测试设备中完全删除应用，确保安装信息能被正确发送。
+
+2. 使用测试控制台遗忘设备，清除与该设备相关的所有信息。您还可以发送从[Adjust InSights 应用](https://play.google.com/store/apps/details?id=com.adjust.insights)中获得的应用识别码和广告 ID，以此使用 forget_device 终端。您可以使用以下任何广告 ID：`adid`、`android_id`、`gps_adid`、`imei`、`oaid`。
+
+   调用看上去应该是这样的：
+
+   ```console
+   $ curl -X POST 'https://app.adjust.com/forget_device?app_token={yourAppToken}&id={adid}'
+   ```
+
+3. 从测试控制台抹除设备信息后，请在测试设备上安装并打开应用，以将安装信息发送给 Adjust。
+
+4. 将测试设备的广告 ID 输入测试控制台，调取安装事件信息。请检查以下内容：
+
+   1. `SignatureVerificationResult` 字段应当显示以下值 `Valid Signature`
+   2. `SignatureVersion` 字段应当显示以下值 `3`
+
+如果这些字段没有缺失，且包含正确的信息，就说明签名库已经成功集成。如果字段中出现了不同的值，请再次检查集成步骤，或发送邮件到 [support@adjust.com](mailto:support@adjust.com) 获取支持。
+
+一切就绪！签名库已成功集成到您的应用。[等待两个归因窗口结束](https://help.adjust.com/zh/article/attribution-windows)，即可[执行 SDK 签名验证](https://help.adjust.com/zh/article/sdk-signature#enforce-signature-validation)，确保 Adjust 只接受带有签名的请求。

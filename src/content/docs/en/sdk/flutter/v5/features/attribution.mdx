@@ -1,0 +1,111 @@
+---
+title: Get attribution information
+description: Listen for attribution changes using the Adjust SDK
+slug: en/sdk/flutter/features/attribution
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v4: /en/sdk/flutter/v4/features/attribution
+---
+
+When a user interacts with an Adjust link, their attribution information updates. This can happen if the user interacts with a [deep link](https://help.adjust.com/en/article/deep-links). Information about a user's attribution is represented in the `AdjustAttribution` class.
+
+## AdjustAttribution class properties {#adjustattribution-class-properties}
+
+The `AdjustAttribution` class contains details about the current attribution status of the device. Any values that aren't populated for the user are returned as a `null` value.
+
+<Callout type="note">
+
+The following values can only be accessed if the [`isCostDataInAttributionEnabled` property on your `AdjustConfig` instance](/en/sdk/flutter/configuration#enable-cost-data-sending) is `true`:
+
+- `costType`
+- `costAmount`
+- `costCurrency`
+
+</Callout>
+
+| Values              | Data type | Description                                                                                                    |
+| ------------------- | --------- | -------------------------------------------------------------------------------------------------------------- |
+| `trackerToken`      | `String`  | The token of the link to which the device is currently attributed                                              |
+| `trackerName`       | `String`  | The name of the link to which the device is currently attributed                                               |
+| `network`           | `String`  | The name of the network to which the device is currently attributed                                            |
+| `campaign`          | `String`  | The name of the campaign to which the device is currently attributed                                           |
+| `adgroup`           | `String`  | The name of the adgroup to which the device is currently attributed                                            |
+| `creative`          | `String`  | The name of the creative to which the device is currently attributed                                           |
+| `clickLabel`        | `String`  | The [click label](https://help.adjust.com/en/article/user-rewards) that the install is tagged with             |
+| `costType`          | `String`  | The campaign pricing model (for example cpi)                                                                   |
+| `costAmount`        | `num`     | The cost of the install.                                                                                       |
+| `costCurrency`      | `String`  | The [3 character ISO 4217 code](https://www.iban.com/currency-codes) of the currency associated with the cost. |
+| `fbInstallReferrer` | `String`  | The [Facebook install referrer](https://developers.facebook.com/docs/app-ads/install-referrer/).               |
+
+## Trigger a function when attribution changes {#trigger-a-function-when-attribution-changes}
+
+<CodeBlock title="Property declaration">
+
+```dart
+typedef void AttributionCallback(AdjustAttribution attributionData);
+AttributionCallback? attributionCallback;
+
+```
+
+</CodeBlock>
+
+The SDK can listen for attribution changes and call a function when it detects an update. To configure your callback function, assign your function to the `attributionCallback` property on your config instance.
+
+<Callout type="important">
+
+You must call the `attributionCallback` method **before** initializing the Adjust SDK in your app.
+
+</Callout>
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
+config.attributionCallback = (AdjustAttribution attributionChangedData) {
+   print('[Adjust]: Attribution changed!');
+
+   if (attributionChangedData.trackerToken != null) {
+      print('[Adjust]: Tracker token: ' + attributionChangedData.trackerToken);
+   }
+   if (attributionChangedData.trackerName != null) {
+      print('[Adjust]: Tracker name: ' + attributionChangedData.trackerName);
+   }
+   if (attributionChangedData.campaign != null) {
+      print('[Adjust]: Campaign: ' + attributionChangedData.campaign);
+   }
+   if (attributionChangedData.network != null) {
+      print('[Adjust]: Network: ' + attributionChangedData.network);
+   }
+   if (attributionChangedData.creative != null) {
+      print('[Adjust]: Creative: ' + attributionChangedData.creative);
+   }
+   if (attributionChangedData.adgroup != null) {
+      print('[Adjust]: Adgroup: ' + attributionChangedData.adgroup);
+   }
+   if (attributionChangedData.clickLabel != null) {
+      print('[Adjust]: Click label: ' + attributionChangedData.clickLabel);
+   }
+};
+Adjust.initSdk(adjustConfig);
+```
+
+## Get current attribution information {#get-current-attribution-information}
+
+<CodeBlock title="Method signature">
+
+```dart
+static Future<AdjustAttribution> getAttribution() async
+```
+
+</CodeBlock>
+
+When a user installs your app, Adjust attributes the install to a campaign. The Adjust SDK gives you access to campaign attribution details for your install. To return this information, call the `getAttribution` method to return the attribution information as an `AdjustAttribution` object.
+
+```dart
+Adjust.getAttribution().then((attribution) {
+  // process attribution
+});
+```

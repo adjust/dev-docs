@@ -1,8 +1,8 @@
-import type { AlgoliaKeys, Hit } from "./../types";
+import type { Hit, TypesenseKeys } from "./../types";
 import type { Locales } from "@i18n/locales";
 
 export interface HelpCenterIndexProps {
-  algoliaKeys: AlgoliaKeys;
+  typesenseKeys: TypesenseKeys;
   lang: keyof Locales;
 }
 

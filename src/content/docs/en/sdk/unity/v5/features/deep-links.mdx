@@ -1,0 +1,153 @@
+---
+title: Deep linking
+description: Follow the guides in this section to set up deep linking.
+category-title: Deep linking
+slug: en/sdk/unity/features/deep-links
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v4: /en/sdk/unity/v4/features/deep-links
+---
+
+You can create deep links to take users to specific pages in your app. The Adjust SDK uses different logic depending on if the user already has your app installed on their device:
+
+- Direct deep linking: occurs if the user already has your app installed. The link takes the user to the page specified in the link
+- Deferred deep linking: occurs if the user doesn't have your app installed. The link takes the user to a storefront to install your app first. After the user installs the app, it opens to the page specified in the link.
+
+The SDK can read deep link data after a user opens your app from a link.
+
+## Set up deep linking {#set-up-deep-linking}
+
+If a user has your app installed, it opens when they interact with a link containing deep link information. The Adjust SDK contains tools to parse deep link information for use throughout your app.
+
+The SDK injects the required settings into Android and iOS projects. To configure deep linking, add your URL schemes in the Unity Editor inspector window.
+
+![A screenshot of the Unity editor](@images/unity/deep-links/1-editor.png)
+
+## Deep linking on iOS {#deep-linking-on-ios}
+
+Devices running iOS 9 and later use [universal links](https://developer.apple.com/library/ios/documentation/General/Conceptual/AppSearch/UniversalLinks.html) to handle deep links. You need to add your universal link scheme to your app to open deep links in your app. To do this:
+
+1. Set up your universal links in the Adjust dashboard.
+2. Configure **Associated Domains** for your app in the Apple Developer Portal.
+3. Open the Unity editor.
+4. Navigate to the **DEEP LINKING** section of the Adjust prefab.
+5. Enter your universal link or links in the **iOS Universal Links Domain** field. Make sure to remove the protocol from the beginning of your link (for example: `https://` or `applinks:`).
+
+## Deep linking on Android {#deep-linking-on-android}
+
+Android devices use a unique URI scheme to handle deep links. To set up deep linking, add your scheme to the **Android URI Schemes** section of the Adjust prefab. The SDK adds the required XML tags to your `AndroidManifest.xml`.
+
+![A screenshot of the Android URI Schemes section in the Unity prefab menu](@images/unity/deep-links/2-uri-schemes.png)
+
+## Deferred deep linking {#deferred-deep-linking}
+
+### Disable opening deferred deep links {#disable-opening-deferred-deep-links}
+
+<CodeBlock title="Property declaration">
+
+```cs
+public bool? IsDeferredDeeplinkOpeningEnabled { get; set; }
+```
+
+</CodeBlock>
+
+The Adjust SDK opens deferred deep links by default. You can disable this by assigning a `false` value to the `IsDeferredDeeplinkOpeningEnabled` property of your `AdjustConfig` instance.
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+//...
+adjustConfig.IsDeferredDeeplinkOpeningEnabled = false;
+//...
+Adjust.InitSdk(adjustConfig);
+```
+
+### Set up a deferred deep link delegate {#set-up-a-deferred-deep-link-delegate}
+
+<CodeBlock title="Property declaration">
+
+```cs
+public Action<string> DeferredDeeplinkDelegate { get; set; }
+```
+
+</CodeBlock>
+
+You can configure the Adjust SDK to call a delegate function when it receives a deferred deep link. This delegate function receives the deep link as a `string` argument.
+
+```cs
+private void DeferredDeeplinkCallback(string deeplinkURL) {
+   //...
+}
+
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+adjustConfig.DeferredDeeplinkDelegate = DeferredDeeplinkCallback;
+Adjust.InitSdk(adjustConfig);
+```
+
+### Example {#example}
+
+This example shows how to log a deep link address when the user opens a deferred deep link.
+
+```cs
+private void LogDeepLink(string deepLinkURL) {
+ Debug.Log("Deeplink URL: " + deeplinkURL);
+}
+//...
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+adjustConfig.DeferredDeeplinkDelegate = LogDeepLink;
+//...
+Adjust.InitSdk(adjustConfig);
+```
+
+## Reattribution via deep links {#reattribution-via-deep-links}
+
+<CodeBlock title="Method signature">
+
+```cs
+public static void ProcessDeeplink(AdjustDeeplink deeplink);
+```
+
+</CodeBlock>
+
+Adjust enables you to run re-engagement campaigns using deep links. For more information, check out how to set up [Deep links in Campaign Lab](https://help.adjust.com/en/article/deep-links).
+
+To reattribute your user, you need to instantiatee an `AdjustDeeplink` object with the deep link URL and pass it to the `Adjust.ProcessDeeplink` method. The Adjust SDK then looks for new attribution data within the deep link. If the SDK finds new information, it forwards the information to Adjust’s servers for reattribution.
+
+```cs
+AdjustDeeplink adjustDeeplink = new AdjustDeeplink("url");
+Adjust.ProcessDeeplink(adjustDeeplink);
+```
+
+## Enable LinkMe {#enable-linkme}
+
+<CodeBlock title="Method signature">
+
+```cs
+public bool? IsLinkMeEnabled { get; set; }
+```
+
+</CodeBlock>
+
+The Adjust SDK lets you copy deep link information from the device pasteboard. When combined with Adjust’s LinkMe solution, this feature enables deferred deep linking on devices running iOS 15 and above.
+
+<Callout type="important">
+
+The Adjust SDK checks the pasteboard when a user opens the app for the first time. The device displays a dialog asking if the user wants to allow the app to read the pasteboard.
+
+</Callout>
+
+When a user clicks on a LinkMe URL they have the option to copy the link information to their system pasteboard. You can use the Adjust SDK to read the system pasteboard for deep link information. If deep link information is present, the SDK forwards the user to the correct page in your app.
+
+To enable pasteboard checking in your app, assign a `true` value to the `IsLinkMeEnabled` property of your `AdjustConfig` instance.
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
+//...
+adjustConfig.IsLinkMeEnabled = true;
+//...
+Adjust.InitSdk(adjustConfig);
+```

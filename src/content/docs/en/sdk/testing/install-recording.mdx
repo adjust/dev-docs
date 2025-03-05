@@ -1,0 +1,88 @@
+---
+title: "Test install recording"
+description: "Test that the Adjust SDK is sending install information to Adjust"
+slug: en/sdk/testing/install-recording
+sidebar-label: "Install recording"
+sidebar-position: 1
+---
+
+Installs are one of the most important things to record in your app. The Adjust SDK records an install when a user installs your app on their device. Adjust then attributes the install to the responsible campaign. You can use the Adjust testing console to verify install information and ensure you're receiving information before deploying to production.
+
+There are two types of install you can test:
+
+- **Organic**: installs that occur without the user interacting with a campaign link
+- **Non-organic**: installs that occur when the user interacts with a campaign link
+
+<Callout type="important">
+
+Make sure to set your SDK environment to **Production** after you finish testing. This ensures your app works in production mode.
+
+</Callout>
+
+Use these tools to test the SDK:
+
+- The Adjust testing console, available in [AppView](https://help.adjust.com/en/article/testing-console).
+- The [Adjust Device API](/en/api/device-api/inspect).
+- Your IDE's log output.
+
+## Organic installs {#organic-installs-1}
+
+To test organic installs in your app:
+
+1. Follow the integration guide for your platform to integrate the Adjust SDK.
+2. Set the environment to **sandbox**. This ensures that your app only sends information to the testing console.
+3. Set your log level to **verbose** to capture all logging information from your app.
+4. Set up a test device or an emulated device and find the device's advertising ID. You can install the [Adjust Insights app](https://apps.apple.com/us/app/adjust-insights/id1125517808) to find this information.
+5. If you've previously used the device for testing:
+   1. Delete your app from the test device.
+   2. Clear the device's advertising ID from the testing console. Follow the instructions for the [Testing console in AppView](https://help.adjust.com/en/article/testing-console#forget-device).
+   3. Alternatively, call the [forget device endpoint](/en/api/device-api/forget/) to remove existing information about the device.
+6. Download and open the test version of your app that contains the Adjust SDK.
+7. Open the testing console and check the device's advertising ID status.
+
+## Non-organic installs {#non-organic-installs}
+
+To test non-organic installs in your app:
+
+1. Follow the get started guide for your platform to integrate the Adjust SDK.
+2. Set the environment to **sandbox**. This ensures that your app only sends information to the testing console.
+3. Set your log level to **verbose** to capture all logging information from your app.
+4. Set up a test device or an emulated device and find the device's advertising ID. You can install the [Adjust Insights app](https://apps.apple.com/us/app/adjust-insights/id1125517808) to find this information.
+5. If you've previously used the device for testing:
+   1. Delete your app from the test device.
+   2. Clear the device's advertising ID from the testing console. Follow the instructions for the [Testing console in AppView](https://help.adjust.com/en/article/testing-console-suite#forget-device).
+   3. Alternatively, call the [forget device endpoint](/en/api/device-api/forget/)
+6. [Create a test link](https://help.adjust.com/en/article/links).
+
+   1. If you want to test probabilistic modeling, enable **Probablistic modeling** for clicks at the [app level](https://help.adjust.com/en/article/attribution-settings-app-level) or link level.
+   2. If you want to test [device ID matching](https://help.adjust.com/en/article/attribution-methods#deterministic-attribution), add your device advertising ID to your campaign URL:
+
+   ```text
+   https://app.adjust.com/abc1234?idfa=test_device_id
+   ```
+
+   ```text
+   https://app.adjust.com/abc1234?gps_adid=test_device_id
+   ```
+
+7. Set up your test link in a web environment.
+8. Select your test link on your test device.
+9. Download and open the test version of your app that contains the Adjust SDK.
+
+## Successful install {#successful-install}
+
+### Testing console {#testing-console-1}
+
+Open the testing console and check the device's advertising ID status. If the install data is recorded successfully, an entry is shown for the device's advertising ID.
+
+![The Adjust testing console](@images/sdk-testing/install/testing-console.png)
+
+### IDE logging {#ide-logging}
+
+Open the logging console in your IDE and look for events logged by `Adjust`. If the install is recorded successfully, the message **Install tracked** is logged.
+
+## Unsuccessful install {#unsuccessful-install}
+
+If the install fails, nothing is recorded in the testing console. When you search for the device's advertising ID the message **Advertising ID not found** is shown in the console output.
+
+Make sure you follow all steps in the Get started guide for your platform. Contact your Adjust representative or the support@adjust.com if you're experiencing issues.

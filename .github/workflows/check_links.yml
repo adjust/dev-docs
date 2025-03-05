@@ -15,19 +15,12 @@ jobs:
           check_interval: 60
           allow_inactive: true
           environment: Preview
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - name: Extract links
-        id: extract_links
-        run: python ./.github/scripts/extract_links.py
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       - name: Check for broken links
         if: steps.waitForVercel.outputs.url
         uses: lycheeverse/lychee-action@v1.10.0
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
-          args: --max-redirects 10 --base ${{ steps.waitForVercel.outputs.url }} ${{ steps.extract_links.outputs.file }}
+          args: --max-redirects 10 --base ${{ steps.waitForVercel.outputs.url }} './src/content/docs/**/*.md*'
           fail: true

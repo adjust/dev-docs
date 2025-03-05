@@ -1,0 +1,125 @@
+---
+title: プリインストールアプリのアクティビティを送信する
+description: プリインストールアプリから情報を送信するようにキャンペーンを設定します。
+slug: ja/sdk/unity/v4/features/preinstalled
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v5: /ja/sdk/unity/features/preinstalled
+---
+
+Adjust SDKを使用して、ユーザーのデバイスにプリインストールされているアプリでのアクティビティを記録することができます。これにより、キャンペーンからアプリをダウンロードしなかったユーザーの情報を記録することが可能です。
+
+Configオブジェクトには、この機能を制御する`bool``preinstallTrackingEnabled`プロパティが含まれています。プリインストール計測を有効化するには、`setPreinstallTrackingEnabled`メソッドを`true`引数で呼び出します。
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
+//...
+adjustConfig.setPreinstallTrackingEnabled(true);
+//...
+Adjust.start(adjustConfig);
+```
+
+Adjust SDKは、プリインストールアプリを計測する5つのメソッドを提供しています：
+
+- [システムプロパティ](#system-properties)（Androidのみ）
+- [コンテンツプロバイダー](#content-provider)（Androidのみ）
+- [System Installer Receiver](#system-installer-receiver)（Androidのみ）
+- [World Readable Directory](#world-readable-directory)（Androidのみ）
+- [デフォルトリンクトークン](#default-link-token)（iOSおよびAndroid）
+
+## System Properties {#system-properties}
+
+Original Equipment Manufacturer（OEM）パートナーは、Androidのシステムプロパティを活用して、プリインストールされたアプリをアトリビューションすることができます。OEMはアトリビューション情報をファイルに書き出し、そのパスをシステムプロパティに追加します。Adjust SDKは初期化時にこのファイルを読み取り、そのインストールをアトリビュートします。
+
+## Content Provider {#content-provider}
+
+コンテンツプロバイダー（content provider）メソッドは、読み取り専用のコンテンツプロバイダーを使用します。SDKはコンテンツリゾルバー（content resolver）を使用して、リクエストからプリインストール情報を収集します。
+
+パーミッションを設定するには、以下を`AndroidManifest.xml`ファイルに追加してください。
+
+<CodeBlock title="AndroidManifest.xml">
+
+```xml
+<uses-permission android:name="com.adjust.preinstall.READ_PERMISSION"/>
+```
+
+</CodeBlock>
+
+デバイスのプレインストール済みアプリにアクセスするには、以下を`AndroidManifest.xml`ファイルに追加してください。
+
+<CodeBlock title="AndroidManifest.xml">
+
+```xml
+<queries>
+   <intent>
+       <action android:name="com.attribution.REFERRAL_PROVIDER"/>
+   </intent>
+</queries>
+
+```
+
+</CodeBlock>
+
+## System Installer Receiver {#system-installer-receiver}
+
+システム インストーラー メソッドは、ブロードキャストレシーバーを使用します。システムインストーラーはプリインストール情報をブロードキャストします。Adjust SDKは、システム プリインストール リファラー レシーバーを使用してこの情報を読み取ります。
+
+レシーバーを設定するには、以下を`AndroidManifest.xml`ファイルに追加します。
+
+<CodeBlock title="AndroidManifest.xml">
+
+```xml
+<receiver android:name="com.adjust.sdk.AdjustPreinstallReferrerReceiver">
+   <intent-filter>
+      <action android:name="com.attribution.SYSTEM_INSTALLER_REFERRER" />
+   </intent-filter>
+</receiver>
+
+```
+
+</CodeBlock>
+
+## World\-readable directory {#world-readable-directory}
+
+プリインストールされたアプリのアトリビューション情報を、世界で読み取り可能なディレクトリに保存します。SDKはインストール時にこのファイルから情報を読み取って、ユーザーをアトリビュートします。システムの暗号化プロトコルが、アプリデータを保護します。
+
+プリインストール情報を見つけられるファイルパスを`setPreinstallFilePath`メソッドにパスし、Adjust SDKがその情報にアクセスできるようにしてください。
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
+//...
+adjustConfig.setPreinstallFilePath("../EngagementFile.xml");
+//...
+Adjust.start(adjustConfig);
+```
+
+## デフォルトのリンクトークン {#default-link-token}
+
+デフォルトのリンクトークンを設定すると、全てのプリインストールを定義済みのAdjustリンクにアトリビュートさせることができます。Adjustはアトリビューションソースが変更されるまで、このトークンに対して全ての情報を記録します。設定する方法は次のとおりです：
+
+1. [Campaign Labで新しいリンクを作成します。](https://help.adjust.com/ja/article/links)
+
+   ```http
+   https://app.adjust.com/{token}
+   ```
+
+2. このトークンをコピーして、アプリのデリゲートファイルの`setDefaultTracker`メソッドにパスします。
+
+   ```cs
+   AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+   //...
+   adjustConfig.setDefaultTracker("{TrackerToken}");
+   //...
+   Adjust.start(adjustConfig);
+   ```
+
+3. アプリをビルドして実行します。ログを有効にしている場合は、ログにメッセージが表示されます。
+
+   ```text
+   Default tracker: 'abc123'.
+   ```

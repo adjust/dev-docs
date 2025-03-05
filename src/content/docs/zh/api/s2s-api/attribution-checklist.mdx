@@ -1,0 +1,114 @@
+---
+title: S2S 归因检查表
+description: Adjust 的 S2S 归因检查表针对您的应用内解决方案提出了各种要求。
+slug: zh/api/s2s-api/attribution-checklist
+sidebar-position: 5
+sidebar-label: 服务器到服务器检查表
+---
+
+要实现 S2S \(服务器到服务器\) 归因和会话跟踪，需要在应用内添加自定义解决方案来复制 Adjust SDK 的基本功能。此 S2S 归因检查表针对您的应用内解决方案提出了各种要求。满足这些要求可确保 Adjust 所接收信息的安全性，以及报告内容的准确性。
+
+## 操作前须知 {#before-you-begin}
+
+了解归因和会话跟踪所需的最小 Adjust SDK 代码长度。将此代码集成到应用中，是 Adjust 归因和会话跟踪的首选方法。该代码易于集成，并提供自定义解决方案必须复制的功能。
+
+参考以下指南，了解基本集成步骤。
+
+📖 [安卓](/zh/sdk/android) / [iOS](/zh/sdk/ios) / [Windows](/zh/sdk/windows) / [Adobe Air](https://github.com/adjust/adobe_air_sdk#basic-integration) / [Unity](/zh/sdk/unity) / [Cordova](https://github.com/adjust/cordova_sdk#basic-integration) / [Marmalade](https://github.com/adjust/marmalade_sdk#basic-integration) / [Xamarin](https://github.com/adjust/xamarin_sdk#basic-integration) / [Cocos2d\-x](https://github.com/adjust/cocos2dx_sdk#basic-integration) / [React Native](/zh/sdk/react-native) / [Titanium](https://github.com/adjust/titanium_sdk#basic-integration) / [Corona](https://github.com/adjust/corona_sdk#basic-integration)
+
+## 检查表概览{#checklist-overview}
+
+Adjust 的 S2S 归因检查表涵盖 3 大关键领域（数据完整性和安全性、广告和设备 ID 以及第三方集成）的 5 项要求。每个项目都是准确归因和会话监测的基础。您的应用内解决方案必须复制 Adjust SDK 的基本功能，该功能默认满足这些要求。
+
+## 1\. 维护数据的安全性和完整性{#maintain-security-and-integrity}
+
+您必须保护请求并在本地缓冲信息，以此确保应用创建、收集和发送到服务器信息的完整性和安全性。
+
+### 保护应用到服务器的请求{#secure-app-to-server-requests}
+
+移动应用安装作弊在移动行业中普遍存在，已造成营销商高达数十亿美元的损失。抵御移动应用安装作弊的首个重要步骤，是保护应用到服务器的请求。如果您无法保证数据的安全性，Adjust 便无法知道从您服务器接收的信息是否合法。这种情况下，您的报告中很可能会掺杂作弊数据。
+
+如果未能满足此要求，您的报告和广告支出就有可能受到伪造安装的侵害，进而对广告预算产生负面影响。如果您无法保证请求的安全性，我们建议不要使用 S2S 集成。
+
+#### Adjust 如何保护安装{#how-adjust-secures-installs}
+
+Adjust 通过 [Adjust SDK 签名](https://help.adjust.com/zh/article/sdk-signature)保护每个安装。此签名受到带[应用密钥](https://help.adjust.com/zh/article/sdk-signature#what-is-an-app-secret)的加密哈希保护，该应用密钥已部署到 Adjust SDK 中并会随每个报告安装发送。Adjust 会针对每个安装验证此哈希，并会拒绝归因任何无法验证的流量。
+
+### 本地缓冲信息{#buffer-information-locally}
+
+用户可能会在设备离线的状态下首次打开您的应用 \(即一次 **安装** \) 或触发会话。如果离线活动从未到达 Adjust 的服务器，则无法准确归因。
+
+如果您未能满足这些要求，那么出现任何短暂中断，例如 4G 切换，或长时间没有网络或 WiFi 覆盖都会导致数据丢失。总体看来，有 10–20% 的安装在第一次尝试时未到达 Adjust 服务器。若 Adjust 未收到此数据，则会基于当前数据，而非实际情况，进行归因。
+
+#### Adjust 如何缓冲信{#how-adjust-buffers-information}
+
+Adjust SDK 将所有应用内活动按序排放，因此当连接可用时，其便可以将数据发送到 Adjust 的服务器。
+
+## 2\. 收集并创建广告和设备 ID{#collect-and-create-advertising-and-device-ids}
+
+安卓的 Google Play 应用商店广告 ID \(GPS_ADID\) 和 iOS 的广告主 ID \(IDFA\) 均属于[广告 ID](https://help.adjust.com/zh/article/device-identifiers#advertising-ids)。设备用户可以重置这两种 ID 或禁止对这两种 ID 的访问。因此，Adjust 还会使用设备 ID 和通用唯一标识符 \(UUID\)（仅限 iOS）进行归因和会话监测。在不重置设备的情况下，最终用户无法重置这两种 ID。
+
+### 收集所有可行的广告和设备 ID{#gather-every-possible-advertising-and-device-id}
+
+广告 ID 可重置。蓄意重复重置广告 ID 是常见情况 \(例如在应用内奖励系统中作弊\)。此外，iOS 上约有 15% 的用户启用了限制广告跟踪 \(LAT\)，从而禁止对其 IDFA 的访问。出于这些原因，Adjust 会依赖其他 ID 来准确归因并持续记录应用内会话。
+
+如果未能满足这些要求，那么记录的每个会话如果没有先前跟踪的广告 ID 或没有广告 ID \(iOS 上所有启用 LAT 的用户\)，则将被归因为新安装。
+
+#### Adjust 如何收集 ID？{#how-adjust-collects-ids}
+
+Adjust SDK 默认收集每个合法可用的广告 ID 和设备 ID。Adjust 会映射 ID，因此，如果一个 ID 被重置，新的 ID 会被映射到同一用户在系统中的其他 ID。
+
+### 生成通用唯一标识符，并将其保存到设备密钥链 \(iOS\){#generate-a-universally-unique-identifier-and-persist-it-to-the-device-keychain-ios}
+
+当用户重置其广告 ID、卸载、重装您的应用或启用 LAT 时，Adjust 将无法检索其 IDFA 和/或 IDFV。为了持续记录用户的应用内会话，Adjust 依赖保存到设备密钥链且为本地生成的永久 UUID。Adjust 会将 UUID 映射到其他设备信息。借助此操作，Adjust 可以在出现如下情况时无缝跟踪用户的应用内活动：
+
+- 用户启用 LAT
+- 用户重置其广告 ID
+- Adjust 未收到原始广告 ID 和/或 iOS 的供应商 ID \(IDFV\)
+
+如果未能满足这些要求，那么在设备农场中，广告 ID 会被不断重置以模拟全新安装，因此任何报告都可能包含源自设备农场的安装。任何启用 LAT 的用户都将在每次会话时被归因为新安装。
+
+#### Adjust 如何管理 UUID？{#how-adjust-manages-uuids}
+
+Adjust 会在安装时生成 UUID。这会被映射到 Adjust 系统的其他设备信息。
+
+## 3\. 第三方集成和其他数据{#third-party-integrations-and-additional-data}
+
+归因到 Apple Search Ads、Google Play 商店和第三方应用商店（例如，Amazon Appstore）所需的重要信息，只能利用第三方集成在您的应用内收集。
+
+您必须支持以下内容：
+
+### 安卓{#android}
+
+- [Google Play 应用商店 referrer API](https://developer.android.com/google/play/installreferrer/igetinstallreferrerservice.html)。
+- 收集[通过拐折检测到的 Dalvik VM 指令集](https://android.googlesource.com/platform/libcore/+/master/libart/src/main/java/dalvik/system/VMRuntime.java#109)
+- [深度链接再归因](https://developer.android.com/training/app-links/deep-linking.html)
+
+### iOS {#ios}
+
+- [Apple Search Ads 归因 API](https://searchads.apple.com/help/reporting/0028-apple-ads-attribution-api)。
+- [深度链接再归因](https://developer.apple.com/library/content/documentation/General/Conceptual/AppSearch/UniversalLinks.html)
+
+在您应用中收集的这些信息也必须在收到后立即转发给 Adjust，以便用于归因。
+
+### 为归因收集所有来源的必要数据{#collect-the-necessary-data-for-attribution-across-all-sources}
+
+Adjust 依赖通过这些集成发送的信息，来实现准确、全面的归因和深度链接再归因。
+
+如果没有 Google Play 应用商店 referrer，Adjust 将无法对以下安装进行归因：
+
+- 超过 50% 的安卓安装
+- 所有 Google 自然搜索安装
+- 任何第三方应用商店安装
+
+[点击劫持过滤](https://help.adjust.com/zh/article/click-injection-filtering)也将不能运行。这样，您就容易遭遇大量安卓移动广告欺诈。此外，如果缺少 Dalvik VM 指令集，Adjust 无法判断安装是否源自虚拟设备。
+
+如果没有 Apple Search Ads 归因 API，Adjust 将无法对以下安装进行归因：
+
+- Apple Search Ads 安装
+
+#### Adjust 如何收集必要的归因数据{#how-adjust-collects-the-necessary-attribution-data}
+
+集成所需的代码可以在 Adjust SDK 指南 \([安卓](/zh/sdk/android), [iOS](/zh/sdk/ios)\) 中找到。您也可以根据深度链接指南 \([安卓](/zh/sdk/android/features/deep-links), [iOS](/zh/sdk/ios/features/deep-links)\) 中的步骤利用 Adjust SDK 启用深度链接再归因。
+
+将 Adjust安卓SDK 添加到应用后，系统会自动收集 Dalvik VM 指令集。

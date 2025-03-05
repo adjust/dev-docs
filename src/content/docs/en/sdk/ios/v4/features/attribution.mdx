@@ -1,0 +1,211 @@
+---
+title: Get attribution information
+description: Listen for attribution changes using the Adjust SDK
+slug: en/sdk/ios/v4/features/attribution
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v5: /en/sdk/ios/features/attribution
+---
+
+When a user interacts with an Adjust link, their attribution information updates. This can happen if the user interacts with a [deep link](https://help.adjust.com/en/article/deep-links). Information about a user's attribution is represented in the `AdjustAttribution` class.
+
+## ADJAttribution class properties {#adjattribution-class-properties}
+
+The `AdjustAttribution` class contains details about the current attribution status of the device. Any values that aren't populated for the user are returned as a `null` value.
+
+<Callout type="note">
+
+The following values can only be accessed if the `needsCost` property on your `ADJConfig` instance is `true`:
+
+- `costType`
+- `costAmount`
+- `costCurrency`
+
+</Callout>
+
+| Values         | Data type  | Description                                                                                                    |
+| -------------- | ---------- | -------------------------------------------------------------------------------------------------------------- |
+| `trackerToken` | `NSString` | The token of the link to which the device is currently attributed                                              |
+| `trackerName`  | `NSString` | The name of the link to which the device is currently attributed                                               |
+| `network`      | `NSString` | The name of the network to which the device is currently attributed                                            |
+| `campaign`     | `NSString` | The name of the campaign to which the device is currently attributed                                           |
+| `adgroup`      | `NSString` | The name of the adgroup to which the device is currently attributed                                            |
+| `creative`     | `NSString` | The name of the creative to which the device is currently attributed                                           |
+| `clickLabel`   | `NSString` | The [click label](https://help.adjust.com/en/article/user-rewards) that the install is tagged with             |
+| `adid`         | `NSString` | The unique Adjust ID assigned to the device                                                                    |
+| `costType`     | `NSString` | The campaign pricing model (for example cpi)                                                                   |
+| `costAmount`   | `NSNumber` | The cost of the install.                                                                                       |
+| `costCurrency` | `NSString` | The [3 character ISO 4217 code](https://www.iban.com/currency-codes) of the currency associated with the cost. |
+
+## Trigger a function when attribution changes {#trigger-a-function-when-attribution-changes}
+
+<CodeBlock title="Property declaration">
+
+```objc
+@property (nonatomic, weak, nullable) NSObject<AdjustDelegate> *delegate;
+```
+
+</CodeBlock>
+
+The SDK can listen for attribution changes and call a function when it detects an update. To configure your delegate function:
+
+1. If you aren't using web views, add the `AdjustDelegate` declaration to your `AppDelegate` header file.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+class AppDelegate: UIResponder, UIApplicationDelegate, AdjustDelegate {
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+@interface AppDelegate : UIResponder <UIApplicationDelegate, AdjustDelegate>
+```
+
+</Tab>
+</Tabs>
+
+2. Add the delegate callback function to your app delegate implementation.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+class AppDelegate: UIResponder, UIApplicationDelegate, AdjustDelegate {
+   func adjustAttributionChanged(_ attribution: ADJAttribution?) {
+      /// ...
+   }
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+- (void)adjustAttributionChanged:(ADJAttribution *)attribution {
+   /// ...
+}
+```
+
+</Tab>
+</Tabs>
+
+3. Set the delegate with your Adjust config instance.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+   appToken: yourAppToken,
+   environment: environment)
+adjustConfig?.delegate = self
+//...
+Adjust.appDidLaunch(adjustConfig)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+*adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
+                                 environment:ADJEnvironmentSandbox];
+[adjustConfig setDelegate:self];
+/// ...
+[Adjust appDidLaunch:adjustConfig];
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+<CodeBlock highlight="{range: 5-15}">
+
+```js
+setupWebViewJavascriptBridge(function (bridge) {
+   var yourAppToken = yourAppToken;
+   var environment = AdjustConfig.EnvironmentSandbox;
+   var adjustConfig = new AdjustConfig(yourAppToken, environment);
+   adjustConfig.setAttributionCallback(function (attribution) {
+      // In this example, we're just displaying alert with attribution content.
+      alert(
+         "Link = " +
+            attribution.trackerToken +
+            "\n" +
+            "Link name = " +
+            attribution.trackerName +
+            "\n" +
+            "Network = " +
+            attribution.network +
+            "\n" +
+            "Campaign = " +
+            attribution.campaign +
+            "\n" +
+            "Adgroup = " +
+            attribution.adgroup +
+            "\n" +
+            "Creative = " +
+            attribution.creative +
+            "\n" +
+            "Click label = " +
+            attribution.clickLabel +
+            "\n" +
+            "Adid = " +
+            attribution.adid,
+      );
+   });
+});
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
+
+Within your delegate function, you have access to the user's `Attribution` information. See the [`ADJAttribution` class properties](#adjattribution-class-properties) for a list of available properties.
+
+## Get current attribution information {#get-current-attribution-information}
+
+<CodeBlock title="Method signature">
+
+```objc
++ (nullable ADJAttribution *)attribution;
+```
+
+</CodeBlock>
+
+When a user installs your app, Adjust attributes the install to a campaign. The Adjust SDK gives you access to campaign attribution details for your install. To return this information, call the `attribution` method to return the attribution information as an `ADJAttribution` object.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let attribution = Adjust.attribution()
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+ADJAttribution *attribution = [Adjust attribution];
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+var attribution = Adjust.getAttribution();
+```
+
+</Tab>
+</Tabs>

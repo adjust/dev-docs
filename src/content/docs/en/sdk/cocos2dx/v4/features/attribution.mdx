@@ -1,0 +1,85 @@
+---
+title: Get attribution information
+description: Listen for attribution changes using the Adjust SDK
+slug: en/sdk/cocos2dx/v4/features/attribution
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v5: /en/sdk/cocos2dx/features/attribution
+---
+
+When a user interacts with an Adjust link, their attribution information updates. This can happen if the user interacts with a [deep link](https://help.adjust.com/en/article/deep-links). Information about a user's attribution is represented in the `AdjustAttribution2dx` class.
+
+## AdjustAttribution2dx class properties
+
+The `AdjustAttribution2dx` class contains details about the current attribution status of the device. Any values that aren't populated for the user are returned as a `null` value.
+
+<Callout type="note">
+
+The following values can only be accessed if the [`needsCost` property on your `AdjustConfig2dx` instance](/en/sdk/cocos2dx/configuration#enable-cost-data-sending) is `true`:
+
+- `costType`
+- `costAmount`
+- `costCurrency`
+
+</Callout>
+
+| Values              | Data type | Description                                                                                                    |
+| ------------------- | --------- | -------------------------------------------------------------------------------------------------------------- |
+| `trackerToken`      | String    | The token of the tracker to which the device is currently attributed                                           |
+| `trackerName`       | String    | The name of the tracker to which the device is currently attributed                                            |
+| `network`           | String    | The name of the network to which the device is currently attributed                                            |
+| `campaign`          | String    | The name of the campaign to which the device is currently attributed                                           |
+| `adgroup`           | String    | The name of the adgroup to which the device is currently attributed                                            |
+| `creative`          | String    | The name of the creative to which the device is currently attributed                                           |
+| `clickLabel`        | String    | The [click label](https://help.adjust.com/en/article/user-rewards) that the install is tagged with             |
+| `adid`              | String    | The unique Adjust ID assigned to the device                                                                    |
+| `costType`          | String    | The campaign pricing model (for example cpi)                                                                   |
+| `costAmount`        | Number    | The cost of the install.                                                                                       |
+| `costCurrency`      | String    | The [3 character ISO 4217 code](https://www.iban.com/currency-codes) of the currency associated with the cost. |
+| `fbInstallReferrer` | String    | The [Facebook install referrer](https://developers.facebook.com/docs/app-ads/install-referrer/).               |
+
+## Trigger a function when attribution changes
+
+<CodeBlock title="Method signature">
+
+```cpp
+void setAttributionCallback(void(*attributionCallback)(AdjustAttribution2dx attribution));
+```
+
+</CodeBlock>
+
+The SDK can listen for attribution changes and call a function when it detects an update. To configure your callback function, call the `setAttributionCallback` method with your function name as an argument.
+
+<Callout type="important">
+
+You must call the `setAttributionCallback` method **before** initializing the Adjust SDK in your app.
+
+</Callout>
+
+```cpp
+AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment);
+adjustConfig.setLogLevel(AdjustLogLevel2dxVerbose);
+adjustConfig.setAttributionCallback(attributionCallbackMethod);
+Adjust2dx::start(adjustConfig);
+```
+
+## Get current attribution information
+
+<CodeBlock title="Method signature">
+
+```cpp
+static AdjustAttribution2dx getAttribution();
+```
+
+</CodeBlock>
+
+When a user installs your app, Adjust attributes the install to a campaign. The Adjust SDK gives you access to campaign attribution details for your install. To return this information, call the `getAttribution` method to return the attribution information as an `AdjustAttribution2dx` object.
+
+```cpp
+AdjustAttribution2dx attribution = Adjust2dx::getAttribution();
+```

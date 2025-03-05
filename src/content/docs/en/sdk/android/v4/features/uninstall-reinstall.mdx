@@ -1,0 +1,342 @@
+---
+title: Uninstall and reinstall measurement
+description: Use the Adjust Android SDK to measure uninstalls and reinstalls.
+slug: en/sdk/android/v4/features/uninstall-reinstall
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v5: /en/sdk/android/features/uninstall-reinstall
+---
+
+Use the Adjust Android SDK to measure uninstalls and reinstalls. Adjust uses push tokens to send silent push notifications to your users' device, and checks if your app is currently installed.
+
+Use the following instructions to add this functionality to your app.
+
+<Callout type="note">
+
+Uninstall and reinstall measurement is effective for apps distributed through any app store or direct download, as long as the device has Google Play Services installed. Devices without Google Play Services aren't currently supported, such as Amazon and Huawei devices.
+
+</Callout>
+
+## Before you begin {#before-you-begin}
+
+Here's what you need to know before getting started.
+
+### Requirements {#requirements}
+
+- [Android SDK v4.12.0 and later](https://github.com/adjust/android_sdk)
+- [Add Firebase to your Android project](https://firebase.google.com/docs/android/setup)
+- Admin, Editor, or Custom Editor [permissions](https://help.adjust.com/en/article/permission-levels)
+
+## Connect Google FCM to Adjust {#connect-google-fcm-to-adjust}
+
+Configuring silent push notifications through Google's Firebase Cloud Messaging (FCM) API allows you to measure uninstalls and reinstalls. Adjust requires an FCM HTTP v1 API private key to connect to Google FCM.
+
+<Callout type="important">
+
+Generate a new FCM HTTP v1 private key instead of using a legacy service key. Google will gradually sunset the Cloud Messaging API (Legacy) starting on July 22, 2024. To find out which services are affected, what to expect during the deprecation period, and how to apply for an extension, refer to [Google's documentation](https://firebase.google.com/support/faq#deprecated-api-shutdown).
+
+</Callout>
+
+### Google Cloud console {#google-cloud-console}
+
+#### 1. Create a custom role for Adjust Uninstall and Reinstall Measurement {#create-a-custom-role-for-adjust-uninstall-and-reinstall-measurement}
+
+1. Access your [Google Cloud Console](https://console.cloud.google.com/).
+2. Select the Google Cloud project associated with your Firebase project.
+3. Search for **IAM & Admin**.
+4. From the side menu, select **Roles**.
+5. Select **+ Create Role**.
+6. Enter the following details:
+   1. **Title**: Adjust Uninstall
+   2. **ID**: adjust_uninstall
+   3. **Role launch stage**: General Availability
+7. Select **+ Add Permissions**.
+8. In the **Enter property name or value** field, enter `cloudmessaging.messages.create` and select it from the search results.
+9. Check the **cloudmessaging.messages.create** option and select **Add**.
+10.   Select **Create**.
+
+#### 2. Create a service account {#create-a-service-account}
+
+1. From the side menu, select **Service Accounts**.
+2. Select **+ Create Service Account**.
+3. In the **Service account name** field, enter `Adjust Uninstall Service Account`.
+4. Select **Create and Continue**.
+5. Select the **Select a role** dropdown. Enter `Adjust Uninstall` and select it from the search results.
+6. Select **Continue**.
+7. Select **Done**.
+
+#### 3. Generate and download the private key {#generate-and-download-the-private-key}
+
+1. Select the newly created service account. The format looks like this: `adjust-uninstall-service-account@test3-55065.iam.gserviceaccount.com`.
+2. Select the **Keys** tab.
+3. Select **Add Key** > **Create new key**.
+4. Select **JSON** and then **Create**.
+   The private key is downloaded as a JSON file to your computer.
+
+### In the Adjust dashboard {#adjust-dashboard}
+
+Now that you have the private key details required to connect Adjust to Google FCM, you need to enable Uninstall and reinstall measurement in your [app configuration in AppView](https://help.adjust.com/en/article/platforms-ios-android-amazon-microsoft):
+
+1. Select the **Platforms** tab.
+2. Select **Edit**.
+   ![Platform settings](@images/android/uninstall-reinstall/1-platform-settings.png)
+3. Under **Advanced settings**, find the **Record uninstall and reinstall data** option.
+   ![Advanced settings](@images/android/uninstall-reinstall/2-advanced-settings.png)
+4. Select **Add connection**. A modal will open prompting you to add a new connection between Adjust and Google FCM.
+   ![New connection modal](@images/android/uninstall-reinstall/3-new-connection.png)
+5. Fill in the required information including your recently generated FCM private key. The **Partner** and **Services** fields are automatically filled in.
+6. Select **Connect**.
+7. Review your app's settings and select **Save**.
+
+## Integrate with the Adjust SDK {#integrate-with-the-adjust-sdk}
+
+Follow these instructions to integrate FCM with the Adjust SDK:
+
+1. Ensure that you have the required dependency for **Firebase Messaging** in your `build.gradle` file:
+
+   ```groovy
+   dependencies {
+      // ...
+      implementation 'com.google.firebase:firebase-messaging:23.4.0'
+      // ...
+   }
+   ```
+
+2. Set up a Firebase Cloud Messaging client app on Android following [Google's documentation](https://firebase.google.com/docs/cloud-messaging/android/client), if you haven't already done so.
+3. Pass the push token for the device to the Adjust SDK.
+   - If you are sending your own push notifications to the app, ensure that you override the `onMessageReceived` method in the `FirebaseMessagingService` class with logic that handles all types of push notifications, including Adjust's silent push notifications for Uninstall and Reinstall Measurement.
+
+#### Example {#example}
+
+The following code snippet shows how you can extend the `FirebaseMessagingService` class to pass the push token to the Adjust SDK, and to update your push notification handling logic. If you aren't sending your own push notifications, you can skip the override of the `onMessageReceived` method.
+
+<Callout type="important">
+
+When overriding `onMessageReceived` as shown below, be careful not to impact how the app handles your own push notifications. Be sure to test sending your own push notifications while your app is in the foreground after any modifications to the below push notification handling code.
+
+</Callout>
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+import com.adjust.sdk.Adjust
+import com.adjust.sdk.Util
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.messaging.FirebaseMessagingService
+import com.google.firebase.messaging.RemoteMessage
+
+class MyFirebaseMessagingService : FirebaseMessagingService() {
+
+  override fun onCreate() {
+    super.onCreate()
+    // Fetch FCM token and set in Adjust SDK
+    FirebaseMessaging.getInstance().token
+      .addOnCompleteListener { task ->
+        if (task.isSuccessful && task.result != null) {
+          Adjust.setPushToken(task.result, applicationContext)
+        }
+      }
+  }
+
+  override fun onNewToken(token: String) {
+    super.onNewToken(token)
+
+    // Receive new FCM token and set in Adjust SDK
+    Adjust.setPushToken(token, applicationContext)
+  }
+
+  override fun onMessageReceived(remoteMessage: RemoteMessage) {
+    super.onMessageReceived(remoteMessage)
+
+    // Check if message has data payload
+    if (remoteMessage.data.isNotEmpty()) {
+      val payload: Map<String, String> = remoteMessage.data
+
+      // Check for Adjust uninstall detection data message
+      if (Util.isAdjustUninstallDetectionPayload(payload)) {
+        // No handling required for Adjust data payload
+      } else {
+        // Handle other data payloads here
+      }
+    }
+
+    // Check if message has notification payload
+    remoteMessage.notification?.let {
+      // Handle notification payload here
+    }
+  }
+}
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+import com.adjust.sdk.Adjust;
+import com.adjust.sdk.Util;
+import com.google.firebase.messaging.FirebaseMessagingService;
+import com.google.firebase.messaging.RemoteMessage;
+import java.util.Map;
+
+public class MyFirebaseMessagingService extends FirebaseMessagingService {
+
+  @Override
+  public void onCreate() {
+    super.onCreate();
+    // Fetch FCM token and set in Adjust SDK
+    FirebaseMessaging.getInstance().getToken()
+      .addOnCompleteListener(task -> {
+        if (task.isSuccessful() && task.getResult() != null) {
+          Adjust.setPushToken(task.getResult(),getApplicationContext());
+        }
+      });
+  }
+
+  @Override
+  public void onNewToken(String token) {
+    super.onNewToken(token);
+
+    // Receive new FCM token and set in Adjust SDK
+    Adjust.setPushToken(token, getApplicationContext());
+  }
+
+  @Override
+  public void onMessageReceived(RemoteMessage remoteMessage) {
+    super.onMessageReceived(remoteMessage);
+
+    // Check if message has data payload
+    if (!remoteMessage.getData().isEmpty()) {
+      Map<String, String> payload = remoteMessage.getData();
+
+      // Check for Adjust uninstall detection data message
+      if (Util.isAdjustUninstallDetectionPayload(payload)) {
+        // No handling required for Adjust data payload
+      } else {
+        // Handle other data payloads here
+      }
+    }
+
+    // Check if message has notification payload
+    if (remoteMessage.getNotification() != null) {
+      // Handle notification payload here
+    }
+  }
+}
+```
+
+</Tab>
+</Tabs>
+
+4. Initialize the Firebase instance in your application before initializing the Adjust SDK.
+
+#### Example {#example-1}
+
+Here is an example of an application class in an Android project. You can see that it initializes the Firebase instance as soon as the app starts.
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+import android.app.Application
+import com.adjust.sdk.Adjust
+import com.adjust.sdk.AdjustConfig
+import com.google.firebase.FirebaseApp
+
+class MyApp : Application() {
+
+  override fun onCreate() {
+    super.onCreate()
+
+    // Initialize Firebase App
+    FirebaseApp.initializeApp(this)
+
+    // Configure Adjust SDK
+    // Replace {YourAppToken} with your Adjust app token
+    val appToken = "{YourAppToken}"
+    val environment = AdjustConfig.ENVIRONMENT_PRODUCTION
+    val config = AdjustConfig(this, appToken, environment)
+
+    // Initialize Adjust SDK
+    Adjust.onCreate(config)
+  }
+}
+
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+import android.app.Application;
+import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustConfig;
+import com.google.firebase.FirebaseApp;
+
+public class MyApp extends Application {
+
+  @Override
+  public void onCreate() {
+    super.onCreate();
+
+    // Initialize Firebase App
+    FirebaseApp.initializeApp(this);
+
+    // Configure Adjust SDK
+    // Replace {YourAppToken} with your Adjust app token
+    String appToken = "{YourAppToken}";
+    String environment = AdjustConfig.ENVIRONMENT_PRODUCTION;
+    AdjustConfig config = new AdjustConfig(this, appToken, environment);
+
+    // Initialize Adjust SDK
+    Adjust.onCreate(config);
+  }
+}
+```
+
+</Tab>
+</Tabs>
+
+## Test the integration {#test-the-integration}
+
+Adjust checks for Android app uninstalls from devices that had their last activity in the Adjust production environment.
+
+To test Uninstall and Reinstall measurement, you can use either a debug build or a release build. The main requirement is that you must set the Adjust SDK environment to _production_ when performing test installs.
+
+To test uninstall measurement:
+
+1. In the Adjust SDK, set the environment to `AdjustConfig.ENVIRONMENT_PRODUCTION` before initializing the Adjust SDK.
+2. Install the app on your physical test device or emulator.
+3. Open the app.
+4. Open Adjust's [Testing Console](https://help.adjust.com/en/article/testing-console).
+5. Enter your _device ID_ and select **View device data**.
+6. Under the **App information** section:
+   - The **Install state** should show **Installed**.
+   - There should be a value for **Push token**.
+7. Uninstall the app.
+8. After 24 hours, check the Testing Console again, as Adjust checks for uninstalls once a day. Under the **App information** section, the **Install state** should now show **Uninstalled**.
+
+The state change from **Installed** to **Uninstalled** ensures that the Uninstall and Reinstall measurement feature works correctly. However, if you would also like to test reinstall measurement, follow the next steps:
+
+1. Reinstall the debug build or release build on your physical test device or emulator.
+2. Open the app.
+3. After 24 hours, check the Testing Console again as Adjust checks for reinstalls once a day. Under the **App information** section, the **Install state** should show **Reinstalled**.
+
+### Troubleshooting {#troubleshooting}
+
+The following are the most common issues when testing uninstall and reinstall measurement:
+
+- The Adjust SDK environment is set to `AdjustConfig.ENVIRONMENT_SANDBOX` when the test install occurs. Uninstall and Reinstall measurement won't work with this setting. Make sure to change the setting in the Adjust SDK to `AdjustConfig.ENVIRONMENT_PRODUCTION`.
+- The push token is missing. If the push token doesn't appear in the Testing Console, there might be something wrong with your Firebase implementation or with the code that integrates the Firebase SDK and the Adjust SDK. Review these elements of your implementation.
+- There is an issue with the FCM HTTP v1 API private key. For example, the private key that you generated may belong to the wrong project, or you may have entered the details incorrectly into Adjust Suite. Review these points, and if necessary, reach out to your Technical Account Manager or support@adjust.com with your device's push token. They can pull logs to check the response from Google's API.
+
+After resolving any issue, follow the these steps to test the implementation again:
+
+1. Uninstall the app.
+2. In the Testing Console, enter your _device ID_, and select **View device data** > **Forget Device**.
+3. Repeat the steps under the [Test the integration section](#test-the-integration).

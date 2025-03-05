@@ -1,0 +1,992 @@
+---
+title: イベント情報の送信
+description: Adjustにイベント情報を送信するには、これらのメソッドを使用してください。
+slug: ja/sdk/ios/v4/features/events
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v5: /ja/sdk/ios/features/events
+---
+
+Adjust SDKは`ADJEvent`オブジェクトを提供しており、アプリのイベント情報を構造化してAdjustのサーバーに送信することができます。
+
+## ADJEventオブジェクトをインスタンス化する {#instantiate-an-adjevent-object}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```objc
++ (nullable ADJEvent *)eventWithEventToken:(nonnull NSString *)eventToken;
+```
+
+</CodeBlock>
+
+Adjust SDKでイベント情報を送信するには、`ADJEvent`オブジェクトをインスタンス化する必要があります。このオブジェクトには、アプリでイベントが発生した時にAdjustに送信される変数が含まれます。
+
+イベントオブジェクトをインスタンス化するには、新しい`ADJEvent`インスタンスを作成して以下のパラメーターをパスしてください：
+
+- `eventToken` （`NSString`）：お客様のAdjust[イベントトークン](https://help.adjust.com/ja/article/add-events#manage-your-events)。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: "abc123")
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+ADJEvent *event = [ADJEvent eventWithEventToken:@"abc123"];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+var adjustEvent = new AdjustEvent("abc123");
+Adjust.trackEvent(adjustEvent);
+```
+
+</Tab>
+</Tabs>
+
+## イベントを送信する {#send-an-event}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```objc
++ (void)trackEvent:(nullable ADJEvent *)event;
+```
+
+</CodeBlock>
+
+[Adjustイベントトークン](https://help.adjust.com/ja/article/add-events#add-event)を関連付けることで、アプリ内のユーザー行動を記録できます。イベントを記録する方法：
+
+- Adjustイベントのインスタンスを新規作成し、イベントトークンを文字列引数としてパスします。
+- イベントのインスタンスを引数として`trackEvent`メソッドを呼び出します。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: "abc123")
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+ADJEvent *event = [ADJEvent eventWithEventToken:@"abc123"];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+var adjustEvent = new AdjustEvent("abc123");
+Adjust.trackEvent(adjustEvent);
+```
+
+</Tab>
+</Tabs>
+
+### 例 {#example}
+
+この例では、ユーザーがボタンを操作する度に`g3mfiw`のトークンでイベントを計測する方法を示します。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+import Adjust
+import UIKit
+
+class ViewControllerSwift: UIViewController {
+   @IBOutlet weak var btnRecordEventSimple: UIButton?
+
+   @IBAction func btnRecordEventSimple(_sender: UIButton) {
+      let event = ADJEvent(eventToken: "g3mfiw");
+      Adjust.trackEvent(event);
+   }
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "Adjust.h"
+#import "Constants.h"
+#import "ViewControllerObjC.h"
+
+@interface ViewControllerObjC ()
+
+@property (weak, nonatomic) IBOutlet UIButton *btnRecordDeduplicatedEvent;
+
+@end
+
+@implementation ViewControllerObjC
+
+- (IBAction)clickRecordSimpleEvent:(UIButton *)sender {
+    ADJEvent *event = [ADJEvent eventWithEventToken: @"g3mfiw"];
+
+    [Adjust trackEvent:event];
+}
+
+@end
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```html
+<html>
+   <body>
+      <script>
+         setupWebViewJavascriptBridge(function(bridge) {
+            let adjustConfig = new AdjustConfig('2fm9gkqubvpc', AdjustConfig.EnvironmentSandbox);
+            adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
+
+            Adjust.appDidLaunch(adjustConfig);
+
+            var btnRecordDeduplicatedEvent = document.getElementById('btnRecordDeduplicatedEvent')
+            btnRecordDeduplicatedEvent.onclick = function(e) {
+                  e.preventDefault()
+                  var adjustEvent = new AdjustEvent('g3mfiw')
+                  Adjust.trackEvent(adjustEvent)
+            }
+         }
+      </script>
+      <div id="buttons">
+         <div style="width:300px;height:35px;text-align:center;">
+            <button id="btnRecordDeduplicatedEvent">Record simple event</button>
+         </div>
+      </div>
+   </body>
+</html>
+```
+
+</Tab>
+</Tabs>
+<CodeBlock title="イベントログ" collapse="6-40">
+
+```txt
+Path:      /event
+ClientSdk: ios$IOS_V4_VERSION
+Parameters:
+  app_token        2fm9gkqubvpc
+  app_version      1.0
+  attribution_deeplink 1
+  callback_params  {"key":"value","foo":"bar"}
+  connectivity_type 1
+  country          US
+  cpu_type         arm64-v8a
+  created_at       2024-01-25T14:13:16.151Z+0100
+  currency         EUR
+  device_manufacturer Apple
+  device_type      phone
+  display_height   2205
+  display_width    1080
+  environment      sandbox
+  event_buffering_enabled 0
+  event_count      3
+  event_token      g3mfiw
+  hardware_name    UE1A.230829.036
+  language         en
+  mcc              310
+  mnc              260
+  needs_response_details 1
+  os_build         UE1A.230829.036
+  os_name          ios
+  os_version       14
+  package_name     com.adjust.examples
+  partner_params   {"key":"value","foo":"bar"}
+  revenue          0.25
+  screen_density   high
+  screen_format    long
+  screen_size      normal
+  session_count    2
+  session_length   23
+  subsession_count 1
+  time_spent       23
+  tracking_enabled 1
+  ui_mode          1
+
+```
+
+</CodeBlock>
+
+## イベント収益の記録 {#record-event-revenue}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```objc
+- (void)setRevenue:(double)amount currency:(nonnull NSString *)currency;
+```
+
+</CodeBlock>
+
+イベントインスタンスにrevenueとcurrencyプロパティを設定することで、イベントに関連する収益を記録できます。この機能を使用して、アプリ内で収益が生成されるアクションを記録しましょう。
+
+これらのプロパティを設定するには、`setRevenue`メソッドを呼び出し、以下の引数をパスします。
+
+- `revenue` （`double`）：イベントによって発生した収益額
+- `currency` （`NSString`）：イベント通貨の[ISO 4217コード](https://www.iban.com/currency-codes)
+
+<Callout type="seealso">
+
+詳細は、[異なる通貨での購入記録](https://help.adjust.com/ja/article/currency-conversion)に関するガイドをご覧ください。
+
+</Callout>
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: "abc123")
+event?.setRevenue(0.01, currency: "EUR")
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+ADJEvent *event = [ADJEvent eventWithEventToken:@"abc123"];
+[event setRevenue:0.01 currency:@"EUR"];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+var adjustEvent = new AdjustEvent(eventToken);
+adjustEvent.setRevenue(0.01, "EUR");
+Adjust.trackEvent(adjustEvent);
+```
+
+</Tab>
+</Tabs>
+
+### 例 {#example-1}
+
+この例では、ユーザーがボタンを操作する度に`g3mfiw`のトークンでイベントを計測する方法を示します。この関数はこのイベントの`revenue`プロパティを _`0.25`_ 、`currency`プロパティを _`EUR`_ に設定します。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+import Adjust
+import UIKit
+
+class ViewControllerSwift: UIViewController {
+   @IBOutlet weak var btnRecordEventRevenue: UIButton?
+
+   @IBAction func btnRecordEventRevenue(_sender: UIButton) {
+      let event = ADJEvent(eventToken: "g3mfiw");
+      event?.setRevenue(0.25, currency: "EUR");
+      Adjust.trackEvent(event);
+   }
+}
+```
+
+</Tab>
+<Tab sync="objc" title="Objective-C">
+
+```objc
+#import "Adjust.h"
+#import "Constants.h"
+#import "ViewControllerObjC.h"
+
+@interface ViewControllerObjC ()
+
+@property (weak, nonatomic) IBOutlet UIButton *btnRecordRevenueEvent;
+
+@end
+
+@implementation ViewControllerObjC
+
+- (IBAction)clickRecordRevenueEvent:(UIButton *)sender {
+   ADJEvent *event = [ADJEvent eventWithEventToken:@"g3mfiw"];
+   [event setRevenue:0.25 currency:@"EUR"];
+   [Adjust trackEvent:event];
+}
+
+@end
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```html
+<html>
+   <body>
+      <script>
+         setupWebViewJavascriptBridge(function(bridge) {
+            let adjustConfig = new AdjustConfig('2fm9gkqubvpc', AdjustConfig.EnvironmentSandbox);
+            adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
+
+            Adjust.appDidLaunch(adjustConfig);
+
+            var btnRecordRevenueEvent = document.getElementById('btnRecordRevenueEvent')
+            btnRecordRevenueEvent.onclick = function(e) {
+                  e.preventDefault()
+                  var adjustEvent = new AdjustEvent('g3mfiw')
+                  adjustEvent.setRevenue(0.25, 'EUR')
+                  Adjust.trackEvent(adjustEvent)
+            }
+         }
+      </script>
+      <div id="buttons">
+         <div style="width:300px;height:35px;text-align:center;">
+            <button id="btnRecordRevenueEvent">Record revenue event</button>
+         </div>
+      </div>
+   </body>
+</html>
+```
+
+</Tab>
+</Tabs>
+<CodeBlock title="イベントログ" highlight="{range: 7}">
+
+```txt
+Path:      /event
+ClientSdk: ios$IOS_V4_VERSION
+Parameters:
+  environment      sandbox
+  event_count      3
+  event_token      abc123
+  currency         EUR
+  revenue          0.25
+```
+
+</CodeBlock>
+
+## 収益イベントの重複排除 {#deduplicate-revenue-events}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```objc
+- (void)setTransactionId:(nonnull NSString *)transactionId;
+```
+
+</CodeBlock>
+
+イベントを重複して計測するのを防ぐため、オプションとして任意のIDをパスすることもできます。SDKが最新10件のIDを保存し、トランザクションIDが重複した収益イベントを排除します。
+
+識別子を設定するには、イベントインスタンスの`setTransactionId`プロパティにトランザクションIDを割り当てます。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: "abc123")
+event?.setTransactionId(transaction.transactionIdentifier)
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+ADJEvent *event = [ADJEvent eventWithEventToken:@"abc123"];
+[event setTransactionId:transaction.transactionIdentifier];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+var adjustEvent = new AdjustEvent(eventToken);
+adjustEvent.setTransactionId(orderId);
+Adjust.trackEvent(adjustEvent);
+```
+
+</Tab>
+</Tabs>
+
+### 例 {#example-2}
+
+この例では、ユーザーがボタンを操作する度に`g3mfiw`のトークンでイベントを計測する例を示します。この関数は`setTransactionId`メソッドを使用して、`uniqueId`を`5e85484b-1ebc-4141-aab7-25b869e54c49`に設定します。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+import Adjust
+import UIKit
+
+class ViewControllerSwift: UIViewController {
+   @IBOutlet weak var btnRecordEventSimple: UIButton?
+
+   @IBAction func btnRecordEventSimple(_sender: UIButton) {
+      let event = ADJEvent(eventToken: "g3mfiw");
+      event.setTransactionId("5e85484b-1ebc-4141-aab7-25b869e54c49")
+      Adjust.trackEvent(event);
+   }
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "Adjust.h"
+#import "Constants.h"
+#import "ViewControllerObjC.h"
+
+@interface ViewControllerObjC ()
+
+@property (weak, nonatomic) IBOutlet UIButton *btnRecordDeduplicatedEvent;
+
+@end
+
+@implementation ViewControllerObjC
+
+- (IBAction)clickRecordSimpleEvent:(UIButton *)sender {
+    ADJEvent *event = [ADJEvent eventWithEventToken: @"g3mfiw"];
+    [event setTransactionId: @"5e85484b-1ebc-4141-aab7-25b869e54c49"]
+    [Adjust trackEvent:event];
+}
+
+@end
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```html
+<html>
+   <body>
+      <script>
+         setupWebViewJavascriptBridge(function(bridge) {
+            let adjustConfig = new AdjustConfig('2fm9gkqubvpc', AdjustConfig.EnvironmentSandbox);
+            adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
+
+            Adjust.appDidLaunch(adjustConfig);
+
+            var btnRecordDeduplicatedEvent = document.getElementById('btnRecordDeduplicatedEvent')
+            btnRecordDeduplicatedEvent.onclick = function(e) {
+                  e.preventDefault()
+                  var adjustEvent = new AdjustEvent('g3mfiw')
+                  adjustEvent.setTransactionId("5e85484b-1ebc-4141-aab7-25b869e54c49")
+                  Adjust.trackEvent(adjustEvent)
+            }
+         }
+      </script>
+      <div id="buttons">
+         <div style="width:300px;height:35px;text-align:center;">
+            <button id="btnRecordDeduplicatedEvent">
+               Record dedupicated event
+            </button>
+         </div>
+      </div>
+   </body>
+</html>
+```
+
+</Tab>
+</Tabs>
+<CodeBlock title="イベントログ" highlight="{range: 7}">
+
+```txt
+Path:      /event
+ClientSdk: ios$IOS_V4_VERSION
+Parameters:
+  environment      sandbox
+  event_count      3
+  event_token      abc123
+  transaction_id   5e85484b-1ebc-4141-aab7-25b869e54c49
+```
+
+</CodeBlock>
+
+## コールバックパラメーターを追加する {#add-callback-parameters}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```objc
+- (void)addCallbackParameter:(nonnull NSString *)key value:(nonnull NSString *)value;
+```
+
+</CodeBlock>
+
+Adjustダッシュボードで[コールバックURLを登録](https://help.adjust.com/ja/article/set-up-callbacks)した場合、SDKがイベントを記録する際にコールバックURLにGETリクエストを送信します。
+
+サーバーに送信するコールバックパラメーターを設定できます。イベントにパラメーターを設定すると、SDKはそれらを[コールバックURL](https://help.adjust.com/ja/article/raw-data-exports)に追加します。この情報を使用して、自社のBIシステムでユーザーのアプリ内行動を分析することが可能です。
+
+イベントにコールバックパラメーターを追加するには、`NSString` key\-value引数を指定して`addCallbackParameter`メソッドを呼び出してください。このメソッドを複回呼び出すことで、複数のパラメーターを追加することができます。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: "abc123")
+event?.addCallbackParameter("key", value: "value")
+event?.addCallbackParameter("foo", value: "bar")
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+ADJEvent *event = [ADJEvent eventWithEventToken:@"abc123"];
+[event addCallbackParameter:@"key" value:@"value"];
+[event addCallbackParameter:@"foo" value:@"bar"];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+var adjustEvent = new AdjustEvent(eventToken);
+adjustEvent.addCallbackParameter("key", "value");
+adjustEvent.addCallbackParameter("foo", "bar");
+Adjust.trackEvent(adjustEvent);
+```
+
+</Tab>
+</Tabs>
+
+Adjust SDKはイベントを計測し、コールバックパラメーターが追加されたURLにリクエストを送信します。例えば、URL `https://www.mydomain.com/callback`が登録されている場合、コールバックは以下のようになります：
+
+```http
+https://www.mydomain.com/callback?key=value&foo=bar
+```
+
+<Callout type="note">
+
+Adjustは、カスタムコールバックパラメーターを保存しません。カスタムパラメーターは、コールバックURLにのみ追加されます。
+
+</Callout>
+
+CSVレポートを使用している場合、CSVの定義欄にパラメーターを追加するようにしてください。
+
+Adjustでは、SDKからURLに情報をパスするための様々なプレースホルダーをサポートしています。例えば、iOSの`{idfa}`プレースホルダーやAndroidの`{gps_adid}`プレースホルダーなどです。`{publisher_parameter}`プレースホルダーは、単一の文字列での全てのコールバックパラメーターを表示します。
+
+<Callout type="seealso">
+
+使用可能な値の全リストを含むURLコールバックの詳細については、[コールバックガイド](https://help.adjust.com/ja/article/callbacks)をご覧ください。
+
+</Callout>
+
+### 例 {#example-3}
+
+この例では、ユーザーがボタンを操作する度に`g3mfiw`のトークンでイベントを計測する方法を示します。次のコールバックパラメーターが追加されました：
+
+- \- `event_token`
+- イベントごとに生成される`revenue_amount`
+
+コールバックURLの結果は以下のようになります：
+
+```http
+http://www.mydomain.com/callback?event_token=g3mfiw&revenue_amount=0.05
+```
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+import Adjust
+import UIKit
+
+class ViewControllerSwift: UIViewController {
+   @IBOutlet weak var btnRecordEventCallbacks: UIButton?
+
+   @IBAction func btnRecordEventCallbacks(_sender: UIButton) {
+      let event = ADJEvent(eventToken: "g3mfiw");
+      event?.addCallbackParameter("event_token", value: "g3mfiw")
+      event?.addCallbackParameter("revenue_amount", value: "0.05")
+      Adjust.trackEvent(event);
+   }
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+<CodeBlock title="ViewControllerObjC.m">
+
+```objc
+#import "Adjust.h"
+#import "Constants.h"
+#import "ViewControllerObjC.h"
+
+@interface ViewControllerObjC ()
+
+@property (weak, nonatomic) IBOutlet UIButton *btnRecordCallbackEvent;
+
+@end
+
+@implementation ViewControllerObjC
+
+- (IBAction)clickRecordCallbackEvent:(UIButton *)sender {
+   ADJEvent *event = [ADJEvent eventWithEventToken:@"g3mfiw"];
+   [event addCallbackParameter:@"event_token" value:@"g3mfiw"];
+   [event addCallbackParameter:@"revenue_amount" value:@"0.05"];
+   [Adjust trackEvent:event];
+}
+
+@end
+```
+
+</CodeBlock>
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```html
+<html>
+   <body>
+      <script>
+         setupWebViewJavascriptBridge(function(bridge) {
+            let adjustConfig = new AdjustConfig('2fm9gkqubvpc', AdjustConfig.EnvironmentSandbox);
+            adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
+
+            Adjust.appDidLaunch(adjustConfig);
+
+            var btnRecordCallbackEvent = document.getElementById('btnRecordCallbackEvent')
+            btnRecordCallbackEvent.onclick = function(e) {
+                  e.preventDefault()
+                  var adjustEvent = new AdjustEvent('g3mfiw');
+                  adjustEvent.addCallbackParameter('event_token', 'g3mfiw');
+                  adjustEvent.addCallbackParameter('revenue_amount', '0.05');
+                  Adjust.trackEvent(adjustEvent);
+            }
+         }
+      </script>
+      <div id="buttons">
+         <div style="width:300px;height:35px;text-align:center;">
+            <button id="btnRecordCallbackEvent">
+               Record event with callback parameters
+            </button>
+         </div>
+      </div>
+   </body>
+</html>
+```
+
+</Tab>
+</Tabs>
+<CodeBlock title="イベントログ">
+
+```txt
+Path:      /event
+ClientSdk: ios$IOS_V4_VERSION
+Parameters:
+  callback_params  {"event_token":"g3mfiw","revenue_amount":"0.05"}
+  environment      sandbox
+  event_count      1
+  event_token      g3mfiw
+
+```
+
+</CodeBlock>
+
+## パートナーパラメーターの追加 {#add-partner-parameters}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```objc
+- (void)addPartnerParameter:(nonnull NSString *)key value:(nonnull NSString *)value;
+```
+
+</CodeBlock>
+
+[パートナーパラメーター](https://help.adjust.com/ja/article/data-sharing-ad-network#map-parameters)を追加することで、ネットワークパートナーに追加情報を送信することができます。
+
+Adjustは、設定した[外部パートナー](https://help.adjust.com/ja/article/integrated-partners)にパートナーパラメーターを送信します。この情報は、より詳細な分析やリターゲティング施策にご利用いただけます。パートナー用にパラメーターの設定が完了し、機能が有効化されると、Adjustのサーバーはデータ転送を開始します。
+
+<Callout type="note">
+
+パートナーパラメーターはデフォルトではローデータに表示されません。ご希望の場合は、プレースホルダー`{partner_parameters}`を追加することで、それらを単一の文字列として受信することができます。
+
+</Callout>
+
+イベントにパートナーパラメーターを追加するには、`NSString` key\-value引数を指定して`addPartnerParameter`メソッドを呼び出してください。このメソッドを複回呼び出すことで、複数のパラメーターを追加することができます。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: "abc123")
+event?.addPartnerParameter("key", value: "value")
+event?.addPartnerParameter("foo", value: "bar")
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+ADJEvent *event = [ADJEvent eventWithEventToken:@"abc123"];
+[event addPartnerParameter:@"key" value:@"value"];
+[event addPartnerParameter:@"foo" value:@"bar"];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+var adjustEvent = new AdjustEvent(eventToken);
+adjustEvent.addPartnerParameter("key", "value");
+adjustEvent.addPartnerParameter("foo", "bar");
+Adjust.trackEvent(adjustEvent);
+```
+
+</Tab>
+</Tabs>
+
+### 例 {#example-4}
+
+この例では、ユーザーがボタンを操作する度に`g3mfiw`のトークンでイベントを計測する方法を示します。次のパートナーパラメーターが追加されました：
+
+- 関連する製品の`product_id`
+- イベントをトリガーしたユーザーの`user_id`
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+import Adjust
+import UIKit
+
+class ViewControllerSwift: UIViewController {
+   @IBOutlet weak var btnRecordEventPartnerParams: UIButton?
+
+   @IBAction func btnRecordEventPartnerParams(_sender: UIButton) {
+      let event = ADJEvent(eventToken: "g3mfiw");
+      event?.addPartnerParameter("product_id", value: "29")
+      event?.addPartnerParameter("user_id", value: "835")
+      Adjust.trackEvent(event);
+   }
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "Adjust.h"
+#import "Constants.h"
+#import "ViewControllerObjC.h"
+
+@interface ViewControllerObjC ()
+
+@property (weak, nonatomic) IBOutlet UIButton *btnRecordPartnerParamsEvent;
+
+@end
+
+@implementation ViewControllerObjC
+
+- (IBAction)clickRecordPartnerParamsEvent:(UIButton *)sender {
+   ADJEvent *event = [ADJEvent eventWithEventToken:@"g3mfiw"];
+   [event addPartnerParameter:@"product_id" value:@"29"];
+   [event addPartnerParameter:@"user_id" value:@"835"];
+   [Adjust trackEvent:event];
+}
+
+@end
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```html
+<html>
+   <body>
+      <script>
+         setupWebViewJavascriptBridge(function(bridge) {
+            let adjustConfig = new AdjustConfig('2fm9gkqubvpc', AdjustConfig.EnvironmentSandbox);
+            adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
+
+            Adjust.appDidLaunch(adjustConfig);
+
+            var btnRecordPartnerParamsEvent = document.getElementById('btnRecordPartnerParamsEvent')
+            btnRecordPartnerParamsEvent.onclick = function(e) {
+                  e.preventDefault()
+                  var adjustEvent = new AdjustEvent('g3mfiw');
+                  adjustEvent.addPartnerParameter('product_id', '29');
+                  adjustEvent.addPartnerParameter('user_id', '835');
+                  Adjust.trackEvent(adjustEvent);
+            }
+         }
+      </script>
+      <div id="buttons">
+         <div style="width:300px;height:35px;text-align:center;">
+            <button id="btnRecordPartnerParamsEvent">
+               Record event with partner parameters
+            </button>
+         </div>
+      </div>
+   </body>
+</html>
+```
+
+</Tab>
+</Tabs>
+<CodeBlock title="イベントログ" highlight="{range: 4}">
+
+```txt
+Path:      /event
+ClientSdk: ios$IOS_V4_VERSION
+Parameters:
+  partner_params  {"product_id":"29","user_id":"835"}
+  environment      sandbox
+  event_count      1
+  event_token      g3mfiw
+```
+
+</CodeBlock>
+
+## コールバック識別子を追加 {#add-a-callback-identifier}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```objc
+- (void)setCallbackId:(nonnull NSString *)callbackId;
+```
+
+</CodeBlock>
+
+計測したいイベントにカスタムの文字列識別子を追加できます。Adjustのサーバーが、この識別子をイベントコールバックでレポートします。これにより、どのイベントが正確に計測されたかを確認することが可能です。
+
+この識別子を設定するには、IDを`NSString`引数とし`setCallbackId`メソッドを呼び出してください。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let event = ADJEvent(eventToken: "abc123")
+event?.setCallbackId("Your-Custom-ID")
+Adjust.trackEvent(event)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+ADJEvent *event = [ADJEvent eventWithEventToken:@"abc123"];
+[event setCallbackId:@"Your-Custom-ID"];
+[Adjust trackEvent:event];
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+var adjustEvent = new AdjustEvent("abc123");
+adjustEvent.setCallbackId("Your-Custom-ID");
+Adjust.trackEvent(adjustEvent);
+```
+
+</Tab>
+</Tabs>
+
+### 例 {#example-5}
+
+ユーザーがボタンを操作する度に`g3mfiw`のトークンでイベントを計測する例を示します。この例では、`callbackId`が`f2e728d8-271b-49ab-80ea-27830a215147`に設定されています。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+import Adjust
+import UIKit
+
+class ViewControllerSwift: UIViewController {
+   @IBOutlet weak var btnRecordEventCallbackId: UIButton?
+
+   @IBAction func btnRecordEventCallbackId(_sender: UIButton) {
+      let event = ADJEvent(eventToken: "g3mfiw");
+      event?.setCallbackId("f2e728d8-271b-49ab-80ea-27830a215147")
+      Adjust.trackEvent(event);
+   }
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import "Adjust.h"
+#import "Constants.h"
+#import "ViewControllerObjC.h"
+
+@interface ViewControllerObjC ()
+
+@property (weak, nonatomic) IBOutlet UIButton *btnRecordCallbackIdEvent;
+
+@end
+
+@implementation ViewControllerObjC
+
+- (IBAction)clickRecordCallbackIdEvent:(UIButton *)sender {
+   ADJEvent *event = [ADJEvent eventWithEventToken:@"g3mfiw"];
+   [event setCallbackId:@"f2e728d8-271b-49ab-80ea-27830a215147"];
+   [Adjust trackEvent:event];
+}
+
+@end
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```html
+<html>
+   <body>
+      <script>
+         setupWebViewJavascriptBridge(function(bridge) {
+            let adjustConfig = new AdjustConfig('2fm9gkqubvpc', AdjustConfig.EnvironmentSandbox);
+            adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
+
+            Adjust.appDidLaunch(adjustConfig);
+
+            var btnRecordCallbackIdEvent = document.getElementById('btnRecordCallbackIdEvent')
+            btnRecordCallbackIdEvent.onclick = function(e) {
+                  e.preventDefault()
+                  var adjustEvent = new AdjustEvent('g3mfiw');
+                  adjustEvent.setCallbackId('f2e728d8-271b-49ab-80ea-27830a215147');
+                  Adjust.trackEvent(adjustEvent);
+            }
+         }
+      </script>
+      <div id="buttons">
+         <div style="width:300px;height:35px;text-align:center;">
+            <button id="btnRecordCallbackIdEvent">
+               Record event with callback ID
+            </button>
+         </div>
+      </div>
+   </body>
+</html>
+```
+
+</Tab>
+</Tabs>
+<CodeBlock title="イベントログ" highlight="{range: 4}">
+
+```txt
+Path:      /event
+ClientSdk: ios$IOS_V4_VERSION
+Parameters:
+  callback_id      f2e728d8-271b-49ab-80ea-27830a215147
+  environment      sandbox
+  event_count      1
+  event_token      g3mfiw
+```
+
+</CodeBlock>

@@ -1,0 +1,98 @@
+---
+title: データポイントの取得
+description: ディープリンクの設定に必要なデータを取得します。
+slug: ja/sdk/ios/features/deep-links/data-points
+sidebar-position: 1
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v4: /ja/sdk/ios/v4/features/deep-links/data-points
+---
+
+アプリでディープリンクを設定する前に、次のデータポイントを取得してください。
+
+- App ID prefix
+- リリースバンドルID
+- デバッグバンドルID
+- リリースカスタムURLスキーム
+- デバッグカスタムURLスキーム
+- リンク解析ドメインまたはドメイン
+
+## 手順 {#instructions}
+
+データポイントを取得するには以下の手順に従ってください。
+
+### App ID prefixとリリースバンドルID {#app-id-prefix-and-release-bundle-id}
+
+アプリIDはApple Developerポータルで確認できます。これには2つの部分が含まれます。
+
+1. **App ID prefix**
+2. **バンドルID**
+
+IDは`<app_id_prefix>.<bundle_id>`としてフォーマットされます。例： `ABC1234567.com.example.app`
+
+App ID prefixとバンドルIDは、次の手順に従って確認できます。
+
+1. [Apple Developerポータル](https://developer.apple.com/account/)にログインします。
+2. 左側のメニューから **証明書、ID、プロフィール（Certificates, IDs & Profiles）** を選択します。
+3. 左側のメニューから **ID（Identifiers）** を選択します。
+4. アプリを探して選択し、編集ページを開きます。
+5. App ID PrefixとバンドルIDがページの上部に表示されます。後で使用できるように、関連情報をコピーして保存します。
+
+### デバッグバンドルID {#debug-bundle-id}
+
+異なるバンドルIDをデバッグビルドで使用している場合、そのIDはXcodeで確認できます。
+
+1. Xcodeでアプリプロジェクトを開きます。
+2. 左側のメニューからプロジェクトを選択します。
+3. **ターゲット（Targets）** でアプリを選択します。
+4. 上部のメニューから **署名と機能（Signing & Capabilities）** を選択します。
+5. 表示されるサブメニューから **デバッグ（Debug）** を選択します。
+6. バンドルIDが表示されます。後で使用できるように、この情報をコピーし保存しておきます。
+
+### カスタムURLスキーム {#custom-url-schemes}
+
+<Callout type="tip">
+
+デバイス上の他のアプリケーション（Telegram、X（旧Twitter）、YouTubeなど）からのリンクや、Push通知からのリンクにはカスタムURLスキームが必要です。カスタムURLスキームがアプリに必要かどうか、マーケティングチームに確認してください。iOSとAndroidで同じカスタムURLスキームを使用されることを推奨します。
+
+</Callout>
+
+カスタムURLスキームを取得するには、次の手順に従ってください。
+
+1. Xcodeでアプリプロジェクトを開きます。
+2. 左側のメニューからプロジェクトを選択します。
+3. **ターゲット（Targets）** でアプリを選択します。
+4. 上部のメニューから **情報（Info）** を選択します。
+5. **URLタイプ（URL Types）** セクションを展開して、カスタムURLスキームを取得します。URLスキーム（URL Schemes）フィールドにビルド設定が含まれている場合（例：`$(CUSTOM_URL_SCHEME)`）、ビルド設定に移動してカスタムURLスキームの値を取得します。
+   1. 上部のメニューから **ビルド設定（Build Settings）** を選択します。
+   2. URLスキームフィールドで指定されている設定を探し、リリースとデバッグ両方の値を取得します。
+
+iOSアプリにまだカスタムURLスキームがない場合は、次の手順に従ってカスタムURLスキームを設定します。
+
+1. Xcodeでアプリプロジェクトを開きます。
+2. 左側のメニューからプロジェクトを選択します。
+3. **ターゲット（Targets）** でアプリを選択します。
+4. 上部のメニューから **情報（Info）** を選択します。
+5. **URLタイプ（URL Types）** セクションを展開します。
+6. 追加（Add）オプションを選択して、新しいURLタイプを追加します。
+7. 次の情報を入力してURLスキームを作成します。
+   - **識別子** ： `$(PRODUCT_BUNDLE_IDENTIFIER)`
+   - **URLスキーム（URL Schemes）** ：カスタムURLスキーム。これはユニークである必要があります。`http`、`https`、mailtoなどの保護されたスキームは使用しないでください。 `mailto`
+   - **権限（Role）** ：編集者（Editor）
+
+このスキームは、本番用ビルド **および** デバッグビルドで機能します。
+
+### リンク解析ドメイン {#link-resolution-domains}
+
+<Callout type="tip">
+
+リンク解析ドメインは、メール、SMS、QRコード、リンクを短縮するプラットフォームを介したディープリンクに必要です。[リンク解析](https://help.adjust.com/ja/article/link-resolution)がアプリに必要かどうか、マーケティングチームに確認してください。
+
+</Callout>
+
+お客様のマーケティングチームが、メールマーケティングのプラットフォームでリンク解析ドメインを使用している可能性があります。このドメインをチームから取得して保存しておくことをお勧めします。

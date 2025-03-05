@@ -1,0 +1,100 @@
+---
+title: ディープリンク
+description: ディープリンクを設定するには、このセクションのガイドに従ってください。
+category-title: ディープリンク
+slug: ja/sdk/cocos2dx/v4/features/deep-links
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v5: /ja/sdk/cocos2dx/features/deep-links
+---
+
+ディープリンクを作成して、ユーザーをアプリ内の特定の場所に誘導します。Adjust SDKは、ユーザーがデバイスにアプリをインストール済みかどうかによって、異なるロジックを使用します。
+
+- ダイレクトディープリンクは、ユーザーがアプリをすでにデバイスにインストールしている場合に使用されます。そのリンクは、リンクで指定されたページにユーザーをリダイレクトします。
+- ディファードディープリンクは、ユーザーがアプリをデバイスにインストールしていない場合に使用されます。そのリンクは、ユーザーをアプリストアに送り、アプリを先にインストールしてもらいます。ユーザーがアプリをインストールすると、リンクで指定されたページが開きます。
+
+SDKは、ユーザーがリンクからアプリを起動した後にディープリンクの情報を読み取ることができます。
+
+## ダイレクトディープリンク
+
+ダイレクトディープリンクは、プラットフォームレベルで設定する必要があります。Cocos2d\-x C\+\+コードで設定することはできません。ターゲットプラットフォームのディープリンク設定手順は、以下のリンク先をご覧ください。
+
+- [iOS](/ja/sdk/ios/features/deep-links/direct)
+- [Android](/ja/sdk/android/features/deep-links)
+
+## ディファードディープリンク
+
+### ディファードディープリンクのコールバックを設定する
+
+<CodeBlock title="メソッドシグネチャー">
+
+```cpp
+void AdjustConfig2dx::setDeferredDeeplinkCallback(bool(*deferredDeeplinkCallback)(std::string deeplink));
+```
+
+</CodeBlock>
+
+Adjust SDKがディファードディープリンクを受け取った際に、コールバック関数を呼び出すように設定することができます。このコールバック関数は、ディープリンクを **文字列** の引数で受け取ります。
+
+<CodeBlock highlight="{range: 3-5}, {range: 15}">
+
+```cpp
+#include "Adjust/Adjust2dx.h"
+
+static bool deferredDeeplinkCallbackMethod(std::string deeplink) {
+   //...
+}
+
+// ...
+
+bool AppDelegate::applicationDidFinishLaunching() {
+    std::string appToken = "{YourAppToken}";
+    std::string environment = AdjustEnvironmentSandbox2dx;
+
+    AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment);
+    adjustConfig.setLogLevel(AdjustLogLevel2dxVerbose);
+    adjustConfig.setDeferredDeeplinkCallback(deferredDeeplinkCallbackMethod);
+    Adjust2dx::start(adjustConfig);
+}
+```
+
+</CodeBlock>
+
+### 例
+
+この例では、ユーザーがディファードディープリンクを開いたときに、ディープリンクのアドレスをログに記録する方法を示しています。
+
+```cpp
+#include "Adjust/Adjust2dx.h"
+
+//...
+
+static bool deferredDeeplinkCallbackMethod(std::string deeplink) {
+    CCLOG("\nDeferred deep link received!");
+    CCLOG("\nURL: %s", deeplink.c_str());
+    CCLOG("\n");
+
+    Adjust2dx::appWillOpenUrl(deeplink);
+
+    return true;
+}
+
+// ...
+
+bool AppDelegate::applicationDidFinishLaunching() {
+    std::string appToken = "{YourAppToken}";
+    std::string environment = AdjustEnvironmentSandbox2dx;
+
+    AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment);
+    adjustConfig.setLogLevel(AdjustLogLevel2dxVerbose);
+    adjustConfig.setDeferredDeeplinkCallback(deferredDeeplinkCallbackMethod);
+    Adjust2dx::start(adjustConfig);
+
+    // ...
+}
+```

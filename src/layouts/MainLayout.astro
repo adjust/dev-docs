@@ -2,35 +2,35 @@
 import type { MarkdownHeading } from "astro";
 import type { CollectionEntry } from "astro:content";
 
+import { languageTree } from "@utils/helpers/navigation/buildLanguageTree";
 import HeadCommon from "../components/HeadCommon.astro";
 import HeadSEO from "../components/HeadSEO.astro";
 import PageContent from "../components/Layout/PageContent/PageContent.astro";
-import PageBreadcrumbs from "@components/Layout/PageBreadcrumbs/PageBreadcrumbs.astro";
-import { getNavigationEntries } from "src/utils/helpers/navigation/getNavigationEntries";
+import PageBreadcrumbs from "@components/PageBreadcrumbs.astro";
 import { type Locales } from "@i18n/locales";
-import { getLanguageFromURL, useTranslations } from "@i18n/utils";
+import { useTranslations } from "@i18n/utils";
 import MobileHeader from "@components/Layout/Header/MobileHeader.astro";
 import Footer from "@components/Layout/Footer/FooterContent.astro";
 import BodyNoScript from "@components/Layout/GoogleTagManager/BodyNoScript.astro";
-import Icons from "@components/Layout/Icons.astro";
-import Sidebar from "@components/Layout/LeftSidebar/Sidebar.astro";
+import Icons from "@components/Layout/Icons/index.astro";
+import LeftSidebar from "@components/Layout/LeftSidebar/Sidebar.astro";
 import BigToc from "@components/BigToc.astro";
+import { findEntryBySlug } from "@utils/helpers/navigation/findEntryBySlug";
+import { getCurrentPage } from "@utils/helpers/navigation/getCurrentPage";
 
 type Props = CollectionEntry<"docs">["data"] & {
   headings: MarkdownHeading[];
 };
 
 const { headings, ...data } = Astro.props;
-const pages = await Astro.glob("../content/docs/**/*.mdx");
 const currentPage = Astro.url.pathname;
-const currentLang = getLanguageFromURL(currentPage);
+const currentLang = Astro.currentLocale;
 
-const navigationEntries = getNavigationEntries(
-  pages,
-  currentPage,
-  currentLang,
-  data?.type,
-);
+let currentSlug = getCurrentPage(currentPage).substring(2);
+currentSlug = `${currentLang}${currentSlug}`;
+
+const pageData = findEntryBySlug(currentSlug);
+
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const homeUrl = `${Astro.url.origin}/${currentLang}`;
 const t = useTranslations(currentLang as keyof Locales);
@@ -51,23 +51,26 @@ const t = useTranslations(currentLang as keyof Locales);
       class="bg-white relative flex xs:w-full xs:flex-col lg:flex-row mx-auto xxl:w-[1600px] p-0"
     >
       <MobileHeader />
-      <Sidebar
+      <LeftSidebar
         homeUrl={homeUrl}
-        lang={currentLang}
-        navigationEntries={navigationEntries?.languageTree}
+        redirects={data.redirects}
+        lang={currentLang || "en"}
+        currentSlug={currentSlug}
+        languageTree={languageTree}
+        versions={data.versions}
       />
       <div class="flex flex-col lg:w-[calc(100%-294px)]">
         <div
           id="content-main"
           class=`xs:pl-4 xs:pr-4 xs:w-full lg:p-0 md:pr-12 min-h-[calc(100vh-362px)] flex flex-col mt-14 mb-[80px] ${data.type !== "category" && headings.length > 0 ? "pr-[330px]" : ""} xxl:pr-0`
         >
-          <PageBreadcrumbs breadcrumbs={navigationEntries?.breadcrumbs} />
+          <PageBreadcrumbs />
           <PageContent
             title={data.title}
             headings={headings}
-            childLinks={navigationEntries.childLinks}
-            multiVersion={data.multiVersion}
+            currentSlug={currentSlug}
             type={data.type}
+            pageData={pageData}
           >
             <slot />
           </PageContent>
@@ -77,11 +80,7 @@ const t = useTranslations(currentLang as keyof Locales);
     </main>
     {
       headings && headings.length > 0 && data.type !== "category" && (
-        <BigToc
-          title={data.title}
-          multiVersion={data.multiVersion}
-          headings={headings}
-        />
+        <BigToc title={data.title} headings={headings} />
       )
     }
   </body>

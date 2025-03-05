@@ -1,0 +1,1061 @@
+---
+title: SDK v5 migration guide
+description: Follow this guide to upgrade from SDK v4 to SDK v5
+slug: en/sdk/migration/unity/v4-to-v5
+sidebar-position: 1
+---
+
+## Before you begin {#before-you-begin}
+
+Here's what you need to do before updating to SDK v5:
+
+1. SDK v5 supports [SDK signature verification](https://help.adjust.com/en/article/sdk-signature) natively. If you currently use the SDK signature library, you need to uninstall this first.
+2. The minimum supported API versions for SDK v5 have been updated. If your app targets a lower version, you need to update it first.
+   - iOS: **12.0**
+   - Android: **21**
+3. The SDK namespace has been renamed from `com.adjust.sdk` to `AdjustSdk`.
+
+## Install the SDK {#install-the-sdk}
+
+Before you install SDK v5, you first need to remove all SDK v4 assets and code from your project.
+
+<Callout type="tip">
+
+The easiest way to remove all SDK v4 assets from your project is to generate a new project.
+
+</Callout>
+
+If you prefer to append changes to your existing project, follow these steps to remove all Adjust SDK v4 assets:
+
+1. Delete the existing `Adjust` installation in your `Assets` directory.
+2. Delete all references to `Adjust` from your Xcode project.
+   - Delete the `Adjust` directory under the **Libraries** section of your project.
+   - Open the **General** tab and delete the `Adjust.a` library under **Frameworks, Libraries, and Embedded Content**.
+   - **Optional**: SDK v4 adds an `-ObjC` flag under your app target's **Other Linker Flags** settings. Only if this was added automatically by the SDK, remove this flag.
+3. Delete all references to `Adjust` in your Android Studio project.
+   - Locate and delete the `adjust-android.jar` library in your project's `libs` directory.
+
+Once you've removed all SDK v4 assets from your project, you can install SDK v5. To do this, either:
+
+- Download the Adjust `unitypackage` from [the GitHub releases page](https://github.com/adjust/unity_sdk/releases/latest) and import it into your project.
+- Install the package using the Unity Package Manager:
+   1. Select the **Package Manager** window in the Unity editor.
+   2. Select **Add package from git URL**.
+   3. Enter the following URL: `https://github.com/adjust/unity_sdk.git?path=Assets/Adjust`.
+
+### Install the iOS and Android SDKs {#install-ios-and-android-sdks}
+
+SDK v5 no longer uses the iOS and Android SDKs as binary dependencies. To install the underlying iOS and Android SDKs, you need to use the [External Dependency Manager for Unity (EDM4U)](https://github.com/googlesamples/unity-jar-resolver) to install the packages from CocoaPods and Maven.
+
+## Update the initialization method {#init-method}
+
+<MinorVersion changed="v5" size="large" />
+
+In SDK v4, the SDK is initialized by configuring an `AdjustConfig` object and passing it to the `Adjust.start()` method.
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("appToken", AdjustEnvironment.Sandbox);
+Adjust.start(adjustConfig);
+```
+
+In SDK v5, this method has been renamed to `Adjust.InitSdk()`.
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("appToken", AdjustEnvironment.Sandbox);
+Adjust.InitSdk(adjustConfig);
+```
+
+## Set up the Signature library {#signature-setup}
+
+SDK v5 includes the [SDK signature library](https://help.adjust.com/en/article/sdk-signature). You can test this by following the testing steps in the [Signature library integration guide](/en/sdk/unity/integrations/signature-library).
+
+Signature protection is inactive by default. To enable it, you need to:
+
+1. [Enforce signature validation](https://help.adjust.com/en/article/sdk-signature#enforce-signature-validation).
+2. [Provide your app's SHA-1 fingerprints](https://help.adjust.com/en/article/sdk-signature#manage-your-certificate-fingerprints) prior to testing.
+
+## Changed APIs {#changed-apis}
+
+<MinorVersion changed="v5" size="large" />
+
+The following APIs have been changed in SDK v5.
+
+### Set log level {#set-log-level}
+
+In SDK v4, you can set your logging level by passing an `AdjustLogLevel` constant to the `AdjustConfig.setLogLevel()` method.
+
+```cs
+adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
+```
+
+In SDK v5, you need to assign an `AdjustLogLevel` constant to the `LogLevel` property of your `AdjustConfig` instance.
+
+```cs
+adjustConfig.LogLevel = AdjustLogLevel.Verbose;
+```
+
+### Disable and enable the SDK {#disable-enable-sdk}
+
+In SDK v4, you can enable and disable the SDK by calling `Adjust.setEnabled()` with a `bool` value.
+
+- Call `Adjust.setEnabled(false)` to disable the SDK.
+- Call `Adjust.setEnabled(true)` to enable the SDK
+
+```cs
+Adjust.setEnabled(false); // Disable the SDK
+Adjust.setEnabled(true); // Enable the SDK
+```
+
+In SDK v5, this feature is split into separate commands for clarity.
+
+- Call `Adjust.Disable()` to disable the SDK.
+- Call `Adjust.Enable()` to enable the SDK.
+
+```cs
+Adjust.Disable(); // Disable the SDK
+Adjust.Enable(); // Enable the SDK
+```
+
+### Send information in background {#send-in-background}
+
+In SDK v4, you can call the `AdjustConfig.setSendInBackground()` method with a `true` argument to enable the SDK to send information to Adjust while your app is running in the background.
+
+```cs
+adjustConfig.setSendInBackground(true);
+```
+
+In SDK v5, you need to set the `IsSendingInBackgroundEnabled` property on your `AdjustConfig` instance to `true` to enable the SDK to send information to Adjust while your app is running in the background.
+
+```cs
+adjustConfig.IsSendingInBackgroundEnabled = true;
+```
+
+### Preinstalled app measurement {#preinstalled-app}
+
+In SDK v4, you can enable measuring preinstalled apps using the `AdjustConfig.setPreinstallTrackingEnabled` method.
+
+```cs
+adjustConfig.setPreinstallTrackingEnabled(true);
+```
+
+In SDK v5, you need to set the `IsPreinstallTrackingEnabled` property on your `AdjustConfig` instance to `true`.
+
+```cs
+adjustConfig.IsPreinstallTrackingEnabled = true;
+```
+
+In SDK v4, you can configure the path containing preinstalled app information using the `AdjustConfig.setPreinstallFilePath` method.
+
+```cs
+adjustConfig.setPreinstallFilePath("path");
+```
+
+In SDK v5, you need to set the `PreinstallFilePath` property on your `AdjustConfig` instance to the file path containing your preinstalled app information.
+
+```cs
+adjustConfig.PreinstallFilePath = "path";
+```
+
+In SDK v4, you can set a default link token to measure installs for preinstalled apps using the `AdjustConfig.setDefaultTracker()` method.
+
+```cs
+adjustConfig.setDefaultTracker("abc123");
+```
+
+In SDK v5, you need to assign your link to the `DefaultTracker` property on your `AdjustConfig` instance directly.
+
+```cs
+adjustConfig.DefaultTracker = "abc123";
+```
+
+### Set external device ID {#set-external-device-id}
+
+In SDK v4, you can set an external device ID by passing an ID to the `AdjustConfig.setExternalDeviceId()` method.
+
+```cs
+adjustConfig.setExternalDeviceId("unique-custom-device-id");
+```
+
+In SDK v5, you need to assign your ID to the `ExternalDeviceID` property on your `AdjustConfig` instance directly.
+
+```cs
+adjustConfig.ExternalDeviceId = "unique-custom-device-id";
+```
+
+### Set Meta App ID {#set-meta-app-id}
+
+In SDK v4, you can set your Meta app ID using the `AdjustConfig.setFbAppId()` method.
+
+```cs
+adjustConfig.setFbAppId("fb-app-id");
+```
+
+In SDK v5, you need to assign your Meta app ID to the `FbAppId` property on your `AdjustConfig` instance.
+
+```cs
+adjustConfig.FbAppId = "fb-app-id";
+```
+
+### Disable AdServices information reading {#disable-adservices}
+
+In SDK v4, you can call the `AdjustConfig.setAllowAdServicesInfoReading()` method with a `false` argument to prevent the Adjust SDK from reading AdServices information.
+
+```cs
+adjustConfig.setAllowAdServicesInfoReading(false);
+```
+
+In SDK v5, you need to set the `IsAdServicesEnabled` property on your `AdjustConfig` instance to `false` to prevent the Adjust SDK from reading AdServices information.
+
+```cs
+adjustConfig.IsAdServicesEnabled = false;
+```
+
+### Disable IDFA reading {#disable-idfa}
+
+In SDK v4, you can call the `AdjustConfig.setAllowIdfaReading()` method with a `false` argument to prevent the Adjust SDK from reading the device's IDFA.
+
+```cs
+adjustConfig.setAllowIdfaReading(false);
+```
+
+In SDK v5, you need to set the `IsIdfaReadingEnabled` property on your `AdjustConfig` instance to `false` to prevent the Adjust SDK from reading the device's IDFA.
+
+```cs
+adjustConfig.IsIdfaReadingEnabled = false;
+```
+
+### Enable cost data in attribution {#enable-cost-data}
+
+In SDK v4, you can enable cost data in the device's attribution information by calling the `Adjust.setNeedsCost()` method with a `true` argument.
+
+```cs
+adjustConfig.setNeedsCost(true);
+```
+
+In SDK v5, you need to set the `IsCostDataInAttributionEnabled` property on your `AdjustConfig` instance to `true` to enable cost data in the device's attribution information.
+
+```cs
+adjustConfig.IsCostDataInAttributionEnabled = true;
+```
+
+### Enable LinkMe {#enable-linkme}
+
+In SDK v4, you can enable [Adjust LinkMe](https://help.adjust.com/en/article/linkme) by calling the `AdjustConfig.setLinkMeEnabled()` method with a `true` argument.
+
+```cs
+adjustConfig.setLinkMeEnabled(true);
+```
+
+In SDK v5, you need to set the `IsLinkMeEnabled` property on your `AdjustConfig` instance to `true` to enable LinkMe.
+
+```cs
+adjustConfig.IsLinkMeEnabled = true;
+```
+
+### Only read device IDs once {#read-device-id-once}
+
+In SDK v4, you can instruct the SDK to only read device identifiers one time upon startup by calling the `AdjustConfig.setReadDeviceInfoOnceEnabled()` method with a `true` argument.
+
+```cs
+adjustConfig.setReadDeviceInfoOnceEnabled(true);
+```
+
+In SDK v5, you need to set the `IsDeviceIdsReadingOnceEnabled` property on your `AdjustConfig` instance to `true` to instruct the SDK to only read device IDs once.
+
+```cs
+adjustConfig.IsDeviceIdsReadingOnceEnabled = true;
+```
+
+### Offline mode {#offline-mode}
+
+In SDK v4, you can enable and disable offline mode the SDK by calling `Adjust.setOfflineMode()` with a `bool` argument.
+
+```cs
+Adjust.setOfflineMode(true);
+Adjust.setOfflineMode(false);
+```
+
+In SDK v5, this feature is split into separate commands for clarity.
+
+- Call `Adjust.SwitchToOfflineMode()` to set the SDK to offline mode.
+- Call `Adjust.SwitchBackToOnlineMode()` to set the SDK back to online mode.
+
+```cs
+Adjust.SwitchToOfflineMode(); // Put the SDK in offline mode
+Adjust.SwitchBackToOnlineMode(); // Put the SDK back in online mode
+```
+
+### Push tokens {#push-tokens}
+
+In SDK v4, you can set your push tokens using the `Adjust.setDeviceToken` method.
+
+```cs
+Adjust.setDeviceToken("push-token");
+```
+
+This method has been renamed to `Adjust.SetPushToken` in SDK v5.
+
+```cs
+Adjust.SetPushToken("push-token");
+```
+
+### Session callback parameters {#callback-params}
+
+In SDK v4, you can add session parameters by passing a key-value pair to the `Adjust.addSessionCallbackParameter()` method and remove individual parameters using the `Adjust.removeSessionCallbackParameter()` method.
+
+```cs
+Adjust.addSessionCallbackParameter("key", "value");
+Adjust.removeSessionCallbackParameter("key");
+Adjust.resetSessionCallbackParameters();
+```
+
+In SDK v5, session parameters are renamed to global parameters.
+
+```cs
+Adjust.AddGlobalCallbackParameter("key", "value");
+Adjust.RemoveGlobalCallbackParameter("key");
+Adjust.RemoveGlobalCallbackParameters();
+```
+
+### Session partner parameters {#partner-params}
+
+In SDK v4, you can add session partner parameters by passing a key-value pair to the `Adjust.addSessionPartnerParameter()` method and remove individual parameters using the `Adjust.removeSessionPartnerParameter()` method.
+
+```cs
+Adjust.addSessionPartnerParameter("key", "value");
+Adjust.removeSessionPartnerParameter("key");
+Adjust.resetSessionPartnerParameters();
+```
+
+In SDK v5, session partner parameters are renamed to global partner parameters.
+
+```cs
+Adjust.AddGlobalPartnerParameter("key", "value");
+Adjust.RemoveGlobalPartnerParameter("key");
+Adjust.RemoveGlobalPartnerParameters();
+```
+
+### Success and failure callbacks {#success-failure-callbacks}
+
+In SDK v4, you can configure session success and failure callbacks by passing delegate functions to the `AdjustConfig.setSessionSuccessDelegate()` and `AdjustConfig.setSessionFailureDelegate()` methods respectively.
+
+```cs
+adjustConfig.setSessionSuccessDelegate(sessionSuccessCallback); // Session success callback
+adjustConfig.setFailureSuccessDelegate(sessionFailureCallback); // Session failure callback
+```
+
+In SDK v5, you need to set the `SessionSuccessDelegate` and `SessionFailureDelegate` properties on your `AdjustConfig` instance to the relevant delegate functions.
+
+```cs
+adjustConfig.SessionSuccessDelegate = sessionSuccessCallback; // Session success callback
+adjustConfig.SessionFailureDelegate = sessionFailureCallback; // Session failure callback
+```
+
+The same change also applies to event success and failure callbacks. In SDK v4, these are set by passing delegate functions to the `AdjustConfig.setSessionSuccessDelegate()` and `AdjustConfig.setSessionFailureDelegate()` methods respectively.
+
+```cs
+adjustConfig.setEventSuccessDelegate(eventSuccessCallback); // Event success callback
+adjustConfig.setEventFailureDelegate(eventFailureCallback); // Event failure callback
+```
+
+In SDK v5, you need to set the `EventSuccessDelegate` and `EventFailureDelegate` properties on your `AdjustConfig` instance to the relevant delegate functions.
+
+```cs
+adjustConfig.EventSuccessDelegate = eventSuccessCallback; // Event success callback
+adjustConfig.EventFailureDelegate = eventFailureCallback; // Event failure callback
+```
+
+### App Store Subscriptions {#app-store-subscriptions}
+
+The following class properties should be set directly in SDK v5:
+
+- `TransactionDate`
+- `SalesRegion`
+
+The following setters have been renamed:
+
+- `addCallbackParameter` -> `AddCallbackParameter`
+- `addCallbackParameter` -> `AddPartnerParameter`
+
+Here is a full example of what has changed:
+
+<CodeBlock useDiffSyntax>
+
+```cs
+AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
+   price,
+   currency,
+-   transactionId,
+-   receipt);
++  transactionId);
+- subscription.setTransactionDate("transaction-date");
+- subscription.setSalesRegion("sales-region");
+- subscription.addCallbackParameter("key1", "value1");
+- subscription.addPartnerParameter("key2", "value2");
+
++ subscription.TransactionDate = "transaction-date";
++ subscription.SalesRegion = "sales-region";
++ subscription.AddCallbackParameter("key1", "value1");
++ subscription.AddPartnerParameter("key2", "value2");
+
+Adjust.trackAppStoreSubscription(subscription);
+```
+
+</CodeBlock>
+
+### Play Store Subscriptions {#play-store-subscriptions}
+
+The following class properties should be set directly in SDK v5:
+
+- `PurchaseTime`
+
+The following setters have been renamed:
+
+- `addCallbackParameter` -> `AddCallbackParameter`
+- `addCallbackParameter` -> `AddPartnerParameter`
+
+Here is a full example of what has changed:
+
+<CodeBlock useDiffSyntax>
+
+```cs
+AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
+   price,
+   currency,
+   sku,
+   orderId,
+   signature,
+   purchaseToken);
+- subscription.setPurchaseTime(purchaseTime);
+- subscription.addCallbackParameter("key1", "value1");
+- subscription.addPartnerParameter("key2", "value2");
+
++ subscription.PurchaseTime = purchaseTime
++ subscription.AddCallbackParameter("key1", "value1");
++ subscription.AddPartnerParameter("key2", "value2");
+
+Adjust.trackPlayStoreSubscription(subscription);
+```
+
+</CodeBlock>
+
+### AdjustEvent class {#adjustevent-class}
+
+The following class properties should be set directly in SDK v5:
+
+- `CallbackId`
+- `TransactionId`
+- `ProductId`
+- `PurchaseToken`
+
+The following setters have been renamed:
+
+- `setRevenue` -> `SetRevenue`
+- `addCallbackParameter` -> `AddCallbackParameter`
+- `addCallbackParameter` -> `AddPartnerParameter`
+
+The `receipt` property has been removed from the `AdjustEvent` class.
+
+Here is a full example of what has changed:
+
+<CodeBlock useDiffSyntax>
+
+```cs
+AdjustEvent adjustEvent = new AdjustEvent("abc123");
+- adjustEvent.setRevenue(0.25, "EUR");
+- adjustEvent.setTransactionId("random-id");
+- adjustEvent.setCallbackId("callback-id");
+- adjustEvent.setProductId("product-id");
+- adjustEvent.setPurchaseToken("purchase-token");
+- adjustEvent.setReceipt("receipt");
+- adjustEvent.addCallbackParameter("key", "value");
+- adjustEvent.addPartnerParameter("key", "value");
+- Adjust.trackEvent(adjustEvent);
+
++ adjustEvent.SetRevenue(0.25, "EUR");
++ adjustEvent.TransactionId = "random-id";
++ adjustEvent.CallbackId = "callback-id";
++ adjustEvent.ProductId = "product-id";
++ adjustEvent.PurchaseToken = "purchase-token";
++ adjustEvent.AddCallbackParameter("key", "value");
++ adjustEvent.AddPartnerParameter("key", "value");
++ Adjust.TrackEvent(adjustEvent);
+```
+
+</CodeBlock>
+
+### Event deduplication {#event-deduplication}
+
+In SDK v4, event deduplication is coupled with the event `transaction ID` and is limited to a maximum of 10 unique IDs.
+
+```cs
+adjustEvent.setTransactionId("transaction-id");
+```
+
+In SDK v5, the feature is decoupled from `transaction ID`. A new ID field called `DeduplicationId` has been added for event deduplication.
+
+```cs
+adjustEvent.DeduplicationId = "deduplication-id";
+```
+
+Users can set a custom limit on the number of `DeduplicationId` that can be added to the list for identifying duplicate events. By default, the limit is set to **10**.
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("appToken", AdjustEnvironment.Sandbox);
+adjustConfig.EventDeduplicationIdsMaxSize = 20
+Adjust.InitSdk(adjustConfig);
+```
+
+### AdjustAttribution class {#attribution-class}
+
+In SDK v4, the `AdjustAttribution` calls has a property called `adid`. In SDK v5, the `adid` property has been removed from the `AdjustAttribution` class. You can retrieve the device's ADID using the [`Adjust.GetAdid()` getter method](#device-info).
+
+In addition, all internal members of the `AdjustAttribution` class are now public properties.
+
+<CodeBlock title="Class members" useDiffSyntax>
+
+```cs
+- adjustAttribution.trackerToken
+- adjustAttribution.trackerName
+- adjustAttribution.network
+- adjustAttribution.campaign
+- adjustAttribution.adgroup
+- adjustAttribution.creative
+- adjustAttribution.clickLabel
+- adjustAttribution.costType
+- adjustAttribution.costAmount
+- adjustAttribution.costCurrency
+- adjustAttribution.fbInstallReferrer
+
++ adjustAttribution.TrackerToken
++ adjustAttribution.TrackerName
++ adjustAttribution.Network
++ adjustAttribution.Campaign
++ adjustAttribution.Adgroup
++ adjustAttribution.Creative
++ adjustAttribution.ClickLabel
++ adjustAttribution.CostType
++ adjustAttribution.CostAmount
++ adjustAttribution.CostCurrency
++ adjustAttribution.FbInstallReferrer
+```
+
+</CodeBlock>
+
+### Attribution changed callback {#attribution-changed-callback}
+
+In SDK v4, you can call a delegate function when the device's attribution changes by assigning the function to the `AdjustConfig.setAttributionChangedDelegate()` function.
+
+```cs
+adjustConfig.setAttributionChangedDelegate(attributionCallback);
+```
+
+In SDK v5, you need to assign your delegate function to the `AttributionChangedDelegate` property on your `AdjustConfig` instance.
+
+```cs
+adjustConfig.AttributionChangedDelegate = attributionCallback;
+```
+
+### Reattribution using deep links {#reattribution-using-deep-links}
+
+In SDK v4, you can pass your deep link information to the `Adjust.appWillOpenUrl()` method.
+
+```cs
+Adjust.appWillOpenUrl("url");
+```
+
+In SDK v5, this has been renamed to `Adjust.ProcessDeeplink()` for clarity. A new `AdjustDeeplink` class has been added for constructing deep links. To process a deep link, instantiate an `AdjustDeeplink` object with your deep link URL and pass it to the `Adjust.ProcessDeeplink` method.
+
+```cs
+AdjustDeeplink adjustDeeplink = new AdjustDeeplink("url");
+Adjust.ProcessDeeplink(adjustDeeplink);
+```
+
+### Launch deferred deep links {#launch-deferred-deeplinks}
+
+In SDK v4, you can call the `AdjustConfig.setLaunchDeferredDeeplink()` method to open deferred deep links.
+
+```cs
+adjustConfig.setLaunchDeferredDeeplink(true);
+```
+
+In SDK v5, you need to set the `IsDeferredDeeplinkOpeningEnabled` property on your `AdjustConfig` instance to `true` to enable the SDK to open deep links.
+
+```cs
+adjustConfig.IsDeferredDeeplinkOpeningEnabled = true;
+```
+
+### COPPA compliance {#coppa-compliance}
+
+In SDK v4, you can mark your app as COPPA compliant by calling the `setCoppaCompliantEnabled` method on your `AdjustConfig` instance with a `bool` value.
+
+```cs
+adjustConfig.setCoppaCompliantEnabled(true);
+```
+
+In SDK v5, you need to set the `IsCoppaComplianceEnabled` property on your `AdjustConfig` instance to a `bool` value.
+
+```cs
+adjustConfig.IsCoppaComplianceEnabled = true;
+```
+
+### Play Store Kids Apps {#play-store-kids}
+
+In SDK v4, you can mark an app as a [Play Store Kids app](/en/sdk/unity/features/privacy#play-store-kids-apps) using the `AdjustConfig` class. This property is read during SDK initialization, which means that the value can't be updated once the SDK is initialized.
+
+```cs
+adjustConfig.setPlayStoreKidsAppEnabled(true);
+```
+
+In SDK v5, you need to set the `IsPlayStoreKidsComplianceEnabled` property of your `AdjustConfig` instance to `true` to enable compliance.
+
+```cs
+adjustConfig.IsPlayStoreKidsComplianceEnabled = true;
+```
+
+### Set data residency and URL strategy {#url-strategy}
+
+In SDK v4, URL strategy and data residency domains are defined as constants in the `AdjustConfig` class.
+
+```cs
+adjustConfig.setUrlStrategy(AdjustConfig.AdjustDataResidencyEU);
+```
+
+In SDK v5, you need to pass your chosen domain or domains as an array. You can also set the following:
+
+- `shouldUseSubdomains` (`bool`): Whether the source should prefix a subdomain.
+- `isDataResidency` (`bool`): Whether the domain should be used for data residency.
+
+```cs
+adjustConfig.SetUrlStrategy(new List<String> {"eu.adjust.com"}, true, true);
+```
+
+Check the table below to see how to configure your URL strategy in SDK v5.
+
+| v4                                     | v5 - main and fallback domain     | v5 - use sub domains | v5 - is Data Residency |
+| -------------------------------------- | --------------------------------- | -------------------- | ---------------------- |
+| `AdjustConfig.AdjustDataResidencyEU`   | `"eu.adjust.com"`                 | `true`               | `true`                 |
+| `AdjustConfig.AdjustDataResidencyTR`   | `"tr.adjust.com"`                 | `true`               | `true`                 |
+| `AdjustConfig.AdjustDataResidencyUS`   | `"us.adjust.com"`                 | `true`               | `true`                 |
+| `AdjustConfig.AdjustUrlStrategyChina`  | `"adjust.world"`, `"adjust.com"`  | `true`               | `false`                |
+| `AdjustConfig.AdjustUrlStrategyCn`     | `"adjust.cn"`, `"adjust.com"`     | `true`               | `false`                |
+| `AdjustConfig.AdjustUrlStrategyCnOnly` | `"adjust.cn"`                     | `true`               | `false`                |
+| `AdjustConfig.AdjustUrlStrategyIndia`  | `"adjust.net.in"`, `"adjust.com"` | `true`               | `false`                |
+
+#### Examples {#examples}
+
+<CodeBlock title="India URL strategy">
+
+```cs
+adjustConfig.SetUrlStrategy(new List<String> {"adjust.net.in", "adjust.com"}, true, false);
+```
+
+</CodeBlock>
+
+<CodeBlock title="China URL strategy">
+
+```cs
+adjustConfig.SetUrlStrategy(new List<String> {"adjust.world", "adjust.com"}, true, false);
+```
+
+</CodeBlock>
+
+<CodeBlock title="China only URL strategy">
+
+```cs
+adjustConfig.SetUrlStrategy(new List<String> {"adjust.cn"}, true, false);
+```
+
+</CodeBlock>
+
+<CodeBlock title="EU data residency">
+
+```cs
+adjustConfig.SetUrlStrategy(new List<String> {"eu.adjust.com"}, true, true);
+```
+
+</CodeBlock>
+
+<CodeBlock title="Turkey data residency">
+
+```cs
+adjustConfig.SetUrlStrategy(new List<String> {"tr.adjust.com"}, true, true);
+```
+
+</CodeBlock>
+
+<CodeBlock title="US data residency">
+
+```cs
+adjustConfig.SetUrlStrategy(new List<String> {"us.adjust.com"}, true, true);
+```
+
+</CodeBlock>
+
+### AdjustThirdPartySharing class changes {#adjustthirdparty-classc-changes}
+
+The following methods have been renamed in SDK v5:
+
+- `addGranularOption` -> `AddGranularOption`
+- `addPartnerSharingSetting` -> `AddPartnerSharingSetting`
+
+Here is a full example of what has changed:
+
+<CodeBlock useDiffSyntax>
+
+```cs
+AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(null);
+
+- adjustThirdPartySharing.addGranularOption("PartnerA", "key", "value");
+- adjustThirdPartySharing.addPartnerSharingSetting("PartnerA", "all", false);
+
++ adjustThirdPartySharing.AddGranularOption("PartnerA", "key", "value");
++ adjustThirdPartySharing.AddPartnerSharingSetting("PartnerA", "all", false);
+
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+```
+
+</CodeBlock>
+
+### Send ad revenue from a specific source {#send-ad-revenue}
+
+In SDK v4, ad revenue sources are defined as constants in the `AdjustConfig` class. In SDK v5, ad revenue sources need to be passed as a string.
+
+<CodeBlock useDiffSyntax>
+
+```cs
+- AdjustAdRevenue adRevenue = new AdjustAdRevenue(AdjustConfig.AdjustAdRevenueSourceAppLovinMAX);
++ AdjustAdRevenue adRevenue = new AdjustAdRevenue("applovin_max_sdk");
+```
+
+</CodeBlock>
+
+| v4                                                   | v5                        |
+| ---------------------------------------------------- | ------------------------- |
+| `AdjustConfig.AdjustAdRevenueSourceAppLovinMAX`      | `"applovin_max_sdk"`      |
+| `AdjustConfig.AdjustAdRevenueSourceAdMob`            | `"admob_sdk"`             |
+| `AdjustConfig.AdjustAdRevenueSourceIronSource`       | `"ironsource_sdk"`        |
+| `AdjustConfig.AdjustAdRevenueSourceAdMost`           | `"admost_sdk"`            |
+| `AdjustConfig.AdjustAdRevenueSourceUnity`            | `"unity_sdk"`             |
+| `AdjustConfig.AdjustAdRevenueSourceHeliumChartboost` | `"helium_chartboost_sdk"` |
+| `AdjustConfig.AdjustAdRevenueSourceADX`              | `"adx_sdk"`               |
+| `AdjustConfig.AdjustAdRevenueSourcePublisher`        | `"publisher_sdk"`         |
+| `AdjustConfig.AdjustAdRevenueSourceTradplus`         | `"tradplus_sdk"`          |
+| `AdjustConfig.AdjustAdRevenueSourceTopOn`            | `"topon_sdk"`             |
+| `AdjustConfig.AdjustAdRevenueSourceMopub`            | No longer supported       |
+
+### AdjustAdRevenue class changes {#adjustadrevenue-class-changes}
+
+The following class properties should be set directly in SDK v5:
+
+- `AdImpressionsCount`
+- `AdRevenueNetwork`
+- `AdRevenueUnit`
+- `AdRevenuePlacement`
+
+The following setters have been renamed:
+
+- `setRevenue` -> `SetRevenue`
+- `addCallbackParameter` -> `AddCallbackParameter`
+- `addCallbackParameter` -> `AddPartnerParameter`
+
+Here is a full example of what has changed:
+
+<CodeBlock useDiffSyntax>
+
+```cs
+AdjustAdRevenue adRevenue = new AdjustAdRevenue("applovin_max_sdk");
+- adRevenue.setRevenue(6.66, "CAD");
+- adRevenue.setAdImpressionsCount(6);
+- adRevenue.setAdRevenueNetwork("network");
+- adRevenue.setAdRevenueUnit("unit");
+- adRevenue.setAdRevenuePlacement("placement");
+- adRevenue.addCallbackParameter("key1", "value1");
+- adRevenue.addPartnerParameter("key2", "value2");
+
++ adRevenue.SetRevenue(6.66, "CAD");
++ adRevenue.AdImpressionsCount = 6;
++ adRevenue.AdRevenueNetwork = "network";
++ adRevenue.AdRevenueUnit = "unit";
++ adRevenue.AdRevenuePlacement = "placement";
++ adRevenue.AddCallbackParameter("key1", "value1");
++ adRevenue.AddPartnerParameter("key2", "value2");
+
+Adjust.trackAdRevenue(adRevenue);
+```
+
+</CodeBlock>
+
+### Configure ATT pop-up waiting interval {#configure-att-interval}
+
+In SDK v4, you can use the `setAttConsentWaitingInterval` method of your `AdjustConfig` instance to configure an interval that delays sending install information to Adjust. This delay gives the user time to interact with an ATT pop-up.
+
+```cs
+adjustConfig.setAttConsentWaitingInterval(66);
+```
+
+In SDK v5, you need to assign your delay interval to the `AttConsentWaitingInterval` property of your `AdjustConfig` instance.
+
+```cs
+adjustConfig.AttConsentWaitingInterval = 66;
+```
+
+#### Disable SKAdNetwork communication {#disable-skan}
+
+In SDK v4, you can prevent the SDK from communicating with SKAdNetwork by calling the `AdjustConfig.deactivateSKAdNetworkHandling()` method.
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox, true);
+adjustConfig.deactivateSKAdNetworkHandling();
+Adjust.start(adjustConfig);
+```
+
+In SDK v5, you need to set the `IsSkanAttributionEnabled` property on your `AdjustConfig` instance to `false` to disable SKAdNetwork communication.
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("appToken", AdjustEnvironment.Sandbox);
+adjustConfig.IsSkanAttributionEnabled = false;
+Adjust.InitSdk(adjustConfig);
+```
+
+### Listen for conversion value updates {#listen-for-cv-updates}
+
+In SDK v4, you can assign a delegate function to listen for conversion value updates by passing it to the `AdjustConfig.setConversionValueUpdatedDelegate()`.
+
+```cs
+adjustConfig.setConversionValueUpdatedDelegate(ConversionValueUpdatedCallback);
+```
+
+In SDK v5, you need to assign your delegate function to the `SkanUpdatedDelegate` property on your `AdjustConfig` instance.
+
+```cs
+adjust.SkanUpdatedDelegate = skanUpdatedCallback;
+```
+
+### Update conversion values {#update-cvs}
+
+In SDK v4, you can use the `Adjust.updateConversionValue()` method to send updated conversion values to Adjust. This method wraps Apple's deprecated [`updateConversionValue` method](https://developer.apple.com/documentation/storekit/skadnetwork/3566697-updateconversionvalue) and has been removed in SDK v5.
+
+To update conversion values in SDK v5, use the `Adjust.UpdateSkanConversionValue()` method with the following arguments:
+
+- `conversionValue` (`int`): The updated conversion value
+- `coarseValue` (`string`): The updated [coarse conversion value](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
+- `lockWindow` (`bool`): Whether to send the postback before the conversion window ends
+- `callback` (`Action<string>`): A callback function which can handle any errors that occur
+
+```cs
+Adjust.UpdateSkanConversionValue(1, "low", false, error =>
+{
+    // process error, if any
+});
+```
+
+### App Tracking Transparency authorization wrapper {#att-wrapper}
+
+In SDK v4, you can handle changes to a user's ATT authorization status using the `Adjust requestTrackingAuthorizationWithCompletionHandler()` method.
+
+```cs
+Adjust.requestTrackingAuthorizationWithCompletionHandler((status) =>
+{
+    switch (status)
+    {
+        case 0:
+            // ATTrackingManagerAuthorizationStatusNotDetermined case
+            break;
+        case 1:
+            // ATTrackingManagerAuthorizationStatusRestricted case
+            break;
+        case 2:
+            // ATTrackingManagerAuthorizationStatusDenied case
+            break;
+        case 3:
+            // ATTrackingManagerAuthorizationStatusAuthorized case
+            break;
+    }
+});
+```
+
+This has been renamed to `Adjust.RequestAppTrackingAuthorization()` in SDK v5 for clarity.
+
+```cs
+Adjust.RequestAppTrackingAuthorization((status) =>
+{
+    switch (status)
+    {
+        case 0:
+            // ATTrackingManagerAuthorizationStatusNotDetermined case
+            break;
+        case 1:
+            // ATTrackingManagerAuthorizationStatusRestricted case
+            break;
+        case 2:
+            // ATTrackingManagerAuthorizationStatusDenied case
+            break;
+        case 3:
+            // ATTrackingManagerAuthorizationStatusAuthorized case
+            break;
+    }
+});
+```
+
+### Get device information {#device-info}
+
+In SDK v4, all device information getter methods run synchronously. In SDK v5, these methods have been changed to run asynchronously. You can add a callback function to handle the information when the asynchronous process completes
+
+<CodeBlock title="IDFA getter">
+
+```cs
+Adjust.GetIdfa(idfa =>
+{
+    // use idfa
+});
+```
+
+</CodeBlock>
+
+<CodeBlock title="ADID getter">
+
+```cs
+Adjust.GetAdid(adid =>
+{
+    // use adid
+});
+```
+
+</CodeBlock>
+
+<CodeBlock title="Attribution getter">
+
+```cs
+Adjust.GetAttribution(attribution =>
+{
+    // use attribution
+});
+```
+
+</CodeBlock>
+
+<CodeBlock title="Enabled status getter">
+
+```cs
+Adjust.IsEnabled(isEnabled =>
+{
+    // use isEnabled
+});
+```
+
+</CodeBlock>
+
+<CodeBlock title="SDK version getter">
+
+```cs
+Adjust.GetSdkVersion(sdkVersion =>
+{
+    // use sdkVersion
+});
+```
+
+</CodeBlock>
+
+<CodeBlock title="Amazon ADID getter">
+
+```cs
+Adjust.GetAmazonAdId(amazonAdId =>
+{
+    // use amazonAdId
+});
+```
+
+</CodeBlock>
+
+<CodeBlock title="Last deep link getter">
+
+```cs
+Adjust.GetLastDeeplink(lastDeeplink =>
+{
+    // use lastDeeplink
+});
+```
+
+</CodeBlock>
+
+## Removed APIs {#removed-apis}
+
+<MinorVersion removed="v5" size="large" />
+
+The following APIs have been removed in SDK v5.
+
+### Event buffering {#event-buffering}
+
+SDK v4 supports event buffering. This feature stores requests event, ad revenue, push tokens, and other information on a local buffer to send at a later date.
+
+```cs
+adjustConfig.setEventBufferingEnabled(true);
+```
+
+This setting has been removed in SDK v5.
+
+### Custom user agent string {#custom-user-agent}
+
+SDK v4 supports setting a custom User Agent by calling `AdjustConfig.setUserAgent()` with a user agent string.
+
+```cs
+adjustConfig.setUserAgent("custom-user-agent");
+```
+
+This setting has been removed in SDK v5.
+
+### Set whether a device is known {#set-device-known}
+
+In SDK v4, you can call the `AdjustConfig.setDeviceKnown()` method to manually inform the SDK whether a device is known.
+
+```cs
+adjustConfig.setDeviceKnown(true);
+```
+
+This setting has been removed in SDK v5.
+
+### Delay SDK start {#delay-sdk-start}
+
+SDK v4 supports delaying the start of the SDK by calling `AdjustConfig setDelayTimer()` with up to **10 seconds** of delay.
+
+```cs
+adjustConfig.setDelayTimer(10);
+```
+
+This setting has been removed in SDK v5.
+
+### Disable third party sharing globally {#disable-sharing-globally}
+
+In SDK v4, you can call the `Adjust.disableThirdPartySharing()` method to globally disable sharing information with third parties globally.
+
+```cs
+Adjust.disableThirdPartySharing()
+```
+
+This feature has been removed from SDK v5. In SDK v5, use the `Adjust.trackThirdPartySharing()` method to enable or disable third party sharing.
+
+```cs
+AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(false);
+Adjust.TrackThirdPartySharing(adjustThirdPartySharing);
+```
+
+### Check for authorization status change {#check-att-status-change}
+
+In SDK v4, you can use the `Adjust.checkForNewAttStatus()` method to prompt the SDK to read a user's ATT status and forward the information to Adjust's servers.
+
+```cs
+Adjust.checkForNewAttStatus();
+```
+
+This method has been removed in SDK v5.
+
+### Set an App Secret {#set-app-secret}
+
+SDK v4 supports setting an App Secret by calling `setAppSecret` method on your `AdjustConfig` instance to sign the SDK traffic with.
+
+```cs
+adjustConfig.setAppSecret(secretId, info1, info2, info3, info4);
+```
+
+This setting has been removed in SDK v5.

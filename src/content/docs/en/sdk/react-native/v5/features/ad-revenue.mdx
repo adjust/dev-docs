@@ -1,0 +1,294 @@
+---
+title: Record ad revenue information
+description:
+   Record ad revenue information for supported network partners using the
+   Adjust SDK.
+slug: en/sdk/react-native/features/ad-revenue
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v4: /en/sdk/react-native/v4/features/ad-revenue
+---
+
+You can record ad revenue for [supported network partners](https://help.adjust.com/en/article/ad-revenue) using the Adjust SDK.
+
+<Callout type="important">
+
+You need to perform some extra setup steps in your Adjust dashboard to measure ad revenue. Contact your Technical Account Manager or support@adjust.com to get started.
+
+</Callout>
+
+## Instantiate an AdjustAdRevenue object {#instantiate-an-adjustadrevenue-object}
+
+<CodeBlock title="Method signature">
+
+```ts
+constructor(source: string)
+```
+
+</CodeBlock>
+
+To send ad revenue information with the Adjust SDK, you need to instantiate an `AdjustAdRevenue` object. This object contains variables that are sent to Adjust when ad revenue is recorded in your app.
+
+To instantiate an ad revenue object, create a new `AdjustAdRevenue` instance and pass the following parameters:
+
+- `source` (`string`): The source of the ad revenue. See the table below for available sources
+
+| Parameter                 | Source            |
+| ------------------------- | ----------------- |
+| `"applovin_max_sdk"`      | AppLovin MAX      |
+| `"admob_sdk"`             | AdMob             |
+| `"ironsource_sdk"`        | ironSource        |
+| `"admost_sdk"`            | AdMost            |
+| `"unity_sdk"`             | Unity             |
+| `"helium_chartboost_sdk"` | Helium Chartboost |
+| `"adx_sdk"`               | Ad(X)             |
+| `"publisher_sdk"`         | Generic source    |
+| `"tradplus_sdk"`          | TradPlus          |
+| `"topon_sdk"`             | TopOn             |
+
+```jsx
+var adjustAdRevenue = new AdjustAdRevenue("source");
+
+Adjust.trackAdRevenue(adjustAdRevenue);
+```
+
+## Send ad revenue {#send-ad-revenue}
+
+<CodeBlock title="Method signature">
+
+```ts
+trackAdRevenue: (source: AdjustAdRevenue) => void
+```
+
+</CodeBlock>
+
+To send ad revenue to Adjust, call the `trackAdRevenue` method with your ad revenue instance as an argument.
+
+```jsx
+var adjustAdRevenue = new AdjustAdRevenue("source");
+
+Adjust.trackAdRevenue(adjustAdRevenue);
+```
+
+## Record ad revenue amount {#record-ad-revenue-amount}
+
+<CodeBlock title="Method signature">
+
+```ts
+public setRevenue(revenue: number, currency: string): void
+```
+
+</CodeBlock>
+
+To send the ad revenue amount, call the `setRevenue` method and pass the following arguments:
+
+- `revenue` (`number`): The amount of revenue
+- `currency` (`string`): The 3 character [ISO 4217 code](https://www.iban.com/currency-codes) of your reporting currency
+
+<Callout type="seealso">
+
+Check the [guide to recording purchases in different currencies](https://help.adjust.com/en/article/currency-conversion) for more information.
+
+</Callout>
+
+```jsx
+var adjustAdRevenue = new AdjustAdRevenue("source");
+
+adjustAdRevenue.setRevenue(1.0, "EUR");
+
+Adjust.trackAdRevenue(adjustAdRevenue);
+```
+
+## Record ad campaign details {#record-ad-campaign-details}
+
+The `AdjustAdRevenue` class contains properties you can use to report on your ad campaigns.
+
+### Ad impressions {#ad-impressions}
+
+<CodeBlock title="Method signature">
+
+```ts
+public setAdImpressionsCount(adImpressionsCount: number): void
+```
+
+</CodeBlock>
+
+To send the number of recorded ad impressions, call the `setAdImpressionsCount` method and pass the following arguments:
+
+- `adImpressionsCount` (`number`): The number of ad impressions.
+
+```jsx
+var adjustAdRevenue = new AdjustAdRevenue("source");
+
+adjustAdRevenue.setAdImpressionsCount(10);
+
+Adjust.trackAdRevenue(adjustAdRevenue);
+```
+
+### Ad revenue network {#ad-revenue-network}
+
+<CodeBlock title="Method signature">
+
+```ts
+public setAdRevenueNetwork(adRevenueNetwork: string): void
+```
+
+</CodeBlock>
+
+To send the ad revenue network, call the `setAdRevenueNetwork` method and pass the following arguments:
+
+- `adRevenueNetwork` (`string`): The network name.
+
+```jsx
+var adjustAdRevenue = new AdjustAdRevenue("source");
+
+adjustAdRevenue.setAdRevenueNetwork("network1");
+
+Adjust.trackAdRevenue(adjustAdRevenue);
+```
+
+### Ad revenue unit {#ad-revenue-unit}
+
+<CodeBlock title="Method signature">
+
+```ts
+public setAdRevenueUnit(adRevenueUnit: string): void
+```
+
+</CodeBlock>
+
+To send the ad revenue unit, call the `setAdRevenueUnit` method and pass the following arguments:
+
+- `adRevenueUnit` (`string`): The ad unit.
+
+```jsx
+var adjustAdRevenue = new AdjustAdRevenue("source");
+
+adjustAdRevenue.setAdRevenueUnit("unit1");
+
+Adjust.trackAdRevenue(adjustAdRevenue);
+```
+
+### Ad revenue placement {#ad-revenue-placement}
+
+<CodeBlock title="Method signature">
+
+```ts
+public setAdRevenuePlacement(adRevenuePlacement: string): void
+```
+
+</CodeBlock>
+
+Record the placement of your ad by passing a `string` value to the `setAdRevenuePlacement` method.
+
+```jsx
+var adjustAdRevenue = new AdjustAdRevenue("source");
+
+adjustAdRevenue.setAdRevenuePlacement("banner");
+
+Adjust.trackAdRevenue(adjustAdRevenue);
+```
+
+## Add callback parameters {#add-callback-parameters}
+
+<CodeBlock title="Method signature">
+
+```ts
+public addCallbackParameter(key: string, value: string): void
+```
+
+</CodeBlock>
+
+If you [register a callback URL](https://help.adjust.com/en/article/recommended-placeholders-callbacks) in the Adjust dashboard, the SDK sends a GET request to your callback URL when it records an event.
+
+You can configure callback parameters to your servers. Once you configure parameters on an event, the SDK appends them to your [callback URL](https://help.adjust.com/en/article/raw-data-exports). You can use this information to analyze your users' in-app behavior with your BI system.
+
+Add callback parameters to your event by calling the `addCallbackParameter` method with `string` key-value arguments. You can add multiple parameters by calling this method multiple times.
+
+The Adjust SDK measures the event and sends a request to your URL with the callback parameters. For example, if you register the URL `https://www.mydomain.com/callback`, your callback looks like this:
+
+<CodeBlock highlight="key=value, foo=bar">
+
+```http
+https://www.mydomain.com/callback?key=value&foo=bar
+```
+
+</CodeBlock>
+
+<Callout type="note">
+
+Adjust doesn't store your custom callback parameters. Custom parameters are only appended to your callback URL.
+
+</Callout>
+
+If you are using CSV uploads, make sure to add the parameters to your CSV definition.
+
+Adjust supports many placeholders which you can use to pass information from the SDK to your URL. For example, the `{idfa}` placeholder for iOS and the `{gps_adid}` placeholder for Android. The `{publisher_parameter}` placeholder presents all callback parameters in a single string.
+
+<Callout type="seealso">
+
+You can read more about using URL callbacks, including a full list of available values, in the [callbacks guide](https://help.adjust.com/en/article/callbacks).
+
+</Callout>
+
+```jsx
+var adjustAdRevenue = new AdjustAdRevenue("source");
+
+adjustAdRevenue.addCallbackParameter("key", "value");
+
+Adjust.trackAdRevenue(adjustAdRevenue);
+```
+
+## Add partner parameters {#add-partner-parameters}
+
+<CodeBlock title="Method signature">
+
+```ts
+public addPartnerParameter(key: string, value: string): void
+```
+
+</CodeBlock>
+
+You can send extra information to your network partners by adding [partner parameters](https://help.adjust.com/en/article/data-sharing-ad-network#map-parameters).
+
+Adjust sends partner parameters to [external partners](https://help.adjust.com/en/article/integrated-partners) you have set up. This information is useful for more granular analysis and retargeting purposes. Adjust's servers forward these parameters once you have set them up and enabled them for a partner.
+
+Add partner parameters to your event by calling the `addPartnerParameter` method with `string` key-value arguments. You can add multiple parameters by calling this method multiple times.
+
+```jsx
+var adjustAdRevenue = new AdjustAdRevenue("source");
+
+adjustAdRevenue.addPartnerParameter("key", "value");
+
+Adjust.trackAdRevenue(adjustAdRevenue);
+```
+
+## Example {#example}
+
+This example shows how to set up and record an ad revenue object with the following properties:
+
+- AppLovin MAX as the revenue source
+- 1 Euro as the revenue amount
+- 10 ad impressions
+- _`"network1"`_ as the ad revenue network
+- _`"unit1"`_ as the ad revenue unit
+- _`"banner"`_ as the ad revenue placement
+- A callback parameter: `"key1" = "value1"`
+- A partner parameter: `"key2" = "value2"`
+
+```jsx
+var adjustAdRevenue = new AdjustAdRevenue("applovin_max_sdk");
+adjustAdRevenue.setRevenue(1.0, "EUR");
+adjustAdRevenue.setAdImpressionsCount(10);
+adjustAdRevenue.setAdRevenueNetwork("network1");
+adjustAdRevenue.setAdRevenueUnit("unit1");
+adjustAdRevenue.setAdRevenuePlacement("banner");
+adjustAdRevenue.addCallbackParameter("key1", "value1");
+adjustAdRevenue.addPartnerParameter("key2", "value2");
+Adjust.trackAdRevenue(adjustAdRevenue);
+```

@@ -1,0 +1,209 @@
+---
+title: アトリビューション情報の取得
+description: Adjust SDKを使ってアトリビューションの変更を受信します。
+slug: ja/sdk/ios/v4/features/attribution
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v5: /ja/sdk/ios/features/attribution
+---
+
+ユーザーがAdjustリンクをクリックすると、そのアトリビューション情報が更新されます。これは、ユーザーが[ディープリンク](https://help.adjust.com/ja/article/deep-links)をクリックした場合に発生します。ユーザーのアトリビューションについての情報は、`AdjustAttribution`クラスに表示されます。
+
+## ADJAttributionクラスのプロパティ {#adjattribution-class-properties}
+
+`AdjustAttribution`クラスには、デバイスの現在のアトリビューションステータスに関する詳細が含まれています。ユーザーの入力されていない値は全て`null`値として返されます。
+
+<Callout type="note">
+
+以下の値は、`ADJConfig`インスタンスの`needsCost`プロパティが`true`になっている場合にのみアクセスできます：
+
+- `costType`
+- `costAmount`
+- `costCurrency`
+
+</Callout>
+
+| 値             | データタイプ | 説明                                                                                          |
+| -------------- | ------------ | --------------------------------------------------------------------------------------------- |
+| `trackerToken` | `NSString`   | デバイスが現在アトリビュートされているリンクのトークン                                        |
+| `trackerName`  | `NSString`   | デバイスが現在アトリビュートされているリンクの名前                                            |
+| `network`      | `NSString`   | デバイスが現在アトリビュートされているネットワークの名前                                      |
+| `campaign`     | `NSString`   | デバイスが現在アトリビュートされているキャンペーンの名前                                      |
+| `adgroup`      | `NSString`   | デバイスが現在アトリビュートされているアドグループの名前                                      |
+| `creative`     | `NSString`   | デバイスが現在アトリビュートされているクリエイティブの名前                                    |
+| `clickLabel`   | `NSString`   | インストールがタグされている[クリックラベル](https://help.adjust.com/ja/article/user-rewards) |
+| `adid`         | `NSString`   | デバイスに割り当てられた一意のAdjust ID                                                       |
+| `costType`     | `NSString`   | キャンペーン価格モデル（例：cpi）                                                             |
+| `costAmount`   | `NSNumber`   | インストールのコスト                                                                          |
+| `costCurrency` | `NSString`   | コストに関連する[3文字のISO 4217通貨コード](https://www.iban.com/currency-codes)              |
+
+## アトリビューションが変更されたときに関数をトリガーする {#trigger-a-function-when-attribution-changes}
+
+<CodeBlock title="プロパティ宣言">
+
+```objc
+@property (nonatomic, weak, nullable) NSObject<adjustdelegate> *delegate;
+```
+
+</CodeBlock>
+
+SDKはアトリビューションの変更を受信し、更新を検出したときに関数を呼び出すことができます。デリゲート関数を設定するには：
+
+1. Web viewを使用していない場合は、`AdjustDelegate`宣言を`AppDelegate`ヘッダーファイルに追加します。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+class AppDelegate: UIResponder, UIApplicationDelegate, AdjustDelegate {
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+@interface AppDelegate : UIResponder <UIApplicationDelegate, AdjustDelegate>
+```
+
+</Tab>
+</Tabs>
+
+2. デリゲートコールバック関数をapp delegateに追加します。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+class AppDelegate: UIResponder, UIApplicationDelegate, AdjustDelegate {
+   func adjustAttributionChanged(_ attribution: ADJAttribution?) {
+      /// ...
+   }
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+- (void)adjustAttributionChanged:(ADJAttribution *)attribution {
+   /// ...
+}
+```
+
+</Tab>
+</Tabs>
+
+3. Adjustのconfigインスタンスでデリゲートを設定します
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+   appToken: yourAppToken,
+   environment: environment)
+adjustConfig?.delegate = self
+//...
+Adjust.appDidLaunch(adjustConfig)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+*adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
+                                 environment:ADJEnvironmentSandbox];
+[adjustConfig setDelegate:self];
+/// ...
+[Adjust appDidLaunch:adjustConfig];
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+<CodeBlock highlight="{range: 5-15}">
+
+```js
+setupWebViewJavascriptBridge(function (bridge) {
+   var yourAppToken = yourAppToken;
+   var environment = AdjustConfig.EnvironmentSandbox;
+   var adjustConfig = new AdjustConfig(yourAppToken, environment);
+   adjustConfig.setAttributionCallback(function (attribution) {
+      // In this example, we're just displaying alert with attribution content.
+      alert(
+         "Link = " +
+            attribution.trackerToken +
+            "\n" +
+            "Link name = " +
+            attribution.trackerName +
+            "\n" +
+            "Network = " +
+            attribution.network +
+            "\n" +
+            "Campaign = " +
+            attribution.campaign +
+            "\n" +
+            "Adgroup = " +
+            attribution.adgroup +
+            "\n" +
+            "Creative = " +
+            attribution.creative +
+            "\n" +
+            "Click label = " +
+            attribution.clickLabel +
+            "\n" +
+            "Adid = " +
+            attribution.adid,
+      );
+   });
+});
+```
+
+</CodeBlock>
+</Tab>
+</Tabs>
+
+デリゲート関数内では、ユーザーの`Attribution`情報にアクセスすることができます。使用可能なプロパティの一覧は、[`ADJAttribution`クラスのプロパティ](#adjattribution-class-properties)を参照してください。
+
+## 現在のアトリビューション情報を取得 {#get-current-attribution-information}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```objc
++ (nullable ADJAttribution *)attribution;
+```
+
+</CodeBlock>
+
+ユーザーがアプリをインストールすると、Adjustはそのインストールをキャンペーンにアトリビュートします。Adjust SDKでは、インストールのキャンペーンアトリビューションの詳細にアクセスすることができます。この情報を返すには、`attribution`メソッドを呼び出して、アトリビューション情報を`ADJAttribution`オブジェクトとして返します。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let attribution = Adjust.attribution()
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+ADJAttribution *attribution = [Adjust attribution];
+```
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+```js
+var attribution = Adjust.getAttribution();
+```
+
+</Tab>
+</Tabs>

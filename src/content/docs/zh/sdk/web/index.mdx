@@ -1,0 +1,106 @@
+---
+title: Web SDK 集成指南
+description: 使用 Web SDK 在您的 web 应用中使用 Adjust 功能
+category-title: Web SDK
+slug: zh/sdk/web
+sidebar-position: 8
+---
+
+通过 Adjust Web SDK，您可以在网页应用中记录归因、事件以及更多数据。该指南展示了如何将该 SDK 集成至应用。
+
+<Callout type="important">
+
+要使用 Web SDK，您必须在 Adjust 控制面板中创建专用的网页应用并将两者关联起来。请勿将 Web SDK 集成到已经包含移动应用 SDK 的移动应用中。
+
+</Callout>
+
+## 1\. 添加 SDK 至您的项目{#add-the-sdk-to-your-project}
+
+要开始设置，请将 SDK 添加至网页应用。Adjust SDK 可在 CommonJS 和 AMD \(Asynchronous Module Definition\) 环境中运行。通过 CDN \(内容分发网络\) 加载时，您可以通过全局`Adjust`命名空间对其进行访问。
+
+### 使用 CDN {#using-a-cdn}
+
+通过 CDN 加载 SDK 时，您应该在生产环境中使用压缩版本。
+
+- 您可以通过添加一个版本至 CDN 目标来加载指定版本，如下所示：`https://cdn.adjust.com/adjust-5.7.0.min.js`。
+- 要加载最新版本，请使用`adjust-latest`包，如下所示：`https://cdn.adjust.com/adjust-latest.min.js`。该包会自动更新，您无需更改目标文件。
+
+<Callout type="tip">
+
+SDK 文件会被缓存，确保服务速度。缓存每 30 分钟更新。如果您想强制更新当前版本，请在标头中定向特定版本。
+
+</Callout>
+
+要通过 CDN 加载 SDK，请将以下代码片段加入网页应用的`<head>`元素中：
+
+{/* prettier-ignore */}
+```html
+<script type="application/javascript">
+!function(t,r,e,a,n,o,i,l,c,s,d,h,u){var f=i+"_q",m=i+"_c";t[i]=t[i]||{},t[f]=t[f]||[],t[m]=t[m]||[];for(let r=0;r<l.length;r++)d(t[i],t[f],l[r]);for(let r=0;r<c.length;r++){var g,b=c[r][0],p=c[r][1];t[i][b]=function(...r){return g=this,t[m].push((function(){g[s]=new t[i][b](...r)})),g};for(let r=0;r<p.length;r++){const e=p[r];t[i][b].prototype[e]=function(...r){t[m].push((function(){g[s][e](...r)}))}}}h=r.createElement(e),u=r.getElementsByTagName(e)[0],h.async=!0,h.src="https://cdn.adjust.com/adjust-latest.min.js",h.onload=function(){for(var r=0;r<t[m].length;r++)t[m][r]();t[m]=[];for(r=0;r<t[f].length;r++)t[f][r][1][0][s]?t[i][t[f][r][0]](t[f][r][1][0][s]):t[i][t[f][r][0]].apply(t[i],t[f][r][1]);t[f]=[]},u.parentNode.insertBefore(h,u)}(window,document,"script",0,0,0,"Adjust",["initSdk","getAttribution","getWebUUID","waitForAttribution","waitForWebUUID","setReferrer","trackEvent","addGlobalCallbackParameters","addGlobalPartnerParameters","removeGlobalCallbackParameter","removeGlobalPartnerParameter","clearGlobalCallbackParameters","clearGlobalPartnerParameters","switchToOfflineMode","switchBackToOnlineMode","stop","restart","gdprForgetMe","disableThirdPartySharing","trackThirdPartySharing","initSmartBanner","showSmartBanner","hideSmartBanner"],[["ThirdPartySharing",["addGranularOption","addPartnerSharingSetting"]]],"__realObj",(function(t,r,e){t[e]=function(){r.push([e,arguments])}}));
+</script>
+```
+
+Adjust SDK 会在每个页面上加载并初始化。
+
+#### 子资源完整性{#subresource-integrity}
+
+请使用[子资源完整性](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity)检查来抵御 XSS \(跨站脚本\) 攻击。要在运行包之前对其进行验证，请使用以下调用 \(请注意额外的`crossOrigin` 、 `integrity`和经过编码的哈希值\):
+
+{/* prettier-ignore */}
+```html
+<script type="application/javascript">
+!function(t,r,e,a,n,o,i,l,s,c,d,h,u){var f=i+"_q",g=i+"_c";t[i]=t[i]||{},t[f]=t[f]||[],t[g]=t[g]||[];for(let r=0;r<l.length;r++)d(t[i],t[f],l[r]);for(let r=0;r<s.length;r++){var m,b=s[r][0],p=s[r][1];t[i][b]=function(...r){return m=this,t[g].push((function(){m[c]=new t[i][b](...r)})),m};for(let r=0;r<p.length;r++){const e=p[r];t[i][b].prototype[e]=function(...r){t[g].push((function(){m[c][e](...r)}))}}}h=r.createElement(e),u=r.getElementsByTagName(e)[0],h.async=!0,h.src="https://cdn.adjust.com/adjust-latest.min.js",o&&(h.crossOrigin="anonymous",h.integrity=o),h.onload=function(){for(var r=0;r<t[g].length;r++)t[g][r]();t[g]=[];for(r=0;r<t[f].length;r++)t[f][r][1][0][c]?t[i][t[f][r][0]](t[f][r][1][0][c]):t[i][t[f][r][0]].apply(t[i],t[f][r][1]);t[f]=[]},u.parentNode.insertBefore(h,u)}(window,document,"script",0,0,"sha384-WE6fJqvcE0mjcC/fPYooIQAOhsHpTDVYjC52i6Asn3LECEpjHyI5zUwD8/5esthg","Adjust",["initSdk","getAttribution","getWebUUID","waitForAttribution","waitForWebUUID","setReferrer","trackEvent","addGlobalCallbackParameters","addGlobalPartnerParameters","removeGlobalCallbackParameter","removeGlobalPartnerParameter","clearGlobalCallbackParameters","clearGlobalPartnerParameters","switchToOfflineMode","switchBackToOnlineMode","stop","restart","gdprForgetMe","disableThirdPartySharing","trackThirdPartySharing","initSmartBanner","showSmartBanner","hideSmartBanner"],[["ThirdPartySharing",["addGranularOption","addPartnerSharingSetting"]]],"__realObj",(function(t,r,e){t[e]=function(){r.push([e,arguments])}}));
+</script>
+```
+
+### 使用 npm {#using-npm}
+
+Adjust SDK 还可用于 [npm](https://www.npmjs.com/package/@adjustcom/adjust-web-sdk)。要将包加入您的项目，请使用您常用的包管理器：
+
+<Tabs>
+<Tab title="NPM" sync="npm">
+
+```console
+$ npm install @adjustcom/adjust-web-sdk --save
+```
+
+</Tab>
+<Tab title="yarn" sync="yarn">
+
+```console
+$ yarn add @adjustcom/adjust-web-sdk
+```
+
+</Tab>
+<Tab title="pnpm" sync="pnpm">
+
+```console
+$ pnpm add @adjustcom/adjust-web-sdk
+```
+
+</Tab>
+</Tabs>
+
+## 2\. 初始化 SDK{#initialize-the-sdk}
+
+安装 SDK 后，需要进行初始化。为此，请调用`initSdk`方法。您可以使用该方法中的参数来自定义 SDK 在应用中的工作方式。
+
+要初始化 SDK，您必须将以下参数添加至`initSdk`调用：
+
+- `appToken` \(`string`\)：您的 [Adjust 应用识别码](https://help.adjust.com/zh/article/app-token-and-reporting-currency#view-your-app-details)。
+- `environment` \(`string`\)：SDK 运行的环境。
+   - 传递`sandbox`来在测试模式下运行 SDK。
+   - 传递 `production`来在生产模式下运行 SDK，方便发布。
+
+```js
+Adjust.initSdk({
+   appToken: "YOUR_APP_TOKEN",
+   environment: "sandbox",
+});
+```
+
+<Callout type="seealso">
+
+您可以在[配置指南](/zh/sdk/web/configuration)中找到 Adjust Web SDK 参数和属性的完整列表。
+
+</Callout>

@@ -1,20 +1,16 @@
 import type { FC } from "react";
 import classNames from "classnames";
 import { Snippet } from "react-instantsearch";
-import type { Hit } from "@algolia/client-search";
+
+import { TOKENIZED_TYPESENSE_LANGS } from "@i18n/locales";
 
 import type { DevHubSearchResultCardProps, HitBreadcrumb } from "./types";
 
 const DevHubSearchResultCard: FC<DevHubSearchResultCardProps> = ({ hit }) => {
-  // need to manually add an ellipsis cause Typesense doesn`t support this in the config
-  const updateHitSnippet = (hit: Hit<any>) => {
-    if (hit._snippetResult.content.matchedWords?.length) {
-      hit._snippetResult.content.value = `... ${hit._snippetResult.content.value} ...`;
-    }
-    return hit;
-  };
-
-  const updatedHit = updateHitSnippet(hit);
+  const isEllipsis = !!hit._snippetResult?.content?.matchedWords?.length;
+  const isTokenizedLang = TOKENIZED_TYPESENSE_LANGS.includes(hit.lang);
+  const title = isTokenizedLang ? hit[`title_${hit.lang}`] : hit.title;
+  const content = isTokenizedLang ? `content_${hit.lang}` : "content";
 
   return (
     <div className="max-w-[956px]">
@@ -43,13 +39,16 @@ const DevHubSearchResultCard: FC<DevHubSearchResultCardProps> = ({ hit }) => {
       </div>
       <a href={hit.url} className="group flex flex-col">
         <h5 className="text-xl font-semibold text-search-primary mt-3 mb-4 group-hover:text-link-active">
-          {hit.title}
+          {title}
         </h5>
         <p className="text-heading-5 h-[40px] text-ellipsis overflow-hidden text-search-primary">
           <Snippet
-            hit={updatedHit}
-            attribute="content"
-            className="overflow-hidden text-ellipsis box"
+            hit={hit}
+            attribute={content}
+            className={classNames("overflow-hidden text-ellipsis box", {
+              "after:ml-1 after:content-['...']  before:mr-1 before:content-['...']":
+                isEllipsis,
+            })}
             style={{
               WebkitBoxOrient: "vertical",
               MozBoxOrient: "vertical",

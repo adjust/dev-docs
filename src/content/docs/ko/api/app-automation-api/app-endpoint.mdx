@@ -1,0 +1,315 @@
+---
+title: 앱 엔드포인트
+description: 앱 엔드포인트를 사용하면 새 앱의 생성과 업데이트를 자동화할 수 있습니다.
+slug: ko/api/app-automation-api/app-endpoint
+sidebar-position: 2
+---
+
+`/app` 엔드포인트를 사용하면 새 앱의 생성과 업데이트를 자동화할 수 있습니다.
+
+## 새 앱 생성 {#create-a-new-app}
+
+템플릿 앱의 설정을 사용해 새 앱을 생성할 수 있습니다. 앱이 이미 존재하는 경우, `force_update` 파라미터를 사용해 새 설정으로 앱을 업데이트할 수 있습니다.
+
+<CodeBlock title="엔드포인트" highlight="/app">
+
+```http
+POST https://settings.adjust.com/api/app
+```
+
+</CodeBlock>
+
+### 파라미터 {#parameters}
+
+| 파라미터                 | 데이터 유형 | In   | 설명                                                                                                                  |
+| ------------------------ | ----------- | ---- | --------------------------------------------------------------------------------------------------------------------- |
+| `store_id`\*             | `String`    | Body | 번들 ID\(Android\) \| 스토어 ID\(Apple\)                                                                              |
+| `platform`\*             | `String`    | Body | `android` \| `ios`                                                                                                    |
+| `name`\*                 | `String`    | Body | 앱의 이름.                                                                                                            |
+| `bundle_id`\*            | `String`    | Body | 앱의 번들 ID                                                                                                          |
+| `android_signature_hash` | `String`    | Body | SHA1 해시: SDK Signature\(SDK 서명\)를 빌드하기 위해 키스토어 파일로부터 생성.                                        |
+| `channel_setup`          | `Object`    | Body | 앱에 대한 파트너 모듈 설정을 위해 필요. 자세한 정보는 [채널 설정 설명](/ko/api/app-automation-api/channel-setup)참조. |
+| `editors`                | `String`    | Body | 앱에 대한 액세스가 필요한 사용자의 이메일 목록.                                                                       |
+| `template_app_token`     | `String`    | Body | 템플릿으로 사용할 Adjust 앱 토큰. 템플릿 앱을 사용하지 않는 경우 필요.                                                |
+| `force_update`           | `Boolean`   | Body | 기존 앱의 설정을 업데이트 하려면 이 값을 true로 전달.                                                                 |
+
+### 응답 파라미터 {#response-parameters-4}
+
+| 파라미터           | 데이터 유형    | 설명                                                                                                                           |
+| ------------------ | -------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `adjust_app_token` | `String`       | SDK 연동과 기타 API 요청에 사용될 Adjust 앱 토큰.                                                                              |
+| `name`             | `String`       | 앱의 이름.                                                                                                                     |
+| `sk_app_id`        | `Integer`      | iOS 앱에 대한 StoreKit 앱 ID.                                                                                                  |
+| `store_id`         | `String`       | Android용 번들 ID \| Apple용 스토어 ID                                                                                         |
+| `bundle_id`        | `String`       | Andorid나 iOS에 대한 번들 ID.                                                                                                  |
+| `ticket_token`     | `String<uuid>` | 현재 작업 상태를 확인하기 위한 티켓 ID. 자세한 정보는 [상태 엔드포인트 설명](/ko/api/app-automation-api/status-endpoint) 참조. |
+
+### 예: {#example}
+
+<CodeBlock title="cURL" highlight="name, bundle_id, store_id, platform, channel_setup">
+
+```console
+$ curl \
+--header "AdjustAuthorization: Token <adjust api token>" \
+--header "Content-Type: application/json" \
+--data '{ "name":"Test App Name", "bundle_id":"test.bundle.app", "store_id":"test.bundle.app", "platform":"android", "channel_setup": { "facebook": {"app_id": "123456789"} } }' \
+-X POST https://settings.adjust.com/api/app
+```
+
+</CodeBlock>
+<CodeBlock title="성공적인 응답">
+
+```json
+{
+   "adjust_app_token": "p77yk727r18g",
+   "name": "Test App Name",
+   "sk_app_id": null,
+   "store_id": "test.bundle.app",
+   "bundle_id": "test.bundle.app",
+   "ticket_token": "af7702a9-ba95-6ba2-bdac-3f83e55ed8d3"
+}
+```
+
+</CodeBlock>
+
+## 앱 상세 정보 불러오기 {#fetch-app-details}
+
+앱 스토어 ID와 플랫폼 이름을 사용해 앱에 관한 상세 정보를 조회할 수 있습니다.
+
+<CodeBlock title="엔드포인트" highlight="store_id={}, platform={}">
+
+```http
+GET https://settings.adjust.com/api/app?store_id={}&platform={}
+```
+
+</CodeBlock>
+
+### 파라미터 {#parameters-1}
+
+| 이름         | 데이터 유형 | In    | 설명                                   |
+| ------------ | ----------- | ----- | -------------------------------------- |
+| `store_id`\* | `String`    | Query | Android용 번들 ID \| Apple용 스토어 ID |
+| `platform`\* | `String`    | Query | `android` \| `ios`                     |
+
+### 응답 파라미터 {#response-parameters-1}
+
+| 이름                     | 유형     | 설명                                                           |
+| ------------------------ | -------- | -------------------------------------------------------------- |
+| `name`                   | `String` | 앱의 이름                                                      |
+| `platform`               | `String` | `android` \| `ios`                                             |
+| `store_id`               | `String` | Android용 번들 ID \| iOS용 스토어 ID                           |
+| `adjust_app_token`       | `String` | 요청된 앱에 대한 토큰.                                         |
+| `additional_info`        | `Object` | 엔드포인트에서 이미 수신한 모든 앱 세부정보.                   |
+| `channel_setup`          | `Object` | 파트너별 파라미터 정보는 "채널 설정" 참조                      |
+| `cross_promo_token`      | `String` | CrossPromotion에 사용할 Adjust 링크 토큰\(사용 가능한 경우\)   |
+| `android_signature_hash` | `String` | SDK 서명을 빌드하기 위해 키스토어 파일로부터 생성된 SHA1 해시. |
+
+### 예: {#example-1}
+
+<CodeBlock title="cURL" highlight="store_id, platform">
+
+```console
+$ curl \
+--header "AdjustAuthorization: Token <adjust api token>" \
+-L -X GET 'https://settings.adjust.com/api/app?store_id=test.bundle.app&platform=android'
+```
+
+</CodeBlock>
+<CodeBlock title="성공적인 응답">
+
+```json
+{
+   "name": "Test App Name",
+   "platform": "android",
+   "store_id": "test.bundle.app",
+   "adjust_app_token": "p77yk727r18g",
+   "additional_info": { "overrides": {} },
+   "channel_setup": {
+      "facebook": { "app_id": "123456789" },
+      "snapchat": { "app_id": "test.bundle.app" }
+   },
+   "cross_promo_token": "hgj3li1",
+   "android_signature_hash": "FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF"
+}
+```
+
+</CodeBlock>
+
+## Adjust 토큰의 앱 상세 정보 불러오기 {#fetch-app-details-by-adjust-token}
+
+Adjust 앱 토큰을 사용해 앱에 관한 상세 정보를 조회할 수 있습니다.
+
+<CodeBlock title="엔드포인트" highlight="{adjust_app_token}">
+
+```http
+GET https://settings.adjust.com/api/app/{adjust_app_token}
+```
+
+</CodeBlock>
+
+### 파라미터 {#parameters-2}
+
+| 이름                 | 데이터 유형 | In   | 설명                                                            |
+| -------------------- | ----------- | ---- | --------------------------------------------------------------- |
+| `adjust_app_token`\* | `String`    | Path | Adjust 앱 토큰. Adjust 대시보드나 /app POST 응답에서 확인 가능. |
+
+### 응답 파라미터 {#response-parameters-2}
+
+| 이름                     | 유형     | 설명                                                           |
+| ------------------------ | -------- | -------------------------------------------------------------- |
+| `name`                   | `String` | 앱의 이름                                                      |
+| `platform`               | `String` | `android` 또는 `ios`                                           |
+| `store_id`               | `String` | Android용 번들 ID \| iOS용 스토어 ID                           |
+| `adjust_app_token`       | `String` | 요청된 앱에 대한 토큰.                                         |
+| `additional_info`        | `Object` | 엔드포인트에서 이미 수신한 모든 앱 세부정보.                   |
+| `channel_setup`          | `Object` | 파트너별 파라미터 정보는 "채널 설정" 참조                      |
+| `cross_promo_token`      | `String` | CrossPromotion에 사용할 Adjust 링크 토큰\(사용 가능한 경우\)   |
+| `android_signature_hash` | `String` | SDK 서명을 빌드하기 위해 키스토어 파일로부터 생성된 SHA1 해시. |
+
+### 예: {#example-2}
+
+<CodeBlock title="cURL" highlight="p77yk727r18g">
+
+```console
+$ curl \
+--header "AdjustAuthorization: Token <adjust api token>" \
+-X GET https://settings.adjust.com/api/app/p77yk727r18g/
+```
+
+</CodeBlock>
+<CodeBlock title="성공적인 응답">
+
+```json
+{
+   "name": "Test App Name",
+   "platform": "android",
+   "store_id": "test.bundle.app",
+   "adjust_app_token": "p77yk727r18g",
+   "additional_info": { "overrides": {} },
+   "channel_setup": {
+      "facebook": { "app_id": "123456789" },
+      "snapchat": { "app_id": "test.bundle.app" }
+   },
+   "cross_promo_token": "hgj3li1",
+   "android_signature_hash": "FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF"
+}
+```
+
+</CodeBlock>
+
+## 앱 채널 불러오기 {#fetch-app-channels}
+
+앱에 대해 활성 상태인 링크가 있는 채널의 목록을 조회합니다.
+
+<CodeBlock title="엔드포인트" highlight="{adjust_app_token}/channels">
+
+```http
+GET https://settings.adjust.com/api/app/{adjust_app_token}/channels
+```
+
+</CodeBlock>
+
+### 파라미터 {#parameters-3}
+
+| 이름                 | 데이터 유형 | In   | 설명                                                            |
+| -------------------- | ----------- | ---- | --------------------------------------------------------------- |
+| `adjust_app_token`\* | `String`    | Path | Adjust 앱 토큰. Adjust 대시보드나 /app POST 응답에서 확인 가능. |
+
+### 응답 파라미터 {#response-parameters-3}
+
+| 파라미터   | 데이터 유형      | 설명                                                    |
+| ---------- | ---------------- | ------------------------------------------------------- |
+| `channels` | `Array <string>` | 앱에 대해 활성 상태인 채널에 대한 네트워크 슬러그 목록. |
+
+<Accordion title="네트워크 슬러그">
+
+- `apple_search_ads`
+- `applovin`
+- `chartboost`
+- `crossinstall`
+- `crosspromotion`
+- `digitalturbine`
+- `facebook`
+- `gameanalytics`
+- `google`
+- `ironsource`
+- `snapchat`
+- `tapjoy`
+- `unityads`
+- `vungle`
+- `inmobi`
+
+</Accordion>
+
+### 예: {#example-3}
+
+<CodeBlock title="cURL" highlight="927t3s86rzsw">
+
+```console
+$ curl \
+--header 'AdjustAuthorization: Token <adjust api token>' \
+--header "SignatureAuthorization: Token <adjust signature token>" \
+--X GET 'https://settings.adjust.com/api/app/927t3s86rzsw/channels'
+```
+
+</CodeBlock>
+<CodeBlock title="성공적인 응답">
+
+```json
+[
+   "unityads",
+   "digitalturbine",
+   "jetfuel_api",
+   "jetfuel",
+   "criteo",
+   "tapjoy",
+   "bytedance",
+   "moloco",
+   "adikteev",
+   "pinsightmedia",
+   "applovin",
+   "aura_ironsource",
+   "freakout",
+   "tradedoubler"
+]
+```
+
+</CodeBlock>
+
+## 서명 검증 활성화 {#enable-signature-verification}
+
+앱 트래픽 보안을 위해 [Adjust v3 Signature 라이브러리](https://help.adjust.com/ko/article/sdk-signature)를 사용하는 경우, 자동화 API를 사용하여 앱의 인증서 핑거프린트를 구성할 수 있습니다.
+
+### 설명 {#instructions-1}
+
+1. 다음 정보와 함께 POST 요청을 `/app` 엔드포인트로 전송합니다.
+
+   - `name`: 앱의 이름
+   - `bundle_id`: Android용 번들 ID \| Apple용 스토어 ID
+   - `store_id`: 타겟 앱 스토어 내 앱의 ID
+   - `platform`: 앱의 타겟 플랫폼
+   - `channel_setup`: 앱에 대한 파트너 모듈 설정을 위해 필요. 자세한 정보는 [채널 설정 페이지](/ko/api/app-automation-api/channel-setup/)를 참고하시기 바랍니다.
+
+   ```bash
+   curl \
+   --header "AdjustAuthorization: Token <adjust api token>" \
+   --header "Content-Type: application/json" \
+   --data '{ "name":"Test App Name", "bundle_id":"test.bundle.app", "store_id":"test.bundle.app", "platform":"android", "channel_setup": { "facebook": {"app_id": "123456789"}, "snapchat": {"app_id": "test.bundle.app"} } }' \
+   -X POST https://settings.adjust.com/api/app
+   ```
+
+2. Adjust 담당자에게 연락하여 Signature v3 지원을 활성화하도록 요청하시기 바랍니다.
+
+3. 앱이 Signature v3 지원 대상으로 표시되면, 다음과 함께 `/app` 엔드포인트로 또 다른 POST 요청을 전송합니다.
+
+   - `android_signature_hash`: : **쉼표로 구분된 16진법** 형식의 SHA\-1 서명 목록.
+   - Adjust 서명 토큰 값이 포함된 `SignatureAuthorization` 헤더.
+
+   ```bash
+   curl \
+   --header "AdjustAuthorization: Token <adjust api token>" \
+   --header "SignatureAuthorization: Token <adjust signature token>" \
+   --header "Content-Type: application/json" \
+   --data '{ "name":"Test App Name", "android_signature_hash": "45:a7:2b:82:00:f1:f6:99:d7:c5:1e:6e:1f:8c:91:b5:5c:f9:98:a2,44:40:16:6e:ed:36:cc:6d:6e:62:53:92:9e:ef:45:63:a1:3c:19:0c,57:44:3a:4c:05:23:50:a4:46:38:83:5d:64:fd:66:82:2f:81:33:19", "bundle_id":"test.bundle.app", "store_id":"test.bundle.app", "platform":"android", "channel_setup": { "facebook": {"app_id": "123456789"}, "snapchat": {"app_id": "test.bundle.app"} } }' \
+   -X POST https://settings.adjust.com/api/app
+   ```

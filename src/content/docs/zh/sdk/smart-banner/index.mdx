@@ -1,0 +1,145 @@
+---
+title: 智能横幅 SDK 集成指南
+description: 通过智能横幅 SDK，您可以将 Adjust 智能横幅添加至自己的网站或网页应用。
+category-title: 智能横幅 SDK
+slug: zh/sdk/smart-banner
+sidebar-position: 10
+---
+
+通过智能横幅 SDK，您可以将[Adjust 智能横幅](https://www.adjust.com/glossary/smart-banners/)添加至自己的网站或网页应用。该指南展示了如何将 SDK 集成到项目中。
+
+## 1\. 安装 SDK {#install-the-sdk}
+
+要将 SDK 添加到您的现有 Javascript 项目中，请使用包管理器进行安装。
+
+<Tabs>
+<Tab title="NPM">
+
+```console
+$ npm install --save @adjustcom/smart-banner-sdk
+```
+
+</Tab>
+<Tab title="yarn">
+
+```console
+$ yarn add @adjustcom/smart-banner-sdk
+```
+
+</Tab>
+<Tab title="pnpm">
+
+```console
+$ pnpm add @adjustcom/smart-banner-sdk
+```
+
+</Tab>
+</Tabs>
+
+安装依赖项后，将其导入到项目中。
+
+```js
+import AdjustSmartBanner from "@adjustcom/smart-banner-sdk";
+```
+
+### 使用 CDN {#using-a-cdn}
+
+如果您不想将 SDK 作为运行时依赖项进行安装，则可以通过 CDN \(内容分发网络\) 加载 SDK。在加载 SDK 时，您可以通过全局`AdjustSmartBanner`命名空间访问 SDK。
+
+通过 CDN 加载 SDK 时，您应该使用缩小版本以获得更好的性能。
+
+- 特定版本。例如： `https://cdn.adjust.com/adjust-smart-banner-0.0.7.min.js`
+- 最新版本。例如： `https://cdn.adjust.com/adjust-smart-banner-latest.min.js`
+
+SDK 文件会被缓存在 CDN 上，以便以最快的速度加载。缓存每 30 分钟刷新一次。要立即接收更新，请定向特定版本的 SDK。
+
+要通过 CDN 加载智能横幅 SDK，请将下列代码片段粘贴进页面的`<head>`标签中：
+
+```html
+<script type="application/javascript">
+   !(function (e, n, t, a, o, s, r, i, c) {
+      var d = o + "_q";
+      (e[o] = e[o] || {}), (e[d] = e[d] || []);
+      for (var u = 0; u < s.length; u++) r(e[o], e[d], s[u]);
+      (i = n.createElement(t)),
+         (c = n.getElementsByTagName(t)[0]),
+         (i.async = !0),
+         (i.src = "https://cdn.adjust.com/adjust-smart-banner-latest.min.js"),
+         (i.onload = function () {
+            e[o] = e[o].default;
+            for (var n = 0; n < e[d].length; n++)
+               e[o][e[d][n][0]]
+                  ? e[o][e[d][n][0]].apply(e[o], e[d][n][1])
+                  : console.error(
+                       "No such function found in " + o + ": " + e[d][n][0],
+                    );
+            e[d] = [];
+         }),
+         c.parentNode.insertBefore(i, c);
+   })(
+      window,
+      document,
+      "script",
+      0,
+      "AdjustSmartBanner",
+      [
+         "init",
+         "show",
+         "hide",
+         "setLanguage",
+         "setIosDeepLinkPath",
+         "setAndroidDeepLinkPath",
+         "setContext",
+         "setAndroidAppSchema",
+         "setDeepLinkPath",
+      ],
+      function (e, n, t) {
+         e[t] = function () {
+            n.push([t, arguments]);
+         };
+      },
+   );
+</script>
+```
+
+## 2\. 初始化 SDK{#initialize-the-sdk}
+
+要初始化智能横幅 SDK，请调用`AdjustSmartBanner.init`方法。
+
+```js
+AdjustSmartBanner.init({
+   appToken: "APP_TOKEN",
+});
+```
+
+调用该方法时，SDK 会检测设备平台。如果设备为移动平台，SDK 就会加载可用的智能横幅。可用横幅会在初始化后立即显示。
+
+如果您的项目针对单一平台应用，请在`appToken`对象中将每个平台识别码作为键进行发送。
+
+```js
+AdjustSmartBanner.init({
+   appToken: {
+      ios: "IOS_APP_TOKEN",
+      android: "ANDROID_APP_TOKEN",
+   },
+});
+```
+
+<Callout type="note">
+
+请查看[初始化选项](/zh/sdk/smart-banner/init-options)，获取完整的配置选项列表。
+
+</Callout>
+
+## 3\. 横幅本地化{#localize-your-banners}
+
+您可以对智能横幅进行本地化，以获得更好的用户体验。智能横幅 SDK 会读取浏览器中的语言，如果横幅存在的本地化版本则显示本地化横幅。如果您想改变该行为，则可以指示 SDK 使用不同的语言。设置首选语言的方法有两种：
+
+- 将其作为`language`参数发送至`AdjustSmartBanner.init`方法。
+- 将两个字母的语言代码作为 **字符串** 参数调用`setLanguage`方法。
+
+```js
+AdjustSmartBanner.setLanguage("fr");
+```
+
+完成了！SDK 现已集成到您的项目中。请查看本节其他指南，了解 SDK 功能相关信息，掌握不同功能的配置方法。

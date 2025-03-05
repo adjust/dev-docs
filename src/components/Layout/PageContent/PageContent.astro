@@ -1,52 +1,50 @@
 ---
 import type { MarkdownHeading } from "astro";
-
 import TableOfContents from "@components/TableOfContents.astro";
-import type { NavigationData } from "@utils/helpers/navigation/types";
 import CategoryCard from "@components/Cards/CategoryCard.astro";
-import SdkVersionSwitch from "@components/Version/SdkVersionSwitch";
-import ApiVersionSwitch from "@components/Version/ApiVersionSwitch";
-
-import { getLanguageFromURL } from "@i18n/utils";
 import { type Locales } from "@i18n/locales";
 import { useTranslations } from "@i18n/utils";
+import type { SidebarItem } from "@utils/helpers/navigation/types";
 
-const currentLang = getLanguageFromURL(Astro.url.pathname);
+const currentLang = Astro.currentLocale;
 
 const t = useTranslations(currentLang as keyof Locales);
 
 type Props = {
   title: string;
   headings: MarkdownHeading[];
-  childLinks: NavigationData["childLinks"];
-  multiVersion: boolean;
+  currentSlug: string;
   type?: string;
+  pageData: SidebarItem | undefined;
 };
 
-const { title, headings, childLinks, multiVersion, type } = Astro.props;
-
-const sortedLinks = childLinks.sort((a, b) => {
-  if (!a.position && !b.position) {
-    return 0;
+const { title, headings, pageData, type } = Astro.props;
+let sortedLinks: SidebarItem[] = [];
+if (type === "category") {
+  if (pageData && pageData.children) {
+    sortedLinks = pageData.children.sort((a, b) => {
+      if (!a.position && !b.position) {
+        return 0;
+      }
+      a.position = Number(a.position) || 0;
+      b.position = Number(b.position) || 0;
+      return a?.position > b?.position ? 1 : -1;
+    });
   }
-  a.position = Number(a.position) || 0;
-  b.position = Number(b.position) || 0;
-  return a?.position > b?.position ? 1 : -1;
-});
+}
 ---
 
 <article
   id="article"
-  class=`${headings && headings.length > 0 ? "lg:w-toc-open-article" : "w-full"} sidebar-open:hidden text-black xs:px-8 lg:pr-4 lg:pl-12 pb-16 xxxl:w-full`
+  class=`${(headings && headings.length > 0) ? "lg:w-toc-open-article" : "w-full"} sidebar-open:hidden text-black xs:px-8 lg:pr-4 lg:pl-12 pb-16 xxxl:w-full`
 >
   {
     headings && headings.length > 0 && type !== "category" && (
       <aside title={t("toc.header")}>
         <TableOfContents
           title={title}
-          multiVersion={multiVersion}
           headings={headings}
-          lang={currentLang}
+          lang={currentLang || "en"}
         />
       </aside>
     )
@@ -56,20 +54,9 @@ const sortedLinks = childLinks.sort((a, b) => {
       {title}
     </h1>
     <div class="article-content" id="article-content">
-      {
-        Astro.url.pathname.includes("sdk") && multiVersion && (
-          <SdkVersionSwitch client:only="react" lang={currentLang} />
-        )
-      }
-      {
-        Astro.url.pathname.includes("api") && multiVersion && (
-          <ApiVersionSwitch client:only="react" lang={currentLang} />
-        )
-      }
       <slot />
-      <!-- Category cards for the entry with "category" type and childs -->
       {
-        sortedLinks.length ? (
+        sortedLinks && sortedLinks.length ? (
           <div class="w-full flex flex-wrap gap-x-2 gap-y-4">
             {sortedLinks.map((child) => (
               <CategoryCard child={child} />
@@ -82,48 +69,41 @@ const sortedLinks = childLinks.sort((a, b) => {
 </article>
 
 <script>
-  import { updateVersionsItems as updateSdkVersions } from "@store/sdkVersionsStore";
-  import { updateVersionsItems as updateApiVersions } from "@store/apiVersionsStore";
+  class HeaderLinkController {
+    private headerLinks: NodeListOf<Element>;
 
-  class SdkVersionBlock extends HTMLElement {
-    constructor() {
-      super();
-
-      const version = this.dataset.message!;
-      updateSdkVersions([{ label: version, value: version }]);
+    constructor(className: string) {
+      this.headerLinks = document.querySelectorAll(`.${className}`);
     }
-  }
-  customElements.define("sdk-version-block", SdkVersionBlock);
 
-  class ApiVersionBlock extends HTMLElement {
-    constructor() {
-      super();
+    private linkCopyHandler = (event: Event, header: Element): void => {
+      event.preventDefault();
+      const url = header.getAttribute("href");
+      const fullUrl = `${window.location.href.split("#")[0]}${url}`;
 
-      const version = this.dataset.message!;
-      updateApiVersions([{ label: version, value: version }]);
-    }
+      navigator.clipboard
+        .writeText(fullUrl)
+        .then(() => {
+          location.href = url || location.href;
+          console.log(`Copied to clipboard: ${fullUrl}`);
+        })
+        .catch((err) => {
+          console.error("Failed to copy: ", err);
+        });
+    };
+
+    public initialize = () => {
+      this.headerLinks.forEach((header) => {
+        header.addEventListener("click", (event) =>
+          this.linkCopyHandler(event, header),
+        );
+      });
+    };
   }
-  customElements.define("api-version-block", ApiVersionBlock);
 
   document.addEventListener("DOMContentLoaded", () => {
-    const headerLinks = document.querySelectorAll(".copy-link");
+    const controller = new HeaderLinkController("copy-link");
 
-    headerLinks.forEach((link) => {
-      link.addEventListener("click", (event) => {
-        event.preventDefault();
-        const url = link.getAttribute("href");
-        const fullUrl = `${window.location.href.split("#")[0]}${url}`;
-
-        navigator.clipboard
-          .writeText(fullUrl)
-          .then(() => {
-            location.href = `${url}`;
-            console.log(`Copied to clipboard: ${fullUrl}`);
-          })
-          .catch((err) => {
-            console.error("Failed to copy:", err);
-          });
-      });
-    });
+    controller.initialize();
   });
 </script>

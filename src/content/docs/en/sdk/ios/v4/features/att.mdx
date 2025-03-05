@@ -1,0 +1,241 @@
+---
+title: Set up App Tracking Transparency
+description: Configure your app to use Apple's App Tracking Transparency framework
+slug: en/sdk/ios/v4/features/att
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v5: /en/sdk/ios/features/att
+---
+
+If you want to record the device's ID for Advertisers (IDFA), you must display a prompt to get your user's authorization. To do this, you need to include Apple's App Tracking Transparency (ATT) framework in your app. The Adjust SDK stores the user's authorization status and sends it to Adjust's servers with each request.
+
+## Authorization statuses {#authorization-statuses}
+
+| Status                                              | Code | Description                                                             |
+| --------------------------------------------------- | ---- | ----------------------------------------------------------------------- |
+| `ATTrackingManagerAuthorizationStatusNotDetermined` | `0`  | The user hasn't responded to the access prompt yet                      |
+| `ATTrackingManagerAuthorizationStatusRestricted`    | `1`  | Access to app-related data is blocked at the device level               |
+| `ATTrackingManagerAuthorizationStatusDenied`        | `2`  | The user has denied access to app-related data for device measurement   |
+| `ATTrackingManagerAuthorizationStatusAuthorized`    | `3`  | The user has approved access to app-related data for device measurement |
+
+<Callout type="note">
+
+You might receive a status code of `-1` if the SDK is unable to retrieve the ATT status.
+
+</Callout>
+
+## ATT authorization wrapper {#att-authorization-wrapper}
+
+<CodeBlock title="Method signature">
+
+```objc
++ (void)requestTrackingAuthorizationWithCompletionHandler:(void (^_Nullable)(NSUInteger status))completion;
+```
+
+</CodeBlock>
+
+The Adjust SDK contains a wrapper around [Apple's `requestTrackingAuthorizationWithCompletionHandler` method](https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager/3547037-requesttrackingauthorizationwith). You can use this wrapper if you don't want to customize the ATT prompt.
+
+The callback method triggers when your user responds to the consent dialog. This method sends the user's consent status code to Adjust's servers. You can define responses to each status code within the callback function.
+
+You must specify text content for the ATT. To do this, add your text to the `NSUserTrackingUsageDescription` key in your `Info.plist` file.
+
+<Callout type="tip">
+
+The Adjust SDK also records the consent status if you use a custom prompt. If you show your prompt before initialization, the SDK sends the status with the install event. If you show it after initialization, the SDK sends the status to Adjust's servers as soon as the user updates it.
+
+</Callout>
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+Adjust.requestTrackingAuthorization { status in
+   switch status {
+   case 0:
+      // ATTrackingManagerAuthorizationStatusNotDetermined case
+      break
+   case 1:
+      // ATTrackingManagerAuthorizationStatusRestricted case
+      break
+   case 2:
+      // ATTrackingManagerAuthorizationStatusDenied case
+      break
+   case 3:
+      // ATTrackingManagerAuthorizationStatusAuthorized case
+      break
+   default:
+      break
+   }
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[Adjust requestTrackingAuthorizationWithCompletionHandler:^(NSUInteger status) {
+   switch (status) {
+      case 0:
+         // ATTrackingManagerAuthorizationStatusNotDetermined case
+         break;
+      case 1:
+         // ATTrackingManagerAuthorizationStatusRestricted case
+         break;
+      case 2:
+         // ATTrackingManagerAuthorizationStatusDenied case
+         break;
+      case 3:
+         // ATTrackingManagerAuthorizationStatusAuthorized case
+         break;
+   }
+}];
+```
+
+</Tab>
+</Tabs>
+
+## Get current authorization status {#get-current-authorization-status}
+
+<CodeBlock title="Method signature">
+
+```objc
++ (int)appTrackingAuthorizationStatus;
+```
+
+</CodeBlock>
+
+You can retrieve a user's current authorization status at any time. Call the `getAppTrackingAuthorizationStatus` method to return the authorization status code as an **integer**.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let authorizationStatus = Adjust.appTrackingAuthorizationStatus();
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+int authorizationStatus = [Adjust appTrackingAuthorizationStatus];
+```
+
+</Tab>
+
+<Tab title="Javascript" sync="js">
+
+```js
+var authorizationStatus = Adjust.appTrackingAuthorizationStatus();
+```
+
+</Tab>
+</Tabs>
+
+## Custom prompt timing {#custom-prompt-timing}
+
+<CodeBlock title="Property declaration">
+
+```objc
+@property (nonatomic, assign) NSUInteger attConsentWaitingInterval;
+```
+
+</CodeBlock>
+
+If your app includes an onboarding process or a tutorial, you may want to delay sending your user's ATT consent status until after the user has completed this process. To do this, you can set the `attConsentWaitingInterval` property to delay the sending of data for **up to 120 seconds** to give the user time to complete the initial onboarding. After the timeout ends or the user sets their consent status, the SDK sends all information it has recorded during the delay to Adjust's servers along with the user's consent status.
+
+<Callout type="note">
+
+If the user closes the app before the timeout ends, or before they select their consent status, the timeout restarts when they reopen the app.
+
+</Callout>
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox as? String
+let adjustConfig = ADJConfig(
+    appToken: yourAppToken,
+    environment: environment)
+//...
+adjustConfig?.attConsentWaitingInterval = 30
+//...
+Adjust.appDidLaunch(adjustConfig)
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+*adjustConfig = [ADJConfig configWithAppToken:@"{YourAppToken}"
+                                  environment:ADJEnvironmentSandbox];
+//...
+[adjustConfig setAttConsentWaitingInterval:30];
+//...
+[Adjust appDidLaunch:adjustConfig];
+```
+
+</Tab>
+</Tabs>
+
+## Check for authorization status changes {#check-for-authorization-status-changes}
+
+<CodeBlock title="Method signature">
+
+```objc
++ (void)checkForNewAttStatus;
+```
+
+</CodeBlock>
+
+If you use a custom ATT prompt, you need to inform the Adjust SDK of changes to the user's authorization status. Call the `checkForNewAttStatus` method to send the authorization status to Adjust's servers.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+Adjust.checkForNewAttStatus();
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[Adjust checkForNewAttStatus];
+```
+
+</Tab>
+</Tabs>
+
+## iOS 17 consent handling {#ios-17-consent-handling}
+
+<MinorVersion added="v4.38.0">
+
+With the release of iOS 17, Apple implemented new rules on what data developers may send to third-parties. To ensure that developers can demonstrate compliance with Apple’s privacy guidelines, the Adjust SDK makes use of two separate endpoints for **consenting** and **non-consenting** users.
+
+</MinorVersion>
+
+By default, the Adjust SDK sends a limited set of data to Adjust’s servers for **probabilistic modeling** using the `analytics.adjust.com` endpoint. This endpoint **doesn’t** receive the following information:
+
+- `idfa`: The device ID For Advertisers (IDFA).
+- `started_at`: The device startup time.
+
+Only if the user [grants ATT consent](#app-tracking-authorization-wrapper), the Adjust SDK gains access to both the idfa and started_at properties for **deterministic attribution** and sends the full payload to `consent.adjust.com`.
+
+Both of these endpoints are available for all [URL strategies](/en/sdk/ios/features/privacy#data-residency).
+
+| URL strategy          | Non-consented endpoint    | Consented endpoint      |
+| --------------------- | ------------------------- | ----------------------- |
+| `ADJDataResidencyEU`  | `analytics.eu.adjust.com` | `consent.eu.adjust.com` |
+| `ADJDataResidencyTR`  | `analytics.tr.adjust.com` | `consent.tr.adjust.com` |
+| `ADJDataResidencyUS`  | `analytics.us.adjust.com` | `consent.us.adjust.com` |
+| `ADJUrlStrategyChina` | `analytics.adjust.world`  | `consent.adjust.world`  |
+| `ADJUrlStrategyCn`    | `analytics.adjust.cn`     | `consent.adjust.cn`     |
+| `ADJUrlStrategyIndia` | `analytics.adjust.net.in` | `consent.adjust.net.in` |

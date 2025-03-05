@@ -1,34 +1,165 @@
 ---
-import SidebarHeader from "./SidebarHeader.astro";
-import SidebarSearch from "./SidebarSearch.astro";
-import Navigation from "./Navigation.astro";
+import type { CollectionEntry } from "astro:content";
+import SidebarHeader from "@components/Layout/LeftSidebar/SidebarHeader.astro";
+import SidebarSearch from "@components/Layout/LeftSidebar/SidebarSearch.astro";
 import LanguageSwitch from "@components/LanguageSwitch.astro";
 import { LOCALE_NAMES } from "@i18n/locales";
-import type { NavigationData } from "@utils/helpers/navigation/types";
+import type { Languages, LanguageTrees } from "@utils/helpers/navigation/types";
+import NavigationTree from "./Navigation.astro";
 
 interface Props {
   homeUrl: string;
   lang: string;
-  navigationEntries: NavigationData["languageTree"];
+  redirects: CollectionEntry<"docs">["data"]["redirects"];
+  currentSlug: string;
+  languageTree: LanguageTrees;
+  versions: CollectionEntry<"docs">["data"]["versions"];
 }
 
-const { homeUrl, lang, navigationEntries } = Astro.props;
+const { homeUrl, lang, redirects, currentSlug, languageTree, versions } =
+  Astro.props as Props;
+const sidebar = languageTree[lang as Languages];
 ---
 
 <aside
+  id="sidebar-navigation"
   class="h-screen xs:hidden xs:absolute xs:z-30 xs:w-full lg:max-w-[294px] lg:flex lg:sticky top-0 flex flex-col border-r-[1.5px] bg-white border-[#E0EAFF] sidebar-open:flex"
   title="Site Navigation"
 >
-  {/* Header with audience switch */}
-  <SidebarHeader homeUrl={homeUrl} lang={lang} />
-  {/* Search input */}
+  <SidebarHeader
+    homeUrl={homeUrl}
+    lang={lang}
+    redirects={redirects}
+    versions={versions}
+  />
   <SidebarSearch />
-  <Navigation navigationEntries={navigationEntries} />
+  <NavigationTree sidebar={sidebar} currentSlug={currentSlug} />
   <div class="h-[63px] border-t-[1px] border-[#CDD0E0]">
     <LanguageSwitch
       lang={lang}
       locales={LOCALE_NAMES}
-      currentUrl={Astro.url.pathname}
+      currentUrl={`/${currentSlug}`}
     />
   </div>
 </aside>
+
+<script>
+  import { $versions as $sdkVersions } from "@store/sdkVersionsStore";
+
+  class CollapseToggle {
+    private slug: string;
+
+    constructor(slug: string) {
+      this.slug = slug;
+    }
+
+    public toggle(): void {
+      const chevronRightDiv = document.getElementById(
+        `chevron-right-${this.slug}`,
+      );
+      const chevronDownDiv = document.getElementById(
+        `chevron-down-${this.slug}`,
+      );
+      const childrenDiv = document.getElementById(`children-${this.slug}`);
+      const linkElement = document.getElementById(`link-${this.slug}`);
+
+      if (chevronRightDiv && chevronDownDiv && childrenDiv) {
+        const isHidden = childrenDiv.classList.toggle("hidden");
+
+        // Toggle chevron visibility
+        chevronRightDiv.classList.toggle("hidden", !isHidden);
+        chevronDownDiv.classList.toggle("hidden", isHidden);
+
+        if (linkElement) {
+          // Toggle link element's font weight
+          linkElement.classList.toggle("font-medium", !isHidden);
+          linkElement.classList.toggle("font-normal", isHidden);
+        }
+      }
+    }
+  }
+
+  // SidebarController class for managing versioned items and collapsible sections
+  class SidebarController {
+    private sdkVersionsStore: typeof $sdkVersions;
+
+    constructor(sdkVersionsStore: typeof $sdkVersions) {
+      this.sdkVersionsStore = sdkVersionsStore;
+    }
+
+    private hideAllVersionedItems(): void {
+      const versionedItems = document.querySelectorAll(
+        "[class*='item-version-sdk']",
+      );
+      versionedItems.forEach((item) => {
+        if (!item.classList.contains("hidden")) item.classList.add("hidden");
+      });
+    }
+
+    private showCurrentVersionItems(sdkVersion: string): void {
+      this.hideAllVersionedItems();
+      const versionedItems = document.querySelectorAll(
+        `.item-version-sdk-${sdkVersion}`,
+      );
+      versionedItems.forEach((item) => {
+        item.classList.remove("hidden");
+      });
+    }
+
+    private setupSidebar(): void {
+      const currentSdkVersion =
+        this.sdkVersionsStore.get()?.currentVersion?.value || "v5";
+      this.showCurrentVersionItems(currentSdkVersion);
+
+      this.sdkVersionsStore.subscribe((store) => {
+        const sdkVersion = store.currentVersion?.value;
+        if (sdkVersion) {
+          this.showCurrentVersionItems(sdkVersion);
+        }
+      });
+    }
+
+    private initializeToggleHandlers(): void {
+      const items = document.querySelectorAll(".toggle-collapse");
+      items.forEach((item) => {
+        item.addEventListener("click", () => {
+          const slug = item!
+            .parentElement!.parentElement!.querySelector("a")!
+            .getAttribute("href")!
+            .slice(1);
+
+          const toggler = new CollapseToggle(slug);
+          toggler.toggle();
+        });
+      });
+    }
+
+    private scrollActiveItemIntoView(): void {
+      const activeItem = document.querySelector(".text-link-active");
+      const sidebar = document.getElementById("sidebar-navigation");
+      if (activeItem && sidebar) {
+        const { top: itemTop, height: itemHeight } =
+          activeItem.getBoundingClientRect();
+        const { top: sidebarTop, height: sidebarHeight } =
+          sidebar.getBoundingClientRect();
+        const offset = itemTop - sidebarTop - (sidebarHeight - itemHeight) / 2;
+        sidebar.scrollBy({ top: offset });
+      }
+    }
+
+    /**
+     * Initializes the sidebar controller and attaches handlers
+     */
+    public initialize = () => {
+      this.setupSidebar();
+      this.initializeToggleHandlers();
+      this.scrollActiveItemIntoView();
+    };
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const controller = new SidebarController($sdkVersions);
+
+    controller.initialize();
+  });
+</script>

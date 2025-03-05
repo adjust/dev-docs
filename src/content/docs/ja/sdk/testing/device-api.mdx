@@ -1,0 +1,67 @@
+---
+title: Device APIを使用してインストールを確認する
+description: Adjust SDKがデバイスAPIでインストール情報をAdjustに送信していることをテストする
+slug: ja/sdk/testing/device-api
+sidebar-label: デバイスAPI
+sidebar-position: 4
+---
+
+Adjust管理画面にログインしなくても、[Device API](/ja/api/device-api/)を使用してインストール情報を確認できます。[inspect deviceエンドポイント](/ja/api/device-api/inspect/)を使用して、次の情報を検査できます：
+
+- デバイスのアトリビューション
+- デバイスのリアトリビューション
+- イベントデータ
+- Pushトークン連携
+- サブスクリプションデータ
+
+Device APIを使用するには、以下の手順に従ってください：
+
+1. お使いのプラットフォーム向けの連携ガイドに従って、Adjust SDKを連携します。
+
+2. 環境を **サンドボックス** に設定します。これにより、アプリからはテストコンソールにのみ情報が送信されるようになります。
+
+3. アプリから全てのログ情報を取得するために、ログレベルを **verbose** に設定します。
+
+4. テストデバイスまたはエミュレートされたデバイスを設定し、デバイスの広告IDを確認します。[Adjust Insightsアプリ](https://apps.apple.com/us/app/adjust-insights/id1125517808)をインストールして、この情報を見つけることができます。
+
+5. 以前にこのデバイスをテストに使用したことがある場合は、以下の手順に従ってください。
+
+   1. テスト用デバイスからアプリを削除します。
+   2. テストコンソールからデバイスの広告IDを消去します。[AppViewのテストコンソール](https://help.adjust.com/ja/article/testing-console#forget-device)向けの手順に従ってください。
+   3. または、[Forget deviceのエンドポイント](/ja/api/device-api/forget/)を呼び出して、デバイスに関する既存の情報を削除することができます。
+
+   ```bash
+   curl --location --request POST "https://api.adjust.com/device_service/api/v1/forget_device" \
+   --header "Authorization: Token token={your_token}" \
+   --data "adid={your_device_id}&app_token={your_app_token}"
+   ```
+
+6. Adjust SDKを含むアプリのテストバージョンをダウンロードして開きます。
+
+7. [inspect deviceエンドポイント](/ja/api/device-api/inspect/)を呼び出して、デバイスに関するインストール情報を取得します。
+
+   ```bash
+   curl --location --request GET "https://api.adjust.com/device_service/api/v1/inspect_device?advertising_id={your_advertising_id}&app_token={your_app_token}" \
+   --header "Authorization: Bearer {your_bearer_token}"
+   ```
+
+## レスポンスの例 {#example-response}
+
+```json
+{
+   "Adid": "acf8534f2f052395e617a38730682ccc",
+   "AdvertisingId": "1234-5678-9012-3456",
+   "Tracker": "abc123",
+   "TrackerName": "Organic",
+   "ClickTime": "0001-01-01T00:00:00Z",
+   "InstallTime": "2015-08-19T03:42:03Z",
+   "LastSessionTime": "2017-07-29T17:29:17Z",
+   "LastEventTimes": {
+      "a1a1a1": "2017-07-29T17:29:55Z",
+      "b2b2b2": "2017-07-29T17:29:21Z",
+      "c3c3c3": "2017-07-29T17:29:38Z",
+      "4d4d4d": "2017-07-29T17:29:58Z"
+   },
+   "State": "installed"
+}
+```

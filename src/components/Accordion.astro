@@ -1,6 +1,4 @@
 ---
-import BuildAccordion from "@components/atlas/BuildAccordion";
-
 interface Props {
   title: string;
   badge?: string;
@@ -9,15 +7,67 @@ interface Props {
 const { title, badge } = Astro.props;
 ---
 
-<BuildAccordion
-  client:only="react"
-  data={[
+<details class="w-full bg-[#f9fafc] rounded-md mb-7 cursor-pointer group">
+  <summary
+    class="font-[500] overflow-hidden text-ellipsis flex justify-between items-center h-14 mb-[2px] px-3 py-4"
+  >
+    <span class="flex-1">{title}</span>
     {
-      id: "",
-      title: title,
-      ...(badge && { badge: { label: badge, color: "neutral" } }),
-    },
-  ]}
->
-  <slot slot="content" />
-</BuildAccordion>
+      badge && (
+        <span class="ml-2 px-2 py-1 badge small-badge text-xs font-normal bg-[#eceef4]">
+          {badge}
+        </span>
+      )
+    }
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      fill="none"
+      viewBox="0 0 24 24"
+      aria-label="Expand"
+      aria-hidden="true"
+      class="chevron transition-transform duration-300 rotate-0"
+      fill-rule="evenodd"
+    >
+      <path stroke="currentColor" d="M9 18.5l6-6.5-6-6.5"></path>
+    </svg>
+  </summary>
+  <div class="bg-white pt-1">
+    <slot />
+  </div>
+</details>
+
+<script>
+  class AccordionController {
+    private detailsElements: NodeListOf<HTMLDetailsElement>;
+    private toggleListeners: Map<HTMLDetailsElement, EventListener>;
+
+    constructor() {
+      this.detailsElements = document.querySelectorAll("details");
+      this.toggleListeners = new Map();
+    }
+
+    private toggleDetails = (open: boolean, chevron: HTMLElement) => {
+      if (!chevron) return;
+      chevron.style.transform = open ? "rotate(90deg)" : "rotate(0deg)";
+    };
+
+    public initialize = () => {
+      this.detailsElements.forEach((details) => {
+        const chevron = details.querySelector(".chevron") as HTMLElement;
+
+        const toggleHandler = () => this.toggleDetails(details.open, chevron);
+        this.toggleListeners.set(details, toggleHandler);
+
+        details.addEventListener("toggle", toggleHandler);
+      });
+    };
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const controller = new AccordionController();
+
+    controller.initialize();
+  });
+</script>

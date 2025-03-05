@@ -1,0 +1,205 @@
+---
+title: Purchase verification
+description: Verify your App Store and Play Store purchases
+slug: en/sdk/cocos2dx/features/purchase-verification
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v4: /en/sdk/unity/v4/features/events
+---
+
+If you've enabled [purchase verification](https://help.adjust.com/en/article/purchase-verification), you can use the Adjust SDK to request purchase verification. There are two ways to verify purchases with the Adjust SDK:
+
+1. Create an `AdjustEvent2dx` object that represents your purchase and configure purchase properties for the target store.
+1. Create an `AdjustAppStorePurchase2dx` (Apple App Store) or `AdjustPlayStorePurchase2dx` (Google Play Store) object representing the purchase.
+
+{% callout type="tip" %}
+If you use revenue events to measure your purchases in Adjust, you should use the `AdjustEvent2dx` class. If you only want to verify a purchase but don't want to associate it with an event, use the `AdjustAppStorePurchase2dx` or `AdjustPlayStorePurchase2dx` class.
+{% /callout %}
+
+When you send purchase information with the Adjust SDK, Adjust does the following:
+
+1. Sends the information to the relevant store and waits for a status response.
+1. Forwards the status response to the Adjust SDK.
+
+You can access the purchase verification status by using a callback. Results are returned as `AdjustPurchaseVerificationResult2dx` objects containing the following properties:
+
+{% deflist %}
+`verificationStatus` (`std::string`)
+
+: The status of the purchase.
+
+`code` (`int`)
+
+: The status code of the purchase.
+
+`message` (`std::string`)
+
+: Any message returned by the store.
+{% /deflist %}
+
+## Verify purchase and record event {% #verify-purchase-and-record-event %}
+
+To send a revenue event for verification and listen for the purchase verification status, follow these steps.
+
+### App Store purchases {% #app-store-purchases %}
+
+1. Instantiate an `AdjustEvent2dx` object with the your event token and set the following parameters:
+
+   {% deflist %}
+   `productId` (`std::string`)
+
+   : The product identifier of the item that was successfully purchased.
+
+   `transactionId` (`std::string`)
+
+   : The ID of the transaction you want to verify.
+   {% /deflist %}
+
+1. Call the `Adjust2dx::verifyAndTrackPlayStorePurchase` method with the following arguments:
+
+   {% deflist %}
+   `event` (`AdjustEvent2dx`)
+
+   : Your instantiated event object.
+
+   `callback` (`void(*callback)`)
+
+   : A delegate callback function that receives an `AdjustPurchaseVerificationResult2dx` object as an argument.
+   {% /deflist %}
+
+In this example, the purchase verification response is output to the logging daemon.
+
+```cpp
+AdjustEvent2dx adjustEvent = AdjustEvent2dx("{% $variables.event.token %}");
+adjustEvent.setRevenue({% $variables.event.revenue.amount %}, "{% $variables.event.revenue.currency %}");
+adjustEvent.setTransactionId("{% $variables.event.transactionId %}");
+adjustEvent.setProductId("{% $variables.event.revenue.productId %}");
+Adjust2dx::verifyAndTrackPlayStorePurchase(adjustEvent, [](AdjustPurchaseVerificationResult2dx verificationResult) {
+    log("Verification status: %s", verificationResult.verificationStatus);
+    log("Code: %s", verificationResult.code);
+    log("Message: %s", verificationResult.message);
+});
+```
+
+### Play Store purchases {% #play-store-purchases %}
+
+1. Instantiate an `AdjustEvent2dx` object with the your event token and set the following parameters:
+
+   {% deflist %}
+   `productId` (`std::string`)
+
+   : The ID of the product that has been purchased.
+
+   `purchaseToken` (`std::string`)
+
+   : The purchase token associated with the purchase.
+   {% /deflist %}
+
+1. Call the `Adjust::verifyAndTrackPlayStorePurchase` method with the following arguments:
+
+   {% deflist %}
+   `event` (`AdjustEvent2dx`)
+
+   : Your instantiated event object.
+
+   `callback` (`void(*callback)`)
+
+   : A delegate callback function that receives an `AdjustPurchaseVerificationResult2dx` object as an argument.
+   {% /deflist %}
+
+In this example, the purchase verification response is output to the logging daemon.
+
+```cpp
+AdjustEvent2dx adjustEvent = AdjustEvent("{% $variables.event.token %}");
+adjustEvent.setRevenue({% $variables.event.revenue.amount %}, "{% $variables.event.revenue.currency %}");
+adjustEvent.setProductId("{% $variables.event.productId %}");
+adjustEvent.setPurchaseToken("{% $variables.event.revenue.purchaseToken %}");
+Adjust2dx::verifyAndTrackPlayStorePurchase(adjustEvent, [](AdjustPurchaseVerificationResult2dx verificationResult) {
+    log("Verification status: %s", verificationResult.verificationStatus);
+    log("Code: %s", verificationResult.code);
+    log("Message: %s", verificationResult.message);
+});
+```
+
+## Only verify purchase {% #only-verify-purchase %}
+
+To send standalone purchase information and listen for the purchase verification status, follow these steps:
+
+### App Store purchases {% #app-store-only-verify %}
+
+1. Instantiate an `AdjustAppStorePurchase2dx` object with the following arguments:
+
+   {% deflist %}
+   `productId` (`std::string`)
+
+   : The product identifier of the item that was successfully purchased.
+
+   `transactionId` (`std::string`)
+
+   : The ID of the transaction you want to verify.
+   {% /deflist %}
+
+1. Call the `Adjust2dx::verifyAppStorePurchase` method with the following arguments:
+
+   {% deflist %}
+   `purchase` (`AdjustAppStorePurchase2dx`)
+
+   : Your instantiated purchase object.
+
+   `callback` (`void(*callback)`)
+
+   : A delegate callback function that receives an `AdjustPurchaseVerificationResult2dx` object as an argument.
+   {% /deflist %}
+
+In this example, the purchase verification response is output to the logging daemon.
+
+```cpp
+AdjustAppStorePurchase2dx purchase = AdjustAppStorePurchase2dx("{% $variables.event.productId %}", "{% $variables.event.transactionId %}");
+Adjust2dx::verifyAppStorePurchase(purchase, [](AdjustPurchaseVerificationResult2dx verificationResult) {
+    log("Verification status: %s", verificationResult.verificationStatus);
+    log("Code: %s", verificationResult.code);
+    log("Message: %s", verificationResult.message);
+});
+```
+
+### Play Store purchases {% #play-store-only-verify %}
+
+1. Instantiate an `AdjustPlayStorePurchase2dx` with the following arguments:
+
+   {% deflist %}
+   `productId` (`std::string`)
+
+   : The ID of the product that has been purchased.
+
+   `purchaseToken` (`std::string`)
+
+   : The purchase token associated with the purchase.
+   {% /deflist %}
+
+1. Call the `Adjust2dx::verifyPlayStorePurchase` method with the following arguments:
+
+   {% deflist %}
+   `purchase` (`AdjustPlayStorePurchase2dx`)
+
+   : Your instantiated purchase object.
+
+   `callback` (`void(*callback)`)
+
+   : A delegate callback function that receives an `AdjustPurchaseVerificationResult2dx` object as an argument.
+   {% /deflist %}
+
+In this example, the purchase verification response is output to the logging daemon.
+
+```cpp
+AdjustPlayStorePurchase2dx purchase = AdjustPlayStorePurchase2dx("{% $variables.event.productId %}", "{% $variables.event.purchaseToken %}");
+Adjust2dx::verifyPlayStorePurchase(purchase, [](AdjustPurchaseVerificationResult2dx verificationResult) {
+    log("Verification status: %s", verificationResult.verificationStatus);
+    log("Code: %s", verificationResult.code);
+    log("Message: %s", verificationResult.message);
+});
+```

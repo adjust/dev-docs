@@ -1,0 +1,275 @@
+---
+title: デバイスAPI
+description: デバイスAPIを使ってデバイス情報を確認し、テスト用にAdjustからデバイス履歴を消去します。
+category-title: デバイスAPI
+slug: ja/api/device-api
+sidebar-position: 6
+---
+
+デバイスAPIを使ってデバイス情報を確認し、テスト用にAdjustからデバイス履歴を消去します。
+
+## 要件 {#requirements}
+
+[デバイスデータの削除](#forget-device)は、 **やり直すことができない** 設定です。Forget deviceエンドポイントを使用するには、アカウントに以下の **いずれか** の[アクセス権限](https://help.adjust.com/ja/article/users)が付与されていることが必要です。
+
+- **管理者** 。
+- **編集者** 。
+- 対象とするアプリにアクセスできる **カスタム編集者** 。
+
+## 認証 {#authentication}
+
+デバイスAPIは認証に[ベアラートークン](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication)を使用します。デバイスAPIにリクエストを行う度に、Adjust APIトークンを`Authorization`ヘッダーに含める必要があります。
+
+自社でシングルサインオン（SSO）を有効にしている場合は、 Adjustの担当者または[support@adjust.com](mailto:support@adjust.com)にお問い合わせください。APIトークンの取得方法についてサポートいたします。
+
+SSO以外のアカウントの場合、APIガイドはユーザーの **プロフィール** に表示されます。トークンを確認するには、以下の手順に従ってください。
+
+1. アカウント（ユーザー）アイコンを選択します。
+2. **アカウント設定（Account Settings）** を選択します。
+3. **マイプロフィール（My Profile）** を選択します。
+4. **APIトークン** が **ユーザー情報（User details）** に表示されます。コピーボタンを選択して、トークンをクリップボードにコピーします。
+
+### Adjust APIトークンをリセットする {#reset-your-adjust-api-token}
+
+Adjust APIトークンはいつでもリセットできます。トークンをリセットすると、古いトークンは無効になります。Adjust APIトークンをリセットした場合、使用中の古いトークンを新しいトークンに置き換える必要があります。無効になったトークンを使用したリクエストは、Adjustによって拒否されます。
+
+Adjust APIトークンをリセットする方法：
+
+1. アカウント（ユーザー）アイコンを選択します。
+2. **アカウント設定（Account Settings）** を選択します。
+3. **マイプロフィール（My Profile）** を選択します。
+4. **APIトークン** が **ユーザー情報（User details）** に表示されます。
+5. **APIトークンをリセットする（Reset API token）** を選択します。
+6. 表示されたモーダルにアカウントのパスワードを入力し、 **リセット（Reset）** を選択してAPIトークンをリセットします。画面の右上に確認メッセージが表示されます。
+7. **APIトークン** の横にあるコピーボタンを選択して、トークンをクリップボードにコピーします。
+
+## デバイスの検査 {#inspect-device}
+
+<Tabs>
+<Tab title="v2" sync="v2">
+<CodeBlock title="エンドポイント">
+
+```http
+GET https://api.adjust.com/device_service/api/v2/inspect_device
+```
+
+</CodeBlock>
+</Tab>
+<Tab title="v1" sync="v1">
+<CodeBlock title="エンドポイント">
+
+```http
+GET https://api.adjust.com/device_service/api/v1/inspect_device
+```
+
+</CodeBlock>
+</Tab>
+</Tabs>
+
+Inspect deviceエンドポイントを使用して、アプリに関連するデバイスとリンク情報を取得します。
+
+### パラメーター {#inspect-device-parameters}
+
+以下のパラメーターを **クエリパラメーター** として追加する必要があります。
+
+`app_token` （`String`）
+
+: [アプリを識別する英数字のトークン](https://help.adjust.com/ja/article/app-token-and-reporting-currency#view-your-app-details)。12文字で設定してください。
+
+`advertising_id` （`String`）
+
+: デバイスに関連付けられた一意の広告ID。
+
+以下の広告IDが利用可能です：
+
+- `idfa`: 広告ID。iOSデバイスでのみ利用可能です。
+- `gps_adid`: Google広告ID。GooglePlayストアを使用するAndroidデバイスでのみ利用可能です。
+- `android_id`: AndroidデバイスID。Androidデバイスでのみ利用可能です。
+- `fire_adid`: Amazon Fire広告ID。Amazon Fireストアを使用しているAndroidデバイスでのみ利用可能です。
+- `win_adid`: Windowsの広告ID。Windowsデバイスでのみ利用可能です。
+
+### レスポンスの形式 {#inspect-device-response-format}
+
+<Tabs>
+<Tab title="v2" sync="v2">
+
+```json
+{
+   "Adid": "string",
+   "AdvertisingId": "string",
+   "Tracker": "string",
+   "TrackerName": "string",
+   "Environment": "string",
+   "ClickTime": "date-time",
+   "InstallTime": "date-time",
+   "LastSessionTime": "date-time",
+   "LastEventsInfo": {
+      "{event_id}": {
+         "name": "string",
+         "time": "date-time"
+      },
+      "{event_id}": {
+         "name": "string",
+         "time": "date-time"
+      },
+      "{event_id}": {
+         "name": "string",
+         "time": "date-time"
+      }
+   },
+   "LastSdkVersion": "ios4.37.2",
+   "State": "string"
+}
+```
+
+</Tab>
+<Tab title="v1" sync="v1">
+
+```json
+{
+   "Adid": "string",
+   "AdvertisingId": "string",
+   "Tracker": "string",
+   "TrackerName": "string",
+   "ClickTime": "date-time",
+   "InstallTime": "date-time",
+   "LastSessionTime": "date-time",
+   "LastEventTimes": {
+      "string": "date-time",
+      "string": "date-time",
+      "string": "date-time",
+      "string": "date-time"
+   },
+   "State": "string"
+}
+```
+
+</Tab>
+</Tabs>
+
+### 例 {#inspect-device-example}
+
+<Tabs>
+<Tab title="v2" sync="v2">
+<CodeBlock title="cURL" highlight="advertising_id=1234-5678-9012-3456, app_token=gwzpeepw8uf8">
+
+```console
+$ curl \
+--header "Authorization: Bearer ask43jskdp2tg2hg87" \
+-L -X GET "https://api.adjust.com/device_service/api/v2/inspect_device?advertising_id=1234-5678-9012-3456&app_token=gwzpeepw8uf8"
+```
+
+</CodeBlock>
+<CodeBlock title="成功レスポンス">
+
+```json
+{
+   "Adid": "acf8534f2f052395e617a38730682ccc",
+   "AdvertisingId": "1234-5678-9012-3456",
+   "Tracker": "abc123",
+   "TrackerName": "Organic",
+   "FirstTracker": "zr5vueb",
+   "FirstTrackerName": "Organic",
+   "Environment": "sandbox",
+   "ClickTime": "0001-01-01T00:00:00Z",
+   "InstallTime": "2015-08-19T03:42:03Z",
+   "LastSessionTime": "2017-07-29T17:29:17Z",
+   "LastEventsInfo": {
+      "kgfcul": {
+         "name": "Copy IDFA",
+         "time": "2024-07-18T10:01:16Z"
+      },
+      "wz9qqz": {
+         "name": "Accept Terms",
+         "time": "2024-07-01T14:13:47Z"
+      },
+      "z3f773": {
+         "name": "Copy IDFV",
+         "time": "2024-07-01T19:01:39Z"
+      }
+   },
+   "LastSdkVersion": "ios4.37.2",
+   "State": "installed"
+}
+```
+
+</CodeBlock>
+</Tab>
+<Tab title="v1" sync="v1">
+<CodeBlock title="cURL" highlight="advertising_id=1234-5678-9012-3456, app_token=gwzpeepw8uf8">
+
+```console
+$ curl \
+--header "Authorization: Bearer ask43jskdp2tg2hg87" \
+-L -X GET "https://api.adjust.com/device_service/api/v1/inspect_device?advertising_id=1234-5678-9012-3456&app_token=gwzpeepw8uf8"
+```
+
+</CodeBlock>
+<CodeBlock title="成功レスポンス">
+
+```json
+{
+   "Adid": "acf8534f2f052395e617a38730682ccc",
+   "AdvertisingId": "1234-5678-9012-3456",
+   "Tracker": "abc123",
+   "TrackerName": "Organic",
+   "ClickTime": "0001-01-01T00:00:00Z",
+   "InstallTime": "2015-08-19T03:42:03Z",
+   "LastSessionTime": "2017-07-29T17:29:17Z",
+   "LastEventTimes": {
+      "a1a1a1": "2017-07-29T17:29:55Z",
+      "b2b2b2": "2017-07-29T17:29:21Z",
+      "c3c3c3": "2017-07-29T17:29:38Z",
+      "4d4d4d": "2017-07-29T17:29:58Z"
+   },
+   "State": "installed"
+}
+```
+
+</CodeBlock>
+</Tab>
+</Tabs>
+
+## デバイスデータを削除する {#forget-device}
+
+<CodeBlock title="エンドポイント" highlight="/forget_device">
+
+```http
+POST https://api.adjust.com/device_service/api/v1/forget_device
+```
+
+</CodeBlock>
+
+Adjustのサーバーからデバイス情報を削除するには、forget deviceエンドポイントを使用します。これを使用して、デバイスへのインストールを何度もテストできます。
+
+### パラメーター {#forget-device-parameters}
+
+以下のパラメーターを **リクエストデータ** として追加する必要があります。
+
+`app_token` （`String`）
+
+: [アプリを識別する英数字のトークン](https://help.adjust.com/ja/article/app-token-and-reporting-currency#view-your-app-details)。12文字で設定してください。
+
+`adid` （`String`）
+
+: デバイス固有のAdjust識別子。[Inspect deviceエンドポイント](#inspect-device)を使用して、デバイスのADIDを確認できます。
+
+### 例 {#forget-device-example}
+
+<CodeBlock title="cURL" highlight="acf8534f2f052395e617a38730682ccc, gwzpeepw8uf8">
+
+```console
+$ curl \
+--header "Authorization: Token token=ask43jskdp2tg2hg87" \
+--location --request POST "https://api.adjust.com/device_service/api/v1/forget_device" \
+--data "adid=acf8534f2f052395e617a38730682ccc&app_token=gwzpeepw8uf8"
+```
+
+</CodeBlock>
+<CodeBlock title="成功レスポンス">
+
+```http
+200: Forgot device
+```
+
+</CodeBlock>

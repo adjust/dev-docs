@@ -1,0 +1,179 @@
+---
+title: 購入認証SDK
+description: App StoreとPlayストアでの購入認証
+slug: ja/sdk/flutter/features/purchase-verification
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v4: /ja/sdk/flutter/v4/features/purchase-verification
+---
+
+[購入認証](https://help.adjust.com/ja/article/purchase-verification)を有効にしている場合、Adjust SDKを使用して購入認証をリクエストできます。Adjust SDKで購入認証を行うには、次の2つの方法があります。
+
+1. 購入を表す`AdjustEvent`オブジェクトを作成し、ターゲットストアの購入プロパティを設定します。
+2. 購入を表す`AdjustAppStorePurchase` （Apple App Store）または`AdjustPlayStorePurchase` （Google Play ストア）オブジェクトを作成します。
+
+<Callout type="tip">
+
+収益イベントを使用してAdjustで購入を計測する場合は、 `AdjustEvent`クラスを使用してください。購入の確認のみをしたいが、イベントには関連付けたくない場合は、 `AdjustAppStorePurchase`または`AdjustPlayStorePurchase`クラスを使用してください。
+
+</Callout>
+
+Adjust SDKで購入情報を送信すると、Adjustは以下を実行します。
+
+1. 情報を該当するストアに送信し、ステータスのレスポンスを待ちます。
+2. ステータスレスポンスをAdjust SDKに転送します。
+
+コールバックを使用することで、購入認証ステータスにアクセスできます。結果は、以下のプロパティを含む`AdjustPurchaseVerificationResult`オブジェクトとして返されます。
+
+- `verificationStatus` \( `String` \)：購入のステータスコード。
+- `code` \( `num` \)：購入のステータスコード。
+- `message` \( `String` \)：App Storeから返される全てのメッセージ。
+
+## 購入を検証してイベントを記録 {#verify-purchase-and-record-event}
+
+<Tabs>
+<Tab title="App Store" icon="StoreAppStore" sync="appstore">
+<CodeBlock title="メソッドシグネチャー">
+
+```dart
+static Future<AdjustPurchaseVerificationResult?> verifyAndTrackAppStorePurchase(
+      AdjustEvent event) async
+```
+
+</CodeBlock>
+
+購入認証の目的で収益イベントを送信し、購入認証ステータスを受け取るには、以下の手順に従ってください。
+
+1. イベントトークンを使用して`AdjustEvent`オブジェクトをインスタンス化し、以下のパラメーターを設定します。
+
+   - `productId` （`String`）：購入に成功したアイテムのプロダクトID。
+   - `transactionId` \( `String` \)：認証したいトランザクションのID。
+
+2. 次の引数を使用して`Adjust.VerifyAndTrackPlayStorePurchase`引数を呼び出します：
+   - `event` \( `AdjustEvent` \)：インスタンス化されたイベントオブジェクト。確認レスポンスは、 `Future<AdjustPurchaseVerificationResult?>`戻り値の一部として送信されることを期待してください。
+
+この例では、購入認証レスポンスがログdaemonに出力されます。
+
+```dart
+AdjustEvent adjustEvent = new AdjustEvent('abc123');
+adjustEvent.setRevenue(6.66, 'CAD');
+adjustEvent.transactionId = 'transaction-id';
+adjustEvent.productId = 'product-id';
+Adjust.verifyAndTrackAppStorePurchase(adjustEvent).then((result) {
+        print('Verification status = $result?.verificationStatus');
+        print('Code = $result?.code.toString()');
+        print('Message = $result?.message');
+}
+```
+
+</Tab>
+<Tab title="Google Play" icon="PlatformGooglePlay" sync="playstore">
+<CodeBlock title="メソッドシグネチャー">
+
+```dart
+static Future<AdjustPurchaseVerificationResult?> verifyAndTrackPlayStorePurchase(
+      AdjustEvent event) async
+```
+
+</CodeBlock>
+
+購入認証の目的で収益イベントを送信し、購入認証ステータスを受け取るには、以下の手順に従ってください。
+
+1. イベントトークンを使用して`AdjustEvent`オブジェクトをインスタンス化し、以下のパラメーターを設定します。
+
+   - `productId` \( `String` \)：購入された商品のID。
+   - `purchaseToken` \( `String` \)：購入に関連付けられた購入トークン。
+
+2. 次の引数を使用して`Adjust.verifyAndTrackPlayStorePurchase`引数を呼び出します：
+   - `adjustEvent` \( `AdjustEvent` \)：インスタンス化されたイベントオブジェクト。確認レスポンスは、 `Future<AdjustPurchaseVerificationResult?>`戻り値の一部として送信されることを期待してください。
+
+この例では、購入認証レスポンスがログdaemonに出力されます。
+
+```dart
+AdjustEvent adjustEvent = new AdjustEvent('abc123');
+adjustEvent.setRevenue(6.66, 'CAD');
+adjustEvent.productId = 'product-id';
+adjustEvent.purchaseToken = 'purchase-token';
+Adjust.verifyAndTrackPlayStorePurchase(adjustEvent).then((result) {
+        print('Verification status = $result?.verificationStatus');
+        print('Code = $result?.code.toString()');
+        print('Message = $result?.message');
+}
+```
+
+</Tab>
+</Tabs>
+
+## 購入認証のみの場合 {#only-verify-purchase}
+
+<Tabs>
+<Tab title="App Store" icon="StoreAppStore" sync="appstore">
+<CodeBlock title="メソッドシグネチャー">
+
+```dart
+static Future<AdjustPurchaseVerificationResult?> verifyAppStorePurchase(
+    AdjustAppStorePurchase purchase) async
+```
+
+</CodeBlock>
+
+独立してApp Storeの購入データを送信し、購入認証ステータスを受信するには、次の手順に従ってください。
+
+1. 以下の引数で`AdjustAppStorePurchase`をインスタンス化します：
+
+   - `productId` （`String`）：購入に成功したアイテムのプロダクトID。
+   - `transactionId` \( `String` \)：認証したいトランザクションのID。
+
+2. 次の引数を使用して`Adjust.verifyAppStorePurchase`引数を呼び出します：
+   - `purchase` \( `AdjustAppStorePurchase` \)：インスタンス化されたイベントオブジェクト。確認レスポンスは、 `Future<AdjustPurchaseVerificationResult?>`戻り値の一部として送信されることを期待してください。
+
+この例では、購入認証レスポンスがログdaemonに出力されます。
+
+```dart
+AdjustAppStorePurchase purchase = new AdjustAppStorePurchase('product-id', 'transaction-id');
+Adjust.verifyAppStorePurchase(purchase).then((result) {
+        print('Verification status = $result?.verificationStatus');
+        print('Code = $result?.code.toString()');
+        print('Message = $result?.message');
+}
+```
+
+</Tab>
+<Tab title="Google Play" icon="PlatformGooglePlay" sync="playstore">
+<CodeBlock title="メソッドシグネチャー">
+
+```dart
+static Future<AdjustPurchaseVerificationResult?> verifyPlayStorePurchase(
+    AdjustPlayStorePurchase purchase) async
+```
+
+</CodeBlock>
+
+独立してPlay Storeの購入データを送信し、購入認証ステータスを受信するには、次の手順に従ってください。
+
+1. 以下の引数で`AdjustPlayStorePurchase`をインスタンス化します：
+
+   - `productId` \( `String` \)：購入された商品のID。
+   - `purchaseToken` \( `String` \)：購入に関連付けられた購入トークン。
+
+2. 次の引数を使用して`Adjust.VerifyPlayStorePurchase`引数を呼び出します：
+   - `purchase` \( `AdjustPlayStorePurchase` \)：インスタンス化された購入オブジェクト。認証レスポンスは、 `Future<AdjustPurchaseVerificationResult?>`戻り値の一部として送信されることになります。
+
+この例では、購入認証レスポンスがログdaemonに出力されます。
+
+```dart
+AdjustPlayStorePurchase purchase = new AdjustPlayStorePurchase('product-id', 'purchase-token');
+Adjust.verifyPlayStorePurchase(purchase).then((result) {
+        print('Verification status = $result?.verificationStatus');
+        print('Code = $result?.code.toString()');
+        print('Message = $result?.message');
+}
+```
+
+</Tab>
+</Tabs>

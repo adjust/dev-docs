@@ -17,12 +17,11 @@ const replaceTemplateStringsPlugin: Plugin<[VersionMap]> = (options) => {
 
          for (const [platform, currentPlatform] of Object.entries(versions)) {
             if (typeof currentPlatform === 'string') {
-               const replacementValue = currentPlatform.substring(1); // Remove leading "v"
                const oldValue = new RegExp(`\\$${platform.toUpperCase()}_VERSION`, 'g');
-               newValue = newValue.replace(oldValue, replacementValue);
+               newValue = newValue.replace(oldValue, currentPlatform);
             } else {
-               const v4ReplacementValue = currentPlatform.v4.substring(1); // Remove leading "v"
-               const v5ReplacementValue = currentPlatform.v5.substring(1); // Remove leading "v"
+               const v4ReplacementValue = currentPlatform.v4;
+               const v5ReplacementValue = currentPlatform.v5;
                const v4OldValue = new RegExp(`\\$${platform.toUpperCase()}_V4_VERSION`, 'g');
                const v5OldValue = new RegExp(`\\$${platform.toUpperCase()}_V5_VERSION`, 'g');
                newValue = newValue.replace(v4OldValue, v4ReplacementValue);

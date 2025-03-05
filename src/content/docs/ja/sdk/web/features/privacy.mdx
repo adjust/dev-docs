@@ -1,0 +1,208 @@
+---
+title: プライバシー機能の設定
+description: アプリ内でユーザーのプライバシーを処理するために使用できる機能を設定します。
+slug: ja/sdk/web/features/privacy
+---
+
+Adjust SDKには、アプリ内でのユーザープライバシーの処理に使用できる機能が含まれています。
+
+## 消去リクエストを送信する {#send-erasure-request}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```js
+function gdprForgetMe(): void;
+```
+
+</CodeBlock>
+
+EUの一般データ保護規則（GDPR）および類似する世界的なプライバシー法（CCPA、LGPDなど）は、個人データの処理に関する包括的な権利をデータ主体に付与しています。これらの権利には、消去権（[GDPR第17条](https://gdpr.eu/article-17-right-to-be-forgotten/)を参照）（[1](https://help.adjust.com/ja/article/gdpr#ref-1)）が含まれます。データ処理者として、Adjustは、（アプリ）ユーザー（データ管理者）からのそのようなリクエストの処理をサポートする義務があります。
+
+`gdprForgetMe`メソッドを呼び出すことで、ユーザーの消去リクエストをAdjustに送信することができます。Adjustが通知を受けると、以下の対応をします。
+
+- Adjustはその内部システムおよびデータベースから、履歴として保管されているユーザーの全ての個人データを完全に削除します。
+- Adjustは、Adjust SDKを介して、このユーザー/デバイスからデータを受信しなくなります。（[2](https://help.adjust.com/ja/article/gdpr#ref-2)）
+
+```js
+Adjust.gdprForgetMe();
+```
+
+## 特定のユーザーの情報をサードパーティと共有する {#third-party-sharing-for-specific-users}
+
+<MinorVersion
+   added="5.7.0"
+   link="https://github.com/adjust/web_sdk/releases/tag/v5.7.0"
+/>{" "}
+
+Adjust SDKを使用して、ユーザーがサードパーティとの共有設定を変更した時にそれを記録することができます。これらの設定は、`ThirdPartySharing`クラスを使用して行われます。
+
+### AdjustThirdPartySharingオブジェクトをインスタンス化する {#instantiate-an-adjustthirdpartysharing-object}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```ts
+class ThirdPartySharing {
+   constructor(isEnabled: boolean) {}
+   // ...
+}
+```
+
+</CodeBlock>
+
+Adjust SDKでサードパーティ共有を有効化または無効化するには、`ThirdPartySharing`オブジェクトをインスタンス化する必要があります。このオブジェクトには、Adjustがサードパーティとの共有をどのように扱うかを制御する変数が含まれます。
+
+これをインスタンス化するには、新しい`ThirdPartySharing`インスタンスを作成して、以下のパラメーターをパスしてください：
+
+- `isEnabled` \( `boolean` \) ：`true`をパスしてサードパーティ共有を有効化するか、 `false`をパスして無効化します。
+
+```ts
+const adjustThirdPartySharing = new Adjust.ThirdPartySharing(true);
+```
+
+`false`に設定すると、 Adjustはユーザーのデータのサードパーティとの共有を停止します。Adjust SDKは引き続き通常通り動作します。
+
+Adjustに情報を送信するには、 `ThirdPartySharing`インスタンスを引数として`Adjust.trackThirdPartySharing`メソッドを呼び出してください。
+
+```ts
+const adjustThirdPartySharing = new Adjust.ThirdPartySharing(true);
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+```
+
+### サードパーティ共有を無効にする（廃止）{#disable-third-party-sharing}
+
+<MinorVersion
+   removed="5.7.0"
+   link="https://github.com/adjust/web_sdk/releases/tag/v5.7.0"
+/>{" "}
+
+以前のバージョンのSDKでサードパーティとの共有を無効にするには、 `disableThirdPartySharing`メソッドを呼び出します。このメソッドは廃止されました。それでも使用する場合は、基礎となるメソッドを直接呼び出していることに注意してください。
+
+```ts
+const adjustThirdPartySharing = new Adjust.ThirdPartySharing(false);
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+```
+
+### 粒度の高い情報を送信する {#send-granular-information}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```ts
+public addGranularOption(partnerName: string,
+                         key: string,
+                         value: string)
+```
+
+</CodeBlock>
+
+ユーザーがサードパーティの共有設定を更新すると、詳細な情報を付与できます。この情報を使用して、ユーザー行動についてより詳しく伝えることができます。
+
+これを行うには、以下のパラメーターを使用して`addGranularOption`メソッドを呼び出します：
+
+- `partnerName` （`string`）：granular optionが適用されるパートナーの名前
+- `key` （`string`）：オプションのキー
+- `value` （`string`）：オプションの値
+
+```ts
+const adjustThirdPartySharing = new Adjust.ThirdPartySharing(true);
+options.addGranularOption("PartnerA", "foo", "bar");
+Adjust.trackThirdPartySharing(options);
+```
+
+## URL戦略 {#url-strategy}
+
+<MinorVersion
+   changed="5.7.0"
+   link="https://github.com/adjust/web_sdk/releases/tag/v5.7.0"
+/>{" "}
+
+URL戦略機能では、以下のいずれかを設定することができます：
+
+- Adjustがお客様のデータを保管する国（データレジデンシー）。
+- Adjust SDKがトラフィックを送信するエンドポイント（カスタムURL）。
+
+これは、プライバシー要件が厳しい国で事業を展開している場合に便利です。URL戦略を設定すると、Adjustは選択したデータレジデンシー地域にデータを保管したり、選択したドメインにトラフィックを送信したりします。
+
+URL戦略を設定するには、 `Adjust.initSdk`インスタンスの`urlStrategy`の以下のプロパティを設定します。
+
+- `domains` （`Array<string>`）：SDKトラフィックを送信する国、データの所在国、またはエンドポイント。デフォルトでは、Adjust SDKは全てのデータをAdjustのエンドポイントに送信します。カスタムエンドポイントを設定する場合は、 `urlStrategy`の`domains`プロパティでパスします。
+- `useSubdomains` （`boolean`）：ドメインをAdjustドメインとして扱うかどうか。
+
+   - `true`の場合、SDKはドメインの前にAdjust固有のサブドメインを付けます。
+   - `false`の場合、SDKは指定されたドメインをプレフィックスなしでそのまま使用します。
+
+- `isDataResidency` （`boolean`）：オプション。ドメインをデータレジデンシーに使用するかどうか。
+
+以下の設定リストをご覧ください。
+
+| urlStrategy           | デフォルトドメインとカスタムドメイン | サブドメインの使用 | データレジデンシー |
+| --------------------- | ------------------------------------ | ------------------ | ------------------ |
+| EU データレジデンシー | `"eu.adjust.com"`                    | `true`             | `true`             |
+| 中国 URL戦略          | `"adjust.cn"`。 `"adjust.com"`       | `true`             | `false`            |
+| カスタムURL戦略       | `"my.custom.domain"`                 | `false`            | `false`            |
+
+```js
+Adjust.initSdk({
+   appToken: "YOUR_APP_TOKEN",
+   environment: "production",
+   logLevel: "verbose",
+   urlStrategy: {
+      domains: ["adjust.cn", "adjust.com"],
+      useSubdomains: true,
+      isDataResidency: false,
+   },
+});
+```
+
+### カスタムエンドポイントの設定（廃止済み）{#set-custom-endpoint}
+
+<MinorVersion
+   removed="5.7.0"
+   link="https://github.com/adjust/web_sdk/releases/tag/v5.7.0"
+/>{" "}
+
+以前のバージョンのSDKでは、廃止された`customUrl`プロパティを使用してエンドポイントをパスしていました。今後は`urlStrategy`設定を使用してください。
+
+<CodeBlock del="{range: 5}" ins="{range: 6-10}">
+
+```js
+Adjust.initSdk({
+   appToken: "YOUR_APP_TOKEN",
+   environment: "production",
+   logLevel: "verbose",
+   customUrl: "my.custom.domain.com",
+   urlStrategy: {
+      domains: ["my.custom.domain"],
+      useSubdomains: false,
+      isDataResidency: false,
+   },
+});
+```
+
+</CodeBlock>
+
+### データレジデンシー（廃止済み）{#data-residency}
+
+<MinorVersion
+   removed="5.7.0"
+   link="https://github.com/adjust/web_sdk/releases/tag/v5.7.0"
+/>{" "}
+
+以前のバージョンのSDKでは、廃止された`dataResidency`プロパティを使用していました。今後は`urlStrategy`設定を使用してください。
+
+<CodeBlock del="{range: 5}" ins="{range: 6-10}">
+
+```js
+Adjust.initSdk({
+   appToken: "YOUR_APP_TOKEN",
+   environment: "production",
+   logLevel: "verbose",
+   dataResidency: "EU",
+   urlStrategy: {
+      domains: ["eu.adjust.com"],
+      useSubdomains: true,
+      isDataResidency: true,
+   },
+});
+```
+
+</CodeBlock>

@@ -1,18 +1,21 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import { SITE, OPEN_GRAPH } from "../consts";
-import { getLanguageFromURL, useTranslations } from "@i18n/utils";
+import { useTranslations } from "@i18n/utils";
 import type { Locales } from "@i18n/locales";
 
-type Props = Partial<{ canonicalUrl: URL } & CollectionEntry<"docs">["data"]>;
+type Props = Partial<
+  { canonicalUrl: URL; pageTitle: string } & CollectionEntry<"docs">["data"]
+>;
 
-const { ogLocale, image, title, description, canonicalUrl } = Astro.props;
-const formattedContentTitle = `${title}`;
+const { ogLocale, image, title, description, canonicalUrl, pageTitle } =
+  Astro.props;
+
+const formattedContentTitle = `${title ?? pageTitle}`;
 const imageSrc = image?.src ?? OPEN_GRAPH.image.src;
 const canonicalImageSrc = new URL(imageSrc, Astro.site);
 const imageAlt = image?.alt ?? OPEN_GRAPH.image.alt;
-const currentPage = Astro.url.pathname;
-const currentLang = getLanguageFromURL(currentPage);
+const currentLang = Astro.currentLocale || "en";
 const t = useTranslations(currentLang as keyof Locales);
 ---
 

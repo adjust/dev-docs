@@ -1,0 +1,77 @@
+---
+title: "Data erasure API"
+description: "Inform Adjust of erasure requests using the Data erasure API."
+slug: en/api/s2s-api/data-erasure-api
+sidebar-position: 7
+---
+
+The EU’s General Data Protection Regulation (GDPR) and similar privacy laws worldwide (CCPA, LGPD, etc.) grant data subjects comprehensive rights when it comes to the processing of their personal data. These rights include, among others, the right to erasure (see [Art. 17 GDPR](https://gdpr.eu/article-17-right-to-be-forgotten/))([1](https://help.adjust.com/en/article/gdpr#ref-1)). As a data processor, Adjust is obliged to support you (the data controller) in the processing of such requests from your (app) users.
+
+You can send the user's erasure request to Adjust using the `gdpr_forget_device` endpoint. Once Adjust has been notified:
+
+- Adjust will permanently delete all the user’s historical personal data from internal system and database.
+- Adjust will no longer receive data from this user/device via the Adjust SDK.([2](https://help.adjust.com/en/article/gdpr#ref-2))
+
+Configure your server to send requests to this API endpoint when users send erasure requests. See the [Right to erasure article](https://help.adjust.com/en/article/gdpr) for more information about erasure requests.
+
+<Callout type="important">
+
+This action is **permanent**. Adjust can't reinstate data previously associated with a device or receive future requests from the device once a erasure request is sent.
+
+</Callout>
+
+<CodeBlock title="Endpoint" highlight="/gdpr_forget_device">
+
+```http
+POST https://gdpr.adjust.com/gdpr_forget_device
+```
+
+</CodeBlock>
+
+## Send an erasure request {#send-an-erasure-request}
+
+Send a POST request including your app token and device ID to remove all data associated with the device.
+
+<Callout type="note">
+
+Erasure requests only apply to the app you specify in your call. Device data for other apps aren't affected.
+
+</Callout>
+
+| Parameter        | Data type | In    | Description                                                                                                  |
+| ---------------- | --------- | ----- | ------------------------------------------------------------------------------------------------------------ |
+| `app_token`\*    | `String`  | Query | The Adjust app token from the dashboard                                                                      |
+| `s2s`\*          | `Boolean` | Query | Whether the call is a Server-to-Server (S2S) call. Value must be `1` (true)                                  |
+| `device_token`\* | `String`  | Query | ID of the device you want Adjust to forget. See [the table below](#device-ids) for a list of accepted values |
+
+### Device identifiers {#device-identifiers}
+
+You must include a device identifier in your request. Below is a list of accepted identifiers.
+
+| Parameter   | Description                      | Example                                |
+| ----------- | -------------------------------- | -------------------------------------- |
+| `idfa`      | iOS ID for advertisers           | `8C6CBCOD-5F43-4765-A6E6-84DFF3D24707` |
+| `idfv`      | iOS ID for vendors               | `CCB300A0-DE1B-4D48-BC7E-599E453B8DD4` |
+| `gps_adid`  | Google Play Store advertising ID | `38400000-8cf0-11bd-b23e-10b96e40000d` |
+| `fire_adid` | Fire OS advertising ID           | `63c5519b-7e66-7ee6-aa5d-3b290743811f` |
+| `win_adid`  | Windows advertising ID           | `107e8ea14329d4a2194ebbb6dc0c0fd7`     |
+| `adid`      | Adjust device ID                 | `18546f6171f67e29d1cb983322ad1329`     |
+
+## Example {#example}
+
+<CodeBlock title="cURL" highlight="app_token=kwrqhymtnsr2&idfa=9C5CBC1D-4F42-4764-A5E6-84DAF3D24707">
+
+```console
+$ curl -X POST "https://gdpr.adjust.com/gdpr_forget_device?s2s=1&app_token=kwrqhymtnsr2&idfa=9C5CBC1D-4F42-4764-A5E6-84DAF3D24707"
+```
+
+</CodeBlock>
+
+### Responses {#responses}
+
+| Status code | Meaning                       | Description                                                                                                                                                      |
+| ----------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `200`       | OK                            | Request was received and processed                                                                                                                               |
+| `400`       | Bad request                   | Invalid formatting or token. Check you have included the necessary parameters. Contact your account manager or support@adjust.com if you need help.              |
+| `429`       | Too many requests             | The endpoint is rate limited to 10 requests per minute and stops responding to requests beyond this threshold to prevent abuse. Try resending the request later. |
+| `451`       | Unavailable for legal reasons |                                                                                                                                                                  |

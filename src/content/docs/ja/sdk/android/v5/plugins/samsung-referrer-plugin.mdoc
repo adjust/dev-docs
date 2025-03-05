@@ -1,0 +1,104 @@
+---
+title: Samsung リファラー
+description: Samsungのリファラープラグインを使用して、Samsung の情報をAdjustに送信します。
+slug: ja/sdk/android/plugins/samsung-referrer-plugin
+versions:
+- label: v5
+  value: v5
+  default: true
+- label: v4
+  value: v4
+redirects:
+  v4: /ja/sdk/android/v4/plugins/samsung-referrer-plugin
+---
+
+Samsungリファラープラグインは、Adjust SDKがデバイス上のSamsung Galaxyストアのインストールリファラー値を読み取ることを可能にします。SDKはこの情報をインストールペイロードの一部として、Adjustサーバーに送信します。
+
+Samsungインストールリファラーは、Samsungインストールリファラーライブラリをサポートしている全てのデバイスで利用が可能です。
+
+## 事前準備 {% #before-you-begin %}
+
+[開始ガイド](/ja/sdk/android)に従ってAdjust SDKをアプリに実装してください。
+
+## Samsungリファラープラグインをインストールする {% #install-the-samsung-referrer-plugin %}
+
+Samsungリファラープラグインをインストールする方法は2つあります。
+
+### Maven {% #maven %}
+
+Adjust SDK宣言にある`build.gradle`ファイルに以下のdependencyを追加してください。
+
+```groovy
+implementation 'com.adjust.sdk:adjust-android:{% $versions.android.v5 %}'
+implementation 'com.adjust.sdk:adjust-android-samsung-referrer:{% $versions.android.v5 %}'
+```
+
+### JAR {% #jar %}
+
+Samsungリファラープラグインについては[GitHubリリースページ](https://github.com/adjust/android_sdk/releases/latest)をご覧ください。
+
+## Samsungインストールリファラーライブラリを追加する {% #add-the-samsung-install-referrer-library %}
+
+アプリがリファラー値を読み取るには、Samsungインストールリファラーを追加する必要があります。詳細は、Samsungの担当者または[support@samsungdevelopers.com](mailto:support@samsungdevelopers.com)までお問い合わせください。
+
+Samsung インストールリファラーライブラリをインストールするには、Adjust SDK宣言の下にある`build.gradle`ファイルに以下のdependencyを追加する必要があります。
+
+```groovy
+implementation  'store.galaxy.samsung.installreferrer:samsung_galaxystore_install_referrer:3.0.1'
+```
+
+## Proguardの設定 {% #proguard-settings %}
+
+Proguardを使用している場合は、ビルド時に重要なクラスが削除されないようにするためにルールを追加してください。
+
+全てのAdjustクラスを保存するため、以下のルールを追加してください。
+
+```java
+-keep public class com.adjust.sdk.** { *; }
+```
+
+Samsungインストールリファラーライブラリを保存するため、以下のルールを追加してください。
+
+```java
+-keep class com.sec.android.app.samsungapps.installreferrer.** { *; }
+```
+
+## プラグインを使用する {% #use-the-plugin %}
+
+Samsungリファラープラグインは、デフォルトで **有効** になっています。`AdjustSamsungReferrer`クラスメソッドを使用して、Samsungインストールのリファラー情報の読み取りをONまたはOFFにすることができます。
+
+インストールリファラーの読み取りを **無効化** するには、SDKを初期化する **前** に`AdjustSamsungReferrer.doNotReadSamsungReferrer()`を呼び出します。
+
+{% tabs %}
+{% tab title="Kotlin" sync="kotlin" %}
+```kotlin
+AdjustSamsungReferrer.doNotReadSamsungReferrer()
+Adjust.initSdk(adjustConfig)
+```
+{% /tab %}
+
+{% tab title="Java" sync="java" %}
+```java
+AdjustSamsungReferrer.doNotReadSamsungReferrer();
+Adjust.initSdk(adjustConfig);
+```
+{% /tab %}
+{% /tabs %}
+
+インストールリファラーの読み取りを **無効化** するには、SDKを初期化する **前** に`AdjustSamsungReferrer.readSamsungReferrer(applicationContext)`を呼び出します。
+
+{% tabs %}
+{% tab title="Kotlin" sync="kotlin" %}
+```kotlin
+AdjustSamsungReferrer.readSamsungReferrer(applicationContext)
+Adjust.initSdk(adjustConfig)
+```
+{% /tab %}
+
+{% tab title="Java" sync="java" %}
+```java
+AdjustSamsungReferrer.readSamsungReferrer(applicationContext);
+Adjust.initSdk(adjustConfig);
+```
+{% /tab %}
+{% /tabs %}

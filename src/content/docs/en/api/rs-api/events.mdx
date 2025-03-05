@@ -1,0 +1,120 @@
+---
+title: "Events endpoint"
+description: "Use the Events endpoint to retrieve event slugs to use in your report service queries."
+slug: en/api/rs-api/events
+sidebar-position: 3
+---
+
+Use the Events endpoint to retrieve event slugs to use in your report service queries. The endpoint enables you to search for events using their readable names and returns useful information about each one.
+
+## Return events {#return-events}
+
+<CodeBlock title="Endpoint" highlight="/reports-service/events">
+
+```http
+GET https://automate.adjust.com/reports-service/events
+```
+
+</CodeBlock>
+
+Return a list of event objects.
+
+### Parameters {#parameters}
+
+| Parameter          | Data type | Required | Description                                                                              |
+| ------------------ | --------- | -------- | ---------------------------------------------------------------------------------------- |
+| `events__contains` | `String`  | No       | Filters events by an exact match in the event's `key` or a partial match in its `value`. |
+
+### Response parameters {#response-parameters}
+
+| Parameter              | Data type       | Description                                                                                         |
+| ---------------------- | --------------- | --------------------------------------------------------------------------------------------------- |
+| `id`                   | `String`        | The event slug.                                                                                     |
+| `name`                 | `String`        | The name of the event.                                                                              |
+| `short_name`           | `String`        | The shortened name of the event.                                                                    |
+| `section`              | `String`        | The event section. See the [Sections table](#rs-events-sections) for a summary of available values. |
+| `formatting`           | `String`        | The format in which the event's data is stored.                                                     |
+| `increase_is_negative` | `Boolean`       | Whether the most recent change was a value increase.                                                |
+| `app_token`            | `Array<String>` | The app token with which the event is associated.                                                   |
+| `tokens`               | `Array<String>` | The event token or tokens.                                                                          |
+
+#### Sections {#sections}
+
+| Section             | Description                                           |
+| ------------------- | ----------------------------------------------------- |
+| `conversion`        | Metrics relating to click and impression conversions. |
+| `fraud`             | Metrics relating to fraud prevention.                 |
+| `cost`              | Metrics relating to cost.                             |
+| `revenue`           | Metrics relating to app revenue.                      |
+| `retention`         | Metrics relating to cohort-based user retention.      |
+| `events`            | Metrics relating to events.                           |
+| `conversion_events` | Metrics relating to SKAdNetwork conversion events.    |
+| `installs`          | Metrics relating to app installs and reinstalls.      |
+| `conversion_values` | Metrics relating to SKAdNetwork conversion values.    |
+
+<CodeBlock title="Response format">
+
+```json
+[
+   {
+      "id": "string",
+      "name": "string",
+      "short_name": "",
+      "section": "",
+      "formatting": "money",
+      "increase_is_negative": false,
+      "description": "",
+      "app_token": ["string"],
+      "tokens": ["string"]
+   }
+]
+```
+
+</CodeBlock>
+
+### Responses {#responses}
+
+This endpoint returns the following responses:
+
+| Response | Description         | Notes                                                                       |
+| -------- | ------------------- | --------------------------------------------------------------------------- |
+| `200`    | Success             | Returns report information                                                  |
+| `204`    | No content          | Returned if the response object is empty                                    |
+| `400`    | Bad request         | Returned if your request is malformed or contains unsupported parameters    |
+| `401`    | Unauthorized        | Returned if your credentials are incorrect or absent                        |
+| `403`    | Forbidden           | Returned if you try to access information you don't have permission to view |
+| `429`    | Too many requests   | Returned if you exceed 50 simultaneous requests                             |
+| `503`    | Service unavailable | Returned if the server can't be reached                                     |
+| `504`    | Gateway timeout     | Returned if the query takes too long to return a response                   |
+
+## Example {#example}
+
+<CodeBlock title="cURL" highlight="events__contains=purchase">
+
+```console
+$ curl \
+'https://automate.adjust.com/reports-service/events?events__contains=purchase' \
+--header 'Authorization: Bearer {API_TOKEN}'
+```
+
+</CodeBlock>
+
+<CodeBlock title="Success response">
+
+```json
+[
+   {
+      "id": "purchase",
+      "name": "Purchase event",
+      "short_name": "PUR",
+      "section": "Revenue",
+      "formatting": "money",
+      "increase_is_negative": false,
+      "description": "",
+      "app_token": ["4zb92bmajmrd"],
+      "tokens": ["abc123"]
+   }
+]
+```
+
+</CodeBlock>

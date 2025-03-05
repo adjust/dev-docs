@@ -1,23 +1,47 @@
 ---
+import type { CollectionEntry } from "astro:content";
+
 import AudienceDropdown from "@components/AudienceDropdown.astro";
 import AdjustLogo from "@components/Icons/astro/AdjustLogo.astro";
-import { type Locales } from "@i18n/locales";
+import SdkVersionSwitch from "@components/SdkVersionSwitch.astro";
 import { useTranslations } from "@i18n/utils";
+import { type Locales } from "@i18n/locales";
+import { uniqueSdkVersions } from "@utils/helpers/navigation/getUniqueVersions";
+import { getCurrentPage } from "@utils/helpers/navigation/getCurrentPage";
 
 interface Props {
   homeUrl: string;
   lang: string;
+  redirects: CollectionEntry<"docs">["data"]["redirects"];
+  versions: CollectionEntry<"docs">["data"]["versions"];
 }
 
-const { homeUrl, lang } = Astro.props;
+const { homeUrl, lang, redirects } = Astro.props;
+const pathName = getCurrentPage(Astro.url.pathname);
+const isSdkSwitch =
+  pathName.includes("sdk") &&
+  uniqueSdkVersions &&
+  uniqueSdkVersions.length &&
+  (redirects || pathName.trim().split("/").length === 2);
 const t = useTranslations(lang as keyof Locales);
 ---
 
 <div
-  class="flex flex-row items-center mb-[74px] pt-7 pl-[27px] sidebar-open:justify-center sidebar-open:mb-5 sidebar-open:pt-[6px] sidebar-open:pl-0"
+  class={`flex flex-col items-center pt-7 pl-[27px] sidebar-open:justify-center sidebar-open:mb-5 sidebar-open:pt-[6px] sidebar-open:pl-0 ${!isSdkSwitch && "mb-[74px]"}`}
 >
-  <a href={homeUrl} title={t("header.adjust-logo-link-label")}>
-    <AdjustLogo />
-  </a>
-  <AudienceDropdown lang={lang} />
+  <div
+    class="flex flex-row items-center xs:justify-center md:justify-start w-full"
+  >
+    <a href={homeUrl} title={t("header.adjust-logo-link-label")}>
+      <AdjustLogo />
+    </a>
+    <AudienceDropdown lang={lang} />
+  </div>
+  <div class="w-full md:pr-8 flex justify-center">
+    {
+      isSdkSwitch ? (
+        <SdkVersionSwitch lang={lang} currentPage={pathName} />
+      ) : undefined
+    }
+  </div>
 </div>

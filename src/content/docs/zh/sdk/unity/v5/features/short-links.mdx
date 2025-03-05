@@ -1,0 +1,52 @@
+---
+title: 解析品牌化短链接
+description: 解析在 Campaign Lab 中创建的短链接。
+slug: zh/sdk/unity/features/short-links
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v4: /zh/sdk/unity/v4/features/short-links
+---
+
+Adjust 的[短链接解决方案](https://help.adjust.com/zh/article/short-branded-links)能将复杂的长链接变成简洁的短链接。短链接会保留深度链接和推广活动信息，如果用户尚未安装您的应用，则会将用户转到应用商店。
+
+使用本节中描述的方法来解析您的短链接。
+
+## 在 Adjust SDK 中设置深度链接 {#set-up-deep-linking-in-the-adjust-sdk}
+
+在 Adjust SDK 中添加对以下内容的支持：
+
+- [URI 方案](/zh/sdk/unity/features/deep-links)
+- [延迟深度链接](/zh/sdk/unity/features/deep-links#deferred-deep-linking)
+
+<Callout type="note">
+
+您无需设置 LinkMe 或链接解析即可使用 Adjust 短链接解决方案。
+
+</Callout>
+
+## 设置 Adjust SDK 来解析短链接 {#set-up-the-adjust-sdk-to-resolve-short-links}
+
+<CodeBlock title="方法签名">
+
+```cs
+public static void ProcessAndResolveDeeplink(AdjustDeeplink deeplink, Action<string> callback);
+```
+
+</CodeBlock>
+
+要解析短深度链接，请使用短深度链接实例化`AdjustDeeplink`对象并使用回传函数将其传递至`Adjust.ProcessAndResolveDeeplink`方法。回传函数会以`string`形式接收已解析的深度链接。
+
+```cs
+AdjustDeeplink adjustDeeplink = new AdjustDeeplink("url");
+Adjust.ProcessAndResolveDeeplink(adjustDeeplink, (resolvedLink) =>
+{
+   Debug.Log("Resolved link = " + resolvedLink);
+});
+```
+
+如果传递给`Adjust.ProcessAndResolveDeeplink`方法的链接被缩短，那么回传函数就会收到扩展后的原始链接。否则，回传函数将接收您传递的链接。

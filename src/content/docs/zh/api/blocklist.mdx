@@ -1,0 +1,293 @@
+---
+title: 屏蔽名单 API
+description: Adjust 屏蔽名单 API 用于拦截来自欺诈来源或已过期的动态及模块合作伙伴跟踪链接的流量。
+category-title: 屏蔽名单 API
+slug: zh/api/blocklist-api
+sidebar-position: 3
+---
+
+<Callout type="note">
+
+在 Adjust Suite 和文档中，"Blacklist\(黑名单\)" 及 "whitelist\(白名单\)" 已被分别更名为 "blocklist\(禁止名单\)" 和 "allowlist\(许可名单\)"。但是，"黑名单" 和 "白名单" 可能仍会存在于终端名称中。
+
+</Callout>
+
+使用 Adjust 禁止名单 API 来拦截来自欺诈或过期链接的流量。您可以将自定义链接和合作伙伴链接加入禁止名单，但无法将自归因渠道 \(SAN\) 合作伙伴链接加入禁止名单。要屏蔽来自 SAN 合作伙伴链接的流量，您必须删除该 SAN 合作伙伴。访问[自归因渠道设置](https://help.adjust.com/zh/suite/article/self-attributing-network-san-setup)页面，查看完整 SAN 合作伙伴列表。
+
+## 认证{#authentication}
+
+禁止名单 API 使用 [Bearer 识别码](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication)进行认证。 向禁止名单 API 发出的每个请求的 `Authorization` 标头中必须包含 Adjust API 识别码。
+
+如果您的组织启用了单点登录 \(SSO\)，请联系您的 Adjust 代表，或发送电子邮件至 [support@adjust.com](mailto:support@adjust.com)，我们将帮您查找 API 识别码。
+
+非单点登录账户的 API 识别码位于用户 **个人档案** 中。要找到该识别码，请按照下列步骤操作。
+
+1. 选择账户 \(用户\) 图标。
+2. 选择 **账户设置** 。
+3. 选择 **个人档案** 标签页。
+4. 您的 **API 识别码** 会显示在 **用户详细信息** 中。选择复制按钮来将识别码复制到您的系统剪贴板。
+
+### 重置 Adjust API 识别码{#reset-your-adjust-api-token}
+
+您可以随时重置 Adjust API 识别码。重置后，旧的识别码将失效。如果您重置了 Adjust API 识别码，请务必在所有使用识别码的位置进行替换。使用无效识别码发送的请求会被 Adjust 拒绝。
+
+重置 Adjust API 识别码：
+
+1. 选择账户 \(用户\) 图标。
+2. 选择 **账户设置** 。
+3. 选择 **个人档案** 标签页。
+4. 您的 **API 识别码** 会显示在 **用户详情** 中。
+5. 选择 **重置 API 识别码** 。
+6. 在窗口中输入账户密码并选择 **重置** 来重置您的 API 识别码。屏幕右上角会显示确认信息。
+7. 选择 **API 识别码** 旁的复制按钮来将识别码复制到您的系统剪贴板。
+
+## 将链接加入屏蔽名单{#blocklist-a-link}
+
+<CodeBlock title="终端" highlight="{link}/blacklist">
+
+```http
+POST https://api.adjust.com/dashboard/api/trackers/{link}/blacklist
+```
+
+</CodeBlock>
+
+您可以将链接加入禁止名单，停止记录交互和回传。被列入禁止名单的链接会保留其现有归因，直到用户被再归因至其他链接。
+
+在链接列入屏蔽名单 之前已记录的点击和展示仍可进行归因。例如，如果您设置了一个时长为 7 天的归因窗口并在第 2 天将链接列入屏蔽名单，Adjust 仍会将第 1 天的交互纳入归因考量。
+
+### 参数{#blocklist-parameters}
+
+以下参数必须被添加至查询路径：
+
+`link` \(`String`\)
+
+: 由字母数字组成的 Adjust 链接识别码。
+
+### 响应格式{#blocklist-response-format}
+
+```json
+{
+   "label": "string",
+   "token": "string",
+   "name": "string",
+   "url": "string",
+   "path": "string",
+   "has_subtrackers": true,
+   "archived": true,
+   "visible": true,
+   "attribution_partner": true,
+   "creative_token": "string",
+   "adgroup_token": "string",
+   "campaign_token": "string",
+   "network_token": "string",
+   "click_url": "string",
+   "impression_url": "string",
+   "allow_partner_linking": true,
+   "settings": {
+      "partner_id": "string",
+      "partner_display_name": "string",
+      "tracking_parameters": "string",
+      "cost_data_parameters": "string",
+      "cost_data": true,
+      "partner_cost_data_parameters": "string",
+      "campaign_structure": "string",
+      "additional_parameters": "string",
+      "attribution_settings": "string",
+      "blacklisted": true
+   },
+   "urls": {
+      "descendants": "string",
+      "ancestors": "string",
+      "update": "string",
+      "show": "string",
+      "archive": "string",
+      "unarchive": "string"
+   }
+}
+```
+
+### 示例 {#blocklist-example}
+
+<CodeBlock title="cURL" highlight="abc123">
+
+```console
+$ curl \
+--header "Authorization: Token token={api_token}" \
+-L -X POST "https://api.adjust.com/dashboard/api/trackers/abc123/blacklist"
+```
+
+</CodeBlock>
+<CodeBlock title="成功响应">
+
+```json
+{
+   "label": "Twitter installs",
+   "token": "abc123",
+   "name": "Twitter installs",
+   "url": "https://app.adjust.com/abc123",
+   "path": "",
+   "has_subtrackers": true,
+   "archived": false,
+   "visible": true,
+   "attribution_partner": false,
+   "creative_token": null,
+   "adgroup_token": null,
+   "campaign_token": null,
+   "network_token": "abc123",
+   "click_url": "https://app.adjust.com/abc123",
+   "impression_url": "https://view.adjust.com/impression/abc123",
+   "allow_partner_linking": true,
+   "settings": {
+      "partner_id": null,
+      "partner_display_name": null,
+      "tracking_parameters": null,
+      "cost_data_parameters": null,
+      "cost_data": false,
+      "partner_cost_data_parameters": null,
+      "campaign_structure": null,
+      "additional_parameters": null,
+      "attribution_settings": null,
+      "blacklisted": true
+   },
+   "urls": {
+      "descendants": "/api/trackers/abc123/descendants.json",
+      "ancestors": "/api/trackers/abc123/ancestors.json",
+      "update": "/api/trackers/abc123.json",
+      "show": "/api/trackers/abc123.json",
+      "archive": "/api/trackers/abc123/archive.json",
+      "unarchive": "/api/trackers/abc123/unarchive.json"
+   }
+}
+```
+
+</CodeBlock>
+
+## 将链接移出屏蔽名单{#unblocklist-a-link}
+
+<CodeBlock title="终端" highlight="{link}/unblacklist">
+
+```http
+POST https://api.adjust.com/dashboard/api/trackers/{link}/unblacklist
+```
+
+</CodeBlock>
+
+您可以随时将链接移出禁止名单，重新激活该链接。一旦将链接移出屏蔽名单，Adjust 就会立即恢复交互跟踪和回传。
+
+只有当链接被激活时接收到的交互才会被纳入您的归因漏斗。
+
+### 参数{#unblocklist-parameters}
+
+以下参数必须被添加至查询路径：
+
+`link` \(`String`\)
+
+: 由字母数字组成的 Adjust 链接识别码。
+
+### 响应格式{#unblocklist-response-format}
+
+```json
+{
+   "label": "string",
+   "token": "string",
+   "name": "string",
+   "url": "string",
+   "path": "string",
+   "has_subtrackers": true,
+   "archived": true,
+   "visible": true,
+   "attribution_partner": true,
+   "creative_token": "string",
+   "adgroup_token": "string",
+   "campaign_token": "string",
+   "network_token": "string",
+   "click_url": "string",
+   "impression_url": "string",
+   "allow_partner_linking": true,
+   "settings": {
+      "partner_id": "string",
+      "partner_display_name": "string",
+      "tracking_parameters": "string",
+      "cost_data_parameters": "string",
+      "cost_data": true,
+      "partner_cost_data_parameters": "string",
+      "campaign_structure": "string",
+      "additional_parameters": "string",
+      "attribution_settings": "string",
+      "blacklisted": true
+   },
+   "urls": {
+      "descendants": "string",
+      "ancestors": "string",
+      "update": "string",
+      "show": "string",
+      "archive": "string",
+      "unarchive": "string"
+   }
+}
+```
+
+### 示例 {#unblocklist-example}
+
+<CodeBlock title="cURL" highlight="abc123">
+
+```console
+$ curl \
+--header "Authorization: Token token={api_token}" \
+-L -X POST "https://api.adjust.com/dashboard/api/trackers/abc123/unblacklist"
+```
+
+</CodeBlock>
+<CodeBlock title="成功响应">
+
+```json
+{
+   "label": "Twitter installs",
+   "token": "abc123",
+   "name": "Twitter installs",
+   "url": "https://app.adjust.com/abc123",
+   "path": "",
+   "has_subtrackers": true,
+   "archived": false,
+   "visible": true,
+   "attribution_partner": false,
+   "creative_token": null,
+   "adgroup_token": null,
+   "campaign_token": null,
+   "network_token": "abc123",
+   "click_url": "https://app.adjust.com/abc123",
+   "impression_url": "https://view.adjust.com/impression/abc123",
+   "allow_partner_linking": true,
+   "settings": {
+      "partner_id": null,
+      "partner_display_name": null,
+      "tracking_parameters": null,
+      "cost_data_parameters": null,
+      "cost_data": false,
+      "partner_cost_data_parameters": null,
+      "campaign_structure": null,
+      "additional_parameters": null,
+      "attribution_settings": null,
+      "blacklisted": false
+   },
+   "urls": {
+      "descendants": "/api/trackers/abc123/descendants.json",
+      "ancestors": "/api/trackers/abc123/ancestors.json",
+      "update": "/api/trackers/abc123.json",
+      "show": "/api/trackers/abc123.json",
+      "archive": "/api/trackers/abc123/archive.json",
+      "unarchive": "/api/trackers/abc123/unarchive.json"
+   }
+}
+```
+
+</CodeBlock>
+
+## 查看链接状态{#view-link-status}
+
+您可以在 [Campaign Lab](https://help.adjust.com/zh/article/campaign-setup) 中查看哪些链接被加入了屏蔽名单。为此请进行下列操作：
+
+1. 打开 Campaign Lab。
+2. 选择一个合作伙伴来显示关联链接列表。 位于屏蔽名单中的链接将显示为 **BLOCKLISTED** \(已列入屏蔽名单\)。
+
+您可以在 Campaign Lab 中隐藏列入禁止名单的链接。要参阅操作说明，请查看：[Campaign Lab 中的隐藏链接](https://help.adjust.com/zh/article/manage-ad-network-setup#hidden-links)

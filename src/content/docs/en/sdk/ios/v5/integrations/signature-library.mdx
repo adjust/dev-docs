@@ -1,0 +1,159 @@
+---
+title: SDK Signature library integration
+description:
+   Add the Signature library to your iOS app to secure communications between
+   the Adjust SDK and Adjust's servers.
+slug: en/sdk/ios/integrations/signature-library
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v4: /en/sdk/ios/v4/integrations/signature-library
+---
+
+<Callout type="note">
+
+This page refers to integration steps for the Adjust SDK v5. If you're using the Adjust SDK v4, please select the appropriate tab on the dropdown menu to your left.
+
+</Callout>
+
+Adjust's SDK Signature library is designed to be a standalone plugin for the Adjust SDK. This means you don’t need to change any of your code or change how you use the Adjust SDK in your app. Once you install the plugin, all requests made by the Adjust SDK will continue to work as expected.
+
+## Before you begin {#before-you-begin}
+
+To integrate the Adjust Signature library into your iOS app, ensure the following:
+
+- The Adjust SDK version in use is **5.0.0 or greater**. This requirement applies even when the Adjust SDK is used indirectly.
+- iOS or tvOS version **12 or greater** is supported.
+
+<Callout type="important">
+
+Using external obfuscation tools with the Adjust SDK or Signature library can impact the functionality of the Signature library. If you're unsure about using an external tool, reach out to your Adjust representative or email support@adjust.com to check if functionality is impacted.
+
+</Callout>
+
+### Migrating from Signature v1 or v2 library {#migrating-from-signature-v1-or-v2-library}
+
+If you previously used Signature v1 or Signature v2, you first need to remove the previous version before integrating the Signature library. To do this:
+
+- If you previously integrated Signature v1, remove any code that calls to signature functions in your project.
+- If you previously integrated Signature v2, remove the Signature v2 library from your project.
+
+## Integrate the signature library {#integrate-the-signature-library}
+
+<Callout type="note">
+
+The Adjust SDK includes the Signature library by default for the majority of cases. Proceed only if prompted by the Adjust SDK or if a specific Signature library version is required.
+
+</Callout>
+
+<Tabs>
+<Tab title="Cocoapods" sync="cocoapods">
+
+The Signature libraries are released on [GitHub](https://github.com/adjust/adjust_signature_sdk/releases/) and are propagated to Cocoapods from version `3.20.1` onwards. To add the Signature library to your project, append the following to your `Podfile` (change the version with the [latest available](https://github.com/adjust/adjust_signature_sdk/releases/latest)):
+
+```ruby
+pod 'AdjustSignature', '~> x.x.x'
+```
+
+Alternatively, Beta releases are available from version `3.24.1` onwards. To add the Signature library to your project, append the following to your `Podfile` (change the version with the [latest available](https://github.com/adjust/adjust_signature_sdk/releases)):
+
+```ruby
+pod 'AdjustSignature', 'x.x.x-beta'
+```
+
+That’s it! The Signature library is now integrated into your project.
+
+</Tab>
+<Tab title="Swift Package Manager" sync="swift-package-manager">
+
+SPM support is available from version `3.20.1` onwards. To add the Signature library, you need to add it to your Xcode project:
+
+1. Select **File —> Swift Packages —> Add Package Dependency**
+2. In the box that appears, enter the Signature’s GitHub address: https://github.com/adjust/adjust_signature_sdk
+3. Enter the version of the library you want to use in the **Version** field. Check the [releases page](https://github.com/adjust/adjust_signature_sdk/releases/latest) for the latest version.
+
+Alternatively, SPM support is available for Beta releases from version `3.24.1` onwards. To add the Signature library, you need to add it to your Xcode project:
+
+1. Select **File —> Swift Packages —> Add Package Dependency**
+2. In the box that appears, enter the Signature’s GitHub address: https://github.com/adjust/adjust_signature_sdk
+3. Enter `release/vx.xx` in the **Branch** field. Replace `x.xx` with the latest major and minor version from the [releases page](https://github.com/adjust/adjust_signature_sdk/releases), e.g. `release/v3.24`.
+
+<Callout type="note">
+
+Targeting the `main` branch could mean fetching a Beta release.
+
+</Callout>
+
+That’s it! The Signature library is now integrated into your project.
+
+</Tab>
+<Tab title="Manual integration" sync="manual-integration">
+
+1. Fetch from GitHub the [latest Stable](https://github.com/adjust/adjust_signature_sdk/releases/latest) or [Beta](https://github.com/adjust/adjust_signature_sdk/releases) Dynamic XCFramework version.
+2. Unzip the archive and copy `AdjustSigSdk.xcframework` into your project’s directory.
+3. In Xcode, select your project in the **Project Navigator**.
+4. Select your target on the left-hand side.
+5. Select the **General** tab and expand the **Frameworks, Libraries and Embedded Content** group.
+6. Select the **+** button at the bottom of the group.
+
+![A screenshot of the Frameworks page in Xcode](@images/sig-v3/xcode-frameworks.png)
+
+7. Select **Add Other --> Add Files** and select the `AdjustSigSdk.xcframework` file from the project directory.
+
+![A screenshot of the framework selector in Xcode](@images/sig-v3/xcode-select-framework.png)
+
+8. Select the **Embed & Sign** option for the `AdjustSigSdk.xcframework`.
+
+![A screenshot of the Embed & Sign option in Xcode](@images/sig-v3/xcode-embed-sign.png)
+
+That’s it! The Signature library is now integrated into your project.
+
+</Tab>
+</Tabs>
+
+## Test your app {#test-your-app}
+
+You can verify you have integrated the Signature library into your app using the [Adjust Testing Console](https://help.adjust.com/en/article/testing-console).
+
+<Callout type="important">
+
+You must ensure that the Adjust SDK is running in **Sandbox mode**.
+
+</Callout>
+
+To test your Signature library integration:
+
+1. Fully delete your app from the test device to ensure the install information is sent.
+2. Forget the device using the Testing Console to clear out all information relating to the device. You can also use the forget_device endpoint by passing your app token and the advertising ID you obtained from the [Adjust Insights app](https://apps.apple.com/us/app/adjust-insights/id1125517808). You can use any of the following advertising IDs: `adid`, `idfa`, `idfv`, `imei`, `oaid`.
+
+   The call looks like this:
+
+   ```console
+   $ curl -X POST 'https://app.adjust.com/forget_device?app_token={yourAppToken}&id={adid}'
+   ```
+
+3. Once you’ve cleared the device from the Testing Console, install the app on your test device and launch it to send install information to Adjust.
+4. Input the test device’s advertising ID into the Testing Console to fetch the install event information. Check the following:
+   1. The `SignatureVerificationResult` field should show a value of `Valid Signature`
+   2. The `SignatureVersion` field should show a value of `3`
+
+If these fields are present and contain the correct information, you have successfully integrated the Signature library. If the fields display any other values, review the integration steps again or contact support@adjust.com for further assistance.
+
+That’s it! You’ve successfully integrated the Signature library into your app. Once [two attribution windows have passed](https://help.adjust.com/en/article/attribution-windows), you can [enforce SDK Signature validation](https://help.adjust.com/en/article/sdk-signature#enforce-signature-validation) to make sure that only signed requests are accepted by Adjust.
+
+## Troubleshooting {#troubleshooting}
+
+### Upload symbols failed
+
+When validating or submitting apps built with Xcode 16, you may encounter an `Upload symbols failed` warning related to the Signature library. This missing symbols condition is intentional and doesn't affect functionality, so it's safe to ignore.
+
+## Updating the Signature Library {#updating-the-signature-library}
+
+The Signature library is automatically updated along with any Adjust SDK v5 update. If a specific Signature library version is required, replace the existing library with a newer version and rerun your tests. You don't need to make any immediate changes to your app logic or settings in Adjust as long as your [certificates are configured and haven't been altered](https://help.adjust.com/en/article/sdk-signature#manage-your-certificate-fingerprints). Remember to [deactivate your secret IDs if they meet the following criteria](https://help.adjust.com/en/article/sdk-signature#manage-your-secret-ids):
+
+- They're no longer contributing to your install reporting.
+- You've fully released a new version of your app (across all app platforms and stores).

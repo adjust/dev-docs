@@ -8,18 +8,16 @@ import type { MarkdownHeading } from "astro";
 interface Props {
   title: string;
   lang: string;
-  multiVersion?: boolean;
   headings?: MarkdownHeading[];
 }
 
-const { title, lang, multiVersion, headings } = Astro.props;
+const { title, lang, headings } = Astro.props;
 const t = useTranslations(lang as keyof Locales);
 ---
 
 <nav
   id="toc"
   class={"hidden transform transition duration-100 translate-x-0 mt-32 fixed top-0 bottom-0 md:right-0 xxl:left-0 border-t border-l border-bluish-grey rounded-tl-lg xxl:ml-open-toc z-25 px-4 bg-white max-h-screen w-[19rem] opacity-1 items-start z-10 lg:flex xxxl:hidden"}
-  data-message={multiVersion ? "true" : "false"}
 >
   <div class="absolute top-0 bottom-0 flex items-start">
     <button
@@ -39,19 +37,22 @@ const t = useTranslations(lang as keyof Locales);
           headings.length > 0 &&
           headings
             .filter(({ depth }) => depth > 1 && depth < 5)
-            .map((heading) => (
-              <li
-                class={`toc-item depth-${heading.depth} ml-${heading.depth > 2 ? 6 : 0}`}
-              >
-                <a
-                  class="toc-link text-gray-700 hover:text-blue-600 hover:no-underline"
-                  href={`#${heading.slug}`}
-                  data-slug={heading.slug}
-                >
-                  {heading.text}
-                </a>
-              </li>
-            ))
+            .map(
+              (heading) =>
+                heading.slug && (
+                  <li
+                    class={`toc-item depth-${heading.depth} ml-${heading.depth > 2 ? 6 : 0}`}
+                  >
+                    <a
+                      class="toc-link text-gray-700 hover:text-blue-600 hover:no-underline"
+                      href={`#${heading.slug}`}
+                      data-slug={heading.slug}
+                    >
+                      {heading.text}
+                    </a>
+                  </li>
+                ),
+            )
       }
     </ul>
   </div>
@@ -77,88 +78,107 @@ const t = useTranslations(lang as keyof Locales);
 </nav>
 
 <script>
-  import { updateHeadings } from "@utils/helpers/toc/getTocHeadings";
   import { handleScrollSpy } from "@utils/helpers/toc/handleScrollSpy";
   import { $tocOpen, setTocOpen } from "@store/tocOpenStore";
 
-  document.addEventListener("DOMContentLoaded", () => {
-    const toc = document.getElementById("toc");
-    if (!toc) return;
+  class TocController {
+    private toc: HTMLElement | null;
+    private tocButton: HTMLElement | null;
+    private tocList: HTMLElement | null;
+    private tocHeader: HTMLElement | null;
+    private leftChevron: HTMLElement | null;
+    private rightChevron: HTMLElement | null;
+    private article: HTMLElement | null;
+    private isTocOpen: boolean;
+    private didUpdateStore: boolean;
+    private openTocClasses: string[];
+    private closedTocClasses: string[];
 
-    const tocButton = document.getElementById("toc-toggle-button");
-    const tocList = document.getElementById("toc-list");
-    const tocHeader = document.getElementById("toc-header");
-    const leftChevron = document.getElementById("chevron-left");
-    const rightChevron = document.getElementById("chevron-right");
-    const article = document.getElementById("article");
-    const isMultiVersion = toc.dataset.message === "true";
+    /**
+     * Selects DOM elements and sets class properties
+     */
+    constructor() {
+      this.toc = document.getElementById("toc");
+      this.tocButton = document.getElementById("toc-toggle-button");
+      this.tocList = document.getElementById("toc-list");
+      this.tocHeader = document.getElementById("toc-header");
+      this.leftChevron = document.getElementById("chevron-left");
+      this.rightChevron = document.getElementById("chevron-right");
+      this.article = document.getElementById("article");
 
-    const storeValue = $tocOpen.get();
-    let didUpdateStore = storeValue !== undefined;
-    let isTocOpen = storeValue === "true" || window.innerWidth >= 1440;
+      const storeValue = $tocOpen.get();
+      this.didUpdateStore = storeValue !== undefined;
+      this.isTocOpen = storeValue === "true" || window.innerWidth >= 1440;
 
-    const openTocClasses = [
-      "xxl:ml-open-toc",
-      "z-25",
-      "px-4",
-      "bg-white",
-      "max-h-screen",
-      "w-[19rem]",
-      "opacity-1",
-      "items-start",
-      "z-10",
-    ];
-    const closedTocClasses = ["w-8", "ml-closed-toc"];
+      this.openTocClasses = [
+        "xxl:ml-open-toc",
+        "z-25",
+        "px-4",
+        "bg-white",
+        "max-h-screen",
+        "w-[19rem]",
+        "opacity-1",
+        "items-start",
+        "z-10",
+      ];
+      this.closedTocClasses = ["w-8", "ml-closed-toc"];
+    }
 
-    const toggleMenu = (open: boolean, updateStore: boolean) => {
-      isTocOpen = open;
+    /**
+     * Toggles menus open and closed by altering classes
+     * @param open Whether the sidebar is currently open
+     * @param updateStore Whether to update the store value to persist the user's choice
+     */
+    private toggleMenu(open: boolean, updateStore: boolean): void {
+      this.isTocOpen = open;
       if (updateStore) {
         setTocOpen(open);
-        didUpdateStore = true;
+        this.didUpdateStore = true;
       }
-      tocList!.classList.toggle("hidden", !open);
-      tocHeader!.classList.toggle("hidden", !open);
-      leftChevron!.classList.toggle("hidden", open);
-      rightChevron!.classList.toggle("hidden", !open);
-      toc.classList[open ? "add" : "remove"](...openTocClasses);
-      toc.classList[open ? "remove" : "add"](...closedTocClasses);
-      tocButton!.classList.toggle("-ml-8", open);
-      tocButton!.classList.toggle("-ml-4", !open);
-      article!.classList.toggle("lg:w-toc-open-article", open);
-      article!.classList.toggle("lg:w-toc-closed-article", !open);
-    };
+      this.tocList?.classList.toggle("hidden", !open);
+      this.tocHeader?.classList.toggle("hidden", !open);
+      this.leftChevron?.classList.toggle("hidden", open);
+      this.rightChevron?.classList.toggle("hidden", !open);
+      this.toc?.classList[open ? "add" : "remove"](...this.openTocClasses);
+      this.toc?.classList[open ? "remove" : "add"](...this.closedTocClasses);
+      this.tocButton?.classList.toggle("-ml-8", open);
+      this.tocButton?.classList.toggle("-ml-4", !open);
+      this.article?.classList.toggle("lg:w-toc-open-article", open);
+      this.article?.classList.toggle("lg:w-toc-closed-article", !open);
+    }
 
-    toggleMenu(storeValue !== "false" && isTocOpen, false);
-
-    tocButton!.addEventListener("click", () => {
-      toggleMenu(!isTocOpen, true);
-    });
-
-    const debounce = (func: Function, wait: number, immediate: boolean) => {
-      let timeout: any;
-      return (...args: any) => {
+    /**
+     * Debounces functions to reduce performance impact
+     * @param func The function to be debounced
+     * @param wait The amount of time to wait before timeout
+     * @param immediate Whether the function needs to be called immediately
+     * @returns The debounced function
+     */
+    private debounce(func: Function, wait: number, immediate: boolean) {
+      let timeout: number | null = null;
+      return (...args: any[]) => {
         const later = () => {
           timeout = null;
           if (!immediate) func(...args);
         };
         const callNow = immediate && !timeout;
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
+        if (timeout) clearTimeout(timeout);
+        timeout = window.setTimeout(later, wait);
         if (callNow) func(...args);
       };
-    };
+    }
 
-    const handleResize = debounce(
+    private handleResize = this.debounce(
       () => {
-        if (!didUpdateStore) {
+        if (!this.didUpdateStore) {
           const smallScreen = window.innerWidth < 1440;
           const verySmallScreen = window.innerWidth < 768;
           const bigScreen = window.innerWidth > 1600;
 
           if (smallScreen && !verySmallScreen) {
-            setTimeout(() => toggleMenu(false, false), 100);
+            setTimeout(() => this.toggleMenu(false, false), 100);
           } else if (!smallScreen && !verySmallScreen && !bigScreen) {
-            setTimeout(() => toggleMenu(true, false), 100);
+            setTimeout(() => this.toggleMenu(true, false), 100);
           }
         }
       },
@@ -166,17 +186,34 @@ const t = useTranslations(lang as keyof Locales);
       true,
     );
 
-    window.addEventListener("resize", handleResize);
+    private handleScroll = this.debounce(handleScrollSpy, 100, true);
 
-    const handleScroll = debounce(handleScrollSpy, 100, true);
+    /**
+     * Initializes the ToC controller by setting initial values and assigning handlers
+     */
+    public initialize(): void {
+      // Don't execute if there's no ToC on the page
+      if (!this.toc) return;
+      // Initial setup based on store value and viewport width
+      const storeValue = $tocOpen.get();
+      this.toggleMenu(storeValue !== "false" && this.isTocOpen, false);
 
-    if (isMultiVersion) {
-      const clearHash = () =>
-        history.replaceState("", document.title, window.location.pathname);
-      document.addEventListener("versionUpdated", updateHeadings);
-      document.addEventListener("versionUpdated", clearHash);
+      // Event listener for the toggle button
+      this.tocButton?.addEventListener("click", () => {
+        this.toggleMenu(!this.isTocOpen, true);
+      });
+
+      // Handle window resize
+      window.addEventListener("resize", this.handleResize);
+
+      // Handle scroll spy
+      requestAnimationFrame(this.handleScroll);
     }
+  }
 
-    requestAnimationFrame(handleScroll);
+  document.addEventListener("DOMContentLoaded", () => {
+    const controller = new TocController();
+
+    controller.initialize();
   });
 </script>

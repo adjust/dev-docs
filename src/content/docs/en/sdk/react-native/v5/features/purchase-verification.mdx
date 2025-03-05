@@ -1,0 +1,175 @@
+---
+title: Purchase verification
+description: Verify your App Store and Play Store purchases
+slug: en/sdk/react-native/features/purchase-verification
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v4: /en/sdk/react-native/v4/features/purchase-verification
+---
+
+If you've enabled [purchase verification](https://help.adjust.com/en/article/purchase-verification), you can use the Adjust SDK to request purchase verification. There are two ways to verify purchases with the Adjust SDK:
+
+1. Create an `AdjustEvent` object that represents your purchase and configure purchase properties for the target store.
+2. Create an `AdjustAppStorePurchase` (Apple App Store) or `AdjustPlayStorePurchase` (Google Play Store) object representing the purchase.
+
+<Callout type="tip">
+
+If you use revenue events to measure your purchases in Adjust, you should use the `AdjustEvent` class. If you only want to verify a purchase but don't want to associate it with an event, use the `AdjustAppStorePurchase` or `AdjustPlayStorePurchase` class.
+
+</Callout>
+
+When you send purchase information with the Adjust SDK, Adjust does the following:
+
+1. Sends the information to the relevant store and waits for a status response.
+2. Forwards the status response to the Adjust SDK.
+
+You can access the purchase verification status by using a callback. Results are returned as `AdjustPurchaseVerificationResult` objects containing the following properties:
+
+- `verificationStatus` (`string`): The status of the purchase.
+- `code` (`number`): The status code of the purchase.
+- `message` (`string`): Any message returned by the store.
+
+## Verify purchase and record event {#verify-purchase-and-record-event}
+
+<Tabs>
+<Tab title="App Store" icon="StoreAppStore" sync="appstore">
+
+<CodeBlock title="Method signature">
+
+```js
+verifyAndTrackAppStorePurchase: (adjustEvent: AdjustEvent, callback: (verificationResult: AdjustPurchaseVerificationResult) => void) => void
+```
+
+</CodeBlock>
+
+To send a revenue event for verification and listen for the purchase verification status, follow these steps:
+
+1. Instantiate an `AdjustEvent` object with the your event token and set the following parameters:
+   - `ProductId` (`string`): The product identifier of the item that was successfully purchased.
+   - `TransactionId` (`string`): The ID of the transaction you want to verify.
+2. Call the `Adjust.verifyAndTrackPlayStorePurchase` method with the following arguments:
+   - `adjustEvent` (`AdjustEvent`): Your instantiated event object.
+   - `callback` (`function`): A delegate callback function that receives an `AdjustPurchaseVerificationResult` object as an argument.
+
+In this example, the purchase verification response is output to the logging daemon.
+
+```js
+var adjustEvent = new AdjustEvent("abc123");
+adjustEvent.setProductId("product-id");
+adjustEvent.setTransactionId("transaction-id");
+adjustEvent.setRevenue(6.66, "CAD");
+Adjust.verifyAndTrackAppStorePurchase(adjustEvent, (verificationResult) => {
+   console.log(`Verification status: ${verificationResult.verificationStatus}`);
+   console.log(`Code: ${verificationResult.code}`);
+   console.log(`Message: ${verificationResult.message}`);
+});
+```
+
+</Tab>
+<Tab title="Google Play" icon="PlatformGooglePlay" sync="playstore">
+
+<CodeBlock title="Method signature">
+
+```js
+verifyAndTrackPlayStorePurchase: (adjustEvent: AdjustEvent, callback: (verificationResult: AdjustPurchaseVerificationResult) => void) => void
+```
+
+</CodeBlock>
+
+To send a revenue event for verification and listen for the purchase verification status, follow these steps:
+
+1. Instantiate an `AdjustEvent` object with the your event token and set the following parameters:
+   - `productId` (`string`): The ID of the product that has been purchased.
+   - `purchaseToken` (`string`): The purchase token associated with the purchase.
+2. Call the `Adjust.verifyAndTrackPlayStorePurchase` method with the following arguments:
+   - `adjustEvent` (`AdjustEvent`): Your instantiated event object.
+   - `callback` (`function`): A delegate callback function that receives an `AdjustPurchaseVerificationResult` object as an argument.
+
+In this example, the purchase verification response is output to the logging daemon.
+
+```js
+var adjustEvent = new AdjustEvent("abc123");
+adjustEvent.setProductId("product-id");
+adjustEvent.setPurchaseToken("purchase-token");
+adjustEvent.setRevenue(6.66, "CAD");
+Adjust.verifyAndTrackPlayStorePurchase(adjustEvent, (verificationResult) => {
+   console.log(`Verification status: ${verificationResult.verificationStatus}`);
+   console.log(`Code: ${verificationResult.code}`);
+   console.log(`Message: ${verificationResult.message}`);
+});
+```
+
+</Tab>
+</Tabs>
+
+## Only verify purchase {#only-verify-purchase}
+
+<Tabs>
+<Tab title="App Store" icon="StoreAppStore" sync="appstore">
+
+<CodeBlock title="Method signature">
+
+```js
+verifyAppStorePurchase: (purchase: AdjustAppStorePurchase, callback: (verificationResult: AdjustPurchaseVerificationResult) => void) => void
+```
+
+</CodeBlock>
+
+To send a standalone App Store purchase and listen for the purchase verification status, follow these steps:
+
+1. Instantiate an `AdjustAppStorePurchase` object with the following arguments:
+   - `productId` (`string`): The product identifier of the item that was successfully purchased.
+   - `transactionId` (`string`): The ID of the transaction you want to verify.
+2. Call the `Adjust.verifyAppStorePurchase` method with the following arguments:
+   - `purchase` (`AdjustAppStorePurchase`): Your instantiated event object.
+   - `callback` (`function`): A delegate callback function that receives an `AdjustPurchaseVerificationResult` object as an argument.
+
+In this example, the purchase verification response is output to the logging daemon.
+
+```js
+var purchase = new AdjustAppStorePurchase("product-id", "transaction-id");
+Adjust.verifyAppStorePurchase(purchase, (verificationResult) => {
+   console.log(`Verification status: ${verificationResult.verificationStatus}`);
+   console.log(`Code: ${verificationResult.code}`);
+   console.log(`Message: ${verificationResult.message}`);
+});
+```
+
+</Tab>
+<Tab title="Google Play" icon="PlatformGooglePlay" sync="playstore">
+
+<CodeBlock title="Method signature">
+
+```js
+verifyPlayStorePurchase: (purchase: AdjustPlayStorePurchase, callback: (verificationResult: AdjustPurchaseVerificationResult) => void) => void
+```
+
+</CodeBlock>
+
+To send a standalone Play Store purchase and listen for the purchase verification status, follow these steps:
+
+1. Instantiate an `AdjustPlayStorePurchase` with the following arguments:
+   - `productId` (`string`): The ID of the product that has been purchased.
+   - `purchaseToken` (`string`): The purchase token associated with the purchase.
+2. Call the `Adjust.verifyPlayStorePurchase` method with the following arguments:
+   - `purchase` (`AdjustPlayStorePurchase`): Your instantiated purchase object.
+   - `verificationResultCallback` (`function`): A delegate callback function that receives an `AdjustPurchaseVerificationResult` object as an argument.
+
+In this example, the purchase verification response is output to the logging daemon.
+
+```js
+var purchase = new AdjustPlayStorePurchase("product-id", "purchase-token");
+Adjust.verifyPlayStorePurchase(purchase, (verificationResult) => {
+   console.log(`Verification status: ${verificationResult.verificationStatus}`);
+   console.log(`Code: ${verificationResult.code}`);
+   console.log(`Message: ${verificationResult.message}`);
+});
+```
+
+</Tab>
+</Tabs>

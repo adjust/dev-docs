@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Page Not Found</title>
+    <script>
+      const supportedLanguages = {
+        ja: "/ja/404",
+        ko: "/ko/404",
+        zh: "/zh/404",
+        en: "/en/404",
+      };
+
+      const pathLang = window.location.pathname.split("/")[1];
+      const isSupportedLang =
+        Object.keys(supportedLanguages).includes(pathLang);
+
+      // If the locale in the URL is unsupported, redirect to English
+      if (!isSupportedLang) {
+        const urlSegments = window.location.pathname.split("/");
+        urlSegments[1] = "en"; // Change locale to "en"
+        window.location.replace(urlSegments.join("/"));
+      } else {
+        // If the locale is supported but still hitting 404, redirect based on browser language
+        const userLanguages = navigator.languages || [navigator.language];
+        const matchedLang = userLanguages.find((lang) =>
+          supportedLanguages.hasOwnProperty(lang.split("-")[0]),
+        );
+
+        if (matchedLang) {
+          const langPrefix = matchedLang.split("-")[0];
+          window.location.replace(supportedLanguages[langPrefix]);
+        } else {
+          // Default to English if no match
+          window.location.replace(supportedLanguages["en"]);
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <p>Redirecting...</p>
+  </body>
+</html>

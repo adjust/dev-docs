@@ -1,22 +1,83 @@
 ---
-import type { ChildLink } from "@utils/helpers/navigation/types";
+import type { SidebarItem } from "@utils/helpers/navigation/types";
 
 interface Props {
-  child: ChildLink;
+  child: SidebarItem;
 }
 
 const { child } = Astro.props;
+const childVersion = child?.version ?? "0";
+const childCategory = child?.slug?.includes("/sdk") ? "sdk" : "api";
+const categoryClass = `category-${childCategory}-${childVersion}`;
 ---
 
-<div class="xs:w-full lg:w-[calc(33.3%-8px)] h-auto min-h-[144px] group">
+<div
+  class={`xs:w-full lg:w-[calc(33.3%-8px)] h-auto min-h-[144px] group ${categoryClass} ${!!child.version && "hidden"}`}
+>
   <a class="!no-underline !text-black" href={`/${child.slug}`}>
     <div
       class="h-full px-4 pt-4 pb-6 justify-center relative rounded-lg border border-card hover:shadow-lg"
     >
-      <span class="block font-semibold mb-2 group-hover:text-link-active"
-        >{child.title}</span
-      >
-      <div class="font-normal">{child.description}</div>
+      <span class="block font-semibold mb-2 group-hover:text-link-active">
+        {child.categoryTitle ? child.categoryTitle : child.title}
+      </span>
+      <div class="font-normal">
+        {child.description}
+      </div>
     </div>
   </a>
 </div>
+
+<script>
+  import { $versions as $sdkVersions } from "@store/sdkVersionsStore";
+
+  class CategoryController {
+    private sdkVersionsStore: typeof $sdkVersions;
+
+    constructor(sdkVersionsStore: typeof $sdkVersions) {
+      this.sdkVersionsStore = sdkVersionsStore;
+    }
+
+    // Hide all versioned items
+    private hideAllVersionedItems(): void {
+      const versionedItems = document.querySelectorAll(
+        "[class*='category-sdk']",
+      );
+      versionedItems.forEach((item) => {
+        if (!item.classList.contains("hidden")) item.classList.add("hidden");
+      });
+    }
+
+    // Show items for the current SDK version
+    private showCurrentVersionItems(sdkVersion: string): void {
+      this.hideAllVersionedItems();
+      const versionedItems = document.querySelectorAll(
+        `.category-sdk-${sdkVersion}, .category-sdk-0`,
+      );
+      versionedItems.forEach((item) => {
+        item.classList.remove("hidden");
+        item.classList.add("block");
+      });
+    }
+
+    // Initialize and subscribe to version changes
+    public initialize(): void {
+      const currentSdkVersion =
+        this.sdkVersionsStore.get()?.currentVersion?.value || "v5";
+      this.showCurrentVersionItems(currentSdkVersion);
+
+      this.sdkVersionsStore.subscribe((store) => {
+        const sdkVersion = store.currentVersion?.value;
+        if (sdkVersion) {
+          this.showCurrentVersionItems(sdkVersion);
+        }
+      });
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const controller = new CategoryController($sdkVersions);
+
+    controller.initialize();
+  });
+</script>

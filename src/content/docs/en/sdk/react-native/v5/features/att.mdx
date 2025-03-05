@@ -1,0 +1,159 @@
+---
+title: Set up App Tracking Transparency
+description: Configure your app to use Apple's App Tracking Transparency framework
+slug: en/sdk/react-native/features/att
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v4: /en/sdk/react-native/v4/features/att
+---
+
+If you want to record the device's ID for Advertisers (IDFA), you must display a prompt to get your user's authorization. To do this, you need to include Apple's App Tracking Transparency (ATT) framework in your app. The Adjust SDK stores the user's authorization status and sends it to Adjust's servers with each request.
+
+## Authorization statuses {#authorization-statuses}
+
+| Status                                              | Code | Description                                                             |
+| --------------------------------------------------- | ---- | ----------------------------------------------------------------------- |
+| `ATTrackingManagerAuthorizationStatusNotDetermined` | `0`  | The user hasn't responded to the access prompt yet                      |
+| `ATTrackingManagerAuthorizationStatusRestricted`    | `1`  | Access to app-related data is blocked at the device level               |
+| `ATTrackingManagerAuthorizationStatusDenied`        | `2`  | The user has denied access to app-related data for device measurement   |
+| `ATTrackingManagerAuthorizationStatusAuthorized`    | `3`  | The user has approved access to app-related data for device measurement |
+
+<Callout type="note">
+
+You might receive a status code of `-1` if the SDK is unable to retrieve the ATT (App Tracking Transparency) status.
+
+</Callout>
+
+## ATT authorization wrapper {#att-authorization-wrapper}
+
+<CodeBlock title="Method signature">
+
+```ts
+requestAppTrackingAuthorization: (handler: (status: number) => void) => void
+```
+
+</CodeBlock>
+
+The Adjust SDK contains a wrapper around [Apple's `requestAppTrackingAuthorization` method](https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager/3547037-requesttrackingauthorizationwith). You can use this wrapper if you don't want to customize the ATT prompt.
+
+The callback method triggers when your user responds to the consent dialog. This method sends the user's consent status code to Adjust's servers. You can define responses to each status code within the callback function.
+
+You must specify text content for the ATT. To do this, add your text to the `NSUserTrackingUsageDescription` key in your `Info.plist` file.
+
+<Callout type="tip">
+
+The Adjust SDK also records the consent status if you use a custom prompt. If you show your prompt before initialization, the SDK sends the status with the install event. If you show it after initialization, the SDK sends the status to Adjust's servers as soon as the user updates it.
+
+</Callout>
+
+```jsx
+Adjust.requestAppTrackingAuthorization(function (status) {
+   print("[Adjust]: Authorization status update!");
+   switch (status) {
+      case 0:
+         // ATTrackingManagerAuthorizationStatusNotDetermined case
+         break;
+      case 1:
+         // ATTrackingManagerAuthorizationStatusRestricted case
+         break;
+      case 2:
+         // ATTrackingManagerAuthorizationStatusDenied case
+         break;
+      case 3:
+         // ATTrackingManagerAuthorizationStatusAuthorized case
+         break;
+   }
+});
+```
+
+### Example {#example}
+
+This example shows how to log a human-readable description of the user's authorization status when they interact with a prompt.
+
+```jsx
+Adjust.requestAppTrackingAuthorization(function (status) {
+   print("[Adjust]: Authorization status update!");
+   switch (status) {
+      case 0:
+         console.log("The user has not responded to the access prompt yet.");
+         break;
+      case 1:
+         console.log(
+            "Access to app-related data is blocked at the device level.",
+         );
+         break;
+      case 2:
+         console.log(
+            "The user has denied access to app-related data for device measurement.",
+         );
+         break;
+      case 3:
+         console.log(
+            "The user has approved access to app-related data for device measurement.",
+         );
+         break;
+   }
+});
+```
+
+## Get current authorization status {#get-current-authorization-status}
+
+<CodeBlock title="Method signature">
+
+```ts
+getAppTrackingAuthorizationStatus: (callback: (authorizationStatus: number) => void) => void
+```
+
+</CodeBlock>
+
+You can retrieve a user's current authorization status at any time. Call the `getAppTrackingAuthorizationStatus` method to return the authorization status code as a `number`.
+
+```jsx
+Adjust.getAppTrackingAuthorizationStatus(function (status) {
+   // check status value
+});
+```
+
+### Example {#example-1}
+
+This example shows how to collect the user's authorization status and convert it to a `string`. This information is assigned to a variable called `authorizationStatus` and passed as a session partner parameter with the key `"status"`.
+
+```jsx
+Adjust.getAppTrackingAuthorizationStatus(function (status) {
+   Adjust.addGlobalCallbackParameter("status", status.toString());
+});
+```
+
+## Custom prompt timing {#custom-prompt-timing}
+
+<CodeBlock title="Method signature">
+
+```ts
+public setAttConsentWaitingInterval(attConsentWaitingInterval: number): void
+```
+
+</CodeBlock>
+
+If your app includes an onboarding process or a tutorial, you may want to delay sending your user's ATT consent status until after the user has completed this process. To do this, you can set the `attConsentWaitingInterval` property to delay the sending of data for **up to 360 seconds** to give the user time to complete the initial onboarding. After the timeout ends or the user sets their consent status, the SDK sends all information it has recorded during the delay to Adjust's servers along with the user's consent status.
+
+<Callout type="note">
+
+If the user closes the app before the timeout ends, or before they select their consent status, the timeout restarts when they reopen the app.
+
+</Callout>
+
+```jsx
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox,
+);
+//...
+adjustConfig.setAttConsentWaitingInterval(30);
+//...
+Adjust.initSdk(adjustConfig);
+```

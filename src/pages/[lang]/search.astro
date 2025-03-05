@@ -11,9 +11,8 @@ import { KNOWN_LANGUAGE_CODES, type Locales } from "@i18n/locales";
 import DevHubIndex from "@components/pages/search/DevHubHits/DevHubIndex";
 import SearchInput from "@components/pages/search/SearchInput";
 import BodyNoScript from "@components/Layout/GoogleTagManager/BodyNoScript.astro";
-import { getLanguageFromURL, useTranslations } from "@i18n/utils";
-const currentPage = Astro.url.pathname;
-const currentLang = getLanguageFromURL(currentPage);
+import { useTranslations } from "@i18n/utils";
+const currentLang = Astro.currentLocale;
 
 export const getStaticPaths = () => {
   return KNOWN_LANGUAGE_CODES.flatMap((langKey) => ({
@@ -31,21 +30,23 @@ const devHubTypesenseKeys = {
   preset: import.meta.env.DEV_HUB_TYPESENSE_SEARCH_PRESET,
 };
 
-const helpCenterAlgoliaKeys = {
-  appId: import.meta.env.HELP_CENTER_ALGOLIA_APP_ID,
-  apiKey: import.meta.env.HELP_CENTER_ALGOLIA_API_KEY,
-  indexName: import.meta.env.HELP_CENTER_ALGOLIA_INDEX_NAME,
+const helpCenterTypesenseKeys = {
+  host: import.meta.env.TYPESENSE_HOST,
+  apiKey: import.meta.env.TYPESENSE_API_KEY,
+  indexName: import.meta.env.HELP_CENTER_TYPESENSE_INDEX_NAME,
+  preset: import.meta.env.HELP_CENTER_TYPESENSE_SEARCH_PRESET,
 };
 
 const t = useTranslations(currentLang as keyof Locales);
+const pageTitle = `Search | ${t("site.title")}`;
 ---
 
 <html dir={`/${lang}`} lang={lang} class="initial">
   <head>
     <HeadCommon />
-    <HeadSEO canonicalUrl={canonicalURL} />
+    <HeadSEO pageTitle={pageTitle} canonicalUrl={canonicalURL} />
     <title>
-      {`Search | ${t("site.title")}`}
+      {pageTitle}
     </title>
   </head>
   <body class="font-body xs:w-full xxl:w-[1600px] mx-auto bg-body-main">
@@ -107,7 +108,7 @@ const t = useTranslations(currentLang as keyof Locales);
         </div>
         <hr class="border border-color-neutral-30 mb-8" />
         <HelpCenterIndex
-          algoliaKeys={helpCenterAlgoliaKeys}
+          typesenseKeys={helpCenterTypesenseKeys}
           lang={lang}
           client:only="react"
         />
