@@ -1,0 +1,233 @@
+---
+title: Deep linking
+description: Follow the guides in this section to set up deep linking.
+category-title: Deep linking
+slug: en/sdk/maui/features/deep-links
+sidebar-position: 5
+---
+
+You can create deep links to take users to specific pages in your app. The Adjust SDK uses different logic depending on if the user already has your app installed on their device:
+
+- Direct deep linking: occurs if the user already has your app installed. The link takes the user to the page specified in the link
+- Deferred deep linking: occurs if the user doesn't have your app installed. The link takes the user to a storefront to install your app first. After the user installs the app, it opens to the page specified in the link.
+
+The SDK can read deep link data after a user opens your app from a link.
+
+## Set up deep linking {#set-up-deep-linking}
+
+If a user has your app installed, it opens when they interact with a link containing deep link information. The Adjust SDK contains tools to parse deep link information for use throughout your app.
+
+## Deep linking on iOS {#deep-linking-on-ios}
+
+Follow the [deep linking guide for iOs](/en/sdk/ios/features/deep-links), except for the following steps that can be done directly in the MAUI environment:
+
+### Custom URL schemes {#custom-url-schemes}
+
+To configure Custom URL Scheme, locate the info.plist file, that is usually located at `Platforms/iOS/Info.plist`, which is an `xml` format.
+
+There, the mentioned **Identifier** in the [custom url scheme iOs deep linking guide](/en/sdk/ios/features/deep-links/direct#custom-url-scheme) should be part of the info.plist file such as:
+
+```xml
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+```
+
+The `string` tag value can also be replaced directly for your app bundle identifier
+
+Also, you should configure the custom url types to include a custom name and scheme, as it can be seen in the snippet:
+
+```xml
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>your.unique.nameForTheDeepLink</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>adjustExample</string>
+			</array>
+		</dict>
+	</array>
+```
+
+In your app's [iOs entry point MauiUIApplicationDelegate](), you can override the iOs equivalent `bool OpenUrl(UIApplication application, NSUrl url, NSDictionary options)` to capture the incoming custom url scheme deep links.
+
+## Set up universal links in your app {#set-up-universal-links-in-your-app}
+
+To configure UniversalLinks, locate the entitlements.plist file, that should be located at `Platforms/iOS/Entitlements.plist`, create one if needed.
+There, the mentioned `Adjust Universal Link domain` in the [adjust universal links iOs deep linking guide](/en/sdk/ios/features/deep-links/direct#adjust-universal-links-domain) should be part of the entitlement.plist file such as:
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+   <key>com.apple.developer.associated-domains</key>
+   <array>
+   <string>applinks:example.adj.st</string>
+   </array>
+</dict>
+</plist>
+```
+
+In your app's [iOs entry point MauiUIApplicationDelegate](), you can override the iOs equivalent `bool ContinueUserActivity(UIApplication application, NSUserActivity userActivity, UIApplicationRestorationHandler completionHandler)` to capture the incoming universal links deep links.
+
+## Deep linking on Android {#deep-linking-on-android}
+
+### Configure your scheme name {#configure-your-scheme-name}
+
+At your MAUI's Android Main Activity class, the `MauiAppCompatActivity` which is usually located at `Platforms/Android/MainActivity.cs`.
+You can use an `IntentFilter` attribute to assign a scheme to your Activity. The different possible configurations can be found [here](https://learn.microsoft.com/en-us/dotnet/maui/android/app-links#configure-the-intent-filter).
+
+This example shows how to set up to the `MainActivity` class to open with the **scheme name** `adjustExample`.
+
+```cs
+[IntentFilter(
+    new string[] { Intent.ActionView },
+    Categories = new[] { Intent.CategoryDefault, Intent.CategoryBrowsable },
+    DataScheme = "adjustExample")]
+public class MainActivity : MauiAppCompatActivity
+{
+    // ...
+}
+```
+
+Your app will now be able to handle URI schemes. When a user clicks a link with a `deep_link` parameter containing your **scheme name**, this activity fires.
+
+<CodeBlock highlight="deep_link=adjustExample%3A%2F%2F">
+
+```html
+https://app.adjust.com/abc123?deep_link=adjustExample%3A%2F%2F
+```
+
+</CodeBlock>
+
+### Configure Android App Links {#configure-android-app-links}
+
+Ensure that you [configure your scheme name](#configure-your-scheme-name) even if you're setting up Android App Links for deep linking.
+
+For [Android App Links](https://help.adjust.com/en/article/set-up-android-app-links), add an `IntentFilter` attribute to specify which URLs your app can handle. Include the `AutoVerify` property to `true` in the `IntentFilter` attribute.
+
+```cs
+[IntentFilter(
+    new string[] { Intent.ActionView },
+    Categories = new[] { Intent.CategoryDefault, Intent.CategoryBrowsable },
+    DataScheme = "adjustExample")]
+
+[IntentFilter(
+    new string[] { Intent.ActionView },
+    Categories = new[] { Intent.CategoryDefault, Intent.CategoryBrowsable },
+    DataScheme = "https",
+    DataHost = "insights.go.link",
+    AutoVerify = true,)]
+public class MainActivity : MauiAppCompatActivity
+{
+    // ...
+}
+```
+
+<Callout type="info">
+
+`insights.go.link` is the branded domain defined as the Android App Link.
+
+</Callout>
+
+Your app will now be able to handle Android App Links. When a user clicks on a link containing the `insights.go.link` domain, your app opens automatically.
+
+```html
+https://insights.go.link/login?adj_t=abc123
+```
+
+## Deferred deep linking {#deferred-deep-linking}
+
+The Adjust SDK opens deferred deep links by default. No additional setup is required. If you want to disable this behavior, you need to set up a deferred deep link callback.
+
+### Set up a deferred deep link delegate {#set-up-a-deferred-deep-link-delegate}
+
+<CodeBlock title="Property declaration">
+
+```cs
+public Func<string, bool>? DeferredDeeplinkDelegate { get; set; }
+```
+
+</CodeBlock>
+
+You can configure the Adjust SDK to call a delegate function when it receives a deferred deep link. This delegate function receives the deep link as a `string` argument.
+
+If you want to open the deep link, return `true` in your delegate function. If you don't want to open it, return `false`.
+
+```cs
+private bool DeferredDeeplinkCallback(string deeplinkURL) {
+   //...
+   return openDeeplinkDecision;
+}
+
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+adjustConfig.DeferredDeeplinkDelegate = DeferredDeeplinkCallback;
+Adjust.InitSdk(adjustConfig);
+```
+
+### Example {#example}
+
+This example shows how to log a deep link address when the user opens a deferred deep link.
+
+```cs
+private void LogDeepLink(string deepLinkURL) {
+   Debug.Log("Deeplink URL: " + deeplinkURL);
+   return true;
+}
+//...
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+adjustConfig.DeferredDeeplinkDelegate = LogDeepLink;
+//...
+Adjust.InitSdk(adjustConfig);
+```
+
+## Reattribution via deep links {#reattribution-via-deep-links}
+
+<CodeBlock title="Method signature">
+
+```cs
+public static void ProcessDeeplink(AdjustDeeplink deeplink);
+```
+
+</CodeBlock>
+
+Adjust enables you to run re-engagement campaigns using deep links. For more information, check out how to set up [Deep links in Campaign Lab](https://help.adjust.com/en/article/deep-links).
+
+To reattribute your user, you need to instantiatee an `AdjustDeeplink` object with the deep link URL and pass it to the `Adjust.ProcessDeeplink` method. The Adjust SDK then looks for new attribution data within the deep link. If the SDK finds new information, it forwards the information to Adjust’s servers for reattribution.
+
+```cs
+AdjustDeeplink adjustDeeplink = new AdjustDeeplink("url");
+Adjust.ProcessDeeplink(adjustDeeplink);
+```
+
+## Enable LinkMe {#enable-linkme}
+
+<CodeBlock title="Method signature">
+
+```cs
+public bool? IsLinkMeEnabled { get; set; }
+```
+
+</CodeBlock>
+
+The Adjust SDK lets you copy deep link information from the device pasteboard. When combined with Adjust’s LinkMe solution, this feature enables deferred deep linking on devices running iOS 15 and above.
+
+<Callout type="important">
+
+The Adjust SDK checks the pasteboard when a user opens the app for the first time. The device displays a dialog asking if the user wants to allow the app to read the pasteboard.
+
+</Callout>
+
+When a user clicks on a LinkMe URL they have the option to copy the link information to their system pasteboard. You can use the Adjust SDK to read the system pasteboard for deep link information. If deep link information is present, the SDK forwards the user to the correct page in your app.
+
+To enable pasteboard checking in your app, assign a `true` value to the `IsLinkMeEnabled` property of your `AdjustConfig` instance.
+
+```cs
+AdjustConfig adjustConfig = new AdjustConfig("{YourAppToken}", AdjustEnvironment.Sandbox);
+//...
+adjustConfig.IsLinkMeEnabled = true;
+//...
+Adjust.InitSdk(adjustConfig);
+```
