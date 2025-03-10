@@ -12,16 +12,27 @@ redirects:
    v4: /zh/sdk/android/v4/integrations/signature-library
 ---
 
+<Callout type="note">
+
+本页面将介绍 Adjust SDK v5 的集成步骤。如果您使用的是 Adjust SDK v4，请打开左侧下拉菜单，选择对应的选项卡。
+
+</Callout>
+
 Adjust 的 SDK 签名库是 Adjust SDK 的一款独立插件，也就是说，您无需变更代码或改变在应用中使用 Adjust SDK 的方式，即可使用 SDK 签名库。安装插件后，Adjust SDK 发出的所有请求都将继续如常运行。
 
-## Before you begin {#before-you-begin}
+## 操作前须知 \{\#before\-you\-begin\}
+
+<Callout type="note">
+
+在 [3\.32\.0 或更高版本](https://github.com/adjust/adjust_signature_sdk/releases/tag/v3.32.0)中，签名库被配置为使用 [16KB 的页面大小](https://developer.android.com/guide/practices/page-sizes)。
+
+</Callout>
 
 要将签名库集成到您的安卓应用，请确保满足下列条件：
 
 - 正在使用的安卓API 为 **21 或更高版本** 。
-- 正在使用的 Adjust SDK 为 **4\.38\.2 或更高版本** 。即使是间接使用 Adjust SDK 的情况，此要求也同样适用。
+- 正在使用的 Adjust SDK 为 **5\.0\.0 或更高版本** 。即使是间接使用 Adjust SDK 的情况，此要求也同样适用。
 - 如果您使用了 ProGuard，那么签名库和 Adjust SDK 须使用完全相同的 ProGuard 配置。
-- 如需[16KB 页面尺寸对齐的签名库](https://developer.android.com/guide/practices/page-sizes)，请联系您的 Adjust 代表或发送邮件至 [support@adjust.com](mailto:support@adjust.com)。
 
 <Callout type="important">
 
@@ -29,31 +40,60 @@ Adjust 的 SDK 签名库是 Adjust SDK 的一款独立插件，也就是说，�
 
 </Callout>
 
-### Migrating from Signature v1 or v2 library {#migrating-from-signature-v1-or-v2-library}
+### 从 Signature V1 或 V2 库过渡{#migrating-from-signature-v1-or-v2-library}
 
 如果您之前使用的是 Signature v1 或 Signature v2，请先移除旧版本，然后再集成签名库。 为此请进行下列操作：
 
 - 如果您之前已经集成了 Signature V1，请移除项目中所有会调用签名功能的代码。
 - 如果您之前已经集成了 Signature V2，请从您的项目中移除 Signature V2 库。
 
-### Updating the Signature Library {#updating-the-signature-library}
-
-要更新 Adjust 签名库，请用新版本替换现有的签名库，然后重新运行测试。只要您的[证书已配置且未被更改](https://help.adjust.com/zh/article/sdk-signature#manage-your-certificate-fingerprints)，就无需立即在 Adjust 中对应用逻辑或设置进行任何更改。[如果密钥 ID 满足以下条件，请务必停用](https://help.adjust.com/zh/article/sdk-signature#manage-your-secret-ids)：
-
-- 应用密钥已不再适用于安装报告。
-- 您已经在所有应用平台和商店中全面发布了应用的新版本。
-
-## Integrate the signature library \(SDK v4 only\) {#integrate-the-signature-library}
+## 集成签名库 \{\#integrate\-the\-signature\-library\}
 
 <Callout type="note">
 
-Adjust SDK v5 原生支持 SDK 签名验证。如果您之前集成了 SDK 签名库，请将其卸载并移除所有相关代码。
+在大多数情况下，SDK 签名库默认包含在 SDK v5 中。您应当仅在收到 SDK 提示，或需要特定 SDK 签名库版本时，才进行单独集成。
 
 </Callout>
+<Tabs> <Tab title="Maven" sync="maven">
 
-请按照下列步骤操作，将签名库集成入您的安卓项目中。
+签名库已在[GitHub](https://github.com/adjust/adjust_signature_sdk/releases/) 上发布，并从版本 `3.20.1` 起传输至 Maven。要向您的项目添加签名库，请将以下行附加到您的 `build.gradle` 中 \(请更改为[最新可用](https://github.com/adjust/adjust_signature_sdk/releases/latest)版本 \)：
 
-1. [从 GitHub 调取](https://github.com/adjust/adjust_signature_sdk/releases/latest)签名库内容。
+```groovy
+dependencies {
+   implementation('com.adjust.sdk:adjust-android:5.x.x') {
+       exclude group: 'com.adjust.signature', module: 'adjust-android-signature'
+   }
+
+   implementation 'com.adjust.signature:adjust-android-signature:x.x.x'
+}
+```
+
+`3.24.1` 及更高版本也在 Maven 上提供 Beta 版发布。要向您的项目添加签名库，请将以下行分别附加到项目层级和应用层级的 `build.gradle` 中 \(请更改为[最新可用](https://github.com/adjust/adjust_signature_sdk/releases)版本 \)：
+
+```groovy
+repositories {
+        maven {
+            url "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+...
+```
+
+```groovy
+dependencies {
+   implementation('com.adjust.sdk:adjust-android:5.x.x') {
+       exclude group: 'com.adjust.signature', module: 'adjust-android-signature'
+   }
+
+   implementation 'com.adjust.signature:adjust-android-signature:x.x.x-SNAPSHOT'
+}
+```
+
+一切就绪！签名库现已集成到您的项目中。请按照下一节说明的步骤操作，在 Adjust suite 中配置您的数字证书。
+
+</Tab>
+<Tab title="手动集成" sync="manual-integration">
+
+1. 从 GitHub[获取最新的稳定版](https://github.com/adjust/adjust_signature_sdk/releases/latest)或[Beta](https://github.com/adjust/adjust_signature_sdk/releases) 版。
 2. 在您的应用模块目录中创建新的 `libs` 目录。
 3. 将收到的 AAR 库复制到 `libs` 目录。
 
@@ -77,7 +117,10 @@ Adjust SDK v5 原生支持 SDK 签名验证。如果您之前集成了 SDK 签�
 
 一切就绪！签名库现已集成到您的项目中。请按照下一节说明的步骤操作，在 Adjust suite 中配置您的数字证书。
 
-## Set up your certificates in the Adjust suite {#set-up-your-certificates-in-the-adjust-suite}
+</Tab>
+</Tabs>
+
+## 在 Adjust 套件中设置证书\{\#set\-up\-your\-certificates\-in\-the\-adjust\-suite\}
 
 将签名库集成到应用中后，Adjust SDK 向 Adjust 发送的所有请求都会带有签名。Adjust SDK 还会向 Adjust 服务器发送相关信息，包括您的签名证书指纹。
 
@@ -91,7 +134,7 @@ Adjust SDK v5 原生支持 SDK 签名验证。如果您之前集成了 SDK 签�
 
 </Callout>
 
-#### From a keystore {#from-a-keystore}
+#### 从密钥库获取证书指纹{#from-a-keystore}
 
 如果您使用了自己的密钥库，或 Android Studio 为您生成了密钥库，则可以按下列步骤操作，提取证书指纹。
 
@@ -132,7 +175,7 @@ Adjust SDK v5 原生支持 SDK 签名验证。如果您之前集成了 SDK 签�
 
 3. 保存 SHA\-1 指纹，[添加到 Adjust suite 中的许可名单中](#add-your-digital-certificate-fingerprints-to-adjusts-allowlist)。
 
-#### From Google Play Internal App Sharing {#from-google-play-internal-app-sharing}
+#### 从 Google 内部应用分享获取证书指纹{#from-google-play-internal-app-sharing}
 
 如果您使用的是 [Google Play 内部应用分享](https://support.google.com/googleplay/android-developer/answer/9303479?hl=en)，则需要将您所在机构的 SHA\-1 证书指纹和内部测试证书指纹发送给 Adjust ，以将其加入许可名单。
 
@@ -145,7 +188,7 @@ Adjust SDK v5 原生支持 SDK 签名验证。如果您之前集成了 SDK 签�
 
 ![A screenshot of the certficate page in Google Play Console](@images/sig-v3/google-play-internal-sharing.png)
 
-#### From Google Play App Signing {#from-google-play-app-signing}
+#### 从 Google Play 应用签名获取证书指纹{#from-google-play-app-signing}
 
 如果您使用的是 [Google Play 应用签名](https://support.google.com/googleplay/android-developer/answer/7384423?hl=en)，则需要将所在机构的 SHA\-1 证书指纹和内部测试证书指纹发送给 Adjust ，以将其加入许可名单。
 
@@ -158,7 +201,7 @@ Adjust SDK v5 原生支持 SDK 签名验证。如果您之前集成了 SDK 签�
 
 ![A screenshot of the App signing page in the Google Play Console](@images/sig-v3/google-play-signing.png)
 
-#### From Huawei AppGallery App Signing {#from-huawei-appgallery-app-signing}
+#### 从 Huawei AppGallery 应用签名获取证书指纹{#from-huawei-appgallery-app-signing}
 
 如果您使用的是 Huawei AppGallery 应用签名，则需要将所在机构的 SHA\-1 证书指纹和内部测试证书指纹发送给 Adjust ，以将其加入许可名单。
 
@@ -188,7 +231,7 @@ Adjust SDK v5 原生支持 SDK 签名验证。如果您之前集成了 SDK 签�
 
 3. 保存指纹，[添加到 Adjust suite 中的许可名单中](#add-your-digital-certificate-fingerprints-to-adjusts-allowlist)。
 
-### Add your digital certificate fingerprints to Adjust’s allowlist {#add-your-digital-certificate-fingerprints-to-adjust-s-allowlist}
+### 将您的数字证书指纹加入 Adjust 许可名单{#add-your-digital-certificate-fingerprints-to-adjust-s-allowlist}
 
 <Callout type="note">
 
@@ -207,7 +250,7 @@ Adjust SDK v5 原生支持 SDK 签名验证。如果您之前集成了 SDK 签�
 
 一切就绪！您的指纹现已加入应用许可名单。
 
-## Test your app {#test-your-app}
+## 测试应用\{\#test\-your\-app\}
 
 您可以使用 [Adjust 测试控制台](https://help.adjust.com/zh/article/testing-console)验证签名库是否已正确集成进应用。
 
@@ -239,3 +282,10 @@ Adjust SDK v5 原生支持 SDK 签名验证。如果您之前集成了 SDK 签�
 如果这些字段没有缺失，且包含正确的信息，就说明签名库已经成功集成。如果字段中出现了不同的值，请再次检查集成步骤，或发送邮件到 [support@adjust.com](mailto:support@adjust.com) 获取支持。
 
 一切就绪！签名库已成功集成到您的应用。[等待两个归因窗口结束](https://help.adjust.com/zh/article/attribution-windows)，即可[执行 SDK 签名验证](https://help.adjust.com/zh/article/sdk-signature#enforce-signature-validation)，确保 Adjust 只接受带有签名的请求。
+
+## 更新签名库\{\#updating\-the\-signature\-library\}
+
+只要 Adjust SDK v5 发生更新，签名库就会同时自动更新。如果需要特定版本的签名库，请用新版本替换现有的签名库，然后重新运行测试。只要您的[证书已配置且未被更改](https://help.adjust.com/zh/article/sdk-signature#manage-your-certificate-fingerprints)，就无需立即在 Adjust 中对应用逻辑或设置进行任何更改。[如果密钥 ID 满足以下条件，请务必将其停用](https://help.adjust.com/zh/article/sdk-signature#manage-your-secret-ids)：
+
+- 应用密钥已不再适用于安装报告。
+- 您已经在所有应用平台和商店中全面发布了应用的新版本。

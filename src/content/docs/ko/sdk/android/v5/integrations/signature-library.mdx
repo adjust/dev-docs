@@ -12,16 +12,27 @@ redirects:
    v4: /ko/sdk/android/v4/integrations/signature-library
 ---
 
+<Callout type="note">
+
+본 페이지는 Adjust SDK v5의 연동 단계를 설명합니다. Adjust SDK v4를 사용하는 경우, 왼쪽의 드롭다운 메뉴에서 해당 탭을 선택합니다.
+
+</Callout>
+
 Adjust의 SDK Signature\(SDK 서명\) 라이브러리는 Adjust SDK의 독립형 플러그인으로 설계되었습니다. 따라서 코드를 변경하거나 앱에서 Adjust SDK를 사용하는 방법을 변경할 필요가 없습니다. 플러그인 설치 후에는 Adjust SDK에서 생성된 모든 요청이 계속 정상적으로 작동합니다.
 
-## Before you begin {#before-you-begin}
+## 시작에 앞서 \{\#before\-you\-begin\}
+
+<Callout type="note">
+
+Signature\(서명\) 라이브러리는 [버전 3\.32\.0 이상](https://github.com/adjust/adjust_signature_sdk/releases/tag/v3.32.0)에서 [16KB 페이지 크기](https://developer.android.com/guide/practices/page-sizes)를 사용하도록 구성됩니다.
+
+</Callout>
 
 서명 라이브러리를 Android 앱에 연동하려면 다음을 확인하시기 바랍니다.
 
 - 사용 중인 Android API 버전이 **21 이상** 이어야 합니다.
-- 사용 중인 Adjust SDK 버전이 **4\.38\.2 이상** 이어야 합니다. 이 요건은 Adjust SDK가 간접적으로 사용되는 경우에도 적용됩니다.
+- 사용 중인 Adjust SDK 버전이 **5\.0\.0 이상** 이어야 하며, 이는 Adjust SDK를 간접적으로 사용하는 경우에도 적용됩니다.
 - Proguard를 사용하는 경우 서명 라이브러리와 Adjust SDK에서 동일한 Proguard 구성을 사용해야 합니다.
-- [116KB page size aligned Signature libraries](https://developer.android.com/guide/practices/page-sizes) 에 관심이 있는 경우 Adjust 담당자 또는 [support@adjust.com](mailto:support@adjust.com) 으로 이메일 주시기 바랍니다.
 
 <Callout type="important">
 
@@ -29,31 +40,60 @@ Adjust의 SDK Signature\(SDK 서명\) 라이브러리는 Adjust SDK의 독립형
 
 </Callout>
 
-### Migrating from Signature v1 or v2 library {#migrating-from-signature-v1-or-v2-library}
+### Signature v1 또는 v2 라이브러리에서 마이그레이션 {#migrating-from-signature-v1-or-v2-library}
 
-이전에 Signature v1 또는 Signature v2를 사용한 적이 있다면 서명 라이브러리를 연동하기 전에 이전 버전을 제거해야 합니다. 다음을 수행하시기 바랍니다.
+이전에 Signature v1 또는 Signature v2를 사용한 적이 있다면 Signature 라이브러리를 연동하기 전에 이전 버전을 제거해야 합니다. 이를 위해 다음을 수행하시기 바랍니다.
 
 - 이전에 Signature v1을 연동한 경우 프로젝트에서 서명 함수를 호출하는 모든 코드를 제거합니다.
 - 이전에 Signature v2를 연동한 경우 프로젝트에서 Signature v2 라이브러리를 제거합니다.
 
-### Updating the Signature Library {#updating-the-signature-library}
-
-Adjust Signature 라이브러리를 업데이트하려면 기존의 Signature 라이브러리를 새 버전으로 교체하고 테스트를 다시 실행하시기 바랍니다. [인증서가 구성되고 변경되지 않은](https://help.adjust.com/ko/article/sdk-signature#manage-your-certificate-fingerprints) 한 Adjust에서 앱 로직이나 설정을 즉시 변경할 필요는 없습니다. [시크릿 ID가 다음 기준에 부합하는 경우 반드시 비활성화하시기 바랍니다](https://help.adjust.com/ko/article/sdk-signature#manage-your-secret-ids).
-
-- 더 이상 설치 리포트에 기여하지 않는 경우.
-- 모든 앱 플랫폼 및 스토어에서 새로운 앱 버전을 출시
-
-## Integrate the signature library \(SDK v4 only\) {#integrate-the-signature-library}
+## Signature 라이브러리 연동 \{\#integrate\-the\-signature\-library\}
 
 <Callout type="note">
 
-Adjust SDK v5는 SDK 서명 검증을 지원합니다. 이전에 SDK Signature 라이브러리 를 연동한 적이 있다면, 이를 삭제하고 모든 관련 코드를 삭제해야 합니다.
+Adjust SDK는 대부분의 경우 Signature 라이브러리를 기본값으로 포함합니다. Adjust SDK의 프롬프트가 있거나 특정 Signature 라이브러리 버전이 필요한 경우에만 계속 진행하시기 바랍니다.
 
 </Callout>
+<Tabs> <Tab title="Maven" sync="maven">
 
-다음 단계에 따라 Android 프로젝트에서 서명 라이브러리를 연동합니다.
+Signature 라이브러리는 [GitHub에서](https://github.com/adjust/adjust_signature_sdk/releases/) 릴리스되며, `3.20.1` 버전부터 Maven으로 전달됩니다. 프로젝트에 라이브러리를 추가하려면 다음을 앱 수준 `build.gradle`에 추가합니다\(최신 버전으로 변경\).
 
-1. [GitHub에서 서명 라이브러리 콘텐츠](https://github.com/adjust/adjust_signature_sdk/releases/latest)를 불러옵니다.
+```groovy
+dependencies {
+   implementation('com.adjust.sdk:adjust-android:5.x.x') {
+       exclude group: 'com.adjust.signature', module: 'adjust-android-signature'
+   }
+
+   implementation 'com.adjust.signature:adjust-android-signature:x.x.x'
+}
+```
+
+또는 `3.24.1` 버전 이상의 베타 릴리스를 Maven에서 이용할 수 있습니다. 프로젝트에 Signature 라이브러리를 추가하려면 다음을 프로젝트 수준 및 앱 수준의 `build.gradle`에 각각 추가합니다\([최신 버전](https://github.com/adjust/adjust_signature_sdk/releases)으로 변경\).
+
+```groovy
+repositories {
+        maven {
+            url "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+...
+```
+
+```groovy
+dependencies {
+   implementation('com.adjust.sdk:adjust-android:5.x.x') {
+       exclude group: 'com.adjust.signature', module: 'adjust-android-signature'
+   }
+
+   implementation 'com.adjust.signature:adjust-android-signature:x.x.x-SNAPSHOT'
+}
+```
+
+이제 끝입니다\! 서명 라이브러리가 프로젝트에 연동되었습니다. 다음 섹션의 단계에 따라 Adjust suite의 디지털 인증서를 설정합니다.
+
+</Tab>
+<Tab title="수동 연동" sync="manual-integration">
+
+1. GitHub에서 [최신 Stable 버전](https://github.com/adjust/adjust_signature_sdk/releases/latest) 또는 [베타](https://github.com/adjust/adjust_signature_sdk/releases) 버전을 가져옵니다.
 2. 앱 모듈 디렉터리 내에 새 `libs` 디렉터리를 생성합니다.
 3. 제공된 AAR 라이브러리를 `libs` 디렉터리에 복사합니다.
 
@@ -75,9 +115,12 @@ Adjust SDK v5는 SDK 서명 검증을 지원합니다. 이전에 SDK Signature �
 
 5. Android Studio 팝업창에서 **Sync Now** 를 선택하여 변경 사항을 동기화합니다.
 
-이제 끝입니다\! Signature 라이브러리가 프로젝트에 연동되었습니다. 다음 섹션의 단계에 따라 Adjust suite의 디지털 인증서를 설정합니다.
+이제 끝입니다\! 서명 라이브러리가 프로젝트에 연동되었습니다. 다음 섹션의 단계에 따라 Adjust suite의 디지털 인증서를 설정합니다.
 
-## Set up your certificates in the Adjust suite {#set-up-your-certificates-in-the-adjust-suite}
+</Tab>
+</Tabs>
+
+## Adjust Suite에서 인증서 설정 \{\#set\-up\-your\-certificates\-in\-the\-adjust\-suite\}
 
 Signature 라이브러리를 앱에 연동하면 Adjust SDK가 Adjust로 전송하는 모든 요청이 서명됩니다. Adjust SDK는 또한 서명 인증서의 핑거프린트를 포함한 관련 정보를 Adjust 서버로 전송합니다.
 
@@ -87,11 +130,11 @@ Signature 라이브러리를 앱에 연동하면 Adjust SDK가 Adjust로 전송�
 
 <Callout type="important">
 
-서명 인증서의 핑거프린트를 허용 리스트에 추가해야 합니다. 허용 리스트에 추가된 핑거프린트가 없는 경우 앱으로부터의 트래픽이 스푸핑될 수 있습니다.
+서명 인증 핑거프린트를 허용 리스트에 추가해야 합니다. 허용 리스트에 추가된 핑거프린트가 없는 경우 앱에서 발생하는 트래픽이 스푸핑될 수 있습니다.
 
 </Callout>
 
-#### From a keystore {#from-a-keystore}
+#### Keystore 사용 {#from-a-keystore}
 
 자체 키스토어를 사용하거나 Android Studio에서 키스토어가 생성된 경우 다음 단계에 따라 인증서의 핑거프린트를 가져올 수 있습니다.
 
@@ -132,7 +175,7 @@ Signature 라이브러리를 앱에 연동하면 Adjust SDK가 Adjust로 전송�
 
 3. SHA\-1 핑거프린트를 저장하여 [Adjust suite의 허용 리스트에 추가](#add-your-digital-certificate-fingerprints-to-adjusts-allowlist)합니다.
 
-#### From Google Play Internal App Sharing {#from-google-play-internal-app-sharing}
+#### Google Play Internal App Sharing 사용 {#from-google-play-internal-app-sharing}
 
 [Google Play Internal App Sharing](https://support.google.com/googleplay/android-developer/answer/9303479?hl=en)을 사용하는 경우, 허용 리스트에 등록하려면 조직의 SHA\-1 인증서 핑거프린트와 내부 테스트 인증서 핑거프린트를 모두 Adjust에 전송해야 합니다.
 
@@ -145,7 +188,7 @@ Signature 라이브러리를 앱에 연동하면 Adjust SDK가 Adjust로 전송�
 
 ![Google Play Console의 인증서 페이지 스크린샷](@images/sig-v3/google-play-internal-sharing.png)
 
-#### From Google Play App Signing {#from-google-play-app-signing}
+#### Google Play App Signing 사용 {#from-google-play-app-signing}
 
 [Google Play App Signing](https://support.google.com/googleplay/android-developer/answer/7384423?hl=en)을 사용하는 경우, 허용 리스트에 등록하려면 조직의 SHA\-1 인증서 핑거프린트와 내부 테스트 인증서 핑거프린트를 모두 Adjust에 전송해야 합니다.
 
@@ -158,7 +201,7 @@ Signature 라이브러리를 앱에 연동하면 Adjust SDK가 Adjust로 전송�
 
 ![Google Play Console의 앱 서명 페이지 스크린샷](@images/sig-v3/google-play-signing.png)
 
-#### From Huawei AppGallery App Signing {#from-huawei-appgallery-app-signing}
+#### Huawei AppGallery App Signing 사용 {#from-huawei-appgallery-app-signing}
 
 Huawei AppGallery App Signing을 사용하는 경우, 허용 리스트에 등록하려면 조직의 SHA\-1 인증서 핑거프린트와 내부 테스트 인증서 핑거프린트를 모두 Adjust에 전송해야 합니다.
 
@@ -188,11 +231,11 @@ Huawei AppGallery의 자체 서명 인증서를 사용하는 경우 [키스토�
 
 3. [Adjust suite의 허용 리스트에 추가](#add-your-digital-certificate-fingerprints-to-adjusts-allowlist)할 핑거프린트를 저장합니다.
 
-### Add your digital certificate fingerprints to Adjust’s allowlist {#add-your-digital-certificate-fingerprints-to-adjust-s-allowlist}
+### 디지털 인증서 핑거프린트를 Adjust의 허용 리스트에 추가 {#add-your-digital-certificate-fingerprints-to-adjust-s-allowlist}
 
 <Callout type="note">
 
-Adjust suite에 사용할 인증서의 모든 핑거프린트를 추가해야 된다는 점을 기억해 주십시오. 디버그 버전과 다른 스토어의 버전이 포함될 수 있습니다.
+Adjust suite에 사용할 인증서의 모든 핑거프린트를 추가해야 합니다. 디버그 버전과 다른 스토어의 버전이 포함될 수 있습니다.
 
 </Callout>
 
@@ -202,12 +245,12 @@ Adjust suite에 사용할 인증서의 모든 핑거프린트를 추가해야 �
 2. **Protection** 탭을 선택합니다.
 3. **의심되는 설치** 섹션의 **편집** 버튼을 선택합니다.
 4. **Android 핑거프린팅** 섹션에서 **새 핑거프린트** 를 선택합니다.
-5. SHA\-1 핑거프린트를 표시되는 텍스트 상자에 붙여넣기합니다.
+5. SHA\-1 핑거프린트를 표시되는 텍스트 상자에 붙여넣기 합니다.
 6. **추가** 를 선택합니다.
 
 이제 끝입니다\! 이제 핑거프린트가 앱의 허용 리스트에 추가되었습니다.
 
-## Test your app {#test-your-app}
+## 앱 테스트 \{\#test\-your\-app\}
 
 [Adjust 테스팅 콘솔](https://help.adjust.com/ko/article/testing-console)을 사용하여 서명 라이브러리가 앱에 연동되었는지 확인할 수 있습니다.
 
@@ -239,3 +282,10 @@ Adjust SDK가 **샌드박스 모드** 에서 실행 중이어야 합니다.
 이러한 필드가 있고 올바른 정보를 포함하고 있다면 서명 라이브러리가 성공적으로 연동된 것입니다. 필드에 다른 값이 표시되는 경우, 연동 단계를 다시 검토하거나 [support@adjust.com](mailto:support@adjust.com)에 연락하시기 바랍니다.
 
 이제 끝입니다\! Signature 라이브러리가 앱에 성공적으로 연동되었습니다. [어트리뷰션 윈도우 2개가 완료](https://help.adjust.com/ko/article/attribution-windows)되면 [SDK Signature\(SDK 서명\) 검증을 시행](https://help.adjust.com/ko/article/sdk-signature#enforce-signature-validation)하여 서명된 요청만 Adjust에서 수락하도록 할 수 있습니다.
+
+## Signature 라이브러리 업데이트 \{\#updating\-the\-signature\-library\}
+
+Signature 라이브러리는 Adjust SDK v5 업데이트와 함께 자동으로 업데이트됩니다. 특정 Signature 라이브러리 버전이 필요한 경우 기존 라이브러리를 새 버전으로 교체하고, 테스트를 다시 실행합니다. [인증서가 구성되어 있고 수정되지 않은 경우](https://help.adjust.com/ko/article/sdk-signature#manage-your-certificate-fingerprints) 앱 로직이나 Adjust의 설정을 즉시 변경할 필요는 없습니다. [다음 기준에 해당하는 경우 시크릿 ID를 비활성화](https://help.adjust.com/ko/article/sdk-signature#manage-your-secret-ids)해야 합니다.
+
+- 더 이상 설치 리포트에 필요하지 않는 경우.
+- 모든 앱 플랫폼 및 스토어에서 새로운 앱 버전을 출시한 경우.
