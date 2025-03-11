@@ -71,6 +71,7 @@ export default defineConfig({
         "@components/MinorVersion.astro",
         "@components/Tab.astro",
         "@components/Tabs.astro",
+        "@components/DefList.astro",
       ],
     }), // Enable React for the Algolia search component.
     react({
