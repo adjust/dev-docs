@@ -64,6 +64,7 @@ export default defineConfig({
   integrations: [
     AutoImport({
       imports: [
+        "src/variables.json",
         "@components/Accordion.astro",
         "@components/Callout.astro",
         "@components/CodeBlock.astro",
@@ -72,6 +73,7 @@ export default defineConfig({
         "@components/Tab.astro",
         "@components/Tabs.astro",
         "@components/DefList.astro",
+        "@components/ExampleApp.astro",
       ],
     }), // Enable React for the Algolia search component.
     react({
