@@ -16,7 +16,6 @@ import {
   defListHastHandlers,
 } from "remark-definition-list";
 import { writeFile } from "fs";
-import markdoc from "@astrojs/markdoc";
 
 console.log(
   `${import.meta.env.VITE_GITHUB_TOKEN ? "Token found" : "No token found"}`,
@@ -85,7 +84,6 @@ export default defineConfig({
     }),
     tailwind(),
     sitemap(),
-    markdoc(),
   ],
   site: "https://dev.adjust.com/",
   markdown: {

@@ -193,8 +193,6 @@ async function processFile(file, locale) {
   let updatedContent;
   if (file.endsWith(".mdx")) {
     updatedContent = fixMdxContent(fileContent, locale);
-  } else if (file.endsWith(".mdoc")) {
-    updatedContent = fixMdocContent(fileContent, locale);
   }
 
   const finalContent = `---\n${yaml.dump(updatedFrontMatter, { noRefs: true })}---\n${updatedContent}`;
@@ -206,8 +204,6 @@ async function processFile(file, locale) {
     // Format the file after writing changes
     if (file.endsWith(".mdx")) {
       await formatMdxFile(file);
-    } else if (file.endsWith(".mdoc")) {
-      await formatMdocFile(file);
     }
   }
 }
@@ -221,7 +217,7 @@ async function main() {
     const relevantFiles = files.filter(
       (file) =>
         file.startsWith(`src/content/docs/${locale}/`) &&
-        (file.endsWith(".mdx") || file.endsWith(".mdoc")),
+        (file.endsWith(".mdx")),
     );
 
     for (const file of relevantFiles) {
