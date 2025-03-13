@@ -8,11 +8,11 @@ This is a step-by-step guide to help you integrate and configure the Adjust Exte
 
 This extension enables you to send installs, sessions, custom in-app events, and other types of data to Adjust. Follow this guide to set up and configure the Adjust Extension and verify that you can send install information to Adjust.
 
-## Set up your project {% #set-up-your-project %}
+## Set up your project {#set-up-your-project}
 
 Follow these steps to set up your project to support the Adjust Extension for Adobe Experience SDK.
 
-### Install the Adjust Extension {% #install-the-adjust-extension %}
+### Install the Adjust Extension {#install-the-adjust-extension}
 
 To use the Adjust Extension for Adobe Experience SDK, you need to add it to your project as a dependency.
 
@@ -24,19 +24,20 @@ https://github.com/adjust/ios_adobe_extension.git
 
 If you're using CocoaPods, add the following line to your `Podfile`:
 
-{% codeblock title="Podfile" showLineNumbers=false %}
+<CodeBlock title="Podfile" showLineNumbers={false}>
 
 ```rb
 pod 'AdjustAdobeExtension'
 ```
 
-{% /codeblock %}
+</CodeBlock>
 
-### Add iOS frameworks {% #add-ios-frameworks %}
+### Add iOS frameworks {#add-ios-frameworks}
 
 The Adjust Extension requires additional iOS frameworks to access information about a device. Add the following frameworks and mark them as **optional** to enable these features.
 
-{% deflist %}
+<DefList>
+
 `AdSupport.framework`
 
 : Used to access the ID for Advertisers (IDFA) and Limited Ad Tracking (LAT) information. LAT is available only on devices running iOS 14 or earlier.
@@ -52,9 +53,10 @@ The Adjust Extension requires additional iOS frameworks to access information ab
 `StoreKit.framework`
 
 : Used to enable the Adjust Extension to communicate with the `SKAdNetwork` framework on devices running iOS 14 or later.
-{% /deflist %}
 
-## Integration guide {% #integration-guide %}
+</DefList>
+
+## Integration guide {#integration-guide}
 
 Once you've completed the project setup steps, you can integrate the Adjust SDK. The following guide shows you how to:
 
@@ -66,14 +68,14 @@ Once you've completed the project setup steps, you can integrate the Adjust SDK.
 
 To do this, you need to create the following files:
 
-{% tabs %}
-{% tab title="Swift" sync="swift" %}
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 - `AppDelegate.swift`: this is where you'll configure the Adjust Extension.
 - `ViewController.swift`: this is where you'll create functions using the Adjust Extension.
-  {% /tab %}
 
-{% tab title="Objective-C" sync="objc" %}
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 - `AppDelegate.m`: the method file for your app delegate. This is where you'll configure the Adjust Extension.
 - `AppDelegate.h`: the header file for your app delegate.
@@ -98,14 +100,15 @@ For the purposes of this guide, use the following header files:
 @end
 ```
 
-{% /tab %}
-{% /tabs %}
+</Tab>
+</Tabs>
 
-### Import classes {% #import-classes %}
+### Import classes {#import-classes}
 
 First, you need to import some classes into your application files. Import the following classes into your App Delegate:
 
-{% deflist %}
+<DefList>
+
 `AEPCore`
 
 : Contains the implementation of the Event Hub.
@@ -117,10 +120,11 @@ First, you need to import some classes into your application files. Import the f
 `AdjustAdobeExtension`
 
 : The Adjust Extension for Adobe Experience SDK.
-{% /deflist %}
 
-{% tabs %}
-{% tab title="Swift" sync="swift" %}
+</DefList>
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 // AppDelegate.swift
@@ -129,9 +133,9 @@ import AEPServices
 import AdjustAdobeExtension
 ```
 
-{% /tab %}
+</Tab>
 
-{% tab title="Objective-C" sync="objc" %}
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 // AppDelegate.m
@@ -141,12 +145,13 @@ import AdjustAdobeExtension
 #import <AdjustAdobeExtension/AdjustAdobeExtension.h>
 ```
 
-{% /tab %}
-{% /tabs %}
+</Tab>
+</Tabs>
 
 Next, import the following classes into your View Controller:
 
-{% deflist %}
+<DefList>
+
 `AEPCore`
 
 : Contains the implementation of the Event Hub.
@@ -154,10 +159,11 @@ Next, import the following classes into your View Controller:
 `AdjustAdobeExtension`
 
 : The Adjust Extension for Adobe Experience SDK.
-{% /deflist %}
 
-{% tabs %}
-{% tab title="Swift" sync="swift" %}
+</DefList>
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 // ViewController.swift
@@ -165,9 +171,8 @@ import AEPCore
 import AdjustAdobeExtension
 ```
 
-{% /tab %}
-
-{% tab title="Objective-C" sync="objc" %}
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 // ViewController.m
@@ -176,803 +181,769 @@ import AdjustAdobeExtension
 #import <AdjustAdobeExtension/AdjustAdobeExtension.h>
 ```
 
-{% /tab %}
-{% /tabs %}
+</Tab>
+</Tabs>
 
-### Create an App Delegate {% #create-an-app-delegate %}
+### Create an App Delegate {#create-an-app-delegate}
 
 To register the Adjust iOS Extension for Adobe Experience SDK, you need to create an App Delegate. If you've not yet created an App Delegate, follow these steps:
 
 1. Create a new `AppDelegate` implementation.
 
-   {% tabs %}
-   {% tab title="Swift" sync="swift" %}
-   {% codeblock title="AppDelegate.swift" highlight="{range: 6}" %}
+<Tabs>
+<Tab title="Swift" sync="swift">
 
-   ```swift
-   import AEPCore
-   import AEPServices
-   import AdjustAdobeExtension
+<CodeBlock title="AppDelegate.swift" highlight="{range: 6}">
 
-   @main
-   class AppDelegate: UIResponder, UIApplicationDelegate {}
-   ```
+```swift
+import AEPCore
+import AEPServices
+import AdjustAdobeExtension
 
-   {% /codeblock %}
-   {% /tab %}
+@main
+class AppDelegate: UIResponder, UIApplicationDelegate {}
+```
 
-   {% tab title="Objective-C" sync="objc" %}
-   {% codeblock title="AppDelegate.swift" highlight="{range: 6}" %}
+   </CodeBlock>
+   </Tab>
 
-   ```objc
-   #import "AppDelegate.h"
-   @import AEPCore;
-   @import AEPServices;
-   #import <AdjustAdobeExtension/AdjustAdobeExtension.h>
+   <Tab title="Objective-C" sync="objc">
+   <CodeBlock title="AppDelegate.swift" highlight="{range: 6}">
 
-   @implementation AppDelegate
-   ```
+```objc
+#import "AppDelegate.h"
+@import AEPCore;
+@import AEPServices;
+#import <AdjustAdobeExtension/AdjustAdobeExtension.h>
 
-   {% /codeblock %}
-   {% /tab %}
-   {% /tabs %}
+@implementation AppDelegate
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
 
 1. Within your `AppDelegate` implementation, create a new function called `application` that returns a boolean. This function takes the following arguments:
 
-   {% deflist %}
-   `application`: `UIApplication`
+<DefList>
 
-   : The singleton app object.
+`application`: `UIApplication`
 
-   `launchOptions`: `[UIApplication.LaunchOptionsKey : Any]`
+: The singleton app object.
 
-   : A dictionary indicating the reason the app was launched.
-   {% /deflist %}
+`launchOptions`: `[UIApplication.LaunchOptionsKey : Any]`
 
-   {% tabs %}
-   {% tab title="Swift" sync="swift" %}
-   {% codeblock
-      title="AppDelegate.swift"
-      highlight="{range: 3}"
-      startLineNumber=5 %}
+: A dictionary indicating the reason the app was launched.
 
-   ```swift
-   @main
-   class AppDelegate: UIResponder, UIApplicationDelegate {
-      func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {}
-   }
-   ```
+</DefList>
 
-   {% /codeblock %}
-   {% /tab %}
+<Tabs>
+<Tab title="Swift" sync="swift">
 
-   {% tab title="Objective-C" sync="objc" %}
-   {% codeblock
-      title="AppDelegate.m"
-      highlight="{range: 3}"
-      startLineNumber=6 %}
+<CodeBlock title="AppDelegate.swift" highlight="{range: 3}" startLineNumber={5}>
 
-   ```objc
-   @implementation AppDelegate
+```swift
+@main
+class AppDelegate: UIResponder, UIApplicationDelegate {
+   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {}
+}
+```
 
-   - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {}
-   ```
+</CodeBlock>
 
-   {% /codeblock %}
-   {% /tab %}
-   {% /tabs %}
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
-### Configure the Adjust Extension {% #configure-the-adjust-extension %}
+<CodeBlock title="AppDelegate.m" highlight="{range: 3}" startLineNumber={6}>
+
+```objc
+@implementation AppDelegate
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {}
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
+
+### Configure the Adjust Extension {#configure-the-adjust-extension}
 
 Once you've created the App Delegate, follow these steps to configure the Adjust iOS Extension for Adobe Experience SDK:
 
 1. Inside your `application` function, set your logging level by calling the `setLogLevel` method of the `AEPMobileCore` class with the following argument:
 
-   {% deflist %}
-   `logLevel`
+<DefList>
 
-   : The level of logging you want to enable.
+`logLevel`
 
-   - `Trace`: enable all logging.
-   - `Debug`: disable verbose logging.
-   - `Warning`: log only errors and warnings.
-   - `Error`: log only errors.
-     {% /deflist %}
+: The level of logging you want to enable.
 
-   {% tabs %}
-   {% tab title="Swift" sync="swift" %}
-   {% codeblock
-      title="AppDelegate.swift"
-      highlight="{range: 2}"
-      startLineNumber=7 %}
+- `Trace`: enable all logging.
+- `Debug`: disable verbose logging.
+- `Warning`: log only errors and warnings.
+- `Error`: log only errors.
 
-   ```swift
-   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-      MobileCore.setLogLevel(LogLevel.trace)
-   }
-   ```
+</DefList>
 
-   {% /codeblock %}
-   {% /tab %}
+<Tabs>
+<Tab title="Swift" sync="swift">
 
-   {% tab title="Objective-C" sync="objc" %}
-   {% codeblock
-      title="AppDelegate.m"
-      highlight="{range: 2}"
-      startLineNumber=8 %}
+<CodeBlock title="AppDelegate.swift" highlight="{range: 2}" startLineNumber={7}>
 
-   ```objc
-   - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-      [AEPMobileCore setLogLevel: AEPLogLevelTrace];
-   }
-   ```
+```swift
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+   MobileCore.setLogLevel(LogLevel.trace)
+}
+```
 
-   {% /codeblock %}
-   {% /tab %}
-   {% /tabs %}
+</CodeBlock>
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+<CodeBlock title="AppDelegate.m" highlight="{range: 2}" startLineNumber={8}>
+
+```objc
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+   [AEPMobileCore setLogLevel: AEPLogLevelTrace];
+}
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
 
 1. Create a new `UIApplicationState` variable called `appState`. You'll use this to communicate the app state with the Adobe Experience SDK.
 
-   {% tabs %}
-   {% tab title="Swift" sync="swift" %}
-   {% codeblock
-      title="AppDelegate.swift"
-      highlight="{range: 3}"
-      startLineNumber=7 %}
+<Tabs>
+<Tab title="Swift" sync="swift">
 
-   ```swift
-   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-      MobileCore.setLogLevel(LogLevel.trace)
-      let appState = application.applicationState
-   }
-   ```
+<CodeBlock title="AppDelegate.swift" highlight="{range: 3}" startLineNumber={7}>
 
-   {% /codeblock %}
-   {% /tab %}
+```swift
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+   MobileCore.setLogLevel(LogLevel.trace)
+   let appState = application.applicationState
+}
+```
 
-   {% tab title="Objective-C" sync="objc" %}
-   {% codeblock
-      title="AppDelegate.m"
-      highlight="{range: 3}"
-      startLineNumber=8 %}
+</CodeBlock>
 
-   ```objc
-   - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-      [AEPMobileCore setLogLevel: AEPLogLevelTrace];
-      const UIApplicationState appState = application.applicationState;
-   }
-   ```
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
-   {% /codeblock %}
-   {% /tab %}
-   {% /tabs %}
+<CodeBlock title="AppDelegate.m" highlight="{range: 3}" startLineNumber={8}>
+
+```objc
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+   [AEPMobileCore setLogLevel: AEPLogLevelTrace];
+   const UIApplicationState appState = application.applicationState;
+}
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
 
 1. Create a new `AdjustAdobeExtensionConfig` instance named `config` with the following argument:
 
-   {% deflist %}
-   `environment`: `NSString`
+<DefList>
 
-   : The environment in which your device is running.
+`environment`: `NSString`
 
-   - Pass `ADJEnvironmentSandbox` when testing.
-   - Pass `ADJEnvironmentProduction` when running the app in production.
-     {% /deflist %}
+: The environment in which your device is running.
 
-   {% tabs %}
-   {% tab title="Swift" sync="swift" %}
-   {% codeblock
-      title="AppDelegate.swift"
-      highlight="{range: 5}"
-      startLineNumber=7 %}
+- Pass `ADJEnvironmentSandbox` when testing.
+- Pass `ADJEnvironmentProduction` when running the app in production.
 
-   ```swift
-   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-      MobileCore.setLogLevel(LogLevel.trace)
-      let appState = application.applicationState
+</DefList>
 
-      if let config = AdjustAdobeExtensionConfig(environment: ADJEnvironmentSandbox) {}
-   }
-   ```
+<Tabs>
+<Tab title="Swift" sync="swift">
 
-   {% /codeblock %}
-   {% /tab %}
+<CodeBlock title="AppDelegate.swift" highlight="{range: 5}" startLineNumber={7}>
 
-   {% tab title="Objective-C" sync="objc" %}
-   {% codeblock
-      title="AppDelegate.m"
-      highlight="{range: 5}"
-      startLineNumber=8 %}
+```swift
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+   MobileCore.setLogLevel(LogLevel.trace)
+   let appState = application.applicationState
 
-   ```objc
-   - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-      [AEPMobileCore setLogLevel: AEPLogLevelTrace];
-      const UIApplicationState appState = application.applicationState;
+   if let config = AdjustAdobeExtensionConfig(environment: ADJEnvironmentSandbox) {}
+}
+```
 
-      AdjustAdobeExtensionConfig *config = [AdjustAdobeExtensionConfig configWithEnvironment:ADJEnvironmentSandbox];
-   }
-   ```
+</CodeBlock>
 
-   {% /codeblock %}
-   {% /tab %}
-   {% /tabs %}
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+<CodeBlock title="AppDelegate.m" highlight="{range: 5}" startLineNumber={8}>
+
+```objc
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+   [AEPMobileCore setLogLevel: AEPLogLevelTrace];
+   const UIApplicationState appState = application.applicationState;
+
+   AdjustAdobeExtensionConfig *config = [AdjustAdobeExtensionConfig configWithEnvironment:ADJEnvironmentSandbox];
+}
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
 
 1. Call the `setConfiguration` method of the `AdjustAdobeExtension` class with your configuration instance as an argument to register the configuration.
 
-   {% tabs %}
-   {% tab title="Swift" sync="swift" %}
-   {% codeblock
-      title="AppDelegate.swift"
-      highlight="{range: 6}"
-      startLineNumber=7 %}
+<Tabs>
+<Tab title="Swift" sync="swift">
 
-   ```swift
-   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-      MobileCore.setLogLevel(LogLevel.trace)
-      let appState = application.applicationState
+<CodeBlock title="AppDelegate.swift" highlight="{range: 6}" startLineNumber={7}>
 
-      if let config = AdjustAdobeExtensionConfig(environment: ADJEnvironmentSandbox) {
-         AdjustAdobeExtension.setConfiguration(config)
-      }
+```swift
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+   MobileCore.setLogLevel(LogLevel.trace)
+   let appState = application.applicationState
+
+   if let config = AdjustAdobeExtensionConfig(environment: ADJEnvironmentSandbox) {
+      AdjustAdobeExtension.setConfiguration(config)
    }
-   ```
+}
+```
 
-   {% /codeblock %}
-   {% /tab %}
+</CodeBlock>
 
-   {% tab title="Objective-C" sync="objc" %}
-   {% codeblock
-      title="AppDelegate.m"
-      highlight="{range: 6}"
-      startLineNumber=8 %}
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
-   ```objc
-   - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-      [AEPMobileCore setLogLevel: AEPLogLevelTrace];
-      const UIApplicationState appState = application.applicationState;
+<CodeBlock title="AppDelegate.m" highlight="{range: 6}" startLineNumber={8}>
 
-      AdjustAdobeExtensionConfig *config = [AdjustAdobeExtensionConfig configWithEnvironment:ADJEnvironmentSandbox];
-      [AdjustAdobeExtension setConfiguration:config];
-   }
-   ```
+```objc
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+   [AEPMobileCore setLogLevel: AEPLogLevelTrace];
+   const UIApplicationState appState = application.applicationState;
 
-   {% /codeblock %}
-   {% /tab %}
-   {% /tabs %}
+   AdjustAdobeExtensionConfig *config = [AdjustAdobeExtensionConfig configWithEnvironment:ADJEnvironmentSandbox];
+   [AdjustAdobeExtension setConfiguration:config];
+}
+```
 
-### Register the Adjust Extension {% #register-the-adjust-extension %}
+</CodeBlock>
+
+</Tab>
+</Tabs>
+
+### Register the Adjust Extension {#register-the-adjust-extension}
 
 Once you've configured the Adjust Extension, you need to register it with the Adobe Experience SDK. To do this:
 
 1. Inside your `application` function, call the `registerExtensions` method of the AEPMobileCore class with the following arguments:
 
-   {% deflist %}
-   `extensions`: `NSArray<Class*>* _Nonnull`
+<DefList>
 
-   : A list of extensions.
+`extensions`: `NSArray<Class*>* _Nonnull`
 
-   `completion`: `(^ _Nullable)(void))`
+: A list of extensions.
 
-   : A completion handler.
-   {% /deflist %}
+`completion`: `(^ _Nullable)(void))`
 
-   For the purposes of this guide, pass the `AdjustAdobeExtension` class for `extensions`. You'll set your completion handler in the next step.
+: A completion handler.
 
-   {% tabs %}
-   {% tab title="Swift" sync="swift" %}
-   {% codeblock
-      title="AppDelegate.swift"
-      highlight="{range: 9}"
-      startLineNumber=7 %}
+</DefList>
 
-   ```swift
-   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-      MobileCore.setLogLevel(LogLevel.trace)
-      let appState = application.applicationState
+For the purposes of this guide, pass the `AdjustAdobeExtension` class for `extensions`. You'll set your completion handler in the next step.
 
-      if let config = AdjustAdobeExtensionConfig(environment: ADJEnvironmentSandbox) {
-         AdjustAdobeExtension.setConfiguration(config)
-      }
+<Tabs>
+<Tab title="Swift" sync="swift">
 
-      MobileCore.registerExtensions([AdjustAdobeExtension.self]) {}
+<CodeBlock title="AppDelegate.swift" highlight="{range: 9}" startLineNumber={7}>
+
+```swift
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+   MobileCore.setLogLevel(LogLevel.trace)
+   let appState = application.applicationState
+
+   if let config = AdjustAdobeExtensionConfig(environment: ADJEnvironmentSandbox) {
+      AdjustAdobeExtension.setConfiguration(config)
    }
-   ```
 
-   {% /codeblock %}
-   {% /tab %}
+   MobileCore.registerExtensions([AdjustAdobeExtension.self]) {}
+}
+```
 
-   {% tab title="Objective-C" sync="objc" %}
-   {% codeblock
-      title="AppDelegate.m"
-      highlight="{range: 8-9}"
-      startLineNumber=9 %}
+</CodeBlock>
 
-   ```objc
-   - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-      [AEPMobileCore setLogLevel: AEPLogLevelTrace];
-      const UIApplicationState appState = application.applicationState;
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
-      AdjustAdobeExtensionConfig *config = [AdjustAdobeExtensionConfig configWithEnvironment:ADJEnvironmentSandbox];
-      [AdjustAdobeExtension setConfiguration:config];
+<CodeBlock title="AppDelegate.m" highlight="{range: 8-9}" startLineNumber={9}>
 
-      [AEPMobileCore registerExtensions:@[AdjustAdobeExtension.class]
-                              completion: ^{}];
-   }
-   ```
+```objc
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+   [AEPMobileCore setLogLevel: AEPLogLevelTrace];
+   const UIApplicationState appState = application.applicationState;
 
-   {% /codeblock %}
-   {% /tab %}
-   {% /tabs %}
+   AdjustAdobeExtensionConfig *config = [AdjustAdobeExtensionConfig configWithEnvironment:ADJEnvironmentSandbox];
+   [AdjustAdobeExtension setConfiguration:config];
+
+   [AEPMobileCore registerExtensions:@[AdjustAdobeExtension.class]
+                           completion: ^{}];
+}
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
 
 1. Within the completion handler, call the `configureWithAppId` method of the `AEPMobileCore` class with your Adobe App ID.
 
-   {% tabs %}
-   {% tab title="Swift" sync="swift" %}
-   {% codeblock
-      title="AppDelegate.swift"
-      highlight="{range: 10}"
-      startLineNumber=7 %}
+<Tabs>
+<Tab title="Swift" sync="swift">
 
-   ```swift
-   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-      MobileCore.setLogLevel(LogLevel.trace)
-      let appState = application.applicationState
+<CodeBlock title="AppDelegate.swift" highlight="{range: 10}" startLineNumber={7}>
 
-      if let config = AdjustAdobeExtensionConfig(environment: ADJEnvironmentSandbox) {
-         AdjustAdobeExtension.setConfiguration(config)
-      }
+```swift
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+   MobileCore.setLogLevel(LogLevel.trace)
+   let appState = application.applicationState
 
-      MobileCore.registerExtensions([AdjustAdobeExtension.self]) {
-         MobileCore.configureWith(appId: "{your_adobe_app_id}")
-      }
+   if let config = AdjustAdobeExtensionConfig(environment: ADJEnvironmentSandbox) {
+      AdjustAdobeExtension.setConfiguration(config)
    }
-   ```
 
-   {% /codeblock %}
-   {% /tab %}
-
-   {% tab title="Objective-C" sync="objc" %}
-   {% codeblock
-      title="AppDelegate.m"
-      highlight="{range: 10}"
-      startLineNumber=9 %}
-
-   ```objc
-   - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-      [AEPMobileCore setLogLevel: AEPLogLevelTrace];
-      const UIApplicationState appState = application.applicationState;
-
-      AdjustAdobeExtensionConfig *config = [AdjustAdobeExtensionConfig configWithEnvironment:ADJEnvironmentSandbox];
-      [AdjustAdobeExtension setConfiguration:config];
-
-      [AEPMobileCore registerExtensions:@[AdjustAdobeExtension.class]
-                              completion: ^{
-         [AEPMobileCore configureWithAppId: @"{your_adobe_app_id}"];
-      }];
+   MobileCore.registerExtensions([AdjustAdobeExtension.self]) {
+      MobileCore.configureWith(appId: "{your_adobe_app_id}")
    }
-   ```
+}
+```
 
-   {% /codeblock %}
-   {% /tab %}
-   {% /tabs %}
+</CodeBlock>
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+<CodeBlock title="AppDelegate.m" highlight="{range: 10}" startLineNumber={9}>
+
+```objc
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+   [AEPMobileCore setLogLevel: AEPLogLevelTrace];
+   const UIApplicationState appState = application.applicationState;
+
+   AdjustAdobeExtensionConfig *config = [AdjustAdobeExtensionConfig configWithEnvironment:ADJEnvironmentSandbox];
+   [AdjustAdobeExtension setConfiguration:config];
+
+   [AEPMobileCore registerExtensions:@[AdjustAdobeExtension.class]
+                           completion: ^{
+      [AEPMobileCore configureWithAppId: @"{your_adobe_app_id}"];
+   }];
+}
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
 
 1. Inside your completion handler, add an `if` block to call the `lifecycleStart` method of the `AEPMobileCore` if the app isn't in the background.
 
-   {% tabs %}
-   {% tab title="Swift" sync="swift" %}
-   {% codeblock
-      title="AppDelegate.swift"
-      highlight="{range: 11-13}"
-      startLineNumber=7 %}
+<Tabs>
+<Tab title="Swift" sync="swift">
 
-   ```swift
-   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-      MobileCore.setLogLevel(LogLevel.trace)
-      let appState = application.applicationState
+<CodeBlock title="AppDelegate.swift" highlight="{range: 11-13}" startLineNumber={7}>
 
-      if let config = AdjustAdobeExtensionConfig(environment: ADJEnvironmentSandbox) {
-         AdjustAdobeExtension.setConfiguration(config)
-      }
+```swift
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+   MobileCore.setLogLevel(LogLevel.trace)
+   let appState = application.applicationState
 
-      MobileCore.registerExtensions([AdjustAdobeExtension.self]) {
-         MobileCore.configureWith(appId: "{your_adobe_app_id}")
-         if appState != .background {
-            MobileCore.lifecycleStart(additionalContextData: nil)
-         }
+   if let config = AdjustAdobeExtensionConfig(environment: ADJEnvironmentSandbox) {
+      AdjustAdobeExtension.setConfiguration(config)
+   }
+
+   MobileCore.registerExtensions([AdjustAdobeExtension.self]) {
+      MobileCore.configureWith(appId: "{your_adobe_app_id}")
+      if appState != .background {
+         MobileCore.lifecycleStart(additionalContextData: nil)
       }
    }
-   ```
+}
+```
 
-   {% /codeblock %}
-   {% /tab %}
+</CodeBlock>
 
-   {% tab title="Objective-C" sync="objc" %}
-   {% codeblock
-      title="AppDelegate.m"
-      highlight="{range: 11-13}"
-      startLineNumber=9 %}
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
-   ```objc
-   - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-      [AEPMobileCore setLogLevel: AEPLogLevelTrace];
-      const UIApplicationState appState = application.applicationState;
+<CodeBlock title="AppDelegate.m" highlight="{range: 11-13}" startLineNumber={9}>
 
-      AdjustAdobeExtensionConfig *config = [AdjustAdobeExtensionConfig configWithEnvironment:ADJEnvironmentSandbox];
-      [AdjustAdobeExtension setConfiguration:config];
+```objc
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+   [AEPMobileCore setLogLevel: AEPLogLevelTrace];
+   const UIApplicationState appState = application.applicationState;
 
-      [AEPMobileCore registerExtensions:@[AdjustAdobeExtension.class]
-                              completion: ^{
-         [AEPMobileCore configureWithAppId: @"{your_adobe_app_id}"];
-         if (appState != UIApplicationStateBackground) {
-            [AEPMobileCore lifecycleStart:nil];
-         }
-      }];
-   }
-   ```
+   AdjustAdobeExtensionConfig *config = [AdjustAdobeExtensionConfig configWithEnvironment:ADJEnvironmentSandbox];
+   [AdjustAdobeExtension setConfiguration:config];
 
-   {% /codeblock %}
-   {% /tab %}
-   {% /tabs %}
+   [AEPMobileCore registerExtensions:@[AdjustAdobeExtension.class]
+                           completion: ^{
+      [AEPMobileCore configureWithAppId: @"{your_adobe_app_id}"];
+      if (appState != UIApplicationStateBackground) {
+         [AEPMobileCore lifecycleStart:nil];
+      }
+   }];
+}
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
 
 1. Finally, return a `true` value at the top level of your `application` function.
 
-   {% tabs %}
-   {% tab title="Swift" sync="swift" %}
-   {% codeblock
-      title="AppDelegate.swift"
-      highlight="{range: 16}"
-      startLineNumber=7 %}
+<Tabs>
+<Tab title="Swift" sync="swift">
 
-   ```swift
-   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-      MobileCore.setLogLevel(LogLevel.trace)
-      let appState = application.applicationState
+<CodeBlock title="AppDelegate.swift" highlight="{range: 16}" startLineNumber={7}>
 
-      if let config = AdjustAdobeExtensionConfig(environment: ADJEnvironmentSandbox) {
-         AdjustAdobeExtension.setConfiguration(config)
-      }
+```swift
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+   MobileCore.setLogLevel(LogLevel.trace)
+   let appState = application.applicationState
 
-      MobileCore.registerExtensions([AdjustAdobeExtension.self]) {
-         MobileCore.configureWith(appId: "{your_adobe_app_id}")
-         if appState != .background {
-            MobileCore.lifecycleStart(additionalContextData: nil)
-         }
-      }
-
-      return true
+   if let config = AdjustAdobeExtensionConfig(environment: ADJEnvironmentSandbox) {
+      AdjustAdobeExtension.setConfiguration(config)
    }
-   ```
 
-   {% /codeblock %}
-   {% /tab %}
-
-   {% tab title="Objective-C" sync="objc" %}
-   {% codeblock
-      title="AppDelegate.m"
-      highlight="{range: 16}"
-      startLineNumber=9 %}
-
-   ```objc
-   - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-      [AEPMobileCore setLogLevel: AEPLogLevelTrace];
-      const UIApplicationState appState = application.applicationState;
-
-      AdjustAdobeExtensionConfig *config = [AdjustAdobeExtensionConfig configWithEnvironment:ADJEnvironmentSandbox];
-      [AdjustAdobeExtension setConfiguration:config];
-
-      [AEPMobileCore registerExtensions:@[AdjustAdobeExtension.class]
-                              completion: ^{
-         [AEPMobileCore configureWithAppId: @"{your_adobe_app_id}"];
-         if (appState != UIApplicationStateBackground) {
-            [AEPMobileCore lifecycleStart:nil];
-         }
-      }];
-
-      return YES;
+   MobileCore.registerExtensions([AdjustAdobeExtension.self]) {
+      MobileCore.configureWith(appId: "{your_adobe_app_id}")
+      if appState != .background {
+         MobileCore.lifecycleStart(additionalContextData: nil)
+      }
    }
-   ```
 
-   {% /codeblock %}
-   {% /tab %}
-   {% /tabs %}
+   return true
+}
+```
 
-### Set up deep link handling {% #set-up-deep-link-handling %}
+</CodeBlock>
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+<CodeBlock title="AppDelegate.m" highlight="{range: 16}" startLineNumber={9}>
+
+```objc
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+   [AEPMobileCore setLogLevel: AEPLogLevelTrace];
+   const UIApplicationState appState = application.applicationState;
+
+   AdjustAdobeExtensionConfig *config = [AdjustAdobeExtensionConfig configWithEnvironment:ADJEnvironmentSandbox];
+   [AdjustAdobeExtension setConfiguration:config];
+
+   [AEPMobileCore registerExtensions:@[AdjustAdobeExtension.class]
+                           completion: ^{
+      [AEPMobileCore configureWithAppId: @"{your_adobe_app_id}"];
+      if (appState != UIApplicationStateBackground) {
+         [AEPMobileCore lifecycleStart:nil];
+      }
+   }];
+
+   return YES;
+}
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
+
+### Set up deep link handling {#set-up-deep-link-handling}
 
 To configure the Adjust iOS Extension for Adobe Experience SDK to open deep links, follow these steps:
 
 1. Within your `AppDelegate` implementation, create a new boolean function called `application` to handle opening deep links. Thie function takes the following arguments:
 
-   {% deflist %}
-   `app`: `UIApplication`
+<DefList>
 
-   : The singleton app object.
+`app`: `UIApplication`
 
-   `url`: `NSURL`
+: The singleton app object.
 
-   : The URL resource to open in the app.
+`url`: `NSURL`
 
-   `options`: `[UIApplicationOpenURLOptionsKey : id]`
+: The URL resource to open in the app.
 
-   : A dictionary of options for handling the URL, containing keys that specify options related to the URL.
-   {% /deflist %}
+`options`: `[UIApplicationOpenURLOptionsKey : id]`
 
-   {% tabs %}
-   {% tab title="Swift" sync="swift" %}
-   {% codeblock
-      title="AppDelegate.swift"
-      highlight="{range: 1}"
-      startLineNumber=25 %}
+: A dictionary of options for handling the URL, containing keys that specify options related to the URL.
 
-   ```swift
-   func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {}
-   ```
+</DefList>
 
-   {% /codeblock %}
-   {% /tab %}
+<Tabs>
+<Tab title="Swift" sync="swift">
 
-   {% tab title="Objective-C" sync="objc" %}
-   {% codeblock
-      title="AppDelegate.m"
-      highlight="{range: 1}"
-      startLineNumber=27 %}
+<CodeBlock title="AppDelegate.swift" highlight="{range: 1}" startLineNumber={25}>
 
-   ```objc
-   - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {}
-   ```
+```swift
+func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {}
+```
 
-   {% /codeblock %}
-   {% /tab %}
-   {% /tabs %}
+</CodeBlock>
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+<CodeBlock title="AppDelegate.m" highlight="{range: 1}" startLineNumber={27}>
+
+```objc
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {}
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
 
 1. Inside this function, call the `processDeeplink` method of the `Adjust` class to open the deep link and return a true value.
 
-   {% tabs %}
-   {% tab title="Swift" sync="swift" %}
-   {% codeblock
-      title="AppDelegate.swift"
-      highlight="{range: 2-5}"
-      startLineNumber=25 %}
+<Tabs>
+<Tab title="Swift" sync="swift">
 
-   ```swift
-   func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-      if let deeplink = ADJDeeplink(deeplink: url) {
-         Adjust.processDeeplink(deeplink)
-      }
-      return true
+<CodeBlock title="AppDelegate.swift" highlight="{range: 2-5}" startLineNumber={25}>
+
+```swift
+func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+   if let deeplink = ADJDeeplink(deeplink: url) {
+      Adjust.processDeeplink(deeplink)
    }
-   ```
+   return true
+}
+```
 
-   {% /codeblock %}
-   {% /tab %}
+</CodeBlock>
 
-   {% tab title="Objective-C" sync="objc" %}
-   {% codeblock
-      title="AppDelegate.m"
-      highlight="{range: 2-3}"
-      startLineNumber=27 %}
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
-   ```objc
-   - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
-      [Adjust processDeeplink: [[ADJDeeplink alloc] initWithDeeplink:url]];
-      return YES;
-   }
-   ```
+<CodeBlock title="AppDelegate.m" highlight="{range: 2-3}" startLineNumber={27}>
 
-   {% /codeblock %}
-   {% /tab %}
-   {% /tabs %}
+```objc
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+   [Adjust processDeeplink: [[ADJDeeplink alloc] initWithDeeplink:url]];
+   return YES;
+}
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
 
 1. Next, create another boolean function called `application` to handle resuming user activity. This function takes the following arguments:
 
-   {% deflist %}
-   `application`: `UIApplication`
+<DefList>
 
-   : The singleton app object.
+`application`: `UIApplication`
 
-   `userActivity`: `NSUserActivity`
+: The singleton app object.
 
-   : The user activity object that represents the activity to continue.
+`userActivity`: `NSUserActivity`
 
-   `restorationHandler`: `void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable)`
+: The user activity object that represents the activity to continue.
 
-   : A handler block to use for restoring the app’s state if needed.
-   {% /deflist %}
+`restorationHandler`: `void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable)`
 
-   {% tabs %}
-   {% tab title="Swift" sync="swift" %}
-   {% codeblock
-      title="AppDelegate.swift"
-      highlight="{range: 1}"
-      startLineNumber=32 %}
+: A handler block to use for restoring the app’s state if needed.
 
-   ```swift
-   func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {}
-   ```
+</DefList>
 
-   {% /codeblock %}
-   {% /tab %}
+<Tabs>
+<Tab title="Swift" sync="swift">
 
-   {% tab title="Objective-C" sync="objc" %}
-   {% codeblock
-      title="AppDelegate.m"
-      highlight="{range: 1}"
-      startLineNumber=32 %}
+<CodeBlock title="AppDelegate.swift" highlight="{range: 1}" startLineNumber={32}>
 
-   ```objc
-   - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler {}
-   ```
+```swift
+func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {}
+```
 
-   {% /codeblock %}
-   {% /tab %}
-   {% /tabs %}
+</CodeBlock>
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+<CodeBlock title="AppDelegate.m" highlight="{range: 1}" startLineNumber={32}>
+
+```objc
+- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler {}
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
 
 1. Inside this function, add a check to see if the app was opened by a link and call `processDeeplink` if it is.
 
-   {% tabs %}
-   {% tab title="Swift" sync="swift" %}
-   {% codeblock
-      title="AppDelegate.swift"
-      highlight="{range: 2-9}"
-      startLineNumber=32 %}
+<Tabs>
+<Tab title="Swift" sync="swift">
 
-   ```swift
-   func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
-      if userActivity.activityType == NSUserActivityTypeBrowsingWeb {
-         if let incomingUrl = userActivity.webpageUrl {
-            if let deeplink = ADJDeeplink(deeplink: incomingUrl) {
-               Adjust.processDeeplink(deeplink)
+<CodeBlock title="AppDelegate.swift" highlight="{range: 2-9}" startLineNumber={32}>
+
+```swift
+func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+   if userActivity.activityType == NSUserActivityTypeBrowsingWeb {
+      if let incomingUrl = userActivity.webpageUrl {
+         if let deeplink = ADJDeeplink(deeplink: incomingUrl) {
+            Adjust.processDeeplink(deeplink)
+         }
+      }
+   }
+   return true
+}
+```
+
+</CodeBlock>
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+<CodeBlock title="AppDelegate.m" highlight="{range: 2-5}" startLineNumber={32}>
+
+```objc
+- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler {
+   if ([[userActivity activityType] isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+     [Adjust proceessDeeplink:[[ADJDeeplink alloc] initWithDeeplink:[userActivity webpageURL]]];
+   }
+   return YES;
+}
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
+
+If you use [short branded links](https://help.adjust.com/en/article/short-branded-links), you can alternatively use the `Adjust.processAndResolveDeeplink` method to resolve your shortened link and return it to a callback function.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+<CodeBlock title="AppDelegate.swift" highlight="{range: 4-8}" startLineNumber={32}>
+
+```swift
+func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+   if userActivity.activityType == NSUserActivityTypeBrowsingWeb {
+      if let incomingUrl = userActivity.webpageUrl {
+         if let deeplink = ADJDeeplink(deeplink: incomingUrl) {
+            Adjust.processAndResolveDeeplink(deeplink) { resolveDeeplink in
+               print("[\(resolveDeeplink)]")
             }
          }
       }
-      return true
    }
-   ```
+   return true
+}
+```
 
-   {% /codeblock %}
-   {% /tab %}
+</CodeBlock>
 
-   {% tab title="Objective-C" sync="objc" %}
-   {% codeblock
-      title="AppDelegate.m"
-      highlight="{range: 2-5}"
-      startLineNumber=32 %}
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
-   ```objc
-   - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler {
-      if ([[userActivity activityType] isEqualToString:NSUserActivityTypeBrowsingWeb]) {
-        [Adjust proceessDeeplink:[[ADJDeeplink alloc] initWithDeeplink:[userActivity webpageURL]]];
-      }
-      return YES;
+<CodeBlock title="AppDelegate.m" highlight="{range: 4-7}" startLineNumber={32}>
+
+```objc
+- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler {
+   if ([[userActivity activityType] isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+      ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:[userActivity webpageURL]];
+      [Adjust processAndResolveDeeplink:deeplink
+               withCompletionHandler:^(NSString * _Nullable resolvedLink) {
+                  NSLog(@"[%@]", resolvedLink);
+      }];
    }
-   ```
+   return YES;
+}
+```
 
-   {% /codeblock %}
-   {% /tab %}
-   {% /tabs %}
+</CodeBlock>
 
-   If you use [short branded links](https://help.adjust.com/en/article/short-branded-links), you can alternatively use the `Adjust.processAndResolveDeeplink` method to resolve your shortened link and return it to a callback function.
+</Tab>
+</Tabs>
 
-   {% tabs %}
-   {% tab title="Swift" sync="swift" %}
-   {% codeblock
-      title="AppDelegate.swift"
-      highlight="{range: 4-8}"
-      startLineNumber=32 %}
-
-   ```swift
-   func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
-      if userActivity.activityType == NSUserActivityTypeBrowsingWeb {
-         if let incomingUrl = userActivity.webpageUrl {
-            if let deeplink = ADJDeeplink(deeplink: incomingUrl) {
-               Adjust.processAndResolveDeeplink(deeplink) { resolveDeeplink in
-                  print("[\(resolveDeeplink)]")
-               }
-            }
-         }
-      }
-      return true
-   }
-   ```
-
-   {% /codeblock %}
-   {% /tab %}
-
-   {% tab title="Objective-C" sync="objc" %}
-   {% codeblock
-      title="AppDelegate.m"
-      highlight="{range: 4-7}"
-      startLineNumber=32 %}
-
-   ```objc
-   - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler {
-      if ([[userActivity activityType] isEqualToString:NSUserActivityTypeBrowsingWeb]) {
-         ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:[userActivity webpageURL]];
-         [Adjust processAndResolveDeeplink:deeplink
-                  withCompletionHandler:^(NSString * _Nullable resolvedLink) {
-                     NSLog(@"[%@]", resolvedLink);
-         }];
-      }
-      return YES;
-   }
-   ```
-
-   {% /codeblock %}
-   {% /tab %}
-   {% /tabs %}
-
-### Set up your View Controller {% #set-up-your-view-controller %}
+### Set up your View Controller {#set-up-your-view-controller}
 
 Next, you need to set up your View Controller. You'll use this file to set up your Adjust features later. For the purposes of this guide, you're only going to set up the `viewDidLoad` function to handle application startup.
 
 1. Inside your View Controller file, createa a new `ViewController` class implementation.
 
-   {% tabs %}
-   {% tab title="Swift" sync="swift" %}
-   {% codeblock
-      title="ViewController.swift"
-      highlight="{range: 1}"
-      startLineNumber=4 %}
+<Tabs>
+<Tab title="Swift" sync="swift">
 
-   ```swift
-   class ViewController: UIViewController {}
-   ```
+<CodeBlock title="ViewController.swift" highlight="{range: 1}" startLineNumber={4}>
 
-   {% /codeblock %}
-   {% /tab %}
+```swift
+class ViewController: UIViewController {}
+```
 
-   {% tab title="Objective-C" sync="objc" %}
-   {% codeblock
-      title="ViewController.m"
-      highlight="{range: 1-2}"
-      startLineNumber=5 %}
+</CodeBlock>
 
-   ```objc
-   @implementation ViewController
-   @end
-   ```
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
-   {% /codeblock %}
-   {% /tab %}
-   {% /tabs %}
+<CodeBlock title="ViewController.m" highlight="{range: 1-2}" startLineNumber={5}>
+
+```objc
+@implementation ViewController
+@end
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
 
 1. Inside your `ViewController` class, create a void function that calls `super.viewDidLoad` to initialize your view.
 
-   {% tabs %}
-   {% tab title="Swift" sync="swift" %}
-   {% codeblock
-      title="ViewController.swift"
-      highlight="{range: 3-5}"
-      startLineNumber=4 %}
+<Tabs>
+<Tab title="Swift" sync="swift">
 
-   ```swift
-   class ViewController: UIViewController {
+<CodeBlock title="ViewController.swift" highlight="{range: 3-5}" startLineNumber={4}>
 
-      override func viewDidLoad() {
-         super.viewDidLoad()
-      }
+```swift
+class ViewController: UIViewController {
+
+   override func viewDidLoad() {
+      super.viewDidLoad()
    }
-   ```
+}
+```
 
-   {% /codeblock %}
-   {% /tab %}
+</CodeBlock>
 
-   {% tab title="Objective-C" sync="objc" %}
-   {% codeblock
-      title="ViewController.m"
-      highlight="{range: 3-5}"
-      startLineNumber=5 %}
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
-   ```objc
-   @implementation ViewController
+<CodeBlock title="ViewController.m" highlight="{range: 3-5}" startLineNumber={5}>
 
-   - (void)viewDidLoad {
-      [super viewDidLoad];
-   }
+```objc
+@implementation ViewController
 
-   @end
-   ```
+- (void)viewDidLoad {
+   [super viewDidLoad];
+}
 
-   {% /codeblock %}
-   {% /tab %}
-   {% /tabs %}
+@end
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
 
 Once you've completed these steps, build and run your app. After you launch your app, you should see the message `Install tracked` in your Xcode logs.

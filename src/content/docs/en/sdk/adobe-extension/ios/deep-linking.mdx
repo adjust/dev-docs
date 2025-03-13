@@ -11,7 +11,7 @@ The Adjust iOS Extension for the Adobe Experience SDK supports two types of deep
 - **Direct deep links**: If the user already has your app installed, the link opens the specified page.
 - **Deferred deep links**: If the user doesn’t have your app installed, the link directs them to the app store to install it. After installation, the app opens the specified page.
 
-## Reattribute users with direct deep links {% #reattribute-users-with-direct-deep-links %}
+## Reattribute users with direct deep links {#reattribute-users-with-direct-deep-links}
 
 You can reattribute your users by sending deep link information to Adjust. When a user engages with a deep link, you can send this data to Adjust to update their attribution information.
 
@@ -21,21 +21,25 @@ You can reattribute your users by sending deep link information to Adjust. When 
 
 The `ADJDeeplink` class constructor requires the following argument:
 
-{% deflist %}
+<DefList>
+
 `deeplink`: `NSURL`
 
 : The deep link URI that opens your app.
-{% /deflist %}
+
+</DefList>
 
 The `processDeeplink` function requires the following argument:
 
-{% deflist %}
+<DefList>
+
 `adjustDeeplink`: `ADJDeeplink`
 
 : The `ADJDeeplink` instance you created.
-{% /deflist %}
 
-## Deferred deep link callbacks {% #deferred-deep-link-callbacks %}
+</DefList>
+
+## Deferred deep link callbacks {#deferred-deep-link-callbacks}
 
 The Adjust iOS Extension for Adobe Experience SDK opens deferred deep links by default. To control this behavior, or perform validation before the deep link is opened, configure the extension to call a function when the app opens via a deferred deep link.
 
@@ -44,13 +48,15 @@ The Adjust iOS Extension for Adobe Experience SDK opens deferred deep links by d
 
 The `setDeferredDeeplinkReceivedBlock` function requires the following argument:
 
-{% deflist %}
+<DefList>
+
 `deeplinkResponseBlock`: `CallbackDeeplinkResponseBlock`
 
 : A function that returns a `boolean` value. If it returns `false`, the extension won't open the deferred deep link.
-{% /deflist %}
 
-### Tutorial: Create a deferred deep link function {% #tutorial %}
+</DefList>
+
+### Tutorial: Create a deferred deep link function {#tutorial}
 
 If you followed the [integration guide](/en/sdk/adobe-extension/ios/integration), you've already configured the Adjust Extension to process and open deep links. If you haven't done this, refer to [set up deep link handling](/en/sdk/adobe-extension/ios/integration#set-up-deep-link-handling) for instructions.
 
@@ -60,8 +66,8 @@ In this tutorial, you'll learn how to create a callback function that controls d
 
 The result looks like this:
 
-{% tabs %}
-{% tab title="Swift" sync="swift" %}
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 // AppDelegate.swift
@@ -117,9 +123,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 ```
 
-{% /tab %}
-
-{% tab title="Objective-C" sync="objc" %}
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 // AppDelegate.m
@@ -169,134 +174,125 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 @end
 ```
 
-{% /tab %}
-{% /tabs %}
+</Tab>
+</Tabs>
 
 Here's what you need to do:
 
 1. Inside your App Delegate, find your `AdjustAdobeExtensionConfig` instantiation. On the next line, call the `setDeferredDeeplinkReceivedBlock` method with a function block as an argument. This function block receives the deep link as an argument.
 
-   {% tabs %}
-   {% tab title="Swift" sync="swift" %}
-   {% codeblock
-      title="AppDelegate.swift"
-      startLineNumber=13
-      highlight="{range: 2}" %}
+<Tabs>
+<Tab title="Swift" sync="swift">
 
-   ```swift
-   if let config = AdjustAdobeExtensionConfig(environment: ADJEnvironmentSandbox) {
-       config.setDeferredDeeplinkReceivedBlock { (deeplink: URL?) -> Bool in }
-       AdjustAdobeExtension.setConfiguration(config)
-   }
-   ```
+<CodeBlock title="AppDelegate.swift" startLineNumber={13} highlight="{range: 2}">
 
-   {% /codeblock %}
-   {% /tab %}
+```swift
+if let config = AdjustAdobeExtensionConfig(environment: ADJEnvironmentSandbox) {
+    config.setDeferredDeeplinkReceivedBlock { (deeplink: URL?) -> Bool in }
+    AdjustAdobeExtension.setConfiguration(config)
+}
+```
 
-   {% tab title="Objective-C" sync="objc" %}
-   {% codeblock
-      title="AppDelegate.m"
-      startLineNumber=12
-      highlight="{range: 2}" %}
+</CodeBlock>
 
-   ```objc
-   AdjustAdobeExtensionConfig *config = [AdjustAdobeExtensionConfig configWithEnvironment:ADJEnvironmentSandbox];
-   [config setDeferredDeeplinkReceivedBlock:^BOOL(NSURL * _Nullable deeplink) {}];
-   [AdjustAdobeExtension setConfiguration:config];
-   ```
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
-   {% /codeblock %}
-   {% /tab %}
-   {% /tabs %}
+<CodeBlock title="AppDelegate.m" startLineNumber={12} highlight="{range: 2}">
+
+```objc
+AdjustAdobeExtensionConfig *config = [AdjustAdobeExtensionConfig configWithEnvironment:ADJEnvironmentSandbox];
+[config setDeferredDeeplinkReceivedBlock:^BOOL(NSURL * _Nullable deeplink) {}];
+[AdjustAdobeExtension setConfiguration:config];
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
 
 1. Inside the `setDeferredDeeplinkReceivedBlock` function block, add an `if` block to check whether the deep link contains the string `"no_open"`. If it does, return `false`.
 
-   {% tabs %}
-   {% tab title="Swift" sync="swift" %}
-   {% codeblock
-      title="AppDelegate.swift"
-      startLineNumber=13
-      highlight="{range: 3-6}" %}
+<Tabs>
+<Tab title="Swift" sync="swift">
 
-   ```swift
-   if let config = AdjustAdobeExtensionConfig(environment: ADJEnvironmentSandbox) {
-       config.setDeferredDeeplinkReceivedBlock { (deeplink: URL?) -> Bool in
-            if let deeplinkString = deeplink?.absoluteString.lowercased(),
-            deeplinkString.contains("no_open") {
-                return false
-            }
-       }
-       AdjustAdobeExtension.setConfiguration(config)
-   }
-   ```
+<CodeBlock title="AppDelegate.swift" startLineNumber={13} highlight="{range: 3-6}">
 
-   {% /codeblock %}
-   {% /tab %}
-
-   {% tab title="Objective-C" sync="objc" %}
-   {% codeblock
-      title="AppDelegate.m"
-      startLineNumber=12
-      highlight="{range: 3-5}" %}
-
-   ```objc
-   AdjustAdobeExtensionConfig *config = [AdjustAdobeExtensionConfig configWithEnvironment:ADJEnvironmentSandbox];
-   [config setDeferredDeeplinkReceivedBlock:^BOOL(NSURL * _Nullable deeplink) {
-        if (deeplink && [[deeplink.absoluteString lowercaseString] containsString:@"no_open"]) {
-            return NO;
+```swift
+if let config = AdjustAdobeExtensionConfig(environment: ADJEnvironmentSandbox) {
+    config.setDeferredDeeplinkReceivedBlock { (deeplink: URL?) -> Bool in
+        if let deeplinkString = deeplink?.absoluteString.lowercased(),
+        deeplinkString.contains("no_open") {
+            return false
         }
-   }];
-   [AdjustAdobeExtension setConfiguration:config];
-   ```
+    }
+    AdjustAdobeExtension.setConfiguration(config)
+}
+```
 
-   {% /codeblock %}
-   {% /tab %}
-   {% /tabs %}
+</CodeBlock>
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+<CodeBlock title="AppDelegate.m" startLineNumber={12} highlight="{range: 3-5}">
+
+```objc
+AdjustAdobeExtensionConfig *config = [AdjustAdobeExtensionConfig configWithEnvironment:ADJEnvironmentSandbox];
+[config setDeferredDeeplinkReceivedBlock:^BOOL(NSURL * _Nullable deeplink) {
+    if (deeplink && [[deeplink.absoluteString lowercaseString] containsString:@"no_open"]) {
+        return NO;
+    }
+}];
+[AdjustAdobeExtension setConfiguration:config];
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
 
 1. Finally, return `true` to open all deep links that don't contain `"no_open"`.
 
-   {% tabs %}
-   {% tab title="Swift" sync="swift" %}
-   {% codeblock
-      title="AppDelegate.swift"
-      startLineNumber=13
-      highlight="{range: 7}" %}
+<Tabs>
+<Tab title="Swift" sync="swift">
 
-   ```swift
-   if let config = AdjustAdobeExtensionConfig(environment: ADJEnvironmentSandbox) {
-       config.setDeferredDeeplinkReceivedBlock { (deeplink: URL?) -> Bool in
-            if let deeplinkString = deeplink?.absoluteString.lowercased(),
-            deeplinkString.contains("no_open") {
-                return false
-            }
-            return true
-       }
-       AdjustAdobeExtension.setConfiguration(config)
-   }
-   ```
+<CodeBlock title="AppDelegate.swift" startLineNumber={13} highlight="{range: 7}">
 
-   {% /codeblock %}
-   {% /tab %}
-
-   {% tab title="Objective-C" sync="objc" %}
-   {% codeblock
-      title="AppDelegate.m"
-      startLineNumber=12
-      highlight="{range: 6}" %}
-
-   ```objc
-   AdjustAdobeExtensionConfig *config = [AdjustAdobeExtensionConfig configWithEnvironment:ADJEnvironmentSandbox];
-   [config setDeferredDeeplinkReceivedBlock:^BOOL(NSURL * _Nullable deeplink) {
-        if (deeplink && [[deeplink.absoluteString lowercaseString] containsString:@"no_open"]) {
-            return NO;
+```swift
+if let config = AdjustAdobeExtensionConfig(environment: ADJEnvironmentSandbox) {
+    config.setDeferredDeeplinkReceivedBlock { (deeplink: URL?) -> Bool in
+        if let deeplinkString = deeplink?.absoluteString.lowercased(),
+        deeplinkString.contains("no_open") {
+            return false
         }
-        return YES;
-   }];
-   [AdjustAdobeExtension setConfiguration:config];
-   ```
+        return true
+    }
+    AdjustAdobeExtension.setConfiguration(config)
+}
+```
 
-   {% /codeblock %}
-   {% /tab %}
-   {% /tabs %}
+</CodeBlock>
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+<CodeBlock title="AppDelegate.m" startLineNumber={12} highlight="{range: 6}">
+
+```objc
+AdjustAdobeExtensionConfig *config = [AdjustAdobeExtensionConfig configWithEnvironment:ADJEnvironmentSandbox];
+[config setDeferredDeeplinkReceivedBlock:^BOOL(NSURL * _Nullable deeplink) {
+    if (deeplink && [[deeplink.absoluteString lowercaseString] containsString:@"no_open"]) {
+        return NO;
+    }
+    return YES;
+}];
+[AdjustAdobeExtension setConfiguration:config];
+```
+
+</CodeBlock>
+   
+</Tab>
+</Tabs>
 
 That's it! When a user opens your app with a deferred deep link, the Adjust Extension will check if the link contains the string `"no_open"`. If it does, the app won't open the deep link.
