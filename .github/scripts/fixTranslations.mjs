@@ -167,20 +167,6 @@ async function formatMdxFile(file) {
   });
 }
 
-// Format MDOC files using the custom formatter
-async function formatMdocFile(file) {
-  return new Promise((resolve, reject) => {
-    exec(
-      `node ../../markdoc-formatter.mjs ../../${file}`,
-      (error, stdout, stderr) => {
-        if (error) return reject(stderr);
-        console.log(stdout);
-        resolve();
-      },
-    );
-  });
-}
-
 // Process a single file
 async function processFile(file, locale) {
   console.log(`Processing ${file} for ${locale}`);
