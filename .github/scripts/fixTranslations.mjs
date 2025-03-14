@@ -43,21 +43,6 @@ function fixFrontMatter(frontMatter, locale) {
   return frontMatter;
 }
 
-// Remove escape slashes from tags
-function removeEscapeSlashesFromTags(content) {
-  return content.replace(/\\(?=[-#])/g, "");
-}
-
-// Add newline after closing tags
-function addNewlineAfterClosingTags(content, tags) {
-  const tagList = tags.join("|");
-  const regex = new RegExp(
-    `(\\S)(\\s*{%\\s*/(?:${tagList})\\s*%})(?!\\n)`,
-    "g",
-  );
-  return content.replace(regex, "$1\n$2");
-}
-
 function fixHeaders(content) {
   const headerRegex = /^(\s*#+\s.*?)(\\{\\#.*?\\})/gm;
   return content.replace(
