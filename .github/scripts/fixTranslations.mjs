@@ -12,19 +12,6 @@ const MDX_TAGS = [
   "ListColumns",
 ];
 
-// Define the base MDOC tags, and dynamically generate opening and closing variants
-const BASE_MDOC_TAGS = [
-  "tabs",
-  "tab",
-  "deflist",
-  "minorversion",
-  "codeblock",
-  "listcolumns",
-  "accordion",
-  "callout",
-];
-const MDOC_TAGS = BASE_MDOC_TAGS.flatMap((tag) => [tag, `/${tag}`]);
-
 const locales = ["ja", "ko", "zh"];
 const TAG_LIST = MDX_TAGS.join("|");
 
@@ -118,32 +105,6 @@ function fixMdxContent(content, locale) {
   // Remove unnecessary IDs
   content = content.replace(/ id="sl-md0000000"/g, "");
   content = content.replace(/\s?md0000000\s?/g, "");
-
-  return content;
-}
-
-// Fix mdoc content
-function fixMdocContent(content, locale) {
-  // Unescape escaped curly braces
-  content = content.replace(/\\{%(.*?)%\\}/g, "{%$1%}");
-  content = fixHeaders(content);
-
-  content = removeEscapeSlashesFromTags(content);
-
-  content = addNewlineAfterClosingTags(content, MDOC_TAGS);
-
-  // Update URLs
-  content = content.replace(
-    /https:\/\/help\.adjust\.com\/en\//g,
-    `https://help.adjust.com/${locale}/`,
-  );
-  content = content.replace(/\(\/en\/(.*?)\)/g, `(/${locale}/$1)`);
-
-  // Add newline between two adjacent opening tags
-  content = content.replace(/(%}\s*)({%\s*[^%]+%})/g, "$1\n$2");
-
-  // Add newline between two adjacent closing tags
-  content = content.replace(/(%}\s*)({%\s*\/[^%]+%})/g, "$1\n$2");
 
   return content;
 }
