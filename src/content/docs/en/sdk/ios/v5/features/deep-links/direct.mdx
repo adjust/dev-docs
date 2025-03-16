@@ -13,19 +13,19 @@ redirects:
    v4: /en/sdk/ios/v4/features/deep-links/direct
 ---
 
-When users with your app installed click an Adjust link, direct deep linking opens specific content in the app.
+When a user with your app installed clicks an Adjust link, direct deep linking ensures they're taken directly to specific content within the app.
 
 ## Setup {#setup}
 
 iOS provides several methods for receiving direct deep links depending on your app's implementation.
 
-Within these methods, you'll use Adjust's `processAndResolve(_:callback:)` method, which does the following:
+Within these methods, you'll use Adjust's `processAndResolve(_:completion:)` method, which does the following:
 
 - Records attribution from deep link clicks
 - Resolves [short branded links](https://help.adjust.com/en/article/short-branded-links) to their long branded link equivalent
 - Passes through all other links as is (Adjust long branded links, other universal links, app scheme deep links)
 
-Your app can then parse the processed link and navigate to the appropriate screen.
+Your app can then handle the resolved link by parsing it and navigating to the appropriate screen.
 
 <CodeBlock title="Method signature">
    ```objc + (void)processAndResolveDeeplink:(nonnull ADJDeeplink *)deeplink
@@ -34,23 +34,32 @@ Your app can then parse the processed link and navigate to the appropriate scree
 
 ## Important Implementation Notes {#important-implementation-notes}
 
-When implementing direct deep linking, keep these key points in mind:
+Follow these deep link handling best practices:
 
 1. **Link Handling Requirements**
 
-   - Handle Adjust branded links (`brandname.go.link`) and universal links (`example.com`) equivalently. If using a domain allowlist, add your Adjust branded domain.
-   - Handle universal links and app scheme deep links equivalently, as Adjust converts universal links to app scheme format when iOS doesn't support them. For example, these links should navigate to the same screen:
+   - Your app should treat Adjust branded links (`brandname.go.link`) and universal links (`example.com`) identically when routing users. If your app uses a domain allowlist, ensure your Adjust branded domain is included. For example, both of the following should navigate to the same screen:
+
+      - Adjust branded link: `https://brandname.go.link/summer-clothes?promo=beach`
+      - Universal link: `https://example.com/summer-clothes?promo=beach`
+
+   - Your app should treat universal links and app scheme deep links identically when routing users. In cases where iOS doesn't support universal links, Adjust converts them to the equivalent app scheme format. For example, both of the following should navigate to the same screen:
       - Adjust branded link: `https://brandname.go.link/summer-clothes?promo=beach`
       - App scheme deep link: `example://summer-clothes?promo=beach`
 
 2. **App State Considerations**
-   - Handle links appropriately whether your app is in "not running," background, or foreground state.
-   - Consider storing deep links if they arrive during app initialization or before the user is authenticated.
-   - Process stored links after your app is ready to handle navigation.
+
+   - Ensure your app correctly handles links when they open the app from any state: "not running," background, or, if applicable, foreground.
+   - Consider storing deep links if they can't be handled immediately, such as when the user isn't yet authenticated, and process them once the app is ready for navigation.
+
+3. **In-App Navigation**
+   - When an app tries to open its own universal links by calling `UIApplication.open(_:options:completionHandler:)` or SwiftUI’s `openURL`, iOS opens them in Safari instead of in the app. To navigate internally, use one of two approaches:
+      - Universal links. Use your app’s deep link handling logic to parse the links and navigate to the appropriate screen.
+      - App scheme deep links. Use these instead of universal links when calling the above iOS methods.
 
 ## Implementation {#implementation}
 
-Use the implementation that matches your app:
+Use the implementation that aligns with your app's structure:
 
 - [UIKit apps using AppDelegate lifecycle](#uikit-apps-using-appdelegate-lifecycle)
 - [UIKit apps using SceneDelegate lifecycle](#uikit-apps-using-scenedelegate-lifecycle)
@@ -65,52 +74,52 @@ Update your AppDelegate to implement iOS direct deep linking methods.
 <Tab title="Swift" sync="swift">
 
 ```swift
+// AppDelegate.swift
+
 // Receive universal link when app is installed,
-// and app is in "not running" or background state,
-// and user clicks link or another app opens link using
-// UIApplication.open(_:options:completionHandler:).
+// and link opens app from "not running"
+// or background state.
 func application(
   _ application: UIApplication,
   continue userActivity: NSUserActivity,
   restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
 ) -> Bool {
-  if userActivity.activityType == NSUserActivityTypeBrowsingWeb,
-    let incomingLink = userActivity.webpageURL {
-    // Send incoming deep link to Adjust's servers for attribution
-    // and retrieve full URL if short branded link.
-    // If not, retrieve original link.
-    let deeplink = ADJDeeplink(deeplink: incomingLink)
-    Adjust.processAndResolve(deeplink) { processedLinkString in
-      guard let processedLink = URL(string: processedLinkString) else { return }
+  guard userActivity.activityType == NSUserActivityTypeBrowsingWeb,
+        let incomingLink = userActivity.webpageURL else { return true }
 
-      // TO DO: Parse the processedLink URL components
-      // (example: path, query params) and
-      // navigate to the appropriate screen in your app
-    }
+  // Send deep link to Adjust's servers for attribution.
+  // If short branded link, receive long link.
+  // Otherwise, receive original link.
+  let deeplink = ADJDeeplink(deeplink: incomingLink)
+  Adjust.processAndResolve(deeplink) { resolvedLinkString in
+    guard let resolvedLink = URL(string: resolvedLinkString) else { return }
+
+    // TO DO: Handle the resolved link by parsing its components
+    // (example: path, query parameters) and
+    // navigating to the appropriate screen.
   }
+
   return true
 }
 
-// Receive app scheme deep link when app is installed, and either:
-// - App is in "not running" or background state, and user clicks link or
-//   another app opens link using UIApplication.open(_:options:completionHandler:), or
-// - App is in foreground state and opens its own link using
-//   UIApplication.open(_:options:completionHandler:).
+// Receive app scheme deep link when app is installed,
+// and link opens app from "not running",
+// background, or foreground state.
 func application(
   _ application: UIApplication,
   open incomingLink: URL,
   options: [UIApplication.OpenURLOptionsKey: Any] = [:]
 ) -> Bool {
-  // Send incoming deep link to Adjust's servers for attribution
-  // and retrieve full URL if short branded link.
-  // If not, retrieve original link.
+  // Send deep link to Adjust's servers for attribution.
+  // If short branded link, receive long link.
+  // Otherwise, receive original link.
   let deeplink = ADJDeeplink(deeplink: incomingLink)
-  Adjust.processAndResolve(deeplink) { processedLinkString in
-    guard let processedLink = URL(string: processedLinkString) else { return }
+  Adjust.processAndResolve(deeplink) { resolvedLinkString in
+    guard let resolvedLink = URL(string: resolvedLinkString) else { return }
 
-    // TO DO: Parse the processedLink URL components
-    // (example: path, query params) and
-    // navigate to the appropriate screen in your app
+    // TO DO: Handle the resolved link by parsing its components
+    // (example: path, query parameters) and
+    // navigating to the appropriate screen.
   }
   return true
 }
@@ -120,10 +129,11 @@ func application(
 <Tab title="Objective-C" sync="objc">
 
 ```objc
+// AppDelegate.m
+
 // Receive universal link when app is installed,
-// and app is in "not running" or background state,
-// and user clicks link or another app opens link using
-// [UIApplication openURL:options:completionHandler:].
+// and link opens app from "not running"
+// or background state.
 - (BOOL)application:(UIApplication *)application
     continueUserActivity:(NSUserActivity *)userActivity
     restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> *_Nullable))
@@ -132,45 +142,42 @@ func application(
        isEqualToString:NSUserActivityTypeBrowsingWeb]) {
     NSURL *incomingLink = userActivity.webpageURL;
     if (incomingLink) {
-      // Send incoming deep link to Adjust's servers for attribution
-      // and retrieve full URL if short branded link.
-      // If not, retrieve original link.
+      // Send deep link to Adjust's servers for attribution.
+      // If short branded link, receive long link.
+      // Otherwise, receive original link.
       ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:incomingLink];
       [Adjust processAndResolveDeeplink:deeplink
-                           callback:^(NSString *processedLinkString) {
-        NSURL *processedLink = [NSURL URLWithString:processedLinkString];
-        if (!processedLink) return;
+            withCompletionHandler:^(NSString *resolvedLinkString) {
+        NSURL *resolvedLink = [NSURL URLWithString:resolvedLinkString];
+        if (!resolvedLink) return;
 
-        // TO DO: Parse the processedLink URL components
-        // (example: path, query params) and
-        // navigate to the appropriate screen in your app
+        // TO DO: Handle the resolved link by parsing its components
+        // (example: path, query parameters) and
+        // navigating to the appropriate screen.
       }];
     }
   }
   return YES;
 }
 
-// Receive app scheme deep link when app is installed, and either:
-// - App is in "not running" or background state, and user clicks link or
-//   another app opens link using [UIApplication
-//   openURL:options:completionHandler:], or
-// - App is in foreground state and opens its own link using
-//   [UIApplication openURL:options:completionHandler:].
+// Receive app scheme deep link when app is installed,
+// and link opens app from "not running",
+// background, or foreground state.
 - (BOOL)application:(UIApplication *)app
             openURL:(NSURL *)incomingLink
             options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
-  // Send incoming deep link to Adjust's servers for attribution
-  // and retrieve full URL if short branded link.
-  // If not, retrieve original link.
+  // Send deep link to Adjust's servers for attribution.
+  // If short branded link, receive long link.
+  // Otherwise, receive original link.
   ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:incomingLink];
   [Adjust processAndResolveDeeplink:deeplink
-                         callback:^(NSString *processedLinkString) {
-    NSURL *processedLink = [NSURL URLWithString:processedLinkString];
-    if (!processedLink) return;
+            withCompletionHandler:^(NSString *resolvedLinkString) {
+    NSURL *resolvedLink = [NSURL URLWithString:resolvedLinkString];
+    if (!resolvedLink) return;
 
-    // TO DO: Parse the processedLink URL components
-    // (example: path, query params) and
-    // navigate to the appropriate screen in your app
+    // TO DO: Handle the resolved link by parsing its components
+    // (example: path, query parameters) and
+    // navigating to the appropriate screen.
   }];
   return YES;
 }
@@ -187,92 +194,88 @@ Update your SceneDelegate to implement iOS direct deep linking methods.
 <Tab title="Swift" sync="swift">
 
 ```swift
-// Receive universal link or app scheme deep link
-// when app is installed, and app is in "not running" state, and either:
-// - User clicks link, or
-// - Another app opens link using
-// UIApplication.open(_:options:completionHandler:).
+// SceneDelegate.swift
+
+// Receive universal link or app scheme deep link when app is installed,
+// and link opens app from "not running" state.
 func scene(
-  _ scene: UIScene,
-  willConnectTo session: UISceneSession,
-  options connectionOptions: UIScene.ConnectionOptions
+    _ scene: UIScene,
+    willConnectTo session: UISceneSession,
+    options connectionOptions: UIScene.ConnectionOptions
 ) {
-  // Handle incoming universal link
-  if let userActivity = connectionOptions.userActivities.first,
-     userActivity.activityType == NSUserActivityTypeBrowsingWeb,
-     let incomingLink = userActivity.webpageURL {
-    // Send incoming deep link to Adjust's servers for attribution
-    // and retrieve full URL if short branded link.
-    // If not, retrieve original link.
-    let deeplink = ADJDeeplink(deeplink: incomingLink)
-    Adjust.processAndResolve(deeplink) { processedLinkString in
-      guard let processedLink = URL(string: processedLinkString) else { return }
+    // Receive incoming universal link
+    if let userActivity = connectionOptions.userActivities.first,
+       userActivity.activityType == NSUserActivityTypeBrowsingWeb,
+       let incomingLink = userActivity.webpageURL {
+        // Send deep link to Adjust's servers for attribution.
+        // If short branded link, receive long link.
+        // Otherwise, receive original link.
+        let deeplink = ADJDeeplink(deeplink: incomingLink)
+        Adjust.processAndResolve(deeplink) { resolvedLinkString in
+            guard let resolvedLink = URL(string: resolvedLinkString) else { return }
 
-      // TO DO: Parse the processedLink URL components
-      // (example: path, query params) and
-      // navigate to the appropriate screen in your app
+            // TO DO: Handle the resolved link by parsing its components
+            // (example: path, query parameters) and
+            // navigating to the appropriate screen.
+        }
+        return
     }
-  }
-  // Handle incoming app scheme deep link
-  else if let urlContext = connectionOptions.urlContexts.first {
-    let incomingLink = urlContext.url
-    // Send incoming deep link to Adjust's servers for attribution
-    // and retrieve full URL if short branded link.
-    // If not, retrieve original link.
-    let deeplink = ADJDeeplink(deeplink: incomingLink)
-    Adjust.processAndResolve(deeplink) { processedLinkString in
-      guard let processedLink = URL(string: processedLinkString) else { return }
 
-      // TO DO: Parse the processedLink URL components
-      // (example: path, query params) and
-      // navigate to the appropriate screen in your app
+    // Receive incoming app scheme deep link
+    guard let urlContext = connectionOptions.urlContexts.first else { return }
+
+    // Send deep link to Adjust's servers for attribution.
+    // If short branded link, receive long link.
+    // Otherwise, receive original link.
+    let deeplink = ADJDeeplink(deeplink: urlContext.url)
+    Adjust.processAndResolve(deeplink) { resolvedLinkString in
+        guard let resolvedLink = URL(string: resolvedLinkString) else { return }
+
+        // TO DO: Handle the resolved link by parsing its components
+        // (example: path, query parameters) and
+        // navigating to the appropriate screen.
     }
-  }
 }
+
 
 // Receive universal link when app is installed,
-// and app is in background state, and either:
-// - User clicks link, or
-// - Another app opens link using
-// UIApplication.open(_:options:completionHandler:).
+// and link opens app from background state.
 func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
-  if userActivity.activityType == NSUserActivityTypeBrowsingWeb,
-     let incomingLink = userActivity.webpageURL {
-    // Send incoming deep link to Adjust's servers for attribution
-    // and retrieve full URL if short branded link.
-    // If not, retrieve original link.
-    let deeplink = ADJDeeplink(deeplink: incomingLink)
-    Adjust.processAndResolve(deeplink) { processedLinkString in
-      guard let processedLink = URL(string: processedLinkString) else { return }
+    guard userActivity.activityType == NSUserActivityTypeBrowsingWeb,
+          let incomingLink = userActivity.webpageURL else { return }
 
-      // TO DO: Parse the processedLink URL components
-      // (example: path, query params) and
-      // navigate to the appropriate screen in your app
+    // Send deep link to Adjust's servers for attribution.
+    // If short branded link, receive long link.
+    // Otherwise, receive original link.
+    let deeplink = ADJDeeplink(deeplink: incomingLink)
+    Adjust.processAndResolve(deeplink) { resolvedLinkString in
+        guard let resolvedLink = URL(string: resolvedLinkString) else { return }
+
+        // TO DO: Handle the resolved link by parsing its components
+        // (example: path, query parameters) and
+        // navigating to the appropriate screen.
     }
-  }
 }
 
-// Receive app scheme deep link when app is installed, and either:
-// - App is in background state, and user clicks link or another app opens link using
-// UIApplication.open(_:options:completionHandler:), or
-// - App is in foreground and opens its own link using
-// UIApplication.open(_:options:completionHandler:).
+// Receive app scheme deep link when app is installed,
+// and link opens app from background
+// or foreground state.
 func scene(
   _ scene: UIScene,
   openURLContexts URLContexts: Set<UIOpenURLContext>
 ) {
   if let urlContext = URLContexts.first {
     let incomingLink = urlContext.url
-    // Send incoming deep link to Adjust's servers for attribution
-    // and retrieve full URL if short branded link.
-    // If not, retrieve original link.
+    // Send deep link to Adjust's servers for attribution.
+    // If short branded link, receive long link.
+    // Otherwise, receive original link.
     let deeplink = ADJDeeplink(deeplink: incomingLink)
-    Adjust.processAndResolve(deeplink) { processedLinkString in
-      guard let processedLink = URL(string: processedLinkString) else { return }
+    Adjust.processAndResolve(deeplink) { resolvedLinkString in
+      guard let resolvedLink = URL(string: resolvedLinkString) else { return }
 
-      // TO DO: Parse the processedLink URL components
-      // (example: path, query params) and
-      // navigate to the appropriate screen in your app
+      // TO DO: Handle the resolved link by parsing its components
+      // (example: path, query parameters) and
+      // navigating to the appropriate screen.
     }
   }
 }
@@ -282,15 +285,14 @@ func scene(
 <Tab title="Objective-C" sync="objc">
 
 ```objc
-// Receive universal link or app scheme deep link
-// when app is installed, and app is in "not running" state, and either:
-// - User clicks link, or
-// - Another app opens link using
-// [UIApplication openURL:options:completionHandler:].
+// SceneDelegate.m
+
+// Receive universal link or app scheme deep link when app is installed,
+// and link opens app from "not running" state.
 - (void)scene:(UIScene *)scene
     willConnectToSession:(UISceneSession *)session
                 options:(UISceneConnectionOptions *)connectionOptions {
-  // Handle incoming universal link
+  // Receive incoming universal link
   if (connectionOptions.userActivities.count > 0) {
     NSUserActivity *userActivity =
         connectionOptions.userActivities.allObjects.firstObject;
@@ -298,90 +300,85 @@ func scene(
          isEqualToString:NSUserActivityTypeBrowsingWeb] &&
         userActivity.webpageURL) {
       NSURL *incomingLink = userActivity.webpageURL;
-      // Send incoming deep link to Adjust's servers for attribution
-      // and retrieve full URL if short branded link.
-      // If not, retrieve original link.
+      // Send deep link to Adjust's servers for attribution.
+      // If short branded link, receive long link.
+      // Otherwise, receive original link.
       ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:incomingLink];
       [Adjust processAndResolveDeeplink:deeplink
-                             callback:^(NSString *processedLinkString) {
-        NSURL *processedLink = [NSURL URLWithString:processedLinkString];
-        if (!processedLink) return;
+            withCompletionHandler:^(NSString *resolvedLinkString) {
+        NSURL *resolvedLink = [NSURL URLWithString:resolvedLinkString];
+        if (!resolvedLink) return;
 
-        // TO DO: Parse the processedLink URL components
-        // (example: path, query params) and
-        // navigate to the appropriate screen in your app
+        // TO DO: Handle the resolved link by parsing its components
+        // (example: path, query parameters) and
+        // navigating to the appropriate screen.
       }];
     }
   }
-  // Handle incoming app scheme deep link
+  // Receive incoming app scheme deep link
   else if (connectionOptions.URLContexts.count > 0) {
     UIOpenURLContext *urlContext =
         connectionOptions.URLContexts.allObjects.firstObject;
     NSURL *incomingLink = urlContext.URL;
-    // Send incoming deep link to Adjust's servers for attribution
-    // and retrieve full URL if short branded link.
-    // If not, retrieve original link.
+    // Send deep link to Adjust's servers for attribution.
+    // If short branded link, receive long link.
+    // Otherwise, receive original link.
     ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:incomingLink];
     [Adjust processAndResolveDeeplink:deeplink
-                           callback:^(NSString *processedLinkString) {
-      NSURL *processedLink = [NSURL URLWithString:processedLinkString];
-      if (!processedLink) return;
+            withCompletionHandler:^(NSString *resolvedLinkString) {
+      NSURL *resolvedLink = [NSURL URLWithString:resolvedLinkString];
+      if (!resolvedLink) return;
 
-      // TO DO: Parse the processedLink URL components
-      // (example: path, query params) and
-      // navigate to the appropriate screen in your app
+      // TO DO: Handle the resolved link by parsing its components
+      // (example: path, query parameters) and
+      // navigating to the appropriate screen.
     }];
   }
 }
 
 // Receive universal link when app is installed,
-// and app is in background state, and either:
-// - User clicks link, or
-// - Another app opens link using
-// [UIApplication openURL:options:completionHandler:].
+// and link opens app from background state.
 - (void)scene:(UIScene *)scene
     continueUserActivity:(NSUserActivity *)userActivity {
   if ([userActivity.activityType
        isEqualToString:NSUserActivityTypeBrowsingWeb]) {
     NSURL *incomingLink = userActivity.webpageURL;
-    // Send incoming deep link to Adjust's servers for attribution
-    // and retrieve full URL if short branded link.
-    // If not, retrieve original link.
+    // Send deep link to Adjust's servers for attribution.
+    // If short branded link, receive long link.
+    // Otherwise, receive original link.
     ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:incomingLink];
     [Adjust processAndResolveDeeplink:deeplink
-                           callback:^(NSString *processedLinkString) {
-      NSURL *processedLink = [NSURL URLWithString:processedLinkString];
-      if (!processedLink) return;
+            withCompletionHandler:^(NSString *resolvedLinkString) {
+      NSURL *resolvedLink = [NSURL URLWithString:resolvedLinkString];
+      if (!resolvedLink) return;
 
-      // TO DO: Parse the processedLink URL components
-      // (example: path, query params) and
-      // navigate to the appropriate screen in your app
+      // TO DO: Handle the resolved link by parsing its components
+      // (example: path, query parameters) and
+      // navigating to the appropriate screen.
     }];
   }
 }
 
-// Receive app scheme deep link when app is installed, and either:
-// - App is in background state, and user clicks link or another app opens link
-//   using [UIApplication openURL:options:completionHandler:], or
-// - App is in foreground and opens its own link using
-//   [UIApplication openURL:options:completionHandler:].
+// Receive app scheme deep link when app is installed,
+// and link opens app from background
+// or foreground state.
 - (void)scene:(UIScene *)scene
     openURLContexts:(NSSet<UIOpenURLContext *> *)URLContexts {
   UIOpenURLContext *urlContext = URLContexts.allObjects.firstObject;
   if (urlContext) {
     NSURL *incomingLink = urlContext.URL;
-    // Send incoming deep link to Adjust's servers for attribution
-    // and retrieve full URL if short branded link.
-    // If not, retrieve original link.
+    // Send deep link to Adjust's servers for attribution.
+    // If short branded link, receive long link.
+    // Otherwise, receive original link.
     ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:incomingLink];
     [Adjust processAndResolveDeeplink:deeplink
-                           callback:^(NSString *processedLinkString) {
-      NSURL *processedLink = [NSURL URLWithString:processedLinkString];
-      if (!processedLink) return;
+            withCompletionHandler:^(NSString *resolvedLinkString) {
+      NSURL *resolvedLink = [NSURL URLWithString:resolvedLinkString];
+      if (!resolvedLink) return;
 
-      // TO DO: Parse the processedLink URL components
-      // (example: path, query params) and
-      // navigate to the appropriate screen in your app
+      // TO DO: Handle the resolved link by parsing its components
+      // (example: path, query parameters) and
+      // navigating to the appropriate screen.
     }];
   }
 }
@@ -398,6 +395,8 @@ If you haven't already done so, create an `AppDelegate.swift` file in your proje
 <Tab title="Swift" sync="swift">
 
 ```swift
+// App.swift
+
 import Adjust
 import SwiftUI
 
@@ -408,27 +407,20 @@ struct MyApp: App {
   var body: some Scene {
     WindowGroup {
       ContentView()
-        // Receive universal link or app scheme deep link
-        // when app is installed, and app is in "not running" or background state,
-        // and either:
-        // - User clicks link, or
-        // - Another app opens link using
-        // UIApplication.open(_:options:completionHandler:) or SwiftUI's openURL.
-        //
-        // Receive app scheme deep link when app is installed,
-        // and app is in foreground and opens its own link using
-        // UIApplication.open(_:options:completionHandler:) or SwiftUI's openURL.
+        // Receive universal link or app scheme deep link when app is installed,
+        // and link opens app from "not running",
+        // background, or foreground state.
         .onOpenURL { incomingLink in
-          // Send incoming deep link to Adjust's servers for attribution
-          // and retrieve full URL if short branded link.
-          // If not, retrieve original link.
+          // Send deep link to Adjust's servers for attribution.
+          // If short branded link, receive long link.
+          // Otherwise, receive original link.
           let deeplink = ADJDeeplink(deeplink: incomingLink)
-          Adjust.processAndResolve(deeplink) { processedLinkString in
-            guard let processedLink = URL(string: processedLinkString) else { return }
+          Adjust.processAndResolve(deeplink) { resolvedLinkString in
+            guard let resolvedLink = URL(string: resolvedLinkString) else { return }
 
-            // TO DO: Parse the processedLink URL components
-            // (example: path, query params) and
-            // navigate to the appropriate screen in your app
+            // TO DO: Handle the resolved link by parsing its components
+            // (example: path, query parameters) and
+            // navigating to the appropriate screen.
           }
         }
     }
@@ -441,55 +433,6 @@ struct MyApp: App {
 
 ### SwiftUI apps using SceneDelegate lifecycle {#swiftui-apps-using-scenedelegate-lifecycle}
 
-Follow the instructions in the [SwiftUI apps using AppDelegate lifecycle](#swiftui-apps-using-appdelegate-lifecycle) section. In addition, implement the following iOS direct deep linking method in your SceneDelegate.
+Follow the instructions in the [SwiftUI apps using AppDelegate lifecycle](#swiftui-apps-using-appdelegate-lifecycle) section. The `onOpenURL` method receives universal links and app scheme deep links when the app is installed, and the link opens the app from a background or foreground state.
 
-<Tabs>
-<Tab title="Swift" sync="swift">
-
-```swift
-// Receive universal link or app scheme deep link
-// when app is installed, and app is in "not running" state, and either:
-// - User clicks link, or
-// - Another app opens link using
-// UIApplication.open(_:options:completionHandler:) or SwiftUI's openURL.
-func scene(
-  _ scene: UIScene,
-  willConnectTo session: UISceneSession,
-  options connectionOptions: UIScene.ConnectionOptions
-) {
-  // Handle incoming universal link
-  if let userActivity = connectionOptions.userActivities.first,
-     userActivity.activityType == NSUserActivityTypeBrowsingWeb,
-     let incomingLink = userActivity.webpageURL {
-    // Send incoming deep link to Adjust's servers for attribution
-    // and retrieve full URL if short branded link.
-    // If not, retrieve original link.
-    let deeplink = ADJDeeplink(deeplink: incomingLink)
-    Adjust.processAndResolve(deeplink) { processedLinkString in
-      guard let processedLink = URL(string: processedLinkString) else { return }
-
-      // TO DO: Parse the processedLink URL components
-      // (example: path, query params) and
-      // navigate to the appropriate screen in your app
-    }
-  }
-  // Handle incoming app scheme deep link
-  else if let urlContext = connectionOptions.urlContexts.first {
-    let incomingLink = urlContext.url
-    // Send incoming deep link to Adjust's servers for attribution
-    // and retrieve full URL if short branded link.
-    // If not, retrieve original link.
-    let deeplink = ADJDeeplink(deeplink: incomingLink)
-    Adjust.processAndResolve(deeplink) { processedLinkString in
-      guard let processedLink = URL(string: processedLinkString) else { return }
-
-      // TO DO: Parse the processedLink URL components
-      // (example: path, query params) and
-      // navigate to the appropriate screen in your app
-    }
-  }
-}
-```
-
-</Tab>
-</Tabs>
+In addition, implement the `scene(_:willConnectTo:options:)` method from the [UIKit apps using SceneDelegate lifecycle](#uikit-apps-using-scenedelegate-lifecycle) section. This method receives universal links and app scheme deep links when the app is installed, and the link opens the app from a "not running" state.
