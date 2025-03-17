@@ -140,27 +140,32 @@ func application(
 // or background state.
 - (BOOL)application:(UIApplication *)application
     continueUserActivity:(NSUserActivity *)userActivity
-    restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> *_Nullable))
-      restorationHandler {
-  if ([userActivity.activityType
-       isEqualToString:NSUserActivityTypeBrowsingWeb]) {
-    NSURL *incomingLink = userActivity.webpageURL;
-    if (incomingLink) {
-      // Send deep link to Adjust's servers for attribution.
-      // If short branded link, receive long link.
-      // Otherwise, receive original link.
-      ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:incomingLink];
-      [Adjust processAndResolveDeeplink:deeplink
-            withCompletionHandler:^(NSString *resolvedLinkString) {
-        NSURL *resolvedLink = [NSURL URLWithString:resolvedLinkString];
-        if (!resolvedLink) return;
+      restorationHandler:
+          (void (^)(NSArray<id<UIUserActivityRestoring>> *_Nullable))
+              restorationHandler {
+  // Check if it's a web browsing activity
+  if (![userActivity.activityType
+          isEqualToString:NSUserActivityTypeBrowsingWeb])
+    return YES;
 
-        // TO DO: Handle the resolved link by parsing its components
-        // (example: path, query parameters) and
-        // navigating to the appropriate screen.
-      }];
-    }
-  }
+  // Check if there's a valid URL
+  NSURL *incomingLink = userActivity.webpageURL;
+  if (!incomingLink) return YES;
+
+  // Send deep link to Adjust's servers for attribution.
+  // If short branded link, receive long link.
+  // Otherwise, receive original link.
+  ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:incomingLink];
+  [Adjust processAndResolveDeeplink:deeplink
+              withCompletionHandler:^(NSString *resolvedLinkString) {
+                NSURL *resolvedLink = [NSURL URLWithString:resolvedLinkString];
+                if (!resolvedLink) return;
+
+                // TO DO: Handle the resolved link by parsing its components
+                // (example: path, query parameters) and
+                // navigating to the appropriate screen.
+              }];
+
   return YES;
 }
 
@@ -169,20 +174,21 @@ func application(
 // background, or foreground state.
 - (BOOL)application:(UIApplication *)app
             openURL:(NSURL *)incomingLink
-            options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
+            options:
+                (NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
   // Send deep link to Adjust's servers for attribution.
   // If short branded link, receive long link.
   // Otherwise, receive original link.
   ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:incomingLink];
   [Adjust processAndResolveDeeplink:deeplink
-            withCompletionHandler:^(NSString *resolvedLinkString) {
-    NSURL *resolvedLink = [NSURL URLWithString:resolvedLinkString];
-    if (!resolvedLink) return;
+              withCompletionHandler:^(NSString *resolvedLinkString) {
+                NSURL *resolvedLink = [NSURL URLWithString:resolvedLinkString];
+                if (!resolvedLink) return;
 
-    // TO DO: Handle the resolved link by parsing its components
-    // (example: path, query parameters) and
-    // navigating to the appropriate screen.
-  }];
+                // TO DO: Handle the resolved link by parsing its components
+                // (example: path, query parameters) and
+                // navigating to the appropriate screen.
+              }];
   return YES;
 }
 ```
@@ -226,12 +232,12 @@ func scene(
     }
 
     // Receive incoming app scheme deep link
-    guard let urlContext = connectionOptions.urlContexts.first else { return }
+    guard let incomingLink = connectionOptions.urlContexts.first?.url else { return }
 
     // Send deep link to Adjust's servers for attribution.
     // If short branded link, receive long link.
     // Otherwise, receive original link.
-    let deeplink = ADJDeeplink(deeplink: urlContext.url)
+    let deeplink = ADJDeeplink(deeplink: incomingLink)
     Adjust.processAndResolve(deeplink) { resolvedLinkString in
         guard let resolvedLink = URL(string: resolvedLinkString) else { return }
 
@@ -268,19 +274,18 @@ func scene(
   _ scene: UIScene,
   openURLContexts URLContexts: Set<UIOpenURLContext>
 ) {
-  if let urlContext = URLContexts.first {
-    let incomingLink = urlContext.url
-    // Send deep link to Adjust's servers for attribution.
-    // If short branded link, receive long link.
-    // Otherwise, receive original link.
-    let deeplink = ADJDeeplink(deeplink: incomingLink)
-    Adjust.processAndResolve(deeplink) { resolvedLinkString in
-      guard let resolvedLink = URL(string: resolvedLinkString) else { return }
+  guard let incomingLink = URLContexts.first?.url else { return }
 
-      // TO DO: Handle the resolved link by parsing its components
-      // (example: path, query parameters) and
-      // navigating to the appropriate screen.
-    }
+  // Send deep link to Adjust's servers for attribution.
+  // If short branded link, receive long link.
+  // Otherwise, receive original link.
+  let deeplink = ADJDeeplink(deeplink: incomingLink)
+  Adjust.processAndResolve(deeplink) { resolvedLinkString in
+    guard let resolvedLink = URL(string: resolvedLinkString) else { return }
+
+    // TO DO: Handle the resolved link by parsing its components
+    // (example: path, query parameters) and
+    // navigating to the appropriate screen.
   }
 }
 ```
@@ -293,74 +298,88 @@ func scene(
 
 // Receive universal link or app scheme deep link when app is installed
 // and link opens app from "not running" state.
+// SceneDelegate.m
+
+// Receive universal link or app scheme deep link when app is installed
+// and link opens app from "not running" state.
 - (void)scene:(UIScene *)scene
     willConnectToSession:(UISceneSession *)session
-                options:(UISceneConnectionOptions *)connectionOptions {
-  // Receive incoming universal link
+                 options:(UISceneConnectionOptions *)connectionOptions {
+  // Receive universal link
   if (connectionOptions.userActivities.count > 0) {
     NSUserActivity *userActivity =
         connectionOptions.userActivities.allObjects.firstObject;
     if ([userActivity.activityType
-         isEqualToString:NSUserActivityTypeBrowsingWeb] &&
+            isEqualToString:NSUserActivityTypeBrowsingWeb] &&
         userActivity.webpageURL) {
       NSURL *incomingLink = userActivity.webpageURL;
       // Send deep link to Adjust's servers for attribution.
       // If short branded link, receive long link.
       // Otherwise, receive original link.
-      ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:incomingLink];
+      ADJDeeplink *deeplink =
+          [[ADJDeeplink alloc] initWithDeeplink:incomingLink];
       [Adjust processAndResolveDeeplink:deeplink
-            withCompletionHandler:^(NSString *resolvedLinkString) {
-        NSURL *resolvedLink = [NSURL URLWithString:resolvedLinkString];
-        if (!resolvedLink) return;
+                  withCompletionHandler:^(NSString *resolvedLinkString) {
+                    NSURL *resolvedLink =
+                        [NSURL URLWithString:resolvedLinkString];
+                    if (!resolvedLink) return;
 
-        // TO DO: Handle the resolved link by parsing its components
-        // (example: path, query parameters) and
-        // navigating to the appropriate screen.
-      }];
+                    // TO DO: Handle the resolved link by parsing its components
+                    // (example: path, query parameters) and
+                    // navigating to the appropriate screen.
+                  }];
+      return;
     }
   }
-  // Receive incoming app scheme deep link
-  else if (connectionOptions.URLContexts.count > 0) {
-    UIOpenURLContext *urlContext =
-        connectionOptions.URLContexts.allObjects.firstObject;
-    NSURL *incomingLink = urlContext.URL;
-    // Send deep link to Adjust's servers for attribution.
-    // If short branded link, receive long link.
-    // Otherwise, receive original link.
-    ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:incomingLink];
-    [Adjust processAndResolveDeeplink:deeplink
-            withCompletionHandler:^(NSString *resolvedLinkString) {
-      NSURL *resolvedLink = [NSURL URLWithString:resolvedLinkString];
-      if (!resolvedLink) return;
 
-      // TO DO: Handle the resolved link by parsing its components
-      // (example: path, query parameters) and
-      // navigating to the appropriate screen.
-    }];
-  }
+  // Receive app scheme deep link
+  if (connectionOptions.URLContexts.count == 0) return;
+
+  UIOpenURLContext *urlContext =
+      connectionOptions.URLContexts.allObjects.firstObject;
+  NSURL *incomingLink = urlContext.URL;
+
+  // Send deep link to Adjust's servers for attribution.
+  // If short branded link, receive long link.
+  // Otherwise, receive original link.
+  ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:incomingLink];
+  [Adjust processAndResolveDeeplink:deeplink
+              withCompletionHandler:^(NSString *resolvedLinkString) {
+                NSURL *resolvedLink = [NSURL URLWithString:resolvedLinkString];
+                if (!resolvedLink) return;
+
+                // TO DO: Handle the resolved link by parsing its components
+                // (example: path, query parameters) and
+                // navigating to the appropriate screen.
+              }];
 }
 
 // Receive universal link when app is installed
 // and link opens app from background state.
 - (void)scene:(UIScene *)scene
     continueUserActivity:(NSUserActivity *)userActivity {
-  if ([userActivity.activityType
-       isEqualToString:NSUserActivityTypeBrowsingWeb]) {
-    NSURL *incomingLink = userActivity.webpageURL;
-    // Send deep link to Adjust's servers for attribution.
-    // If short branded link, receive long link.
-    // Otherwise, receive original link.
-    ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:incomingLink];
-    [Adjust processAndResolveDeeplink:deeplink
-            withCompletionHandler:^(NSString *resolvedLinkString) {
-      NSURL *resolvedLink = [NSURL URLWithString:resolvedLinkString];
-      if (!resolvedLink) return;
+  // Check if it's a web browsing activity
+  if (![userActivity.activityType
+          isEqualToString:NSUserActivityTypeBrowsingWeb])
+    return;
 
-      // TO DO: Handle the resolved link by parsing its components
-      // (example: path, query parameters) and
-      // navigating to the appropriate screen.
-    }];
-  }
+  // Check if there's a valid URL
+  NSURL *incomingLink = userActivity.webpageURL;
+  if (!incomingLink) return;
+
+  // Send deep link to Adjust's servers for attribution.
+  // If short branded link, receive long link.
+  // Otherwise, receive original link.
+  ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:incomingLink];
+  [Adjust processAndResolveDeeplink:deeplink
+              withCompletionHandler:^(NSString *resolvedLinkString) {
+                NSURL *resolvedLink = [NSURL URLWithString:resolvedLinkString];
+                if (!resolvedLink) return;
+
+                // TO DO: Handle the resolved link by parsing its components
+                // (example: path, query parameters) and
+                // navigating to the appropriate screen.
+              }];
 }
 
 // Receive app scheme deep link when app is installed
@@ -368,23 +387,27 @@ func scene(
 // or foreground state.
 - (void)scene:(UIScene *)scene
     openURLContexts:(NSSet<UIOpenURLContext *> *)URLContexts {
+  // Check if we have any URL contexts
   UIOpenURLContext *urlContext = URLContexts.allObjects.firstObject;
-  if (urlContext) {
-    NSURL *incomingLink = urlContext.URL;
-    // Send deep link to Adjust's servers for attribution.
-    // If short branded link, receive long link.
-    // Otherwise, receive original link.
-    ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:incomingLink];
-    [Adjust processAndResolveDeeplink:deeplink
-            withCompletionHandler:^(NSString *resolvedLinkString) {
-      NSURL *resolvedLink = [NSURL URLWithString:resolvedLinkString];
-      if (!resolvedLink) return;
+  if (!urlContext) return;
 
-      // TO DO: Handle the resolved link by parsing its components
-      // (example: path, query parameters) and
-      // navigating to the appropriate screen.
-    }];
-  }
+  // Check if the URL is valid
+  NSURL *incomingLink = urlContext.URL;
+  if (!incomingLink) return;
+
+  // Send deep link to Adjust's servers for attribution.
+  // If short branded link, receive long link.
+  // Otherwise, receive original link.
+  ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:incomingLink];
+  [Adjust processAndResolveDeeplink:deeplink
+              withCompletionHandler:^(NSString *resolvedLinkString) {
+                NSURL *resolvedLink = [NSURL URLWithString:resolvedLinkString];
+                if (!resolvedLink) return;
+
+                // TO DO: Handle the resolved link by parsing its components
+                // (example: path, query parameters) and
+                // navigating to the appropriate screen.
+              }];
 }
 ```
 
