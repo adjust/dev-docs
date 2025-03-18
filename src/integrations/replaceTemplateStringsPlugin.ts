@@ -35,7 +35,7 @@ const getValueFromPath = (path: string, obj: VariablesData) => {
 // This function finds all occurrences of "{variables.<path>}" in the code string
 // and replaces them with the corresponding value from the variables object.
 const interpolateVariables = (codeString: string) => {
-  const isVariableUsed = variableReg.test(codeString);
+  const isVariableUsed = codeString.match(variableReg);
 
   if (!isVariableUsed) {
     return codeString;
@@ -49,7 +49,7 @@ const interpolateVariables = (codeString: string) => {
 };
 
 const interpolateVersions = (codeString: string, versions: VersionMap) => {
-  const isVersionUsed = versionRegex.test(codeString);
+  const isVersionUsed = codeString.match(versionRegex);
   if (!isVersionUsed) {
      return codeString;
    }
