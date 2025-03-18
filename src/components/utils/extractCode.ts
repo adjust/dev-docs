@@ -3,42 +3,10 @@ import rehypeParse from "rehype-parse";
 import { select, selectAll } from "hast-util-select";
 import { toString } from "hast-util-to-string";
 
-import variables from "../../variables.json";
-
 interface CodeExtractionResult {
   code: string;
   lang?: string;
 }
-
-interface MyData {
-  config: Record<string, any>;
-  ids: Record<string, any>;
-  event: Record<string, any>;
-  adRevenue: Record<string, any>;
-  subscription: Record<string, any>;
-}
-
-const variableReg = /{variables\.([a-zA-Z0-9_.]+)}/g;
-
-const getValueFromPath = (path: string, obj: MyData) => {
-  return path
-    .split(".")
-    .reduce((acc: any, key: string) => acc?.[key] as string, obj);
-};
-
-// This function finds all occurrences of "{variables.<path>}" in the code string
-// and replaces them with the corresponding value from the variables object.
-const interpolateVariables = (codeString: string) => {
-  const isVariableUsed = variableReg.test(codeString);
-  if (!isVariableUsed) {
-    return codeString;
-  }
-  return codeString.replace(variableReg, (_, path: string) => {
-    const value = getValueFromPath(path, variables);
-    // If the value is undefined, keep the original text.
-    return value || `{variables.${path}}`;
-  });
-};
 
 export const extractCodeFromHTML = async (
   htmlString: string,
@@ -62,5 +30,5 @@ export const extractCodeFromHTML = async (
     return acc + text;
   }, "");
 
-  return { code: interpolateVariables(extractedCode), lang };
+  return { code: extractedCode, lang };
 };
