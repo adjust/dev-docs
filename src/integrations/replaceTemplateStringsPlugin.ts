@@ -24,7 +24,7 @@ const getValueFromPath = (path: string, obj: VariablesData) => {
     // need to extract the object key (newKey) and array index (indexValue) separately.
     if (index === arr.length - 1 && indexReg.test(key)) {
       const newKey = key.replace(indexReg, "");
-      // We will always have the index as existing for the array index was checked before
+      // We will always have the index exist, as the array index was checked before
       const indexValue = indexReg.exec(key)![1];
       return acc?.[newKey][indexValue] as string;
     }
