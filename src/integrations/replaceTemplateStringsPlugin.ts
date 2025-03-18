@@ -63,8 +63,18 @@ const interpolateVersions = (codeString: string, versions: VersionMap) => {
      );
      newValue = newValue.replace(oldValue, currentPlatform);
    } else {
+     const v2ReplacementValue = currentPlatform.v2;
+     const v3ReplacementValue = currentPlatform.v3;
      const v4ReplacementValue = currentPlatform.v4;
      const v5ReplacementValue = currentPlatform.v5;
+     const v2OldValue = new RegExp(
+       `\\$${platform.toUpperCase()}_V2_VERSION`,
+       "g",
+     );
+     const v3OldValue = new RegExp(
+       `\\$${platform.toUpperCase()}_V3_VERSION`,
+       "g",
+     );
      const v4OldValue = new RegExp(
        `\\$${platform.toUpperCase()}_V4_VERSION`,
        "g",
@@ -73,6 +83,8 @@ const interpolateVersions = (codeString: string, versions: VersionMap) => {
        `\\$${platform.toUpperCase()}_V5_VERSION`,
        "g",
      );
+     newValue = newValue.replace(v2OldValue, v2ReplacementValue);
+     newValue = newValue.replace(v3OldValue, v3ReplacementValue);
      newValue = newValue.replace(v4OldValue, v4ReplacementValue);
      newValue = newValue.replace(v5OldValue, v5ReplacementValue);
    }
