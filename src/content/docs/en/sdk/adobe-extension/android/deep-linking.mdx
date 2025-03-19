@@ -22,6 +22,7 @@ You can reattribute your users by sending deep link information to Adjust. When 
 The `AdjustDeeplink` class constructor requires the following argument:
 
 <DefList>
+
 `url`: `Uri`
 
 : The deep link URI that opens your app.
@@ -31,6 +32,7 @@ The `AdjustDeeplink` class constructor requires the following argument:
 The `Adjust.processDeeplink` function requires the following arguments:
 
 <DefList>
+
 `adjustDeeplink`: `AdjustDeeplink`
 
 : The `AdjustDeeplink` instance you created.
@@ -51,6 +53,7 @@ The Adjust Android Extension for Adobe Experience SDK opens deferred deep links 
 The `OnDeferredDeeplinkResponseListener` function requires the following argument:
 
 <DefList>
+
 `onDeferredDeeplinkResponseListener`: `OnDeferredDeeplinkResponseListener`
 
 : A function that returns a `boolean` value. If it returns `false`, the extension won't open the deferred deep link.
@@ -130,82 +133,66 @@ Here's what you need to do:
 
 1. Inside the `try...catch` block, call the `setOnDeferredDeeplinkResponseListener` method of your `AdjustAdobeExtensionConfig` instance. Pass an `OnDeferredDeeplinkResponseListener` instance as an argument.
 
-   <CodeBlock
-   title="MainApp.java"
-   highlight="{range: 6}"
-   startLineNumber={21}
-   showLineNumbers>
+<CodeBlock title="MainApp.java" highlight="{range: 6}" startLineNumber={21} showLineNumbers>
 
-   ```java
-    try {
-        MobileCore.configureWithAppID("your_adobe_app_id");
+```java
+ try {
+     MobileCore.configureWithAppID("your_adobe_app_id");
 
-        AdjustAdobeExtensionConfig config =
-                new AdjustAdobeExtensionConfig(AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX);
-        config.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListener() {});
-        AdjustAdobeExtension.setConfiguration(config);
-    } catch (Exception e) {
-        Log.e("example", "Exception occurred during configuration: " + e.getMessage());
-    }
-   ```
+     AdjustAdobeExtensionConfig config =
+             new AdjustAdobeExtensionConfig(AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX);
+     config.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListener() {});
+     AdjustAdobeExtension.setConfiguration(config);
+ } catch (Exception e) {
+     Log.e("example", "Exception occurred during configuration: " + e.getMessage());
+ }
+```
 
-   </CodeBlock>
+</CodeBlock>
 
 1. Create a new public function called `launchReceivedDeeplink` inside your `OnDeferredDeeplinkResponseListener` declaration. This method takes a `Uri` argument and returns a `boolean`.
 
-   <CodeBlock
-   title="MainApp.java"
-   highlight="{range: 3}"
-   startLineNumber={26}
-   showLineNumbers>
+<CodeBlock title="MainApp.java" highlight="{range: 3}" startLineNumber={26} showLineNumbers>
 
-   ```java
-    config.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListener() {
-        @Override
-        public boolean launchReceivedDeeplink(Uri deeplink) {}
-    });
-   ```
+```java
+ config.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListener() {
+     @Override
+     public boolean launchReceivedDeeplink(Uri deeplink) {}
+ });
+```
 
-   </CodeBlock>
+</CodeBlock>
 
 1. Add an `if` condition to the `launchReceivedDeeplink` to check if the `deeplink` contains the value `"no_open"`. If the string is found, the function returns `false`, and the app shouldn't open the deferred deep link.
 
-   <CodeBlock
-   title="MainApp.java"
-   highlight="{range: 3-5}"
-   startLineNumber={27}
-   showLineNumbers>
+<CodeBlock title="MainApp.java" highlight="{range: 3-5}" startLineNumber={27} showLineNumbers>
 
-   ```java
-    @Override
-    public boolean launchReceivedDeeplink(Uri deeplink) {
-        if (deeplink.contains("no_open")) {
-            return false;
-        }
-    }
-   ```
+```java
+ @Override
+ public boolean launchReceivedDeeplink(Uri deeplink) {
+     if (deeplink.contains("no_open")) {
+         return false;
+     }
+ }
+```
 
-   </CodeBlock>
+</CodeBlock>
 
 1. Finally, add an `else` block to return `true` if the deep link doesn't contain `"no_open"`.
 
-   <CodeBlock
-   title="MainApp.java"
-   highlight="{range: 5-7}"
-   startLineNumber={27}
-   showLineNumbers>
+<CodeBlock title="MainApp.java" highlight="{range: 5-7}" startLineNumber={27} showLineNumbers>
 
-   ```java
-    @Override
-    public boolean launchReceivedDeeplink(Uri deeplink) {
-        if (deeplink.contains("no_open")) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-   ```
+```java
+ @Override
+ public boolean launchReceivedDeeplink(Uri deeplink) {
+     if (deeplink.contains("no_open")) {
+         return false;
+     } else {
+         return true;
+     }
+ }
+```
 
-   </CodeBlock>
+</CodeBlock>
 
 That's it! When a user opens your app with a deferred deep link, the Adjust Extension will check if the link contains the string `"no_open"`. If it does, the app won't open the deep link.
