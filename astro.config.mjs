@@ -5,7 +5,7 @@ import AutoImport from "astro-auto-import";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import expressiveCode from "astro-expressive-code";
-import remarkReplaceVersions from "./src/integrations/remarkReplaceVersions";
+import replaceTemplateStringsPlugin from "./src/integrations/replaceTemplateStringsPlugin";
 import { fetchVersions } from "./src/integrations/fetchSdkVersions";
 import rehypeExternalLinks from "rehype-external-links";
 import remarkCustomHeadingId from "remark-custom-heading-id";
@@ -88,7 +88,7 @@ export default defineConfig({
   site: "https://dev.adjust.com/",
   markdown: {
     remarkPlugins: [
-      [remarkReplaceVersions, versions],
+      [replaceTemplateStringsPlugin, versions],
       remarkCustomHeadingId,
       remarkDefinitionList,
     ],
