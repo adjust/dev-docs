@@ -1,0 +1,378 @@
+---
+title: iOS Adobe Extension v3 migration guide
+description: Follow this guide to migrate from v2 to v3
+sidebar-label: iOS v3 migration guide
+sidebar-position: 1
+---
+
+The [Adjust Extension for Adobe Experience SDK](https://github.com/adjust/ios_adobe_extension) has been updated to v3 to support Adjust iOS SDK v5. Follow this guide to migrate from v2 to v3.
+
+<Callout type="important">
+
+You need to update your app to support iOS 12 or above before migrating.
+
+</Callout>
+
+To install v3 of the Adjust iOS Extension for Adobe Experience using Swift Package Manager, enter the following URL:
+
+```txt
+https://github.com/adjust/ios_adobe_extension.git
+```
+
+If you're using CocoaPods, add the following line to your `Podfile`:
+
+<CodeBlock title="Podfile">
+
+```rb
+pod 'AdjustAdobeExtension'
+```
+
+</CodeBlock>
+
+For a complete guide to setting up the Adjust iOS Extension for Adobe Experience, see the [integration guide](/en/sdk/adobe-extension/ios/integration).
+
+## New APIs {#new-apis}
+
+<MinorVersion added="v3" size="large" />
+
+The following APIs have been added in v3.
+
+### Resolve short branded links {#resolve-short-branded-links}
+
+v3 of the Adjust Extension for Adobe Experience SDK adds support for resolving [short branded links](https://help.adjust.com/en/article/short-branded-links). To resolve shortened links, call the `Adjust.processAndResolveDeeplink` method with the following arguments:
+
+<DefList>
+
+`deeplink`: `NSURL`
+
+: The deep link that opened the app.
+
+`withCompletionHandler`: `ADJResolvedDeeplinkBlock`
+
+: A completion function that receives the resolved short link as an argument.
+
+</DefList>
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+    if userActivity.activityType == NSUserActivityTypeBrowsingWeb {
+        if let incomingUrl = userActivity.webpageUrl {
+        if let deeplink = ADJDeeplink(deeplink: incomingUrl) {
+            Adjust.processAndResolveDeeplink(deeplink) { resolveDeeplink in
+                print("[\(resolveDeeplink)]")
+            }
+        }
+        }
+    }
+    return true
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler {
+    if ([[userActivity activityType] isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+        ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:[userActivity webpageURL]];
+        [Adjust processAndResolveDeeplink:deeplink
+                withCompletionHandler:^(NSString * _Nullable resolvedLink) {
+                    NSLog(@"[%@]", resolvedLink);
+        }];
+    }
+    return YES;
+}
+```
+
+</Tab>
+</Tabs>
+
+### Global callback parameters {#global-callback-parameters}
+
+v3 of the Adjust Extension for Adobe Experience SDK adds support for the global callback parameters API from iOS SDK v5. To add global callbacks to your sessions, call the `Adjust.addGlobalCallbackParameter` method with the following arguments:
+
+<DefList>
+
+`key`: `NSString`
+
+: The key of your parameter.
+
+`value`: `NSString`
+
+: The value of your parameter.
+
+</DefList>
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+Adjust.addGlobalCallbackParameter("value", forKey: "key")
+Adjust.addGlobalCallbackParameter("855", forKey: "user_id")
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[Adjust addGlobalCallbackParameter:@"value" forKey:@"key"];
+[Adjust addGlobalCallbackParameter:@"855" forKey:@"user_id"];
+```
+
+</Tab>
+</Tabs>
+
+Learn how to [set up global callback](/en/sdk/adobe-extension/ios/global-parameters#global-callback-parameters).
+
+### Global partner parameters {#global-partner-parameters}
+
+v3 of the Adjust Extension for Adobe Experience SDK adds support for the global partner parameters API from iOS SDK v5. To add global partner parameters, call the `Adjust.addGlobalPartnerParameter` method with the following arguments:
+
+<DefList>
+
+`key`: `String`
+
+: The key of your parameter.
+
+`value`: `String`
+
+: The value of your parameter.
+
+</DefList>
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+Adjust.addGlobalPartnerParameter("value", forKey: "key")
+Adjust.addGlobalPartnerParameter("855", forKey: "user_id")
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+[Adjust addGlobalPartnerParameter:@"value" forKey:@"key"];
+[Adjust addGlobalPartnerParameter:@"855" forKey:@"user_id"];
+```
+
+</Tab>
+</Tabs>
+
+Learn how to [set up global partner parameters](/en/sdk/adobe-extension/ios/global-parameters#global-partner-parameters).
+
+### Set external device ID {#set-external-device-id}
+
+v3 of the Adjust Extension for Adobe Experience SDK adds support for setting [external device identifiers](https://help.adjust.com/en/article/external-device-identifiers). To set an external device ID, call the `setExternalDeviceId` method of your `AdjustAdobeExtensionConfig` instance with the following argument:
+
+<DefList>
+
+`externalDeviceId`: `NSString`
+
+: Your external device identifier.
+
+</DefList>
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+if let config = AdjustAdobeExtensionConfig(environment: ADJEnvironmentSandbox) {
+   config.setExternalDeviceId("{variables.config.externalDeviceId}")
+   AdjustAdobeExtension.setConfiguration(config)
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+AdjustAdobeExtensionConfig *config = [AdjustAdobeExtensionConfig configWithEnvironment:ADJEnvironmentSandbox];
+[config setExternalDeviceId:@"{variables.config.externalDeviceId}"];
+[AdjustAdobeExtension setConfiguration:config];
+```
+
+</Tab>
+</Tabs>
+
+Learn how to [configure external device IDs](/en/sdk/adobe-extension/ios/external-device-id).
+
+### Set default link token for preinstalled apps {#set-default-link-token-preinstalled-apps}
+
+v3 of the Adjust Extension for Adobe Experience SDK adds support for setting a default [link token](https://help.adjust.com/en/article/links) for recording preinstalled app installs to a default campaign. To set a default link token, call the `setDefaultTracker` method of your `AdjustAdobeExtensionConfig` instance with the following argument:
+
+<DefList>
+
+`defaultTracker`: `NSString`
+
+: The alphanumeric link token of your preinstall campaign.
+
+</DefList>
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+if let config = AdjustAdobeExtensionConfig(environment: ADJEnvironmentSandbox) {
+   config.setDefaultTracker("abc123")
+   AdjustAdobeExtension.setConfiguration(config)
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+AdjustAdobeExtensionConfig *config = [AdjustAdobeExtensionConfig configWithEnvironment:ADJEnvironmentSandbox];
+[config setDefaultTracker:@"abc123"];
+[AdjustAdobeExtension setConfiguration:config];
+```
+
+</Tab>
+</Tabs>
+
+Learn how to [send preinstalled app activity](/en/sdk/adobe-extension/ios/preinstalled).
+
+## Changed APIs {#changed-apis}
+
+<MinorVersion changed="v3" size="large" />
+
+The following APIs have changed in v3.
+
+### Direct deep linking {#direct-deep-linking}
+
+In SDK v2, you can open deep links for attribution by calling the `AdjustAdobeExtension.application` method with the deep link data as an argument.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+    return AdjustAdobeExtension.application(app, open: url, options: options)
+}
+```
+
+</Tab>
+
+<Tab title="Objective-C" sync="objc">
+
+```objc
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+    return [AdjustAdobeExtension application:app openURL:url options:options];
+}
+```
+
+</Tab>
+</Tabs>
+
+SDK v3 has been updated to use the Adjust iOS SDK's `processDeeplink` method. To open direct deep links:
+
+1. Create a new `ADJDeeplink` instance with the deep link URL.
+
+1. Pass your `ADJDeeplink` instance to the `Adjust.processDeeplink` method.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+   if let deeplink = ADJDeeplink(deeplink: url) {
+      Adjust.processDeeplink(deeplink)
+   }
+   return true
+}
+```
+
+</Tab>
+
+<Tab title="Objective-C" sync="objc">
+
+```objc
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+   [Adjust processDeeplink: [[ADJDeeplink alloc] initWithDeeplink:url]];
+   return YES;
+}
+```
+
+</Tab>
+</Tabs>
+
+Learn how to [reattribute users with direct deep links](/en/sdk/adobe-extension/ios/deep-linking#reattribute-users-with-direct-deep-links).
+
+### Deferred deep linking callback {#deferred-deep-linking-callback}
+
+In SDK v2, you can configure the SDK to launch a callback function when a deferred deep link is opened by passing a function to the `setDeeplinkResponseBlock` method of your `AdjustAdobeExtensionConfig` instance.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+if let config = AdjustAdobeExtensionConfig(environment: ADJEnvironmentSandbox) {
+    config.setDeeplinkResponseBlock { deepLink in
+        // Deep link response received
+        // Apply your logic to determine whether the Adjust SDK should try to open the deep link
+        return true;
+        // or
+        // return false;
+    }
+    AdjustAdobeExtension.setConfiguration(config)
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+AdjustAdobeExtensionConfig *config = [AdjustAdobeExtensionConfig configWithEnvironment:ADJEnvironmentSandbox];
+[config setDeeplinkResponseBlock:^BOOL(NSURL * _Nullable deeplink) {
+    // Deep link response received
+    // Apply your logic to determine whether the Adjust SDK should try to open the deep link
+    return YES;
+    // or
+    // return NO;
+}];
+[AdjustAdobeExtension setConfiguration:config];
+```
+
+</Tab>
+</Tabs>
+
+In SDK v3, the `setDeeplinkResponseBlock` method has been renamed to `setDeferredDeeplinkReceivedBlock`.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+if let config = AdjustAdobeExtensionConfig(environment: ADJEnvironmentSandbox) {
+    config.setDeferredDeeplinkReceivedBlock { (deeplink: URL?) -> Bool in
+        if let deeplinkString = deeplink?.absoluteString.lowercased(),
+        deeplinkString.contains("no_open") {
+            return false
+        }
+        return true
+    }
+    AdjustAdobeExtension.setConfiguration(config)
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+AdjustAdobeExtensionConfig *config = [AdjustAdobeExtensionConfig configWithEnvironment:ADJEnvironmentSandbox];
+[config setDeferredDeeplinkReceivedBlock:^BOOL(NSURL * _Nullable deeplink) {
+    if (deeplink && [[deeplink.absoluteString lowercaseString] containsString:@"no_open"]) {
+        return NO;
+    }
+    return YES;
+}];
+[AdjustAdobeExtension setConfiguration:config];
+```
+
+</Tab>
+</Tabs>
+
+Learn how to [work with deferred deep link callbacks](/en/sdk/adobe-extension/ios/deep-linking#deferred-deep-link-callbacks).

@@ -12,19 +12,6 @@ const MDX_TAGS = [
   "ListColumns",
 ];
 
-// Define the base MDOC tags, and dynamically generate opening and closing variants
-const BASE_MDOC_TAGS = [
-  "tabs",
-  "tab",
-  "deflist",
-  "minorversion",
-  "codeblock",
-  "listcolumns",
-  "accordion",
-  "callout",
-];
-const MDOC_TAGS = BASE_MDOC_TAGS.flatMap((tag) => [tag, `/${tag}`]);
-
 const locales = ["ja", "ko", "zh"];
 const TAG_LIST = MDX_TAGS.join("|");
 
@@ -54,21 +41,6 @@ function fixFrontMatter(frontMatter, locale) {
   }
 
   return frontMatter;
-}
-
-// Remove escape slashes from tags
-function removeEscapeSlashesFromTags(content) {
-  return content.replace(/\\(?=[-#])/g, "");
-}
-
-// Add newline after closing tags
-function addNewlineAfterClosingTags(content, tags) {
-  const tagList = tags.join("|");
-  const regex = new RegExp(
-    `(\\S)(\\s*{%\\s*/(?:${tagList})\\s*%})(?!\\n)`,
-    "g",
-  );
-  return content.replace(regex, "$1\n$2");
 }
 
 function fixHeaders(content) {
@@ -122,32 +94,6 @@ function fixMdxContent(content, locale) {
   return content;
 }
 
-// Fix mdoc content
-function fixMdocContent(content, locale) {
-  // Unescape escaped curly braces
-  content = content.replace(/\\{%(.*?)%\\}/g, "{%$1%}");
-  content = fixHeaders(content);
-
-  content = removeEscapeSlashesFromTags(content);
-
-  content = addNewlineAfterClosingTags(content, MDOC_TAGS);
-
-  // Update URLs
-  content = content.replace(
-    /https:\/\/help\.adjust\.com\/en\//g,
-    `https://help.adjust.com/${locale}/`,
-  );
-  content = content.replace(/\(\/en\/(.*?)\)/g, `(/${locale}/$1)`);
-
-  // Add newline between two adjacent opening tags
-  content = content.replace(/(%}\s*)({%\s*[^%]+%})/g, "$1\n$2");
-
-  // Add newline between two adjacent closing tags
-  content = content.replace(/(%}\s*)({%\s*\/[^%]+%})/g, "$1\n$2");
-
-  return content;
-}
-
 const modifiedFiles = [];
 
 // Get the list of modified files in the current PR
@@ -167,20 +113,6 @@ async function formatMdxFile(file) {
   });
 }
 
-// Format MDOC files using the custom formatter
-async function formatMdocFile(file) {
-  return new Promise((resolve, reject) => {
-    exec(
-      `node ../../markdoc-formatter.mjs ../../${file}`,
-      (error, stdout, stderr) => {
-        if (error) return reject(stderr);
-        console.log(stdout);
-        resolve();
-      },
-    );
-  });
-}
-
 // Process a single file
 async function processFile(file, locale) {
   console.log(`Processing ${file} for ${locale}`);
@@ -193,8 +125,6 @@ async function processFile(file, locale) {
   let updatedContent;
   if (file.endsWith(".mdx")) {
     updatedContent = fixMdxContent(fileContent, locale);
-  } else if (file.endsWith(".mdoc")) {
-    updatedContent = fixMdocContent(fileContent, locale);
   }
 
   const finalContent = `---\n${yaml.dump(updatedFrontMatter, { noRefs: true })}---\n${updatedContent}`;
@@ -206,8 +136,6 @@ async function processFile(file, locale) {
     // Format the file after writing changes
     if (file.endsWith(".mdx")) {
       await formatMdxFile(file);
-    } else if (file.endsWith(".mdoc")) {
-      await formatMdocFile(file);
     }
   }
 }
@@ -221,7 +149,7 @@ async function main() {
     const relevantFiles = files.filter(
       (file) =>
         file.startsWith(`src/content/docs/${locale}/`) &&
-        (file.endsWith(".mdx") || file.endsWith(".mdoc")),
+        (file.endsWith(".mdx")),
     );
 
     for (const file of relevantFiles) {

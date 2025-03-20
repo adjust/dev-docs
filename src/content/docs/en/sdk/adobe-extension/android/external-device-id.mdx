@@ -1,0 +1,98 @@
+---
+title: Configure external device ID
+description: Use external device IDs to enhance your reporting.
+sidebar-position: 4
+---
+
+An [external device identifier](https://help.adjust.com/en/article/external-device-identifiers) is a custom value that you can assign to a device or user. This helps you recognize users across sessions and platforms. External device IDs also help you deduplicate installs by user, to avoid counting multiple new installs associated with the same user.
+
+Using external device IDs can produce different results depending on your setup. If you want to use them, contact your Adjust representative. They will talk you through the best approach for your use case.
+
+You must set your external device ID in your `AdjustAdobeExtensionConfig` instance before you call `AdjustAdobeExtension.setConfiguration`. You can't change this property after you've initialized the extension.
+
+## Reference {#reference}
+
+To set an external device ID, call the `setExternalDeviceId` method of your `AdjustAdobeExtensionConfig` instance with the following argument:
+
+<DefList>
+
+`externalDeviceId`: `String`
+
+: Your external device identifier.
+
+</DefList>
+
+## Tutorial: Set an external device ID {#tutorial}
+
+To set an external device ID, you need to set the ID using your `AdjustAdobeExtensionConfig` instance. If you followed the [integration guide](/en/sdk/adobe-extension/android/integration), your `MainApp.java` file should look something like this:
+
+```java
+// MainApp.java
+import android.app.Application;
+import android.util.Log;
+
+import com.adjust.adobeextension.AdjustAdobeExtension;
+import com.adjust.adobeextension.AdjustAdobeExtensionConfig;
+import com.adobe.marketing.mobile.AdobeCallback;
+import com.adobe.marketing.mobile.Extension;
+import com.adobe.marketing.mobile.Analytics;
+import com.adobe.marketing.mobile.Identity;
+import com.adobe.marketing.mobile.LoggingMode;
+import com.adobe.marketing.mobile.MobileCore;
+
+public class MainApp extends Application {
+   @Override
+   public void onCreate() {
+      super.onCreate();
+
+      MobileCore.setApplication(this);
+      MobileCore.setLogLevel(LoggingMode.VERBOSE);
+
+      try {
+         MobileCore.configureWithAppID("your_adobe_app_id");
+
+         AdjustAdobeExtensionConfig config =
+               new AdjustAdobeExtensionConfig(AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX);
+         AdjustAdobeExtension.setConfiguration(config);
+      } catch (Exception e) {
+         Log.e("example", "Exception occurred during configuration: " + e.getMessage());
+      }
+
+      try {
+         List<Class<? extends Extension>> extensions = Arrays.asList(
+               Analytics.EXTENSION,
+               Identity.EXTENSION,
+               AdjustAdobeExtension.EXTENSION);
+         MobileCore.registerExtensions(extensions, new AdobeCallback<Object>() {
+            @Override
+            public void call(Object o) {
+               Log.d("example", "Adjust Adobe Extension SDK initialized");
+            }
+         });
+      } catch (Exception e) {
+         Log.e("example", "Exception occurred while registering Extension: " + e.getMessage());
+      }
+   }
+}
+```
+
+To set a default link token for preinstalled apps, pass the link token to the `setExternalDeviceId` method of the `AdjustAdobeExtensionConfig` instance. The ID is sent to Adjust with each session.
+
+In this example, the external device ID is set to _{variables.config.externalDeviceId}_.
+
+<CodeBlock title="MainApp.java" highlight="{range: 6}" startLineNumber={21} showLineNumbers>
+
+```java
+try {
+   MobileCore.configureWithAppID("your_adobe_app_id");
+
+   AdjustAdobeExtensionConfig config =
+         new AdjustAdobeExtensionConfig(AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX);
+   config.setExternalDeviceId("{variables.config.externalDeviceId}");
+   AdjustAdobeExtension.setConfiguration(config);
+} catch (Exception e) {
+   Log.e("example", "Exception occurred during configuration: " + e.getMessage());
+}
+```
+
+</CodeBlock>

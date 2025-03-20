@@ -5,7 +5,7 @@ import AutoImport from "astro-auto-import";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import expressiveCode from "astro-expressive-code";
-import remarkReplaceVersions from "./src/integrations/remarkReplaceVersions";
+import replaceTemplateStringsPlugin from "./src/integrations/replaceTemplateStringsPlugin";
 import { fetchVersions } from "./src/integrations/fetchSdkVersions";
 import rehypeExternalLinks from "rehype-external-links";
 import remarkCustomHeadingId from "remark-custom-heading-id";
@@ -16,7 +16,6 @@ import {
   defListHastHandlers,
 } from "remark-definition-list";
 import { writeFile } from "fs";
-import markdoc from "@astrojs/markdoc";
 
 console.log(
   `${import.meta.env.VITE_GITHUB_TOKEN ? "Token found" : "No token found"}`,
@@ -64,6 +63,7 @@ export default defineConfig({
   integrations: [
     AutoImport({
       imports: [
+        "src/variables.json",
         "@components/Accordion.astro",
         "@components/Callout.astro",
         "@components/CodeBlock.astro",
@@ -71,6 +71,8 @@ export default defineConfig({
         "@components/MinorVersion.astro",
         "@components/Tab.astro",
         "@components/Tabs.astro",
+        "@components/DefList.astro",
+        "@components/ExampleApp.astro",
       ],
     }), // Enable React for the Algolia search component.
     react({
@@ -82,12 +84,11 @@ export default defineConfig({
     }),
     tailwind(),
     sitemap(),
-    markdoc(),
   ],
   site: "https://dev.adjust.com/",
   markdown: {
     remarkPlugins: [
-      [remarkReplaceVersions, versions],
+      [replaceTemplateStringsPlugin, versions],
       remarkCustomHeadingId,
       remarkDefinitionList,
     ],

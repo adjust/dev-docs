@@ -1,0 +1,199 @@
+---
+title: React Native SDK 連携ガイド
+description: React Native SDKを使用して、React NativeアプリでAdjust機能にアクセスしましょう。
+category-title: React Native SDK
+slug: ja/sdk/react-native
+sidebar-position: 4
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v4: /ja/sdk/react-native/v4
+---
+
+Adjust React Native SDKを実装することで、アトリビューションやイベントなどのさまざまなデータをReact Nativeアプリで計測できます。Adjust SDKをアプリに実装するには、以下の手順に従ってください。また、[GitHub](https://github.com/adjust/react_native_sdk/tree/master/example)のサンプルアプリもご覧ください。
+
+<Callout type="important">
+
+Adjust SDKは、iOS 12以降またはAndroid APIレベル21（Lollipop）以降に対応しています。
+
+</Callout>
+
+## 1. プロジェクトにSDKを追加する {#add-the-sdk-to-your-project}
+
+React NativeアプリでAdjust SDKを使うには、プロジェクトに追加する必要があります。
+
+1. 次のオプションのいずれか1つを使用して、React Nativeライブラリをダウンロードします。
+
+   ```console
+   $ npm install react-native-adjust@$REACT_NATIVE_V5_VERSION --save
+   ```
+
+1. ターミナルで以下のコマンドを実行し、iOSアプリのCocoaPodsのdependencyをインストールします：
+
+   ```console
+   $ cd ios && pod install
+   ```
+
+## 2. SDKを実装する {#integrate-the-sdk}
+
+SDKをプロジェクトに実装するには、AdjustのSDK設定をメインアプリのJavascriptファイルにインポートする必要があります。
+
+アプリの`.js`ファイルの冒頭に、次の行を追加します：
+
+```js
+import { Adjust, AdjustConfig } from "react-native-adjust";
+```
+
+## 3. Adjust SDKを初期化する {#initialize-the-adjust-sdk}
+
+React Nativeアプリ内で、出来るだけ早くAdjust SDKを初期化するようにしてください。これを行うには、アプリトークンを使ってConfigオブジェクトとアプリを実行したい環境を初期化します。 また、アプリの`.js`に次のコードを追加してください：
+
+```js
+constructor(props) {
+   super(props);
+   const adjustConfig = new AdjustConfig("{YourAppToken}", AdjustConfig.EnvironmentSandbox);
+   Adjust.initSdk(adjustConfig);
+}
+
+componentWillUnmount() {
+   Adjust.componentWillUnmount();
+}
+```
+
+`AdjustConfig`引数をパスします：
+
+- `{YourAppToken}`をあなたのトークンに置き換えてください。アプリトークンの確認方法については、[アプリ設定](https://help.adjust.com/ja/article/app-settings#view-your-app-token)をご覧ください。
+- 環境を選択します。
+   - アプリをテスト中で、テストデータを送信する必要がある場合は、`AdjustConfig.EnvironmentSandbox`を使用してください。テストデータを表示するには、ダッシュボードで[サンドボックスモードを有効にする](https://help.adjust.com/ja/article/filter-data#sandbox)必要があります。
+   - テストが完了し、アプリを公開する準備が整ったら、`AdjustConfig.EnvironmentProduction`を使用してください。
+
+<Callout type="important">
+
+テストを実行する際は、環境が`AdjustEnvironment.sandbox`に設定されていることを確認してください。アプリをアプリストアに提出する前に、これを`AdjustEnvironment.production`に変更してください。
+
+</Callout>
+
+## 4. Androidデバイスを設定する {#set-up-android-devices}
+
+### パーミッションを追加する {#add-permissions}
+
+Adjust SDKが情報にアクセスするには、特定のパーミッションが必要です。
+
+- `INTERNET`: Adjust Android SDKに自動的に追加されます。手動で追加する必要はありません。
+
+また、追加情報へのアクセスを許可するオプションの権限を追加することもできます。
+
+- `ACCESS_NETWORK_STATE` (オプション）：これを `AndroidManifest.xml`ファイルに追加して、便利なパラメーターを読み込むことができます。
+
+```xml
+<uses-permission android:name="android.permission.INTERNET"/>
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+```
+
+Adjust SDKには、バージョン4.32.0以降、デフォルトで`com.google.android.gms.AD_ID`パーミッションが含まれています。アプリをCOPPAに準拠させる必要がある場合や、Google Playストアをターゲットにしていない場合は、`remove`ディレクティブを追加することでこれを削除することができます。
+
+```xml
+<uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
+```
+
+<Callout type="seealso">
+
+このパーミッションに関する詳細は、Googleの[`AdvertisingIdClient.Info`](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid)ドキュメントをご参照ください。
+
+</Callout>
+
+### Google Play 開発者サービスを追加する {#add-google-play-services}
+
+Google Playストアを対象とするアプリは、[Google広告ID](https://support.google.com/googleplay/android-developer/answer/6048248?hl=en)（`gps_adid`）を使用してデバイスを識別する必要があります。これを行うには、以下のdependencyを`build.gradle`ファイルの `dependencies`セクションに追加してください。
+
+```groovy
+implementation 'com.google.android.gms:play-services-ads-identifier:18.1.0'
+```
+
+<Callout type="note">
+
+Adjust SDKは、`play-services-ads-identifier`dependencyのどのバージョンとも関連付けられていません。Google Play 開発者サービスのライブラリの任意のバージョンを使用できます。
+
+</Callout>
+
+### インストールリファラーを設定する {#set-up-install-referrer}
+
+インストールリファラーは、アプリインストールをソースにアトリビュートするために使用できるアトリビューションメカニズムです。2つの部分で構成されます。
+
+- [x] アプリ内でリファラルコンテンツを取得するために開発者が使用する、これらのアプリストアの一連のAPI。
+- [x] Google PlayやHuawei App Galleryなどのアプリストアで、ストアWebサイト上のアプリページURLに使用できる`referrer`パラメーター。リファラーパラメーターの設定方法は次のとおりです。
+   - ユーザーがAdjustリンクをクリックすると、Adjustサーバーは`reftag`というユニークIDをパスします。このIDはクリックとリファラーパラメーターに割り当てられます。リファレンスタグの詳細については、[リファレンスタグ](https://help.adjust.com/ja/article/reftag)を参照してください。
+   - [Google 広告](https://support.google.com/google-ads/answer/6357635?hl=en)キャンペーンを実行すると、`gclid`というユニークIDがGoogleからリファラーパラメーターに渡されます。Google広告アカウントで **自動タグ** が有効になっている必要があります。
+
+<Callout type="note">
+
+インストールリファラーは必須ではありませんが、アトリビューションの正確性を向上させるために推奨します。
+
+</Callout>
+
+#### Google Play Referrer API
+
+[Google Play Referrer API](https://developer.android.com/google/play/installreferrer)をサポートする：
+
+1. アプリレベルの`build.gradle`ファイルの **dependenciesブロック** に以下の行を追加します：
+
+   ```groovy
+   dependencies {
+      implementation 'com.android.installreferrer:installreferrer:2.2'
+   }
+   ```
+
+1. `installreferrer`ライブラリは **Google Maven** リポジトリに含まれています。アプリをビルドするには、アプリのトップレベルの`build.gradle`ファイルにGoogle Mavenリポジトリを追加する必要があります：
+
+   ```groovy
+   allprojects {
+      repositories {
+         maven {
+            url "https://maven.google.com"
+         }
+      }
+   }
+   ```
+
+#### Metaとのリファラー連携
+
+Adjust SDKは、Adjust Metaインストールリファラープラグインを使用して[Metaインストールリファラー](https://developers.facebook.com/docs/app-ads/meta-install-referrer)をサポートしています。[連携の詳細については、React Native Meta インストール リファラープラグインをご覧ください](/ja/sdk/react-native/plugins/meta-referrer-plugin)。
+
+## 5. iOS frameworksを追加する {#add-ios-frameworks}
+
+特定のiOS frameworksをアプリに実装すると、Adjust SDKは追加の情報を取得できます。これらのframeworksによって特定のSDK機能を有効にできますが、SDKが正常に動作するために必須というわけではありません。 フレームワークを追加し、その後、 **Project Settings --> Build Phases --> Link Binary With Libraries** で **Optional** としてマークすることができます。
+
+| Framework                             | 説明                                                                                                                                          | 注意                                                                                              |
+| ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| **AdSupport.framework**               | SDKがIDFA値と（iOS 14以前の）LAT情報にアクセスするには、このframeworkが必要です。                                                             | アプリが「子供向け」カテゴリーをターゲットにしている場合は、このframeworkは実装しないでください。 |
+| **AdServices.framework**              | このフレームワークは、Apple Search Ads アトリビューションを処理するのに必要です。                                                             |                                                                                                   |
+| **StoreKit.framework**                | iOS 14以降において、このframeworkはSKAdNetwork frameworkにアクセスし、SKAdNetworkとの通信をAdjust SDKで自動的に処理できるようにします。       |                                                                                                   |
+| **AppTrackingTransparency.framework** | iOS 14またはそれ以降において、このframeworkはSDKがATTに対する同意を確認するダイアログをラップし、ユーザーの許諾状況を示す値にアクセスします。 | アプリが「子供向け」カテゴリーをターゲットにしている場合は、このframeworkは実装しないでください。 |
+
+## 6. SDKシグネチャーを設定する {#set-up-sdk-signature}
+
+Adjust SDKとAdjustのサーバー間の通信を保護するためにSDKシグネチャーライブラリを使用する場合は、[AdjustヘルプセンターのSDKシグネチャーガイド](https://help.adjust.com/ja/article/sdk-signature)の手順に従ってください。
+
+## 7. 連携をテストする {#test-your-integration}
+
+Adjust SDKは、実装をテストとトラブルシューティングのためのツールを提供します。以下の手順に従って、実装をテストしてください。
+
+- 環境を`AdjustConfig.EnvironmentSandbox`に設定します。
+- Adjustダッシュボードに[サンドボックスフィルター](https://help.adjust.com/ja/article/filter-data#sandbox)を追加します。
+- ログレベルを`AdjustConfig.LogLevelVerbose`に設定します。
+
+<Callout type="tip">
+
+問題が発生した場合は、全ての詳細情報とログを添付し、[support@adjust.com](mailto:support@adjust.com)までメールをお送りください。
+
+</Callout>
+
+### Google Play 開発者サービスの連携をテストする {#test-google-play-services-integration}
+
+Adjust SDKがデバイスのGoogle広告IDを受信できるかどうかテストするには、ログレベルを`AdjustConfig.LogLevelVerbose`に、環境を`AdjustConfig.EnvironmentSandbox`に設定します。アプリを起動してセッションまたはイベントを記録します。SDKは、広告IDを読み取った場合、 `gps_adid` パラメーターをログに記録します。
+
+Google広告IDを取得する際に問題が発生した場合は、SDK [Githubリポジトリ](https://github.com/adjust/react_native_sdk)で質問を投稿するか、[support@adjust.com](mailto:support@adjust.com)までお問い合わせください。

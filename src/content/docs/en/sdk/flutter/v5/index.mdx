@@ -1,0 +1,152 @@
+---
+title: Flutter SDK integration guide
+description: Use the Flutter SDK to access Adjust's features in your Flutter apps
+category-title: Flutter SDK
+slug: en/sdk/flutter
+sidebar-position: 5
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v4: /en/sdk/flutter/v4
+---
+
+The Adjust Flutter SDK enables you to measure attribution, events, and much more in your Flutter app. Follow the steps in this guide to set up your app to work with the Adjust SDK. You can also check out the example app [on GitHub](https://github.com/adjust/flutter_sdk/tree/master/example).
+
+<Callout type="important">
+
+The Adjust SDK supports iOS 12 or later and Android API level 21 (Lollipop) or later.
+
+</Callout>
+
+## 1. Add the SDK to your project {#add-the-sdk-to-your-project}
+
+To use the [Adjust Flutter SDK](https://github.com/adjust/flutter_sdk/releases) in your Flutter app, you need to add it to your project.
+
+To import the Adjust SDK to your Flutter project, follow these steps:
+
+1. Add the following to your `pubspec.yaml` file:
+
+   ```yaml
+   dependencies:
+      adjust_sdk: ^$FLUTTER_V5_VERSION
+   ```
+
+1. Navigate to your project and run the following command. Visual Studio automatically runs this command after you edit the `pubspec.yaml` file.
+
+   ```console
+   $ flutter packages get
+   ```
+
+## 2. Set up Android devices {#set-up-android-devices}
+
+### Add Google Play Services {#add-google-play-services}
+
+Apps that target the Google Play Store must use the [Google Advertising ID](https://support.google.com/googleplay/android-developer/answer/6048248?hl=en) (`gps_adid`) to identify devices. To do this, add the following dependency to the `dependencies` section of your `build.gradle` file.
+
+```groovy
+implementation 'com.google.android.gms:play-services-ads-identifier:18.1.0'
+```
+
+<Callout type="note">
+
+The Adjust SDK isn't tied to any version of the `play-services-ads-identifier` dependency. You can use any version of the Google Play Services library.
+
+</Callout>
+
+### Add permissions {#add-permissions}
+
+The Adjust SDK requires the following permissions. Add them to your `AndroidManifest.xml` file if they're not already present:
+
+```xml
+<uses-permission android:name="android.permission.INTERNET"/>
+```
+
+The Adjust SDK includes the `com.google.android.gms.AD_ID` permission by default. You can remove it by adding a `remove` directive if need to make your app COPPA-compliant or if you don't target the Google Play Store.
+
+```xml
+<uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
+```
+
+<Callout type="seealso">
+
+See Google's [`AdvertisingIdClient.Info documentation`](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid) for more information about this permission.
+
+</Callout>
+
+### Set up install referrer {#set-up-install-referrer}
+
+The install referrer is a unique identifier which you can use to attribute an app install to a source. The Adjust SDK requires this information to perform attribution.
+
+- Use the [Google Play Referrer API](https://developer.android.com/google/play/installreferrer).
+
+#### Google Play Referrer API
+
+To support the Google Play Referrer API, add the following in your `build.gradle` file:
+
+```groovy
+implementation 'com.android.installreferrer:installreferrer:2.2'
+```
+
+#### Meta referrer integration
+
+The Adjust SDK supports the [Meta Install Referrer](https://developers.facebook.com/docs/app-ads/meta-install-referrer) using the Adjust Meta Install Referrer plugin. [See the Flutter Meta Install Referrer plugin for integration details](/en/sdk/flutter/plugins/meta-referrer-plugin).
+
+## 3. Add iOS frameworks {#add-ios-frameworks}
+
+The Adjust SDK is able to get extra information when you include certain iOS frameworks in your app. These frameworks enable certain SDK features, but they're not mandatory for the SDK to work normally. You can add the frameworks and then mark them as **Optional** in **Project Settings --> Build Phases --> Link Binary With Libraries**.
+
+| Framework                           | Description                                                                                                                      | Notes                                                                                                        |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `AdSupport.framework`               | Enables access to the device's IDFA. Also enables access to LAT information on devices running iOS 14 or earlier                 | Don't add this framework if your app targets the "Kids" category                                             |
+| `AdServices.framework`              | Handles Apple Search Ads attribution                                                                                             |                                                                                                              |
+| `StoreKit.framework`                | Enables access to the SKAdNetwork framework                                                                                      | Required to allow the Adjust SDK to handle communication with SKAdNetwork on devices running iOS 14 or later |
+| `AppTrackingTransparency.framework` | Required to allow the Adjust SDK to wrap user ATT consent dialog and access consent responses on devices running iOS 14 or later | Don't add this framework if your app targets the "Kids" category                                             |
+
+## 4. Set up SDK Signature {#set-up-sdk-signature}
+
+If you want to use the SDK signature library to secure communications between the Adjust SDK and Adjust's servers, follow the instructions in the [SDK signature guide on the Adjust Help Center](https://help.adjust.com/en/article/sdk-signature).
+
+## 5. Initialize the Adjust SDK {#initialize-the-adjust-sdk}
+
+Make sure you initialize the Adjust SDK as soon as possible in your Flutter app. To do this, initialize your config object with your app token and the environment you want to run your application in.
+
+<Callout type="important">
+
+When running tests you should ensure that your environment is set to `AdjustEnvironment.sandbox`. Change this to `AdjustEnvironment.production` before you submit your application to the app store.
+
+</Callout>
+
+```dart
+AdjustConfig config = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox);
+Adjust.initSdk(config);
+```
+
+## 6. Build your app {#build-your-app}
+
+Well done! You should now be able to build and run your Flutter app. Enable logging to check for any issues. Check your logs to see the `Install tracked` message.
+
+You are ready to start attributing your users with the Adjust SDK.
+
+## 7. Test your integration {#test-your-integration}
+
+The Adjust SDK provides tools for testing and troubleshooting issues with your integration. To test your setup:
+
+- Set your environment to `AdjustEnvironment.sandbox`.
+- Add a sandbox filter to your Adjust dashboard results.
+- Set your log level to `AdjustLogLevel.verbose`.
+
+<Callout type="tip">
+
+If you encounter any issues, email support@adjust.com with all details and logs.
+
+</Callout>
+
+### Test Google Play Services integration {#test-google-play-services-integration}
+
+To test that the Adjust SDK can receive a device's Google Advertising ID, set the log level to `AdjustLogLevel.verbose` and the environment to `AdjustEnvironment.sandbox`. Start your app and measure a session or an event. The SDK logs the `gps_adid` (Google Play Services Advertiser ID) parameter if it has read the advertising ID.
+
+If you're experiencing issues retrieving the Google Advertising ID, open an issue in the SDK [GitHub repository](https://github.com/adjust/flutter_sdk) or contact support@adjust.com.
