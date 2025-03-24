@@ -421,3 +421,54 @@ AdjustLinkResolution.resolveLink(url, new String[]{"example.com"}, new AdjustLin
 
 </Tab>
 </Tabs>
+
+## Handling Deeplinks with Referrer {#handling-deeplinks-with-referrer}
+
+An optional referrer URL used to track source of the deeplink or app open for better attribution or reattribution and deep linking. For example, channels like SEO / Organic Search, Adjust links are not directly used. If the client's root domain has Universal Links implemented and triggers an app opening, For such channels, we may have to rely on signals coming from the referrer URL to attribute or reattribute users.
+
+#### Set up a Referrer URL
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+ override fun onCreate(savedInstanceState: Bundle?) {
+   super.onCreate(savedInstanceState)
+   setContentView(R.layout.activity_main)
+
+   val intent = intent
+   val data = intent.data
+   val adjustDeeplink = AdjustDeeplink(data)
+   // If referrer URL is available, add it to the deeplink object
+   val referrer = Uri.parse("https://example.com")
+   referrer?.let {
+      adjustDeeplink.setReferrer(referrer)
+   }
+
+   Adjust.processDeeplink(adjustDeeplink, applicationContext)
+}
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+
+    Intent intent = getIntent();
+    Uri data = intent.getData();
+    AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+    // If referrer URL is available, add it to the deeplink object
+    Uri referrer = Uri.parse("https://example.com");
+    if (referrer != null) {
+        adjustDeeplink.setReferrer(referrer);
+    }
+    Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
+}
+```
+
+</Tab>
+</Tabs>
