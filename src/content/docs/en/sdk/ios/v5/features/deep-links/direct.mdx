@@ -408,3 +408,66 @@ func scene(
 
 </Tab>
 </Tabs>
+
+## Handling Deeplinks with Referrer {#handling-deeplinks-with-referrer}
+
+An optional referrer URL used to track the source of the deeplink for better attribution and deep linking.
+
+#### Set up a Referrer URL
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+func application(_ application: UIApplication,
+                continue userActivity: NSUserActivity,
+                restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+
+    guard userActivity.activityType == NSUserActivityTypeBrowsingWeb,
+        let url = userActivity.webpageURL else { return false }
+
+    if let deeplink = ADJDeeplink(deeplink: url) {
+        // If referrer URL is available, add it to the deeplink object
+        if let referrer = URL(string: "https://example.com") {
+            deeplink.setReferrer(referrer)
+        }
+        // Send deeplink and referrer to Adjust's servers
+        Adjust.processDeeplink(deeplink)
+        return true
+    }
+    return false
+}
+
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+- (BOOL)application:(UIApplication *)application
+            continueUserActivity:(NSUserActivity *)userActivity
+    restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> *restorableObjects))restorationHandler {
+    
+    if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+        NSURL *url = userActivity.webpageURL;
+        if (url) {
+            ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:url];
+            if (deeplink) {
+                NSURL *referrer = [NSURL URLWithString:@"https://example.com"];
+                // If referrer URL is available, add it to the deeplink object
+                if (referrer) {
+                    [deeplink setReferrer:referrer];
+                }
+                // Send deeplink and referrer to Adjust's servers
+                [Adjust processDeeplink:deeplink];
+            }
+            return YES;
+        }
+    }
+    return NO;
+}
+
+```
+
+</Tab>
+</Tabs>
