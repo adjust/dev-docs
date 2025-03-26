@@ -89,16 +89,20 @@ func application(
   restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
 ) -> Bool {
   guard userActivity.activityType == NSUserActivityTypeBrowsingWeb,
-        let incomingLink = userActivity.webpageURL else { return true }
+    let incomingLink = userActivity.webpageURL
+  else { return true }
+
+  // Create deep link object
+  guard let deeplink = ADJDeeplink(deeplink: incomingLink) else { return }
 
   // Send deep link to Adjust's servers for attribution.
   // If short branded link, receive long link.
   // Otherwise, receive original link.
-  let deeplink = ADJDeeplink(deeplink: incomingLink)
-  Adjust.processAndResolve(deeplink) { resolvedLinkString in
-    guard let resolvedLink = URL(string: resolvedLinkString) else { return }
+  Adjust.processAndResolve(deeplink) { resolvedLink in
+    // Handle failure if resolvedLink is nil
+    guard let resolvedLink = resolvedLink else { return }
 
-    // TO DO: Handle the resolved link by parsing its components
+    // TO DO: Handle resolvedLink by parsing its components
     // (example: path, query parameters) and
     // navigating to the appropriate screen.
   }
@@ -114,14 +118,17 @@ func application(
   open incomingLink: URL,
   options: [UIApplication.OpenURLOptionsKey: Any] = [:]
 ) -> Bool {
+  // Create deep link object
+  guard let deeplink = ADJDeeplink(deeplink: incomingLink) else { return }
+
   // Send deep link to Adjust's servers for attribution.
   // If short branded link, receive long link.
   // Otherwise, receive original link.
-  let deeplink = ADJDeeplink(deeplink: incomingLink)
-  Adjust.processAndResolve(deeplink) { resolvedLinkString in
-    guard let resolvedLink = URL(string: resolvedLinkString) else { return }
+  Adjust.processAndResolve(deeplink) { resolvedLink in
+    // Handle failure if resolvedLink is nil
+    guard let resolvedLink = resolvedLink else { return }
 
-    // TO DO: Handle the resolved link by parsing its components
+    // TO DO: Handle resolvedLink by parsing its components
     // (example: path, query parameters) and
     // navigating to the appropriate screen.
   }
@@ -161,7 +168,7 @@ func application(
                 NSURL *resolvedLink = [NSURL URLWithString:resolvedLinkString];
                 if (!resolvedLink) return;
 
-                // TO DO: Handle the resolved link by parsing its components
+                // TO DO: Handle resolvedLink by parsing its components
                 // (example: path, query parameters) and
                 // navigating to the appropriate screen.
               }];
@@ -185,7 +192,7 @@ func application(
                 NSURL *resolvedLink = [NSURL URLWithString:resolvedLinkString];
                 if (!resolvedLink) return;
 
-                // TO DO: Handle the resolved link by parsing its components
+                // TO DO: Handle resolvedLink by parsing its components
                 // (example: path, query parameters) and
                 // navigating to the appropriate screen.
               }];
@@ -209,62 +216,74 @@ Update your SceneDelegate to implement iOS direct deep linking methods.
 // Receive universal link or app scheme deep link when app is installed
 // and link opens app from "not running" state.
 func scene(
-    _ scene: UIScene,
-    willConnectTo session: UISceneSession,
-    options connectionOptions: UIScene.ConnectionOptions
+  _ scene: UIScene,
+  willConnectTo session: UISceneSession,
+  options connectionOptions: UIScene.ConnectionOptions
 ) {
-    // Receive incoming universal link
-    if let userActivity = connectionOptions.userActivities.first,
-       userActivity.activityType == NSUserActivityTypeBrowsingWeb,
-       let incomingLink = userActivity.webpageURL {
-        // Send deep link to Adjust's servers for attribution.
-        // If short branded link, receive long link.
-        // Otherwise, receive original link.
-        let deeplink = ADJDeeplink(deeplink: incomingLink)
-        Adjust.processAndResolve(deeplink) { resolvedLinkString in
-            guard let resolvedLink = URL(string: resolvedLinkString) else { return }
-
-            // TO DO: Handle the resolved link by parsing its components
-            // (example: path, query parameters) and
-            // navigating to the appropriate screen.
-        }
-        return
-    }
-
-    // Receive incoming app scheme deep link
-    guard let incomingLink = connectionOptions.urlContexts.first?.url else { return }
+  // Receive incoming universal link
+  if let userActivity = connectionOptions.userActivities.first,
+    userActivity.activityType == NSUserActivityTypeBrowsingWeb,
+    let incomingLink = userActivity.webpageURL
+  {
+    // Create deep link object
+    guard let deeplink = ADJDeeplink(deeplink: incomingLink) else { return }
 
     // Send deep link to Adjust's servers for attribution.
     // If short branded link, receive long link.
     // Otherwise, receive original link.
-    let deeplink = ADJDeeplink(deeplink: incomingLink)
-    Adjust.processAndResolve(deeplink) { resolvedLinkString in
-        guard let resolvedLink = URL(string: resolvedLinkString) else { return }
+    Adjust.processAndResolve(deeplink) { resolvedLink in
+      // Handle failure if resolvedLink is nil
+      guard let resolvedLink = resolvedLink else { return }
 
-        // TO DO: Handle the resolved link by parsing its components
-        // (example: path, query parameters) and
-        // navigating to the appropriate screen.
+      // TO DO: Handle resolvedLink by parsing its components
+      // (example: path, query parameters) and
+      // navigating to the appropriate screen.
     }
-}
+    return
+  }
 
+  // Receive incoming app scheme deep link
+  guard let incomingLink = connectionOptions.urlContexts.first?.url else {
+    return
+  }
+
+  // Create deep link object
+  guard let deeplink = ADJDeeplink(deeplink: incomingLink) else { return }
+
+  // Send deep link to Adjust's servers for attribution.
+  // If short branded link, receive long link.
+  // Otherwise, receive original link.
+  Adjust.processAndResolve(deeplink) { resolvedLink in
+    // Handle failure if resolvedLink is nil
+    guard let resolvedLink = resolvedLink else { return }
+
+    // TO DO: Handle resolvedLink by parsing its components
+    // (example: path, query parameters) and
+    // navigating to the appropriate screen.
+  }
+}
 
 // Receive universal link when app is installed
 // and link opens app from background state.
 func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
-    guard userActivity.activityType == NSUserActivityTypeBrowsingWeb,
-          let incomingLink = userActivity.webpageURL else { return }
+  guard userActivity.activityType == NSUserActivityTypeBrowsingWeb,
+    let incomingLink = userActivity.webpageURL
+  else { return }
 
-    // Send deep link to Adjust's servers for attribution.
-    // If short branded link, receive long link.
-    // Otherwise, receive original link.
-    let deeplink = ADJDeeplink(deeplink: incomingLink)
-    Adjust.processAndResolve(deeplink) { resolvedLinkString in
-        guard let resolvedLink = URL(string: resolvedLinkString) else { return }
+  // Create deep link object
+  guard let deeplink = ADJDeeplink(deeplink: incomingLink) else { return }
 
-        // TO DO: Handle the resolved link by parsing its components
-        // (example: path, query parameters) and
-        // navigating to the appropriate screen.
-    }
+  // Send deep link to Adjust's servers for attribution.
+  // If short branded link, receive long link.
+  // Otherwise, receive original link.
+  Adjust.processAndResolve(deeplink) { resolvedLink in
+    // Handle failure if resolvedLink is nil
+    guard let resolvedLink = resolvedLink else { return }
+
+    // TO DO: Handle resolvedLink by parsing its components
+    // (example: path, query parameters) and
+    // navigating to the appropriate screen.
+  }
 }
 
 // Receive app scheme deep link when app is installed
@@ -276,14 +295,17 @@ func scene(
 ) {
   guard let incomingLink = URLContexts.first?.url else { return }
 
+  // Create deep link object
+  guard let deeplink = ADJDeeplink(deeplink: incomingLink) else { return }
+
   // Send deep link to Adjust's servers for attribution.
   // If short branded link, receive long link.
   // Otherwise, receive original link.
-  let deeplink = ADJDeeplink(deeplink: incomingLink)
-  Adjust.processAndResolve(deeplink) { resolvedLinkString in
-    guard let resolvedLink = URL(string: resolvedLinkString) else { return }
+  Adjust.processAndResolve(deeplink) { resolvedLink in
+    // Handle failure if resolvedLink is nil
+    guard let resolvedLink = resolvedLink else { return }
 
-    // TO DO: Handle the resolved link by parsing its components
+    // TO DO: Handle resolvedLink by parsing its components
     // (example: path, query parameters) and
     // navigating to the appropriate screen.
   }
@@ -324,7 +346,7 @@ func scene(
                         [NSURL URLWithString:resolvedLinkString];
                     if (!resolvedLink) return;
 
-                    // TO DO: Handle the resolved link by parsing its components
+                    // TO DO: Handle resolvedLink by parsing its components
                     // (example: path, query parameters) and
                     // navigating to the appropriate screen.
                   }];
@@ -348,7 +370,7 @@ func scene(
                 NSURL *resolvedLink = [NSURL URLWithString:resolvedLinkString];
                 if (!resolvedLink) return;
 
-                // TO DO: Handle the resolved link by parsing its components
+                // TO DO: Handle resolvedLink by parsing its components
                 // (example: path, query parameters) and
                 // navigating to the appropriate screen.
               }];
@@ -376,7 +398,7 @@ func scene(
                 NSURL *resolvedLink = [NSURL URLWithString:resolvedLinkString];
                 if (!resolvedLink) return;
 
-                // TO DO: Handle the resolved link by parsing its components
+                // TO DO: Handle resolvedLink by parsing its components
                 // (example: path, query parameters) and
                 // navigating to the appropriate screen.
               }];
@@ -404,7 +426,7 @@ func scene(
                 NSURL *resolvedLink = [NSURL URLWithString:resolvedLinkString];
                 if (!resolvedLink) return;
 
-                // TO DO: Handle the resolved link by parsing its components
+                // TO DO: Handle resolvedLink by parsing its components
                 // (example: path, query parameters) and
                 // navigating to the appropriate screen.
               }];
@@ -424,7 +446,7 @@ If you haven't already done so, create an `AppDelegate.swift` file in your proje
 ```swift
 // App.swift
 
-import Adjust
+import AdjustSdk
 import SwiftUI
 
 @main
@@ -438,14 +460,17 @@ struct MyApp: App {
         // and link opens app from "not running",
         // background, or foreground state.
         .onOpenURL { incomingLink in
+          // Create deep link object
+          guard let deeplink = ADJDeeplink(deeplink: incomingLink) else { return }
+
           // Send deep link to Adjust's servers for attribution.
           // If short branded link, receive long link.
           // Otherwise, receive original link.
-          let deeplink = ADJDeeplink(deeplink: incomingLink)
-          Adjust.processAndResolve(deeplink) { resolvedLinkString in
-            guard let resolvedLink = URL(string: resolvedLinkString) else { return }
+          Adjust.processAndResolve(deeplink) { resolvedLink in
+            // Handle failure if resolvedLink is nil
+            guard let resolvedLink = resolvedLink else { return }
 
-            // TO DO: Handle the resolved link by parsing its components
+            // TO DO: Handle resolvedLink by parsing its components
             // (example: path, query parameters) and
             // navigating to the appropriate screen.
           }
