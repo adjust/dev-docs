@@ -1,0 +1,134 @@
+---
+title: Send preinstalled app activity
+sidebar-label: Configure preinstalled app
+description: Configure a campaign to send information from preinstalled apps.
+sidebar-position: 3
+---
+
+You can use the Adjust Android Extension for Adobe Experience SDK to send Adjust activity from apps that came preinstalled on a user's device. This enables you to send information from users who didn't download your app from a campaign.
+
+You can send data from preinstalled apps to a predefined default link. When a user opens the app for the first time, the install session is associated with the default link token.
+
+## Reference {#reference}
+
+To set your default link token, call the `setDefaultTracker` method of your `AdjustAdobeExtensionConfig` instance with the following argument:
+
+<DefList>
+
+`token`: `String`
+
+: Your alphanumeric Adjust link token.
+
+</DefList>
+
+## Tutorial: Set a default link token {#tutorial}
+
+To set your default link token, you need to add the token to your `AdjustAdobeExtensionConfig` instance. If you followed the [integration guide](/en/sdk/adobe-extension/android/integration), your `MainApp.java` file should look something like this:
+
+```java
+// MainApp.java
+import android.app.Application;
+import android.util.Log;
+
+import com.adjust.adobeextension.AdjustAdobeExtension;
+import com.adjust.adobeextension.AdjustAdobeExtensionConfig;
+import com.adobe.marketing.mobile.AdobeCallback;
+import com.adobe.marketing.mobile.Extension;
+import com.adobe.marketing.mobile.Analytics;
+import com.adobe.marketing.mobile.Identity;
+import com.adobe.marketing.mobile.LoggingMode;
+import com.adobe.marketing.mobile.MobileCore;
+
+public class MainApp extends Application {
+   @Override
+   public void onCreate() {
+      super.onCreate();
+
+      MobileCore.setApplication(this);
+      MobileCore.setLogLevel(LoggingMode.VERBOSE);
+
+      try {
+         MobileCore.configureWithAppID("your_adobe_app_id");
+
+         AdjustAdobeExtensionConfig config =
+               new AdjustAdobeExtensionConfig(AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX);
+         AdjustAdobeExtension.setConfiguration(config);
+      } catch (Exception e) {
+         Log.e("example", "Exception occurred during configuration: " + e.getMessage());
+      }
+
+      try {
+         List<Class<? extends Extension>> extensions = Arrays.asList(
+               Analytics.EXTENSION,
+               Identity.EXTENSION,
+               AdjustAdobeExtension.EXTENSION);
+         MobileCore.registerExtensions(extensions, new AdobeCallback<Object>() {
+            @Override
+            public void call(Object o) {
+               Log.d("example", "Adjust Adobe Extension SDK initialized");
+            }
+         });
+      } catch (Exception e) {
+         Log.e("example", "Exception occurred while registering Extension: " + e.getMessage());
+      }
+   }
+}
+```
+
+To set a default link token for preinstalled apps, pass the link token to the `setDefaultTracker` method of the `AdjustAdobeExtensionConfig` instance. When Adjust receives the install session information, it attributes the install to the default link.
+
+In this example, the default link token is set to `"abc123"`.
+
+<CodeBlock title="MainApp.java" highlight="{range: 26}">
+
+```java
+import android.app.Application;
+import android.util.Log;
+
+import com.adjust.adobeextension.AdjustAdobeExtension;
+import com.adjust.adobeextension.AdjustAdobeExtensionConfig;
+import com.adobe.marketing.mobile.AdobeCallback;
+import com.adobe.marketing.mobile.Extension;
+import com.adobe.marketing.mobile.Analytics;
+import com.adobe.marketing.mobile.Identity;
+import com.adobe.marketing.mobile.LoggingMode;
+import com.adobe.marketing.mobile.MobileCore;
+
+public class MainApp extends Application {
+   @Override
+   public void onCreate() {
+      super.onCreate();
+
+      MobileCore.setApplication(this);
+      MobileCore.setLogLevel(LoggingMode.VERBOSE);
+
+      try {
+         MobileCore.configureWithAppID("your_adobe_app_id");
+
+         AdjustAdobeExtensionConfig config =
+               new AdjustAdobeExtensionConfig(AdjustAdobeExtensionConfig.ENVIRONMENT_SANDBOX);
+         config.setDefaultTracker("abc123");
+         AdjustAdobeExtension.setConfiguration(config);
+      } catch (Exception e) {
+         Log.e("example", "Exception occurred during configuration: " + e.getMessage());
+      }
+
+      try {
+         List<Class<? extends Extension>> extensions = Arrays.asList(
+               Analytics.EXTENSION,
+               Identity.EXTENSION,
+               AdjustAdobeExtension.EXTENSION);
+         MobileCore.registerExtensions(extensions, new AdobeCallback<Object>() {
+            @Override
+            public void call(Object o) {
+               Log.d("example", "Adjust Adobe Extension SDK initialized");
+            }
+         });
+      } catch (Exception e) {
+         Log.e("example", "Exception occurred while registering Extension: " + e.getMessage());
+      }
+   }
+}
+```
+
+</CodeBlock>

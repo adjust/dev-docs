@@ -1,0 +1,225 @@
+---
+title: 收入验证
+description: 验证App Store 和 Play 商店中的购买情况
+slug: zh/sdk/cocos2dx/features/purchase-verification
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v4: /zh/sdk/unity/v4/features/events
+---
+
+如果您已启用[收入验证](https://help.adjust.com/zh/article/purchase-verification)，就可以使用 Adjust SDK 请求收入验证。通过 Adjust SDK 验证购买的方法有两种：
+
+1. 创建代表购买的`AdjustEvent2dx`对象并为目标商店配置购买属性。
+1. 创建代表购买的`AdjustAppStorePurchase2dx` (Apple App Store) 或`AdjustPlayStorePurchase2dx` (Google Play 商店) 对象。
+
+<Callout type="tip">
+
+如果您在 Adjust 中使用收入事件来监测购买，则应使用`AdjustEvent2dx`类。如果您只想验证购买但不想将其与事件关联，请使用`AdjustAppStorePurchase2dx`或`AdjustPlayStorePurchase2dx`类。
+
+</Callout>
+
+当您使用 Adjust SDK 发送购买信息时，Adjust 会进行下列操作：
+
+1. 将信息发送至相关商店并等待状态响应。
+1. 将状态响应转发至 Adjust SDK。
+
+您可以使用回传查看收入验证状态。结果以`AdjustPurchaseVerificationResult2dx`对象的形式返回，包含以下属性：
+
+<DefList>
+
+`verificationStatus` (`std::string`)
+
+: 购买状态。
+
+`code` (`int`)
+
+: 购买的状态代码。
+
+`message` (`std::string`)
+
+: 商店返回的任何消息。
+
+</DefList>
+
+## 验证购买和记录事件 {#verify-purchase-and-record-event}
+
+如需发送收入事件进行验证并监听收入验证状态，请按照下列步骤操作：
+
+### App Store 购买 {#app-store-purchases}
+
+1. 使用您的事件识别码实例化`AdjustEvent2dx`对象并设置以下参数：
+
+<DefList>
+
+`productId` (`std::string`)
+
+: 已被成功售出货品的产品识别码。
+
+`transactionId` (`std::string`)
+
+: 要验证的交易 ID。
+
+</DefList>
+
+1. 请使用下列参数调用 `Adjust2dx::verifyAndTrackPlayStorePurchase` 方法：
+
+<DefList>
+
+`event` (`AdjustEvent2dx`)
+
+: 您的实例化事件对象。
+
+`callback` (`void(*callback)`)
+
+: 接收`AdjustPurchaseVerificationResult2dx`对象作为参数的委托回传函数。
+
+</DefList>
+
+在此示例中，收入验证响应被输出至日志后台进程。
+
+```cpp
+AdjustEvent2dx adjustEvent = AdjustEvent2dx("{variables.event.token}");
+adjustEvent.setRevenue({variables.event.revenue.amount}, "{variables.event.revenue.currency}");
+adjustEvent.setTransactionId("{variables.event.transactionId}");
+adjustEvent.setProductId("{variables.event.revenue.productId}");
+Adjust2dx::verifyAndTrackPlayStorePurchase(adjustEvent, [](AdjustPurchaseVerificationResult2dx verificationResult) {
+    log("Verification status: %s", verificationResult.verificationStatus);
+    log("Code: %s", verificationResult.code);
+    log("Message: %s", verificationResult.message);
+});
+```
+
+### Play 商店购买 {#play-store-purchases}
+
+1. 使用您的事件识别码实例化`AdjustEvent2dx`对象并设置以下参数：
+
+<DefList>
+
+`productId` (`std::string`)
+
+: 已购买产品的 ID。
+
+`purchaseToken` (`std::string`)
+
+: 与购买关联的购买识别码。
+
+</DefList>
+
+1. 请使用下列参数调用 `Adjust::verifyAndTrackPlayStorePurchase` 方法：
+
+<DefList>
+
+`event` (`AdjustEvent2dx`)
+
+: 您的实例化事件对象。
+
+`callback` (`void(*callback)`)
+
+: 接收`AdjustPurchaseVerificationResult2dx`对象作为参数的委托回传函数。
+
+</DefList>
+
+在此示例中，收入验证响应被输出至日志后台进程。
+
+```cpp
+AdjustEvent2dx adjustEvent = AdjustEvent("{variables.event.token}");
+adjustEvent.setRevenue({variables.event.revenue.amount}, "{variables.event.revenue.currency}");
+adjustEvent.setProductId("{variables.event.productId}");
+adjustEvent.setPurchaseToken("{variables.event.revenue.purchaseToken}");
+Adjust2dx::verifyAndTrackPlayStorePurchase(adjustEvent, [](AdjustPurchaseVerificationResult2dx verificationResult) {
+    log("Verification status: %s", verificationResult.verificationStatus);
+    log("Code: %s", verificationResult.code);
+    log("Message: %s", verificationResult.message);
+});
+```
+
+## 仅验证购买 {#only-verify-purchase}
+
+要发送单独购买信息并监听收入验证状态，请按照下列步骤操作：
+
+### App Store 购买 {#app-store-only-verify}
+
+1. 使用以下参数实例化`AdjustAppStorePurchase2dx`对象：
+
+<DefList>
+
+`productId` (`std::string`)
+
+: 已被成功售出货品的产品识别码。
+
+`transactionId` (`std::string`)
+
+: 要验证的交易 ID。
+
+</DefList>
+
+1. 请使用下列参数调用 `Adjust2dx::verifyAppStorePurchase` 方法：
+
+<DefList>
+
+`purchase` (`AdjustAppStorePurchase2dx`)
+
+: 实例化的购买对象。
+
+`callback` (`void(*callback)`)
+
+: 接收`AdjustPurchaseVerificationResult2dx`对象作为参数的委托回传函数。
+
+</DefList>
+
+在此示例中，收入验证响应被输出至日志后台进程。
+
+```cpp
+AdjustAppStorePurchase2dx purchase = AdjustAppStorePurchase2dx("{variables.event.productId}", "{variables.event.transactionId}");
+Adjust2dx::verifyAppStorePurchase(purchase, [](AdjustPurchaseVerificationResult2dx verificationResult) {
+    log("Verification status: %s", verificationResult.verificationStatus);
+    log("Code: %s", verificationResult.code);
+    log("Message: %s", verificationResult.message);
+});
+```
+
+### Play 商店购买 {#play-store-only-verify}
+
+1. 使用以下参数实例化`AdjustPlayStorePurchase2dx`：
+
+<DefList>
+
+`productId` (`std::string`)
+
+: 已购买产品的 ID。
+
+`purchaseToken` (`std::string`)
+
+: 与购买关联的购买识别码。
+
+</DefList>
+
+1. 请使用下列参数调用 `Adjust2dx::verifyPlayStorePurchase` 方法：
+
+<DefList>
+
+`purchase` (`AdjustPlayStorePurchase2dx`)
+
+: 实例化的购买对象。
+
+`callback` (`void(*callback)`)
+
+: 接收`AdjustPurchaseVerificationResult2dx`对象作为参数的委托回传函数。
+
+</DefList>
+
+在此示例中，收入验证响应被输出至日志后台进程。
+
+```cpp
+AdjustPlayStorePurchase2dx purchase = AdjustPlayStorePurchase2dx("{variables.event.productId}", "{variables.event.purchaseToken}");
+Adjust2dx::verifyPlayStorePurchase(purchase, [](AdjustPurchaseVerificationResult2dx verificationResult) {
+    log("Verification status: %s", verificationResult.verificationStatus);
+    log("Code: %s", verificationResult.code);
+    log("Message: %s", verificationResult.message);
+});
+```

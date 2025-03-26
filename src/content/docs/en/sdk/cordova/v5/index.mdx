@@ -1,0 +1,123 @@
+---
+title: Cordova SDK integration guide
+description: Use the Cordova SDK to access Adjust's features in your Cordova apps
+category-title: Cordova SDK
+slug: en/sdk/cordova
+sidebar-position: 6
+versions:
+   - label: v5
+     value: v5
+     default: true
+   - label: v4
+     value: v4
+redirects:
+   v4: /en/sdk/cordova/v4
+---
+
+The Adjust Cordova SDK enables you to measure attribution, events, and much more in your Cordova app. Follow the steps in this guide to set up your app to work with the Adjust SDK. You can also check out the example apps [on GitHub](https://github.com/adjust/cordova_sdk/tree/master/example-cordova).
+
+## 1. Add the SDK to your project {#add-the-sdk-to-your-project}
+
+The Adjust Cordova SDK is available as a plugin on npm. To add it to your project,
+
+### Cordova plugin
+
+To add the Adjust Cordova SDK to your Cordova plugin, run the following command:
+
+```console
+> cordova plugin add com.adjust.sdk
+Fetching plugin "com.adjust.sdk" via npm
+Installing "com.adjust.sdk" for android
+Installing "com.adjust.sdk" for ios
+```
+
+### Ionic
+
+If you use Ionic to build your app, add the SDK and its TypeScript typings from the [`awesome-cordova-plugins` repository](https://github.com/danielsogl/awesome-cordova-plugins) by running the following commands:
+
+```console
+> npm install @awesome-cordova-plugins/adjust --save
+> ionic cordova plugin add com.adjust.sdk
+```
+
+## 2. Set up Android devices {#set-up-android-devices}
+
+### Add permissions {#add-permissions}
+
+The Adjust SDK includes the `com.google.android.gms.AD_ID` and `android.permission.INTERNET` permissions by default. You can remove the `AD_ID` permission by adding a `remove` directive if need to make your app COPPA-compliant or if you don't target the Google Play Store.
+
+```xml
+<config-file target="AndroidManifest.xml" parent="/manifest">
+  <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" />
+</config-file>
+```
+
+<Callout type="seealso">
+
+See Google's [`AdvertisingIdClient.Info documentation`](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid) for more information about this permission.
+
+</Callout>
+
+### Set up install referrer {#set-up-install-referrer}
+
+The Adjust SDK enables support for the [Google Play Referrer API](https://developer.android.com/google/play/installreferrer) by default. The Meta Install Referrer is available as a plugin for Android. [See the Cordova Meta Install Referrer plugin for integration details](/en/sdk/cordova/plugins/meta-referrer-plugin).
+
+## 3. Add iOS frameworks {#add-ios-frameworks}
+
+The Adjust SDK automatically links the frameworks listed below on iOS devices.
+
+| Framework                           | Description                                                                                                                           | Notes                                                                                                        |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `AdSupport.framework`               | Enables access to the device's IDFA. Also enables access to LAT information on devices running iOS 14 or earlier                      | Don't add this framework if your app targets the "Kids" category                                             |
+| `AdServices.framework`              | Handles Apple Search Ads attribution                                                                                                  |                                                                                                              |
+| `StoreKit.framework`                | Enables access to the SKAdNetwork framework                                                                                           | Required to allow the Adjust SDK to handle communication with SKAdNetwork on devices running iOS 14 or later |
+| `AppTrackingTransparency.framework` | Required to allow the Adjust SDK to wrap user tracking consent dialog and access consent responses on devices running iOS 14 or later | Don't add this framework if your app targets the "Kids" category                                             |
+
+## 4. Set up SDK Signature {#set-up-sdk-signature}
+
+If you want to use the SDK signature library to secure communications between the Adjust SDK and Adjust's servers, follow the instructions in the [SDK signature guide on the Adjust Help Center](https://help.adjust.com/en/article/sdk-signature).
+
+## 5. Initialize the Adjust SDK {#initialize-the-adjust-sdk}
+
+<Callout type="important">
+
+When running tests you should ensure that your environment is set to `AdjustConfig.EnvironmentSandbox`. Change this to `AdjustConfig.EnvironmentProduction` before you submit your application to the app store.
+
+</Callout>
+
+Make sure you initialize the Adjust SDK as soon as possible in your Cordova app. To do this:
+
+1. Instantiate an `AdjustConfig` object with the following information:
+   - `appToken`: Your [Adjust app token](https://help.adjust.com/en/article/app-settings#view-your-app-token).
+   - `environment`: The environment your app is running in. Set this to `AdjustConfig.EnvironmentSandbox` to test your app locally.
+1. Pass your `AdjustConfig` instance to the `Adjust.initSdk` method to initialize the SDK.
+
+```js
+var adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox,
+);
+Adjust.initSdk(adjustConfig);
+```
+
+## 6. Build your app {#build-your-app}
+
+Well done! You should now be able to build and run your Cordova app. Enable logging to check for any issues. Check your logs to see the `Install tracked` message.
+
+You are ready to start attributing your users with the Adjust SDK.
+
+## 7. Test your integration {#test-your-integration}
+
+The Adjust SDK provides tools for testing and troubleshooting issues with your integration. To test your setup:
+
+- Set your environment to `AdjustConfig.EnvironmentSandbox`.
+- Add a sandbox filter to your Adjust dashboard results.
+- Set your log level to `AdjustConfig.LogLevelVerbose`.
+
+If you encounter any issues, email support@adjust.com with all details and logs.
+
+### Test Google Play Services integration {#test-google-play-services-integration}
+
+To test that the Adjust SDK can receive a device's Google Advertising ID, set the log level to **verbose** and the environment to **Sandbox**. Start your app and measure a session or an event. The SDK logs the `gps_adid` (Google Play Services Advertiser ID) parameter if it has read the advertising ID.
+
+If you're experiencing issues retrieving the Google Advertising ID, open an issue in the SDK [GitHub repository](https://github.com/adjust/cordova_sdk) or contact support@adjust.com.
