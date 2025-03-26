@@ -1,96 +1,92 @@
 ---
-title: Web SDK 연동 가이드
-description: 웹 SDK를 사용해 웹앱의 Adjust 기능에 액세스합니다.
+title: "Web SDK 연동 가이드"
+description: "웹 SDK를 사용해 웹앱의 Adjust 기능에 액세스합니다."
 category-title: "웹 SDK "
-slug: ko/sdk/web
+slug: "en/sdk/web"
 sidebar-position: 8
 ---
-
 Adjust 웹 SDK를 사용하면 웹 앱에서 어트리뷰션, 이벤트 및 기타 데이터를 기록할 수 있습니다. 이 가이드에서는 SDK를 앱과 연동하는 방법을 설명합니다.
 
-<Callout type="important">
-
-웹 SDK를 사용하려면 Adjust 대시보드에서 지원 중단된 웹 앱을 생성하고 그 둘을 연결해야 합니다. 웹 SDK를 모바일 앱 SDK가 이미 포함된 모바일 앱과 연동해서는 안 됩니다.
-
-</Callout>
-
-## 1\. 프로젝트에 SDK 추가 {#add-the-sdk-to-your-project}
+1\. 프로젝트에 SDK 추가 \{\#add\-the\-sdk\-to\-your\-project\}
+----------------------------------------------------------------
 
 시작하려면 웹 앱에 SDK를 추가합니다. Adjust SDK는 CommonJS와 AMD\(비동기 모듈 정의\) 환경에서 모두 작동합니다. CDN\(콘텐츠 전송 네트워크\)을 통해 로딩될 때 글로벌 `Adjust` 네임스페이스를 통해 액세스할 수 있습니다.
 
-### CDN 사용 {#using-a-cdn}
+### CDN 사용 \{\#using\-a\-cdn\}
 
 CDN을 통해 SDK를 로딩할 때 프로덕션 빌드에 간소화된 버전을 사용해야 합니다.
 
-- 다음과 같이 CDN 대상에 추가하여 특정 버전을 로드할 수 있습니다. `https://cdn.adjust.com/adjust-5.7.0.min.js`
-- 최신 버전을 로드하려면 다음과 같이 `adjust-latest` 패키지를 사용합니다. `https://cdn.adjust.com/adjust-latest.min.js` 이 패키지는 자동으로 업데이트되므로 대상 파일을 변경할 필요가 없습니다.
+* 다음과 같이 CDN 대상에 추가하여 특정 버전을 로드할 수 있습니다. `https://cdn.adjust.com/adjust-5.7.2.min.js`
+* 최신 버전을 로드하려면 다음과 같이 `adjust-latest` 패키지를 사용합니다. `https://cdn.adjust.com/adjust-latest.min.js` 이 패키지는 자동으로 업데이트되므로 대상 파일을 변경할 필요가 없습니다.
 
-<Callout type="tip">
+<callout type="tip"> 
 
 SDK 파일은 캐시되어 빠른 서비스가 가능합니다. 이 캐시는 30분마다 업데이트됩니다. SDK 파일을 최신 버전으로 강제로 업데이트하려면 헤더에서 특정 버전을 대상으로 지정하시기 바랍니다.
+</Callout> 
 
-</Callout>
+CDN을 통해 SDK를 로드하려면 웹 앱의 `<head id="sl-md0000000">` 요소 안에 다음 스니펫을 추가합니다.
 
-CDN을 통해 SDK를 로드하려면 웹 앱의 `<head>` 요소 안에 다음 스니펫을 추가합니다.
+\{/\* prettier\-ignore \*/\}
 
-{/* prettier-ignore */}
 ```html
-<script type="application/javascript">
+<script type="application/javascript" id="sl-md0000000">
 !function(t,r,e,a,n,o,i,l,c,s,d,h,u){var f=i+"_q",m=i+"_c";t[i]=t[i]||{},t[f]=t[f]||[],t[m]=t[m]||[];for(let r=0;r<l.length;r++)d(t[i],t[f],l[r]);for(let r=0;r<c.length;r++){var g,b=c[r][0],p=c[r][1];t[i][b]=function(...r){return g=this,t[m].push((function(){g[s]=new t[i][b](...r)})),g};for(let r=0;r<p.length;r++){const e=p[r];t[i][b].prototype[e]=function(...r){t[m].push((function(){g[s][e](...r)}))}}}h=r.createElement(e),u=r.getElementsByTagName(e)[0],h.async=!0,h.src="https://cdn.adjust.com/adjust-latest.min.js",h.onload=function(){for(var r=0;r<t[m].length;r++)t[m][r]();t[m]=[];for(r=0;r<t[f].length;r++)t[f][r][1][0][s]?t[i][t[f][r][0]](t[f][r][1][0][s]):t[i][t[f][r][0]].apply(t[i],t[f][r][1]);t[f]=[]},u.parentNode.insertBefore(h,u)}(window,document,"script",0,0,0,"Adjust",["initSdk","getAttribution","getWebUUID","waitForAttribution","waitForWebUUID","setReferrer","trackEvent","addGlobalCallbackParameters","addGlobalPartnerParameters","removeGlobalCallbackParameter","removeGlobalPartnerParameter","clearGlobalCallbackParameters","clearGlobalPartnerParameters","switchToOfflineMode","switchBackToOnlineMode","stop","restart","gdprForgetMe","disableThirdPartySharing","trackThirdPartySharing","initSmartBanner","showSmartBanner","hideSmartBanner"],[["ThirdPartySharing",["addGranularOption","addPartnerSharingSetting"]]],"__realObj",(function(t,r,e){t[e]=function(){r.push([e,arguments])}}));
 </script>
 ```
 
 Adjust SDK는 각 페이지에서 로드되며 페이지 로드 시 한 번 초기화됩니다.
 
-#### 하위 리소스 무결성 {#subresource-integrity}
+#### 하위 리소스 무결성 \{\#subresource\-integrity\}
 
-[하위 리소스 무결성](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity) 검사를 사용하여 XSS\(사이트 간 스크립팅\) 공격을 완화할 수 있습니다. 패키지를 실행하기 전에 검증하려면 다음 콜\(추가 `crossOrigin`, `integrity`, 인코딩된 해시 확인\)을 사용합니다.
+[하위 리소스 무결성](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity) 검사를 사용하여 XSS\(사이트 간 스크립팅\) 공격을 완화할 수 있습니다. 패키지를 실행하기 전에 검증하려면 다음 스니펫\(추가 `crossOrigin`, `integrity`, 인코딩된 해시 확인\)을 사용합니다.
 
-{/* prettier-ignore */}
+\{/\* prettier\-ignore \*/\}
+
 ```html
-<script type="application/javascript">
-!function(t,r,e,a,n,o,i,l,s,c,d,h,u){var f=i+"_q",g=i+"_c";t[i]=t[i]||{},t[f]=t[f]||[],t[g]=t[g]||[];for(let r=0;r<l.length;r++)d(t[i],t[f],l[r]);for(let r=0;r<s.length;r++){var m,b=s[r][0],p=s[r][1];t[i][b]=function(...r){return m=this,t[g].push((function(){m[c]=new t[i][b](...r)})),m};for(let r=0;r<p.length;r++){const e=p[r];t[i][b].prototype[e]=function(...r){t[g].push((function(){m[c][e](...r)}))}}}h=r.createElement(e),u=r.getElementsByTagName(e)[0],h.async=!0,h.src="https://cdn.adjust.com/adjust-latest.min.js",o&&(h.crossOrigin="anonymous",h.integrity=o),h.onload=function(){for(var r=0;r<t[g].length;r++)t[g][r]();t[g]=[];for(r=0;r<t[f].length;r++)t[f][r][1][0][c]?t[i][t[f][r][0]](t[f][r][1][0][c]):t[i][t[f][r][0]].apply(t[i],t[f][r][1]);t[f]=[]},u.parentNode.insertBefore(h,u)}(window,document,"script",0,0,"sha384-WE6fJqvcE0mjcC/fPYooIQAOhsHpTDVYjC52i6Asn3LECEpjHyI5zUwD8/5esthg","Adjust",["initSdk","getAttribution","getWebUUID","waitForAttribution","waitForWebUUID","setReferrer","trackEvent","addGlobalCallbackParameters","addGlobalPartnerParameters","removeGlobalCallbackParameter","removeGlobalPartnerParameter","clearGlobalCallbackParameters","clearGlobalPartnerParameters","switchToOfflineMode","switchBackToOnlineMode","stop","restart","gdprForgetMe","disableThirdPartySharing","trackThirdPartySharing","initSmartBanner","showSmartBanner","hideSmartBanner"],[["ThirdPartySharing",["addGranularOption","addPartnerSharingSetting"]]],"__realObj",(function(t,r,e){t[e]=function(){r.push([e,arguments])}}));
+<script type="application/javascript" id="sl-md0000000">
+!function(t,r,a,e,n,o,i,l,s,c,d,h,u){var f=i+"_q",m=i+"_c";t[i]=t[i]||{},t[f]=t[f]||[],t[m]=t[m]||[];for(let r=0;r<l.length;r++)d(t[i],t[f],l[r]);for(let r=0;r<s.length;r++){var g,b=s[r][0],p=s[r][1];t[i][b]=function(...r){return g=this,t[m].push((function(){g[c]=new t[i][b](...r)})),g};for(let r=0;r<p.length;r++){const a=p[r];t[i][b].prototype[a]=function(...r){t[m].push((function(){g[c][a](...r)}))}}}h=r.createElement(a),u=r.getElementsByTagName(a)[0],h.async=!0,h.src="https://cdn.adjust.com/adjust-5.7.2.min.js",o&&(h.crossOrigin="anonymous",h.integrity=o),h.onload=function(){for(var r=0;r<t[m].length;r++)t[m][r]();t[m]=[];for(r=0;r<t[f].length;r++)t[f][r][1][0][c]?t[i][t[f][r][0]](t[f][r][1][0][c]):t[i][t[f][r][0]].apply(t[i],t[f][r][1]);t[f]=[]},u.parentNode.insertBefore(h,u)}(window,document,"script",0,0,"sha384-3BJePftWPBpqzii4G4Z1wjO/OaXCIpqAZ/4hbIB8KGBvrmSwZQLUflAaqRa2poWO","Adjust",["initSdk","getAttribution","getWebUUID","waitForAttribution","waitForWebUUID","setReferrer","trackEvent","addGlobalCallbackParameters","addGlobalPartnerParameters","removeGlobalCallbackParameter","removeGlobalPartnerParameter","clearGlobalCallbackParameters","clearGlobalPartnerParameters","switchToOfflineMode","switchBackToOnlineMode","stop","restart","gdprForgetMe","disableThirdPartySharing","trackThirdPartySharing","initSmartBanner","showSmartBanner","hideSmartBanner"],[["ThirdPartySharing",["addGranularOption","addPartnerSharingSetting"]]],"__realObj",(function(t,r,a){t[a]=function(){r.push([a,arguments])}}));hirdPartySharing",["addGranularOption","addPartnerSharingSetting"]]],"__realObj",(function(t,r,e){t[e]=function(){r.push([e,arguments])}}));
 </script>
 ```
 
-### npm 사용 {#using-npm}
+<callout type="note"> 
+
+스니펫은 최신 버전이 아닌 로딩될 웹 SDK의 구체적인 버전을 지정합니다. 이는 무결성 해시가 파일의 내용과 관련이 있으며, 내용이 변경될 경우 해시가 더 이상 일치하지 않아 무결성 검증 오류가 발생하기 때문에 중요합니다. 구체적인 버전을 지정하면 무결성 검사가 일관되게 통과하여 SDK가 로딩되게 할 수 있습니다. 그러나 업데이트는 자동으로 수행되지 않으며, 최신 기능 및 개선 사항을 받으려면 SDK를 수동으로 업데이트해야 합니다.
+</Callout> 
+
+### npm 사용 \{\#using\-npm\}
 
 Adjust SDK는 [npm](https://www.npmjs.com/package/@adjustcom/adjust-web-sdk)에서도 사용이 가능합니다. 프로젝트에 패키지를 추가하려면 선호하는 패키지 매니저를 사용하시기 바랍니다.
-
-<Tabs>
-<Tab title="npm" sync="npm">
+<tabs> <tab title="npm" sync="npm"> 
 
 ```console
 $ npm install @adjustcom/adjust-web-sdk --save
 ```
 
-</Tab>
-<Tab title="Yarn" sync="yarn">
+</Tab> <tab title="Yarn" sync="yarn"> 
 
 ```console
 $ yarn add @adjustcom/adjust-web-sdk
 ```
 
-</Tab>
-<Tab title="pnpm" sync="pnpm">
+</Tab> <tab title="pnpm" sync="pnpm"> 
 
 ```console
 $ pnpm add @adjustcom/adjust-web-sdk
 ```
 
-</Tab>
-</Tabs>
+</Tab> </Tabs> 
 
-## 2\. SDK 초기화 {#initialize-the-sdk}
+2\. SDK 초기화 \{\#initialize\-the\-sdk\}
+--------------------------------------------
 
 SDK를 설치한 후에는 초기화해야 합니다. 해당 기능 사용을 원하는 경우 `initSdk` 메서드를 호출합니다. 이 메서드는 앱에서 SDK가 작동하는 방식을 사용자 지정하는 데 사용할 수 있는 인수를 제공합니다.
 
 SDK를 시작하려면 다음 인수를 `initSdk` 호출에 추가해야 합니다.
 
-- `appToken` `string`: [Adjust 앱 토큰](https://help.adjust.com/ko/article/app-token-and-reporting-currency#view-your-app-details)입니다.
-- `environment` \(`string`\): SDK를 실행할 환경입니다.
-   - 테스트 모드에서 SDK를 실행하려면 `sandbox` 를 전달합니다.
-   - 릴리즈를 위해 프로덕션 모드에서 SDK를 실행하려면 `production` 을 전달합니다.
+* `appToken` `string`: [Adjust 앱 토큰](https://help.adjust.com/en/article/app-token-and-reporting-currency#view-your-app-details)입니다.
+* `environment` \(`string`\): SDK를 실행할 환경입니다. 
+  * 테스트 모드에서 SDK를 실행하려면 `sandbox` 를 전달합니다.
+  * 릴리즈를 위해 프로덕션 모드에서 SDK를 실행하려면 `production` 을 전달합니다.
 
 ```js
 Adjust.initSdk({
@@ -99,8 +95,8 @@ Adjust.initSdk({
 });
 ```
 
-<Callout type="seealso">
+<callout type="seealso"> 
 
-[구성 가이드](/ko/sdk/web/configuration)에서 Adjust 웹 SDK의 전체 인수 및 속성 목록을 확인하실 수 있습니다.
-
+[구성 가이드](/en/sdk/web/configuration)에서 Adjust 웹 SDK의 전체 인수 및 속성 목록을 확인하실 수 있습니다.
 </Callout>
+
