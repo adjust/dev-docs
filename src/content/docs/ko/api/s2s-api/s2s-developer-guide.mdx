@@ -1,34 +1,36 @@
 ---
-title: "S2S 개발자 가이드"
-description: "Adjust 전체 S2S 구현"
-slug: "en/api/s2s-api/s2s-developer-guide"
+title: S2S 개발자 가이드
+description: Adjust 전체 S2S 구현
+slug: ko/api/s2s-api/s2s-developer-guide
 sidebar-position: 6
 ---
+
 Adjust는 모바일, 콘솔, 커넥티드 TV\(CTV\) 앱을 위한 서버 간\(S2S\) 인터페이스를 제공합니다. S2S를 통해 Adjust를 도입하고자 하는 경우, Adjust SDK의 기능을 복제할 수 있도록 앱을 수정해야 합니다. 본 가이드는 다음에 대한 단계별 설명을 제공합니다.
 
-* 앱에 필요한 업데이트를 수행하는 방법.
-* Adjust에 S2S 요청을 전송하는 방법.
+- 앱에 필요한 업데이트를 수행하는 방법.
+- Adjust에 S2S 요청을 전송하는 방법.
 
-시작에 앞서 \{\#before\-you\-begin\}
-------------------------------------
+## 시작에 앞서 \{\#before\-you\-begin\}
 
 시작 전 수행해야 할 사항은 다음과 같습니다.
 
-### S2S 세션 측정 활성화 \{\#enable\-s2s\-session\-measurement\)\}
+### S2S 세션 측정 활성화 {#enable-s2s-session-measurement)}
 
 모바일 앱에 서버 간 인터페이스를 사용하는 경우, Adjust는 해당 앱에 대해 서버 간 세션 측정을 활성화해야 합니다. 자세한 내용은 Adjust 담당자나 [support@adjust.com](mailto:support@adjust.com)으로 문의하시기 바랍니다.
 
-서버 간 세션 측정은 특정 플랫폼을 선택할 때 [CTV 측정](https://help.adjust.com/en/article/ctv-advision)과 [PC 및 콘솔 측정](https://help.adjust.com/en/article/measurement-for-pc-and-console-games)에 대해 자동으로 활성화됩니다.
+서버 간 세션 측정은 특정 플랫폼을 선택할 때 [CTV 측정](https://help.adjust.com/ko/article/ctv-advision)과 [PC 및 콘솔 측정](https://help.adjust.com/ko/article/measurement-for-pc-and-console-games)에 대해 자동으로 활성화됩니다.
 
-### S2S 보안 설정 \{\#set\-up\-s2s\-security\}
+### S2S 보안 설정 {#set-up-s2s-security}
 
-서버 간 활동을 보호하고 스푸핑된 요청을 방지하기위해 [S2S 보안을 도입](/en/api/s2s-api/security)하시기 바랍니다. Adjust 대시보드에서 토큰을 생성하고 수신되는 각 요청에 포함합니다.
-<callout type="important"> 
+서버 간 활동을 보호하고 스푸핑된 요청을 방지하기위해 [S2S 보안을 도입](/ko/api/s2s-api/security)하시기 바랍니다. Adjust 대시보드에서 토큰을 생성하고 수신되는 각 요청에 포함합니다.
+
+<Callout type="important">
 
 Adjust의 서버는 올바른 토큰이 없는 모든 요청을 거부합니다. 이는 해당 데이터에 대한 강력한 보호를 보장합니다.
-</Callout> 
 
-### 로컬에서 이벤트를 대기하고 유지 \{\#queue\-and\-persist\-events\-locally\}
+</Callout>
+
+### 로컬에서 이벤트를 대기하고 유지 {#queue-and-persist-events-locally}
 
 사용자는 기기가 오프라인 상태일 때 앱 설치나 세션과 같은 중요한 이벤트를 트리거할 수 있습니다. 정확한 어트리뷰션을 위해 Adjust 서버로 전송될 수 있을 때까지 이러한 이벤트를 포착하고 로컬에 저장해야 합니다.
 
@@ -42,13 +44,13 @@ Adjust의 서버는 올바른 토큰이 없는 모든 요청을 거부합니다.
 
 이 접근법은 다음과 같은 시나리오에서 데이터 손실을 완화하는 데 도움이 됩니다.
 
-* 짧은 네트워크 중단\(예: 5G에서 WiFi로의 전환\).
-* 연결 없이 연장된 기간.
-* 전송 전에 앱이 충돌하거나 강제 종료.
+- 짧은 네트워크 중단\(예: 5G에서 WiFi로의 전환\).
+- 연결 없이 연장된 기간.
+- 전송 전에 앱이 충돌하거나 강제 종료.
 
 로컬 대기가 없다면 설치 데이터의 10~20%를 잃을 위험이 있으며, 이는 어트리뷰션 정확도에 큰 영향을 줄 수 있습니다. 이 대기열 시스템을 도입하면 Adjust에 완전하고 정확한 사용자 활동 관련 정보를 전송하여 오프라인에서 발생하는 이벤트에 대해서도 정확한 어트리뷰션을 수행할 수 있습니다.
 
-### iOS 프레임워크 추가 \{\#add\-ios\-frameworks\}
+### iOS 프레임워크 추가 {#add-ios-frameworks}
 
 특정 iOS 기능을 지원하려면 프레임워크를 프로젝트에 연결해야 합니다. 프로젝트에 프레임워크를 추가하는 방법은 다음과 같습니다.
 
@@ -59,56 +61,57 @@ Adjust의 서버는 올바른 토큰이 없는 모든 요청을 거부합니다.
 5. **\+** 버튼을 선택합니다.
 6. 아래 목록에서 앱에 필요한 프레임워크를 검색하여 추가합니다.
 
-|                프레임워크                |                                        설명                                        |
-|-------------------------------------|----------------------------------------------------------------------------------|
-| `AdSupport.framework`               | IDFA 수집에 필요합니다. ATT 이전 iOS 버전에 대한 광고 추적 제한 상태를 수집할 때도 필요합니다.                     |
+| 프레임워크                          | 설명                                                                                                            |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `AdSupport.framework`               | IDFA 수집에 필요합니다. ATT 이전 iOS 버전에 대한 광고 추적 제한 상태를 수집할 때도 필요합니다.                  |
 | `AppTrackingTransparency.framework` | iOS 14\.5 이상을 사용하는 기기에서 AppTrackingTransparency 프롬프트를 제시하고 IDFA를 수집하기 위해 필요합니다. |
-| `AdServices.framework`              | Adjust가 Apple 검색 광고 캠페인에 어트리뷰션하기 위해 필요합니다.                                       |
-| `StoreKit.framework`                | SKAdNetwork 캠페인 실행을 위해 필요합니다.                                                    |
+| `AdServices.framework`              | Adjust가 Apple 검색 광고 캠페인에 어트리뷰션하기 위해 필요합니다.                                               |
+| `StoreKit.framework`                | SKAdNetwork 캠페인 실행을 위해 필요합니다.                                                                      |
 
-필수 파라미터 \{\#required\-parameters\}
---------------------------------------
+## 필수 파라미터 \{\#required\-parameters\}
 
 다음은 각 서버 간 요청에서 요구되는 파라미터입니다.
 
-|    파라미터     |                      설명                       |
-|-------------|-----------------------------------------------|
+| 파라미터    | 설명                                                                         |
+| ----------- | ---------------------------------------------------------------------------- |
 | `s2s`       | 해당 요청이 서버 간 요청임을 나타냅니다. 반드시 `1`로 하드코드되어야 합니다. |
-| `app_token` | Adjust 앱 토큰입니다.                               |
-| `os_name`   | 모바일 OS의 이름입니다. 아래에서 옵션 목록을 확인하시기 바랍니다.        |
+| `app_token` | Adjust 앱 토큰입니다.                                                        |
+| `os_name`   | 모바일 OS의 이름입니다. 아래에서 옵션 목록을 확인하시기 바랍니다.            |
 
-<listcolumns> 
+<ListColumns>
 
-* `android`
-* `android-tv`
-* `apple-tv`
-* `bada`
-* `blackberry`
-* `fire-tv`
-* `ios`
-* `linux`
-* `macos`
-* `nintendo`
-* `playstation`
+- `android`
+- `android-tv`
+- `apple-tv`
+- `bada`
+- `blackberry`
+- `fire-tv`
+- `ios`
+- `linux`
+- `macos`
+- `nintendo`
+- `playstation`
 
-*** ** * ** ***
+---
 
-* `roku-os`
-* `server`
-* `smart-cast`
-* `steamos`
-* `symbian`
-* `tizen`
-* `unknown`
-* `webos`
-* `windows`
-* `windows-phone`
-* `xbox`
+- `roku-os`
+- `server`
+- `smart-cast`
+- `steamos`
+- `symbian`
+- `tizen`
+- `unknown`
+- `webos`
+- `windows`
+- `windows-phone`
+- `xbox`
 
-</ListColumns> 
+</ListColumns>
 
 서버에서 이러한 파라미터를 생성합니다. 기기와 관계없이 Adjust에 보내는 모든 서버 간 요청에 사용됩니다. 기기별 파라미터는 필요에 따라 추가됩니다. 단순화를 위해 이 가이드에서는 모든 파라미터 처리를 클라이언트 측에서 설명하고 있지만, 실제로는 대부분 서버 측에서 처리됩니다.
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 // Create dictionary for params to include on all S2S requests to Adjust
@@ -124,7 +127,8 @@ params["os_name"] = "ios"
 params["app_token"] = "4w565xzmb54d"
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 // Create dictionary for params to include on all S2S requests to Adjust
@@ -140,7 +144,8 @@ params[@"os_name"] = @"ios";
 params[@"app_token"] = @"4w565xzmb54d";
 ```
 
-</Tab> <tab title="Kotlin" sync="kotlin"> 
+</Tab>
+<Tab title="Kotlin" sync="kotlin">
 
 ```kotlin
 // Create map for params to include on all S2S requests to Adjust
@@ -156,7 +161,8 @@ params["os_name"] = "android"
 params["app_token"] = "4w565xzmb54d"
 ```
 
-</Tab> <tab title="Java" sync="java"> 
+</Tab>
+<Tab title="Java" sync="java">
 
 ```java
 // Create map for params to include on all S2S requests to Adjust
@@ -172,25 +178,27 @@ params.put("os_name", "android");
 params.put("app_token", "4w565xzmb54d");
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
-### 기기 ID 및 트래킹 상태 \{\#device\-ids\-and\-tracking\-statuses\}
+### 기기 ID 및 트래킹 상태 {#device-ids-and-tracking-statuses}
 
 모든 서버 간 요청에는 **최소 1개** 의 기기 식별자가 포함되어야 합니다. 모바일 운영 체제에 의해 도입된 개인정보 보호 조치로 인해 광고 ID를 사용할 수 없는 경우가 있습니다. 따라서 가능한 경우 광고 ID를 포함하고 항상 백업 식별자를 포함해야 합니다.
 
-#### PC 및 콘솔 / CTV 기기 ID \{\#pc\-console\-ctv\-device\-ids\}
+#### PC 및 콘솔 / CTV 기기 ID {#pc-console-ctv-device-ids}
 
 PC 및 콘솔, CTV 측정의 경우, 기기 식별자로 사용하기 위해 각 콜에 고유한 `external_device_id` 파라미터를 전달할 수 있습니다. 이 값은 기기를 식별하는 모든 고유한 문자열이 될 수 있습니다.
 
-#### iOS 기기 ID \{\#ios\-device\-ids\}
+#### iOS 기기 ID {#ios-device-ids}
 
 ##### IDFA 및 트래킹 상태
 
 IDFA\(광고주용 ID\)는 사용자가 공유에 동의한 iOS 기기에서만 이용 가능합니다. 일부 앱은 IDFA를 수집하지만 그렇지 않은 앱도 있습니다. 앱의 IDFA 수집 여부와 관계없이 Adjust는 각 요청에서 트래킹 상태 정보를 요구합니다. 아래에서 구현에 상응하는 코드를 사용하시기 바랍니다.
 
-**IDFA를 수집하는 앱** 
+**IDFA를 수집하는 앱**
 
-1. Xcode에 ATT 설명을 추가합니다. 
+1. Xcode에 ATT 설명을 추가합니다.
+
    1. 프로젝트의 `Info.plist` 파일을 엽니다.
    2. 편집기에서 **Information properties List** 를 마우스 오른쪽 버튼으로 클릭하고 **Add Row** 를 선택하여 루트에 키를 추가합니다.
    3. 키를 `NSUserTrackingUsageDescription`으로 설정합니다.
@@ -200,14 +208,16 @@ IDFA\(광고주용 ID\)는 사용자가 공유에 동의한 iOS 기기에서만 
 
 ATT의 요건은 다음과 같습니다.
 
-* ATT 지원은 iOS 14부터 시작되지만, IDFA 조회에 대한 사용자 동의는 iOS 14\.5 이상 버전에서만 필요합니다. 따라서 Adjust는 ATT 프롬프트를 iOS 14\.5 이상 버전의 사용자에게만 타겟팅할 것을 권장합니다.
-* ATT 프롬프트를 표시하려면 앱이 활성 상태여야 합니다. 앱이 다시 활성 상태가 될 때까지 기다리지 않으면 다른 시스템 프롬프트 이후에 즉시 앱을 표시하지 못할 수 있습니다.
-* 프롬프트를 표시하기에 가장 빠른 위치는 `applicationDidBecomeActive`\(앱 델리게이트\) 또는 `sceneDidBecomeActive`\(Scene 델리게이트\)입니다. `didFinishLaunchingWithOptions`\(앱 델리게이트\)에서는 ATT 프롬프트를 표시할 수 없습니다.
+- ATT 지원은 iOS 14부터 시작되지만, IDFA 조회에 대한 사용자 동의는 iOS 14\.5 이상 버전에서만 필요합니다. 따라서 Adjust는 ATT 프롬프트를 iOS 14\.5 이상 버전의 사용자에게만 타겟팅할 것을 권장합니다.
+- ATT 프롬프트를 표시하려면 앱이 활성 상태여야 합니다. 앱이 다시 활성 상태가 될 때까지 기다리지 않으면 다른 시스템 프롬프트 이후에 즉시 앱을 표시하지 못할 수 있습니다.
+- 프롬프트를 표시하기에 가장 빠른 위치는 `applicationDidBecomeActive`\(앱 델리게이트\) 또는 `sceneDidBecomeActive`\(Scene 델리게이트\)입니다. `didFinishLaunchingWithOptions`\(앱 델리게이트\)에서는 ATT 프롬프트를 표시할 수 없습니다.
 
 아래의 코드 예시는 이 요구 사항을 모두 충족합니다.
 
 어트리뷰션의 정확도를 높이려면 최초의 세션 요청에 IDFA를 포함하고, 가능한 경우 이후 모든 요청에 포함하시기 바랍니다.
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 import AppTrackingTransparency
@@ -261,7 +271,8 @@ getIDFAInfo { info in
 }
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 #import <AppTrackingTransparency/AppTrackingTransparency.h>
@@ -325,12 +336,15 @@ getIDFAInfo(^(IDFAInfo *info) {
 });
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
-**IDFA를 수집하지 않는 앱** 
+**IDFA를 수집하지 않는 앱**
 
 아래의 코드를 사용하여 트래킹 상태를 확인합니다.
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 import AdSupport
@@ -363,7 +377,8 @@ getTrackingInfo { info in
 }
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 #import <AdSupport/AdSupport.h>
@@ -404,12 +419,15 @@ getTrackingInfo(^(TrackingInfo *info) {
 });
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
 ##### IDFV
 
 IDFV\(벤더용 ID\)는 모든 최신 iOS 기기에서 이용 가능한 백업 식별자입니다.
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 let idfv: UUID? = UIDevice.current.identifierForVendor
@@ -419,7 +437,8 @@ if let idfvString = idfv?.uuidString {
 }
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 NSUUID *idfv = [[UIDevice currentDevice] identifierForVendor];
@@ -429,12 +448,15 @@ if (idfv) {
 }
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
 ##### 기본 중복 제거 토큰
 
 앱 삭제 및 재설치 등 앱의 모든 활동을 일관적으로 측정하기 위해 무작위 버전 4 UUID\("기본 중복 제거 토큰"\)를 생성하고 iOS 키체인에 저장합니다. 기본 중복 제거 토큰은 모든 기기에 대해 생성해야 하는 백업 식별자입니다.
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 import Foundation
@@ -513,7 +535,8 @@ let primaryDedupeToken = getOrCreatePrimaryDedupeToken()
 params["primary_dedupe_token"] = primaryDedupeToken.uuidString.lowercased()
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 #import <Foundation/Foundation.h>
@@ -598,21 +621,25 @@ params[@"primary_dedupe_token"] = [[primaryDedupeToken UUIDString]
     lowercaseString];
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
-#### Google Play 기기 ID\(Android\) \{\#google\-play\-device\-ids\-android\}
+#### Google Play 기기 ID\(Android\) {#google-play-device-ids-android}
 
 ##### Google 광고 식별자
 
 GPS ADID\(Google 플레이 서비스의 광고 ID\)는 사용자가 광고 ID 삭제를 선택하지 않은 경우 Google 플레이 서비스를 통해 Android 기기에서 액세스할 수 있습니다.
-<callout type="tip"> 
+
+<Callout type="tip">
 
 [Google Maven Repository](https://maven.google.com/web/index.html#com.google.android.gms:play-services-ads-identifier)에서 Play Services Ads Identifier 라이브러리의 최신 버전을 확인할 수 있습니다.
-</Callout> 
+
+</Callout>
 
 1. `play-services-ads-identifier` 디펜던시를 앱의 `build.gradle` 파일에 추가합니다.
 
-<tabs> <tab title="Kotlin DSL"> <codeblock title="build.gradle.kts"> 
+<Tabs>
+<Tab title="Kotlin DSL"> <CodeBlock title="build.gradle.kts">
 
 ```kotlin
 dependencies {
@@ -620,7 +647,9 @@ dependencies {
 }
 ```
 
-</CodeBlock> </Tab> <tab title="Groovy"> <codeblock title="build.gradle"> 
+</CodeBlock>
+</Tab> <Tab title="Groovy">
+<CodeBlock title="build.gradle">
 
 ```groovy
 dependencies {
@@ -628,20 +657,22 @@ dependencies {
 }
 ```
 
-</CodeBlock> </Tab> </Tabs> 
+</CodeBlock>
+</Tab> </Tabs>
 
 2. `AndroidManifest.xml` 파일에 다음 권한을 추가합니다.
 
-   <codeblock title="AndroidManifest.xml"> 
+   <CodeBlock title="AndroidManifest.xml">
 
    ```xml
-   <uses-permission android:name="com.google.android.gms.permission.AD_ID" id="sl-md0000000"/>
+   <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
    ```
 
-   </CodeBlock> 
+   </CodeBlock>
+
 3. 앱이 R8 또는 ProGuard를 사용하는 경우 다음 규칙을 `proguard-rules.pro` 파일에 추가하여 코드 최적화 중 Google 광고 식별자 조회에 필요한 클래스와 메서드를 유지합니다\(없는 경우 앱 모듈 디렉토리에 파일 생성\).
 
-   <codeblock title="proguard-rules.pro"> 
+   <CodeBlock title="proguard-rules.pro">
 
    ```java
    -keep class com.google.android.gms.common.ConnectionResult {
@@ -658,10 +689,12 @@ dependencies {
    }
    ```
 
-   </CodeBlock> 
+   </CodeBlock>
+
 4. Google 광고 식별자와 트래킹 상태를 수집하는 코드를 구현합니다.
 
-<tabs> <tab title="Kotlin" sync="kotlin"> 
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
 
 ```kotlin
 import com.google.android.gms.ads.identifier.AdvertisingIdClient
@@ -698,19 +731,23 @@ lifecycleScope.launch {
 }
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
 ##### App Set ID
 
 App Set ID는 Google 플레이 서비스가 설치되고 API Level 30\(Android 11\) 이상을 실행하는 모든 Android 기기에서 사용할 수 있는 백업 식별자입니다.
-<callout type="tip"> 
+
+<Callout type="tip">
 
 [Google Maven Repository](https://maven.google.com/web/index.html#com.google.android.gms:play-services-appset)에서 Play Services App Set 라이브러리의 최신 버전을 확인할 수 있습니다.
-</Callout> 
+
+</Callout>
 
 1. 앱의 `build.gradle` 파일에 필요한 디펜던시를 추가합니다.
 
-<tabs> <tab title="Kotlin DSL"> <codeblock title="build.gradle.kts"> 
+<Tabs>
+<Tab title="Kotlin DSL"> <CodeBlock title="build.gradle.kts">
 
 ```kotlin
 dependencies {
@@ -718,7 +755,9 @@ dependencies {
 }
 ```
 
-</CodeBlock> </Tab> <tab title="Groovy"> <codeblock title="build.gradle"> 
+</CodeBlock>
+</Tab> <Tab title="Groovy">
+<CodeBlock title="build.gradle">
 
 ```groovy
 dependencies {
@@ -726,11 +765,13 @@ dependencies {
 }
 ```
 
-</CodeBlock> </Tab> </Tabs> 
+</CodeBlock>
+</Tab> </Tabs>
 
 2. App Set ID를 수집하는 코드를 구현합니다.
 
-<tabs> <tab title="Kotlin" sync="kotlin"> 
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
 
 ```kotlin
 import com.google.android.gms.appset.AppSet
@@ -765,17 +806,19 @@ lifecycleScope.launch {
 }
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
-추가 파라미터 \{\#additional\-parameters\}
-----------------------------------------
+## 추가 파라미터 \{\#additional\-parameters\}
 
 다음 파라미터는 필수가 아닙니다. 이러한 파라미터를 사용하는 경우 모든 요청에 포함해야 합니다.
 
-### Unix 타임스탬프 \{\#unix\-timestamp\}
+### Unix 타임스탬프 {#unix-timestamp}
 
 각 서버 간 요청에 Unix 타임스탬프를 추가하면 기기에서 활동이 발생한 시간을 제공하여 어트리뷰션의 정확도가 개선됩니다.
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 // Unix timestamp of when activity occurred on device
@@ -784,7 +827,8 @@ lifecycleScope.launch {
 params["created_at_unix"] = String(Int(Date().timeIntervalSince1970))
 ```
 
-</Tab> <tab title="Kotlin" sync="kotlin"> 
+</Tab>
+<Tab title="Kotlin" sync="kotlin">
 
 ```kotlin
 // Unix timestamp of when activity occurred on device
@@ -793,21 +837,24 @@ params["created_at_unix"] = String(Int(Date().timeIntervalSince1970))
 params["created_at_unix"] = (System.currentTimeMillis() / 1000).toString()
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
-### 확률론적 모델링 데이터 포인트 \{\#probabilistic\-modeling\}
+### 확률론적 모델링 데이터 포인트 {#probabilistic-modeling}
 
 확률론적 모델링을 어트리뷰션 방법으로 사용하려면 모든 서버 간 요청에 다음 파라미터를 포함해야 합니다.
 
-|     파라미터      |         설명          |
-|---------------|---------------------|
-| `device_name` | 기기의 이름              |
-| `device_type` | 기기 유형 또는 모델         |
+| 파라미터      | 설명                               |
+| ------------- | ---------------------------------- |
+| `device_name` | 기기의 이름                        |
+| `device_type` | 기기 유형 또는 모델                |
 | `os_version`  | 기기에서 실행되는 운영 체제의 버전 |
-| `ip_address`  | 디바이스의 IP 주소         |
+| `ip_address`  | 디바이스의 IP 주소                 |
 
 Adjust는 특히 iOS에서 더욱 포괄적인 어트리뷰션이 가능하게 되므로 이러한 파라미터를 추가할 것을 강력히 추천합니다.
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 import UIKit
@@ -838,7 +885,8 @@ params["os_version"] = UIDevice.current.systemVersion
 params["ip_address"] = "192.0.0.1"  // Example value
 ```
 
-</Tab> <tab title="Kotlin" sync="kotlin"> 
+</Tab>
+<Tab title="Kotlin" sync="kotlin">
 
 ```kotlin
 import android.content.Context
@@ -883,17 +931,20 @@ params["device_type"] = when {
 params["ip_address"] = "192.0.0.1"  // Example value
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
-### 환경 \{\#environment\}
+### 환경 {#environment}
 
 `environment` 파라미터를 전달하여 요청이 전송되는 환경을 지정할 수 있습니다. 여러 환경으로부터의 요청은 테스트를 위해 Adjust에서 별도로 보관합니다. 다음 값을 사용할 수 있습니다.
 
-* `sandbox`: 테스트 시 이를 사용하여 요청을 프로덕션 데이터와 분리합니다.
-* `production`: 앱을 출시할 때 사용합니다.
+- `sandbox`: 테스트 시 이를 사용하여 요청을 프로덕션 데이터와 분리합니다.
+- `production`: 앱을 출시할 때 사용합니다.
 
 이 파라미터를 전달하지 않으면 기본값은 `production`입니다.
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 // For testing (sandbox environment)
@@ -903,7 +954,8 @@ params["environment"] = "sandbox"
 params["environment"] = "production"
 ```
 
-</Tab> <tab title="Kotlin" sync="kotlin"> 
+</Tab>
+<Tab title="Kotlin" sync="kotlin">
 
 ```kotlin
 // For testing (sandbox environment)
@@ -913,73 +965,83 @@ params["environment"] = "sandbox"
 params["environment"] = "production"
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
-### 글로벌 콜백 파라미터 \{\#global\-callback\-parameters\}
+### 글로벌 콜백 파라미터 {#global-callback-parameters}
 
-[로 데이터 내보내기](https://help.adjust.com/en/article/raw-data-exports)를 사용하는 경우 모든 서버 간 요청에 '글로벌 콜백 파라미터'를 포함하여 로 데이터에 사용자 지정 파라미터를 추가할 수 있습니다. 이는 일반적으로 내보낸 로 데이터에 내부 사용자 ID를 포함하는 데 사용됩니다.
+[로 데이터 내보내기](https://help.adjust.com/ko/article/raw-data-exports)를 사용하는 경우 모든 서버 간 요청에 '글로벌 콜백 파라미터'를 포함하여 로 데이터에 사용자 지정 파라미터를 추가할 수 있습니다. 이는 일반적으로 내보낸 로 데이터에 내부 사용자 ID를 포함하는 데 사용됩니다.
 
 글로벌 콜백 파라미터는 문자열 키\-값 쌍을 포함하는 JSON 객체로 표시됩니다.
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 params["callback_params"] = '{"user_id": "2696775149", "user_category": "high value"}'
 ```
 
-</Tab> <tab title="Kotlin" sync="kotlin"> 
+</Tab>
+<Tab title="Kotlin" sync="kotlin">
 
 ```kotlin
 params["callback_params"] = '{"user_id": "2696775149", "user_category": "high value"}'
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
-### 글로벌 파트너 파라미터 \{\#global\-partner\-parameters\}
+### 글로벌 파트너 파라미터 {#global-partner-parameters}
 
 특정 파트너와 연동하는 경우 모든 서버 간 요청에 '글로벌 파트너 파라미터'를 포함해야 할 수 있습니다. Adjust의 서버는 파트너에게 보내는 모든 콜백에서 이러한 파라미터를 전달합니다. 이는 일반적으로 수신하는 콜백에 고유한 사용자 ID를 요구하는 애널리틱스 파트너에 사용됩니다.
 
 글로벌 파트너 파라미터는 문자열 키\-값 쌍을 포함하는 JSON 객체로 표시됩니다.
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 params["partner_params"] = '{"analytics_user_id": "3913132433", "analytics_visitor_id": "nzFC9LKSqM"}'
 ```
 
-</Tab> <tab title="Kotlin" sync="kotlin"> 
+</Tab>
+<Tab title="Kotlin" sync="kotlin">
 
 ```kotlin
 params["partner_params"] = '{"analytics_user_id": "3913132433", "analytics_visitor_id": "nzFC9LKSqM"}'
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
-요청 \{\#requests\}
---------------------
+## 요청 \{\#requests\}
 
-<callout type="important"> 
+<Callout type="important">
 
 요청을 전송하기 전에 모든 파라미터 값이 URL로 암호화되었는지 확인합니다.
-</Callout> 
 
-### 세션 \{\#session\}
+</Callout>
+
+### 세션 {#session}
 
 세션은 Adjust 도입의 토대가 되며 유일한 필수 활동입니다. 세션은 일반적으로 앱이 실행되었음을 나타냅니다. Adjust 서버는 성공적인 세션 요청을 다음과 같이 기록합니다.
 
-* 이는 기기의 첫 세션을 '설치' 활동으로 기록합니다.
-* 이후의 세션은 '세션' 활동으로 기록됩니다.
-* [리어트리뷰션 범주](https://help.adjust.com/en/article/reattribution)가 충족되면 '리어트리뷰션' 또는 '리어트리뷰션 재설치' 활동을 기록합니다.
+- 이는 기기의 첫 세션을 '설치' 활동으로 기록합니다.
+- 이후의 세션은 '세션' 활동으로 기록됩니다.
+- [리어트리뷰션 범주](https://help.adjust.com/ko/article/reattribution)가 충족되면 '리어트리뷰션' 또는 '리어트리뷰션 재설치' 활동을 기록합니다.
 
-<callout type="info"> 
+<Callout type="info">
 
 참고로 Adjust SDK는 다음 중 하나가 발생한 경우 Adjust 서버로 세션 요청을 전송합니다.
 
-* 사용자가 앱 설치 또는 재설치 후 최초로 앱을 실행합니다.
-* 앱이 종료되거나 백그라운드에서 실행된지 30분 이상 지난 후에 사용자가 앱을 다시 엽니다.
+- 사용자가 앱 설치 또는 재설치 후 최초로 앱을 실행합니다.
+- 앱이 종료되거나 백그라운드에서 실행된지 30분 이상 지난 후에 사용자가 앱을 다시 엽니다.
 
-</Callout> 
+</Callout>
 
 서버 간 세션 요청을 `created_at_unix` 파라미터와 함께 보낼 때 Adjust 서버에서 이 값은 마지막으로 성공적으로 기록된 세션의 `created_at_unix` 시간보다 최소 20분 이후여야 합니다.
-<codeblock title="요청 - cURL"> 
+
+<CodeBlock title="요청 - cURL">
 
 ```sh
 curl -X POST "https://app.adjust.com/session" \ -H "Authorization: Bearer ADD_YOUR_AUTH_TOKEN_HERE" \
@@ -1003,10 +1065,11 @@ curl -X POST "https://app.adjust.com/session" \ -H "Authorization: Bearer ADD_YO
 -s
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
-이는 Adjust가 기기에 대한 첫 세션을 성공적으로 기록했을 때의 응답 형식입니다. 필요한 경우 Adjust의 [테스팅 콘솔](https://help.adjust.com/en/article/testing-console)을 사용하여 기기를 삭제하고 이를 여러 번 테스트할 수 있습니다.
-<codeblock title="응답"> 
+이는 Adjust가 기기에 대한 첫 세션을 성공적으로 기록했을 때의 응답 형식입니다. 필요한 경우 Adjust의 [테스팅 콘솔](https://help.adjust.com/ko/article/testing-console)을 사용하여 기기를 삭제하고 이를 여러 번 테스트할 수 있습니다.
+
+<CodeBlock title="응답">
 
 ```console
 {
@@ -1020,10 +1083,11 @@ curl -X POST "https://app.adjust.com/session" \ -H "Authorization: Bearer ADD_YO
 HTTP Status Code: 200
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 이는 Adjust가 기기에 대한 이후 세션을 성공적으로 기록했을 때의 응답 형식입니다.
-<codeblock title="응답"> 
+
+<CodeBlock title="응답">
 
 ```console
 {
@@ -1037,12 +1101,14 @@ HTTP Status Code: 200
 HTTP Status Code: 200
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
-### 설치 후 이벤트 \{\#post\-install\-event\}
+### 설치 후 이벤트 {#post-install-event}
 
-기기에 대해 최소 1회의 세션 요청이 성공적으로 전송되면 [설치 후 이벤트](/en/api/s2s-api/events)를 전송할 수 있습니다. 이는 일반적으로 마케팅 목표를 나타내는 이벤트로, 네트워크에서 캠페인을 최적화하는 데 사용할 수 있습니다.
-<tabs> <tab title="Swift" sync="swift"> 
+기기에 대해 최소 1회의 세션 요청이 성공적으로 전송되면 [설치 후 이벤트](/ko/api/s2s-api/events)를 전송할 수 있습니다. 이는 일반적으로 마케팅 목표를 나타내는 이벤트로, 네트워크에서 캠페인을 최적화하는 데 사용할 수 있습니다.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 // Add event token to existing params
@@ -1054,7 +1120,8 @@ params["revenue"] = "19.99"
 params["currency"] = "USD"
 ```
 
-</Tab> <tab title="Kotlin" sync="kotlin"> 
+</Tab>
+<Tab title="Kotlin" sync="kotlin">
 
 ```kotlin
 // Add event token to existing params
@@ -1066,14 +1133,17 @@ params["revenue"] = "19.99"
 params["currency"] = "USD"
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
-#### 콜백 파라미터 \{\#callback\-parameters\}
+#### 콜백 파라미터 {#callback-parameters}
 
-[로 데이터 내보내기](https://help.adjust.com/en/article/raw-data-exports)를 사용하는 경우 이벤트 레벨 사용자 지정 데이터를 추가하기 위해 특정 이벤트 요청에 사용자 지정 '콜백 파라미터'를 포함할 수 있습니다. 구매 이벤트의 경우 해당 이벤트에 대한 로 데이터에 내부 트랜잭션 ID를 포함할 수 있습니다.
+[로 데이터 내보내기](https://help.adjust.com/ko/article/raw-data-exports)를 사용하는 경우 이벤트 레벨 사용자 지정 데이터를 추가하기 위해 특정 이벤트 요청에 사용자 지정 '콜백 파라미터'를 포함할 수 있습니다. 구매 이벤트의 경우 해당 이벤트에 대한 로 데이터에 내부 트랜잭션 ID를 포함할 수 있습니다.
 
 콜백 파라미터는 문자열 키\-값 쌍을 포함하는 JSON 객체로 표시됩니다.
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 // If callback_params exists, add the event callback parameters to it (for example: txn_id)
@@ -1083,7 +1153,8 @@ params["callback_params"] = '{"user_id": "2696775149", "user_category": "high va
 params["callback_params"] = '{"txn_id": "8837853376"}'
 ```
 
-</Tab> <tab title="Kotlin" sync="kotlin"> 
+</Tab>
+<Tab title="Kotlin" sync="kotlin">
 
 ```kotlin
 // If callback_params exists, add the event callback parameters to it (for example: txn_id)
@@ -1093,14 +1164,17 @@ params["callback_params"] = '{"user_id": "2696775149", "user_category": "high va
 params["callback_params"] = '{"txn_id": "8837853376"}'
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
-#### 파트너 파라미터 \{\#partners\-parameters\}
+#### 파트너 파라미터 {#partners-parameters}
 
 특정 파트너와 연동하는 경우 이벤트 요청에 사용자 지정 '파트너 파라미터'를 포함해야 할 수 있습니다. Adjust의 서버는 해당 이벤트에 대해 파트너에게 보내는 콜백에 이러한 파라미터를 추가하게 됩니다. 이는 일반적으로 `view_item`, `add_to_cart`, 구매와 같은 이벤트에 대해 동적 리마케팅 캠페인을 활성화하는 데 주로 사용됩니다.
 
 파트너 파라미터는 문자열 키\-값 쌍을 포함하는 JSON 객체로 표시됩니다.
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 // If partner_params exists, add the event partner parameters to it (for example: item_id)
@@ -1110,7 +1184,8 @@ params["partner_params"] = '{"analytics_user_id": "3913132433", "analytics_sessi
 params["partner_params"] = '{"item_id": "[\"76524\",\"62599\"]"}'
 ```
 
-</Tab> <tab title="Kotlin" sync="kotlin"> 
+</Tab>
+<Tab title="Kotlin" sync="kotlin">
 
 ```kotlin
 // If partner_params exists, add the event partner parameters to it (for example: item_id)
@@ -1120,10 +1195,12 @@ params["partner_params"] = '{"analytics_user_id": "3913132433", "analytics_sessi
 params["partner_params"] = '{"item_id": "[\"76524\",\"62599\"]"}'
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
 이벤트 요청을 전송합니다.
-<codeblock title="요청 - cURL"> 
+
+<CodeBlock title="요청 - cURL">
 
 ```sh
 curl -X POST "https://app.adjust.com/event" \
@@ -1151,7 +1228,8 @@ curl -X POST "https://app.adjust.com/event" \
 -s
 ```
 
-</CodeBlock> <codeblock title="응답"> 
+</CodeBlock>
+<CodeBlock title="응답">
 
 ```console
 {
@@ -1162,4 +1240,3 @@ HTTP Status Code: 200
 ```
 
 </CodeBlock>
-

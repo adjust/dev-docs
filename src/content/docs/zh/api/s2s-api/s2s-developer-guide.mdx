@@ -1,34 +1,36 @@
 ---
-title: "S2S 开发者指南"
-description: "实现 Adjust 完整 S2S 集成"
-slug: "en/api/s2s-api/s2s-developer-guide"
+title: S2S 开发者指南
+description: 实现 Adjust 完整 S2S 集成
+slug: zh/api/s2s-api/s2s-developer-guide
 sidebar-position: 6
 ---
+
 Adjust 针对移动端、游戏主机和联网电视 \(CTV\) 平台应用提供服务器端到服务器端 \(S2S\) 接口。如果您选择通过 S2S 集成 Adjust，则需要修改应用来实现 Adjust SDK 的相关功能。本指南包含针对下列操作的分步说明：
 
-* 如何对您的应用进行必要的更新。
-* 如何向 Adjust 发送 S2S 请求。
+- 如何对您的应用进行必要的更新。
+- 如何向 Adjust 发送 S2S 请求。
 
-操作前须知 \{\#before\-you\-begin\}
------------------------------------
+## 操作前须知 \{\#before\-you\-begin\}
 
 以下是您在操作前需要了解的内容。
 
-### 启用 S2S 会话评估 \{\#enable\-s2s\-session\-measurement\)\}
+### 启用 S2S 会话评估 {#enable-s2s-session-measurement)}
 
 如果您的移动应用使用的是 S2S 端口，那么 Adjust 需要为您的应用启用 S2S 会话监测。请联系您的 Adjust 代表，或发送邮件至 [support@adjust.com](mailto:support@adjust.com) 以继续。
 
-当您选择平台时，针对 [CTV 监测](https://help.adjust.com/en/article/ctv-advision)以及 [PC 和主机监测](https://help.adjust.com/en/article/measurement-for-pc-and-console-games)的 S2S 会话监测会自动启用。
+当您选择平台时，针对 [CTV 监测](https://help.adjust.com/zh/article/ctv-advision)以及 [PC 和主机监测](https://help.adjust.com/zh/article/measurement-for-pc-and-console-games)的 S2S 会话监测会自动启用。
 
-### 设置 S2S 安全\{\#set\-up\-s2s\-security\}
+### 设置 S2S 安全{#set-up-s2s-security}
 
-[实施 S2S 安全机制](/en/api/s2s-api/security)，保护您的 S2S 活动不受侵害，防止伪造请求。在 Adjust 控制面板中生成识别码，并在每个传入请求中加入该识别码。
-<callout type="important"> 
+[实施 S2S 安全机制](/zh/api/s2s-api/security)，保护您的 S2S 活动不受侵害，防止伪造请求。在 Adjust 控制面板中生成识别码，并在每个传入请求中加入该识别码。
+
+<Callout type="important">
 
 Adjust 服务器会拒绝所有识别码缺失或不正确的请求，确保您的数据安全无虞。
-</Callout> 
 
-### 本地的事件队列和保存 \{\#queue\-and\-persist\-events\-locally\}
+</Callout>
+
+### 本地的事件队列和保存 {#queue-and-persist-events-locally}
 
 用户可能会在设备离线的状态下触发重要事件，如应用安装或会话等。为确保归因准确，您必须在本地捕获并保存这些事件，直至将这些事件成功传输至 Adjust 服务器。
 
@@ -42,13 +44,13 @@ Adjust 服务器会拒绝所有识别码缺失或不正确的请求，确保您�
 
 发生下列情况时，上述方法有助于减少数据丢失：
 
-* 短暂的网络连接中断 \(例如从 5G 切换到 WiFi 时\)。
-* 长时间无网络连接。
-* 应用在传输前崩溃或强制关闭。
+- 短暂的网络连接中断 \(例如从 5G 切换到 WiFi 时\)。
+- 长时间无网络连接。
+- 应用在传输前崩溃或强制关闭。
 
 如果没有本地队列，您可能会损失 10% \- 20% 的安装数据，严重影响归因的准确性。实装队列系统后，您就能确保 Adjust 完整、准确地呈现用户活动情况，甚至能对离线发生的事件进行精准归因。
 
-### 添加 iOS 框架 \{\#add\-ios\-frameworks\}
+### 添加 iOS 框架 {#add-ios-frameworks}
 
 您必须将框架关联到项目，才能支持特定 iOS 功能。要向项目中添加框架，请按照下列步骤操作：
 
@@ -59,56 +61,57 @@ Adjust 服务器会拒绝所有识别码缺失或不正确的请求，确保您�
 5. 点击 **\+** 按钮。
 6. 参考下方表格，搜索并添加应用所需的框架。
 
-|                 框架                  |                                描述                                 |
-|-------------------------------------|-------------------------------------------------------------------|
-| `AdSupport.framework`               | 需要收集 IDFA。以及前 ATT iOS 版本需要收集限制广告跟踪 \(LAT\) 状态。                  |
+| 框架                                | 描述                                                                                    |
+| ----------------------------------- | --------------------------------------------------------------------------------------- |
+| `AdSupport.framework`               | 需要收集 IDFA。以及前 ATT iOS 版本需要收集限制广告跟踪 \(LAT\) 状态。                   |
 | `AppTrackingTransparency.framework` | 需要显示 AppTrackingTransparency 弹窗以及 iOS 14\.5 及更高版本操作系统中需要收集 IDFA。 |
-| `AdServices.framework`              | 需要 Adjust 归因 Apple Search Ads 推广活动。                               |
-| `StoreKit.framework`                | 需要投放 SKAdNetwork 推广活动。                                            |
+| `AdServices.framework`              | 需要 Adjust 归因 Apple Search Ads 推广活动。                                            |
+| `StoreKit.framework`                | 需要投放 SKAdNetwork 推广活动。                                                         |
 
-必要参数\{\#required\-parameters\}
-----------------------------------
+## 必要参数\{\#required\-parameters\}
 
 所有 S2S 请求中都必须包含下列参数。
 
-|     参数      |             描述             |
-|-------------|----------------------------|
-| `s2s`       | 说明该请求属于 S2S 请求。必须硬编码为 `1`。 |
-| `app_token` | 您的 Adjust 应用识别码。           |
-| `os_name`   | 移动设备操作系统的名称。请查看下方选项列表。     |
+| 参数        | 描述                                         |
+| ----------- | -------------------------------------------- |
+| `s2s`       | 说明该请求属于 S2S 请求。必须硬编码为 `1`。  |
+| `app_token` | 您的 Adjust 应用识别码。                     |
+| `os_name`   | 移动设备操作系统的名称。请查看下方选项列表。 |
 
-<listcolumns> 
+<ListColumns>
 
-* `android`
-* `android-tv`
-* `apple-tv`
-* `bada`
-* `blackberry`
-* `fire-tv`
-* `ios`
-* `linux`
-* `macos`
-* `nintendo`
-* `playstation`
+- `android`
+- `android-tv`
+- `apple-tv`
+- `bada`
+- `blackberry`
+- `fire-tv`
+- `ios`
+- `linux`
+- `macos`
+- `nintendo`
+- `playstation`
 
-*** ** * ** ***
+---
 
-* `roku-os`
-* `server`
-* `smart-cast`
-* `steamos`
-* `symbian`
-* `tizen`
-* `unknown`
-* `webos`
-* `windows`
-* `windows-phone`
-* `xbox`
+- `roku-os`
+- `server`
+- `smart-cast`
+- `steamos`
+- `symbian`
+- `tizen`
+- `unknown`
+- `webos`
+- `windows`
+- `windows-phone`
+- `xbox`
 
-</ListColumns> 
+</ListColumns>
 
 请在您的服务器上创建这些参数。无论使用何种设备，向 Adjust 发出的所有 S2S 请求都会用到这些参数。如有需要，我们还会添加其他设备特定的参数。为简明起见，本指南会从客户端角度展现所有的参数处理活动，但实际上大部分参数处理都在服务器端进行。
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 // Create dictionary for params to include on all S2S requests to Adjust
@@ -124,7 +127,8 @@ params["os_name"] = "ios"
 params["app_token"] = "4w565xzmb54d"
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 // Create dictionary for params to include on all S2S requests to Adjust
@@ -140,7 +144,8 @@ params[@"os_name"] = @"ios";
 params[@"app_token"] = @"4w565xzmb54d";
 ```
 
-</Tab> <tab title="Kotlin" sync="kotlin"> 
+</Tab>
+<Tab title="Kotlin" sync="kotlin">
 
 ```kotlin
 // Create map for params to include on all S2S requests to Adjust
@@ -156,7 +161,8 @@ params["os_name"] = "android"
 params["app_token"] = "4w565xzmb54d"
 ```
 
-</Tab> <tab title="Java" sync="java"> 
+</Tab>
+<Tab title="Java" sync="java">
 
 ```java
 // Create map for params to include on all S2S requests to Adjust
@@ -172,25 +178,27 @@ params.put("os_name", "android");
 params.put("app_token", "4w565xzmb54d");
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
-### 设备 ID 和跟踪状态 \{\#device\-ids\-and\-tracking\-statuses\}
+### 设备 ID 和跟踪状态 {#device-ids-and-tracking-statuses}
 
 每个 S2S 请求都必须包含 **至少一个** 设备标识符。由于移动操作系统采取的隐私保护措施，广告 ID 有时不可用。因此，您应当在可用的情况下添加广告 ID，并始终在请求中加入备用标识符。
 
-#### PC 和主机 / CTV 设备 ID \{\#pc\-console\-ctv\-device\-ids\}
+#### PC 和主机 / CTV 设备 ID {#pc-console-ctv-device-ids}
 
 对于 PC、主机和 CTV 监测，您可以随每个回传发送唯一的 `external_device_id` 参数，以该参数为设备标识符。该参数值可以是任何唯一字符串，只要能够识别设备即可。
 
-#### iOS 设备 ID \{\#ios\-device\-ids\}
+#### iOS 设备 ID {#ios-device-ids}
 
 ##### IDFA 和跟踪状态
 
 只有在 iOS 用户授予数据跟踪许可后，您才能读取 iOS 设备的广告主 ID \(IDFA\)。并非所有应用都会收集 IDFA。但是，无论应用是否收集 IDFA，Adjust 都要求每个请求包含跟踪状态。请根据您的具体实装情况，使用下方对应的代码。
 
-**收集 IDFA 的应用** 
+**收集 IDFA 的应用**
 
-1. 在 Xcode 中添加 ATT 描述。 
+1. 在 Xcode 中添加 ATT 描述。
+
    1. 打开项目的 `Info.plist` 文件。
    2. 在编辑器中右键点击 **Information Property List** ，然后选择 **Add Row** 将 key 添加到根。
    3. 将 key 设置为 `NSUserTrackingUsageDescription` 。
@@ -200,14 +208,16 @@ params.put("app_token", "4w565xzmb54d");
 
 ATT 有下列要求：
 
-* iOS 14 首次推出了 ATT 支持，但是只有针对 iOS 14\.5 和更高版本操作系统的 IDFA 调取才需要用户许可。因此，Adjust 建议您针对 iOS 14\.5 及更高版本的用户显示 ATT 许可请求弹窗。
-* 只有在应用处于活跃状态时，ATT 许可请求弹窗才能显示。除非您等待应用状态再次恢复活跃，否则如果在其他系统弹窗出现后立即显示 ATT 许可请求弹窗，可能导致显示失败。
-* 该弹窗最早可出现在 `applicationDidBecomeActive` \(App Delegate\) 或 `sceneDidBecomeActive` \(Scene Delegate\) 中。`didFinishLaunchingWithOptions` \(App Delegate\) 中无法显示 ATT 弹窗。
+- iOS 14 首次推出了 ATT 支持，但是只有针对 iOS 14\.5 和更高版本操作系统的 IDFA 调取才需要用户许可。因此，Adjust 建议您针对 iOS 14\.5 及更高版本的用户显示 ATT 许可请求弹窗。
+- 只有在应用处于活跃状态时，ATT 许可请求弹窗才能显示。除非您等待应用状态再次恢复活跃，否则如果在其他系统弹窗出现后立即显示 ATT 许可请求弹窗，可能导致显示失败。
+- 该弹窗最早可出现在 `applicationDidBecomeActive` \(App Delegate\) 或 `sceneDidBecomeActive` \(Scene Delegate\) 中。`didFinishLaunchingWithOptions` \(App Delegate\) 中无法显示 ATT 弹窗。
 
 下方示例代码满足上述所有要求。
 
 要获得准确的归因，请在第一个会话请求和后续所有请求中加入可用的 IDFA。
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 import AppTrackingTransparency
@@ -261,7 +271,8 @@ getIDFAInfo { info in
 }
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 #import <AppTrackingTransparency/AppTrackingTransparency.h>
@@ -325,12 +336,15 @@ getIDFAInfo(^(IDFAInfo *info) {
 });
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
-**不收集 IDFA 的应用** 
+**不收集 IDFA 的应用**
 
 请使用以下代码获取跟踪状态。
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 import AdSupport
@@ -363,7 +377,8 @@ getTrackingInfo { info in
 }
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 #import <AdSupport/AdSupport.h>
@@ -404,12 +419,15 @@ getTrackingInfo(^(TrackingInfo *info) {
 });
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
 ##### IDFV
 
 所有现代 iOS 设备都有备用标识符——供应商 ID \(IDFV\)。
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 let idfv: UUID? = UIDevice.current.identifierForVendor
@@ -419,7 +437,8 @@ if let idfvString = idfv?.uuidString {
 }
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 NSUUID *idfv = [[UIDevice currentDevice] identifierForVendor];
@@ -429,12 +448,15 @@ if (idfv) {
 }
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
 ##### 主要去重识别码
 
 要通过卸载和重装，持续一致地监测应用活动，请生成随机版本 4 UUID \(即 “主要去重识别码”\)，并将其保存在 iOS 密钥链中。主要去重识别码是一种备用标识符，您应当为所有设备生成该识别码。
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 import Foundation
@@ -513,7 +535,8 @@ let primaryDedupeToken = getOrCreatePrimaryDedupeToken()
 params["primary_dedupe_token"] = primaryDedupeToken.uuidString.lowercased()
 ```
 
-</Tab> <tab title="Objective-C" sync="objc"> 
+</Tab>
+<Tab title="Objective-C" sync="objc">
 
 ```objc
 #import <Foundation/Foundation.h>
@@ -598,21 +621,25 @@ params[@"primary_dedupe_token"] = [[primaryDedupeToken UUIDString]
     lowercaseString];
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
-#### Google Play 设备 ID \(Android\) \{\#google\-play\-device\-ids\-android\}
+#### Google Play 设备 ID \(Android\) {#google-play-device-ids-android}
 
 ##### Google 广告 ID
 
 安装 Google Play 服务的 Android 设备可用 Google Play 服务广告 ID \(GPS ADID\) ，但前提是用户未选择删除其广告 ID。
-<callout type="tip"> 
+
+<Callout type="tip">
 
 您可以打开 [Google Maven Repository](https://maven.google.com/web/index.html#com.google.android.gms:play-services-ads-identifier)，查看最新版本的 Play Services Ads Identifier 库。
-</Callout> 
+
+</Callout>
 
 1. 将 `play-services-ads-identifier` 依赖项添加至应用的 `build.gradle` 文件：
 
-<tabs> <tab title="Kotlin DSL"> <codeblock title="build.gradle.kts"> 
+<Tabs>
+<Tab title="Kotlin DSL"> <CodeBlock title="build.gradle.kts">
 
 ```kotlin
 dependencies {
@@ -620,7 +647,9 @@ dependencies {
 }
 ```
 
-</CodeBlock> </Tab> <tab title="Groovy"> <codeblock title="build.gradle"> 
+</CodeBlock>
+</Tab> <Tab title="Groovy">
+<CodeBlock title="build.gradle">
 
 ```groovy
 dependencies {
@@ -628,20 +657,22 @@ dependencies {
 }
 ```
 
-</CodeBlock> </Tab> </Tabs> 
+</CodeBlock>
+</Tab> </Tabs>
 
 2. 将以下权限添加至您的 `AndroidManifest.xml` 文件：
 
-   <codeblock title="AndroidManifest.xml"> 
+   <CodeBlock title="AndroidManifest.xml">
 
    ```xml
-   <uses-permission android:name="com.google.android.gms.permission.AD_ID" id="sl-md0000000"/>
+   <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
    ```
 
-   </CodeBlock> 
+   </CodeBlock>
+
 3. 如果您的应用使用了 R8 或 ProGuard，请将这些规则添加到您的 `proguard-rules.pro` 文件，以便在代码优化期间保留 Google 广告 ID 检索所需的类和方法 \(如果文件不存在，请在应用模块目录中进行创建\)：
 
-   <codeblock title="proguard-rules.pro"> 
+   <CodeBlock title="proguard-rules.pro">
 
    ```java
    -keep class com.google.android.gms.common.ConnectionResult {
@@ -658,10 +689,12 @@ dependencies {
    }
    ```
 
-   </CodeBlock> 
+   </CodeBlock>
+
 4. 实装代码，以收集 Google 广告 ID 和跟踪状态：
 
-<tabs> <tab title="Kotlin" sync="kotlin"> 
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
 
 ```kotlin
 import com.google.android.gms.ads.identifier.AdvertisingIdClient
@@ -698,19 +731,23 @@ lifecycleScope.launch {
 }
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
 ##### App Set ID
 
 App Set ID 是一个备用标识符，适用于所有已安装 Google Play 服务，且运行 API Level 30 \(Android 11\) 或更高版本的 Android 设备。
-<callout type="tip"> 
+
+<Callout type="tip">
 
 您可以打开 [Google Maven Repository](https://maven.google.com/web/index.html#com.google.android.gms:play-services-appset)，查看最新版本的 Play Services App Set 库。
-</Callout> 
+
+</Callout>
 
 1. 将必要依赖项添加到应用的 `build.gradle` 文件：
 
-<tabs> <tab title="Kotlin DSL"> <codeblock title="build.gradle.kts"> 
+<Tabs>
+<Tab title="Kotlin DSL"> <CodeBlock title="build.gradle.kts">
 
 ```kotlin
 dependencies {
@@ -718,7 +755,9 @@ dependencies {
 }
 ```
 
-</CodeBlock> </Tab> <tab title="Groovy"> <codeblock title="build.gradle"> 
+</CodeBlock>
+</Tab> <Tab title="Groovy">
+<CodeBlock title="build.gradle">
 
 ```groovy
 dependencies {
@@ -726,11 +765,13 @@ dependencies {
 }
 ```
 
-</CodeBlock> </Tab> </Tabs> 
+</CodeBlock>
+</Tab> </Tabs>
 
 2. 实装代码以收集 App Set ID：
 
-<tabs> <tab title="Kotlin" sync="kotlin"> 
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
 
 ```kotlin
 import com.google.android.gms.appset.AppSet
@@ -765,17 +806,19 @@ lifecycleScope.launch {
 }
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
-其他参数 \{\#additional\-parameters\}
--------------------------------------
+## 其他参数 \{\#additional\-parameters\}
 
 这些参数并非必要。如果您使用了其中的任意参数，请在所有请求中添加这些参数。
 
-### Unix 时间戳 \{\#unix\-timestamp\}
+### Unix 时间戳 {#unix-timestamp}
 
 在每个 S2S 请求中包含 Unix 时间戳，可提供设备上活动发生的时间，提高归因的准确性。
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 // Unix timestamp of when activity occurred on device
@@ -784,7 +827,8 @@ lifecycleScope.launch {
 params["created_at_unix"] = String(Int(Date().timeIntervalSince1970))
 ```
 
-</Tab> <tab title="Kotlin" sync="kotlin"> 
+</Tab>
+<Tab title="Kotlin" sync="kotlin">
 
 ```kotlin
 // Unix timestamp of when activity occurred on device
@@ -793,21 +837,24 @@ params["created_at_unix"] = String(Int(Date().timeIntervalSince1970))
 params["created_at_unix"] = (System.currentTimeMillis() / 1000).toString()
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
-### 概率模型数据点 \{\#probabilistic\-modeling\}
+### 概率模型数据点 {#probabilistic-modeling}
 
 要使用概率模型作为归因方法，请在所有 S2S 请求中加入下列参数：
 
-|      参数       |      描述       |
-|---------------|---------------|
-| `device_name` | 设备名称。         |
-| `device_type` | 设备类型或型号。      |
+| 参数          | 描述                       |
+| ------------- | -------------------------- |
+| `device_name` | 设备名称。                 |
+| `device_type` | 设备类型或型号。           |
 | `os_version`  | 设备所运行的操作系统版本。 |
-| `ip_address`  | 设备 IP 地址。     |
+| `ip_address`  | 设备 IP 地址。             |
 
 Adjust 强烈建议您添加这些参数，这样能获得更全面的归因，对于 iOS 平台尤其如此。
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 import UIKit
@@ -838,7 +885,8 @@ params["os_version"] = UIDevice.current.systemVersion
 params["ip_address"] = "192.0.0.1"  // Example value
 ```
 
-</Tab> <tab title="Kotlin" sync="kotlin"> 
+</Tab>
+<Tab title="Kotlin" sync="kotlin">
 
 ```kotlin
 import android.content.Context
@@ -883,17 +931,20 @@ params["device_type"] = when {
 params["ip_address"] = "192.0.0.1"  // Example value
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
-### 环境 \{\#environment\}
+### 环境 {#environment}
 
 您可以传送 `environment` 参数，说明所发送请求位于怎样的环境。为方便测试，Adjust 会区分来自不同环境的请求。可用的值如下：
 
-* `sandbox`: 在测试时使用该参数，以区分请求与真实流量。
-* `production`: 在发布应用时使用该参数。
+- `sandbox`: 在测试时使用该参数，以区分请求与真实流量。
+- `production`: 在发布应用时使用该参数。
 
 如果不发送此参数，那么默认值为 `production`。
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 // For testing (sandbox environment)
@@ -903,7 +954,8 @@ params["environment"] = "sandbox"
 params["environment"] = "production"
 ```
 
-</Tab> <tab title="Kotlin" sync="kotlin"> 
+</Tab>
+<Tab title="Kotlin" sync="kotlin">
 
 ```kotlin
 // For testing (sandbox environment)
@@ -913,73 +965,83 @@ params["environment"] = "sandbox"
 params["environment"] = "production"
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
-### 统一回传参数\{\#global\-callback\-parameters\}
+### 统一回传参数{#global-callback-parameters}
 
-使用[原始数据导出](https://help.adjust.com/en/article/raw-data-exports)时，您可以在所有 S2S 请求中加入 “统一回传参数”，以便在原始数据中添加自定义参数。这种方法通常用来在原始数据导出中加入您的内部用户 ID。
+使用[原始数据导出](https://help.adjust.com/zh/article/raw-data-exports)时，您可以在所有 S2S 请求中加入 “统一回传参数”，以便在原始数据中添加自定义参数。这种方法通常用来在原始数据导出中加入您的内部用户 ID。
 
 统一回传参数形式：包含字符串键值对的 JSON 对象。
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 params["callback_params"] = '{"user_id": "2696775149", "user_category": "high value"}'
 ```
 
-</Tab> <tab title="Kotlin" sync="kotlin"> 
+</Tab>
+<Tab title="Kotlin" sync="kotlin">
 
 ```kotlin
 params["callback_params"] = '{"user_id": "2696775149", "user_category": "high value"}'
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
-### 统一合作伙伴参数\{\#global\-partner\-parameters\}
+### 统一合作伙伴参数{#global-partner-parameters}
 
 在集成特定合作伙伴时，您可能需要在所有 S2S 请求中加入“统一合作伙伴参数”。在向合作伙伴发送的所有回传中，Adjust 服务器都会传递这些参数。如果数据分析合作伙伴需要在收到的回传中包含他们专有的用户 ID，那么经常会使用这种方法。
 
 统一合作伙伴参数形式：包含字符串键值对的 JSON 对象。
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 params["partner_params"] = '{"analytics_user_id": "3913132433", "analytics_visitor_id": "nzFC9LKSqM"}'
 ```
 
-</Tab> <tab title="Kotlin" sync="kotlin"> 
+</Tab>
+<Tab title="Kotlin" sync="kotlin">
 
 ```kotlin
 params["partner_params"] = '{"analytics_user_id": "3913132433", "analytics_visitor_id": "nzFC9LKSqM"}'
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
-请求 \{\#requests\}
---------------------
+## 请求 \{\#requests\}
 
-<callout type="important"> 
+<Callout type="important">
 
 在发送请求之前，请务必对所有参数值进行 URL 编码。
-</Callout> 
 
-### 会话 \{\#session\}
+</Callout>
+
+### 会话 {#session}
 
 会话是 Adjust 实现的基础，也是唯一必要的活动。一次会话通常代表一次应用打开。Adjust 服务器会按下列方式记录成功的会话请求：
 
-* 设备首次会话会被记录为 “安装” 活动。
-* 后续会话会被记录为 “会话” 活动。
-* 如果满足[再归因条件](https://help.adjust.com/en/article/reattribution)，则会被记录 “再归因” 或 “再归因重装” 活动。
+- 设备首次会话会被记录为 “安装” 活动。
+- 后续会话会被记录为 “会话” 活动。
+- 如果满足[再归因条件](https://help.adjust.com/zh/article/reattribution)，则会被记录 “再归因” 或 “再归因重装” 活动。
 
-<callout type="info"> 
+<Callout type="info">
 
 当下列任一情况发生时，Adjust SDK 会向 Adjust 服务器发送会话请求：
 
-* 用户在安装或重装后首次打开应用。
-* 应用关闭或在后台运行至少 30 分钟后，用户重新打开应用。
+- 用户在安装或重装后首次打开应用。
+- 应用关闭或在后台运行至少 30 分钟后，用户重新打开应用。
 
-</Callout> 
+</Callout>
 
 在发送带有 `created_at_unix` 参数的 S2S 会话请求时，Adjust 服务器要求该值比上次成功记录会话的 `created_at_unix` 时间至少晚 20 分钟。
-<codeblock title="请求 - cURL"> 
+
+<CodeBlock title="请求 - cURL">
 
 ```sh
 curl -X POST "https://app.adjust.com/session" \ -H "Authorization: Bearer ADD_YOUR_AUTH_TOKEN_HERE" \
@@ -1003,10 +1065,11 @@ curl -X POST "https://app.adjust.com/session" \ -H "Authorization: Bearer ADD_YO
 -s
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
-这是 Adjust 成功记录设备首次会话时的响应格式。如有需要，您可以使用 Adjust [测试控制台](https://help.adjust.com/en/article/testing-console)遗忘设备，并进行多次测试。
-<codeblock title="响应"> 
+这是 Adjust 成功记录设备首次会话时的响应格式。如有需要，您可以使用 Adjust [测试控制台](https://help.adjust.com/zh/article/testing-console)遗忘设备，并进行多次测试。
+
+<CodeBlock title="响应">
 
 ```console
 {
@@ -1020,10 +1083,11 @@ curl -X POST "https://app.adjust.com/session" \ -H "Authorization: Bearer ADD_YO
 HTTP Status Code: 200
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
 这是 Adjust 成功记录该设备后续会话时的响应格式。
-<codeblock title="响应"> 
+
+<CodeBlock title="响应">
 
 ```console
 {
@@ -1037,12 +1101,14 @@ HTTP Status Code: 200
 HTTP Status Code: 200
 ```
 
-</CodeBlock> 
+</CodeBlock>
 
-### 安装后事件 \{\#post\-install\-event\}
+### 安装后事件 {#post-install-event}
 
-成功发送至少 1 次设备会话请求后，您就可以发送[安装后事件](/en/api/s2s-api/events)了。这些事件通常代表营销目标，广告渠道可使用这些信息来优化推广活动。
-<tabs> <tab title="Swift" sync="swift"> 
+成功发送至少 1 次设备会话请求后，您就可以发送[安装后事件](/zh/api/s2s-api/events)了。这些事件通常代表营销目标，广告渠道可使用这些信息来优化推广活动。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 // Add event token to existing params
@@ -1054,7 +1120,8 @@ params["revenue"] = "19.99"
 params["currency"] = "USD"
 ```
 
-</Tab> <tab title="Kotlin" sync="kotlin"> 
+</Tab>
+<Tab title="Kotlin" sync="kotlin">
 
 ```kotlin
 // Add event token to existing params
@@ -1066,14 +1133,17 @@ params["revenue"] = "19.99"
 params["currency"] = "USD"
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
-#### 回传参数 \{\#callback\-parameters\}
+#### 回传参数 {#callback-parameters}
 
-使用[原始数据导出](https://help.adjust.com/en/article/raw-data-exports)时，您可以在特定事件请求中加入自定义 “回传参数”，以添加事件层级自定义数据。例如，如果应用中发生购买事件，您就可以在原始数据中加入该事件的内部交易 ID。
+使用[原始数据导出](https://help.adjust.com/zh/article/raw-data-exports)时，您可以在特定事件请求中加入自定义 “回传参数”，以添加事件层级自定义数据。例如，如果应用中发生购买事件，您就可以在原始数据中加入该事件的内部交易 ID。
 
 回传参数形式：包含字符串键值对的 JSON 对象。
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 // If callback_params exists, add the event callback parameters to it (for example: txn_id)
@@ -1083,7 +1153,8 @@ params["callback_params"] = '{"user_id": "2696775149", "user_category": "high va
 params["callback_params"] = '{"txn_id": "8837853376"}'
 ```
 
-</Tab> <tab title="Kotlin" sync="kotlin"> 
+</Tab>
+<Tab title="Kotlin" sync="kotlin">
 
 ```kotlin
 // If callback_params exists, add the event callback parameters to it (for example: txn_id)
@@ -1093,14 +1164,17 @@ params["callback_params"] = '{"user_id": "2696775149", "user_category": "high va
 params["callback_params"] = '{"txn_id": "8837853376"}'
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
-#### 合作伙伴参数\{\#partners\-parameters\}
+#### 合作伙伴参数{#partners-parameters}
 
 在集成特定合作伙伴时，您可能需要在事件请求中加入自定义 “合作伙伴参数”。在向合作伙伴发送的相关事件回传中，Adjust 服务器会传递这些参数。在启用动态再营销推广活动时，通常会使用这种方法，例如 `view_item`、`add_to_cart`、购买等事件。
 
 合作伙伴参数形式：包含字符串键值对的 JSON 对象。
-<tabs> <tab title="Swift" sync="swift"> 
+
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 // If partner_params exists, add the event partner parameters to it (for example: item_id)
@@ -1110,7 +1184,8 @@ params["partner_params"] = '{"analytics_user_id": "3913132433", "analytics_sessi
 params["partner_params"] = '{"item_id": "[\"76524\",\"62599\"]"}'
 ```
 
-</Tab> <tab title="Kotlin" sync="kotlin"> 
+</Tab>
+<Tab title="Kotlin" sync="kotlin">
 
 ```kotlin
 // If partner_params exists, add the event partner parameters to it (for example: item_id)
@@ -1120,10 +1195,12 @@ params["partner_params"] = '{"analytics_user_id": "3913132433", "analytics_sessi
 params["partner_params"] = '{"item_id": "[\"76524\",\"62599\"]"}'
 ```
 
-</Tab> </Tabs> 
+</Tab>
+</Tabs>
 
 发送事件请求。
-<codeblock title="请求 - cURL"> 
+
+<CodeBlock title="请求 - cURL">
 
 ```sh
 curl -X POST "https://app.adjust.com/event" \
@@ -1151,7 +1228,8 @@ curl -X POST "https://app.adjust.com/event" \
 -s
 ```
 
-</CodeBlock> <codeblock title="响应"> 
+</CodeBlock>
+<CodeBlock title="响应">
 
 ```console
 {
@@ -1162,4 +1240,3 @@ HTTP Status Code: 200
 ```
 
 </CodeBlock>
-
