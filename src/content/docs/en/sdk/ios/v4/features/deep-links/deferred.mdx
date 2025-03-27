@@ -44,7 +44,7 @@ To implement deferred deep linking, update your AppDelegate with the highlighted
 <Tabs>
 <Tab title="Swift" sync="swift">
 
-```swift {7,38-39,47-67}
+```swift {7,38-39,47-69}
 // AppDelegate.swift
 
 import Adjust
@@ -93,7 +93,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, AdjustDelegate {
 
   // Receive deferred deep link via AdjustDelegate method
   func adjustDeeplinkResponse(_ deeplink: URL?) -> Bool {
-    guard let incomingLink = deeplink else { return false }
+    // Handle failure if deeplink is nil
+    guard let deeplink = deeplink else { return false }
 
     if UserDefaults.standard.bool(forKey: "hasCompletedOnboarding") {
       // If onboarding is complete, handle deferred deep link immediately
@@ -103,7 +104,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, AdjustDelegate {
       // navigating to the appropriate screen.
     } else {
       // Store deferred deep link to invoke after onboarding screens and login
-      UserDefaults.standard.set(incomingLink.absoluteString, forKey: "deferredLink")
+      UserDefaults.standard.set(
+        incomingLink.absoluteString, forKey: "deferredLink")
     }
 
     // Return true to let Adjust SDK attempt to open deep link immediately
@@ -253,7 +255,7 @@ class ViewController: UIViewController {
 
     // Show ATT prompt after delay to ensure app is active
     DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-      Adjust.requestTrackingAuthorization { _ in }
+      Adjust.requestTrackingAuthorization()
     }
 
     // After onboarding, set hasCompletedOnboarding to true
@@ -261,16 +263,15 @@ class ViewController: UIViewController {
 
     // Show main content
 
-    // Check for deferred deep link received before or during onboarding
-    guard let deferredLinkString = UserDefaults.standard.string(forKey: "deferredLink"),
-          let deferredLink = URL(string: deferredLinkString) else { return }
+    // Check for deferredLink received before or during onboarding
+    if let deferredLink = UserDefaults.standard.string(forKey: "deferredLink") {
+      // Remove stored deferred deep link to avoid handling again later
+      UserDefaults.standard.removeObject(forKey: "deferredLink")
 
-    // Remove stored deferred deep link to avoid handling again later
-    UserDefaults.standard.removeObject(forKey: "deferredLink")
-
-    // TO DO: Handle the deferred deep link by parsing its components
-    // (example: path, query parameters) and
-    // navigating to the appropriate screen.
+      // TO DO: Handle deferredLink by parsing its components
+      // (example: path, query parameters) and
+      // navigating to the appropriate screen.
+    }
   }
 }
 ```
@@ -320,17 +321,16 @@ class ViewController: UIViewController {
   // Show main content
 
   // Check for deferred deep link received before or during onboarding
-  NSString *deferredLinkString =
+  NSString *deferredLink =
       [[NSUserDefaults standardUserDefaults] stringForKey:@"deferredLink"];
-  NSURL *deferredLink = [NSURL URLWithString:deferredLinkString];
-  if (!deferredLink) return;
+  if (deferredLink) {
+    // Remove stored deferred deep link to avoid handling again later
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"deferredLink"];
 
-  // Remove stored deferred deep link to avoid handling again later
-  [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"deferredLink"];
-
-  // TO DO: Handle the deferred deep link by parsing its components
-  // (example: path, query parameters) and
-  // navigating to the appropriate screen.
+    // TO DO: Handle deferredLink by parsing its components
+    // (example: path, query parameters) and
+    // navigating to the appropriate screen.
+  }
 }
 
 @end
@@ -362,7 +362,7 @@ struct ContentView: View {
 
           // Show ATT prompt after delay to ensure app is active
           DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            Adjust.requestTrackingAuthorizationWithCompletionHandler { _ in }
+            Adjust.requestTrackingAuthorization()
           }
 
           // After onboarding, set hasCompletedOnboarding to true
@@ -370,16 +370,14 @@ struct ContentView: View {
 
           // Show main content
 
-          // Check for deep link received during onboarding
-          if let deferredLinkString = UserDefaults.standard.string(
+          // Check for deep link received before or during onboarding
+          if let deferredLink = UserDefaults.standard.string(
             forKey: "deferredLink"
-          ),
-            let deferredLink = URL(string: deferredLinkString)
-          {
+          ) {
             // Remove stored deferred deep link to avoid handling again later
             UserDefaults.standard.removeObject(forKey: "deferredLink")
 
-            // TO DO: Handle the deferred deep link by parsing its components
+            // TO DO: Handle deferredLink by parsing its components
             // (example: path, query parameters) and
             // navigating to the appropriate screen.
           }

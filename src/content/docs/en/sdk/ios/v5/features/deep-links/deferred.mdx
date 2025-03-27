@@ -118,10 +118,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, AdjustDelegate {
 </Tab>
 <Tab title="Objective-C" sync="objc">
 
-```objc {34-35,43-64,70}
+```objc {34-35,43-64,71}
 // AppDelegate.m
 
-#import <Adjust/Adjust.h>
+#import <AdjustSdk/AdjustSdk.h>
 #import "AppDelegate.h"
 
 @implementation AppDelegate
@@ -163,6 +163,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, AdjustDelegate {
 
 // Receive deferred deep link via AdjustDelegate method
 - (BOOL)adjustDeferredDeeplinkReceived:(nullable NSURL *)deeplink {
+  // Handle failure if deeplink is nil
   if (!deeplink) return NO;
 
   if ([[NSUserDefaults standardUserDefaults]
@@ -266,7 +267,7 @@ class ViewController: UIViewController {
       // Remove stored deferred deep link to avoid handling again later
       UserDefaults.standard.removeObject(forKey: "deferredLink")
 
-      // TO DO: Handle the deferredLink by parsing its components
+      // TO DO: Handle deferredLink by parsing its components
       // (example: path, query parameters) and
       // navigating to the appropriate screen.
     }
@@ -280,7 +281,7 @@ class ViewController: UIViewController {
 ```objc
 // ViewController.m
 
-#import <Adjust/Adjust.h>
+#import <AdjustSdk/AdjustSdk.h>
 #import "ViewController.h"
 
 @implementation ViewController
@@ -319,17 +320,16 @@ class ViewController: UIViewController {
   // Show main content
 
   // Check for deferred deep link received before or during onboarding
-  NSString *deferredLinkString =
+  NSString *deferredLink =
       [[NSUserDefaults standardUserDefaults] stringForKey:@"deferredLink"];
-  NSURL *deferredLink = [NSURL URLWithString:deferredLinkString];
-  if (!deferredLink) return;
+  if (deferredLink) {
+    // Remove stored deferred deep link to avoid handling again later
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"deferredLink"];
 
-  // Remove stored deferred deep link to avoid handling again later
-  [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"deferredLink"];
-
-  // TO DO: Handle the deferred deep link by parsing its components
-  // (example: path, query parameters) and
-  // navigating to the appropriate screen.
+    // TO DO: Handle deferredLink by parsing its components
+    // (example: path, query parameters) and
+    // navigating to the appropriate screen.
+  }
 }
 
 @end
@@ -361,7 +361,7 @@ struct ContentView: View {
 
           // Show ATT prompt after delay to ensure app is active
           DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            Adjust.requestAppTrackingAuthorizationWithCompletionHandler()
+            Adjust.requestAppTrackingAuthorization()
           }
 
           // After onboarding, set hasCompletedOnboarding to true
@@ -370,7 +370,9 @@ struct ContentView: View {
           // Show main content
 
           // Check for deep link received before or during onboarding
-          if let deferredLink = UserDefaults.standard.string(forKey: "deferredLink") {
+          if let deferredLink = UserDefaults.standard.string(
+            forKey: "deferredLink")
+          {
             // Remove stored deferred deep link to avoid handling again later
             UserDefaults.standard.removeObject(forKey: "deferredLink")
 
@@ -385,7 +387,6 @@ struct ContentView: View {
     }
   }
 }
-
 ```
 
 </Tab>
