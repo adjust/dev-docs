@@ -14,11 +14,11 @@ redirects:
 
 Adjust SDKは`AdjustEvent`オブジェクトを提供しており、アプリのイベント情報を構造化してAdjustのサーバーに送信することができます。
 
-## AdjustEventオブジェクトをインスタンス化する {#instantiate-an-adjustevent-object}
+## AdjustEventオブジェクトをインスタンス化する \{\#instantiate\-an\-adjustevent\-object\}
 
 <CodeBlock title="メソッドシグネチャー">
 
-```js
+```ts
 constructor(eventToken: string)
 ```
 
@@ -35,12 +35,12 @@ var adjustEvent = new AdjustEvent("abc123");
 Adjust.trackEvent(adjustEvent);
 ```
 
-## イベントを送信する {#send-an-event}
+## イベントを送信する \{\#send\-an\-event\}
 
 <CodeBlock title="メソッドシグネチャー">
 
 ```js
-trackEvent(event: AdjustEvent): void
+trackEvent(adjustEvent: AdjustEvent): void
 ```
 
 </CodeBlock>
@@ -59,8 +59,6 @@ Adjust.trackEvent(adjustEvent);
 
 この例では、ユーザーがボタンを操作する度に _`g3mfiw`_ のトークンでイベントを計測する方法を示します。
 
-<Tabs>
-<Tab title="JS">
 <CodeBlock title="index.js" highilight="{range: 30}">
 
 ```js
@@ -78,13 +76,13 @@ var app = {
       app.receivedEvent("deviceready");
 
       var adjustConfig = new AdjustConfig(
-         { APP_ID },
+         "YourAppToken",
          AdjustConfig.EnvironmentSandbox,
       );
-      Adjust.create(adjustConfig);
+      Adjust.initSdk(adjustConfig);
    },
    receivedEvent: function (id) {
-      console.log("[AdjustExample]: Received Event: " + id);
+      console.log("Received Event: " + id);
 
       var btnRecordSimpleEvent = document.getElementById(
          "btnRecordSimpleEvent",
@@ -104,49 +102,21 @@ app.initialize();
 ```
 
 </CodeBlock>
-</Tab>
-<Tab title="HTML">
-
-```html
-<!DOCTYPE >
-<html>
-   <head>
-      <!---->
-   </head>
-   <body>
-      <div class="app">
-         <button
-            id="btnRecordSimpleEvent"
-            style="color: black; height: 30px; margin: 5px"
-         >
-            Record simple event
-         </button>
-      </div>
-      <script src="cordova.js"></script>
-      <script src="js/index.js"></script>
-   </body>
-</html>
-```
-
-</Tab>
-</Tabs>
 <CodeBlock title="イベントログ" highlight="{range: 22-23}" collapse="7-21, 24-46">
 
 ```txt
 Path:      /event
-ClientSdk: cordova$CORDOVA_VERSION
+ClientSdk: cordova$CORDOVA_V5_VERSION
 Parameters:
   android_uuid     781f17d5-5048-4fae-a4e5-77b58bab62b9
   api_level        34
   app_token        2fm9gkqubvpc
   app_version      1.0
   attribution_deeplink 1
-  callback_params  {"key":"value","foo":"bar"}
   connectivity_type 1
   country          US
   cpu_type         arm64-v8a
   created_at       2024-01-25T14:13:16.151Z+0100
-  currency         EUR
   device_manufacturer Google
   device_name      sdk_gphone64_arm64
   device_type      phone
@@ -168,8 +138,6 @@ Parameters:
   os_name          android
   os_version       14
   package_name     com.adjust.examples
-  partner_params   {"key":"value","foo":"bar"}
-  revenue          0.25
   screen_density   high
   screen_format    long
   screen_size      normal
@@ -183,11 +151,11 @@ Parameters:
 
 </CodeBlock>
 
-## イベント収益の記録 {#record-event-revenue}
+## イベント収益を記録する \{\#record\-event\-revenue\}
 
 <CodeBlock title="メソッドシグネチャー">
 
-```js
+```ts
 setRevenue(revenue: number, currency: string): void
 ```
 
@@ -216,8 +184,6 @@ Adjust.trackEvent(adjustEvent);
 
 この例では、ユーザーがボタンを操作する度に _`g3mfiw`_ のトークンでイベントを計測する方法を示します。この関数は、このイベントの`revenue`プロパティを _`0.25`_ に、`currency`プロパティを _`EUR`_ に設定します。
 
-<Tabs>
-<Tab title="JS">
 <CodeBlock title="index.js" highlight="31">
 
 ```js
@@ -235,13 +201,13 @@ var app = {
       app.receivedEvent("deviceready");
 
       var adjustConfig = new AdjustConfig(
-         { APP_ID },
+         "YourAppToken",
          AdjustConfig.EnvironmentSandbox,
       );
-      Adjust.create(adjustConfig);
+      Adjust.initSdk(adjustConfig);
    },
    receivedEvent: function (id) {
-      console.log("[AdjustExample]: Received Event: " + id);
+      console.log("Received Event: " + id);
 
       var btnRecordRevenueEvent = document.getElementById(
          "btnRecordRevenueEvent",
@@ -262,37 +228,11 @@ app.initialize();
 ```
 
 </CodeBlock>
-</Tab>
-<Tab title="HTML">
-
-```html
-<!DOCTYPE >
-<html>
-   <head>
-      <!---->
-   </head>
-   <body>
-      <div class="app">
-         <button
-            id="btnRecordRevenueEvent"
-            style="color: black; height: 30px; margin: 5px"
-         >
-            Record revenue event
-         </button>
-      </div>
-      <script src="cordova.js"></script>
-      <script src="js/index.js"></script>
-   </body>
-</html>
-```
-
-</Tab>
-</Tabs>
 <CodeBlock title="イベントログ" highlight="{range: 7-8}">
 
 ```txt
 Path:      /event
-ClientSdk: cordova$CORDOVA_VERSION
+ClientSdk: cordova$CORDOVA_V5_VERSION
 Parameters:
   environment      sandbox
   event_count      3
@@ -303,32 +243,30 @@ Parameters:
 
 </CodeBlock>
 
-## 一意のトランザクションIDを設定する {#set-a-unique-transaction-id}
+## 収益イベントの重複を排除する \{\#deduplicate\-revenue\-events\}
 
-<CodeBlock title="プロパティ宣言">
+<CodeBlock title="メソッドシグネチャー">
 
-```js
-setTransactionId(transactionId: string)
+```ts
+setDeduplicationId(deduplicationId: string): void
 ```
 
 </CodeBlock>
 
 イベントを重複して計測するのを防ぐため、オプションとして任意のIDをパスすることもできます。SDKが最新10件のIDを保存し、トランザクションIDが重複した収益イベントを排除します。
 
-識別子を設定するには、イベントインスタンスの`setTransactionId`プロパティにトランザクションIDを割り当てます。
+識別子を設定するには、`setDeduplicationId`メソッドを呼び出し、`string`引数として重複IDをパスしてください。
 
 ```js
 var adjustEvent = new AdjustEvent("abc123");
-adjustEvent.setTransactionId("{YourTransactionId}");
+adjustEvent.setDeduplicationId(deduplicationId);
 Adjust.trackEvent(adjustEvent);
 ```
 
 ### 例 {#example}
 
-この例では、ユーザーがボタンを操作する度に _`g3mfiw`_ のトークンでイベントを計測する方法を示します。この関数は、 `setTransactionId`メソッドを使用して`transactionId`から _`5e85484b-1ebc-4141-aab7-25b869e54c49`_ に設定します。
+この例は、ユーザーがボタンを操作する度に _`g3mfiw`_ のトークンでイベントを計測する方法です。この関数は`setDeduplicationId`メソッドを使用して、`deduplicationId`を _`5e85484b-1ebc-4141-aab7-25b869e54c49`_ に設定します。
 
-<Tabs>
-<Tab title="JS">
 <CodeBlock title="index.js" highlight="{range: 31-33}">
 
 ```js
@@ -346,13 +284,13 @@ var app = {
       app.receivedEvent("deviceready");
 
       var adjustConfig = new AdjustConfig(
-         { APP_ID },
+         "YourAppToken",
          AdjustConfig.EnvironmentSandbox,
       );
-      Adjust.create(adjustConfig);
+      Adjust.initSdk(adjustConfig);
    },
    receivedEvent: function (id) {
-      console.log("[AdjustExample]: Received Event: " + id);
+      console.log("Received Event: " + id);
 
       var btnRecordUniqueEvent = document.getElementById(
          "btnRecordUniqueEvent",
@@ -362,7 +300,7 @@ var app = {
          "click",
          function () {
             var adjustEvent = new AdjustEvent("g3mfiw");
-            adjustEvent.setTransactionId(
+            adjustEvent.setDeduplicationId(
                "5e85484b-1ebc-4141-aab7-25b869e54c49",
             );
             Adjust.trackEvent(adjustEvent);
@@ -375,51 +313,25 @@ app.initialize();
 ```
 
 </CodeBlock>
-</Tab>
-<Tab title="HTML">
-
-```html
-<!DOCTYPE >
-<html>
-   <head>
-      <!---->
-   </head>
-   <body>
-      <div class="app">
-         <button
-            id="btnRecordUniqueEvent"
-            style="color: black; height: 30px; margin: 5px"
-         >
-            Record unique event
-         </button>
-      </div>
-      <script src="cordova.js"></script>
-      <script src="js/index.js"></script>
-   </body>
-</html>
-```
-
-</Tab>
-</Tabs>
 <CodeBlock title="イベントログ" highlight="{range: 7}">
 
 ```txt
 Path:      /event
-ClientSdk: cordova$CORDOVA_VERSION
+ClientSdk: cordova$CORDOVA_V5_VERSION
 Parameters:
   environment      sandbox
   event_count      3
-  event_token      abc123
-  transaction_id   5e85484b-1ebc-4141-aab7-25b869e54c49
+  event_token      g3mfiw
+  deduplication_id   5e85484b-1ebc-4141-aab7-25b869e54c49
 ```
 
 </CodeBlock>
 
-## コールバックパラメーターを追加する {#add-callback-parameters}
+## コールバックパラメーターを追加する \{\#add\-callback\-parameters\}
 
 <CodeBlock title="メソッドシグネチャー">
 
-```js
+```ts
 addCallbackParameter(key: string, value: string): void
 ```
 
@@ -465,7 +377,7 @@ Adjustでは、SDKからURLに情報をパスするための様々なプレー�
 
 ### 例 {#example}
 
-この例では、ユーザーがボタンを操作する度に`g3mfiw`のトークンでイベントを計測する方法を示します。次のコールバックパラメーターが追加されました：
+この例では、ユーザーがボタンを操作する度に`g3mfiw`のトークンでイベントを計測する方法を示します。次のコールバックパラメーターが追加されました。
 
 - \- `event_token`
 - イベントごとに生成される`revenue_amount`
@@ -479,8 +391,6 @@ http://www.mydomain.com/callback?event_token=g3mfiw&revenue_amount=0.05
 ```
 
 </CodeBlock>
-<Tabs>
-<Tab title="JS">
 <CodeBlock title="index.js" highlight="{range: 31-32}">
 
 ```js
@@ -498,13 +408,13 @@ var app = {
       app.receivedEvent("deviceready");
 
       var adjustConfig = new AdjustConfig(
-         { APP_ID },
+         "YourAppToken",
          AdjustConfig.EnvironmentSandbox,
       );
-      Adjust.create(adjustConfig);
+      Adjust.initSdk(adjustConfig);
    },
    receivedEvent: function (id) {
-      console.log("[AdjustExample]: Received Event: " + id);
+      console.log("Received Event: " + id);
 
       var btnRecordCallbackEvent = document.getElementById(
          "btnRecordCallbackEvent",
@@ -526,37 +436,11 @@ app.initialize();
 ```
 
 </CodeBlock>
-</Tab>
-<Tab title="HTML">
-
-```html
-<!DOCTYPE >
-<html>
-   <head>
-      <!---->
-   </head>
-   <body>
-      <div class="app">
-         <button
-            id="btnRecordCallbackEvent"
-            style="color: black; height: 30px; margin: 5px"
-         >
-            Record callback event
-         </button>
-      </div>
-      <script src="cordova.js"></script>
-      <script src="js/index.js"></script>
-   </body>
-</html>
-```
-
-</Tab>
-</Tabs>
 <CodeBlock title="イベントログ" highlight="{range: 4}">
 
 ```txt
 Path:      /event
-ClientSdk: cordova$CORDOVA_VERSION
+ClientSdk: cordova$CORDOVA_V5_VERSION
 Parameters:
   callback_params  {"event_token":"g3mfiw","revenue_amount":"0.05"}
   environment      sandbox
@@ -566,11 +450,11 @@ Parameters:
 
 </CodeBlock>
 
-## パートナーパラメーターの追加 {#add-partner-parameters}
+## パートナーパラメーターを追加する \{\#add\-partner\-parameters\}
 
 <CodeBlock title="メソッドシグネチャー">
 
-```js
+```ts
 addPartnerParameter(key: string, value: string): void
 ```
 
@@ -597,13 +481,11 @@ Adjust.trackEvent(adjustEvent);
 
 ### 例 {#example}
 
-この例では、ユーザーがボタンを操作する度に`g3mfiw`のトークンでイベントを計測する方法を示します。次のパートナーパラメーターが追加されました：
+この例では、ユーザーがボタンを操作する度に`g3mfiw`のトークンでイベントを計測する方法を示します。次のパートナーパラメーターが追加されました。
 
 - 関連する製品の`product_id`
 - イベントをトリガーしたユーザーの`user_id`
 
-<Tabs>
-<Tab title="JS">
 <CodeBlock title="index.js" highlight="{range: 31-32}">
 
 ```js
@@ -621,13 +503,13 @@ var app = {
       app.receivedEvent("deviceready");
 
       var adjustConfig = new AdjustConfig(
-         { APP_ID },
+         "YourAppToken",
          AdjustConfig.EnvironmentSandbox,
       );
-      Adjust.create(adjustConfig);
+      Adjust.initSdk(adjustConfig);
    },
    receivedEvent: function (id) {
-      console.log("[AdjustExample]: Received Event: " + id);
+      console.log("Received Event: " + id);
 
       var btnRecordPartnerParamEvent = document.getElementById(
          "btnRecordPartnerParamEvent",
@@ -649,37 +531,11 @@ app.initialize();
 ```
 
 </CodeBlock>
-</Tab>
-<Tab title="HTML">
-
-```html
-<!DOCTYPE >
-<html>
-   <head>
-      <!---->
-   </head>
-   <body>
-      <div class="app">
-         <button
-            id="btnRecordPartnerParamEvent"
-            style="color: black; height: 30px; margin: 5px"
-         >
-            Record partner param event
-         </button>
-      </div>
-      <script src="cordova.js"></script>
-      <script src="js/index.js"></script>
-   </body>
-</html>
-```
-
-</Tab>
-</Tabs>
 <CodeBlock title="イベントログ" highlight="{range: 4}">
 
 ```txt
 Path:      /event
-ClientSdk: cordova$CORDOVA_VERSION
+ClientSdk: cordova$CORDOVA_V5_VERSION
 Parameters:
   partner_params  {"product_id":"29","user_id":"835"}
   environment      sandbox
@@ -689,12 +545,12 @@ Parameters:
 
 </CodeBlock>
 
-## コールバック識別子を追加 {#add-a-callback-identifier}
+## コールバック識別子を追加する \{\#add\-a\-callback\-identifier\}
 
 <CodeBlock title="メソッドシグネチャー">
 
-```js
-setCallbackId(callbackId: string)
+```ts
+setCallbackId(callbackId: string): void
 ```
 
 </CodeBlock>
@@ -713,10 +569,8 @@ Adjust.trackEvent(adjustEvent);
 
 ### 例 {#example}
 
-ユーザーがボタンを操作する度に`g3mfiw`のトークンでイベントを計測する例を示します。この例では、`callbackId`が`f2e728d8-271b-49ab-80ea-27830a215147`に設定されています。
+この例では、ユーザーがボタンを操作する度に`g3mfiw`のトークンでイベントを計測する方法を示します。この例では、 `callbackId`は`f2e728d8-271b-49ab-80ea-27830a215147`に設定されています。
 
-<Tabs>
-<Tab title="JS">
 <CodeBlock title="index.js" highlight="{range: 31}">
 
 ```js
@@ -734,13 +588,13 @@ var app = {
       app.receivedEvent("deviceready");
 
       var adjustConfig = new AdjustConfig(
-         { APP_ID },
+         "YourAppToken",
          AdjustConfig.EnvironmentSandbox,
       );
-      Adjust.create(adjustConfig);
+      Adjust.initSdk(adjustConfig);
    },
    receivedEvent: function (id) {
-      console.log("[AdjustExample]: Received Event: " + id);
+      console.log("Received Event: " + id);
 
       var btnRecordCallbackIdEvent = document.getElementById(
          "btnRecordCallbackIdEvent",
@@ -761,37 +615,11 @@ app.initialize();
 ```
 
 </CodeBlock>
-</Tab>
-<Tab title="HTML">
-
-```html
-<!DOCTYPE >
-<html>
-   <head>
-      <!---->
-   </head>
-   <body>
-      <div class="app">
-         <button
-            id="btnRecordCallbackIdEvent"
-            style="color: black; height: 30px; margin: 5px"
-         >
-            Record callback ID event
-         </button>
-      </div>
-      <script src="cordova.js"></script>
-      <script src="js/index.js"></script>
-   </body>
-</html>
-```
-
-</Tab>
-</Tabs>
 <CodeBlock title="イベントログ" highlight="{range: 7}">
 
 ```txt
 Path:      /event
-ClientSdk: cordova$CORDOVA_SDK
+ClientSdk: cordova$CORDOVA_V5_VERSION
 Parameters:
   environment      sandbox
   event_count      3

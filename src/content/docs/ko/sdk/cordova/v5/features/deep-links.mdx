@@ -20,37 +20,100 @@ redirects:
 
 SDK는 사용자가 링크를 통해 앱을 실행한 이후에 딥링크 데이터를 읽을 수 있습니다.
 
-## 딥링크 설정 {#set-up-deep-linking}
+## 딥링크 설정 \{\#set\-up\-deep\-linking\}
 
-사용자가 앱을 설치한 경우, 사용자가 딥링크 정보가 포함된 링크를 클릭하면 딥링크가 실행됩니다. Adjust SDK는 앱에서 사용하기 위해 딥링크 정보를 파싱할 수 있는 툴을 포함하고 있습니다.
+Adjust SDK에서 딥링크를 사용하려면 우선 앱에서 딥링크 정보를 열고 읽을 수 있도록 설정해야 합니다.
 
-딥링크는 앱 수준에서 설정되어야 합니다. 아래의 플랫폼별 딥링크 설정 가이드 링크를 참조하시기 바랍니다.
+## 디퍼드 딥링크 \{\#deferred\-deep\-linking\}
 
-- [iOS](/ko/sdk/ios/features/deep-links)
-- [Android](/ko/sdk/android/features/deep-links)
+### 디퍼드 딥링크 비활성화 {#disable-deferred-deep-linking}
 
-## 딥링크를 사용한 리어트리뷰션 {#reattribution-using-deep-links}
+<CodeBlock title="메서드 서명">
 
-<Callout type="seealso">
+```ts
+disableDeferredDeeplinkOpening(): void
+```
 
-Adjust를 통해 딥링크를 사용하여 리인게이지먼트 캠페인을 집행할 수 있습니다. 자세한 정보는 Adjust의 [어트리뷰션 데이터를 딥링크에 추가하는 방법](https://help.adjust.com/ko/article/manage-reattributions#track-reattributions-via-deeplink-clicks)을 참조하시기 바랍니다.
+</CodeBlock>
 
-</Callout>
+SDK는 기본 설정에 따라 디퍼드 딥링크를 실행합니다. `disableDeferredDeeplinkOpening` 메서드를 호출하면 이 설정을 구성할 수 있습니다.
 
-사용자를 리어트리뷰션하려면 앱에서 딥링크 콘텐츠를 수신할 때 `appWillOpenUrl` 메서드를 호출해야 합니다. 이후 Adjust SDK는 딥링크 내에서 새로운 어트리뷰션 데이터를 찾습니다. SDK가 새로운 정보를 찾으면 이는 리어트리뷰션을 위해 Adjust 서버로 전달됩니다.
+```js
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox,
+);
 
-iOS에서 딥링킹을 활성화하려면 주요 활동에서 `true` 값으로 `appWillOpenUrl` 메서드를 호출합니다.
+adjustConfig.disableDeferredDeeplinkOpening();
+
+Adjust.initSdk(adjustConfig);
+```
+
+### 디퍼드 딥링크 델리게이트 설정 {#set-up-a-deferred-deep-link-delegate}
+
+<CodeBlock title="메서드 서명">
+
+```ts
+setDeferredDeeplinkCallback(deferredDeeplinkCallback: (deeplink: string) => void): void
+```
+
+</CodeBlock>
+
+디퍼드 딥링크 수신 시 델리게이트 함수를 호출하도록 Adjust SDK를 구성할 수 있습니다. 이 델리게이트 함수는 딥링크를 `string` 인수로 수신합니다.
+
+```js
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox,
+);
+
+adjustConfig.setDeferredDeeplinkCallback(function (deeplink) {
+   console.log("Deferred deep link URL content: " + deeplink);
+});
+
+Adjust.initSdk(adjustConfig);
+```
+
+### 예 {#example}
+
+이 예시에서는 사용자가 디퍼드 딥링크를 열 때 Adjust가 딥링크 주소를 기록하는 방법을 보여줍니다.
+
+```js
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox,
+);
+adjustConfig.setDeferredDeeplinkCallback(function(deeplink) {
+    console.log("Deferred deep link URL: " + deeplink);
+)};
+
+Adjust.initSdk(adjustConfig);
+```
+
+## 딥링크를 통한 리어트리뷰션 \{\#reattribution\-via\-deep\-links\}
+
+<CodeBlock title="메서드 서명">
+
+```ts
+processDeeplink(adjustDeeplink: AdjustDeeplink): void
+```
+
+</CodeBlock>
+
+Adjust를 사용하면 딥링크를 사용하여 리타겟팅 캠페인을 진행할 수 있습니다. 자세한 내용은 [Campaign Lab에서 딥링크를 설정하는 방법](https://help.adjust.com/ko/article/deep-links)을 확인하시기 바랍니다.
+
+사용자를 리어트리뷰션하려면 앱에서 딥링크 콘텐츠를 수신할 때 `processDeeplink` 메서드를 호출해야 합니다. 이후 Adjust SDK는 딥링크 내에서 새로운 어트리뷰션 데이터를 찾습니다. SDK가 새로운 정보를 찾으면 이는 리어트리뷰션을 위해 Adjust 서버로 전달됩니다.
 
 ```js
 function handleOpenURL(url) {
    setTimeout(function () {
       // Check content of the url object and get information about the URL.
-      Adjust.appWillOpenUrl(url);
+      Adjust.appWillOpenUrl(new AdjustDeeplink(url));
    }, 300);
 }
 ```
 
-`didLaunchAppFromLink` 메서드 내에서 `Adjust.appWillOpenUrl` 함수를 호출하여 유니버설 링크를 열 수 있습니다.
+`didLaunchAppFromLink` 메서드에서 `Adjust.processDeeplink` 함수를 호출하여 유니버설 링크를 열 수 있습니다.
 
 ```js
 var app = {
@@ -73,55 +136,17 @@ var app = {
 
    didLaunchAppFromLink: function (eventData) {
       // Check content of the url object and get information about the URL.
-      Adjust.appWillOpenUrl(eventData.url);
+      Adjust.appWillOpenUrl(new AdjustDeeplink(eventData.url));
    },
 };
 ```
 
-## 디퍼드 딥링크 {#deferred-deep-linking}
-
-### 디퍼드 딥링크 콜백 설정 {#set-up-a-deferred-deep-link-callback}
-
-<CodeBlock title="속성 선언">
-
-```js
-setDeferredDeeplinkCallbackListener(deferredDeeplinkCallback: (uri: string) => void)
-```
-
-</CodeBlock>
-
-`AdjustConfig` 인스턴스에서 `setDeferredDeeplinkCallbackListener` 속성에 함수를 추가하고 디퍼드 딥링크 수신 시 함수를 호출하도록 Adjust SDK를 구성할 수 있습니다. 이 함수는 딥링크를 `string`인수로 수신합니다.
-
-```js
-var adjustConfig = new AdjustConfig(appToken, environment);
-
-adjustConfig.setDeferredDeeplinkCallbackListener(function (deeplink) {
-   // Your callback function
-});
-
-Adjust.create(adjustConfig);
-```
-
-### 예시 {#example}
-
-이 예시에서는 사용자가 디퍼드 딥링크를 열 때 Adjust가 딥링크 주소를 기록하는 방법을 보여줍니다.
-
-```js
-var adjustConfig = new AdjustConfig(appToken, environment);
-
-adjustConfig.setDeferredDeeplinkCallbackListener(function (deeplink) {
-   console.log("Received deferred deeplink: " + deeplink);
-});
-
-Adjust.create(adjustConfig);
-```
-
-### LinkMe 활성화 {#enable-linkme}
+## LinkMe 활성화 \{\#enable\-linkme\}
 
 <CodeBlock title="메서드 서명">
 
-```js
-setLinkMeEnabled(linkMeEnabled: boolean)
+```ts
+enableLinkMe(): void
 ```
 
 </CodeBlock>
@@ -136,10 +161,15 @@ Adjust SDK는 사용자의 첫 앱 실행 시 페이스트보드를 확인합니
 
 사용자가 LinkMe URL을 클릭하면 링크 정보를 시스템 페이스트보드에 복사할 수 있는 옵션이 주어집니다. Adjust SDK는 딥링크 정보에 대한 시스템 페이스트보드를 읽고 딥링크 정보가 있는 경우 사용자를 의도한 페이지로 이동시킬 수 있습니다.
 
-앱에서의 페이스트보드 확인을 활성화하려면 config 객체의 `linkMeEnabled` 속성을 `true`로 설정합니다.
+앱에서 페이스트보드 확인을 활성화하려면 `enableLinkMe` 메서드를 config 객체에서 호출합니다.
 
 ```js
-var adjustConfig = new AdjustConfig(appToken, environment);
-adjustConfig.setLinkMeEnabled(true);
-Adjust.create(adjustConfig);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox,
+);
+
+adjustConfig.enableLinkMe();
+
+Adjust.initSdk(adjustConfig);
 ```

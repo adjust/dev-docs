@@ -16,7 +16,7 @@ Adjustの[リンク短縮ソリューション](https://help.adjust.com/ja/artic
 
 このセクションで説明するメソッドを使用して、短縮リンクを解析します。
 
-## Adjust SDKでディープリンクを設定 {#set-up-deep-linking-in-the-adjust-sdk}
+## Adjust SDKでディープリンクを設定する \{\#set\-up\-deep\-linking\-in\-the\-adjust\-sdk\}
 
 Adjust SDKに、以下のサポートを追加してください。
 
@@ -25,11 +25,11 @@ Adjust SDKに、以下のサポートを追加してください。
 
 <Callout type="note">
 
-Adjustのリンク短縮ソリューションを使用するために、[リンク解析](/ja/sdk/android/features/deep-links#link-resolution)を設定する必要はありません。
+Adjustのリンク短縮ソリューションを使用するために、[リンクの解決](/ja/sdk/android/features/deep-links#link-resolution)を設定する必要はありません。
 
 </Callout>
 
-## Adjust SDKを設定して短縮リンクを解析 {#set-up-the-adjust-sdk-to-resolve-short-links}
+## Adjust SDKを設定して短縮リンクを解析する \{\#set\-up\-the\-adjust\-sdk\-to\-resolve\-short\-links\}
 
 <CodeBlock title="メソッドシグネチャー">
 
@@ -84,8 +84,7 @@ protected void onCreate(Bundle savedInstanceState) {
 ```
 
 </Tab>
-</Tabs>
-<Tabs>
+</Tabs> <Tabs>
 <Tab title="Kotlin" sync="kotlin">
 
 ```kotlin
@@ -127,3 +126,59 @@ protected void onNewIntent(Intent intent) {
 </Tabs>
 
 `processAndResolveDeeplink`メソッドに送信したリンクが短縮されていた場合、 `resolvedLink`は拡張された元のリンクを返します。メソッドにパスしたリンクが短縮されていない場合、 `resolvedLink`にはパスした同じリンクが含まれます。
+
+## リファラーを使用したディープリンクを処理する\{\#handling\-deeplinks\-with\-referrer\}
+
+オプションのリファラーURLは、ディープリンクやアプリのソースを計測して、より正確なアトリビューションやリアトリビューション、ディープリンクを実現するために使用されます。例えば、SEOやオーガニック検索、Adjustリンクなどのチャネルには直接使用されません。クライアントのルートドメインでAndroidアプリリンクが実装されており、それによってアプリが起動する場合、そのチャネルでは、ユーザーのアトリビューションまたはリアトリビューションを行うために、リファラーURLから得られるシグナルに依存する場合があります。
+
+#### リファラーURLを設定する
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+override fun onNewIntent(intent: Intent?) {
+   super.onNewIntent(intent)
+
+   val webpageURL = intent.data
+   val adjustDeeplink = AdjustDeeplink(webpageURL)
+   val referrer = getReferrer() //Activity#getReferrer()
+   referrer?.let {
+      adjustDeeplink.setReferrer(referrer)
+   }
+   Adjust.processAndResolveDeeplink(adjustDeeplink, this) { resolvedLink ->
+      // resolvedLink contains either resolved URL (if it was unshortened)
+      // or just echoed URL if it was not shortened
+      Log.d("Example", resolvedLink)
+   }
+}
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+@Override
+protected void onNewIntent(Intent intent) {
+   super.onNewIntent(intent);
+
+   Uri webpageURL = intent.getData();
+   AdjustDeeplink adjustDeeplink = new AdjustDeeplink(webpageURL);
+    // If referrer URL is available, add it to the deeplink object
+    Uri referrer = getReferrer(); //Activity#getReferrer()
+    if (referrer != null) {
+        adjustDeeplink.setReferrer(referrer);
+    }
+   Adjust.processAndResolveDeeplink(adjustDeeplink, this, new   OnDeeplinkResolvedListener() {
+   @Override
+   public void onDeeplinkResolved(String resolvedLink) {
+         // resolvedLink contains either resolved URL (if it was unshortened)
+         // or just echoed URL if it was not shortened
+         Log.d("Example", resolvedLink);
+   }
+   });
+}
+```
+
+</Tab>
+</Tabs>

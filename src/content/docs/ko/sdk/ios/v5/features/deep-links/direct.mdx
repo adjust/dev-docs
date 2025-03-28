@@ -21,7 +21,7 @@ Adjust 대시보드에서 딥링크가 설정되면 앱에서 딥링크를 구�
 - [ ] 앱의 Associated Domains 활성화
 - [ ] Xcode에서 딥링크 구성
 
-## Associated Domains 활성화 {#enable-associated-domains}
+## Associated Domains 활성화 \{\#enable\-associated\-domains\}
 
 Apple 개발자 계정에서 Associated Domains를 활성화해야, 앱에서 유니버설 링크 도메인을 설정할 수 있습니다. 이를 위해 다음의 단계를 수행하시기 바랍니다.
 
@@ -32,7 +32,7 @@ Apple 개발자 계정에서 Associated Domains를 활성화해야, 앱에서 �
 5. **Associated Domains** 가 **Capabilities** 아래에 체크 표시되어있는지 확인합니다.
 6. **Save** 를 선택하여 변경 내용을 저장합니다.
 
-## Xcode에서 딥링크 구성 {#configure-deep-links-in-xcode}
+## Xcode에서 딥링크 구성 \{\#configure\-deep\-links\-in\-xcode\}
 
 다음의 단계를 수행하여 Xcode 프로젝트에 딥링크 구성을 추가하시기 바랍니다.
 
@@ -75,7 +75,7 @@ Apple 개발자 계정에서 Associated Domains를 활성화해야, 앱에서 �
 
 이 스킴은 프로덕션과 디버그 빌드 **모두** 에 작동합니다.
 
-## iOS 앱 변경 {#modify-your-ios-app}
+## iOS 앱 변경 \{\#modify\-your\-ios\-app\}
 
 다양한 딥링크 시나리오를 설정하려면 iOS 앱을 업데이트해야 합니다. 앱을 업데이트 하는 방식은 앱이 [scene](https://developer.apple.com/documentation/uikit/app_and_environment/scenes)을 사용하는지 여부에 따라 달라집니다.
 
@@ -405,6 +405,69 @@ func scene(
         [Adjust processDeeplink:deeplink];
     }
 }
+```
+
+</Tab>
+</Tabs>
+
+## 리퍼러 \{\#handling\-deeplinks\-with\-referrer\}를 사용하여 딥링크 처리
+
+더 나은 어트리뷰션 또는 리어트리뷰션 및 딥링킹을 위해 열린 딥링크 또는 앱의 소스 추적에 사용되는 선택적 리퍼러 URL입니다. 예를 들어, SEO/오가닉 검색과 같은 채널에서는 Adjust 링크가 직접 사용되지 않습니다. 클라이언트의 루트 도메인에 유니버설 링크가 구현되고 앱 실행을 트리거하는 경우, 이러한 채널에서 Adjust는 리퍼러 URL에서 전송되는 시그널에 의존하여 사용자를 어트리뷰션 또는 리어트리뷰션해야 할 수 있습니다.
+
+#### 리퍼러 URL 설정
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+func application(_ application: UIApplication,
+                continue userActivity: NSUserActivity,
+                restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+
+    guard userActivity.activityType == NSUserActivityTypeBrowsingWeb,
+        let url = userActivity.webpageURL else { return false }
+
+    if let deeplink = ADJDeeplink(deeplink: url) {
+        // If referrer URL is available, add it to the deeplink object
+        if let referrer = URL(string: "https://example.com") {
+            deeplink.setReferrer(referrer)
+        }
+        // Send deeplink and referrer to Adjust's servers
+        Adjust.processDeeplink(deeplink)
+        return true
+    }
+    return false
+}
+
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+- (BOOL)application:(UIApplication *)application
+            continueUserActivity:(NSUserActivity *)userActivity
+    restorationHandler:(void (^)(NSArray<id<uiuseractivityrestoring>> *restorableObjects))restorationHandler {
+
+    if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+        NSURL *url = userActivity.webpageURL;
+        if (url) {
+            ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:url];
+            if (deeplink) {
+                NSURL *referrer = [NSURL URLWithString:@"https://example.com"];
+                // If referrer URL is available, add it to the deeplink object
+                if (referrer) {
+                    [deeplink setReferrer:referrer];
+                }
+                // Send deeplink and referrer to Adjust's servers
+                [Adjust processDeeplink:deeplink];
+            }
+            return YES;
+        }
+    }
+    return NO;
+}
+
 ```
 
 </Tab>
