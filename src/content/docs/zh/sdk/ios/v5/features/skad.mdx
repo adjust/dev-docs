@@ -24,7 +24,7 @@ StoreKit Ad Network \(SKAdNetwork\) 是 Apple 的归因框架，可针对应用�
 2. 然后，广告渠道会通过回调将这些信息传输给 Adjust。
 3. Adjust 在 [Datascape](https://help.adjust.com/zh/suite/article/datascape) 中展示 SKAdNetwork 数据。
 
-## Disable SKAdNetwork communication {#disable-skadnetwork-communication}
+## 关闭 SKAdNetwork 通讯 {#disable-skadnetwork-communication}
 
 <CodeBlock title="方法签名">
 
@@ -43,6 +43,7 @@ Adjust SDK 默认与 SKAdNetwork 通讯。SDK 在初始化时会注册 SKAdNetwo
 您必须在初始化 Adjust SDK _之前_ 调用 `disableSkanAttribution` 方法。
 
 </Callout>
+
 <Tabs>
 <Tab title="Swift" sync="swift">
 
@@ -53,7 +54,7 @@ let adjustConfig = ADJConfig(
     appToken: yourAppToken,
     environment: environment)
 //...
-adjustConfig.disableSkanAttribution()
+adjustConfig?.disableSkanAttribution()
 //...
 Adjust.initSdk(adjustConfig)
 ```
@@ -72,7 +73,7 @@ ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:@"{YourAppToken}"
 </Tab>
 </Tabs>
 
-## Update conversion values {#update-conversion-values}
+## 更新转化值 {#update-conversion-values}
 
 <CodeBlock title="方法签名">
 
@@ -85,7 +86,7 @@ ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:@"{YourAppToken}"
 
 </CodeBlock>
 
-转化值是用来在 SKAdNetwork 中跟踪用户行为的机制。您可以将 64 个条件映射至 `0`\-`63` 的转化值，并在用户安装时将此整数值发送至 SKAdNetwork。该信息可帮助您进一步了解用户在安装后的最初几日内是如何与应用交互的。
+转化值是用来在 SKAdNetwork 中监测用户行为的机制。您可以将 64 个条件映射至 `0`\-`63` 的转化值，并在用户安装时将此整数值发送至 SKAdNetwork。该信息可帮助您进一步了解用户在安装后的最初几日内是如何与应用交互的。
 
 如果您通过 Adjust 管理转化值，那么服务器会在 SDK 中更新该值。您也可以通过 `updateSkanConversionValue` 方法更新转化值。该方法接受以下参数：
 
@@ -102,10 +103,10 @@ ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:@"{YourAppToken}"
 ```swift
 Adjust.updateSkanConversionValue(
     1,
-    coarseValue: SKAdNetwork.CoarseConversionValue.low,
+    coarseValue: SKAdNetwork.CoarseConversionValue.low.rawValue,
     lockWindow: false) { error in
     if let error {
-        print(String(format: "An error occurred during completion: %@", error))
+        print( "An error occurred during completion: %@", error.localizedDescription)
     }
 }
 ```
@@ -125,16 +126,16 @@ Adjust.updateSkanConversionValue(
 </Tab>
 </Tabs>
 
-## SKAdNetwork callbacks {#skadnetwork-4-0-callbacks}
+## SKAdNetwork 回传{#skadnetwork-4-0-callbacks}
 
 SKAdNetwork 4\.0 回调中包含额外信息，帮助广告主更好地了解用户。Adjust 服务器更新转化值时，这些额外信息就会通过无类型字典发送。要访问此信息，请将一个 completion handler 传递至`[adjustSkanUpdatedWithConversionData]`方法。您可以在 completion handler 中访问回传信息。
 
-- `conversion_value`: The updated conversion value.
-- `coarse_value`: The updated [coarse conversion value](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
-- `lock_window`: Whether to send the postback before the conversion window ends
-- `error`: Any error message returned by the update.
+- `conversion_value`: 更新后的转化值
+- `coarse_value`: 更新后的[粗粒度转化值](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
+- `lock_window`: 是否在转化窗口结束前发送回调
+- `error`: 更新返回的错误信息。
 
-### Example {#example-3}
+### 示例 {#example-3}
 
 该示例展示了如何记录了细粒度转化值和粗粒度转化值，以及 SKAdNetwork 回调是否在转化值窗口结束前发送。
 
@@ -161,7 +162,7 @@ func adjustSkanUpdated(withConversionData data: [String: String]) {
 </Tab>
 </Tabs>
 
-## Set up direct install postbacks {#set-up-direct-install-postbacks}
+## 设置直接安装回调{#set-up-direct-install-postbacks}
 
 <Callout type="note">
 

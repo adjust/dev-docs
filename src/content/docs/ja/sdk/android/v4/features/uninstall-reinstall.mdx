@@ -32,13 +32,13 @@ Adjust Android SDKを使用して、アンインストールと再インスト�
 - [AndroidプロジェクトにFirebaseを追加すること](https://firebase.google.com/docs/android/setup)
 - 管理者、編集者およびカスタム編集者の[ユーザー権限](https://help.adjust.com/ja/article/permission-levels)
 
-## Google FCMをAdjustに連携する {#connect-google-fcm-to-adjust}
+## Google FCMをAdjustに接続する {#connect-google-fcm-to-adjust}
 
 GoogleのFirebase Cloud Messaging（FCM）APIを使用してサイレントPush通知を設定することで、アンインストールと再インストールを計測できます。 AdjustがGoogle FCMに接続するには、FCM HTTP v1 APIプライベートキーが必要です。
 
 <Callout type="important">
 
-レガシー版のサービスキーを使用する代わりに、新しいFCM HTTP v1プライベートキーを生成してください。Googleは、2024年7月22日にCloud Messaging API（レガシー版）を終了します。影響を受けるサービス、廃止期間中の留意点、延長を申請する方法については、 [Googleのドキュメント](https://firebase.google.com/support/faq#deprecated-api-shutdown)をご覧ください。
+レガシー版のサービスキーを使用するのではなく、新しいFCM HTTP v1プライベートキーを生成してください。Googleは、2024年6月20日にCloud Messaging API（レガシー版）を終了します。影響を受けるサービス、廃止期間中の留意点、延長を申請する方法については、 [Googleのドキュメント](https://firebase.google.com/support/faq#deprecated-api-shutdown)をご覧ください。
 
 </Callout>
 
@@ -46,11 +46,11 @@ GoogleのFirebase Cloud Messaging（FCM）APIを使用してサイレントPush�
 
 #### 1\.Adjustのアンインストール・再インストール計測のカスタムアクセス権限を作成する {#create-a-custom-role-for-adjust-uninstall-and-reinstall-measurement}
 
-1. [Google Cloud Console](https://console.cloud.google.com/)にアクセスします。
-2. Firebaseプロジェクトに関連付けられているGoogle Cloudプロジェクトを選択します。
-3. **IAM & Admin** を検索します。
+1. [Google Cloudコンソール](https://console.cloud.google.com/)にアクセスします。
+2. Firebaseプロジェクトに関連するGoogle Cloudプロジェクトを選択します。
+3. **IAMと管理（IAM & Admin）** を検索します。
 4. サイドメニューで、 **ロール（Role）** を選択します。
-5. **\+ 権限を作成 \(Create Role\)** を選択します。
+5. **ロールを作成（\+ Create Role）** を選択します。
 6. 以下の詳細を入力します：
 
    1. **Title** : Adjust Uninstall
@@ -91,9 +91,9 @@ AdjustとGoogle FCMを連携するために必要なプライベートキーの�
 6. **接続（Connect）** を選択します。
 7. アプリの設定を確認し、 **保存（Save）** を選択します。
 
-## Adjust SDKを実装する {#integrate-with-the-adjust-sdk}
+## Adjust SDKに連携する {#integrate-with-the-adjust-sdk}
 
-FCMをAdjust SDKに連携するには、以下の手順に従ってください。
+Firebase Cloud Messaging（FCM）をAdjust SDKと連携するには、以下の手順に従ってください。
 
 1. `build.gradle`ファイルに、 **Firebase Messaging** に必要なdependencyがあることを確認してください。
 
@@ -107,7 +107,7 @@ FCMをAdjust SDKに連携するには、以下の手順に従ってください�
 
 2. まだ未設定の場合は、[Googleのドキュメント](https://firebase.google.com/docs/cloud-messaging/android/client)に従ってFirebase Cloud Messagingクライアントアプリを設定してください。
 
-3. デバイスのプッシュトークンをAdjust SDKにパスします。
+3. デバイスのpushトークンをAdjust SDKに渡します。
 
    - アプリに独自のPush通知を送信する場合は、全てのタイプのPush通知を処理するロジックを使って`FirebaseMessagingService`クラスの`onMessageReceived`メソッドをオーバーライドするようにしてください。それにはアンインストールおよび再インストール計測のためのAdjustのサイレントPush通知も含まれます。
 
@@ -120,6 +120,7 @@ FCMをAdjust SDKに連携するには、以下の手順に従ってください�
 以下のように`onMessageReceived`をオーバーライドする際は、アプリが独自のPush通知を処理する方法に影響を与えないように注意してください。 以下のPush通知処理コードに変更を加えた後、アプリがフォアグラウンドで動作している間に独自のPush通知を送信するテストを実施してください。
 
 </Callout>
+
 <Tabs>
 <Tab title="Kotlin" sync="kotlin">
 
@@ -232,7 +233,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 </Tab>
 </Tabs>
 
-4. Adjust SDKを初期化する前に、アプリのFirebaseインスタンスを初期化します。
+4. Adjust SDKを初期化する前に、アプリのFirebaseインスタンスを初期化してください。
 
 #### 例 {#example-1}
 
@@ -301,15 +302,15 @@ public class MyApp extends Application {
 </Tab>
 </Tabs>
 
-## 実装テスト {#test-the-integration}
+## 連携をテストする {#test-the-integration}
 
-Adjustは、Adjustの本番環境で最後のアクティビティがあったデバイスからのAndroidアプリのアンインストールを確認します。
+Adjustは、Adjustの本番環境で最後にアクティビティが記録されたデバイスで、Androidアプリのアンインストールを確認します。
 
-アンインストールと再インストールの計測をテストするには、デバッグビルドまたはリリースビルドのいずれかを使用してください。主な要件として、テストインストールを実行する際は、Adjust SDK環境を _本番用_ に設定する必要があります。
+アンインストールと再インストールの計測をテストするには、デバッグビルドまたはリリースビルドのいずれかを使用してください。 主な要件として、テストインストールを実行する際は、Adjust SDK環境を _本番用_ に設定する必要があります。
 
 アンインストール計測をテストする方法：
 
-1. Adjust SDKで、Adjust SDKを初期化する前に環境を`AdjustConfig.ENVIRONMENT_PRODUCTION`に設定します。
+1. Adjust SDKを初期化する前に、Adjust SDKで環境を`AdjustConfig.ENVIRONMENT_PRODUCTION`に設定します。
 2. 実機テスト用のデバイスまたはエミュレーターにアプリをインストールします。
 3. アプリを開きます。
 4. Adjustの[テストコンソール（Testing Console）](https://help.adjust.com/ja/article/testing-console)を開きます。
@@ -324,7 +325,7 @@ Adjustは、Adjustの本番環境で最後のアクティビティがあった�
 
 状態が **インストール済み \(Installed）** から **アンインストール済み（Uninstalled）** に変更されることで、アンインストールと再インストール計測機能が正しく機能するようになります。 再インストール計測もテストする場合は、次の手順に従ってください。
 
-1. 実際のテストデバイスまたはエミュレーターにデバッグビルドまたはリリースビルドを再インストールします。
+1. 物理テストデバイスまたはエミュレーターに、デバッグビルドまたはリリースビルドを再インストールします。
 2. アプリを開きます。
 3. Adjustは1日に1回再インストールを確認するため、24時間後に再度テストコンソールを確認してください。 **アプリ情報 \(App information\)** セクションの **インストールの状態（Install state）** に **再インストール済み（Reinstalled）** と表示されます。
 

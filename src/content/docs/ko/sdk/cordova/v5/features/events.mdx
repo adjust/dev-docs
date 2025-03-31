@@ -18,7 +18,7 @@ Adjust SDK가 제공하는 `AdjustEvent` 객체는 이벤트 정보를 구성하
 
 <CodeBlock title="메서드 서명">
 
-```js
+```ts
 constructor(eventToken: string)
 ```
 
@@ -40,7 +40,7 @@ Adjust.trackEvent(adjustEvent);
 <CodeBlock title="메서드 서명">
 
 ```js
-trackEvent(event: AdjustEvent): void
+trackEvent(adjustEvent: AdjustEvent): void
 ```
 
 </CodeBlock>
@@ -55,12 +55,10 @@ var adjustEvent = new AdjustEvent("abc123");
 Adjust.trackEvent(adjustEvent);
 ```
 
-### 예시 {#example}
+### 예 {#example}
 
 본 예시에서는 사용자가 버튼을 조작할 때마다 _`g3mfiw`_ 라는 토큰으로 이벤트를 기록하는 방법을 보여줍니다.
 
-<Tabs>
-<Tab title="JS">
 <CodeBlock title="index.js" highilight="{range: 30}">
 
 ```js
@@ -78,13 +76,13 @@ var app = {
       app.receivedEvent("deviceready");
 
       var adjustConfig = new AdjustConfig(
-         { APP_ID },
+         "YourAppToken",
          AdjustConfig.EnvironmentSandbox,
       );
-      Adjust.create(adjustConfig);
+      Adjust.initSdk(adjustConfig);
    },
    receivedEvent: function (id) {
-      console.log("[AdjustExample]: Received Event: " + id);
+      console.log("Received Event: " + id);
 
       var btnRecordSimpleEvent = document.getElementById(
          "btnRecordSimpleEvent",
@@ -104,49 +102,22 @@ app.initialize();
 ```
 
 </CodeBlock>
-</Tab>
-<Tab title="HTML">
 
-```html
-<!DOCTYPE >
-<html>
-   <head>
-      <!---->
-   </head>
-   <body>
-      <div class="app">
-         <button
-            id="btnRecordSimpleEvent"
-            style="color: black; height: 30px; margin: 5px"
-         >
-            Record simple event
-         </button>
-      </div>
-      <script src="cordova.js"></script>
-      <script src="js/index.js"></script>
-   </body>
-</html>
-```
-
-</Tab>
-</Tabs>
 <CodeBlock title="이벤트 로그" highlight="{range: 22-23}" collapse="7-21, 24-46">
 
 ```txt
 Path:      /event
-ClientSdk: cordova$CORDOVA_VERSION
+ClientSdk: cordova$CORDOVA_V5_VERSION
 Parameters:
   android_uuid     781f17d5-5048-4fae-a4e5-77b58bab62b9
   api_level        34
   app_token        2fm9gkqubvpc
   app_version      1.0
   attribution_deeplink 1
-  callback_params  {"key":"value","foo":"bar"}
   connectivity_type 1
   country          US
   cpu_type         arm64-v8a
   created_at       2024-01-25T14:13:16.151Z+0100
-  currency         EUR
   device_manufacturer Google
   device_name      sdk_gphone64_arm64
   device_type      phone
@@ -168,8 +139,6 @@ Parameters:
   os_name          android
   os_version       14
   package_name     com.adjust.examples
-  partner_params   {"key":"value","foo":"bar"}
-  revenue          0.25
   screen_density   high
   screen_format    long
   screen_size      normal
@@ -187,7 +156,7 @@ Parameters:
 
 <CodeBlock title="메서드 서명">
 
-```js
+```ts
 setRevenue(revenue: number, currency: string): void
 ```
 
@@ -212,12 +181,10 @@ adjustEvent.setRevenue(0.01, "EUR");
 Adjust.trackEvent(adjustEvent);
 ```
 
-### 예시 {#example}
+### 예 {#example}
 
 본 예시에서는 사용자가 버튼을 조작할 때마다 _`g3mfiw`_ 라는 토큰으로 이벤트를 기록하는 방법을 보여줍니다. 이 함수는 이벤트의 `revenue` 속성을 _`0.25`_ , `currency` 속성을 _`EUR`_ 로 설정합니다.
 
-<Tabs>
-<Tab title="JS">
 <CodeBlock title="index.js" highlight="31">
 
 ```js
@@ -235,13 +202,13 @@ var app = {
       app.receivedEvent("deviceready");
 
       var adjustConfig = new AdjustConfig(
-         { APP_ID },
+         "YourAppToken",
          AdjustConfig.EnvironmentSandbox,
       );
-      Adjust.create(adjustConfig);
+      Adjust.initSdk(adjustConfig);
    },
    receivedEvent: function (id) {
-      console.log("[AdjustExample]: Received Event: " + id);
+      console.log("Received Event: " + id);
 
       var btnRecordRevenueEvent = document.getElementById(
          "btnRecordRevenueEvent",
@@ -262,37 +229,12 @@ app.initialize();
 ```
 
 </CodeBlock>
-</Tab>
-<Tab title="HTML">
 
-```html
-<!DOCTYPE >
-<html>
-   <head>
-      <!---->
-   </head>
-   <body>
-      <div class="app">
-         <button
-            id="btnRecordRevenueEvent"
-            style="color: black; height: 30px; margin: 5px"
-         >
-            Record revenue event
-         </button>
-      </div>
-      <script src="cordova.js"></script>
-      <script src="js/index.js"></script>
-   </body>
-</html>
-```
-
-</Tab>
-</Tabs>
 <CodeBlock title="이벤트 로그" highlight="{range: 7-8}">
 
 ```txt
 Path:      /event
-ClientSdk: cordova$CORDOVA_VERSION
+ClientSdk: cordova$CORDOVA_V5_VERSION
 Parameters:
   environment      sandbox
   event_count      3
@@ -303,32 +245,30 @@ Parameters:
 
 </CodeBlock>
 
-## 고유 트랜잭션 ID 설정 {#set-a-unique-transaction-id}
+## 매출 이벤트 중복 제거 {#deduplicate-revenue-events}
 
-<CodeBlock title="속성 선언">
+<CodeBlock title="메서드 서명">
 
-```js
-setTransactionId(transactionId: string)
+```ts
+setDeduplicationId(deduplicationId: string): void
 ```
 
 </CodeBlock>
 
-중복 이벤트 기록을 방지하기 위해 선택적 식별자를 전달할 수 있습니다. SDK는 최근순으로 10개의 ID를 저장하고, 중복된 트랜잭션 ID가 있는 매출 이벤트를 건너뜁니다.
+중복 이벤트 기록을 방지하기 위해 선택적 ID를 전달할 수 있습니다. SDK는 최근순으로 10개의 ID를 저장하고, 중복된 트랜잭션 ID가 있는 매출 이벤트를 건너뜁니다.
 
-식별자를 설정하려면 트랜잭션 ID를 이벤트 인스턴스의 `setTransactionId` 속성에 할당합니다.
+ID를 설정하려면 `setDeduplicationId` 메서드를 호출하고 중복 제거 ID를 `string` 인수로 전달합니다.
 
 ```js
 var adjustEvent = new AdjustEvent("abc123");
-adjustEvent.setTransactionId("{YourTransactionId}");
+adjustEvent.setDeduplicationId(deduplicationId);
 Adjust.trackEvent(adjustEvent);
 ```
 
-### 예시 {#example}
+### 예 {#example}
 
-본 예시에서는 사용자가 버튼을 조작할 때마다 _`g3mfiw`_ 라는 토큰으로 이벤트를 기록하는 방법을 보여줍니다. 이 함수는 `setTransactionId` 메서드를 사용하여 `setTransactionId`를 _`5e85484b-1ebc-4141-aab7-25b869e54c49`_ 로 설정합니다.
+본 예시에서는 사용자가 버튼을 조작할 때마다 _`g3mfiw`_ 라는 토큰으로 이벤트를 기록하는 방법을 보여줍니다. 이 함수는 `setDeduplicationId` 메서드를 사용하여 `deduplicationId`를 _`5e85484b-1ebc-4141-aab7-25b869e54c49`_ 로 설정합니다.
 
-<Tabs>
-<Tab title="JS">
 <CodeBlock title="index.js" highlight="{range: 31-33}">
 
 ```js
@@ -346,13 +286,13 @@ var app = {
       app.receivedEvent("deviceready");
 
       var adjustConfig = new AdjustConfig(
-         { APP_ID },
+         "YourAppToken",
          AdjustConfig.EnvironmentSandbox,
       );
-      Adjust.create(adjustConfig);
+      Adjust.initSdk(adjustConfig);
    },
    receivedEvent: function (id) {
-      console.log("[AdjustExample]: Received Event: " + id);
+      console.log("Received Event: " + id);
 
       var btnRecordUniqueEvent = document.getElementById(
          "btnRecordUniqueEvent",
@@ -362,7 +302,7 @@ var app = {
          "click",
          function () {
             var adjustEvent = new AdjustEvent("g3mfiw");
-            adjustEvent.setTransactionId(
+            adjustEvent.setDeduplicationId(
                "5e85484b-1ebc-4141-aab7-25b869e54c49",
             );
             Adjust.trackEvent(adjustEvent);
@@ -375,42 +315,17 @@ app.initialize();
 ```
 
 </CodeBlock>
-</Tab>
-<Tab title="HTML">
 
-```html
-<!DOCTYPE >
-<html>
-   <head>
-      <!---->
-   </head>
-   <body>
-      <div class="app">
-         <button
-            id="btnRecordUniqueEvent"
-            style="color: black; height: 30px; margin: 5px"
-         >
-            Record unique event
-         </button>
-      </div>
-      <script src="cordova.js"></script>
-      <script src="js/index.js"></script>
-   </body>
-</html>
-```
-
-</Tab>
-</Tabs>
 <CodeBlock title="이벤트 로그" highlight="{range: 7}">
 
 ```txt
 Path:      /event
-ClientSdk: cordova$CORDOVA_VERSION
+ClientSdk: cordova$CORDOVA_V5_VERSION
 Parameters:
   environment      sandbox
   event_count      3
-  event_token      abc123
-  transaction_id   5e85484b-1ebc-4141-aab7-25b869e54c49
+  event_token      g3mfiw
+  deduplication_id   5e85484b-1ebc-4141-aab7-25b869e54c49
 ```
 
 </CodeBlock>
@@ -419,7 +334,7 @@ Parameters:
 
 <CodeBlock title="메서드 서명">
 
-```js
+```ts
 addCallbackParameter(key: string, value: string): void
 ```
 
@@ -429,7 +344,7 @@ Adjust 대시보드에 [콜백 URL](https://help.adjust.com/ko/article/set-up-ca
 
 서버로 보낼 콜백 파라미터를 구성할 수 있습니다. 이벤트에 대한 파라미터 구성이 완료되면 SDK는 이를 [콜백 URL](https://help.adjust.com/ko/article/raw-data-exports)에 추가합니다. 해당 정보를 사용하여, BI 시스템을 통해 사용자 인앱 행동을 분석할 수 있습니다.
 
-**문자열** 키\-값 인수와 함께 `addCallbackParameter` 메서드를 호출하여 이벤트에 콜백 파라미터를 추가합니다. 이 메서드를 여러 번 호출함으로써 여러 개의 파라미터를 추가할 수 있습니다.
+**문자열** 키\-값 인수와 함께 `addCallbackParameter` 메서드를 호출하여 이벤트에 콜백 파라미터를 추가합니다. 이 메서드를 여러 번 호출함으로써 여러 파라미터를 추가할 수 있습니다.
 
 ```js
 var adjustEvent = new AdjustEvent("abc123");
@@ -463,7 +378,7 @@ Adjust [콜백 가이드](https://help.adjust.com/ko/article/callbacks)에서 �
 
 </Callout>
 
-### 예시 {#example}
+### 예 {#example}
 
 본 예시에서는 사용자가 버튼을 조작할 때마다 `g3mfiw`라는 토큰으로 이벤트를 기록하는 방법을 보여줍니다. 다음 콜백 파라미터가 추가됩니다.
 
@@ -479,8 +394,7 @@ http://www.mydomain.com/callback?event_token=g3mfiw&revenue_amount=0.05
 ```
 
 </CodeBlock>
-<Tabs>
-<Tab title="JS">
+
 <CodeBlock title="index.js" highlight="{range: 31-32}">
 
 ```js
@@ -498,13 +412,13 @@ var app = {
       app.receivedEvent("deviceready");
 
       var adjustConfig = new AdjustConfig(
-         { APP_ID },
+         "YourAppToken",
          AdjustConfig.EnvironmentSandbox,
       );
-      Adjust.create(adjustConfig);
+      Adjust.initSdk(adjustConfig);
    },
    receivedEvent: function (id) {
-      console.log("[AdjustExample]: Received Event: " + id);
+      console.log("Received Event: " + id);
 
       var btnRecordCallbackEvent = document.getElementById(
          "btnRecordCallbackEvent",
@@ -526,37 +440,12 @@ app.initialize();
 ```
 
 </CodeBlock>
-</Tab>
-<Tab title="HTML">
 
-```html
-<!DOCTYPE >
-<html>
-   <head>
-      <!---->
-   </head>
-   <body>
-      <div class="app">
-         <button
-            id="btnRecordCallbackEvent"
-            style="color: black; height: 30px; margin: 5px"
-         >
-            Record callback event
-         </button>
-      </div>
-      <script src="cordova.js"></script>
-      <script src="js/index.js"></script>
-   </body>
-</html>
-```
-
-</Tab>
-</Tabs>
 <CodeBlock title="이벤트 로그" highlight="{range: 4}">
 
 ```txt
 Path:      /event
-ClientSdk: cordova$CORDOVA_VERSION
+ClientSdk: cordova$CORDOVA_V5_VERSION
 Parameters:
   callback_params  {"event_token":"g3mfiw","revenue_amount":"0.05"}
   environment      sandbox
@@ -570,7 +459,7 @@ Parameters:
 
 <CodeBlock title="메서드 서명">
 
-```js
+```ts
 addPartnerParameter(key: string, value: string): void
 ```
 
@@ -586,7 +475,7 @@ Adjust는 설정한 [외부 파트너](https://help.adjust.com/ko/article/integr
 
 </Callout>
 
-**문자열** 키\-값 인수와 함께 `addPartnerParameter` 메서드를 호출하여 이벤트에 파트너 파라미터를 추가합니다. 이 메서드를 여러 번 호출함으로써 여러 개의 파라미터를 추가할 수 있습니다.
+**문자열** 키\-값 인수와 함께 `addPartnerParameter` 메서드를 호출하여 이벤트에 파트너 파라미터를 추가합니다. 이 메서드를 여러 번 호출함으로써 여러 파라미터를 추가할 수 있습니다.
 
 ```js
 var adjustEvent = new AdjustEvent("abc123");
@@ -595,15 +484,13 @@ adjustEvent.addPartnerParameter("foo", "bar");
 Adjust.trackEvent(adjustEvent);
 ```
 
-### 예시 {#example}
+### 예 {#example}
 
 본 예시에서는 사용자가 버튼을 조작할 때마다 `g3mfiw`라는 토큰으로 이벤트를 기록하는 방법을 보여줍니다. 다음 파트너 파라미터가 추가됩니다.
 
 - 관련 제품의 `product_id`
 - 이벤트를 트리거한 사용자의 `user_id`
 
-<Tabs>
-<Tab title="JS">
 <CodeBlock title="index.js" highlight="{range: 31-32}">
 
 ```js
@@ -621,13 +508,13 @@ var app = {
       app.receivedEvent("deviceready");
 
       var adjustConfig = new AdjustConfig(
-         { APP_ID },
+         "YourAppToken",
          AdjustConfig.EnvironmentSandbox,
       );
-      Adjust.create(adjustConfig);
+      Adjust.initSdk(adjustConfig);
    },
    receivedEvent: function (id) {
-      console.log("[AdjustExample]: Received Event: " + id);
+      console.log("Received Event: " + id);
 
       var btnRecordPartnerParamEvent = document.getElementById(
          "btnRecordPartnerParamEvent",
@@ -649,37 +536,12 @@ app.initialize();
 ```
 
 </CodeBlock>
-</Tab>
-<Tab title="HTML">
 
-```html
-<!DOCTYPE >
-<html>
-   <head>
-      <!---->
-   </head>
-   <body>
-      <div class="app">
-         <button
-            id="btnRecordPartnerParamEvent"
-            style="color: black; height: 30px; margin: 5px"
-         >
-            Record partner param event
-         </button>
-      </div>
-      <script src="cordova.js"></script>
-      <script src="js/index.js"></script>
-   </body>
-</html>
-```
-
-</Tab>
-</Tabs>
 <CodeBlock title="이벤트 로그" highlight="{range: 4}">
 
 ```txt
 Path:      /event
-ClientSdk: cordova$CORDOVA_VERSION
+ClientSdk: cordova$CORDOVA_V5_VERSION
 Parameters:
   partner_params  {"product_id":"29","user_id":"835"}
   environment      sandbox
@@ -693,15 +555,15 @@ Parameters:
 
 <CodeBlock title="메서드 서명">
 
-```js
-setCallbackId(callbackId: string)
+```ts
+setCallbackId(callbackId: string): void
 ```
 
 </CodeBlock>
 
 트래킹하려는 각 이벤트에 커스텀 문자열 ID를 추가할 수도 있습니다. Adjust 서버는 이벤트 콜백에서 이러한 식별자를 보고합니다. 이를 통해 성공적으로 트래킹된 이벤트 확인이 가능합니다.
 
-다음 인수와 함께 `setCallbackId` 메서드를 호출하여 이 식별자를 설정합니다.
+다음 인수로 `setCallbackId` 메서드를 호출하여 이 식별자를 설정합니다.
 
 - `callbackId` \(`string`\): 고유한 콜백 ID.
 
@@ -711,12 +573,10 @@ adjustEvent.setCallbackId("Your-Custom-Id");
 Adjust.trackEvent(adjustEvent);
 ```
 
-### 예시 {#example}
+### 예 {#example}
 
 본 예시에서는 사용자가 버튼을 조작할 때마다 `g3mfiw`라는 토큰으로 이벤트를 기록하는 방법을 보여줍니다. `callbackId`가 `f2e728d8-271b-49ab-80ea-27830a215147`로 설정되었습니다.
 
-<Tabs>
-<Tab title="JS">
 <CodeBlock title="index.js" highlight="{range: 31}">
 
 ```js
@@ -734,13 +594,13 @@ var app = {
       app.receivedEvent("deviceready");
 
       var adjustConfig = new AdjustConfig(
-         { APP_ID },
+         "YourAppToken",
          AdjustConfig.EnvironmentSandbox,
       );
-      Adjust.create(adjustConfig);
+      Adjust.initSdk(adjustConfig);
    },
    receivedEvent: function (id) {
-      console.log("[AdjustExample]: Received Event: " + id);
+      console.log("Received Event: " + id);
 
       var btnRecordCallbackIdEvent = document.getElementById(
          "btnRecordCallbackIdEvent",
@@ -761,37 +621,12 @@ app.initialize();
 ```
 
 </CodeBlock>
-</Tab>
-<Tab title="HTML">
 
-```html
-<!DOCTYPE >
-<html>
-   <head>
-      <!---->
-   </head>
-   <body>
-      <div class="app">
-         <button
-            id="btnRecordCallbackIdEvent"
-            style="color: black; height: 30px; margin: 5px"
-         >
-            Record callback ID event
-         </button>
-      </div>
-      <script src="cordova.js"></script>
-      <script src="js/index.js"></script>
-   </body>
-</html>
-```
-
-</Tab>
-</Tabs>
 <CodeBlock title="이벤트 로그" highlight="{range: 7}">
 
 ```txt
 Path:      /event
-ClientSdk: cordova$CORDOVA_SDK
+ClientSdk: cordova$CORDOVA_V5_VERSION
 Parameters:
   environment      sandbox
   event_count      3

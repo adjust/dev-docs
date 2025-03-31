@@ -37,65 +37,66 @@ Adjust APIトークンをリセットする方法：
 
 ## パートナーを取得する {#fetch-partners}
 
+<Tabs>
+<Tab title="v2" sync="v2">
+
 <CodeBlock title="エンドポイント" highlight="/partners">
 
 ```http
-GET https://api.adjust.com/public/v1/partners
+GET https://api.adjust.com/public/v2/partners
 ```
 
 </CodeBlock>
 
-このエンドポイントを使用して、パートナーの一覧と関連データを取得します。データはパートナーオブジェクトの配列で返されます。
+このエンドポイントを使用して、パートナーの一覧と関連データを取得します。 データはパートナーオブジェクトの配列で返されます。
 
 ### パラメーター {#fetch-partners-parameters}
 
 次のパラメーターを **クエリパラメーター** としてパスすることができます。
 
-`after` （`String`）
+`cursor` （`String`）
 
-: リクエストを開始する[カーソルの位置](#fetch-partners-pagination)。
-
-`before` （`String`）
-
-: リクエストを終了する[カーソルの位置](#fetch-partners-pagination)。
+: カーソルの位置。
 
 `limit` （`Integer`）
 
 : レスポンスに含む結果の最大数。この値は正の整数であることが必須です。デフォルトは`50`です。
 
+</Tab>
+</Tabs>
+
 ### ページネーション {#fetch-partners-pagination}
 
-このエンドポイントからの結果は、カーソルを使用してページ分割されています。各ページには、 `previous`と`next`ページの位置が返されます。特定のページを返すために、これらをコールに含めることができます。
+<Tabs>
+<Tab title="v2" sync="v2">
 
-各結果のページには、カーソルの位置を含む`paging`オブジェクトが含まれています。これらのカーソルを使って、プログラムでページ間を移動することができます。例えば、最初のページには次のような`paging`オブジェクトが含まれます。
+このエンドポイントからの結果は、カーソルを使用して表示されます。各結果ページには、カーソルの位置を含む`paging`オブジェクトが含まれています。これらのカーソルを使って、プログラムでページ間を移動することができます。例えば、1つ目のページには以下のような結果が含まれます。
 
 <CodeBlock title="ページネーションの例">
 
 ```json
 "paging": {
-   "page_size": "50",
-   "collection_size": "49",
-   "total": "199",
-   "cursors": {
-      "after": "g2wAAAACYhW1_gxkAANuaWxq",
-      "before": null
-   },
-   "next": "https://api.adjust.com/public/v1/apps/yxs12pfewq/trackers?after=g2wAAAACYhW1_gxkAANuaWxq&limit=50",
-   "previous": null
+   "next": "https://api.adjust.com/public/v2/partners?cursor=g2wAAAACYhW1_gxkAANuaWxq&limit=50",
+   "cursor": "g2wAAAACYhW1_gxkAANuaWxq"
 }
 ```
 
 </CodeBlock>
 
-2ページ目に移動するには、`after`値を`after`パラメーター内の次のリクエストに追加します。例：
+2ページ目に移動するには、`next`リンクをたどって、次に指定された`cursor`の位置から結果を返します。
 
-<CodeBlock title="cURL" highlight="after=g2wAAAACYhW1_gxkAANuaWxq">
+<CodeBlock title="cURL" highlight="cursor=g2wAAAACYhW1_gxkAANuaWxq">
 
 ```console
-$ curl "https://api.adjust.com/public/v1/apps/yxs12pfewq/trackers?after=g2wAAAACYhW1_gxkAANuaWxq"
+$ curl "https://api.adjust.com/public/v2/partners?cursor=g2wAAAACYhW1_gxkAANuaWxq&limit=50"
 ```
 
 </CodeBlock>
+
+結果の特定の場所に戻るには、リクエスト **クエリパラメーター** で`cursor`値をパスしてください。
+
+</Tab>
+</Tabs>
 
 ### レスポンスの形式 {#fetch-partners-response-format}
 
@@ -106,15 +107,8 @@ $ curl "https://api.adjust.com/public/v1/apps/yxs12pfewq/trackers?after=g2wAAAAC
       "request_id": "string",
       "timestamp": "datetime",
       "paging": {
-         "page_size": "string",
-         "collection_size": "string",
-         "total": "string",
          "next": "string",
-         "previous": "string",
-         "cursors": {
-            "after": "string",
-            "before": "string"
-         }
+         "cursor": "string"
       },
       "items": [
          {
@@ -129,33 +123,30 @@ $ curl "https://api.adjust.com/public/v1/apps/yxs12pfewq/trackers?after=g2wAAAAC
 
 ### 例 {#fetch-partners-example}
 
+<Tabs>
+<Tab title="v2" sync="v2">
+
 <CodeBlock title="cURL">
 
 ```console
 $ curl \
 --header 'Authorization: Token token={API_TOKEN}' \
--L -X GET 'https://api.adjust.com/public/v1/partners?limit=1'
+-L -X GET 'https://api.adjust.com/public/v2/partners?limit=1'
 ```
 
 </CodeBlock>
+
 <CodeBlock title="成功レスポンス">
 
 ```json
 {
    "data": {
-      "api_version": "1",
+      "api_version": "2",
       "request_id": "FcK55-tdJUDOWQIAABsB",
       "timestamp": "2019-09-09T09:07:06Z",
       "paging": {
-         "page_size": "1",
-         "collection_size": "1",
-         "total": "199",
-         "next": "https://api.adjust.com/public/v1/partners?after=g2wAAAACYhW1_gxkAANuaWxq&limit=1",
-         "previous": null,
-         "cursors": {
-            "after": "g2wAAAACYhW1_gxkAANuaWxq",
-            "before": null
-         }
+         "cursor": "g2wAAAACYhW1_gxkAANuaWxq",
+         "next": "https://api.adjust.com/public/v2/partners?cursor=g2wAAAACYhW1_gxkAANuaWxq&limit=1"
       },
       "items": [
          {
@@ -169,24 +160,18 @@ $ curl \
 ```
 
 </CodeBlock>
+</Tab>
+</Tabs>
 
 ## リンクを取得する {#fetch-links}
 
 <Tabs>
 <Tab title="v2" sync="v2">
+
 <CodeBlock title="エンドポイント" highlight="v2/apps/{app_token}/trackers">
 
 ```http
 GET https://api.adjust.com/public/v2/apps/{app_token}/trackers
-```
-
-</CodeBlock>
-</Tab>
-<Tab title="v1" sync="v1">
-<CodeBlock title="エンドポイント" highlight="v1/apps/{app_token}/trackers">
-
-```http
-GET https://api.adjust.com/public/v1/apps/{app_token}/trackers
 ```
 
 </CodeBlock>
@@ -211,29 +196,6 @@ GET https://api.adjust.com/public/v1/apps/{app_token}/trackers
 `cursor` （`String`）
 
 : カーソルの位置。
-
-`limit` （`Integer`）
-
-: レスポンスに含む結果の最大数。この値は正の整数であることが必須です。デフォルトは`50`です。
-
-</Tab>
-<Tab title="v1" sync="v1">
-
-リクエストの **パス** に、以下のパラメーターを含める必要があります。
-
-`app_token` （`String`）
-
-: [アプリを識別する英数字のトークン](https://help.adjust.com/ja/article/app-token-and-reporting-currency#view-your-app-details)。12文字で設定してください。
-
-次のパラメーターを **クエリパラメーター** としてパスすることができます。
-
-`after` （`String`）
-
-: リクエストを開始する[カーソルの位置](#fetch-partners-pagination)。
-
-`before` （`String`）
-
-: リクエストを終了する[カーソルの位置](#fetch-partners-pagination)。
 
 `limit` （`Integer`）
 
@@ -273,40 +235,6 @@ $ curl "https://api.adjust.com/public/v2/apps/yxs12pfewq/trackers?cursor=g2wAAAA
 結果の特定の場所に戻るには、リクエスト **クエリパラメーター** で`cursor`値をパスしてください。
 
 </Tab>
-<Tab title="v1" sync="v1">
-
-このエンドポイントからの結果は、カーソルを使用してページ分割されています。各ページには、 `previous`と`next`ページの位置が返されます。特定のページを返すために、これらをコールに含めることができます。
-
-各結果のページには、カーソルの位置を含む`paging`オブジェクトが含まれています。これらのカーソルを使って、プログラムでページ間を移動することができます。例えば、最初のページには次のような`paging`オブジェクトが含まれます。
-
-<CodeBlock title="ページネーションの例">
-
-```json
-"paging": {
-   "page_size": "50",
-   "collection_size": "49",
-   "total": "199",
-   "cursors": {
-      "after": "g2wAAAACYhW1_gxkAANuaWxq",
-      "before": null
-   },
-   "next": "https://api.adjust.com/public/v1/apps/yxs12pfewq/trackers?after=g2wAAAACYhW1_gxkAANuaWxq&limit=50",
-   "previous": null
-}
-```
-
-</CodeBlock>
-
-2ページ目に移動するには、`next`リンクをたどって、次に指定された`cursor`の位置から結果を返します。
-
-<CodeBlock title="cURL" highlight="after=g2wAAAACYhW1_gxkAANuaWxq">
-
-```console
-$ curl "https://api.adjust.com/public/v1/apps/yxs12pfewq/trackers?after=g2wAAAACYhW1_gxkAANuaWxq"
-```
-
-</CodeBlock>
-</Tab>
 </Tabs>
 
 ### レスポンスの形式 {#fetch-links-response-format}
@@ -337,6 +265,7 @@ $ curl "https://api.adjust.com/public/v1/apps/yxs12pfewq/trackers?after=g2wAAAAC
 
 <Tabs>
 <Tab title="v2" sync="v2">
+
 <CodeBlock title="cURL" highlight="gwzpeepw8uf8">
 
 ```console
@@ -346,6 +275,7 @@ $ curl \
 ```
 
 </CodeBlock>
+
 <CodeBlock title="成功レスポンス">
 
 ```json
@@ -353,57 +283,7 @@ $ curl \
    "data": {
       "paging": {
          "cursor": "g2wAAAACYhW1_gxkAANuaWxq",
-         "next": "https://api.adjust.com/public/v2/apps/gwzpeepw8uf8/trackers?after=g2wAAAACYhW1_gxkAANuaWxq&limit=1"
-      },
-      "items": [
-         {
-            "archived": false,
-            "has_subtrackers": false,
-            "partner_id": 3,
-            "cost_data_enabled": false,
-            "label": "Adroll",
-            "level": 1,
-            "name": "Adroll",
-            "token": "abc123",
-            "url": "https://app.adjust.com/abc123",
-            "click_url": "https://app.adjust.com/abc123?campaign={campaign_name}&idfa={idfa}&deeplink=http%3A%2F%2Fa.b%2Fc%3Fd%3D1%26e%3D%%MACROS%%",
-            "impression_url": "https://s2s.adjust.com/impression/abc123?campaign={campaign_name}&idfa={idfa}&s2s=1"
-         }
-      ]
-   }
-}
-```
-
-</CodeBlock>
-</Tab>
-<Tab title="v1" sync="v1">
-<CodeBlock title="cURL" highlight="gwzpeepw8uf8">
-
-```console
-$ curl \
---header 'Authorization: Token token={API_TOKEN}' \
--L -X GET 'https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers?limit=1'
-```
-
-</CodeBlock>
-<CodeBlock title="成功レスポンス">
-
-```json
-{
-   "data": {
-      "api_version": "1",
-      "request_id": "FcK55-tdJUDOWQIAABsB",
-      "timestamp": "2019-09-09T09:07:06Z",
-      "paging": {
-         "page_size": "1",
-         "collection_size": "1",
-         "total": "199",
-         "next": "https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers?after=g2wAAAACYhW1_gxkAANuaWxq&limit=1",
-         "previous": null,
-         "cursors": {
-            "after": "g2wAAAACYhW1_gxkAANuaWxq",
-            "before": null
-         }
+         "next": "https://api.adjust.com/public/v2/apps/gwzpeepw8uf8/trackers?cursor=g2wAAAACYhW1_gxkAANuaWxq&limit=1"
       },
       "items": [
          {
@@ -432,19 +312,11 @@ $ curl \
 
 <Tabs>
 <Tab title="v2" sync="v2">
+
 <CodeBlock title="エンドポイント" highlight="v2/apps/{app_token}/trackers/{link_token}/children">
 
 ```http
 GET https://api.adjust.com/public/v2/apps/{app_token}/trackers/{link_token}/children
-```
-
-</CodeBlock>
-</Tab>
-<Tab title="v1" sync="v1">
-<CodeBlock title="エンドポイント" highlight="v1/apps/{app_token}/trackers/{link_token}/children">
-
-```http
-GET https://api.adjust.com/public/v1/apps/{app_token}/trackers/{link_token}/children
 ```
 
 </CodeBlock>
@@ -473,33 +345,6 @@ GET https://api.adjust.com/public/v1/apps/{app_token}/trackers/{link_token}/chil
 `cursor` （`String`）
 
 : カーソルの位置。
-
-`limit` （`Integer`）
-
-: レスポンスに含む結果の最大数。この値は正の整数であることが必須です。デフォルトは`50`です。
-
-</Tab>
-<Tab title="v1" sync="v1">
-
-リクエストの **パス** に、以下のパラメーターをパスする必要があります。
-
-`app_token` （`String`）
-
-: [アプリを識別する英数字のトークン](https://help.adjust.com/ja/article/app-token-and-reporting-currency#view-your-app-details)。12文字で設定してください。
-
-`tracker_token` （`String`）
-
-: サブリンクがネストされている **親リンク** のリンクトークン。
-
-次のパラメーターをリクエストの **クエリパラメーター** としてパスすることができます。
-
-`after` （`String`）
-
-: リクエストを開始する[カーソルの位置](#fetch-sublinks-pagination)。
-
-`before` （`String`）
-
-: リクエストを終了する[カーソルの位置](#fetch-sublinks-pagination)。
 
 `limit` （`Integer`）
 
@@ -539,40 +384,6 @@ $ curl "https://api.adjust.com/public/v2/apps/gwzpeepw8uf8/trackers/abc123/child
 結果の特定の場所に戻るには、リクエスト **クエリパラメーター** で`cursor`値をパスしてください。
 
 </Tab>
-<Tab title="v1" sync="v1">
-
-このエンドポイントからの結果は、カーソルを使用してページ分割されています。各ページには、 `previous`と`next`ページの位置が返されます。特定のページを返すために、これらをコールに含めることができます。
-
-各結果のページには、カーソルの位置を含む`paging`オブジェクトが含まれています。これらのカーソルを使って、プログラムでページ間を移動することができます。例えば、最初のページには次のような`paging`オブジェクトが含まれます。
-
-<CodeBlock title="ページネーションの例">
-
-```json
-"paging": {
-   "page_size": "50",
-   "collection_size": "49",
-   "total": "199",
-   "cursors": {
-      "after": "g2wAAAACYhW1_gxkAANuaWxq",
-      "before": null
-   },
-   "next": "https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers/abc123/children?after=g2wAAAACYhW1_gxkAANuaWxq&limit=50",
-   "previous": null
-}
-```
-
-</CodeBlock>
-
-2ページ目に移動するには、`next`リンクをたどって、次に指定された`cursor`の位置から結果を返します。
-
-<CodeBlock title="cURL" highlight="after=g2wAAAACYhW1_gxkAANuaWxq">
-
-```console
-$ curl "https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers/abc123/children?after=g2wAAAACYhW1_gxkAANuaWxq"
-```
-
-</CodeBlock>
-</Tab>
 </Tabs>
 
 ### レスポンスの形式 {#fetch-sublinks-response-format}
@@ -597,6 +408,7 @@ $ curl "https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers/abc123/child
 
 <Tabs>
 <Tab title="v2" sync="v2">
+
 <CodeBlock title="cURL" highlight="gwzpeepw8uf8, abc123">
 
 ```console
@@ -606,6 +418,7 @@ $ curl \
 ```
 
 </CodeBlock>
+
 <CodeBlock title="成功レスポンス">
 
 ```json
@@ -636,64 +449,17 @@ $ curl \
 
 </CodeBlock>
 </Tab>
-<Tab title="v1" sync="v1">
-<CodeBlock title="cURL" highlight="gwzpeepw8uf8, abc123">
-
-```console
-$ curl \
---header 'Authorization: Token token={API_TOKEN}'
--L -X GET 'https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers/abc123/children?limit=1' \
-```
-
-</CodeBlock>
-<CodeBlock title="成功レスポンス">
-
-```json
-{
-   "data": {
-      "api_version": "1",
-      "request_id": "FcK55-tdJUDOWQIAABsB",
-      "timestamp": "2019-09-09T09:07:06Z",
-      "paging": {
-         "page_size": "1",
-         "collection_size": "1",
-         "total": "199",
-         "next": "https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers/abc123/children?after=g2wAAAACYhW1_gxkAANuaWxq&limit=1",
-         "previous": null,
-         "cursors": {
-            "after": "g2wAAAACYhW1_gxkAANuaWxq",
-            "before": null
-         }
-      },
-      "items": [
-         {
-            "name": "Adroll::SpringCampaign",
-            "token": "xyz456",
-            "label": "SpringCampaign",
-            "level": 2,
-            "archived": false,
-            "has_subtrackers": false,
-            "partner_id": null,
-            "cost_data_enabled": false,
-            "url": "https://app.adjust.com/xyz456",
-            "click_url": "https://app.adjust.com/xyz456?idfa={idfa}&deeplink=http%3A%2F%2Fa.b%2Fc%3Fd%3D1%26e%3D%%MACROS%%",
-            "impression_url": "https://s2s.adjust.com/impression/xyz456?idfa={idfa}&s2s=1"
-         }
-      ]
-   }
-}
-```
-
-</CodeBlock>
-</Tab>
 </Tabs>
 
 ## リンクを作成する {#create-links}
 
+<Tabs>
+<Tab title="v2" sync="v2">
+
 <CodeBlock title="エンドポイント" highlight="{app_token}/trackers">
 
 ```http
-POST https://api.adjust.com/public/v1/apps/{app_token}/trackers
+POST https://api.adjust.com/public/v2/apps/{app_token}/trackers
 ```
 
 </CodeBlock>
@@ -754,19 +520,20 @@ POST https://api.adjust.com/public/v1/apps/{app_token}/trackers
 <CodeBlock title="cURL">
 
 ```console
-$ curl --location --request POST 'https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers' \
+$ curl --location --request POST 'https://api.adjust.com/public/v2/apps/gwzpeepw8uf8/trackers' \
 --header 'Authorization: Token token={API_TOKEN}' \
 --header 'Content-Type: application/json' \
 --data-raw '{"name": "Adroll"}'
 ```
 
 </CodeBlock>
+
 <CodeBlock title="成功レスポンス">
 
 ```json
 {
    "data": {
-      "api_version": "1",
+      "api_version": "2",
       "request_id": "FcK55-tdJUDOWQIAABsB",
       "timestamp": "2019-09-09T09:07:06Z",
       "items": [
@@ -795,7 +562,7 @@ $ curl --location --request POST 'https://api.adjust.com/public/v1/apps/gwzpeepw
 <CodeBlock title="cURL" highlight="parent_token">
 
 ```console
-$ curl --location --request POST 'https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers' \
+$ curl --location --request POST 'https://api.adjust.com/public/v2/apps/gwzpeepw8uf8/trackers' \
 --header 'Authorization: Token token={API_TOKEN}' \
 --header 'Content-Type: application/json' \
 --data-raw '{"parent_token": "abc123", "name": "SpringCampaign"}'
@@ -807,7 +574,7 @@ $ curl --location --request POST 'https://api.adjust.com/public/v1/apps/gwzpeepw
 ```json
 {
    "data": {
-      "api_version": "1",
+      "api_version": "2",
       "request_id": "FcK55-tdJUDOWQIAABsB",
       "timestamp": "2019-09-09T09:07:06Z",
       "items": [
@@ -830,13 +597,18 @@ $ curl --location --request POST 'https://api.adjust.com/public/v1/apps/gwzpeepw
 ```
 
 </CodeBlock>
+</Tab>
+</Tabs>
 
 ## リンクを更新する {#update-links}
+
+<Tabs>
+<Tab title="v2" sync="v2">
 
 <CodeBlock title="エンドポイント" highlight="{app_token}/trackers/{link_token}">
 
 ```http
-PATCH https://api.adjust.com/public/v1/apps/{app_token}/trackers/{link_token}
+PATCH https://api.adjust.com/public/v2/apps/{app_token}/trackers/{link_token}
 ```
 
 </CodeBlock>
@@ -898,7 +670,7 @@ PATCH https://api.adjust.com/public/v1/apps/{app_token}/trackers/{link_token}
 $ curl \
 --header 'Authorization: Token token={API_TOKEN}' \
 --header 'Content-Type: application/json' \
---location --request PATCH 'https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers/klm789' \
+--location --request PATCH 'https://api.adjust.com/public/v2/apps/gwzpeepw8uf8/trackers/klm789' \
 --data-raw '{"partner_id": 174, "cost_data_enabled": false}'
 ```
 
@@ -908,7 +680,7 @@ $ curl \
 ```json
 {
    "data": {
-      "api_version": "1",
+      "api_version": "2",
       "request_id": "FcK55-tdJUDOWQIAABsB",
       "timestamp": "2019-09-09T09:07:06Z",
       "items": [
@@ -931,3 +703,5 @@ $ curl \
 ```
 
 </CodeBlock>
+</Tab> 
+</Tabs>

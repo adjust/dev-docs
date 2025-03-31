@@ -14,11 +14,11 @@ redirects:
 
 Adjust SDK 提供一个 `AdjustEvent` 对象，用于架构并向 Adjust 服务器发送来自您应用的事件信息。
 
-## 实例化 AdjustEvent 对象 {#instantiate-an-adjustevent-object}
+## 实例化 AdjustEvent 对象{#instantiate-an-adjustevent-object}
 
 <CodeBlock title="方法签名">
 
-```js
+```ts
 constructor(eventToken: string)
 ```
 
@@ -35,12 +35,12 @@ var adjustEvent = new AdjustEvent("abc123");
 Adjust.trackEvent(adjustEvent);
 ```
 
-## 发送事件 {#send-an-event}
+## 发送事件{#send-an-event}
 
 <CodeBlock title="方法签名">
 
 ```js
-trackEvent(event: AdjustEvent): void
+trackEvent(adjustEvent: AdjustEvent): void
 ```
 
 </CodeBlock>
@@ -59,8 +59,6 @@ Adjust.trackEvent(adjustEvent);
 
 在此示例中，每次用户与某个按钮互动时，我们就监测到一个带有 _`g3mfiw`_ 标签的事件。
 
-<Tabs>
-<Tab title="JS">
 <CodeBlock title="index.js" highilight="{range: 30}">
 
 ```js
@@ -78,13 +76,13 @@ var app = {
       app.receivedEvent("deviceready");
 
       var adjustConfig = new AdjustConfig(
-         { APP_ID },
+         "YourAppToken",
          AdjustConfig.EnvironmentSandbox,
       );
-      Adjust.create(adjustConfig);
+      Adjust.initSdk(adjustConfig);
    },
    receivedEvent: function (id) {
-      console.log("[AdjustExample]: Received Event: " + id);
+      console.log("Received Event: " + id);
 
       var btnRecordSimpleEvent = document.getElementById(
          "btnRecordSimpleEvent",
@@ -104,49 +102,22 @@ app.initialize();
 ```
 
 </CodeBlock>
-</Tab>
-<Tab title="HTML">
 
-```html
-<!DOCTYPE >
-<html>
-   <head>
-      <!---->
-   </head>
-   <body>
-      <div class="app">
-         <button
-            id="btnRecordSimpleEvent"
-            style="color: black; height: 30px; margin: 5px"
-         >
-            Record simple event
-         </button>
-      </div>
-      <script src="cordova.js"></script>
-      <script src="js/index.js"></script>
-   </body>
-</html>
-```
-
-</Tab>
-</Tabs>
 <CodeBlock title="事件日志" highlight="{range: 22-23}" collapse="7-21, 24-46">
 
 ```txt
 Path:      /event
-ClientSdk: cordova$CORDOVA_VERSION
+ClientSdk: cordova$CORDOVA_V5_VERSION
 Parameters:
   android_uuid     781f17d5-5048-4fae-a4e5-77b58bab62b9
   api_level        34
   app_token        2fm9gkqubvpc
   app_version      1.0
   attribution_deeplink 1
-  callback_params  {"key":"value","foo":"bar"}
   connectivity_type 1
   country          US
   cpu_type         arm64-v8a
   created_at       2024-01-25T14:13:16.151Z+0100
-  currency         EUR
   device_manufacturer Google
   device_name      sdk_gphone64_arm64
   device_type      phone
@@ -168,8 +139,6 @@ Parameters:
   os_name          android
   os_version       14
   package_name     com.adjust.examples
-  partner_params   {"key":"value","foo":"bar"}
-  revenue          0.25
   screen_density   high
   screen_format    long
   screen_size      normal
@@ -183,11 +152,11 @@ Parameters:
 
 </CodeBlock>
 
-## 记录事件收入 {#record-event-revenue}
+## 记录事件收入{#record-event-revenue}
 
 <CodeBlock title="方法签名">
 
-```js
+```ts
 setRevenue(revenue: number, currency: string): void
 ```
 
@@ -216,8 +185,6 @@ Adjust.trackEvent(adjustEvent);
 
 在此示例中，每次用户与某个按钮互动时，我们就监测到一个带有 _`g3mfiw`_ 标签的事件。该函数会将该事件的 `revenue` 属性设为 _`0.25`_ ，并将 `currency` 属性设为 _`EUR`_ 。
 
-<Tabs>
-<Tab title="JS">
 <CodeBlock title="index.js" highlight="31">
 
 ```js
@@ -235,13 +202,13 @@ var app = {
       app.receivedEvent("deviceready");
 
       var adjustConfig = new AdjustConfig(
-         { APP_ID },
+         "YourAppToken",
          AdjustConfig.EnvironmentSandbox,
       );
-      Adjust.create(adjustConfig);
+      Adjust.initSdk(adjustConfig);
    },
    receivedEvent: function (id) {
-      console.log("[AdjustExample]: Received Event: " + id);
+      console.log("Received Event: " + id);
 
       var btnRecordRevenueEvent = document.getElementById(
          "btnRecordRevenueEvent",
@@ -262,37 +229,12 @@ app.initialize();
 ```
 
 </CodeBlock>
-</Tab>
-<Tab title="HTML">
 
-```html
-<!DOCTYPE >
-<html>
-   <head>
-      <!---->
-   </head>
-   <body>
-      <div class="app">
-         <button
-            id="btnRecordRevenueEvent"
-            style="color: black; height: 30px; margin: 5px"
-         >
-            Record revenue event
-         </button>
-      </div>
-      <script src="cordova.js"></script>
-      <script src="js/index.js"></script>
-   </body>
-</html>
-```
-
-</Tab>
-</Tabs>
 <CodeBlock title="事件日志" highlight="{range: 7-8}">
 
 ```txt
 Path:      /event
-ClientSdk: cordova$CORDOVA_VERSION
+ClientSdk: cordova$CORDOVA_V5_VERSION
 Parameters:
   environment      sandbox
   event_count      3
@@ -303,32 +245,30 @@ Parameters:
 
 </CodeBlock>
 
-## 设置唯一交易 ID {#set-a-unique-transaction-id}
+## 收入事件去重{#deduplicate-revenue-events}
 
-<CodeBlock title="属性声明">
+<CodeBlock title="方法签名">
 
-```js
-setTransactionId(transactionId: string)
+```ts
+setDeduplicationId(deduplicationId: string): void
 ```
 
 </CodeBlock>
 
 您也可以发送一个可选的标识符，以避免记录重复事件。SDK 会存储最近 10 个标识符，带有重复交易 ID 的收入事件会被跳过。
 
-要设置标识符，请将您的交易 ID 指定至事件实例的 `setTransactionId` 属性。
+要设置标识符，请调用 `setDeduplicationId` 方法并以 `string` 参数形式发送您的去重 ID。
 
 ```js
 var adjustEvent = new AdjustEvent("abc123");
-adjustEvent.setTransactionId("{YourTransactionId}");
+adjustEvent.setDeduplicationId(deduplicationId);
 Adjust.trackEvent(adjustEvent);
 ```
 
 ### 示例 {#example}
 
-在此示例中，每次用户与某个按钮互动时，我们就监测到一个带有 _`g3mfiw`_ 标签的事件。该函数会使用 `setTransactionId` 方法将 `transactionId` 设为 _`5e85484b-1ebc-4141-aab7-25b869e54c49`_ 。
+在此示例中，每次用户与某个按钮互动时，我们就监测到一个带有 _`g3mfiw`_ 标签的事件。该函数会使用 `setDeduplicationId` 方法将 `deduplicationId` 设为 _`5e85484b-1ebc-4141-aab7-25b869e54c49`_ 。
 
-<Tabs>
-<Tab title="JS">
 <CodeBlock title="index.js" highlight="{range: 31-33}">
 
 ```js
@@ -346,13 +286,13 @@ var app = {
       app.receivedEvent("deviceready");
 
       var adjustConfig = new AdjustConfig(
-         { APP_ID },
+         "YourAppToken",
          AdjustConfig.EnvironmentSandbox,
       );
-      Adjust.create(adjustConfig);
+      Adjust.initSdk(adjustConfig);
    },
    receivedEvent: function (id) {
-      console.log("[AdjustExample]: Received Event: " + id);
+      console.log("Received Event: " + id);
 
       var btnRecordUniqueEvent = document.getElementById(
          "btnRecordUniqueEvent",
@@ -362,7 +302,7 @@ var app = {
          "click",
          function () {
             var adjustEvent = new AdjustEvent("g3mfiw");
-            adjustEvent.setTransactionId(
+            adjustEvent.setDeduplicationId(
                "5e85484b-1ebc-4141-aab7-25b869e54c49",
             );
             Adjust.trackEvent(adjustEvent);
@@ -375,51 +315,26 @@ app.initialize();
 ```
 
 </CodeBlock>
-</Tab>
-<Tab title="HTML">
 
-```html
-<!DOCTYPE >
-<html>
-   <head>
-      <!---->
-   </head>
-   <body>
-      <div class="app">
-         <button
-            id="btnRecordUniqueEvent"
-            style="color: black; height: 30px; margin: 5px"
-         >
-            Record unique event
-         </button>
-      </div>
-      <script src="cordova.js"></script>
-      <script src="js/index.js"></script>
-   </body>
-</html>
-```
-
-</Tab>
-</Tabs>
 <CodeBlock title="事件日志" highlight="{range: 7}">
 
 ```txt
 Path:      /event
-ClientSdk: cordova$CORDOVA_VERSION
+ClientSdk: cordova$CORDOVA_V5_VERSION
 Parameters:
   environment      sandbox
   event_count      3
-  event_token      abc123
-  transaction_id   5e85484b-1ebc-4141-aab7-25b869e54c49
+  event_token      g3mfiw
+  deduplication_id   5e85484b-1ebc-4141-aab7-25b869e54c49
 ```
 
 </CodeBlock>
 
-## 添加回传参数 {#add-callback-parameters}
+## 添加回传参数{#add-callback-parameters}
 
 <CodeBlock title="方法签名">
 
-```js
+```ts
 addCallbackParameter(key: string, value: string): void
 ```
 
@@ -479,8 +394,7 @@ http://www.mydomain.com/callback?event_token=g3mfiw&revenue_amount=0.05
 ```
 
 </CodeBlock>
-<Tabs>
-<Tab title="JS">
+
 <CodeBlock title="index.js" highlight="{range: 31-32}">
 
 ```js
@@ -498,13 +412,13 @@ var app = {
       app.receivedEvent("deviceready");
 
       var adjustConfig = new AdjustConfig(
-         { APP_ID },
+         "YourAppToken",
          AdjustConfig.EnvironmentSandbox,
       );
-      Adjust.create(adjustConfig);
+      Adjust.initSdk(adjustConfig);
    },
    receivedEvent: function (id) {
-      console.log("[AdjustExample]: Received Event: " + id);
+      console.log("Received Event: " + id);
 
       var btnRecordCallbackEvent = document.getElementById(
          "btnRecordCallbackEvent",
@@ -526,37 +440,12 @@ app.initialize();
 ```
 
 </CodeBlock>
-</Tab>
-<Tab title="HTML">
 
-```html
-<!DOCTYPE >
-<html>
-   <head>
-      <!---->
-   </head>
-   <body>
-      <div class="app">
-         <button
-            id="btnRecordCallbackEvent"
-            style="color: black; height: 30px; margin: 5px"
-         >
-            Record callback event
-         </button>
-      </div>
-      <script src="cordova.js"></script>
-      <script src="js/index.js"></script>
-   </body>
-</html>
-```
-
-</Tab>
-</Tabs>
 <CodeBlock title="事件日志" highlight="{range: 4}">
 
 ```txt
 Path:      /event
-ClientSdk: cordova$CORDOVA_VERSION
+ClientSdk: cordova$CORDOVA_V5_VERSION
 Parameters:
   callback_params  {"event_token":"g3mfiw","revenue_amount":"0.05"}
   environment      sandbox
@@ -566,11 +455,11 @@ Parameters:
 
 </CodeBlock>
 
-## 添加合作伙伴参数 {#add-partner-parameters}
+## 添加合作伙伴参数{#add-partner-parameters}
 
 <CodeBlock title="方法签名">
 
-```js
+```ts
 addPartnerParameter(key: string, value: string): void
 ```
 
@@ -602,8 +491,6 @@ Adjust.trackEvent(adjustEvent);
 - 相关产品的 `product_id`
 - 触发事件的用户 `user_id`
 
-<Tabs>
-<Tab title="JS">
 <CodeBlock title="index.js" highlight="{range: 31-32}">
 
 ```js
@@ -621,13 +508,13 @@ var app = {
       app.receivedEvent("deviceready");
 
       var adjustConfig = new AdjustConfig(
-         { APP_ID },
+         "YourAppToken",
          AdjustConfig.EnvironmentSandbox,
       );
-      Adjust.create(adjustConfig);
+      Adjust.initSdk(adjustConfig);
    },
    receivedEvent: function (id) {
-      console.log("[AdjustExample]: Received Event: " + id);
+      console.log("Received Event: " + id);
 
       var btnRecordPartnerParamEvent = document.getElementById(
          "btnRecordPartnerParamEvent",
@@ -649,37 +536,12 @@ app.initialize();
 ```
 
 </CodeBlock>
-</Tab>
-<Tab title="HTML">
 
-```html
-<!DOCTYPE >
-<html>
-   <head>
-      <!---->
-   </head>
-   <body>
-      <div class="app">
-         <button
-            id="btnRecordPartnerParamEvent"
-            style="color: black; height: 30px; margin: 5px"
-         >
-            Record partner param event
-         </button>
-      </div>
-      <script src="cordova.js"></script>
-      <script src="js/index.js"></script>
-   </body>
-</html>
-```
-
-</Tab>
-</Tabs>
 <CodeBlock title="事件日志" highlight="{range: 4}">
 
 ```txt
 Path:      /event
-ClientSdk: cordova$CORDOVA_VERSION
+ClientSdk: cordova$CORDOVA_V5_VERSION
 Parameters:
   partner_params  {"product_id":"29","user_id":"835"}
   environment      sandbox
@@ -689,12 +551,12 @@ Parameters:
 
 </CodeBlock>
 
-## 添加回传标识符 {#add-a-callback-identifier}
+## 添加回传标识符{#add-a-callback-identifier}
 
 <CodeBlock title="方法签名">
 
-```js
-setCallbackId(callbackId: string)
+```ts
+setCallbackId(callbackId: string): void
 ```
 
 </CodeBlock>
@@ -715,8 +577,6 @@ Adjust.trackEvent(adjustEvent);
 
 在此示例中，每次用户与某个按钮互动时，我们就监测到一个带有`g3mfiw`标签的事件。在该示例中，`callbackId` 被设为了 `f2e728d8-271b-49ab-80ea-27830a215147`。
 
-<Tabs>
-<Tab title="JS">
 <CodeBlock title="index.js" highlight="{range: 31}">
 
 ```js
@@ -734,13 +594,13 @@ var app = {
       app.receivedEvent("deviceready");
 
       var adjustConfig = new AdjustConfig(
-         { APP_ID },
+         "YourAppToken",
          AdjustConfig.EnvironmentSandbox,
       );
-      Adjust.create(adjustConfig);
+      Adjust.initSdk(adjustConfig);
    },
    receivedEvent: function (id) {
-      console.log("[AdjustExample]: Received Event: " + id);
+      console.log("Received Event: " + id);
 
       var btnRecordCallbackIdEvent = document.getElementById(
          "btnRecordCallbackIdEvent",
@@ -761,37 +621,12 @@ app.initialize();
 ```
 
 </CodeBlock>
-</Tab>
-<Tab title="HTML">
 
-```html
-<!DOCTYPE >
-<html>
-   <head>
-      <!---->
-   </head>
-   <body>
-      <div class="app">
-         <button
-            id="btnRecordCallbackIdEvent"
-            style="color: black; height: 30px; margin: 5px"
-         >
-            Record callback ID event
-         </button>
-      </div>
-      <script src="cordova.js"></script>
-      <script src="js/index.js"></script>
-   </body>
-</html>
-```
-
-</Tab>
-</Tabs>
 <CodeBlock title="事件日志" highlight="{range: 7}">
 
 ```txt
 Path:      /event
-ClientSdk: cordova$CORDOVA_SDK
+ClientSdk: cordova$CORDOVA_V5_VERSION
 Parameters:
   environment      sandbox
   event_count      3
