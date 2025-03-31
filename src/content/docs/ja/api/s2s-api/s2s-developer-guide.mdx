@@ -1,0 +1,1244 @@
+---
+title: サーバー間（S2S）開発者ガイド
+description: Adjust Full S2Sを実装
+slug: ja/api/s2s-api/s2s-developer-guide
+sidebar-position: 6
+---
+
+Adjustは、モバイルアプリ、コンソールアプリ、コネクテッドTV（CTV）アプリ向けのサーバー間（S2S）インターフェイスを提供しています。サーバー間でAdjustを実装する場合は、Adjust SDKの機能を複製できるようにアプリを変更する必要があります。このガイドでは、以下の手順について説明します。
+
+- 必要なアップデートをアプリに実装する方法
+- Adjustへサーバー間リクエストを送信する方法
+
+## 事前準備 \{\#before\-you\-begin\}
+
+事前準備として、以下を実行してください。
+
+### サーバー間セッション計測 {#enable-s2s-session-measurement)} を有効化する
+
+モバイルアプリ向けにサーバー間インターフェイスを使用している場合、Adjustはアプリのサーバー間セッション計測を有効にする必要があります。ご希望の場合は、Adjustの担当者または[support@adjust.com](mailto:support@adjust.com)にお問い合わせください。
+
+プラットフォームを選択すると、[コネクテッドTV計測](https://help.adjust.com/ja/article/ctv-advision)と[PCおよびコンソール計測](https://help.adjust.com/ja/article/measurement-for-pc-and-console-games)のサーバー間セッション計測が自動的に有効になります。
+
+### S2Sセキュリティを設定する {#set-up-s2s-security}
+
+[サーバー間（S2S）セキュリティを実装](/ja/api/s2s-api/security)してサーバー間のアクティビティを保護し、スプーフィングされたリクエストを防止します。Adjustダッシュボードでトークンを生成し、受信する各リクエストにそのトークンを含めます。
+
+<Callout type="important">
+
+Adjustのサーバーは正しいトークンが含まれていないリクエストを拒否するため、データが安全に保護されます。
+
+</Callout>
+
+### ローカルでイベントキューを保持する{#queue-and-persist-events-locally}
+
+ユーザーは、アプリのインストールやセッションなどの重要なイベントをオフラインのデバイスで実行することがあります。アトリビューションの正確性を維持するには、デバイスがオンラインになり、Adjustのサーバーに正常に送信できるようになるまで、これらのイベントを取得してローカルに格納しておく必要があります。
+
+永続的なローカルイベントキューを可能にするには、以下の手順を実行します。
+
+1. アクティビティが発生した際に格納するためのキューを作成します。
+2. 各アクティビティには、デバイスでイベントが発生した時間を秒単位で示す`created_at_unix`タイムスタンプが付与されます。例えば、いつイベントが発生したのかを「`1484085154`」のように表します。
+3. このキューをSQLiteデータベースやファイルなどのローカルストレージに保存して、アプリを再起動しても保持できるようにします。
+4. キューが空ではなく、デバイスがオンラインのときに、Adjustのサーバーにアクティビティの送信を試みます。
+5. アクティビティの送信が成功した場合のみ、キューからアクティビティを削除します。
+
+このアプローチは、以下のような場合にデータ損失を最小に抑制します。
+
+- 短時間のネットワーク中断（例：5GからWiFiへの切り替え時など）
+- 長時間オンラインに復帰できない
+- 送信前にアプリがクラッシュまたは強制終了
+
+ローカルキューがない場合、インストールデータの10%～20%が失われる危険があり、アトリビューションの正確性に大きな影響が及ぶことがあります。このキューシステムを実装することで、Adjustはユーザーアクティビティを完全かつ正確に受信し、オフラインで発生したイベントであっても正確にアトリビューションできるようになります。
+
+### iOSフレームワークを追加する {#add-ios-frameworks}
+
+特定のiOS機能をサポートするには、フレームワークをプロジェクトにリンクする必要があります。フレームワークをプロジェクトに追加するには、次の手順を実行します。
+
+1. Xcodeでプロジェクトを開きます。
+2. プロジェクトナビゲータで、ターゲットを選択します。
+3. **General** タブに移動します。
+4. **Frameworks, Libraries, Embedded Content** のセクションまでスクロールします。
+5. 「 **\+** 」ボタンを選択します。
+6. 以下のリストを参考に、アプリに必要なフレームワークを検索して追加します。
+
+| Framework                           | 説明                                                                                                                                           |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AdSupport.framework`               | IDFAの収集と、AppTrackingTransparency（ATT）以前のiOSバージョンで「Limit Ad Tracking（追跡型広告を制限）」ステータスを収集する場合に必要です。 |
+| `AppTrackingTransparency.framework` | AppTrackingTransparencyのポップアップを表示し、iOS 14\.5以降を実行するデバイスでIDFAを収集する場合に必要です。                                 |
+| `AdServices.framework`              | AdjustがApple Search Adsキャンペーンをアトリビュートするのに必要です。                                                                         |
+| `StoreKit.framework`                | SKAdNetworkキャンペーンの実行に必要です。                                                                                                      |
+
+## 必須パラメーター \{\#required\-parameters\}
+
+各サーバー間リクエストには、以下のパラメーターが必要です。
+
+| パラメーター | 説明                                                                                                      |
+| ------------ | --------------------------------------------------------------------------------------------------------- |
+| `s2s`        | リクエストが「サーバー間リクエスト」であることを示します。「`1`」にハードコーディングする必要があります。 |
+| `app_token`  | Adjustのアプリトークン。                                                                                  |
+| `os_name`    | モバイルOS名。以下のオプションを参照してください。                                                        |
+
+<ListColumns>
+
+- `android`
+- `android-tv`
+- `apple-tv`
+- `bada`
+- `blackberry`
+- `fire-tv`
+- `ios`
+- `linux`
+- `macos`
+- `nintendo`
+- `playstation`
+
+---
+
+- `roku-os`
+- `server`
+- `smart-cast`
+- `steamos`
+- `symbian`
+- `tizen`
+- `unknown`
+- `webos`
+- `windows`
+- `windows-phone`
+- `xbox`
+
+</ListColumns>
+
+これらのパラメーターをサーバー上に作成します。これらはデバイスの種類に関係なく、Adjustへ送信される全てのサーバー間リクエストに使用されます。デバイス固有のパラメーターは、必要に応じて追加されます。このガイドではクライアント側の全てのパラメーターの処理方法について説明しますが、実際は、その多くがサーバー側で発生します。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+// Create dictionary for params to include on all S2S requests to Adjust
+var params: [String: String] = [:]
+
+// Hard-coded
+params["s2s"] = "1"
+
+// The name of the operating system running on the device
+params["os_name"] = "ios"
+
+// Replace with your Adjust app token
+params["app_token"] = "4w565xzmb54d"
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+// Create dictionary for params to include on all S2S requests to Adjust
+NSMutableDictionary *params = [NSMutableDictionary dictionary];
+
+// Hard-coded
+params[@"s2s"] = @"1";
+
+// The name of the operating system running on the device
+params[@"os_name"] = @"ios";
+
+// Replace with your Adjust app token
+params[@"app_token"] = @"4w565xzmb54d";
+```
+
+</Tab>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+// Create map for params to include on all S2S requests to Adjust
+val params = mutableMapOf<String, String>()
+
+// Hard-coded
+params["s2s"] = "1"
+
+// The name of the operating system running on the device
+params["os_name"] = "android"
+
+// Replace with your Adjust app token
+params["app_token"] = "4w565xzmb54d"
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+// Create map for params to include on all S2S requests to Adjust
+Map<String, String> params = new HashMap<>();
+
+// Hard-coded
+params.put("s2s", "1");
+
+// The name of the operating system running on the device
+params.put("os_name", "android");
+
+// Replace with your Adjust app token
+params.put("app_token", "4w565xzmb54d");
+```
+
+</Tab>
+</Tabs>
+
+### デバイスIDとトラッキングのステータス {#device-ids-and-tracking-statuses}
+
+全てのサーバー間リクエストには、 **少なくとも1つ** のデバイスIDを含める必要があります。モバイルのオペレーティングシステムがプライバシー対策を実装していることから、広告IDを常に利用できるとは限りません。そのため、可能な場合は広告IDを含めますが、常にバックアップのIDを含める必要があります。
+
+#### PCおよびコンソール/コネクテッドTV（CTV）のデバイスID {#pc-console-ctv-device-ids}
+
+PC、コンソールおよびコネクテッドTVを計測する場合、それぞれの呼び出しに一意の`external_device_id`パラメーターを含めることで、デバイスIDとして使用できます。デバイスを識別する一意の値には、任意の文字列を指定できます。
+
+#### iOSデバイスID {#ios-device-ids}
+
+##### IDFAと計測ステータス
+
+広告主ID（IDFA）は、ユーザーが共有することに同意したiOSデバイスでのみ利用可能です。IDFAを収集するアプリもあれば、そうでないアプリもありますが、アプリがIDFAを収集するかどうかに関係なく、Adjustは各リクエストのトラッキングステータスを要求します。以下から、実装環境に対応するコードを選んで使用してください。
+
+**IDFAを収集するアプリ**
+
+1. XcodeでATTの説明を追加します。
+
+   1. プロジェクトの`Info.plist`ファイルを開きます。
+   2. エディターで、 **Information Property List** を右クリックし、 **Add Row** を選択すると、ルートにキーを追加できます。
+   3. `NSUserTrackingUsageDescription`にキーを設定します。
+   4. トラッキングの許可を求める理由を文字列で設定します。例えば、「このIDは、パーソナライズされた広告を配信するために使用されます」のように入力します。このテキストについては、[Appleのガイドライン](https://developer.apple.com/documentation/bundleresources/information_property_list/nsusertrackingusagedescription)を確認してください。
+
+2. ATTポップアップの実装とIDFAの取得
+
+ATTには以下の要件があります。
+
+- ATTのサポートはiOS 14で開始されましたが、IDFAの取得にユーザーの同意が必要となるのはiOS 14\.5以降のみです。このためAdjustは、iOS 14\.5以降のバージョンを使用するユーザーに対してATTポップアップを表示することを推奨しています。
+- ATTポップアップを表示するには、アプリをアクティブな状態にする必要があります。他のシステムポップアップの直後だと表示に失敗する可能性があるため、アプリの状態が再びアクティブになるまで待機しなければなりません。
+- ポップアップを最も早く表示できるのは、 `applicationDidBecomeActive`（App Delegate）または`sceneDidBecomeActive`（Scene Delegate）です。`didFinishLaunchingWithOptions`（App Delegate）でATTポップアップを表示することはできません。
+
+以下のコード例は、これらの要件を全て満たしています。
+
+正確なアトリビューションを行うため、最初のセッションリクエストと、その後の全てのリクエストにIDFAを含めてください。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+import AppTrackingTransparency
+import AdSupport
+
+struct IDFAInfo {
+    let idfa: UUID?
+    let attStatus: ATTrackingManager.AuthorizationStatus?
+    let trackingEnabled: Bool?
+}
+
+func getIDFAInfo(completion: @escaping (IDFAInfo) -> Void) {
+    // For iOS 14.5+, show ATT prompt to attempt to retrieve IDFA and retrieve ATT
+    // status afterwards
+    if #available(iOS 14.5, *) {
+        // Wait briefly to ensure app is active
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            ATTrackingManager.requestTrackingAuthorization { status in
+                let idfa = (status == .authorized) ?
+                    ASIdentifierManager.shared().advertisingIdentifier : nil
+                completion(IDFAInfo(idfa: idfa, attStatus: status,
+                    trackingEnabled: nil))
+            }
+        }
+    // For earlier versions, don't show ATT prompt. Just get IDFA and tracking
+    // enabled status.
+    } else {
+        let manager = ASIdentifierManager.shared()
+        let idfa = manager.isAdvertisingTrackingEnabled ?
+            manager.advertisingIdentifier : nil
+        let trackingEnabled = manager.isAdvertisingTrackingEnabled
+        completion(IDFAInfo(idfa: idfa, attStatus: nil,
+            trackingEnabled: trackingEnabled))
+    }
+}
+
+// Usage example
+getIDFAInfo { info in
+    // Include IDFA if available
+    if let idfa = info.idfa?.uuidString {
+        params["idfa"] = idfa
+    }
+
+    // Include ATT status if available,
+    // otherwise include tracking enabled status, never both
+    if let attStatus = info.attStatus {
+        params["att_status"] = String(attStatus.rawValue)
+    } else if let trackingEnabled = info.trackingEnabled {
+        params["tracking_enabled"] = trackingEnabled ? "1" : "0"
+    }
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import <AppTrackingTransparency/AppTrackingTransparency.h>
+#import <AdSupport/AdSupport.h>
+
+@interface IDFAInfo : NSObject
+@property (nonatomic, strong) NSUUID *idfa;
+@property (nonatomic, assign) ATTrackingManagerAuthorizationStatus attStatus;
+@property (nonatomic, strong) NSNumber *trackingEnabled;
+@end
+
+@implementation IDFAInfo
+@end
+
+void getIDFAInfo(void (^completion)(IDFAInfo *)) {
+    // For iOS 14.5+, show ATT prompt to attempt to retrieve IDFA and retrieve ATT
+    // status afterwards
+    if (@available(iOS 14.5, *)) {
+        // Wait briefly to ensure app is active
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC),
+            dispatch_get_main_queue(), ^{
+            [ATTrackingManager requestTrackingAuthorizationWithCompletionHandler:
+                ^(ATTrackingManagerAuthorizationStatus status) {
+                    IDFAInfo *info = [[IDFAInfo alloc] init];
+                    if (status == ATTrackingManagerAuthorizationStatusAuthorized) {
+                        info.idfa = [[ASIdentifierManager sharedManager]
+                            advertisingIdentifier];
+                    }
+                    info.attStatus = status;
+                    completion(info);
+                }];
+        });
+    // For earlier versions, don't show ATT prompt. Just get IDFA and tracking
+    // enabled status.
+    } else {
+        ASIdentifierManager *manager = [ASIdentifierManager sharedManager];
+        IDFAInfo *info = [[IDFAInfo alloc] init];
+        if (manager.isAdvertisingTrackingEnabled) {
+            info.idfa = manager.advertisingIdentifier;
+        }
+        info.trackingEnabled = @(manager.isAdvertisingTrackingEnabled);
+        completion(info);
+    }
+}
+
+// Usage example
+getIDFAInfo(^(IDFAInfo *info) {
+    // Include IDFA if available
+    if (info.idfa) {
+        params[@"idfa"] = [info.idfa UUIDString];
+    }
+
+    // Include ATT status if available, otherwise tracking enabled status, never both
+    if (info.attStatus != nil) {
+        params[@"att_status"] = [NSString stringWithFormat:@"%ld",
+            (long)info.attStatus];
+    } else if (info.trackingEnabled != nil) {
+        params[@"tracking_enabled"] = [info.trackingEnabled boolValue] ?
+            @"1" : @"0";
+    }
+});
+```
+
+</Tab>
+</Tabs>
+
+**IDFAを収集しないアプリ**
+
+以下のコードを使用して、トラッキングステータスを取得します。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+import AdSupport
+
+struct TrackingInfo {
+    let attStatus: ATTrackingManager.AuthorizationStatus?
+    let trackingEnabled: Bool?
+}
+
+func getTrackingInfo(completion: @escaping (TrackingInfo) -> Void) {
+    // For iOS 14.5+, get ATT status without showing prompt
+    if #available(iOS 14.5, *) {
+        let status = ATTrackingManager.trackingAuthorizationStatus
+        completion(TrackingInfo(attStatus: status, trackingEnabled: nil))
+    // For earlier versions, get tracking enabled status
+    } else {
+        let trackingEnabled = ASIdentifierManager.shared().isAdvertisingTrackingEnabled
+        completion(TrackingInfo(attStatus: nil, trackingEnabled: trackingEnabled))
+    }
+}
+
+// Usage example
+getTrackingInfo { info in
+    // Include ATT status if available, otherwise tracking enabled status, never both
+    if let attStatus = info.attStatus {
+        params["att_status"] = String(attStatus.rawValue)
+    } else if let trackingEnabled = info.trackingEnabled {
+        params["tracking_enabled"] = trackingEnabled ? "1" : "0"
+    }
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import <AdSupport/AdSupport.h>
+
+@interface TrackingInfo : NSObject
+@property (nonatomic, assign) ATTrackingManagerAuthorizationStatus attStatus;
+@property (nonatomic, strong) NSNumber *trackingEnabled;
+@end
+
+@implementation TrackingInfo
+@end
+
+void getTrackingInfo(void (^completion)(TrackingInfo *)) {
+    // For iOS 14.5+, get ATT status without showing prompt
+    if (@available(iOS 14.5, *)) {
+        TrackingInfo *info = [[TrackingInfo alloc] init];
+        info.attStatus = ATTrackingManager.trackingAuthorizationStatus;
+        completion(info);
+    // For earlier versions, get tracking enabled status
+    } else {
+        TrackingInfo *info = [[TrackingInfo alloc] init];
+        BOOL enabled = [ASIdentifierManager sharedManager].isAdvertisingTrackingEnabled;
+        info.trackingEnabled = @(enabled);
+        completion(info);
+    }
+}
+
+// Usage example
+getTrackingInfo(^(TrackingInfo *info) {
+    // Include ATT status if available, otherwise tracking enabled status, never both
+    if (info.attStatus != nil) {
+        params[@"att_status"] = [NSString stringWithFormat:@"%ld",
+            (long)info.attStatus];
+    } else if (info.trackingEnabled != nil) {
+        params[@"tracking_enabled"] = [info.trackingEnabled boolValue] ?
+            @"1" : @"0";
+    }
+});
+```
+
+</Tab>
+</Tabs>
+
+##### idfv
+
+ベンダーID（DFV）は、最新のiOSデバイスの全てで利用可能なバックアップIDです。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+let idfv: UUID? = UIDevice.current.identifierForVendor
+
+if let idfvString = idfv?.uuidString {
+   params["idfv"] = idfvString
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+NSUUID *idfv = [[UIDevice currentDevice] identifierForVendor];
+
+if (idfv) {
+    params[@"idfv"] = [idfv UUIDString];
+}
+```
+
+</Tab>
+</Tabs>
+
+##### メインの重複排除トークン
+
+アンインストールと再インストールのアプリアクティビティを一貫して計測するには、バージョン4のUUID（メインの重複排除トークン）をランダムに生成し、iOSキーチェーンに保存します。メインの重複排除トークンは、全てのデバイスに対して生成する必要があるバックアップIDです。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+import Foundation
+import Security
+
+// App's bundle ID
+let bundleId = "com.example.app"
+
+// Collect the primary dedupe token from the keychain
+func getPrimaryDedupeToken(bundleId: String) -> UUID? {
+    // Define the query to search for the token in the keychain
+    let query: [String: Any] = [
+        kSecClass as String: kSecClassGenericPassword,
+        kSecAttrAccount as String: "primary_dedupe_token",
+        kSecAttrService as String: bundleId,
+        kSecReturnData as String: true
+    ]
+
+    var item: CFTypeRef?
+    // Attempt to fetch the token from the keychain
+    let status = SecItemCopyMatching(query as CFDictionary, &item)
+
+    // If the fetch was successful, convert the result to a UUID
+    guard status == errSecSuccess,
+          let existingItem = item as? Data,
+          let uuidString = String(data: existingItem, encoding: .utf8),
+          let token = UUID(uuidString: uuidString) else {
+        // Return nil if the token doesn't exist or couldn't be collected
+        return nil
+    }
+
+    return token
+}
+
+// Save the primary dedupe token to the keychain
+func setPrimaryDedupeToken(_ token: UUID, bundleId: String) -> Bool {
+    let tokenData = token.uuidString.data(using: .utf8)!
+    // Define the attributes for storing the token in the keychain
+    let query: [String: Any] = [
+        kSecClass as String: kSecClassGenericPassword,
+        kSecAttrAccount as String: "primary_dedupe_token",
+        kSecAttrService as String: bundleId,
+        kSecValueData as String: tokenData,
+        kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlock
+    ]
+
+    // Attempt to add the token to the keychain
+    let status = SecItemAdd(query as CFDictionary, nil)
+
+    // Return true if the token was successfully added, false otherwise
+    return status == errSecSuccess
+}
+
+// Collect the existing primary dedupe token or create a new one if it doesn't exist
+func getOrCreatePrimaryDedupeToken() -> UUID {
+    // Try to collect an existing token
+    if let existingToken = getPrimaryDedupeToken(bundleId: bundleId) {
+        return existingToken
+    } else {
+        // If no token exists, generate a new one
+        let newToken = UUID()
+        // Attempt to save the new token
+        if setPrimaryDedupeToken(newToken, bundleId: bundleId) {
+            return newToken
+        } else {
+            // If saving fails, throw a fatal error
+            fatalError("Failed to save primary dedupe token")
+        }
+    }
+}
+
+// Usage example
+let primaryDedupeToken = getOrCreatePrimaryDedupeToken()
+
+// Convert to lowercase string
+params["primary_dedupe_token"] = primaryDedupeToken.uuidString.lowercased()
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+#import <Foundation/Foundation.h>
+#import <Security/Security.h>
+
+// App's bundle ID
+NSString *const bundleId = @"com.example.app";
+
+// Collect the primary dedupe token from the keychain
+NSUUID *getPrimaryDedupeToken(NSString *bundleId) {
+    // Define the query to search for the token in the keychain
+    NSDictionary *query = @{
+        (__bridge id)kSecClass: (__bridge id)kSecClassGenericPassword,
+        (__bridge id)kSecAttrAccount: @"primary_dedupe_token",
+        (__bridge id)kSecAttrService: bundleId,
+        (__bridge id)kSecReturnData: @YES
+    };
+
+    CFTypeRef item = NULL;
+    // Attempt to fetch the token from the keychain
+    OSStatus status = SecItemCopyMatching((__bridge CFDictionaryRef)query,
+        &item);
+
+    // If the fetch was successful, convert the result to a UUID
+    if (status == errSecSuccess && item != NULL) {
+        NSData *existingItem = (__bridge_transfer NSData *)item;
+        NSString *uuidString = [[NSString alloc]
+            initWithData:existingItem encoding:NSUTF8StringEncoding];
+        return [[NSUUID alloc] initWithUUIDString:uuidString];
+    }
+
+    // Return nil if the token doesn't exist or couldn't be collected
+    return nil;
+}
+
+// Save the primary dedupe token to the keychain
+BOOL setPrimaryDedupeToken(NSUUID *token, NSString *bundleId) {
+    NSData *tokenData = [[token UUIDString]
+        dataUsingEncoding:NSUTF8StringEncoding];
+    // Define the attributes for storing the token in the keychain
+    NSDictionary *query = @{
+        (__bridge id)kSecClass: (__bridge id)kSecClassGenericPassword,
+        (__bridge id)kSecAttrAccount: @"primary_dedupe_token",
+        (__bridge id)kSecAttrService: bundleId,
+        (__bridge id)kSecValueData: tokenData,
+        (__bridge id)kSecAttrAccessible:
+            (__bridge id)kSecAttrAccessibleAfterFirstUnlock
+    };
+
+    // Attempt to add the token to the keychain
+    OSStatus status = SecItemAdd((__bridge CFDictionaryRef)query, NULL);
+    // Return YES if the token was successfully added, NO otherwise
+    return status == errSecSuccess;
+}
+
+// Collect the existing primary dedupe token or create a new one if it doesn't exist
+NSUUID *getOrCreatePrimaryDedupeToken(void) {
+    // Try to collect an existing token
+    NSUUID *existingToken = getPrimaryDedupeToken(bundleId);
+    if (existingToken) {
+        return existingToken;
+    } else {
+        // If no token exists, generate a new one
+        NSUUID *newToken = [NSUUID UUID];
+        // Attempt to save the new token
+        if (setPrimaryDedupeToken(newToken, bundleId)) {
+            return newToken;
+        } else {
+            // If saving fails, throw an exception
+            @throw [NSException exceptionWithName:@"TokenSaveError"
+                reason:@"Failed to save primary dedupe token"
+                userInfo:nil];
+        }
+    }
+}
+
+// Usage example
+NSUUID *primaryDedupeToken = getOrCreatePrimaryDedupeToken();
+
+// Convert to lowercase string
+params[@"primary_dedupe_token"] = [[primaryDedupeToken UUIDString]
+    lowercaseString];
+```
+
+</Tab>
+</Tabs>
+
+#### Google PlayデバイスID（Android） {#google-play-device-ids-android}
+
+##### Google広告ID
+
+Google Play開発者サービスの広告ID（GPS ADID）は、ユーザーが広告IDの削除を選択していない場合、Google Play開発サービスを搭載したAndroidデバイスで利用可能です。
+
+<Callout type="tip">
+
+Google Play開発者サービスの広告IDライブラリは、[Google Mavenリポジトリ](https://maven.google.com/web/index.html#com.google.android.gms:play-services-ads-identifier)で最新バージョンを確認できます。
+
+</Callout>
+
+1. アプリの`build.gradle`ファイルに、dependencyとして`play-services-ads-identifier`を追加します。
+
+<Tabs>
+<Tab title="Kotlin DSL"> <CodeBlock title="build.gradle.kts">
+
+```kotlin
+dependencies {
+   implementation("com.google.android.gms:play-services-ads-identifier:18.1.0")
+}
+```
+
+</CodeBlock>
+</Tab> <Tab title="Groovy">
+<CodeBlock title="build.gradle">
+
+```groovy
+dependencies {
+    implementation 'com.google.android.gms:play-services-ads-identifier:18.1.0'
+}
+```
+
+</CodeBlock>
+</Tab>
+</Tabs>
+
+2. 以下のパーミッションを`AndroidManifest.xml`ファイルに追加します。
+
+   <CodeBlock title="AndroidManifest.xml">
+
+   ```xml
+   <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
+   ```
+
+   </CodeBlock>
+
+3. アプリでR8またはProGuardを使用している場合は、`proguard-rules.pro`ファイルに以下のルールを追加して、コード最適化中にGoogle広告IDを取得するためのクラスとメソッドを保持します。ファイルが存在しない場合は、アプリモジュールのディレクトリ内でファイルを作成してください。
+
+   <CodeBlock title="proguard-rules.pro">
+
+   ```java
+   -keep class com.google.android.gms.common.ConnectionResult {
+      int SUCCESS;
+   }
+   -keep class com.google.android.gms.ads.identifier.AdvertisingIdClient {
+      com.google.android.gms.ads.identifier.
+      AdvertisingIdClient$Info getAdvertisingIdInfo(
+         android.content.Context);
+   }
+   -keep class com.google.android.gms.ads.identifier.AdvertisingIdClient$Info {
+      java.lang.String getId();
+      boolean isLimitAdTrackingEnabled();
+   }
+   ```
+
+   </CodeBlock>
+
+4. Google広告IDとトラッキングステータスを収集するためのコードを実装します。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+import com.google.android.gms.ads.identifier.AdvertisingIdClient
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
+suspend fun getGoogleAdvertisingIdInfo(
+   context: Context): AdvertisingIdClient.Info? {
+   return withContext(Dispatchers.IO) {
+      try {
+          AdvertisingIdClient.getAdvertisingIdInfo(context)
+      } catch (e: Exception) {
+          // Handle exceptions
+          // (for example: Google Play Services not available)
+          null
+      }
+   }
+}
+
+// Usage example
+// As getGoogleAdvertisingIdInfo is a suspending function,
+// it should be called from within a coroutine scope.
+lifecycleScope.launch {
+   val adInfo = getGoogleAdvertisingIdInfo(context)
+   adInfo?.let { info ->
+      // Include Google Advertising ID if tracking is not limited
+      if (!info.isLimitAdTrackingEnabled) {
+          params["gps_adid"] = info.id
+      }
+      // Set tracking status
+      params["tracking_enabled"] = if (info.isLimitAdTrackingEnabled)
+          "0" else "1"
+   }
+}
+```
+
+</Tab>
+</Tabs>
+
+##### App Set ID
+
+App Set IDは、Google Play開発者サービスがインストールされており、APIレベル30（Android 11）以降を実行する全てのAndroidデバイスで利用可能なバックアップIDです。
+
+<Callout type="tip">
+
+Google Play開発者サービスのApp Setライブラリの最新バージョンは、[Google Mavenリポジトリ](https://maven.google.com/web/index.html#com.google.android.gms:play-services-appset)で確認できます。
+
+</Callout>
+
+1. アプリの`build.gradle`ファイルに、必要なdependencyを追加します。
+
+<Tabs>
+<Tab title="Kotlin DSL"> <CodeBlock title="build.gradle.kts">
+
+```kotlin
+dependencies {
+    implementation("com.google.android.gms:play-services-appset:16.1.0")
+}
+```
+
+</CodeBlock>
+</Tab> <Tab title="Groovy">
+<CodeBlock title="build.gradle">
+
+```groovy
+dependencies {
+   implementation 'com.google.android.gms:play-services-appset:16.1.0'
+}
+```
+
+</CodeBlock>
+</Tab>
+</Tabs>
+
+2. App Set IDを収集するためのコードを実装します。
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+import com.google.android.gms.appset.AppSet
+import com.google.android.gms.appset.AppSetIdClient
+import com.google.android.gms.appset.AppSetIdInfo
+import com.google.android.gms.tasks.Tasks
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
+suspend fun getAppSetId(context: Context): String? {
+   return withContext(Dispatchers.IO) {
+      try {
+            val client: AppSetIdClient = AppSet.getClient(context)
+            val taskResult = Tasks.await(client.appSetIdInfo)
+            taskResult.id
+      } catch (e: Exception) {
+            // Handle exceptions (for example: Google Play Services not available)
+            null
+      }
+   }
+}
+
+// Usage example
+// As getAppSetId is a suspending function,
+// it should be called from within a coroutine scope.
+lifecycleScope.launch {
+   val appSetId = getAppSetId(context)
+   appSetId?.let { id ->
+      val params = mutableMapOf<String, String>()
+      params["google_app_set_id"] = id
+   }
+}
+```
+
+</Tab>
+</Tabs>
+
+## 追加パラメーター \{\#additional\-parameters\}
+
+これらのパラメーターは必須ではありませんが、いずれかを使用する場合は、全てのリクエストに含める必要があります。
+
+### Unixタイムスタンプ {#unix-timestamp}
+
+各サーバー間リクエストにUnixのタイムスタンプを含めると、デバイスでアクティビティが発生した時刻が提供されるため、アトリビューションの正確性が向上します。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+// Unix timestamp of when activity occurred on device
+// Code example shows how to retrieve current time in seconds
+// Example value: "1484085154"
+params["created_at_unix"] = String(Int(Date().timeIntervalSince1970))
+```
+
+</Tab>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+// Unix timestamp of when activity occurred on device
+// Code example shows how to retrieve current time in seconds
+// Example value: "1484085154"
+params["created_at_unix"] = (System.currentTimeMillis() / 1000).toString()
+```
+
+</Tab>
+</Tabs>
+
+### 確率的モデリングのデータポイント {#probabilistic-modeling}
+
+確率的モデリングをアトリビューションメソッドとして使用するには、全てのサーバー間リクエストに以下のパラメーターを含める必要があります。
+
+| パラメーター  | 説明                                                       |
+| ------------- | ---------------------------------------------------------- |
+| `device_name` | デバイス名。                                               |
+| `device_type` | デバイスのタイプまたはモデル。                             |
+| `os_version`  | デバイス上で動作するオペレーティングシステムのバージョン。 |
+| `ip_address`  | デバイスのIPアドレス。                                     |
+
+特にiOSの場合により包括的なアトリビューションが可能になるため、Adjustはこれらのパラメーターを追加することを強くお勧めしています。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+import UIKit
+
+// Device name
+// Example value: "iPhone10,5"
+var systemInfo = utsname()
+uname(&systemInfo)
+let machineMirror = Mirror(reflecting: systemInfo.machine)
+let deviceName = machineMirror.children.reduce("") {
+    identifier, element in
+    guard let value = element.value as? Int8, value != 0
+    else { return identifier }
+    return identifier + String(UnicodeScalar(UInt8(value)))
+}
+params["device_name"] = deviceName
+
+// Device type
+// Example value: "iPhone"
+params["device_type"] = UIDevice.current.model
+
+// OS version
+// Example value: "17.5.1"
+params["os_version"] = UIDevice.current.systemVersion
+
+// IP address
+// Retrieve the device's IP address from requests to your server
+params["ip_address"] = "192.0.0.1"  // Example value
+```
+
+</Tab>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+import android.content.Context
+import android.content.res.Configuration
+import android.os.Build
+import android.content.pm.PackageManager
+
+// Usage example
+val context: Context = // ... get your context here ...
+
+val isGooglePlayGamesForPC = context.packageManager
+    .hasSystemFeature("com.google.android.play.feature
+    .HPE_EXPERIENCE")
+
+// Device name
+params["device_name"] = if (isGooglePlayGamesForPC) null
+    else Build.MODEL
+
+// OS version
+params["os_version"] = if (isGooglePlayGamesForPC) null
+    else Build.VERSION.RELEASE
+
+// Device type
+params["device_type"] = when {
+    isGooglePlayGamesForPC -> "pc"
+    (context.resources.configuration.uiMode and
+    Configuration.UI_MODE_TYPE_MASK) == Configuration
+    .UI_MODE_TYPE_TELEVISION -> "tv"
+    else -> when (context.resources.configuration.screenLayout
+        and Configuration.SCREENLAYOUT_SIZE_MASK) {
+        Configuration.SCREENLAYOUT_SIZE_SMALL,
+        Configuration.SCREENLAYOUT_SIZE_NORMAL -> "phone"
+        Configuration.SCREENLAYOUT_SIZE_LARGE,
+        Configuration.SCREENLAYOUT_SIZE_XLARGE -> "tablet"
+        else -> null
+    }
+}
+
+// IP address
+// Retrieve the device's IP address from requests to
+// your server
+params["ip_address"] = "192.0.0.1"  // Example value
+```
+
+</Tab>
+</Tabs>
+
+### 環境 {#environment}
+
+`environment` パラメーターを渡すことで、リクエストが送信される環境を指定できます。テストを可能にするために、Adjustでは異なる環境からのリクエストを分離して管理します。利用可能な値は以下のとおりです。
+
+- `sandbox`: テスト用のリクエストを本番用データと分けるため、テスト時に使用します。
+- `production`: アプリをリリースする際に使用する本番用環境です。
+
+このパラメーターを指定しない場合、デフォルト値は`production`となります。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+// For testing (sandbox environment)
+params["environment"] = "sandbox"
+
+// For production use
+params["environment"] = "production"
+```
+
+</Tab>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+// For testing (sandbox environment)
+params["environment"] = "sandbox"
+
+// For production use
+params["environment"] = "production"
+```
+
+</Tab>
+</Tabs>
+
+### グローバルコールバックパラメーター {#global-callback-parameters}
+
+[ローデータのエクスポート](https://help.adjust.com/ja/article/raw-data-exports)を使用する場合、全てのサーバー間リクエストに「グローバルコールバック」を含めることで、ローデータにカスタムパラメーターを追加できます。これは通常、エクスポートされたローデータに内部ユーザーIDを含めるために使用します。
+
+グローバルコールバックパラメーターは、文字列のキーと値のペアを含むJSONオブジェクトとして表されます。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+params["callback_params"] = '{"user_id": "2696775149", "user_category": "high value"}'
+```
+
+</Tab>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+params["callback_params"] = '{"user_id": "2696775149", "user_category": "high value"}'
+```
+
+</Tab>
+</Tabs>
+
+### グローバルパートナーパラメーター {#global-partner-parameters}
+
+特定のパートナーと連携する際、全てのサーバー間リクエストに「グローバルパートナーパラメーター」を含める場合があります。Adjustのサーバーは、パートナーへの全てのコールバックで、これらのパラメーターを渡します。これは通常、受信するコールバックに独自のユーザーIDを要求するアナリティクスパートナー向けに使用されます。
+
+グローバルパートナーは、文字列のキーと値のペアを含むJSONオブジェクトとして表されます。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+params["partner_params"] = '{"analytics_user_id": "3913132433", "analytics_visitor_id": "nzFC9LKSqM"}'
+```
+
+</Tab>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+params["partner_params"] = '{"analytics_user_id": "3913132433", "analytics_visitor_id": "nzFC9LKSqM"}'
+```
+
+</Tab>
+</Tabs>
+
+## リクエスト \{\#requests\}
+
+<Callout type="important">
+
+リクエストを送信する前に、全てのパラメーター値がURLエンコードされていることを確認してください。
+
+</Callout>
+
+### セッション {#session}
+
+セッションは、Adjust実装の基盤として必要となる唯一のアクティビティです。セッションとは一般的に、アプリが開かれることを指します。Adjustのサーバーは、正常なセッションリクエストを次のようにログに記録します。
+
+- デバイスの最初のセッションを「インストール」アクティビティとして記録します。
+- 以降のセッションを「セッション」アクティビティとして記録します。
+- [リアトリビューションの基準](https://help.adjust.com/ja/article/reattribution)が満たされている場合は、「リアトリビューション」または「リアトリビューション再インストール」のアクティビティを記録します。
+
+<Callout type="info">
+
+また、以下のいずれかが発生した場合、Adjust SDKはセッションリクエストをAdjustのサーバーに送信します。
+
+- ユーザーが、インストール後または再インストール後に初めてアプリを起動した。
+- アプリが閉じられた後、またはバックグラウンドで30分間経過した後で、ユーザーが再度アプリを起動した。
+
+</Callout>
+
+送信するサーバー間セッションリクエストに`created_at_unix`パラメーターが含まれる場合、Adjustのサーバーはこのパラメーター値が、ログに記録された最後のセッションの`created_at_unix`時間から20分以上経過していることを確認します。
+
+<CodeBlock title="リクエスト - cURL">
+
+```sh
+curl -X POST "https://app.adjust.com/session" \ -H "Authorization: Bearer ADD_YOUR_AUTH_TOKEN_HERE" \
+-H "Content-Type: application/x-www-form-urlencoded" \
+-d "s2s=1\
+&os_name=ios\
+&app_token=i9dukg8o5slc\
+&idfa=29DDE430-CE81-4F00-A50C-689595AAD142\
+&att_status=3\
+&idfv=59E27F41-A86B-4560-B585-63161F871C4B\
+&primary_dedupe_token=3b35fcfb-6115-4cff-830f-e32a248c487d\
+&created_at_unix=1484085154\
+&device_name=iPhone16%2C2\
+&device_type=iPhone\
+&os_version=17.5.1\
+&ip_address=192.0.0.1\
+&environment=sandbox\
+&callback_params=%7B%22user_id%22%3A%20%222696775149%22%2C%20%22user_category%22%3A%20%22high%20value%22%7D\
+&partner_params=%7B%22analytics_user_id%22%3A%20%223913132433%22%2C%20%22analytics_session_id%22%3A%20%22nzFC9LKSqM%22%7D"\
+-w "\n\nHTTP Status Code: %{http_code}\n"\
+-s
+```
+
+</CodeBlock>
+
+これは、Adjustでデバイスの最初のセッションを正常にログに記録するためのレスポンスフォーマットです。Adjustの[テストコンソール](https://help.adjust.com/ja/article/testing-console)を使用すれば、実際のデバイスを利用せずに、必要に応じて何度でもテストできます。
+
+<CodeBlock title="レスポンス">
+
+```console
+{
+   "app_token": "4w565xzmb54d",
+   "adid": "df6c5653080670612cd2f9766ddc0814",
+   "timestamp": "2024-07-09T01:31:14.373Z+0000",
+   "message": "Install tracked",
+   "ask_in": 2000
+}
+
+HTTP Status Code: 200
+```
+
+</CodeBlock>
+
+これは、Adjustでデバイスの以降のセッションを正常にログに記録するためのレスポンスフォーマットです。
+
+<CodeBlock title="レスポンス">
+
+```console
+{
+   "app_token": "4w565xzmb54d",
+   "adid": "df6c5653080670612cd2f9766ddc0814",
+   "timestamp": "2024-07-09T02:31:14.373Z+0000",
+   "message": "Session tracked",
+   "ask_in": 5000
+}
+
+HTTP Status Code: 200
+```
+
+</CodeBlock>
+
+### インストール後のイベント {#post-install-event}
+
+デバイスのセッションリクエストを少なくとも1つ正常に送信すると、[インストール後のイベント](/ja/api/s2s-api/events)を送信できるようになります。これらは通常、マーケティング目標を表すイベントであり、ネットワークはこれをキャンペーンの最適化に使用できます。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+// Add event token to existing params
+params["event_token"] = "2y7e81"
+
+// Add revenue and currency, if applicable
+// These parameters are equivalent to $19.99
+params["revenue"] = "19.99"
+params["currency"] = "USD"
+```
+
+</Tab>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+// Add event token to existing params
+params["event_token"] = "2y7e81"
+
+// Add revenue and currency, if applicable
+// These parameters are equivalent to $19.99
+params["revenue"] = "19.99"
+params["currency"] = "USD"
+```
+
+</Tab>
+</Tabs>
+
+#### コールバックパラメーター {#callback-parameters}
+
+[ローデータエクスポート](https://help.adjust.com/ja/article/raw-data-exports)を使用する場合、特定のイベントリクエストにカスタムの「コールバックパラメーター」を含めることで、イベントレベルのカスタムデータを追加できます。たとえば、購入イベントのローデータに内部のトランザクションIDを含めることが可能です。
+
+コールバックパラメーターは、文字列のキーと値のペアを含むJSONオブジェクトとして表されます。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+// If callback_params exists, add the event callback parameters to it (for example: txn_id)
+params["callback_params"] = '{"user_id": "2696775149", "user_category": "high value", "txn_id": "8837853376"}'
+
+// If callback_params does not exist, create it
+params["callback_params"] = '{"txn_id": "8837853376"}'
+```
+
+</Tab>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+// If callback_params exists, add the event callback parameters to it (for example: txn_id)
+params["callback_params"] = '{"user_id": "2696775149", "user_category": "high value", "txn_id": "8837853376"}'
+
+// If callback_params does not exist, create it
+params["callback_params"] = '{"txn_id": "8837853376"}'
+```
+
+</Tab>
+</Tabs>
+
+#### パートナーパラメーター {#partners-parameters}
+
+特定のパートナーと連携する場合は、イベントリクエストにカスタムの「パートナーパラメーター」を含める必要があります。その後、Adjustのサーバーは、パートナーに送信する関連イベントのコールバックにこれらのパラメーターを追加するようになります。これは、`view_item`、`add_to_cart`、購入などのイベントの動的なリマーケティングキャンペーンを可能にする、最も一般的な方法です。
+
+パートナーパラメーターは、文字列のキーと値のペアを含むJSONオブジェクトとして表されます。
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+// If partner_params exists, add the event partner parameters to it (for example: item_id)
+params["partner_params"] = '{"analytics_user_id": "3913132433", "analytics_session_id": "nzFC9LKSqM", "item_id": "[\"76524\",\"62599\"]"}'
+
+// If partner_params does not exist, create it
+params["partner_params"] = '{"item_id": "[\"76524\",\"62599\"]"}'
+```
+
+</Tab>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+// If partner_params exists, add the event partner parameters to it (for example: item_id)
+params["partner_params"] = '{"analytics_user_id": "3913132433", "analytics_session_id": "nzFC9LKSqM", "item_id": "[\"76524\",\"62599\"]"}'
+
+// If partner_params does not exist, create it
+params["partner_params"] = '{"item_id": "[\"76524\",\"62599\"]"}'
+```
+
+</Tab>
+</Tabs>
+
+イベントリクエストを送信します。
+
+<CodeBlock title="リクエスト - cURL">
+
+```sh
+curl -X POST "https://app.adjust.com/event" \
+-H "Authorization:Bearer ADD_YOUR_AUTH_TOKEN_HERE" \
+-H "Content-Type:application/x-www-form-urlencoded" \
+-d "s2s=1\
+&os_name=ios\
+&app_token=4w565xzmb54d\
+&idfa=29DDE430-CE81-4F00-A50C-689595AAD142\
+&att_status=3\
+&idfv=59E27F41-A86B-4560-B585-63161F871C4B\
+&primary_dedupe_token=3b35fcfb-6115-4cff-830f-e32a248c487d\
+&created_at_unix=1484085154\
+&device_name=iPhone16%2C2\
+&device_type=iPhone\
+&os_version=17.5.1\
+&ip_address=192.0.0.1\
+&environment=sandbox\
+&callback_params=%7B%22user_id%22%3A%20%222696775149%22%2C%20%22user_category%22%3A%20%22high%20value%22%2C%20%22txn_id%22%3A%20%228837853376%22%7D\
+&partner_params=%7B%22analytics_user_id%22%3A%20%223913132433%22%2C%20%22analytics_session_id%22%3A%20%22nzFC9LKSqM%22%2C%20%22item_id%22%3A%20%22%5B%5C%2276524%5C%22%2C%5C%2262599%5C%22%5D%22%7D"\
+&event_token=2y7e81\
+&revenue=19.99\
+&currency=USD\
+-w "\n\nHTTP Status Code: %{http_code}\n"\
+-s
+```
+
+</CodeBlock>
+<CodeBlock title="レスポンス">
+
+```console
+{
+   "status": "OK"
+}
+
+HTTP Status Code: 200
+```
+
+</CodeBlock>
