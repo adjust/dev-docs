@@ -15,14 +15,14 @@ redirects:
 
 When sending marketing emails that link to iOS apps, there is a challenge due to conflicting requirements:
 
-- **Email marketing platforms** need to replace original links with redirect URLs to record clicks and measure campaign performance.
+- **Email marketing platforms** need to replace original links with redirect URLs to record email clicks and measure campaign performance.
 - **Universal links** should provide a seamless experience to users who have the app installed by opening links in the app directly.
 
-Due to iOS limitations for universal links, email redirect URLs open in the browser instead of the app. This leads to a suboptimal user experience, often requiring multiple steps for the user to open the app.
+Due to iOS limitations for universal links, redirects such as email click URLs open in the browser instead of the app. This leads to a suboptimal user experience, often requiring multiple steps for the user to open the app.
 
 Adjust's Link Resolution feature resolves this conflict. It follows the redirect chain to reach the final destination URL and then passes that URL to your app for deep link handling. This maintains both email analytics and seamless in-app experiences for your users.
 
-## Before you begin
+## Before you begin {#before-you-begin}
 
 - [Configure deep link settings](/en/sdk/ios/features/deep-links/configure-deep-link-settings)
 - [Set up direct deep linking](/en/sdk/ios/features/deep-links/direct)
@@ -32,50 +32,50 @@ Adjust's Link Resolution feature resolves this conflict. It follows the redirect
 
 1. You create a campaign in your email marketing platform.
 2. In the emails, you use Adjust deep links.
-3. When you send the emails, the email marketing platform replaces the Adjust deep links with its email redirect URLs.
+3. When you send the emails, the email marketing platform replaces the Adjust deep links with its email click URLs.
 
    For example, your original URL:  
    `https://brandname.go.link/summer-clothes?promo=beach&adj_t=abc123`
 
-   is replaced with an email redirect URL:  
+   is replaced with an email click URL:  
    `https://email.example.com/2wuTnQvU`
 
    Note: "example.com" is your domain and "email" is your subdomain dedicated to email click measurement.
 
-4. A user who has your app installed clicks on the email redirect URL in your email, which opens as a universal link in your app.
-5. Your app passes the email redirect URL to the link resolution method in the Adjust SDK.
-6. The link resolution method compares the domain in the email redirect URL against the link resolution domains configured in the Adjust SDK, and one of two things happens:
+4. A user who has your app installed clicks a link in your email, which opens as a universal link in your app.
+5. Your app passes the email click URL to the link resolution method in the Adjust SDK.
+6. The link resolution method compares the domain in the email click URL against the link resolution domains configured in the Adjust SDK, and one of two things happens:
 
    - Domains don't match - The method returns the deep link as is.
    - Domains match - The method resolves the link and returns the resulting deep link.
 
-   The Adjust SDK will follow up to ten redirects when attempting to resolve to the final destination URL. If there are more than ten redirects, the SDK will return the tenth redirect URL.
+   The Adjust SDK follows up to ten redirects when attempting to resolve to the final destination URL. If there are more than ten redirects, the SDK returns the tenth click URL.
 
 <Callout type="note">
 
-When a user without your app clicks on the redirect URL, iOS handles this as a normal web URL and redirects the user to the App Store. In this case, Link Resolution isn't applicable.
+When a user without your app clicks on a link in your email, iOS handles this as a normal web URL and redirects the user to the App Store. In this case, Link Resolution isn't applicable.
 
 </Callout>
 
 ## Setup {#setup}
 
-### 1. Choose Subdomain
+### 1. Choose email click domain {#choose-email-click-domain}
 
-Choose a subdomain (or root domain) dedicated to email click measurement. If you already have a subdomain for this purpose, choose an additional one to set up. A new subdomain is required to avoid issues with migrating live email traffic on an existing subdomain.
+Choose a subdomain dedicated to email click measurement. For email deliverability purposes, the subdomain should match the root domain of your sending domain. If you already have a subdomain for this purpose, choose an additional one. A new subdomain is required to prevent issues when migrating live email traffic from an existing subdomain.
 
 **Example:** `email.example.com`
 
-### 2. Set up CDN
+### 2. Set up CDN {#set-up-cdn}
 
-Set up a content delivery network (CDN) to manage incoming requests for your email redirect domain:
+Set up a content delivery network (CDN) to manage incoming requests for your email click domain:
 
-- **Set up TLS/SSL certificate**. iOS requires that universal links use HTTPS, so a TLS/SSL certificate is required for your email redirect domain.
-- **Host AASA file**. iOS requires this file to enable your email redirect domain as a universal link. All email marketing platforms listed below, with the exception of Iterable, require that your CDN host the AASA file. For Iterable, you will upload the AASA file to their system in a later step.
+- **Set up TLS/SSL certificate**. iOS requires that universal links use HTTPS, so a TLS/SSL certificate is required for your email click domain.
+- **Host AASA file**. iOS requires this file to enable your email click domain as a universal link. All email marketing platforms listed below, with the exception of Iterable, require that your CDN host the AASA file. For Iterable, you will upload the AASA file to their system in a later step.
 - **Forward traffic**. Except for requests for to AASA file, forward all other traffic to the origin server of your email marketing platform.
-- **Configure DNS**. Point your email redirect domain to your CDN. This is usually done by configuring a CNAME record in its DNS settings. This configuration is managed through your domain registrar or web host, depending on which entity controls your DNS. If you're unsure, consult your IT department or system administrator for assistance.
-- **Configure domain in email marketing platform**. In the in the email marketing platform dashboard, configure your email redirect domain and ensure that HTTPS support is enabled for it.
+- **Configure DNS**. Point your email click domain to your CDN. This is usually done by configuring a CNAME record in its DNS settings. This configuration is managed through your domain registrar or web host, depending on which entity controls your DNS. If you're unsure, consult your IT department or system administrator for assistance.
+- **Configure domain in email marketing platform**. In the email marketing platform dashboard, configure your email click domain and ensure that HTTPS support is enabled for it.
 
-Each ESP provides specific setup instructions for different CDN providers. Follow the documentation for your ESP and CDN combination to ensure proper configuration:
+Email marketing platforms provide specific setup instructions for certain CDN providers, as shown in the table below. If your chosen CDN isn't covered in the documentation, you can adapt the setup steps from a documented CDN while referencing your CDN provider's general documentation.
 
 | Email marketing platform | CDN setup documentation                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -87,17 +87,19 @@ Each ESP provides specific setup instructions for different CDN providers. Follo
 | SendGrid                 | [AWS CloudFront](https://support.sendgrid.com/hc/en-us/articles/4412701748891-How-to-configure-SSL-for-click-tracking-using-CloudFront), [Cloudflare](https://www.twilio.com/docs/sendgrid/ui/sending-email/content-delivery-networks/using-cloudflare-as-your-content-delivery-network-cdn), [Fastly](https://www.twilio.com/docs/sendgrid/ui/sending-email/content-delivery-networks/using-fastly-as-your-content-delivery-network-cdn), [KeyCDN](https://www.twilio.com/docs/sendgrid/ui/sending-email/content-delivery-networks/using-keycdn-as-your-content-delivery-network-cdn)                                                                                                                                                                                                                  |
 | SparkPost                | [AWS CloudFront](https://support.sparkpost.com/docs/tech-resources/enabling-https-engagement-tracking-on-sparkpost/#step-by-step-guide-with-aws-cloudfront), [Cloudflare](https://support.sparkpost.com/docs/tech-resources/enabling-https-engagement-tracking-on-sparkpost/#step-by-step-guide-with-cloudflare), [Fastly](https://support.sparkpost.com/docs/tech-resources/enabling-https-engagement-tracking-on-sparkpost/#step-by-step-guide-with-fastly), [Google Cloud Platform](https://support.sparkpost.com/docs/tech-resources/enabling-https-engagement-tracking-on-sparkpost/#step-by-step-guide-with-google-cloud-platform), [Microsoft Azure](https://support.sparkpost.com/docs/tech-resources/enabling-https-engagement-tracking-on-sparkpost/#step-by-step-guide-with-microsoft-azure) |
 
-#### Create AASA file
+#### Create AASA file {#create-aasa-file}
 
 To make things easier, you can reuse the AASA file from your Adjust branded domain.
 
-- Download the AASA file from your Adjust branded domain:
-   ```
-   https://example.go.link/.well-known/apple-app-site-association
-   ```
-   Replace `example.go.link` with your Adjust branded domain.
+Download the AASA file from your Adjust branded domain:
 
-##### Email marketing platforms besides Iterable
+```
+https://example.go.link/.well-known/apple-app-site-association
+```
+
+Replace `example.go.link` with your Adjust branded domain.
+
+##### Email marketing platforms besides Iterable {#email-marketing-platforms-besides-iterable}
 
 Host the file on your CDN in this location:
 
@@ -105,29 +107,30 @@ Host the file on your CDN in this location:
 https://email.example.com/.well-known/apple-app-site-association
 ```
 
-Replace `email.example.com` with your email redirect domain.
+Replace `email.example.com` with your email click domain.
 
 - Ensure your CDN serves the file according to these requirements:
+   - HTTPS
    - Content-Type header has to be `application/json`.
    - No Content-Disposition header should be present.
-   - The server must serve the file directly without redirects
+   - The CDN must serve the file directly without redirects.
    - The content has to remain in JSON format.
 
-##### Iterable
+##### Iterable {#iterable}
 
-In the Iterable dashboard, upload the AASA file when [configuring the email redirect domain](https://support.iterable.com/hc/en-us/articles/115002651226-Configuring-Deep-Links-for-Email-or-SMS#setting-up-destination-domains).
+In the Iterable dashboard, upload the AASA file when [configuring the email click domain](https://support.iterable.com/hc/en-us/articles/115002651226-Configuring-Deep-Links-for-Email-or-SMS#setting-up-destination-domains).
 
-### 3. Configure Associated Domains
+### 3. Configure Associated Domains {#configure-associated-domains}
 
-Add the email redirect domain to your [**Associated Domains** configuration](/en/sdk/ios/features/deep-links/configure-deep-link-settings#configure-universal-links) in Xcode. Example:
+Add the email click domain to your [**Associated Domains** configuration](/en/sdk/ios/features/deep-links/configure-deep-link-settings#configure-universal-links) in Xcode. Example:
 
 `applinks:email.example.com`
 
-### 4. Implement Link Resolution
+### 4. Implement Link Resolution {#implement-link-resolution}
 
 Add Link Resolution to your [direct deep linking](/en/sdk/ios/features/deep-links/direct) implementation in front of where you are calling `processAndResolve(_:withCompletionHandler:)`.
 
-Add your email redirect domain to `resolveUrlSuffixArray`.
+Add your email click domain to `resolveUrlSuffixArray`.
 
 <Tabs>
 <Tab title="Swift" sync="swift">
@@ -162,7 +165,7 @@ ADJLinkResolution.resolveLink(
 </Tab>
 <Tab title="Objective-C" sync="objc">
 
-```objc {1-8, 24}
+```objc {1-6, 24}
 // Resolve email redirect
 [ADJLinkResolution resolveLinkWithUrl:incomingLink
                 resolveUrlSuffixArray:@[@"email.example.com"]
@@ -192,13 +195,13 @@ ADJLinkResolution.resolveLink(
 </Tab>
 </Tabs>
 
-### 5. Test and Release
+### 5. Test and Release {#test-and-release}
 
 - Create a debug build of your app, and install it on a real iOS device.
 - In the Adjust dashboard, create a [custom link](https://help.adjust.com/en/article/custom-link-setup). For email, you generally have to use long links, so that your email marketing platform can populate the attribution parameters (adj_campaign, adj_adgroup, adj_creative) with its macros.
 - Create an email template which uses the Adjust deep link.
-- Generate a test email from the email template. This should replace the Adjust deep link in the email with an email redirect link.
+- Generate a test email from the email template. This should replace the Adjust deep link in the email with an email click link.
 - Send the test email to an account that can open the email on your real iOS device.
 - Open the email in an email app (Gmail, Apple Mail).
-- Click the link. The app should open immediately without first opening a browser, and the app should navigate to the correct page. Follow the [testing guide](http://localhost:4321/en/sdk/ios/features/deep-links/testing#test-direct-deep-linking) to test the link when the app is both in not running and background states.
+- Click the link. The app should open immediately without first opening a browser, and the app should navigate to the correct page. Follow the [testing guide](http://localhost:4321/en/sdk/ios/features/deep-links/testing#test-direct-deep-linking) to test the link when the app is both in "not running" and background states.
 - Release the app update to the App Store.
