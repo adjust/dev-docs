@@ -19,7 +19,7 @@ Adjust SDKの動作を設定するには、このドキュメントに記載さ�
 
 <CodeBlock title="メソッドシグネチャー">
 
-```js
+```ts
 constructor(appToken: string, environment: AdjustEnvironment)
 ```
 
@@ -29,27 +29,27 @@ Adjust SDKを設定するには、`AdjustConfig`オブジェクトをインス�
 
 Configオブジェクトをインスタンス化するには、新しい`AdjustConfig`インスタンスを作成して以下のパラメーターをパスしてください：
 
--  `appToken` （`string`）：お客様の[Adjustアプリトークン](https://help.adjust.com/ja/article/app-token-and-reporting-currency#view-your-app-details)。
--  `environment` （`AdjustEnvironment`）：SDKを実行したい環境。テスト用のサンドボックスモードでSDKを実行するには`AdjustConfig.EnvironmentSandbox`をパスします。リリース用の本番モードでSDKを実行するには`AdjustConfig.EnvironmentProduction`をパスします。
+- `appToken` （`string`）：お客様の[Adjustアプリトークン](https://help.adjust.com/ja/article/app-token-and-reporting-currency#view-your-app-details)。
+- `environment` （`AdjustEnvironment`）：SDKを実行したい環境。テスト用のサンドボックスモードでSDKを実行するには`AdjustConfig.EnvironmentSandbox`をパスします。リリース用の本番モードでSDKを実行するには`AdjustConfig.EnvironmentProduction`をパスします。
 
 ```js
 var adjustConfig = new AdjustConfig(
    "{YourAppToken}",
    AdjustConfig.EnvironmentSandbox,
 );
-Adjust.create(adjustConfig);
+Adjust.initSdk(adjustConfig);
 ```
 
 ## 読み取り専用の設定 {#readonly-configuration}
 
-**読み取り専用** の設定オプションは、SDKを初期化する **前に** `AdjustConfig`インスタンスで設定されます。これらのオプションは、SDKの実行中は変更できません。`Adjust.create()`を実行する前に、使用したいオプションを設定する必要があります。
+**読み取り専用** の設定オプションは、SDKを初期化する **前に** `AdjustConfig`インスタンスで設定されます。これらのオプションは、SDKの実行中は変更できません。`Adjust.initSdk`を実行する前に、使用したいオプションを設定する必要があります。
 
 ### ログレベルを設定する {#set-your-logging-level}
 
 <CodeBlock title="メソッドシグネチャー">
 
-```js
-setLogLevel(logLevel: AdjustLogLevel)
+```ts
+setLogLevel(logLevel: AdjustLogLevel): void
 ```
 
 </CodeBlock>
@@ -66,9 +66,9 @@ Adjust SDKは、さまざまな量の情報を返すために、設定可能な�
 | `AdjustLogLevel.Assert`   | エラーレベル以下のログを無効化する                     |
 | `AdjustLogLevel.Suppress` | ログを全て無効化する                                   |
 
-ログレベルを設定するには、次の引数で`setLogLevel`メソッドを呼び出します。
+`setLogLevel`メソッドを以下の引数で呼び出すことで、ログレベルを設定できます。
 
--  `logLevel` （`AdjustLogLevel`）：使用したいログレベル
+- `logLevel` （`AdjustLogLevel`）：使用したいログレベル
 
 ```js
 var adjustConfig = new AdjustConfig(
@@ -76,15 +76,15 @@ var adjustConfig = new AdjustConfig(
    AdjustConfig.EnvironmentSandbox,
 );
 adjustConfig.setLogLevel(AdjustLogLevel.Verbose);
-Adjust.create(adjustConfig);
+Adjust.initSdk(adjustConfig);
 ```
 
 ### 外部デバイスIDを設定する {#set-external-device-identifier}
 
 <CodeBlock title="メソッドシグネチャー">
 
-```js
-setExternalDeviceId(externalDeviceId: string)
+```ts
+setExternalDeviceId(externalDeviceId: string): void
 ```
 
 </CodeBlock>
@@ -93,7 +93,7 @@ setExternalDeviceId(externalDeviceId: string)
 
 外部デバイスIDをデバイスのカスタム識別子として使用できます。これは、他のシステム上で継続性を保ちたい場合に役立ちます。次の引数で`setExternalDeviceId`メソッドを呼び出し、外部デバイスIDを割り当てます。
 
--  `externalDeviceId` （`string`）：外部デバイスID。この値は **大文字と小文字を区別します** 。外部デバイスIDをインポートしている場合は、パス値がインポートした値と一致することを確認してください。
+- `externalDeviceId` （`string`）：外部デバイスID。この値は **大文字と小文字を区別します** 。外部デバイスIDをインポートしている場合は、パス値がインポートした値と一致することを確認してください。
 
 <Callout type="seealso">
 
@@ -107,10 +107,10 @@ var adjustConfig = new AdjustConfig(
    AdjustConfig.EnvironmentSandbox,
 );
 adjustConfig.setExternalDeviceId("{Your-External-Device-Id}");
-Adjust.create(adjustConfig);
+Adjust.initSdk(adjustConfig);
 ```
 
-外部デバイスIDをビジネスアナリティクスに使用する場合は、IDを[セッションコールバックパラメーター](/ja/sdk/cordova/features/session-parameters)としてパスすることができます。
+外部デバイスIDをビジネスアナリティクスに使用する場合は、そのIDを[グローバルコールバックパラメーター](/ja/sdk/cordova/features/session-parameters)として指定できます。
 
 既存の外部デバイスIDをAdjustにインポートすることが可能です。これにより、Adjustサーバーが今後のデータを既存のデバイス記録と一致させることができます。この設定をご希望の場合は、Adjustの担当者にお問い合わせください。
 
@@ -118,15 +118,15 @@ Adjust.create(adjustConfig);
 
 <CodeBlock title="メソッドシグネチャー">
 
-```js
-setDefaultTracker(defaultTracker: string)
+```ts
+setDefaultTracker(defaultTracker: string): void
 ```
 
 </CodeBlock>
 
 アプリがデバイスにプリインストールされている場合、デフォルトのリンクトークンを設定できます。ユーザーがプリインストールされたアプリを初めて起動すると、インストールはデフォルトのリンクトークンにアトリビュートされます。デフォルトのリンクトークンを設定するには、次の引数を使用して`setDefaultTracker`メソッドを呼び出します：
 
--  `defaultTracker` （`string`）：プリインストールを記録したい[Adjustリンクトークン](https://help.adjust.com/ja/article/links#adjust-link-token)。
+- `defaultTracker` （`string`）：プリインストールを記録したい[Adjustリンクトークン](https://help.adjust.com/ja/article/links#adjust-link-token)。
 
 ```js
 var adjustConfig = new AdjustConfig(
@@ -134,117 +134,63 @@ var adjustConfig = new AdjustConfig(
    AdjustConfig.EnvironmentSandbox,
 );
 adjustConfig.setDefaultTracker("{LinkToken}");
-Adjust.create(adjustConfig);
+Adjust.initSdk(adjustConfig);
 ```
 
-### コストデータの送信を有効化する {#enable-cost-data-sending}
+### アトリビューションで広告費用データを受信する {#receive-ad-spend-data}
 
 <CodeBlock title="メソッドシグネチャー">
 
-```js
-setNeedsCost(needsCost: boolean)
+```ts
+enableCostDataInAttribution(): void
 ```
 
 </CodeBlock>
 
-デフォルトでは、Adjust SDKはユーザーのアトリビューションの一環としてコストデータを送信しません。コストデータの送信を有効化することで、このデータを送信するようにSDKを設定できます。コストデータの送信を有効化するには、次の引数を使用して`setNeedsCost`メソッドを呼び出します：
+デフォルトでは、Adjust SDKはユーザーのアトリビューションの一部として広告費用データを受信しません。`AdjustConfig`インスタンスの`enableCostDataInAttribution`メソッドを呼び出すことで、この情報をリクエストするようにSDKを設定できます。
 
--  `needsCost` （`boolean`）：コストデータの送信を有効化するには`true`、無効化するには`false`に設定します。
-
-コストデータには、ユーザーの[アトリビューション情報](/ja/sdk/cordova/features/attribution)でアクセスできます。
+広告費用データには、ユーザーの[アトリビューション情報](/ja/sdk/cordova/features/attribution)でアクセスできます。
 
 ```js
 var adjustConfig = new AdjustConfig(
    "{YourAppToken}",
    AdjustConfig.EnvironmentSandbox,
 );
-adjustConfig.setNeedsCost(true);
-Adjust.create(adjustConfig);
+adjustConfig.enableCostDataInAttribution();
+Adjust.initSdk(adjustConfig);
 ```
 
-### バックグランドでの計測機能を有効化する {#enable-background-recording}
+### バックグラウンドでの送信を有効にする {#enable-background-recording}
 
 <CodeBlock title="メソッドシグネチャー">
 
-```js
-setSendInBackground(sendInBackground: boolean)
+```ts
+enableSendingInBackground(): void
 ```
 
 </CodeBlock>
 
-デフォルトでは、アプリがバックグラウンドで動作している間、Adjust SDKはリクエストの送信を一時停止します。バックグランドでの計測機能を有効化することで、SDKがバックグランドでリクエストを送信するよう設定することが可能です。バックグランドでの計測機能を有効化するには、次の引数を使用して`setSendInBackground`メソッドを呼び出します：
-
--  `sendInBackground` （`boolean`）：バックグランドでの送信を有効化するには`true`、無効化するには`false`に設定します。
+デフォルトでは、Adjust SDKはアプリがバックグラウンドで動作している間、リクエストの送信を一時停止します。バックグランドでの計測機能を有効にすることで、SDKがバックグランドでリクエストを送信するように設定できます。バックグラウンドでの計測機能を有効にするには、`AdjustConfig`インスタンスで`enableSendingInBackground`メソッドを呼び出します。
 
 ```js
 var adjustConfig = new AdjustConfig(
    "{YourAppToken}",
    AdjustConfig.EnvironmentSandbox,
 );
-adjustConfig.setSendInBackground(true);
-Adjust.create(adjustConfig);
-```
-
-### イベントのバッファリングを有効化する {#enable-event-buffering}
-
-<CodeBlock title="メソッドシグネチャー">
-
-```js
-setEventBufferingEnabled(eventBufferingEnabled: boolean)
-```
-
-</CodeBlock>
-
-Adjust SDKは、ユーザーがアプリ内でイベントをトリガーすると、すぐにイベント情報を送信します。イベントバッファリングを有効にすることで、イベント情報をスケジュールに沿って送信することができます。イベントバッファリングは、デバイス上のローカルバッファにイベントを保存し、1分間に1回、全てのリクエストを送信します。
-
-Configオブジェクトにはブーリアン`eventBufferingEnabled`プロパティが含まれており、それが動作を制御します。イベントのバッファリングを有効化するには、次の引数を指定して`setEventBufferingEnabled`メソッドを呼び出します。
-
--  `eventBufferingEnabled` （`boolean`）：イベントのバッファリングを有効化するには`true`、無効化するには`false`に設定します。
-
-```js
-var adjustConfig = new AdjustConfig(
-   "{YourAppToken}",
-   AdjustConfig.EnvironmentSandbox,
-);
-adjustConfig.setEventBufferingEnabled(true);
-Adjust.create(adjustConfig);
-```
-
-### SDKの起動を遅らせる {#delay-the-start-of-the-sdk}
-
-<CodeBlock title="メソッドシグネチャー">
-
-```js
-setDelayStart(delayStart: number)
-```
-
-</CodeBlock>
-
-デフォルトでは、Adjust SDKはアプリの起動直後に動作を開始します。起動時に取得できないデータを[セッションパラメーター](/ja/sdk/cordova/features/session-parameters)で送信したい場合は、SDKの動作開始を遅らせることができます。これは、ユニークな識別子などの情報を送信する場合に便利です。
-
-動作開始の遅延を設定するには、次の引数を使用して`setDelayStart`メソッドを呼び出します。
-
--  `delayStart` （`number`）：SDKの動作開始を遅らせる時間（秒）。SDKの動作開始を遅らせることができるのは最長 **10秒間** です。
-
-```js
-var adjustConfig = new AdjustConfig(
-   "{YourAppToken}",
-   AdjustConfig.EnvironmentSandbox,
-);
-adjustConfig.setDelayStart(5.5);
-Adjust.create(adjustConfig);
+adjustConfig.enableSendingInBackground();
+Adjust.initSdk(adjustConfig);
 ```
 
 ## 動的設定 {#dynamic-configuration}
 
 **動的** 設定オプションは、SDKのライフサイクル中に、ユーザーによるイベントやアクションに応じて変更されることがあります。
 
-### オフラインモードに切り替える {#toggle-offline-mode}
+### オフラインモードを有効化する {#activate-offline-mode}
 
 <CodeBlock title="メソッドシグネチャー">
 
-```js
-setOfflineMode(enabled: boolean): void
+```ts
+switchToOfflineMode(): void
 ```
 
 </CodeBlock>
@@ -256,19 +202,33 @@ setOfflineMode(enabled: boolean): void
 
 Adjust SDKは、イベントとセッションのデータをAdjustのサーバーにリアルタイムで送信します。SDKをオフラインモードにすると、情報の送信を一時停止することができます。オフラインモードでは、SDKは全てのデータをデバイスのローカルファイルに保存します。オフラインモードを無効にすると、SDKはこの情報をAdjustのサーバーに送信します。
 
-以下の引数を使用して`setOfflineMode`メソッドを呼び出すことで、いつでもオフランモードに切り替えられます：
-
--  `isOffline` （`boolean`）：オフラインモードを有効化するには`true`に、オフラインモードを無効化するには`false`に設定します。
+`Adjust.switchToOfflineMode`メソッドを呼び出すことで、いつでもオフランモードに切り替えられます：
 
 ```js
-Adjust.setOfflineMode(true);
+Adjust.switchToOfflineMode();
+```
+
+### オフラインモードを無効化する {#deactivate-offline-mode}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```ts
+switchBackToOnlineMode(): void
+```
+
+</CodeBlock>
+
+`Adjust.switchBackToOnlineMode`メソッドを呼び出して、SDKを再度有効化することができます。これにより、SDKは情報の送信を再開します。
+
+```js
+Adjust.switchBackToOnlineMode();
 ```
 
 ### Pushトークンを設定する {#set-push-tokens}
 
 <CodeBlock title="メソッドシグネチャー">
 
-```js
+```ts
 setPushToken(pushToken: string): void
 ```
 
@@ -276,51 +236,64 @@ setPushToken(pushToken: string): void
 
 Pushトークンは、[Audiences](https://help.adjust.com/ja/article/audiences)やクライアントコールバックに使用されます。また、[アンインストール・再インストール計測](https://help.adjust.com/ja/article/uninstalls-reinstalls)にも必要です。
 
-Configオブジェクトには、Pudhトークンを格納するための文字列`pushToken`プロパティが含まれています。このプロパティは、`setPushToken`メソッドと以下の引数を呼び出すことで、いつでも更新することが可能です：
+Configオブジェクトには、Pudhトークンを格納するための文字列`pushToken`プロパティが含まれています。このプロパティは、`Adjust.setPushToken`メソッドと以下の引数を呼び出すことで、いつでも更新することが可能です：
 
--  `token` （`string`）：Push トークン
+- `token` （`string`）：Push トークン
 
 ```js
 Adjust.setPushToken("{PushNotificationsToken}");
 ```
 
-### SDKを無効化または有効化する {#disable-or-enable-the-sdk}
+### SDKを無効化する {#disable-the-sdk}
 
-<Callout type="important">
-
-このメソッドを呼び出せるのは、初回セッションの後のみです。この設定は、セッション間で持続します。
-
-</Callout>
 <CodeBlock title="メソッドシグネチャー">
 
-```js
-setEnabled(enabled: boolean): void
+```ts
+disable(): void
 ```
 
 </CodeBlock>
 
-Adjust SDKは、デフォルトでアプリが開いている時に実行されます。Adjust SDKを無効化または再有効化することで、計測を一時停止したり再起動したりすることができます。Adjust SDKを無効にすると、Adjustサーバーにデータが送信されなくなります。
-
-以下の引数を使用して`setEnabled`メソッドを呼び出すことで、SDKをいつでも有効化または無効化できます：
-
--  `isEnabled` （`boolean`）：SDKを有効化するには`true`に、SDKを無効化するには`false`に設定します。
+デフォルトでAdjust SDKは、アプリが開くと実行されます。`Adjust.disable`メソッドを呼び出すと、Adjust SDKを無効にしてAdjustへの情報送信を停止できます。Adjust SDKを無効にするとデータはAdjustに送信されず、SDKは情報を記録しません。つまり、SDKが無効になっているときに呼び出されたAdjustメソッドは、何も記録しません。
 
 ```js
-Adjust.setEnabled(false);
+Adjust.disable();
+```
+
+### SDKを有効化する {#enable-the-sdk}
+
+<CodeBlock title="メソッドシグネチャー">
+
+```ts
+enable(): void
+```
+
+</CodeBlock>
+
+SDKを無効にした後で再度有効にする場合は、`Adjust.enable`メソッドを呼び出します。SDKが有効になると、Adjustのサーバーに情報を送信します。
+
+```js
+Adjust.enable();
 ```
 
 #### 有効化ステータスを確認する {#check-enabled-status}
 
 <CodeBlock title="メソッドシグネチャー">
 
-```js
-isEnabled(): Promise<boolean >
+```ts
+isEnabled(): Promise<boolean>
 ```
 
 </CodeBlock>
 
-Adjust SDKが有効であるかどうかを確認するには、＝`isEnabled`メソッドを呼び出します。このメソッドは、SDKが **有効** （`true`）か **無効** （`false`）かを示す **ブーリアン** 値を返します。
+Adjust SDKが有効であることを確認するには、コールバック関数を含む`Adjust.isEnabled`メソッドを呼び出します。ステータスが`boolean`値としてコールバック関数に返され、 SDKが **有効** （`true`）か **無効** （`false`）かが示されます。
 
 ```js
-Adjust.isEnabled();
+Adjust.isEnabled(function (isEnabled) {
+   if (isEnabled) {
+      console.log("SDK is enabled");
+   } else {
+      console.log("SDK is disabled");
+   }
+});
 ```
