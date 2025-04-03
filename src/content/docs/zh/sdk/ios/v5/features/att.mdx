@@ -50,7 +50,8 @@ Adjust SDK 包含 [Apple `requestTrackingAuthorizationWithCompletionHandler` 方
 如果您使用自定义弹窗，Adjust SDK 也会记录授权状态。如果在初始化之前展示弹窗，那么 SDK 会随安装事件一同发送状态。如果在初始化之后展示弹窗，那么 SDK 会在用户更新状态后立即向 Adjust 服务器发送状态。
 
 </Callout>
-<Tabs> <Tab title="Swift" sync="swift">
+<Tabs>
+<Tab title="Swift" sync="swift">
 
 ```swift
 Adjust.requestAppTrackingAuthorization { status in
@@ -144,7 +145,9 @@ int authorizationStatus = [Adjust appTrackingAuthorizationStatus];
 如果用户在延时结束前关闭应用或在选择授权状态前关闭应用，那么用户重新打开应用时延时将重新开始计时。
 
 </Callout>
-<Tabs> <Tab title="Swift" sync="swift">
+<Tabs>
+<Tab title="Swift" sync="swift">
+<CodeBlock highlight="{range: 7}">
 
 ```swift
 let yourAppToken = "{YourAppToken}"
@@ -158,8 +161,10 @@ adjustConfig?.attConsentWaitingInterval = 30
 Adjust.initSdk(adjustConfig)
 ```
 
+</CodeBlock>
 </Tab>
 <Tab title="Objective-C" sync="objc">
+<CodeBlock highlight="{range: 4}">
 
 ```objc
  ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:@"{YourAppToken}"
@@ -170,6 +175,7 @@ Adjust.initSdk(adjustConfig)
 [Adjust initSdk:adjustConfig];
 ```
 
+</CodeBlock>
 </Tab>
 </Tabs>
 
@@ -194,3 +200,67 @@ Adjust.initSdk(adjustConfig)
 | 中国 URL 策略           | `analytics.adjust.world`  | `consent.adjust.world`  |
 | 仅限中国地区的 URL 策略 | `analytics.adjust.cn`     | `consent.adjust.cn`     |
 | 印度 URL 策略           | `analytics.adjust.net.in` | `consent.adjust.net.in` |
+
+## 禁用 App Tracking Transparency {#disable-att-framework}
+
+<CodeBlock title="方法签名">
+
+```objc
+- (void)disableAppTrackingTransparencyUsage;
+```
+
+</CodeBlock>
+
+In case you want to disable Adjust SDK's automatic interaction with `AppTrackingTransparency.framework`, call the `disableAppTrackingTransparencyUsage` method on your `ADJConfig` instance before SDK initialization.
+
+<Callout type="note">
+
+Even with this setup, the SDK will still allow you to use `requestAppTrackingAuthorizationWithCompletionHandler` and `appTrackingAuthorizationStatus` methods.
+
+</Callout>
+<Tabs>
+<Tab title="Swift" sync="swift">
+<CodeBlock highlight="{range: 6}">
+
+```swift
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox
+let adjustConfig = ADJConfig(
+   appToken: yourAppToken,
+   environment: environment)
+adjustConfig?.disableAppTrackingTransparencyUsage()
+Adjust.initSdk(adjustConfig)
+```
+
+</CodeBlock>
+</Tab>
+<Tab title="Objective-C" sync="objc">
+<CodeBlock highlight="{range: 5}">
+
+```objc
+NSString *yourAppToken = @"{YourAppToken}";
+NSString *environment = ADJEnvironmentSandbox;
+ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:appToken
+                                                  environment:environment];
+[adjustConfig disableAppTrackingTransparencyUsage];
+[Adjust initSdk:adjustConfig];
+```
+
+</CodeBlock>
+</Tab>
+<Tab title="Javascript" sync="js">
+<CodeBlock highlight="{range: 5}">
+
+```js
+setupWebViewJavascriptBridge(function (bridge) {
+   var yourAppToken = yourAppToken;
+   var environment = AdjustConfig.EnvironmentSandbox;
+   var adjustConfig = new AdjustConfig(yourAppToken, environment);
+   adjustConfig.disableAppTrackingTransparencyUsage();
+   Adjust.initSdk(adjustConfig);
+});
+```
+
+</CodeBlock>
+</Tab>
+</Tabs>
