@@ -150,6 +150,8 @@ If the user closes the app before the timeout ends, or before they select their 
 <Tabs>
 <Tab title="Swift" sync="swift">
 
+<CodeBlock highlight="{range: 7}">
+
 ```swift
 let yourAppToken = "{YourAppToken}"
 let environment = ADJEnvironmentSandbox
@@ -162,8 +164,12 @@ adjustConfig?.attConsentWaitingInterval = 30
 Adjust.initSdk(adjustConfig)
 ```
 
+</CodeBlock>
+
 </Tab>
 <Tab title="Objective-C" sync="objc">
+
+<CodeBlock highlight="{range: 4}">
 
 ```objc
  ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:@"{YourAppToken}"
@@ -174,6 +180,8 @@ Adjust.initSdk(adjustConfig)
 [Adjust initSdk:adjustConfig];
 ```
 
+</CodeBlock>
+
 </Tab>
 </Tabs>
 
@@ -183,8 +191,8 @@ With the release of iOS 17, Apple implemented new rules on what data developers 
 
 By default, the Adjust SDK sends a limited set of data to Adjust’s servers for **probabilistic modeling** using the `analytics.adjust.com` endpoint. This endpoint **doesn’t** receive the following information:
 
--  `idfa`: The device ID For Advertisers (IDFA).
--  `started_at`: The device startup time.
+- `idfa`: The device ID For Advertisers (IDFA).
+- `started_at`: The device startup time.
 
 Only if the user [grants ATT consent](#app-tracking-authorization-wrapper), the Adjust SDK gains access to both the idfa and started_at properties for **deterministic attribution** and sends the full payload to `consent.adjust.com`.
 
@@ -198,3 +206,74 @@ Both of these endpoints are available for all [URL strategies](/en/sdk/ios/featu
 | China URL strategy      | `analytics.adjust.world`  | `consent.adjust.world`  |
 | China only URL strategy | `analytics.adjust.cn`     | `consent.adjust.cn`     |
 | India URL strategy      | `analytics.adjust.net.in` | `consent.adjust.net.in` |
+
+## Disable the usage of App Tracking Transparency {#disable-att-framework}
+
+<CodeBlock title="Method signature">
+
+```objc
+- (void)disableAppTrackingTransparencyUsage;
+```
+
+</CodeBlock>
+
+In case you want to disable Adjust SDK's automatic interaction with `AppTrackingTransparency.framework`, call the `disableAppTrackingTransparencyUsage` method on your `ADJConfig` instance before SDK initialization.
+
+<Callout type="note">
+
+Even with this setup, the SDK will still allow you to use `requestAppTrackingAuthorizationWithCompletionHandler` and `appTrackingAuthorizationStatus` methods.
+
+</Callout>
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+<CodeBlock highlight="{range: 6}">
+
+```swift
+let yourAppToken = "{YourAppToken}"
+let environment = ADJEnvironmentSandbox
+let adjustConfig = ADJConfig(
+   appToken: yourAppToken,
+   environment: environment)
+adjustConfig?.disableAppTrackingTransparencyUsage()
+Adjust.initSdk(adjustConfig)
+```
+
+</CodeBlock>
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+<CodeBlock highlight="{range: 5}">
+
+```objc
+NSString *yourAppToken = @"{YourAppToken}";
+NSString *environment = ADJEnvironmentSandbox;
+ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:appToken
+                                                  environment:environment];
+[adjustConfig disableAppTrackingTransparencyUsage];
+[Adjust initSdk:adjustConfig];
+```
+
+</CodeBlock>
+
+</Tab>
+<Tab title="Javascript" sync="js">
+
+<CodeBlock highlight="{range: 5}">
+
+```js
+setupWebViewJavascriptBridge(function (bridge) {
+   var yourAppToken = yourAppToken;
+   var environment = AdjustConfig.EnvironmentSandbox;
+   var adjustConfig = new AdjustConfig(yourAppToken, environment);
+   adjustConfig.disableAppTrackingTransparencyUsage();
+   Adjust.initSdk(adjustConfig);
+});
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>

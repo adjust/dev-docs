@@ -16,12 +16,12 @@ Adjust 的[短链接解决方案](https://help.adjust.com/zh/article/short-brand
 
 使用本节中描述的方法来解析您的短链接。
 
-## 在 Adjust SDK 中设置深度链接 {#set-up-deep-linking-in-the-adjust-sdk}
+## 在 Adjust SDK 中设置深度链接{#set-up-deep-linking-in-the-adjust-sdk}
 
 在 Adjust SDK 中添加对以下内容的支持：
 
--  [URI 方案](/zh/sdk/android/features/deep-links)
--  [延迟深度链接](/zh/sdk/android/features/deep-links#deferred-deep-linking)
+- [URI 方案](/zh/sdk/android/features/deep-links)
+- [延迟深度链接](/zh/sdk/android/features/deep-links#deferred-deep-linking)
 
 <Callout type="note">
 
@@ -29,7 +29,7 @@ Adjust 的[短链接解决方案](https://help.adjust.com/zh/article/short-brand
 
 </Callout>
 
-## 设置 Adjust SDK 来解析短链接 {#set-up-the-adjust-sdk-to-resolve-short-links}
+## 设置 Adjust SDK 来解析短链接{#set-up-the-adjust-sdk-to-resolve-short-links}
 
 <CodeBlock title="方法签名">
 
@@ -39,7 +39,7 @@ public static void processAndResolveDeeplink(Uri url, Context context, OnDeeplin
 
 </CodeBlock>
 
-Adjust SDK 会使用 `onCreate` 或 `onNewIntent` 方法，传递活动 intent 对象中的深度连接信息。深度链接位于`intent`对象的`data`属性。应用启动，且上述方法之一被调用后，您就可以读取深度链接了。调用 `processAndResolveDeeplink` 方法来解析将用户深度链接至应用的 Adjust 短链接 URL 。
+Adjust SDK 会使用 `onCreate` 或 `onNewIntent` 方法，传递活动 intent 对象中的深度连接信息。深度链接位于`intent`对象的`data`属性。应用启动，且上述方法之一被调用后，您就可以读取深度链接了。调用`processAndResolveDeeplink`方法来解析将用户深度链接至应用的 Adjust 短链接 URL 。
 
 <Tabs>
 <Tab title="Kotlin" sync="kotlin">
@@ -85,6 +85,7 @@ protected void onCreate(Bundle savedInstanceState) {
 
 </Tab>
 </Tabs>
+
 <Tabs>
 <Tab title="Kotlin" sync="kotlin">
 
@@ -127,3 +128,59 @@ protected void onNewIntent(Intent intent) {
 </Tabs>
 
 如果您发送至`processAndResolveDeeplink`方法的链接为短链接，那么`resolvedLink`就会返回延长后的原始链接。如果您传递给该方法的链接未被缩短，那么`resolvedLink`包含的链接与您传递的链接相同。
+
+## Handling Deeplinks with Referrer {#handling-deeplinks-with-referrer}
+
+An optional referrer URL used to track source of the deeplink or app open for better attribution or reattribution and deep linking. For example, channels like SEO / Organic Search, Adjust links are not directly used. If the client's root domain has Android App Links implemented and triggers an app opening, For such channels, we may have to rely on signals coming from the referrer URL to attribute or reattribute users.
+
+#### Set up a Referrer URL
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+override fun onNewIntent(intent: Intent?) {
+   super.onNewIntent(intent)
+
+   val webpageURL = intent.data
+   val adjustDeeplink = AdjustDeeplink(webpageURL)
+   val referrer = getReferrer() //Activity#getReferrer()
+   referrer?.let {
+      adjustDeeplink.setReferrer(referrer)
+   }
+   Adjust.processAndResolveDeeplink(adjustDeeplink, this) { resolvedLink ->
+      // resolvedLink contains either resolved URL (if it was unshortened)
+      // or just echoed URL if it was not shortened
+      Log.d("Example", resolvedLink)
+   }
+}
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+@Override
+protected void onNewIntent(Intent intent) {
+   super.onNewIntent(intent);
+
+   Uri webpageURL = intent.getData();
+   AdjustDeeplink adjustDeeplink = new AdjustDeeplink(webpageURL);
+    // If referrer URL is available, add it to the deeplink object
+    Uri referrer = getReferrer(); //Activity#getReferrer()
+    if (referrer != null) {
+        adjustDeeplink.setReferrer(referrer);
+    }
+   Adjust.processAndResolveDeeplink(adjustDeeplink, this, new   OnDeeplinkResolvedListener() {
+   @Override
+   public void onDeeplinkResolved(String resolvedLink) {
+         // resolvedLink contains either resolved URL (if it was unshortened)
+         // or just echoed URL if it was not shortened
+         Log.d("Example", resolvedLink);
+   }
+   });
+}
+```
+
+</Tab>
+</Tabs>
