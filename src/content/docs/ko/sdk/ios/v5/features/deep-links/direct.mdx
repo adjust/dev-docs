@@ -409,3 +409,66 @@ func scene(
 
 </Tab>
 </Tabs>
+
+## 리퍼러 {#handling-deeplinks-with-referrer}를 사용하여 딥링크 처리
+
+더 나은 어트리뷰션 또는 리어트리뷰션 및 딥링킹을 위해 열린 딥링크 또는 앱의 소스 추적에 사용되는 선택적 리퍼러 URL입니다. 예를 들어, SEO/오가닉 검색과 같은 채널에서는 Adjust 링크가 직접 사용되지 않습니다. 클라이언트의 루트 도메인에 유니버설 링크가 구현되고 앱 실행을 트리거하는 경우, 이러한 채널에서 Adjust는 리퍼러 URL에서 전송되는 시그널에 의존하여 사용자를 어트리뷰션 또는 리어트리뷰션해야 할 수 있습니다.
+
+#### 리퍼러 URL 설정
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+func application(_ application: UIApplication,
+                continue userActivity: NSUserActivity,
+                restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+
+    guard userActivity.activityType == NSUserActivityTypeBrowsingWeb,
+        let url = userActivity.webpageURL else { return false }
+
+    if let deeplink = ADJDeeplink(deeplink: url) {
+        // If referrer URL is available, add it to the deeplink object
+        if let referrer = URL(string: "https://example.com") {
+            deeplink.setReferrer(referrer)
+        }
+        // Send deeplink and referrer to Adjust's servers
+        Adjust.processDeeplink(deeplink)
+        return true
+    }
+    return false
+}
+
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+- (BOOL)application:(UIApplication *)application
+            continueUserActivity:(NSUserActivity *)userActivity
+    restorationHandler:(void (^)(NSArray<id<uiuseractivityrestoring>> *restorableObjects))restorationHandler {
+
+    if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+        NSURL *url = userActivity.webpageURL;
+        if (url) {
+            ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:url];
+            if (deeplink) {
+                NSURL *referrer = [NSURL URLWithString:@"https://example.com"];
+                // If referrer URL is available, add it to the deeplink object
+                if (referrer) {
+                    [deeplink setReferrer:referrer];
+                }
+                // Send deeplink and referrer to Adjust's servers
+                [Adjust processDeeplink:deeplink];
+            }
+            return YES;
+        }
+    }
+    return NO;
+}
+
+```
+
+</Tab>
+</Tabs>
