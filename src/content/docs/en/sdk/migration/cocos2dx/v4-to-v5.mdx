@@ -1,0 +1,721 @@
+---
+title: SDK v5 migration guide
+description: Follow this guide to upgrade from SDK v4 to SDK v5
+slug: en/sdk/migration/cocos2dx/v4-to-v5
+sidebar-position: 1
+---
+
+## Before you begin {#before-you-begin}
+
+Here's what you need to do before updating to SDK v5:
+
+1. The minimum supported API versions for SDK v5 have been updated. If your app targets a lower version, you need to update it first.
+
+   - iOS: **12.0**
+   - Android: **21**
+
+## Install the SDK {#install-the-sdk}
+
+To start using SDK v5, you need to add it as a dependency in your project. To do this:
+
+1. Download the SDK archive [from GitHub](https://github.com/adjust/cocos2dx_sdk/releases)
+
+1. Copy the C++ files from the `dist` directory and add them to your Cocos2d-x project
+
+1. (**Android only**): add the paths of the C++ files to the `LOCAL_SRC_FILES` section of your `Android.mk` file.
+
+   ```text
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustConfig2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustAttribution2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustProxy2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustEvent2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/Adjust2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustEventFailure2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustEventSuccess2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustSessionFailure2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustSessionSuccess2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustAppStoreSubscription2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustPlayStoreSubscription2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustThirdPartySharing2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustAdRevenue2dx.cpp
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustAppStorePurchase2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustPlayStorePurchase2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustDeeplink2dx.cpp \
+   $(LOCAL_PATH)/../../../Classes/Adjust/AdjustPurchaseVerificationResult2dx.cpp \
+   ```
+
+   If you're using CMake, add the following list of sources and headers to your `CMakeLists.txt` file:
+
+   ```cmake
+   # add cross-platforms source files and header files
+   list(APPEND GAME_SOURCE
+       Classes/Adjust/AdjustConfig2dx.cpp
+       Classes/Adjust/AdjustAttribution2dx.cpp
+       Classes/Adjust/AdjustProxy2dx.cpp
+       Classes/Adjust/AdjustEvent2dx.cpp
+       Classes/Adjust/AdjustAdRevenue2dx.cpp
+       Classes/Adjust/AdjustAppStoreSubscription2dx.cpp
+       Classes/Adjust/AdjustPlayStoreSubscription2dx.cpp
+       Classes/Adjust/AdjustAppStorePurchase2dx.cpp
+       Classes/Adjust/AdjustPlayStorePurchase2dx.cpp
+       Classes/Adjust/Adjust2dx.cpp
+       Classes/Adjust/AdjustEventFailure2dx.cpp
+       Classes/Adjust/AdjustEventSuccess2dx.cpp
+       Classes/Adjust/AdjustSessionFailure2dx.cpp
+       Classes/Adjust/AdjustSessionSuccess2dx.cpp
+       Classes/Adjust/AdjustThirdPartySharing2dx.cpp
+       Classes/Adjust/AdjustDeeplink2dx.cpp
+       Classes/Adjust/AdjustPurchaseVerificationResult2dx.cpp
+       )
+   list(APPEND GAME_HEADER
+       Classes/Adjust/AdjustConfig2dx.h
+       Classes/Adjust/AdjustAttribution2dx.h
+       Classes/Adjust/AdjustProxy2dx.h
+       Classes/Adjust/AdjustEvent2dx.h
+       Classes/Adjust/AdjustAdRevenue2dx.h
+       Classes/Adjust/AdjustAppStoreSubscription2dx.h
+       Classes/Adjust/AdjustPlayStoreSubscription2dx.h
+       Classes/Adjust/AdjustAppStorePurchase2dx.h
+       Classes/Adjust/AdjustPlayStorePurchase2dx.h
+       Classes/Adjust/Adjust2dx.h
+       Classes/Adjust/AdjustEventFailure2dx.h
+       Classes/Adjust/AdjustEventSuccess2dx.h
+       Classes/Adjust/AdjustSessionFailure2dx.h
+       Classes/Adjust/AdjustSessionSuccess2dx.h
+       Classes/Adjust/AdjustThirdPartySharing2dx.h
+       Classes/Adjust/AdjustDeeplink2dx.h
+       Classes/Adjust/AdjustPurchaseVerificationResult2dx.h
+       )
+   ```
+
+1. (**Android only**): download the latest `adjust-android.aar` from [the GitHub releases page](https://github.com/adjust/cocos2dx_sdk/releases/latest) and import it into your Android Studio project.
+
+1. (**iOS only**): download the latest `AdjustSdk.framework` from [the GitHub releases page](https://github.com/adjust/cocos2dx_sdk/releases/latest) and link it in your Xcode project.
+
+## Set up the Signature library {#signature-setup}
+
+SDK v5 uses the [SDK signature library](https://help.adjust.com/en/article/sdk-signature) to encrypt information sent from the Adjust SDK to Adjust's servers. You MUST add the signature library to your project to use SDK v5.
+
+### Android apps
+
+1. Download the latest `adjust-android-signature.aar` from [the Adjust Signature library GitHub repository](https://github.com/adjust/adjust_signature_sdk/releases/latest).
+1. Add the `.aar` to your Android Studio project.
+
+### iOS apps
+
+1. Download the latest `AdjustSigSdk-iOS-Static.a` from [the Adjust Signature library GitHub repository](https://github.com/adjust/adjust_signature_sdk/releases/latest).
+1. Link the `.a` in your Xcode project.
+
+## Update your app's privacy manifest (iOS only) {#update-privacy-manifest}
+
+To inform the App Store of the Adjust SDK's privacy requirements, you need to merge your privacy manifest with Adjust's privacy manifests.
+
+1. Add the [Adjust SDK privacy manifest](https://github.com/adjust/ios_sdk/blob/master/Adjust/PrivacyInfo.xcprivacy) properties to your app's privacy manifest.
+1. Add the [Signature library privacy manifest](https://github.com/adjust/adjust_signature_sdk/blob/main/Resources/iOS/PrivacyInfo.xcprivacy) properties to your app's privacy manifest.
+
+## Update the initialization method {#update-the-init-method}
+
+<MinorVersion changed="v5" size="large" />
+
+In SDK v4, the initialization method is `Adjust2dx::start(adjustConfig)`. This has been changed to `Adjust2dx::initSdk(adjustConfig)`.
+
+<CodeBlock useDiffSyntax>
+
+```cpp
+#include "Adjust/Adjust2dx.h"
+
+std::string appToken = "YourAppToken";
+std::string environment = AdjustEnvironmentSandbox2dx;
+
+AdjustConfig2dx adjustConfig = AdjustConfig2dx(appToken, environment);
+
+- Adjust2dx::start(adjustConfig);
+
+* Adjust2dx::initSdk(adjustConfig);
+```
+
+</CodeBlock>
+
+## Changed APIs {#changed-apis}
+
+<MinorVersion changed="v5" size="large" />
+
+The following APIs have been changed in SDK v5.
+
+### Disable and enable the SDK {#disable-enable-sdk}
+
+In SDK v4, you can enable and disable the SDK by calling `Adjust2dx::setEnabled` with a `bool` value.
+
+```cpp
+Adjust2dx::setEnabled(false); // disable SDK
+Adjust2dx::setEnabled(true); // enable SDK
+```
+
+In SDK v5, this feature is split into separate commands for clarity.
+
+- Call `Adjust2dx::disable()` to disable the SDK.
+- Call `Adjust2dx::enable()` to enable the SDK.
+
+```cpp
+Adjust2dx::disable();
+Adjust2dx::enable();
+```
+
+### Send information in background {#send-in-background}
+
+In SDK v4, you can set the `sendInBackground` property on your `adjustConfig` instance to `true` to enable the SDK to send information to Adjust while your app is running in the background.
+
+```cpp
+adjustConfig.sendInBackground(true);
+```
+
+In SDK v5, you need to call the `enableSendingInBackground` method of your `adjustConfig` instance to enable the SDK to send information to Adjust while your app is running in the background.
+
+```cpp
+adjustConfig.enableSendingInBackground();
+```
+
+### Preinstalled app measurement {#preinstalled-app}
+
+In SDK v4, you can call the `setPreinstallTrackingEnabled` method of your `adjustConfig` instance with a `true` argument to enable measuring preinstalled apps.
+
+```cpp
+adjustConfig.setPreinstallTrackingEnabled(true);
+```
+
+In SDK v5, you need to call the `enablePreinstallTracking` method of your `adjustConfig` instance to enable measuring preinstalled apps.
+
+```cpp
+adjustConfig.enablePreinstallTracking();
+```
+
+### Disable AdServices information reading {#disable-adservices}
+
+In SDK v4, you can call the `setAllowAdServicesInfoReading` method on your `adjustConfig` with the value `false` to prevent the Adjust SDK from reading AdServices information.
+
+```cpp
+adjustConfig.setAllowAdServicesInfoReading(false);
+```
+
+In SDK v5, you need to call the `disableAdServices` method on your `adjustConfig` instance to prevent the Adjust SDK from reading AdServices information. The default state is `true`.
+
+```cpp
+adjustConfig.disableAdServices();
+```
+
+### Disable IDFA reading {#disable-idfa}
+
+In SDK v4, you can call the `setAllowIdfaReading` method on your `adjustConfig` with the value `false` to prevent the Adjust SDK from reading the device's IDFA.
+
+```cpp
+adjustConfig.setAllowIdfaReading(false);
+```
+
+In SDK v5, you need to call the `disableIdfaReading` method on your `adjustConfig` instance to prevent the Adjust SDK from reading the device's IDFA. The default state is `true`.
+
+```cpp
+adjustConfig.disableIdfaReading();
+```
+
+### Enable cost data in attribution {#enable-cost-data}
+
+In SDK v4, you can call the `setNeedsCost` method on your `adjustConfig` instance with the value `true` to enable cost data in the device's attribution information.
+
+```cpp
+adjustConfig.setNeedsCost(true);
+```
+
+In SDK v5, you need to call the `enableCostDataInAttribution` method on your `adjustConfig` instance to enable cost data in the device's attribution information. The default state is `false`.
+
+```cpp
+adjustConfig.enableCostDataInAttribution();
+```
+
+### Enable LinkMe {#enable-linkme}
+
+In SDK v4, you can call the `setLinkMeEnabled` method on your `adjustConfig` instance with the value `true` to enable [Adjust LinkMe](https://help.adjust.com/en/article/linkme).
+
+```cpp
+adjustConfig.setLinkMeEnabled(true);
+```
+
+In SDK v5, you need to call the `enableLinkMe` method on your `adjustConfig` instance to enable [Adjust LinkMe](https://help.adjust.com/en/article/linkme). The default state is `false`.
+
+```cpp
+adjustConfig.enableLinkMe();
+```
+
+### Only read device IDs once {#read-device-id-once}
+
+In SDK v4, you can call the `setReadDeviceInfoOnceEnabled` method on your `adjustConfig` with the value `true` to instruct the SDK to only read device IDs once.
+
+```cpp
+adjustConfig.setReadDeviceInfoOnceEnabled(true);
+```
+
+In SDK v5, you need to call the `enableDeviceIdsReadingOnce` method on your `adjustConfig` to instruct the SDK to only read device IDs once. The default state is `false`.
+
+```cpp
+adjustConfig.enableDeviceIdsReadingOnce();
+```
+
+### Offline mode {#offline-mode}
+
+In SDK v4, you can enable and disable offline mode the SDK by calling `Adjust2dx::setOfflineMode` with a `bool` argument.
+
+```cpp
+Adjust2dx::setOfflineMode(true);
+Adjust2dx::setOfflineMode(false);
+```
+
+In SDK v5, this feature is split into separate commands for clarity.
+
+- Call `Adjust2dx::switchToOfflineMode` to set the SDK to offline mode.
+- Call `Adjust2dx::switchBackToOnlineMode` to set the SDK back to online mode.
+
+```cpp
+Adjust2dx::switchToOfflineMode(); // Put the SDK in offline mode
+Adjust2dx::switchBackToOnlineMode(); // Put the SDK back in online mode
+```
+
+### Session callback parameters {#callback-params}
+
+In SDK v4, you can add session callback parameters by passing a key-value pair to the `Adjust2dx::addSessionCallbackParameter` method and remove individual parameters using the `Adjust2dx::removeSessionCallbackParameter` method.
+
+```cpp
+Adjust2dx::addSessionCallbackParameter("key", "value");
+Adjust2dx::removeSessionCallbackParameter("key");
+Adjust2dx::resetSessionCallbackParameters();
+```
+
+In SDK v5, session callback parameters are renamed to global parameters.
+
+```cpp
+Adjust2dx::addGlobalCallbackParameter("key", "value");
+Adjust2dx::removeGlobalCallbackParameter("key");
+Adjust2dx::removeGlobalCallbackParameters();
+```
+
+### Session partner parameters {#partner-params}
+
+In SDK v4, you can add session partner parameters by passing a key-value pair to the `Adjust2dx::addSessionPartnerParameter` method and remove individual parameters using the `Adjust2dx::removeSessionPartnerParameter` method.
+
+```cpp
+Adjust2dx::addSessionPartnerParameter("key", "value");
+Adjust2dx::removeSessionPartnerParameter("key");
+Adjust2dx::resetSessionPartnerParameters();
+```
+
+In SDK v5, session partner parameters are renamed to global partner parameters.
+
+```cpp
+Adjust2dx::addGlobalPartnerParameter("key", "value");
+Adjust2dx::removeGlobalPartnerParameter("key");
+Adjust2dx::removeGlobalPartnerParameters();
+```
+
+### Event deduplication {#event-deduplication}
+
+In SDK v4, event deduplication is coupled with the event `transaction ID` and is limited to a maximum of 10 unique IDs.
+
+```cpp
+adjustEvent.setTransactionId("transaction-id");
+```
+
+In SDK v5, the feature is decoupled from `transaction ID`. A new ID field called `deduplicationId` has been added for event deduplication.
+
+```cpp
+adjustEvent.setDeduplicationId("deduplication-id");
+```
+
+You can set a custom limit on the number of `deduplicationId` that can be added to the list for identifying duplicate events. By default, the limit is set to **10**.
+
+```cpp
+AdjustConfig2dx adjustConfig = AdjustConfig2dx("appToken", AdjustEnvironmentSandbox2dx);
+adjustConfig.setEventDeduplicationIdsMaxSize(20);
+Adjust2dx::initSdk(adjustConfig);
+```
+
+### App Store Subscriptions {#app-store-subscriptions}
+
+In SDK v4, you can set a new subscription by configuring an `AdjustAppStoreSubscription2dx` object. This object is initialized with four arguments: `price`, `currency`, `transactionId`, and `receipt`.
+
+```cpp
+AdjustAppStoreSubscription2dx subscription = AdjustAppStoreSubscription2dx(price, currency, transactionId, receipt);
+```
+
+In SDK v5, you don't need to pass the `receipt` argument as it's no longer needed for purchase verification.
+
+```cpp
+AdjustAppStoreSubscription2dx subscription = AdjustAppStoreSubscription2dx(price, currency, transactionId);
+```
+
+### Reattribution using deep links {#reattribution-using-deep-links}
+
+In SDK v4, you can pass your deep link information to the `Adjust2dx::appWillOpenUrl` method.
+
+```cpp
+Adjust2dx::appWillOpenUrl("url");
+```
+
+In SDK v5, this has been renamed to `Adjust2dx::processDeeplink` for clarity. A new `AdjustDeeplink2dx` class has been added for constructing deep links. To process a deep link, instantiate an `AdjustDeeplink2dx` object with your deep link URL and pass it to the `Adjust2dx::processDeeplink` method.
+
+```cpp
+AdjustDeeplink2dx deeplink = AdjustDeeplink2dx("url");
+Adjust2dx::processDeeplink(deeplink);
+```
+
+### Deep link resolution {#deeplink-resolution}
+
+In SDK v4, you can resolve a shortened deep link by passing the `url` to the `Adjust2dx::processDeeplink` method.
+
+```cpp
+Adjust2dx::processDeeplink("url", [](std::string resolvedLink) {
+    std::cout << "Resolved link: " << resolvedLink;
+});
+```
+
+In SDK v5, you need to send an `AdjustDeeplink2dx` object initialized with the deep link `url`. This returns the original unshortened deep link.
+
+```cpp
+AdjustDeeplink2dx deeplink = AdjustDeeplink2dx("url");
+Adjust2dx::processDeeplink(deeplink, [](std::string resolvedLink) {
+    std::cout << "Resolved link: " << resolvedLink;
+});
+```
+
+### COPPA compliance {#coppa-compliance}
+
+In SDK v4, you can call the `coppaCompliantEnabled` method on your `adjustConfig` instance with the value `true` to enable COPPA compliance.
+
+```cpp
+adjustConfig.setCoppaCompliantEnabled(true);
+```
+
+In SDK v5, you need to call the `enableCoppaCompliance` method on your `adjustConfig` instance to enable COPPA compliance. The default state is `false`.
+
+```cpp
+adjustConfig.enableCoppaCompliance();
+```
+
+### Play Store Kids Apps {#play-store-kids}
+
+In SDK v4, you can mark an app as a [Play Store Kids app](/en/sdk/react-native/features/privacy#play-store-kids-apps-android-only) by calling the `setPlayStoreKidsAppEnabled` method on your `adjustConfig` instance with the value `true`. This is read during SDK initialization, which means that the value can't be updated once the SDK is initialized.
+
+```cpp
+adjustConfig.setPlayStoreKidsAppEnabled(true);
+```
+
+In SDK v5, you need to call the `enablePlayStoreKidsCompliance` method of your `adjustConfig` instance to enable compliance. The default state is `false`.
+
+```cpp
+adjustConfig.enablePlayStoreKidsCompliance();
+```
+
+### Set data residency and URL strategy {#url-strategy}
+
+In SDK v4, URL strategy and data residency domains are defined as constants in the `AdjustConfig` class.
+
+```cpp
+adjustConfig.setUrlStrategy(AdjustDataResidencyEU);
+```
+
+In SDK v5, you need to pass your chosen domain or domains as an array. You need to also set the following:
+
+- `useSubdomains` (`bool`): Whether the domain should be treated as an Adjust domain. If `true`, the SDK will prefix the domains with Adjust-specific subdomains. If `false`, the SDK will use the provided domain as-is, without adding any prefixes.
+- `isDataResidency` (`bool`): Whether the domain should be used for data residency.
+
+```cpp
+adjustConfig.setUrlStrategy({"eu.adjust.com"}, true, true);
+```
+
+Check the table below to see how to configure your URL strategy in SDK v5.
+
+| v4                        | v5 - main and fallback domain     | v5 - use sub domains | v5 - is Data Residency |
+| ------------------------- | --------------------------------- | -------------------- | ---------------------- |
+| `AdjustDataResidencyEU`   | `"eu.adjust.com"`                 | `true`               | `true`                 |
+| `AdjustDataResidencyTR`   | `"tr.adjust.com"`                 | `true`               | `true`                 |
+| `AdjustDataResidencyUS`   | `"us.adjust.com"`                 | `true`               | `true`                 |
+| `AdjustUrlStrategyChina`  | `"adjust.world"`, `"adjust.com"`  | `true`               | `false`                |
+| `AdjustUrlStrategyCn`     | `"adjust.cn"`, `"adjust.com"`     | `true`               | `false`                |
+| `AdjustUrlStrategyCnOnly` | `"adjust.cn"`                     | `true`               | `false`                |
+| `AdjustUrlStrategyIndia`  | `"adjust.net.in"`, `"adjust.com"` | `true`               | `false`                |
+
+#### Examples {#examples}
+
+```cpp
+// India URL strategy
+adjustConfig.setUrlStrategy({"adjust.net.in", "adjust.com"}, true, false);
+
+// China URL strategy
+adjustConfig.setUrlStrategy({"adjust.world", "adjust.com"}, true, false);
+
+// China only URL strategy
+adjustConfig.setUrlStrategy({"adjust.cn"}, true, false);
+
+// EU URL strategy
+adjustConfig.setUrlStrategy({"eu.adjust.com"}, true, true);
+
+// Turkey URL strategy
+adjustConfig.setUrlStrategy({"tr.adjust.com"}, true, true);
+
+// US URL strategy
+adjustConfig.setUrlStrategy({"us.adjust.com"}, true, true);
+```
+
+### Record ad revenue {#record-ad-revenue}
+
+In SDK v4, you can record ad revenue by instantiating an `AdjustAdRevenue2dx` object with an ad revenue source constant.
+
+```cpp
+AdjustAdRevenue2dx adRevenue = AdjustAdRevenue2dx(AdjustAdRevenueSourceAppLovinMAX);
+```
+
+In SDK v5, you need to instantiate an `AdjustAdRevenue` object with a string `source`.
+
+```cpp
+AdjustAdRevenue2dx adRevenue = AdjustAdRevenue2dx("applovin_max_sdk")
+```
+
+| v4                                      | v5                        |
+| --------------------------------------- | ------------------------- |
+| `AdjustAdRevenueSourceAppLovinMAX`      | `"applovin_max_sdk"`      |
+| `AdjustAdRevenueSourceAdMob`            | `"admob_sdk"`             |
+| `AdjustAdRevenueSourceIronSource`       | `"ironsource_sdk"`        |
+| `AdjustAdRevenueSourceAdMostSource`     | `"admost_sdk"`            |
+| `AdjustAdRevenueSourceUnity`            | `"unity_sdk"`             |
+| `AdjustAdRevenueSourceHeliumChartboost` | `"helium_chartboost_sdk"` |
+| `AdjustAdRevenueSourceAdx`              | `"adx_sdk"`               |
+| `AdjustAdRevenueSourcePublisher`        | `"publisher_sdk"`         |
+| `AdjustAdRevenueSourceTopOn`            | `"topon_sdk"`             |
+| `AdjustAdRevenueSourceMopub`            | No longer supported       |
+
+### Disable SKAdNetwork communication {#disable-skan}
+
+In SDK v4, you can prevent the SDK from communicating with SKAdNetwork by calling the `adjustConfig.deactivateSKAdNetworkHandling` method.
+
+```cpp
+adjustConfig.deactivateSKAdNetworkHandling();
+```
+
+In SDK v5, you need to call the `disableSkanAttribution` method on your `adjustConfig` instance to disable SKAdNetwork communication. The default state is `true`.
+
+```cpp
+adjustConfig.disableSkanAttribution();
+```
+
+### Listen for conversion value updates {#listen-for-cv-updates}
+
+In SDK v4, you can call the `setPostbackConversionValueUpdatedCallback` method on your `adjustConfig` to listen for conversion value updates. Before SKAN4, you could use the `setConversionValueUpdatedCallback` method.
+
+```cpp
+// pre-SKAN4 callback
+adjustConfig.setConversionValueUpdatedCallback([](int conversionValue) {
+    std::cout << "\nConversion value: " << conversionValue;
+});
+// SKAN4 callback
+adjustConfig.setPostbackConversionValueUpdatedCallback([](
+        int conversionValue,
+        std::string coarseValue,
+        bool lockWindow) {
+    std::cout << "\nConversion value: " << conversionValue;
+    std::cout << "\nCoarse value: " << coarseValue;
+    std::cout << "\nLock window: " << lockWindow;
+});
+```
+
+In SDK v5, you need to assign a callback function to the `setSkanUpdatedCallback` method of your `adjustConfig` object.
+
+```cpp
+adjustConfig.setSkanUpdatedCallback([](
+    std::unordered_map<std::string, std::string> data) {
+    std::cout << "\nConversion value: " << data["conversionValue"];
+    std::cout << "\nCoarse value: " << data["coarseValue"];
+    std::cout << "\nLock window: " << data["lockWindow"];
+    std::cout << "\nError: " << data["error"];
+});
+```
+
+### Update conversion values {#update-cvs}
+
+In SDK v4, you can use one of these methods to send updated conversion values to Adjust:
+
+```cpp
+// pass just the conversion value (deprecated method)
+Adjust2dx::updateConversionValue(6);
+
+// pass the conversion value and a callback to receive a message about potential error
+Adjust2dx::updatePostbackConversionValue(6, [](std::string error) {
+    std::cout << "Error while updating conversion value: " << error;
+});
+
+// SKAN 4.0
+// pass the conversion value, coarse value and a callback to receive a message about potential error
+Adjust2dx::updatePostbackConversionValue(6, "low", [](std::string error) {
+    std::cout << "Error while updating conversion value: " << error;
+});
+
+// SKAN 4.0
+// pass the conversion value, coarse value, lock window and a callback to receive a message about potential error
+Adjust2dx::updatePostbackConversionValue(6, "low", false, [](std::string error) {
+    std::cout << "Error while updating conversion value: " << error;
+});
+```
+
+To update conversion values in SDK v5, use the `updateSkanConversionValue` method with the following arguments:
+
+- `conversionValue` (`int`): The updated conversion value
+- `coarseValue` (`std::string`): The updated [coarse conversion value](https://developer.apple.com/documentation/storekit/skadnetwork/coarseconversionvalue)
+- `lockWindow` (`bool`): Whether to send the postback before the conversion window ends
+
+```cpp
+Adjust2dx::updateSkanConversionValue(6, "low", true, [](std::string error) {
+    std::cout << "Error while updating conversion value: " << error;
+});
+```
+
+### App Tracking Transparency authorization wrapper {#att-wrapper}
+
+In SDK v4, you can handle changes to a user's ATT authorization status using the `Adjust2dx::requestTrackingAuthorizationWithCompletionHandler` method.
+
+```cpp
+Adjust2dx::requestTrackingAuthorizationWithCompletionHandler([] (int status) {
+    switch (status) {
+        case 0:
+            // ATTrackingManagerAuthorizationStatusNotDetermined case
+            break;
+        case 1:
+            // ATTrackingManagerAuthorizationStatusRestricted case
+            break;
+        case 2:
+            // ATTrackingManagerAuthorizationStatusDenied case
+            break;
+        case 3:
+            // ATTrackingManagerAuthorizationStatusAuthorized case
+            break;
+    }
+});
+```
+
+This has been renamed to `Adjust2dx::requestAppTrackingAuthorization` in SDK v5 for clarity.
+
+```cpp
+Adjust2dx::requestAppTrackingAuthorization([] (int status) {
+    switch (status) {
+        case 0:
+            // ATTrackingManagerAuthorizationStatusNotDetermined case
+            break;
+        case 1:
+            // ATTrackingManagerAuthorizationStatusRestricted case
+            break;
+        case 2:
+            // ATTrackingManagerAuthorizationStatusDenied case
+            break;
+        case 3:
+            // ATTrackingManagerAuthorizationStatusAuthorized case
+            break;
+    }
+});
+```
+
+### Get device information {#device-info}
+
+In SDK v4, all device information getter methods run synchronously. In SDK v5, these methods have been changed to run asynchronously. You can add a callback function to handle the information when the asynchronous process completes
+
+```cpp
+// IDFA getter
+Adjust2dx::getIdfa([](std::string idfa) {
+    std::cout << "\nIDFA = " << idfa;
+});
+
+// IDFV getter
+Adjust2dx::getIdfv([](std::string idfv) {
+    std::cout << "\nIDFV = " << idfa;
+});
+
+// ADID getter
+Adjust2dx::getAdid([](std::string adid) {
+    std::cout << "\nAdjust ID = " << adid;
+});
+
+// Attribution getter
+Adjust2dx::getAttribution([](AdjustAttribution2dx attribution) {
+   // process attribution
+});
+
+// Enabled status getter
+Adjust2dx::isEnabled([](bool isEnabled) {
+   // process isEnabled
+});
+
+// SDK version getter
+Adjust2dx::getSdkVersion([](std::string sdkVersion) {
+    std::cout << "\nSDK version = " << sdkVersion;
+});
+
+// Last deep link getter
+Adjust2dx::getLastDeeplink([](std::string lastDeeplink) {
+    std::cout << "\nLast deeplink = " << lastDeeplink;
+});
+```
+
+## Removed APIs {#removed-apis}
+
+<MinorVersion removed="v5" size="large" />
+
+The following APIs have been removed in SDK v5.
+
+### Event buffering {#event-buffering}
+
+SDK v4 supports event buffering. This feature stores requests event, ad revenue, push tokens, and other information on a local buffer to send at a later date.
+
+```cpp
+adjustConfig.setEventBufferingEnabled(true);
+```
+
+This setting has been removed in SDK v5.
+
+### Custom user agent string {#custom-user-agent}
+
+SDK v4 supports setting a custom User Agent by calling `adjustConfig.setUserAgent` with a user agent string.
+
+```cpp
+adjustConfig.setUserAgent("custom-user-agent");
+```
+
+This setting has been removed in SDK v5.
+
+### Set whether a device is known {#set-device-known}
+
+In SDK v4, you can call the `adjustConfig.setDeviceKnown` method to manually inform the SDK whether a device is known.
+
+```cpp
+adjustConfig.setDeviceKnown(true);
+```
+
+This setting has been removed in SDK v5.
+
+### Delay SDK start {#delay-sdk-start}
+
+SDK v4 supports delaying the start of the SDK by calling `adjustConfig.setDelayStart` with up to **10 seconds** of delay.
+
+```cpp
+adjustConfig.setDelayStart(10);
+```
+
+This method has been removed in SDK v5. The `Adjust2dx::sendFirstPackages()` method that interrupts this delay has also been removed.
+
+### Disable third party sharing globally {#disable-sharing-globally}
+
+In SDK v4, you can call the `Adjust2dx::disableThirdPartySharing` method to globally disable sharing information with third parties globally.
+
+```cpp
+Adjust2dx::disableThirdPartySharing();
+```
+
+This feature has been removed from SDK v5. In SDK v5, use the `Adjust2dx::trackThirdPartySharing` method to enable or disable third party sharing.
+
+```cpp
+AdjustThirdPartySharing2dx thirdPartySharing = AdjustThirdPartySharing2dx(false);
+Adjust2dx::trackThirdPartySharing(thirdPartySharing);
+```
