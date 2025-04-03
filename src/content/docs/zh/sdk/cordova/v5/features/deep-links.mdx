@@ -15,42 +15,105 @@ redirects:
 
 您可以创建深度链接来将用户转到应用中的特定页面。针对用户是否已在设备上安装您的应用，Adjust SDK 会使用不同的逻辑：
 
--  直接深度链接：用于用户已经安装应用的情况。用户会被转向链接中指定的页面。
--  如果用户尚未安装应用，那么就会发生延迟深度链接。链接首先会将用户转向应用商店页面来安装应用。用户安装后，就会被带到链接中指定的页面。
+- 直接深度链接：用于用户已经安装应用的情况。用户会被转向链接中指定的页面。
+- 如果用户尚未安装应用，那么就会发生延迟深度链接。链接首先会将用户转向应用商店页面来安装应用。用户安装后，就会被带到链接中指定的页面。
 
 用户通过链接打开应用后，SDK 就可以读取深度链接数据了。
 
-## 设置深度链接 {#set-up-deep-linking}
+## 设置深度链接{#set-up-deep-linking}
 
-如果用户已经安装了您的应用，那么在与包含深度链接信息的链接互动时，应用就会打开。Adjust SDK 中包含的工具能够解析深度链接信息，在应用中使用。
+要在 Adjust SDK 中使用深度链接，请首先在应用中启用深度链接信息的打开和读取功能。
 
-您需要在应用层级上设置深度链接。请按照下方链接中的说明，在您的目标平台上设置深度链接：
+## 延迟深度链接{#deferred-deep-linking}
 
--  [iOS](/zh/sdk/ios/features/deep-links)
--  [安卓](/zh/sdk/android/features/deep-links)
+### 禁用延迟深度链接{#disable-deferred-deep-linking}
 
-## 通过深度链接进行再归因 {#reattribution-using-deep-links}
+<CodeBlock title="方法签名">
 
-<Callout type="seealso">
+```ts
+disableDeferredDeeplinkOpening(): void
+```
 
-Adjust 支持使用深度链接进行再交互推广活动。要了解更多信息，请参阅[如何在深度链接中附加归因数据](https://help.adjust.com/zh/article/manage-reattributions#track-reattributions-via-deeplink-clicks)。
+</CodeBlock>
 
-</Callout>
+SDK 默认自动打开延迟深度链接。您可以通过调用`disableDeferredDeeplinkOpening`方法来调整此设置。
 
-要对用户进行再归因，请在应用收到深度链接内容时调用 `appWillOpenUrl` 方法。这样，Adjust SDK 就会在深度链接中寻找新的归因信息。如果 SDK 找到新信息，就会将其转发至 Adjust 服务器进行再归因。
+```js
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox,
+);
 
-要针对 iOS 启用深度链接，请在`Adjust`实例中使用 `true` 值调用 `appWillOpenUrl` 方法。
+adjustConfig.disableDeferredDeeplinkOpening();
+
+Adjust.initSdk(adjustConfig);
+```
+
+### 设置延迟深度链接委托{#set-up-a-deferred-deep-link-delegate}
+
+<CodeBlock title="方法签名">
+
+```ts
+setDeferredDeeplinkCallback(deferredDeeplinkCallback: (deeplink: string) => void): void
+```
+
+</CodeBlock>
+
+您可以配置 Adjust SDK，使其在接收到延迟深度链接时调用一个委托函数。委托函数会以 `string` 参数的形式接收深度链接。
+
+```js
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox,
+);
+
+adjustConfig.setDeferredDeeplinkCallback(function (deeplink) {
+   console.log("Deferred deep link URL content: " + deeplink);
+});
+
+Adjust.initSdk(adjustConfig);
+```
+
+### 示例 {#example}
+
+该示例展示了如何在用户打开延迟深度链接时记录深度链接地址。
+
+```js
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox,
+);
+adjustConfig.setDeferredDeeplinkCallback(function(deeplink) {
+    console.log("Deferred deep link URL: " + deeplink);
+)};
+
+Adjust.initSdk(adjustConfig);
+```
+
+## 通过深度链接进行再归因{#reattribution-via-deep-links}
+
+<CodeBlock title="方法签名">
+
+```ts
+processDeeplink(adjustDeeplink: AdjustDeeplink): void
+```
+
+</CodeBlock>
+
+Adjust 支持您使用深度链接开展再交互推广活动。要了解更多信息，请查看如何[在 Campaign Lab 中设置深度链接](https://help.adjust.com/zh/article/deep-links)。
+
+要对用户进行再归因，请在应用收到深度链接内容时调用 `processDeeplink` 方法。这样，Adjust SDK 就会在深度链接中寻找新的归因信息。如果 SDK 找到新信息，就会将其转发至 Adjust 服务器进行再归因。
 
 ```js
 function handleOpenURL(url) {
    setTimeout(function () {
       // Check content of the url object and get information about the URL.
-      Adjust.appWillOpenUrl(url);
+      Adjust.appWillOpenUrl(new AdjustDeeplink(url));
    }, 300);
 }
 ```
 
-您可以在`didLaunchAppFromLink`方法中调用`Adjust.appWillOpenUrl`函数来打开通用链接。
+您可以在`didLaunchAppFromLink`方法中调用`Adjust.processDeeplink`函数来打开通用链接。
 
 ```js
 var app = {
@@ -73,55 +136,17 @@ var app = {
 
    didLaunchAppFromLink: function (eventData) {
       // Check content of the url object and get information about the URL.
-      Adjust.appWillOpenUrl(eventData.url);
+      Adjust.appWillOpenUrl(new AdjustDeeplink(eventData.url));
    },
 };
 ```
 
-## 延迟深度链接 {#deferred-deep-linking}
-
-### 设置延迟深度链接回传 {#set-up-a-deferred-deep-link-callback}
-
-<CodeBlock title="属性声明">
-
-```js
-setDeferredDeeplinkCallbackListener(deferredDeeplinkCallback: (uri: string) => void)
-```
-
-</CodeBlock>
-
-您可以向 `AdjustConfig` 实例 `setDeferredDeeplinkCallbackListener` 属性添加一个函数，以此配置 Adjust SDK，使其在收到延迟深度链接时调用一个函数。该函数会以 `string` 参数的形式接收深度链接。
-
-```js
-var adjustConfig = new AdjustConfig(appToken, environment);
-
-adjustConfig.setDeferredDeeplinkCallbackListener(function (deeplink) {
-   // Your callback function
-});
-
-Adjust.create(adjustConfig);
-```
-
-### 示例 {#example}
-
-该示例展示了如何在用户打开延迟深度链接时记录深度链接地址。
-
-```js
-var adjustConfig = new AdjustConfig(appToken, environment);
-
-adjustConfig.setDeferredDeeplinkCallbackListener(function (deeplink) {
-   console.log("Received deferred deeplink: " + deeplink);
-});
-
-Adjust.create(adjustConfig);
-```
-
-### 启用 LinkMe {#enable-linkme}
+## 启用 LinkMe {#enable-linkme}
 
 <CodeBlock title="方法签名">
 
-```js
-setLinkMeEnabled(linkMeEnabled: boolean)
+```ts
+enableLinkMe(): void
 ```
 
 </CodeBlock>
@@ -136,10 +161,15 @@ setLinkMeEnabled(linkMeEnabled: boolean)
 
 当用户点击 LinkMe URL 时，可以选择将链接信息复制到剪贴板。您可以使用 Adjust SDK 读取系统剪贴板，获取深度链接信息。如果含有深度链接信息，SDK 就会将用户转到应用中的正确页面。
 
-要在您的应用中开启剪贴板查看，请将 config 对象的 `linkMeEnabled` 属性值设置为 `true`：
+要在应用中启用剪贴板查看，请在 config 对象上调用`enableLinkMe`方法：
 
 ```js
-var adjustConfig = new AdjustConfig(appToken, environment);
-adjustConfig.setLinkMeEnabled(true);
-Adjust.create(adjustConfig);
+const adjustConfig = new AdjustConfig(
+   "{YourAppToken}",
+   AdjustConfig.EnvironmentSandbox,
+);
+
+adjustConfig.enableLinkMe();
+
+Adjust.initSdk(adjustConfig);
 ```
