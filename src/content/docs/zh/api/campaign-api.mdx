@@ -37,10 +37,13 @@ sidebar-position: 4
 
 ## 调取合作伙伴{#fetch-partners}
 
+<Tabs>
+<Tab title="v2" sync="v2">
+
 <CodeBlock title="终端" highlight="/partners">
 
 ```http
-GET https://api.adjust.com/public/v1/partners
+GET https://api.adjust.com/public/v2/partners
 ```
 
 </CodeBlock>
@@ -51,51 +54,49 @@ GET https://api.adjust.com/public/v1/partners
 
 您可以将下列参数作为 **查询参数** 传递：
 
-`after` \(`String`\)
+`cursor` \(`String`\)
 
-: 请求起始[游标位置](#fetch-partners-pagination)。
-
-`before` \(`String`\)
-
-: 请求结束的[游标位置](#fetch-partners-pagination)。
+: 游标位置。
 
 `limit` \(`Integer`\)
 
 : 响应中包含的最大结果数，该值必须为正整数。默认设置为 `50`。
 
+</Tab>
+</Tabs>
+
 ### 分页{#fetch-partners-pagination}
 
-来自此终端的结果会通过游标进行分页。每页返回`previous`和`next`的位置。您可以将这些信息包含在调用中来返回指定页。
+<Tabs>
+<Tab title="v2" sync="v2">
 
-每个结果页都包含一个`paging`对象，其中包含游标位置。您可以使用这些游标位置来在不同页间程序化移动。例如，首页可能包含以下`paging`对象：
+来自此终端的结果会通过游标进行分页。每个结果页面都包含一个`paging`对象，其中包含游标位置。您可以使用这些游标位置来在不同页间程序化移动。例如，第一页可能包含如下结果：
 
 <CodeBlock title="分页示例">
 
 ```json
 "paging": {
-   "page_size": "50",
-   "collection_size": "49",
-   "total": "199",
-   "cursors": {
-      "after": "g2wAAAACYhW1_gxkAANuaWxq",
-      "before": null
-   },
-   "next": "https://api.adjust.com/public/v1/apps/yxs12pfewq/trackers?after=g2wAAAACYhW1_gxkAANuaWxq&limit=50",
-   "previous": null
+   "next": "https://api.adjust.com/public/v2/partners?cursor=g2wAAAACYhW1_gxkAANuaWxq&limit=50",
+   "cursor": "g2wAAAACYhW1_gxkAANuaWxq"
 }
 ```
 
 </CodeBlock>
 
-要访问第二页，在下一个请求中的`after`参数中添加`after`值。例如：
+要前往第二页，请使用`next`链接来返回来自下一个指定`cursor`位置的结果。
 
-<CodeBlock title="cURL" highlight="after=g2wAAAACYhW1_gxkAANuaWxq">
+<CodeBlock title="cURL" highlight="cursor=g2wAAAACYhW1_gxkAANuaWxq">
 
 ```console
-$ curl "https://api.adjust.com/public/v1/apps/yxs12pfewq/trackers?after=g2wAAAACYhW1_gxkAANuaWxq"
+$ curl "https://api.adjust.com/public/v2/partners?cursor=g2wAAAACYhW1_gxkAANuaWxq&limit=50"
 ```
 
 </CodeBlock>
+
+要返回结果中的特定位置，请在请求 **查询参数** 中传递`cursor`值。
+
+</Tab>
+</Tabs>
 
 ### 响应格式{#fetch-partners-response-format}
 
@@ -106,15 +107,8 @@ $ curl "https://api.adjust.com/public/v1/apps/yxs12pfewq/trackers?after=g2wAAAAC
       "request_id": "string",
       "timestamp": "datetime",
       "paging": {
-         "page_size": "string",
-         "collection_size": "string",
-         "total": "string",
          "next": "string",
-         "previous": "string",
-         "cursors": {
-            "after": "string",
-            "before": "string"
-         }
+         "cursor": "string"
       },
       "items": [
          {
@@ -129,12 +123,15 @@ $ curl "https://api.adjust.com/public/v1/apps/yxs12pfewq/trackers?after=g2wAAAAC
 
 ### 示例 {#fetch-partners-example}
 
+<Tabs>
+<Tab title="v2" sync="v2">
+
 <CodeBlock title="cURL">
 
 ```console
 $ curl \
 --header 'Authorization: Token token={API_TOKEN}' \
--L -X GET 'https://api.adjust.com/public/v1/partners?limit=1'
+-L -X GET 'https://api.adjust.com/public/v2/partners?limit=1'
 ```
 
 </CodeBlock>
@@ -143,19 +140,12 @@ $ curl \
 ```json
 {
    "data": {
-      "api_version": "1",
+      "api_version": "2",
       "request_id": "FcK55-tdJUDOWQIAABsB",
       "timestamp": "2019-09-09T09:07:06Z",
       "paging": {
-         "page_size": "1",
-         "collection_size": "1",
-         "total": "199",
-         "next": "https://api.adjust.com/public/v1/partners?after=g2wAAAACYhW1_gxkAANuaWxq&limit=1",
-         "previous": null,
-         "cursors": {
-            "after": "g2wAAAACYhW1_gxkAANuaWxq",
-            "before": null
-         }
+         "cursor": "g2wAAAACYhW1_gxkAANuaWxq",
+         "next": "https://api.adjust.com/public/v2/partners?cursor=g2wAAAACYhW1_gxkAANuaWxq&limit=1"
       },
       "items": [
          {
@@ -169,24 +159,18 @@ $ curl \
 ```
 
 </CodeBlock>
+</Tab>
+</Tabs>
 
 ## 获取链接{#fetch-links}
 
 <Tabs>
 <Tab title="v2" sync="v2">
+
 <CodeBlock title="终端" highlight="v2/apps/{app_token}/trackers">
 
 ```http
 GET https://api.adjust.com/public/v2/apps/{app_token}/trackers
-```
-
-</CodeBlock>
-</Tab>
-<Tab title="v1" sync="v1">
-<CodeBlock title="终端" highlight="v1/apps/{app_token}/trackers">
-
-```http
-GET https://api.adjust.com/public/v1/apps/{app_token}/trackers
 ```
 
 </CodeBlock>
@@ -211,29 +195,6 @@ GET https://api.adjust.com/public/v1/apps/{app_token}/trackers
 `cursor` \(`String`\)
 
 : 游标位置。
-
-`limit` \(`Integer`\)
-
-: 响应中包含的最大结果数，该值必须为正整数。默认设置为 `50`。
-
-</Tab>
-<Tab title="v1" sync="v1">
-
-您必须在请求 **路径** 中传递以下参数：
-
-`app_token` \(`String`\)
-
-: [用于标识应用的字母数字识别码](https://help.adjust.com/zh/article/app-token-and-reporting-currency#view-your-app-details)。长度必须为 12 个字符。
-
-您可以将下列参数作为 **查询参数** 传递：
-
-`after` \(`String`\)
-
-: 请求起始[游标位置](#fetch-partners-pagination)。
-
-`before` \(`String`\)
-
-: 请求结束的[游标位置](#fetch-partners-pagination)。
 
 `limit` \(`Integer`\)
 
@@ -273,40 +234,6 @@ $ curl "https://api.adjust.com/public/v2/apps/yxs12pfewq/trackers?cursor=g2wAAAA
 要返回结果中的特定位置，请在请求 **查询参数** 中传递`cursor`值。
 
 </Tab>
-<Tab title="v1" sync="v1">
-
-来自此终端的结果会通过游标进行分页。每页返回`previous`和`next`的位置。您可以将这些信息包含在调用中来返回指定页。
-
-每个结果页都包含一个`paging`对象，其中包含游标位置。您可以使用这些游标位置来在不同页间程序化移动。例如，首页可能包含以下`paging`对象：
-
-<CodeBlock title="分页示例">
-
-```json
-"paging": {
-   "page_size": "50",
-   "collection_size": "49",
-   "total": "199",
-   "cursors": {
-      "after": "g2wAAAACYhW1_gxkAANuaWxq",
-      "before": null
-   },
-   "next": "https://api.adjust.com/public/v1/apps/yxs12pfewq/trackers?after=g2wAAAACYhW1_gxkAANuaWxq&limit=50",
-   "previous": null
-}
-```
-
-</CodeBlock>
-
-要前往第二页，请使用`next`链接来返回来自下一个指定`cursor`位置的结果。
-
-<CodeBlock title="cURL" highlight="after=g2wAAAACYhW1_gxkAANuaWxq">
-
-```console
-$ curl "https://api.adjust.com/public/v1/apps/yxs12pfewq/trackers?after=g2wAAAACYhW1_gxkAANuaWxq"
-```
-
-</CodeBlock>
-</Tab>
 </Tabs>
 
 ### 响应格式{#fetch-links-response-format}
@@ -337,6 +264,7 @@ $ curl "https://api.adjust.com/public/v1/apps/yxs12pfewq/trackers?after=g2wAAAAC
 
 <Tabs>
 <Tab title="v2" sync="v2">
+
 <CodeBlock title="cURL" highlight="gwzpeepw8uf8">
 
 ```console
@@ -353,57 +281,7 @@ $ curl \
    "data": {
       "paging": {
          "cursor": "g2wAAAACYhW1_gxkAANuaWxq",
-         "next": "https://api.adjust.com/public/v2/apps/gwzpeepw8uf8/trackers?after=g2wAAAACYhW1_gxkAANuaWxq&limit=1"
-      },
-      "items": [
-         {
-            "archived": false,
-            "has_subtrackers": false,
-            "partner_id": 3,
-            "cost_data_enabled": false,
-            "label": "Adroll",
-            "level": 1,
-            "name": "Adroll",
-            "token": "abc123",
-            "url": "https://app.adjust.com/abc123",
-            "click_url": "https://app.adjust.com/abc123?campaign={campaign_name}&idfa={idfa}&deeplink=http%3A%2F%2Fa.b%2Fc%3Fd%3D1%26e%3D%%MACROS%%",
-            "impression_url": "https://s2s.adjust.com/impression/abc123?campaign={campaign_name}&idfa={idfa}&s2s=1"
-         }
-      ]
-   }
-}
-```
-
-</CodeBlock>
-</Tab>
-<Tab title="v1" sync="v1">
-<CodeBlock title="cURL" highlight="gwzpeepw8uf8">
-
-```console
-$ curl \
---header 'Authorization: Token token={API_TOKEN}' \
--L -X GET 'https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers?limit=1'
-```
-
-</CodeBlock>
-<CodeBlock title="成功响应">
-
-```json
-{
-   "data": {
-      "api_version": "1",
-      "request_id": "FcK55-tdJUDOWQIAABsB",
-      "timestamp": "2019-09-09T09:07:06Z",
-      "paging": {
-         "page_size": "1",
-         "collection_size": "1",
-         "total": "199",
-         "next": "https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers?after=g2wAAAACYhW1_gxkAANuaWxq&limit=1",
-         "previous": null,
-         "cursors": {
-            "after": "g2wAAAACYhW1_gxkAANuaWxq",
-            "before": null
-         }
+         "next": "https://api.adjust.com/public/v2/apps/gwzpeepw8uf8/trackers?cursor=g2wAAAACYhW1_gxkAANuaWxq&limit=1"
       },
       "items": [
          {
@@ -432,19 +310,11 @@ $ curl \
 
 <Tabs>
 <Tab title="v2" sync="v2">
+
 <CodeBlock title="终端" highlight="v2/apps/{app_token}/trackers/{link_token}/children">
 
 ```http
 GET https://api.adjust.com/public/v2/apps/{app_token}/trackers/{link_token}/children
-```
-
-</CodeBlock>
-</Tab>
-<Tab title="v1" sync="v1">
-<CodeBlock title="终端" highlight="v1/apps/{app_token}/trackers/{link_token}/children">
-
-```http
-GET https://api.adjust.com/public/v1/apps/{app_token}/trackers/{link_token}/children
 ```
 
 </CodeBlock>
@@ -473,33 +343,6 @@ GET https://api.adjust.com/public/v1/apps/{app_token}/trackers/{link_token}/chil
 `cursor` \(`String`\)
 
 : 游标位置。
-
-`limit` \(`Integer`\)
-
-: 响应中包含的最大结果数，该值必须为正整数。默认设置为 `50`。
-
-</Tab>
-<Tab title="v1" sync="v1">
-
-您必须在请求 **路径** 中传递以下参数：
-
-`app_token` \(`String`\)
-
-: [用于标识应用的字母数字识别码](https://help.adjust.com/zh/article/app-token-and-reporting-currency#view-your-app-details)。长度必须为 12 个字符。
-
-`tracker_token` \(`String`\)
-
-: 子链接所在 **父级链接** 的链接识别码。
-
-您可以在请求的 **查询参数** 中传递以下参数：
-
-`after` \(`String`\)
-
-: 请求起始[游标位置](#fetch-sublinks-pagination)。
-
-`before` \(`String`\)
-
-: 请求结束的[游标位置](#fetch-sublinks-pagination)。
 
 `limit` \(`Integer`\)
 
@@ -539,40 +382,6 @@ $ curl "https://api.adjust.com/public/v2/apps/gwzpeepw8uf8/trackers/abc123/child
 要返回结果中的特定位置，请在请求 **查询参数** 中传递`cursor`值。
 
 </Tab>
-<Tab title="v1" sync="v1">
-
-来自此终端的结果会通过游标进行分页。每页返回`previous`和`next`的位置。您可以将这些信息包含在调用中来返回指定页。
-
-每个结果页都包含一个`paging`对象，其中包含游标位置。您可以使用这些游标位置来在不同页间程序化移动。例如，首页可能包含以下`paging`对象：
-
-<CodeBlock title="分页示例">
-
-```json
-"paging": {
-   "page_size": "50",
-   "collection_size": "49",
-   "total": "199",
-   "cursors": {
-      "after": "g2wAAAACYhW1_gxkAANuaWxq",
-      "before": null
-   },
-   "next": "https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers/abc123/children?after=g2wAAAACYhW1_gxkAANuaWxq&limit=50",
-   "previous": null
-}
-```
-
-</CodeBlock>
-
-要前往第二页，请使用`next`链接来返回来自下一个指定`cursor`位置的结果。
-
-<CodeBlock title="cURL" highlight="after=g2wAAAACYhW1_gxkAANuaWxq">
-
-```console
-$ curl "https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers/abc123/children?after=g2wAAAACYhW1_gxkAANuaWxq"
-```
-
-</CodeBlock>
-</Tab>
 </Tabs>
 
 ### 响应格式{#fetch-sublinks-response-format}
@@ -597,6 +406,7 @@ $ curl "https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers/abc123/child
 
 <Tabs>
 <Tab title="v2" sync="v2">
+
 <CodeBlock title="cURL" highlight="gwzpeepw8uf8, abc123">
 
 ```console
@@ -636,64 +446,17 @@ $ curl \
 
 </CodeBlock>
 </Tab>
-<Tab title="v1" sync="v1">
-<CodeBlock title="cURL" highlight="gwzpeepw8uf8, abc123">
-
-```console
-$ curl \
---header 'Authorization: Token token={API_TOKEN}'
--L -X GET 'https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers/abc123/children?limit=1' \
-```
-
-</CodeBlock>
-<CodeBlock title="成功响应">
-
-```json
-{
-   "data": {
-      "api_version": "1",
-      "request_id": "FcK55-tdJUDOWQIAABsB",
-      "timestamp": "2019-09-09T09:07:06Z",
-      "paging": {
-         "page_size": "1",
-         "collection_size": "1",
-         "total": "199",
-         "next": "https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers/abc123/children?after=g2wAAAACYhW1_gxkAANuaWxq&limit=1",
-         "previous": null,
-         "cursors": {
-            "after": "g2wAAAACYhW1_gxkAANuaWxq",
-            "before": null
-         }
-      },
-      "items": [
-         {
-            "name": "Adroll::SpringCampaign",
-            "token": "xyz456",
-            "label": "SpringCampaign",
-            "level": 2,
-            "archived": false,
-            "has_subtrackers": false,
-            "partner_id": null,
-            "cost_data_enabled": false,
-            "url": "https://app.adjust.com/xyz456",
-            "click_url": "https://app.adjust.com/xyz456?idfa={idfa}&deeplink=http%3A%2F%2Fa.b%2Fc%3Fd%3D1%26e%3D%%MACROS%%",
-            "impression_url": "https://s2s.adjust.com/impression/xyz456?idfa={idfa}&s2s=1"
-         }
-      ]
-   }
-}
-```
-
-</CodeBlock>
-</Tab>
 </Tabs>
 
 ## 创建链接{#create-links}
 
+<Tabs>
+<Tab title="v2" sync="v2">
+
 <CodeBlock title="终端" highlight="{app_token}/trackers">
 
 ```http
-POST https://api.adjust.com/public/v1/apps/{app_token}/trackers
+POST https://api.adjust.com/public/v2/apps/{app_token}/trackers
 ```
 
 </CodeBlock>
@@ -740,10 +503,10 @@ POST https://api.adjust.com/public/v1/apps/{app_token}/trackers
 
 可用的`level`值如下：
 
--  `1`: 渠道层级
--  `2`: 推广活动层级
--  `3`: 广告组层级
--  `4`: 素材层级
+- `1`: 渠道层级
+- `2`: 推广活动层级
+- `3`: 广告组层级
+- `4`: 素材层级
 
 ### 示例 {#create-links-example}
 
@@ -754,7 +517,7 @@ POST https://api.adjust.com/public/v1/apps/{app_token}/trackers
 <CodeBlock title="cURL">
 
 ```console
-$ curl --location --request POST 'https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers' \
+$ curl --location --request POST 'https://api.adjust.com/public/v2/apps/gwzpeepw8uf8/trackers' \
 --header 'Authorization: Token token={API_TOKEN}' \
 --header 'Content-Type: application/json' \
 --data-raw '{"name": "Adroll"}'
@@ -766,7 +529,7 @@ $ curl --location --request POST 'https://api.adjust.com/public/v1/apps/gwzpeepw
 ```json
 {
    "data": {
-      "api_version": "1",
+      "api_version": "2",
       "request_id": "FcK55-tdJUDOWQIAABsB",
       "timestamp": "2019-09-09T09:07:06Z",
       "items": [
@@ -795,7 +558,7 @@ $ curl --location --request POST 'https://api.adjust.com/public/v1/apps/gwzpeepw
 <CodeBlock title="cURL" highlight="parent_token">
 
 ```console
-$ curl --location --request POST 'https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers' \
+$ curl --location --request POST 'https://api.adjust.com/public/v2/apps/gwzpeepw8uf8/trackers' \
 --header 'Authorization: Token token={API_TOKEN}' \
 --header 'Content-Type: application/json' \
 --data-raw '{"parent_token": "abc123", "name": "SpringCampaign"}'
@@ -807,7 +570,7 @@ $ curl --location --request POST 'https://api.adjust.com/public/v1/apps/gwzpeepw
 ```json
 {
    "data": {
-      "api_version": "1",
+      "api_version": "2",
       "request_id": "FcK55-tdJUDOWQIAABsB",
       "timestamp": "2019-09-09T09:07:06Z",
       "items": [
@@ -830,13 +593,18 @@ $ curl --location --request POST 'https://api.adjust.com/public/v1/apps/gwzpeepw
 ```
 
 </CodeBlock>
+</Tab>
+</Tabs>
 
-## 更新链接{#update-links}
+## 更新链接 {#update-links}
+
+<Tabs>
+<Tab title="v2" sync="v2">
 
 <CodeBlock title="终端" highlight="{app_token}/trackers/{link_token}">
 
 ```http
-PATCH https://api.adjust.com/public/v1/apps/{app_token}/trackers/{link_token}
+PATCH https://api.adjust.com/public/v2/apps/{app_token}/trackers/{link_token}
 ```
 
 </CodeBlock>
@@ -885,10 +653,10 @@ PATCH https://api.adjust.com/public/v1/apps/{app_token}/trackers/{link_token}
 
 可用的`level`值如下：
 
--  `1`: 渠道层级
--  `2`: 推广活动层级
--  `3`: 广告组层级
--  `4`: 素材层级
+- `1`: 渠道层级
+- `2`: 推广活动层级
+- `3`: 广告组层级
+- `4`: 素材层级
 
 ### 示例 {#update-links-example}
 
@@ -898,7 +666,7 @@ PATCH https://api.adjust.com/public/v1/apps/{app_token}/trackers/{link_token}
 $ curl \
 --header 'Authorization: Token token={API_TOKEN}' \
 --header 'Content-Type: application/json' \
---location --request PATCH 'https://api.adjust.com/public/v1/apps/gwzpeepw8uf8/trackers/klm789' \
+--location --request PATCH 'https://api.adjust.com/public/v2/apps/gwzpeepw8uf8/trackers/klm789' \
 --data-raw '{"partner_id": 174, "cost_data_enabled": false}'
 ```
 
@@ -908,7 +676,7 @@ $ curl \
 ```json
 {
    "data": {
-      "api_version": "1",
+      "api_version": "2",
       "request_id": "FcK55-tdJUDOWQIAABsB",
       "timestamp": "2019-09-09T09:07:06Z",
       "items": [
@@ -931,3 +699,5 @@ $ curl \
 ```
 
 </CodeBlock>
+</Tab>
+</Tabs>

@@ -14,8 +14,8 @@ redirects:
 
 You can create deep links to take users to specific pages in your app. The Adjust SDK uses different logic depending on if the user already has your app installed on their device:
 
--  Direct deep linking: occurs if the user already has your app installed. The link takes the user to the page specified in the link
--  Deferred deep linking: occurs if the user doesn't have your app installed. The link takes the user to a storefront to install your app first. After the user installs the app, it opens to the page specified in the link.
+- Direct deep linking: occurs if the user already has your app installed. The link takes the user to the page specified in the link
+- Deferred deep linking: occurs if the user doesn't have your app installed. The link takes the user to a storefront to install your app first. After the user installs the app, it opens to the page specified in the link.
 
 The SDK can read deep link data after a user opens your app from a link.
 
@@ -380,9 +380,9 @@ Some Email Service Providers (ESPs) use their own custom domains for marketing c
 
 The `resolveLinkWithUrl` method takes the following arguments:
 
--  `url` (`String`): the deep link that opened the application.
--  `resolveUrlSuffixArray` (`String[]`): the custom domains of the configured campaigns that need to be resolved.
--  `adjustLinkResolutionCallback` (`AdjustLinkResolutionCallback`): the callback that returns the final URL.
+- `url` (`String`): the deep link that opened the application.
+- `resolveUrlSuffixArray` (`String[]`): the custom domains of the configured campaigns that need to be resolved.
+- `adjustLinkResolutionCallback` (`AdjustLinkResolutionCallback`): the callback that returns the final URL.
 
 The method checks the deep link against the domains in the `resolveUrlSuffixArray`. If it doesn't find any matches, it forwards the deep link URL as is. If it does find a match, it attempts to resolve the link and return the resulting deep link. It then stores this in the callback parameter.
 
@@ -417,6 +417,57 @@ AdjustLinkResolution.resolveLink(url, new String[]{"example.com"}, new AdjustLin
       Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
    }
 });
+```
+
+</Tab>
+</Tabs>
+
+## Handling Deeplinks with Referrer {#handling-deeplinks-with-referrer}
+
+An optional referrer URL used to track source of the deeplink or app open for better attribution or reattribution and deep linking. For example, channels like SEO / Organic Search, Adjust links are not directly used. If the client's root domain has Android App Links implemented and triggers an app opening, For such channels, we may have to rely on signals coming from the referrer URL to attribute or reattribute users.
+
+#### Set up a Referrer URL
+
+<Tabs>
+<Tab title="Kotlin" sync="kotlin">
+
+```kotlin
+ override fun onCreate(savedInstanceState: Bundle?) {
+   super.onCreate(savedInstanceState)
+   setContentView(R.layout.activity_main)
+
+   val intent = intent
+   val data = intent.data
+   val adjustDeeplink = AdjustDeeplink(data)
+   // If referrer URL is available, add it to the deeplink object
+   val referrer = getReferrer() //Activity#getReferrer()
+   referrer?.let {
+      adjustDeeplink.setReferrer(referrer)
+   }
+
+   Adjust.processDeeplink(adjustDeeplink, applicationContext)
+}
+```
+
+</Tab>
+<Tab title="Java" sync="java">
+
+```java
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+
+    Intent intent = getIntent();
+    Uri data = intent.getData();
+    AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+    // If referrer URL is available, add it to the deeplink object
+    Uri referrer = getReferrer(); //Activity#getReferrer()
+    if (referrer != null) {
+        adjustDeeplink.setReferrer(referrer);
+    }
+    Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
+}
 ```
 
 </Tab>

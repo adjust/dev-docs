@@ -1,0 +1,199 @@
+---
+title: Send push tokens
+description: Send push tokens to Adjust to inform audiences and uninstall and reinstall measurement.
+sidebar-position: 8
+---
+
+Push notifications enable you to deliver personalized content to your users. You can use deep links to direct users to specific pages in your app, and measure reattributions.
+
+- The push token is a unique identifier that can be used to sort [Audiences](https://help.adjust.com/en/article/audiences) and client callbacks.
+- Push tokens are also required for [uninstall and reinstall measurement](https://help.adjust.com/en/article/uninstalls-reinstalls).
+
+## How it works {#how-it-works}
+
+Each device generates a unique push token that's used to target it. The push token is sent to Adjust when the following information is passed to the `MobileCore.track` API:
+
+1. `ADJAdobeAdjustActionSetPushToken`: a string constant that maps to the `setPushToken` method.
+1. `data`: a dictionary of values used to configure your push token.
+
+When you call `MobileCore.track` with these arguments, the Adjust extension the token to the `setPushToken` method and sends the information to Adjust.
+
+## Reference {#reference}
+
+The `data` dictionary holds information about an action. To configure your push token, add the following key-value pair to your dictionary.
+
+<DefList>
+
+`ADJAdobeAdjustPushToken`
+
+: The device's push token.
+
+</DefList>
+
+## Example: Send a push token {#example-send-push-token}
+
+To send a push token to Adjust, you need to add a function to your main activity. In this tutorial, you'll build on your ViewController from the [integration guide](/en/sdk/adobe-extension/ios/integration) and send an updated push token to Adjust. The final result looks like this:
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+```swift
+// ViewController.swift
+import AEPCore
+import AdjustAdobeExtension
+
+class ViewController: UIViewController {
+
+   override func viewDidLoad() {
+      super.viewDidLoad()
+
+      var dataDict: Dictionary = [String : String]()
+      dataDict[ADJAdobeAdjustPushToken:"de18dbf8-f38a-4962-8f1e-44abcf43055d"]
+      MobileCore.track(action: ADJAdobeAdjustActionSetPushToken, data: dataDict)
+   }
+}
+```
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+```objc
+// ViewController.m
+#import "ViewController.h"
+@import AEPCore;
+#import <AdjustAdobeExtension/AdjustAdobeExtension.h>
+
+@implementation ViewController
+
+- (void)viewDidLoad {
+   [super viewDidLoad];
+
+   NSMutableDictionary * dataDict = [NSMutableDictionary dictionary];
+   [dataDict setValue:@"de18dbf8-f38a-4962-8f1e-44abcf43055d" forKey:ADJAdobeAdjustPushToken];
+   [AEPMobileCore trackAction:ADJAdobeAdjustActionSetPushToken
+                        data:dataDict];
+   [dataDict removeAllObjects];
+}
+
+@end
+```
+
+</Tab>
+</Tabs>
+
+Here's what you need to do:
+
+1. Inside your `viewDidLoad` function block, create a new dictionary called `dataDict`. This is used to hold the properties of the action.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+<CodeBlock title="ViewController.swift" highlight="{range: 4}" startLineNumber={6} showLineNumbers>
+
+```swift
+override func viewDidLoad() {
+   super.viewDidLoad()
+
+   var dataDict: Dictionary = [String : String]()
+}
+```
+
+</CodeBlock>
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+<CodeBlock title="ViewController.m" highlight="{range: 4}" startLineNumber={7} showLineNumbers>
+
+```objc
+- (void)viewDidLoad {
+   [super viewDidLoad];
+
+   NSMutableDictionary * dataDict = [NSMutableDictionary dictionary];
+}
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
+
+1. Add your push token to the dictionary using the `ADJAdobeAdjustPushToken` key. This example sets the push token to `"de18dbf8-f38a-4962-8f1e-44abcf43055d"`.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+<CodeBlock title="ViewController.swift" highlight="{range: 5}" startLineNumber={6} showLineNumbers>
+
+```swift
+override func viewDidLoad() {
+   super.viewDidLoad()
+
+   var dataDict: Dictionary = [String : String]()
+   dataDict[ADJAdobeAdjustPushToken:"de18dbf8-f38a-4962-8f1e-44abcf43055d"]
+}
+```
+
+</CodeBlock>
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+<CodeBlock title="ViewController.m" highlight="{range: 5}" startLineNumber={7} showLineNumbers>
+
+```objc
+- (void)viewDidLoad {
+   [super viewDidLoad];
+
+   NSMutableDictionary * dataDict = [NSMutableDictionary dictionary];
+   [dataDict setValue:@"de18dbf8-f38a-4962-8f1e-44abcf43055d" forKey:ADJAdobeAdjustPushToken];
+}
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
+
+1. Finally, call `MobileCore.trackAction` with `ADJAdobeAdjustActionSetPushToken` and your `dataDict` dictionary to send the push token to Adjust. If you're using Objective-C, call `removeAllObjects` on your `dataDict` dictionary to deallocate it.
+
+<Tabs>
+<Tab title="Swift" sync="swift">
+
+<CodeBlock title="ViewController.swift" highlight="{range: 6}" startLineNumber={6} showLineNumbers>
+
+```swift
+override func viewDidLoad() {
+   super.viewDidLoad()
+
+   var dataDict: Dictionary = [String : String]()
+   dataDict[ADJAdobeAdjustPushToken:"de18dbf8-f38a-4962-8f1e-44abcf43055d"]
+   MobileCore.track(action: ADJAdobeAdjustActionSetPushToken, data: dataDict)
+}
+```
+
+</CodeBlock>
+
+</Tab>
+<Tab title="Objective-C" sync="objc">
+
+<CodeBlock title="ViewController.m" highlight="{range: 6-8}" startLineNumber={7} showLineNumbers>
+
+```objc
+- (void)viewDidLoad {
+   [super viewDidLoad];
+
+   NSMutableDictionary * dataDict = [NSMutableDictionary dictionary];
+   [dataDict setValue:@"de18dbf8-f38a-4962-8f1e-44abcf43055d" forKey:ADJAdobeAdjustPushToken];
+   [AEPMobileCore trackAction:ADJAdobeAdjustActionSetPushToken
+                        data:dataDict];
+   [dataDict removeAllObjects];
+}
+```
+
+</CodeBlock>
+
+</Tab>
+</Tabs>
+
+That's it! Your push token is sent to Adjust when the view loads.
