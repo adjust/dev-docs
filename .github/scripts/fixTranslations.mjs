@@ -51,6 +51,13 @@ function fixHeaders(content) {
   );
 }
 
+function fixPrettier(content) {
+  return content.replaceAll(
+    "\{/\* prettier\-ignore \*/\}",
+    "{/* prettier-ignore */}",
+  );
+}
+
 // Fix MDX content
 function fixMdxContent(content, locale) {
   // Fix tags to ensure correct casing
@@ -72,7 +79,7 @@ function fixMdxContent(content, locale) {
   );
   content = content.replace(tagRegex, "$1\n$3");
   content = fixHeaders(content);
-
+  content = fixPrettier(content);
   // Fix escaped headers
   const headerRegex = /^(\s.*?)(\\{#.*?\\})/gm;
   content = content.replace(
