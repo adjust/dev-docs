@@ -12,13 +12,19 @@ redirects:
    v4: /ko/sdk/ios/v4/integrations/signature-library
 ---
 
+<Callout type="note">
+
+본 페이지는 Adjust SDK v5의 연동 단계를 설명합니다. Adjust SDK v4를 사용하는 경우, 왼쪽의 드롭다운 메뉴에서 해당 탭을 선택합니다.
+
+</Callout>
+
 Adjust의 SDK Signature\(SDK 서명\) 라이브러리는 Adjust SDK의 독립형 플러그인으로 설계되었습니다. 따라서 코드를 변경하거나 앱에서 Adjust SDK를 사용하는 방법을 변경할 필요가 없습니다. 플러그인 설치 후에는 Adjust SDK에서 생성된 모든 요청이 계속 정상적으로 작동합니다.
 
 ## 시작에 앞서 {#before-you-begin}
 
 Adjust Signature 라이브러리를 iOS 앱에 연동하려면 다음을 확인하시기 바랍니다.
 
-- 사용 중인 Adjust SDK 버전이 **4\.35\.2 이상** 이어야 합니다. 이 요건은 Adjust SDK를 간접적으로 사용하는 경우에도 적용됩니다.
+- 사용 중인 Adjust SDK 버전이 **5\.0\.0 이상** 이어야 하며, 이는 Adjust SDK를 간접적으로 사용하는 경우에도 적용됩니다.
 - iOS 또는 tvOS 버전 **12 이상** 이 지원됩니다.
 
 <Callout type="important">
@@ -34,24 +40,66 @@ Adjust Signature 라이브러리를 iOS 앱에 연동하려면 다음을 확인�
 - 이전에 Signature v1을 연동한 경우 프로젝트에서 서명 함수를 호출하는 모든 코드를 제거합니다.
 - 이전에 Signature v2를 연동한 경우 프로젝트에서 Signature v2 라이브러리를 제거합니다.
 
-### Signature 라이브러리 업데이트 {#updating-the-signature-library}
-
-Adjust Signature 라이브러리를 업데이트하려면 기존 Signature 라이브러리를 새로운 버전으로 교체하고 테스트를 다시 실행합니다. 앱 로직이나 Adjust의 설정을 즉시 변경할 필요는 없습니다. [다음 기준에 해당하는 경우 시크릿 ID를 비활성화해야 합니다](https://help.adjust.com/ko/article/sdk-signature#manage-your-secret-ids).
-
-- 더 이상 설치 리포트에 필요하지 않는 경우.
-- 모든 앱 플랫폼 및 스토어에서 새로운 앱 버전을 출시한 경우.
-
-## Signature 라이브러리 연동\(SDK v4만 해당\) {#integrate-the-signature-library}
+## Signature 라이브러리 연동 {#integrate-the-signature-library}
 
 <Callout type="note">
 
-Adjust SDK v5는 SDK 서명 검증을 지원합니다. 이전에 SDK Signature 라이브러리 를 연동한 적이 있다면, 이를 삭제하고 모든 관련 코드를 삭제해야 합니다.
+Adjust SDK는 대부분의 경우 Signature 라이브러리를 기본값으로 포함합니다. Adjust SDK의 프롬프트가 있거나 특정 Signature 라이브러리 버전이 필요한 경우에만 계속 진행하시기 바랍니다.
+
+</Callout>
+<Tabs>
+<Tab title="Cocoapods" sync="cocoapods">
+<Callout type="important">
+
+To avoid conflicts, you must ensure that the Adjust SDK was integrated without the usage of dependency managers.
 
 </Callout>
 
-다음 단계에 따라 iOS 프로젝트에서 서명 라이브러리를 연동하십시오.
+Signature 라이브러리는 [GitHub에서](https://github.com/adjust/adjust_signature_sdk/releases/) 릴리스되며, `3.20.1` 버전부터 Cocoapods에 전달됩니다. 프로젝트에 Signature 라이브러리를 추가하려면 다음을 `Podfile`에 추가합니다\([최신 버전](https://github.com/adjust/adjust_signature_sdk/releases/latest)으로 변경\).
 
-1. [GitHub에서`AdjustSigSdk-iOS-tvOS-Dynamic.xcframework.zip` 아카이브](https://github.com/adjust/adjust_signature_sdk/releases/latest)를 다운로드합니다.
+```ruby
+pod 'AdjustSignature', '~> x.x.x'
+```
+
+베타 릴리스는 `3.24.1` 버전부터 이용 가능합니다. 프로젝트에 Signature 라이브러리를 추가하려면 다음을 `Podfile`에 추가합니다\([최신 버전](https://github.com/adjust/adjust_signature_sdk/releases)으로 변경\).
+
+```ruby
+pod 'AdjustSignature', 'x.x.x-beta'
+```
+
+이제 끝입니다\! Signature 라이브러리가 프로젝트에 연동되었습니다.
+
+</Tab>
+<Tab title="Swift 패키지 매니저" sync="swift-package-manager"> <Callout type="important">
+
+To avoid conflicts, you must ensure that the Adjust SDK was integrated without the usage of dependency managers.
+
+</Callout>
+
+SPM 지원은 `3.20.1` 버전부터 이용 가능합니다. Signature 라이브러리를 추가하려면 Xcode 프로젝트에 추가해야 합니다.
+
+1. **File \-\-> Swift Packages \-\-> Add Package Dependency** 를 선택합니다.
+2. 창이 뜨면 서명의 GitHub 주소[\(https://github.com/adjust/adjust_signature_sdk\)를 입력합니다.](https://github.com/adjust/adjust_signature_sdk)
+3. 사용하고자 하는 라이브러리의 버전을 **Version** 필드에 입력합니다. 최신 버전은 [릴리스 페이지](https://github.com/adjust/adjust_signature_sdk/releases/latest)에서 확인하실 수 있습니다.
+
+`3.24.1` 버전 이상의 베타 릴리스의 경우, SPM 지원이 제공됩니다. Signature 라이브러리를 추가하려면 Xcode 프로젝트에 추가해야 합니다.
+
+1. **File \-\-> Swift Packages \-\-> Add Package Dependency** 를 선택합니다.
+2. 창이 뜨면 서명의 GitHub 주소[\(https://github.com/adjust/adjust_signature_sdk\)를 입력합니다.](https://github.com/adjust/adjust_signature_sdk)
+3. **Branch** 필드에 `release/vx.xx`를 입력합니다. `x.xx`를 [릴리스 페이지의](https://github.com/adjust/adjust_signature_sdk/releases) 최신 메이저 및 마이너 버전\(예: `release/v3.24`\)으로 바꿉니다.
+
+<Callout type="note">
+
+`main` branch를 타겟팅하면 베타 버전을 가져올 수 있습니다.
+
+</Callout>
+
+이제 끝입니다\! Signature 라이브러리가 프로젝트에 연동되었습니다.
+
+</Tab>
+<Tab title="수동 연동" sync="manual-integration">
+
+1. GitHub에서 [최신 Stable 버전](https://github.com/adjust/adjust_signature_sdk/releases/latest) 또는 [베타](https://github.com/adjust/adjust_signature_sdk/releases) Dynamic XCFramework 버전을 가져옵니다.
 2. 아카이브를 압축 해제하고 `AdjustSigSdk.xcframework`를 프로젝트의 디렉터리에 복사합니다.
 3. Xcode의 **Project Navigator** 에서 프로젝트를 선택합니다.
 4. 왼쪽에서 타겟을 선택합니다.
@@ -69,6 +117,9 @@ Adjust SDK v5는 SDK 서명 검증을 지원합니다. 이전에 SDK Signature �
 ![Xcode의 Embed & Sign(삽입 및 서명) 옵션 스크린샷](@images/sig-v3/xcode-embed-sign.png)
 
 이제 끝입니다\! Signature 라이브러리가 프로젝트에 연동되었습니다.
+
+</Tab>
+</Tabs>
 
 ## 앱 테스트 {#test-your-app}
 
@@ -108,3 +159,10 @@ Adjust SDK가 **샌드박스 모드** 에서 실행 중이어야 합니다.
 ### 심볼 업로드 실패
 
 Xcode 16으로 빌드된 앱을 검증하거나 제출할 때 Signature 라이브러리와 관련된 `Upload symbols failed` 경고가 표시될 수 있습니다. 누락된 심볼 상황은 의도적인 것이며 기능에는 영향을 미치지 않으므로 무시해도 됩니다.
+
+## Signature 라이브러리 업데이트 {#updating-the-signature-library}
+
+Signature 라이브러리는 Adjust SDK v5 업데이트와 함께 자동으로 업데이트됩니다. 특정 라이브러리 버전이 필요한 경우 기존 라이브러리를 새 버전으로 교체하고 테스트를 다시 실행합니다. [인증서가 구성되어 있고 수정되지 않은 경우](https://help.adjust.com/ko/article/sdk-signature#manage-your-certificate-fingerprints) 앱 로직이나 Adjust의 설정을 즉시 변경할 필요는 없습니다. [다음 기준에 해당하는 경우 시크릿 ID를 비활성화](https://help.adjust.com/ko/article/sdk-signature#manage-your-secret-ids)해야 합니다.
+
+- 더 이상 설치 리포트에 필요하지 않는 경우.
+- 모든 앱 플랫폼 및 스토어에서 새로운 앱 버전을 출시한 경우.
